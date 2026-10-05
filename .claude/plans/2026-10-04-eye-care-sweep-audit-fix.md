@@ -155,20 +155,20 @@ Each item is named so nothing is lost; none blocks Session A.
 
 ## Track P: route prep, in a second session beside Session 0
 
-Session 0's tail (recalibration, audit rerun, Track P message, handoff) is pending; Track P's host proof queues behind it.
+**Closed 2026-10-05:** every unit built, checked and proven (status below). What it leaves open sits in the units it
+serves: Session B's B1 and B4 rows, register S1 (the button timing), Spec 47 §5 stage 3 (walker items 2, 4, 5 and focus
+and active states).
 
 Code-only units from Sessions A and B that need neither Session 0's repairs nor the host, pulled forward so the sweep
 can start the moment Session 0's tail ends. **File ownership (no overlap with Session 0):** Track P owns
 `scripts/parity/**` (the walker, `collect.mjs` included: it also takes S0-3's walker-side `::before`/`::after` read),
 `scripts/computed-route/solve.mjs`, `lib/solve-rows.mjs`, `lib/ledger.mjs`, `lint.mjs`, the new `sweep.mjs`, and
 `sites/eye-care-ward-end/build/qa/independent-check.mjs`; Session 0 owns `calibrate.mjs`, `lib/calibrate.mjs`, the
-calibration fixtures, the seeder and every block. **Coupling:** `lib/calibrate.mjs` imports `DEFAULT_PROPS` and
-`HOVER_PROPS` from `scripts/parity/lib/collect.mjs`, so Track P's new read properties must land on `main` before
-Session 0's recalibration tail starts (or that tail recalibrates again). **Host:** none until its proofs; those queue
-behind Session 0's tail on the shared serial queue. Units: A-1 (all five walker fixes plus the `::after` read), A1's
+calibration fixtures, the seeder and every block (`lib/calibrate.mjs` reads `collect.mjs`'s `DEFAULT_PROPS` and
+`HOVER_PROPS`, so the walker's read properties are calibration's too). Units: A-1 (all five walker fixes plus the `::after` read), A1's
 rounds-0 test, A3's `sweep.mjs` aggregator and tests (built against the existing solve reports), A5's
 `independent-check.mjs::accepted` ledger fix, and B4 divergence protection. Done when each has its MUST FAIL test,
-tests and lint pass, and it is pushed; the About measure-only proof of A-1 runs on the queue after Session 0 deploys.
+tests and lint pass, it is pushed, and the About measure-only proof of A-1 passes.
 
 **Status (2026-10-05): every code unit built, pushed and proven.** A1 `4f70dda13`; A-1 part 1
 (timings and `::before`/`::after` in `collect.mjs`, on main for Session 0's recalibration) `4f70dda13`, part 2 (DevTools
@@ -183,14 +183,9 @@ a declared width never replaces a ledger-held width; the settle floor is 900ms a
 page that reads opacity 0 under 300ms). Then triage reads `includes/` helpers (`8b153abb3`), the flex alignment noise
 row is gone (`8f032be03`), and /qc passed 15 scenarios on local pages and real data, fixing triage's missing-report
 error on the way (`2035bb6ce`; report `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/stage-6-report.md`).
-Review findings in other sessions' code, for Session 0 (not changed by Track P):
-- `scripts/computed-route/lib/deploy-hash.mjs::normaliseBundle` renumbers only `NNN(){` webpack modules; a module with
-  parameters (`NNN(e,t,r){`) keeps its build-folder id, so calibrate can refuse a deploy that matches.
-- `scripts/computed-route/lib/calibrate-read.mjs::readInstancesInPage` lost the 81-element cap: large blocks
-  (google-reviews) may time out on the host during recalibration.
-- `wishlist-panel/colour-preview.js` and `choice-flow/preview-style.js` copy the tier fallback instead of
-  `utils/responsive.js::resolveTier`.
-- `plugins/sgs-blocks/tests/js/__mocks__/@wordpress/components.js`'s pass-through fallback hides a misspelt import.
+Not yet measured: the new walk's time on the real host (four widths of About took 20s on the local mirror); A3's
+first host runs compare it with the 2026-10-04 About walk, and batch the DevTools node lookups if it is over twice as
+long. The four review findings in Session 0's code are handled by Session 0 (deploy-hash `0b0630d6e`, calibration chunk probe, the tier helpers in its fix wave, jest mocks `7c714f86b`).
 
 ## Session A: whole-site sweep (measure, never write)
 
@@ -200,7 +195,7 @@ LEDGER Front F state the result. **Estimate:** realistic ~3 h, about 2 h of it u
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|
-| A-1 Read what DevTools reads | **Built 2026-10-05 (Track P, `4f70dda13`, `f7d9003f5`; host proof pending):** `parity/lib/devtools.mjs` (`settleAnimations`, `forcedHover`, `declaredValues`), timings and pseudo layers in `collect.mjs`, `textRun` rows; GAP-CHECKLIST §19. Before the sweep, so it measures truthfully (Bean, 2026-10-04: these gaps are data DevTools already shows). Each a general walker fix with a MUST FAIL test and a tool-log line: (1) settle on `document.getAnimations()` finishing instead of the fixed `state.settle ?? 900` wait in `draft-live-walk.mjs` (no row read mid-entrance); (2) every pair's hover read by forcing `:hover` through the Chrome DevTools Protocol (`CSS.forcePseudoState`), not only pairs flagged `hover` in a hand config; (3) declared values from the matched CSS rules (`CSS.getMatchedStylesForNode`) beside computed ones, so a width or max-width the draft declares (Contact's 168px address) is written instead of left as a used value; (4) a text-run pair also compares the spacing between its rows (their boxes' tops), giving the hours list its gap; (5) transition and animation timings compared (duration, delay, easing), which computed style already holds. Panels are handled in A2 by opening them before pairing | `scripts/parity/draft-live-walk.mjs`, `scripts/parity/lib/collect.mjs`, `scripts/parity/lib/chrome.mjs`, `scripts/parity/lib/compare.mjs`, `scripts/computed-route/tests/walker-refs.test.mjs` | none | each fix's MUST FAIL test; About still at 0 open on a measure-only run (no new rows from the fixes on a solved page) |
+| A-1 Read what DevTools reads | **Built and proven 2026-10-05 (Track P, `4f70dda13`, `f7d9003f5`, `9fa6bbbe3`; About on the local mirror: 1 real open issue, S1's button timing):** `parity/lib/devtools.mjs` (`settleAnimations`, `forcedHover`, `declaredValues`), timings and pseudo layers in `collect.mjs`, `textRun` rows; GAP-CHECKLIST §19. Before the sweep, so it measures truthfully (Bean, 2026-10-04: these gaps are data DevTools already shows). Each a general walker fix with a MUST FAIL test and a tool-log line: (1) settle on `document.getAnimations()` finishing instead of the fixed `state.settle ?? 900` wait in `draft-live-walk.mjs` (no row read mid-entrance); (2) every pair's hover read by forcing `:hover` through the Chrome DevTools Protocol (`CSS.forcePseudoState`), not only pairs flagged `hover` in a hand config; (3) declared values from the matched CSS rules (`CSS.getMatchedStylesForNode`) beside computed ones, so a width or max-width the draft declares (Contact's 168px address) is written instead of left as a used value; (4) a text-run pair also compares the spacing between its rows (their boxes' tops), giving the hours list its gap; (5) transition and animation timings compared (duration, delay, easing), which computed style already holds. Panels are handled in A2 by opening them before pairing | `scripts/parity/draft-live-walk.mjs`, `scripts/parity/lib/collect.mjs`, `scripts/parity/lib/chrome.mjs`, `scripts/parity/lib/compare.mjs`, `scripts/computed-route/tests/walker-refs.test.mjs` | none | each fix's MUST FAIL test; About still at 0 open on a measure-only run (no new rows from the fixes on a solved page) |
 | A0 Live = HEAD | (after A-1 lands, so HEAD carries it) Queue runner in the scratchpad (serial, `SGS_HEADED=1`, STOP file). Deploy HEAD (includes 508217f03) to eye-care-test; check the theme snapshot matches `sites/eye-care-ward-end/theme-snapshot.json` (`push-theme-snapshot.py` if not); rebuild all 17 trees with `wp-build-page.js`. Before rebuilding, `git diff --ignore-cr-at-eol sites/eye-care-ward-end/build/*.tree.json` must be empty (`about.tree.json` differs in line endings only on 2026-10-04). Record the HEAD hash; tell peer sessions not to deploy to eye-care-test while the queue runs | queue runner (scratchpad) | none | deploy verifies by checksum; every rebuild reports 0 invalid blocks |
 | A1 Measure-only mode | **Test built 2026-10-05 (`4f70dda13`):** `solve.mjs::solveLoop`, `tests/solve.test.mjs`. Proven by code reading (risk review, 2026-10-04): `solve.mjs --rounds 0` stamps refs (`addRefs`, `writeTree`), rebuilds the live page, walks once and classifies, and breaks before `writeRound`. It walks 4 widths (375/768/1440/1920), and shop and product rebuild a site-wide template. Add one test that rounds 0 never calls `writeRound`, then use it | `tests/` | none (first action, 5 min) | the new test, red when the break is removed |
 | A2 Pair every surface | For each surface without `walkerFull`: measure-only run (stamps refs), then `pairs.mjs --surface <s>`, set `walkerFull`. Order: help, home, footer, header, then the rest. Hand configs are shared (`header.mjs` serves header, mobile-menu and the 4 megas; `help.mjs` serves help and size-guide), and `pairs.mjs` reads the live page at rest, so mobile-menu, the megas, size-guide and lens pair almost nothing. Decided default: give each panel surface its own hand config whose navigation opens the panel before pairing (same pattern as the existing states); if that takes more than 15 min for a surface, record it as unmeasured with its reason and move on | `surfaces.json`, hand configs in `qa/parity/`, generated `qa/parity/*.full.mjs`, `qa/pairs/*.json` | A0, A1 | each pairing report lists kept and left-out blocks with reasons; `lint.mjs --surfaces` passes |

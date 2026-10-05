@@ -388,7 +388,7 @@ Calibration (2026-10-03) measured, on eye-care-test's private calibration page, 
 The comparison tool missed several things you found. Each gap becomes a check, with a planted fault to prove it catches it:
 - **Overlays and tints drawn as pseudo-elements** (N18, N21): built 2026-10-05 as each `::before`/`::after` layer's computed paint compared layer by layer (GAP-CHECKLIST §19); brightness sampling over images is not built.
 - **Every surface walked at 1920 as well** (N5, N20).
-- **Hover on every interactive element**, not only configured pairs (N1, N23): built 2026-10-05 for every measured block (the walker forces hover the way DevTools does); live proof on the next About run.
+- **Hover on every interactive element**, not only configured pairs (N1, N23): built 2026-10-05 for every measured block (the walker forces hover the way DevTools does); proven on About (local copy of the site, 2026-10-05): no false rows, one real issue (S1's button timing).
 - **"Is this text inside a link" compared both sides** (N2A).
 - **Line count sampled while the header shrinks and grows** (N2B).
 - **Clicked and focused states**, not only hover (N6).

@@ -23,7 +23,8 @@ difference closed or a recorded decision, confirmed by an independent check). Co
 framework bugs, editor-canvas gaps) is built, pushed and deployed to both test sites (2026-10-05); its tail (recalibration, audit rerun)
 remains. Then: a whole-site sweep, an audit of what stays open, and one framework fix pass (Front F). Running beside that repair (Track P, 2026-10-05, code only, QC'd): the
 comparison tool now reads what the browser's developer tools show, your decided differences can no longer be
-overwritten, and the sweep, triage and register-check tools are ready; their live proof is one About run after the repair.
+overwritten, and the sweep, triage and register-check tools are ready. Proven on About (local copy of the site): it
+found one real issue, your 0.25s button lift timing never reaching any button (register S1).
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -67,7 +68,7 @@ and was restored from git and rebuilt. **Lenses: paired (28 of 29 blocks), walks
 closed 25 but regressed 3 rows, so its tree was restored from git and rebuilt. Hostinger's edge answers headless browsers and curl with a 403 browser
 check after bursts of traffic: run the route's host tools with `SGS_HEADED=1` (dev-setup.md), one job at a time.
 
-**Track P (2026-10-05, pushed through 2035bb6ce; code only, no deploy):** the sweep plan's code units, built beside
+**Track P (2026-10-05, closed; pushed through 9fa6bbbe3; code only, no deploy):** the sweep plan's code units, built beside
 Session 0. Walker (GAP-CHECKLIST §19): reads once animations finish (900ms floor), forced `:hover` on every pair, the
 draft's declared widths, `::before`/`::after` paint keyed as calibration keys it, motion timings, a text run's row
 spacing. Solve: `--rounds 0` never writes (test); a ledgered row's target is Bean's decided value at every width it
@@ -78,7 +79,8 @@ tools: `sweep.mjs` (A3), `register-sweep.mjs` (A4), `triage.mjs` (B1, reads the 
 reaches). /code-review high fixed four defects; /qc passed 15 scenarios on local pages and real data (90/100, report
 in `~/.claude/pipeline-state/qc/qc-trackp-20261005-0128/`). Proven 2026-10-05 on Session 0's local mirror: About measure-only finds 1 open
 issue, real: S1's 0.25s button timing never reaches a button (`button/render.php` always writes `transition: all
-{transitionDuration}ms`, default 300; framework repair, register S1). 
+{transitionDuration}ms`, default 300; framework repair, register S1).
+
 **Session 0 (2026-10-05, pushed through `4726700c1`; deployed to eye-care-test, sandybrown at `7f770ebb5`).** Done (plan
 `plans/2026-10-04-eye-care-sweep-audit-fix.md`, Session 0 status): seeder routing (unrouted core styling 628 to 368,
 `74771c855`), the framework bugs (accordion-item scope hash, team-member typography, grid items as Spec 32 FR-32-12,

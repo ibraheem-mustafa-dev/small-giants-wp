@@ -794,8 +794,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 131 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 978 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 154 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 1022 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -936,13 +936,15 @@ Each entry's purpose is quoted from the script's own header.
 | 124 | `check-separators-through-helper.py` | lines between items go through the helper. |
 | 125 | `check-no-client-names.py` | : keep client names and reference-site names out of the framework. |
 | 126 | `check-extension-roster.js` | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds sgs-update-v2.py::_seed_extension_attr_rows, so… |
-| 127 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 128 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 129 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 130 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 131 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 127 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
+| 128 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
+| 129 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 130 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 131 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 132 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 133 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
 
-**131 gating scripts.** Regenerate this whole section with:
+**133 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -950,7 +952,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (131 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 132 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (133 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 134 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -998,11 +1000,24 @@ Every field below is extracted from the script's own executable code (regex over
 - CLI flags read: `--check`, `--report`, `--run-dir`, `--update-baseline`
 - Non-zero exit sites found: SystemExit(non-zero on failure)
 
+**`plugins/sgs-blocks/scripts/check-border-preview-twin.js`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: `full`
+- Non-zero exit sites found: exit(0), exit(1)
+
 **`plugins/sgs-blocks/scripts/check-border-style-without-width.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parents[3]; `PLUGIN` = REPO / "plugins" / "sgs-blocks"; `BASELINE` = Path(__file__).with_name("border-style-without-width-baseline.json")
 - Reads: `BASELINE`
 - Writes: **read-only** — no write call site found in source
 - CLI flags read: `--check`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-border-width-defaults.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: `sqlite3:f"file:{db_path.as_posix(`
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): block_attributes, plugins
+- CLI flags read: `--check`, `--root`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-border-width-without-style.py`** (build)
@@ -1083,7 +1098,7 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: exit(0), exit(1)
 
 **`plugins/sgs-blocks/scripts/check-editor-render-parity.js`** (build)
-- Reads: `BASELINE_FILE`, `blockJsonPath`
+- Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0), exit(1)
 
@@ -1745,7 +1760,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 822 scripts
+#### `plugins/sgs-blocks/scripts/` — 864 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1767,6 +1782,12 @@ for the verb you happen to have in mind.
 | `behavioural-analyser/backfill-coarse-roles.py` | manifest | Spec 31 Phase 3.5 — Refine Phase 1 coarse roles to role-templates taxonomy. |
 | `behavioural-analyser/backfill-from-json-catalogue.py` | manifest | Spec 31 Phase 3 step 3.1 helper — one-shot backfill of role / derived_selector |
 | `behavioural-analyser/extract-signatures.py` | manifest+script-call+test-import | SGS Block Behavioural Signature Extractor |
+| `behavioural-analyser/helper_maps.py` | script-call | Derive the seeder's helper contracts from the helper PHP source. |
+| `behavioural-analyser/hover_states.py` | script-call | Which values a helper paints only in the hover state, read from the helper body. |
+| `behavioural-analyser/php_include_graph.py` | script-call+test-import | The PHP text the seeder's supplementary pass scans for one block. |
+| `behavioural-analyser/php_preprocess.py` | script-call | Source rewrites that let the seeder's statement scanner read more PHP shapes. |
+| `behavioural-analyser/php_source_index.py` | script-call+test-import | Index of the PHP functions the css_property seeder can follow. |
+| `behavioural-analyser/seeder_shapes.py` | script-call+test-import | Evidence shapes the css_property seeder adds on top of its statement tracer. |
 | `build-deploy.py` | manifest+script-call+skill+test-import | One-shot SGS build + tar + scp + remote extract + cleanup. |
 | `build-font-collection.py` | manifest | Generates a WordPress Font Library collection manifest (google-fonts.json) from the |
 | `build-tier-fixture-page.py` | manifest+script-call | Build (and publish) ONE canary page carrying every block that has migrated |
@@ -1794,7 +1815,9 @@ for the verb you happen to have in mind.
 | `cheat-gate/run.py` | commit-gate+manifest+npm+script-call+settings+skill+test-import | F5 cheat-detection gate runner. |
 | `check-block-asset-targets.js` | manifest+npm+script-call | STRUCTURAL GUARD (post-D382 hardening) — stops the "block.json names a source filename that never gets compiled" class of bug from regressing. |
 | `check-blockjson-metadata-only.py` | manifest+script-call | visual-diff-gate helper. |
+| `check-border-preview-twin.js` | manifest | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
 | `check-border-style-without-width.py` | manifest+script-call | the "no width = no border" detector. |
+| `check-border-width-defaults.py` | manifest | "the stylesheet never chooses a border width". |
 | `check-border-width-without-style.py` | manifest | the "a width paints solid" detector. |
 | `check-box-family-guard.py` | manifest+npm+script-call | STRUCTURAL GUARD — box-object interface contract (2026-07-09 plan §6). |
 | `check-child-lift.py` | manifest | check-child-lift — every child-lift rule in the tree stays at ZERO specificity. |
@@ -1867,6 +1890,9 @@ for the verb you happen to have in mind.
 | `check-wiring-fingerprint.py` | manifest+script-call | : every attribute that paints must be wired end to |
 | `check-withdrawn-figures.py` | manifest | a figure withdrawn in one file stays withdrawn everywhere. |
 | `check-wrapper-capability-preconditions.js` | manifest+npm+script-call | STRUCTURAL GUARD for the shared-wrapper capability declarations in each block's `supports.sgs` — Spec 35A §F.2.1 + §F.2.2 (D637, step 7 of the… |
+| `codemods/add-box-families.js` | test-import | Declares the per-device box settings that were missing from `supports.sgs.boxFamilies`. Each one stores a `{desktop, tablet, mobile}` object whose… |
+| `codemods/box-desktop-to-tier.js` | — | Moves the editor canvas's box previews (padding, margin, border-radius and other `{desktop,tablet,mobile}` box objects) from the desktop tier only to… |
+| `codemods/remove-dead-context-keys.js` | — | Removes context keys nothing reads from every block.json: `sgs/formId`, `sgs/tabsOrientation`, `sgs/tabsStyle` (usesContext entries and… |
 | `colour-codemod/adopt.js` | manifest+script-call | `<SgsColourPanel rows={[...]}>`) into a call to the shared row helper it is semantically identical to: fillRow / textRow |
 | `colour-codemod/classify-end-shape.js` | manifest+npm+script-call | WHY THIS EXISTS (2026-09-06, colour-conformance). Adversarial-council pre-mortem (6/6 personas graded D) found survey.js's AUTOFIXABLE verdict is… |
 | `colour-codemod/classify-gradient-path-deferred.js` | manifest+script-call | Splits every `gradient-path-deferred` refusal that fix.js's dry run |
@@ -2030,6 +2056,36 @@ for the verb you happen to have in mind.
 | `draft-manifest/readme_routes.py` | manifest+script-call | The README's routes table: which views the design says exist, their route and purpose. |
 | `drift-validator/validate.py` | manifest+script-call+skill | Spec 19 Stage 9 — Drift Validator |
 | `e2e-authoring-acceptance.php` | — | SGS QA-AUTHORING Gate — FR-27 Cluster C End-to-End Authoring Acceptance Test |
+| `editor-render-parity/check-a-editor-canvas-desync.js` | script-call | CHECK A: editor-canvas desync. |
+| `editor-render-parity/check-b-invalid-keyword.js` | script-call | CHECK B: invalid CSS keyword passthrough. |
+| `editor-render-parity/lib-a-control-surface.js` | script-call | CHECK A: which JSX components are control surfaces, and which edit.js uses server-side render. |
+| `editor-render-parity/lib-a-destructure.js` | script-call | CHECK A: destructured, aliased and written attribute collection outside excluded ranges. |
+| `editor-render-parity/lib-a-exemptions.js` | script-call | CHECK A exemption signals 2 (companion co-write) and 3 (no-preview Notice branch). |
+| `editor-render-parity/lib-a-helper-reads.js` | script-call | CHECK A signal 6 — an attribute the editor canvas reads through a helper. |
+| `editor-render-parity/lib-a-live-data.js` | script-call | CHECK A exemption signals 4 (live-data placeholder) and 5 (declared open-state scrim). |
+| `editor-render-parity/lib-ast.js` | script-call | JSX AST helpers shared by the checks. |
+| `editor-render-parity/lib-baseline.js` | script-call | Baseline file loading and finding keys. |
+| `editor-render-parity/lib-blocks.js` | script-call | Reading a block directory: block.json attributes, context keys, keyword table, file helpers. |
+| `editor-render-parity/lib-ceiling.js` | script-call | Blocking flags and the CHECK A open-backlog ceiling, with the full ratchet history. |
+| `editor-render-parity/lib-config.js` | script-call | Paths, the shared component-file map and the Babel options every check reads. |
+| `editor-render-parity/lib-editor-invisible.js` | script-call | Attribute names that are editor-invisible by design (CHECK A exemption set). |
+| `editor-render-parity/lib-php-attrvars.js` | script-call | Traces render.php variables back to the attributes they read (one and two hops). |
+| `editor-render-parity/lib-php-gates.js` | script-call | Classifies if-condition gates and boolean keywords around a usage site (SIGNAL 1). |
+| `editor-render-parity/lib-php-html-context.js` | script-call | Finds the assignment target or HTML attribute a render.php offset sits in. |
+| `editor-render-parity/lib-php-mask.js` | script-call | PHP source masks (strings, comments) and bracket matching. |
+| `editor-render-parity/lib-php-sinks.js` | script-call | Classifies CSS declaration sinks in render.php source. |
+| `editor-render-parity/lib-php-usage.js` | script-call | Collects and classifies every render.php usage site of an attribute (SIGNAL 1 driver). |
+| `editor-render-parity/lib-report.js` | script-call | Prints one check section of the survey report. |
+| `editor-render-parity/lib-survey.js` | script-call | Runs both checks over every block directory. |
+| `editor-render-parity/self-test-a-basic.js` | script-call | Self-test: CHECK A positive, negative, SSR and exemption fixtures. |
+| `editor-render-parity/self-test-a-context.js` | script-call | Self-test: CHECK A block-context fixtures and the CHECK A verdict. |
+| `editor-render-parity/self-test-a-exemptions.js` | script-call | Self-test: CHECK A hover and rename (alias) exemption fixtures. |
+| `editor-render-parity/self-test-assert.js` | script-call | Assertion helper for the self-test fixtures. |
+| `editor-render-parity/self-test-b-keyword.js` | script-call | Self-test: CHECK B fixtures. |
+| `editor-render-parity/self-test-real-tree.js` | script-call | Self-test: regression tests that read the real block tree. |
+| `editor-render-parity/self-test-signals-12.js` | script-call | Self-test: SIGNAL 1 and SIGNAL 2 fixtures. |
+| `editor-render-parity/self-test-signals-345.js` | script-call | Self-test: SIGNAL 3, 5 and 4 fixtures. |
+| `editor-render-parity/self-test.js` | script-call | Self-test runner: positive and negative fixtures for both checks. |
 | `excluded-gate/__init__.py` | manifest+script-call+test-import | excluded-gate — F5 excluded-literal tripwire gate. |
 | `excluded-gate/db_check.py` | manifest+script-call | cross-reference detected signatures against excluded_properties DB table. |
 | `excluded-gate/models.py` | manifest+script-call+skill+test-import | shared data types for the F5 excluded-literal gate. |
@@ -2078,7 +2134,7 @@ for the verb you happen to have in mind.
 | `image-sequence-prep.py` | manifest | turns a video into frames the sgs/image-sequence block can use. |
 | `inspector-scan/core/baseline.js` | manifest+script-call+skill+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.7 source=spec evidence=hybrid baseline shape (keyed… |
 | `inspector-scan/core/components.js` | manifest+script-call+test-import | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md §4.5 source=file evidence=live-read… |
-| `inspector-scan/core/extensions.js` | manifest+script-call | GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/ on… |
+| `inspector-scan/core/extensions.js` | manifest+script-call+test-import | GROUND-TRUTH: spec=task brief 2026-08-08 (extensionsDir plumbing) source=file evidence=live-read plugins/sgs-blocks/src/blocks/extensions/ on… |
 | `inspector-scan/core/finding.js` | manifest+script-call | GROUND-TRUTH: spec=none source=file evidence=live-read plugins/sgs-blocks/scripts/inspector-scan/core/roster.js (`BLOCKS_DIR =… |
 | `inspector-scan/core/golden.js` | manifest+script-call | core/golden.js — the shared GOLDEN-CONTROL engine (C4 step 1, 2026-08-19). |
 | `inspector-scan/core/report.js` | manifest+script-call | Report is generated by iterating the rule REGISTRY (rules.json order), never a second hand-written order list — this is the direct mitigation for H7… |
@@ -2125,6 +2181,7 @@ for the verb you happen to have in mind.
 | `ledger/coverage_check.py` | commit-gate+manifest+npm+script-call+test-import | ledger.coverage_check — F5 pipeline-close coverage-conservation gate (UNACCOUNTED leg). |
 | `ledger/declare_input.py` | manifest+npm+script-call+test-import | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/models.py` | manifest+script-call+skill+test-import | ledger.models — data model for F2 CSS Accounting Ledger (input half). |
+| `lib/context-keys.js` | script-call | The one answer to "is this context key consumed?" for check-dead-controls.js, check-editor-render-parity.js and the wiring-fingerprint gate. A key is… |
 | `lib/stage8-cli.js` | manifest+script-call | to keep stage8-audit.js under the repo's 250-line limit. No browser, no network — `makeRunId` is deterministic given an explicit `now` (never calls… |
 | `lib/stage8-lighthouse.js` | manifest+script-call | out purely to keep stage8-audit.js under the repo's 250-line limit. This is the ONLY module in the stage8 family that touches a real browser/network… |
 | `lib/stage8-network-console-builders.js` | manifest+script-call | stage8-audit.js. CWV builder + the shared LHR helpers (`hasRuntimeError`, `auditErrored`, `auditItems`, `hostnameOf`) live in the sibling… |
@@ -2572,7 +2629,7 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 67 scripts
+#### `scripts/` — 82 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2583,8 +2640,13 @@ for the verb you happen to have in mind.
 | `computed-route/calibrate.mjs` | — | Block calibration command (FR-47-2). |
 | `computed-route/ledger.mjs` | script-call+skill+test-import | Divergence ledger command (FR-47-5). |
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2): one library-wide folder, one file per block, whichever site measured it. A block calibrated on one site is never… |
+| `computed-route/lib/calibrate-instances.mjs` | script-call | Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked instance per setting and marker, each… |
+| `computed-route/lib/calibrate-markers.mjs` | script-call | The marker values calibration writes into one setting (Spec 47 §3.2 marker table). Each marker: { label, attrs, expect: { width: value } \| null… |
+| `computed-route/lib/calibrate-props.mjs` | script-call | What calibration reads and how a setting's css_property maps onto it (FR-47-2). |
+| `computed-route/lib/calibrate-read.mjs` | script-call | The browser side of calibration: reads every element of each calibration instance at each width, at rest and under its state trigger. Element keys… |
 | `computed-route/lib/calibrate.mjs` | script-call | Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one marked instance per setting and… |
 | `computed-route/lib/db.mjs` | manifest+script-call+skill+test-import | Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses every write; the route never seeds… |
+| `computed-route/lib/deploy-hash.mjs` | script-call | The deploy key calibration stamps on a cache: md5 of a block's front-end build files, locally and on the site, so a cache is used only while the… |
 | `computed-route/lib/entrance.mjs` | manifest+script-call | Entrance start (Spec 38, sgsAnimationStart): a block with an entrance that the draft shows at rest while live still holds it hidden is one whose… |
 | `computed-route/lib/guard.mjs` | manifest+script-call | The regression guard (R-47-9): when a round makes rows worse, find the write that did it and revert only that. |
 | `computed-route/lib/ledger.mjs` | script-call+skill+test-import | Divergence ledger library (FR-47-5): the rules an entry may name, matching a row, finding stale entries, migrating walker accepts, and building a new… |
@@ -2592,20 +2654,29 @@ for the verb you happen to have in mind.
 | `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft element… |
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 47 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
+| `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/solve-report.mjs` | script-call | Writes Solve's report (FR-47-3): solve-report.json (everything) and solve-report.md (counts per class, every write with its before and after values… |
 | `computed-route/lib/solve-rows.mjs` | script-call | Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each |
+| `computed-route/lib/sweep.mjs` | script-call | The whole-site sweep (FR-47-3): every surface's latest Solve report as one row per distinct open issue. An issue is solve-report.mjs::wholePage's: a… |
 | `computed-route/lib/tree.mjs` | script-call | Layout trees: read, write, ref classes, setting writes, and the live-site safety guard (R-47-11). |
+| `computed-route/lib/triage-source.mjs` | script-call | Triage's source pass (B1), string search only (no PHP or CSS parsing): what a block's own render.php and style.css say about a row's property and… |
+| `computed-route/lib/triage.mjs` | script-call | Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that decided it. Classes: W (walker or… |
 | `computed-route/lint.mjs` | script-call | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
-| `computed-route/solve.mjs` | — | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
+| `computed-route/register-sweep.mjs` | — | Register <-> sweep command (A4). |
+| `computed-route/solve.mjs` | script-call | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
+| `computed-route/sweep.mjs` | script-call | Sweep command: reads every surface's latest Solve report (`<buildDir>/qa/solve/<surface>/<timestamp>/solve-report.json`) and writes… |
+| `computed-route/triage.mjs` | — | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U) with its evidence for every distinct open issue of a surface's Solve report… |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |
 | `lib/close-browser-on-exit.js` | script-call | close-browser-on-exit — make sure a Playwright browser dies with the script that launched it. |
 | `lib/oldshape-mappings.js` | script-call | wp-migrate-oldshape-blocks.js (Track B content restore, 2026-07-15). |
+| `lib/wp-session.js` | script-call | wp-session — one logged-in Chrome shared by a run and every child script it starts. |
 | `lint-naming-conventions.py` | manifest+test-import | CI linter for the SGS WordPress Framework naming conventions. |
 | `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
+| `local-wp/sync-build.sh` | — | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `parity/benchmark/cases.mjs` | manifest+script-call | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
@@ -2620,6 +2691,7 @@ for the verb you happen to have in mind.
 | `parity/lib/collect.mjs` | script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
 | `parity/lib/compare-state.mjs` | script-call | One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check, load entrances and links, each difference… |
 | `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
+| `parity/lib/devtools.mjs` | script-call | What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 47 A-1, GAP-CHECKLIST.md section 19): the page read once its… |
 | `parity/lib/divergences.mjs` | script-call | Divergence ledger (GAP-CHECKLIST.md section 16, Spec 47 FR-47-5). A config may name a site's divergences.json |
 | `parity/lib/entrances.mjs` | script-call | The load-entrance check for draft-live-walk.mjs (GAP-CHECKLIST.md section 15). What moves or fades in as a page loads, judged by what paints, not by… |
 | `parity/lib/focus.mjs` | manifest+script-call+skill | The keyboard focus pass for draft-live-walk.mjs (GAP-CHECKLIST.md section 13). A scripted el.focus() after mouse clicks never matches :focus-visible… |
@@ -2640,7 +2712,7 @@ for the verb you happen to have in mind.
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
-| `wp-build-page.js` | script-call | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
+| `wp-build-page.js` | manifest+script-call | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
 | `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 

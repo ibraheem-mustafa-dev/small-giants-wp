@@ -366,7 +366,8 @@ before it counts (GAP-CHECKLIST §11).
     distinct values and skipped where nothing runs.
 13. **Text-run rows:** a text run's rows are compared by the space between their line boxes (a `row-gap` row).
 Items 10 to 13 and the built parts of 1 and 3: GAP-CHECKLIST §19, proven in headless Chromium on local pages
-(`tests/walker-devtools.test.mjs`); their live proof is the About measure-only run.
+(`tests/walker-devtools.test.mjs`) and on About (measure-only on the local mirror, 2026-10-05: no false rows after the
+animation-timing rule; 1 real open issue).
 
 **Done when:** each item has a GAP-CHECKLIST section with its planted fault turning red. `node
 scripts/parity/benchmark.mjs --noise` still catches 5 of 5 with no new noise rows.
@@ -486,8 +487,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      (`sites/eye-care-ward-end/build/qa/solve-score.mjs`, `qa/score-items/<surface>.json`), reference blocks
      (`lib/references.mjs`; a linked placeholder is never written; `lint.mjs --surfaces` passes), the pinpointing guard
      (`lib/guard.mjs`, R-47-9), box seeding from the node's nearest wider tier (`resolve.mjs::WIDER_TIERS`), and the
-     divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; D-1 holds Contact's subtext margin at 0px
-     on phones).
+     divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; every entry cites its register items).
+     Contact's subtext keeps its 22px margin (Bean, 2026-10-05), so the 375px name-field drop stays open (register
+     CR15/N45b).
    - **Calibration:** every SGS block but `theme-toggle` (CR12) has one library-wide cache file
      (`scripts/computed-route/cache/<block>.json`, gitignored; its `site` names where it was measured: eye-care-test page
      668, or sandybrown page 4750, which runs the `mamas-munches` snapshot). A border-style marker carries its companion
@@ -516,7 +518,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
-       negative control. Contact pairs 31 of 32 blocks (the map is register 418) and its form 6 of 6; its distinct
+       negative control. Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
        issues went from 134 to 19 on 2026-10-04 (open causes in the plan's Progress).
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
@@ -545,7 +547,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
        child.
      - The functional flows (FR-47-7) and the walker's items 2, 4, 5 and focus and active states (FR-47-6): not started;
-       items 1 and 3's hover, plus items 10 to 13, are built (2026-10-05) with their live proof pending. Contact and its form walk
+       items 1 and 3's hover, plus items 10 to 13, are built and proven (2026-10-05: About measure-only on the local mirror,
+       1 open issue, real: S1's button timing; register S1). Contact and its form walk
        only their rest state until FR-47-7 maps the form-flow states.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
 5. **A second draft** from a different designer, to test generality.
