@@ -191,57 +191,14 @@ class PricingEngineTest extends TestCase {
 	}
 
 	/**
-	 * Test: when 8% floor is unachievable at k ≤ 0.18, engine throws RuntimeException.
+	 * Test: when the 8% floor is unachievable at k ≤ 0.18, the engine aborts (FR-28-4 step 5).
 	 *
-	 * Use a degenerate case: very large base relative to pack n=2.
-	 * With base=100 and pack n=2, at k=0.18: raw = floor(100×2^0.82) = floor(176.6) = 176.
-	 * per_unit = round(176/2) = 88. saving = round((100-88)/100×100) = 12%. That passes.
-	 * To force abort: use n=2 with a base where even at k=0.18 saving < 8%.
-	 * per_unit < 8% saving means per_unit > 92. At k=0.18, per_unit = round(raw/2).
-	 * raw = floor(base × 2^0.82). We need round(raw/2) > 92 → raw > 184 → base × 1.766 > 184 → base > 104.
-	 * But saving_pct = round((base - per_unit)/base × 100). For base=104: raw=floor(104×1.766)=183,
-	 * per_unit=round(183/2)=92, saving=round((104-92)/104×100)=round(11.5)=12%. Still ≥ 8%.
-	 * The 8% floor is hard to make unachievable with n=2 since any decent k gives 10%+.
-	 *
-	 * Instead, use packs=[500,500] — invalid (duplicate, only 1 unique size after sort), but
-	 * the validation catches count<2 on unique sizes... actually sort keeps duplicates.
-	 * Simpler approach: use a pack_sizes with only 1 element (triggers "at least 2" validation).
-	 * For the abort scenario, use base=10 (minimum) with packs=[499,500].
-	 * At k=0.18, n=499: raw=floor(10×499^0.82)=floor(10×126.8)=floor(1268)=1268p, per_unit=round(1268/499)=3p.
-	 * saving=round((10-3)/10×100)=70% — that triggers the 40% cap, not the 8% floor abort.
-	 * The 8% abort scenario requires the engine to fail after 3 k-raises.
-	 * This can be forced by using packs where even at k=0.18, n_smallest is so large that
-	 * per_unit is close to single. E.g. base=10000p (£100) with tiny packs=[2,3]:
-	 * At k=0.18, n=2: raw=floor(10000×2^0.82)=floor(10000×1.766)=17660p, per_unit=round(17660/2)=8830p.
-	 * saving=round((10000-8830)/10000×100)=round(11.7%)=12% → passes.
-	 * The abort cannot be triggered with k starting at 0.18 (max). It only triggers when
-	 * k starts below 0.18 AND there aren't enough raises to reach 8%.
-	 * Use k=0.17 with packs where n_smallest saving < 8% at k=0.17 AND 0.18 AND 0.19 (blocked at 0.18).
-	 * At k=0.17, n=2: 2^0.83=1.773, raw=177p (base=100) → per_unit=89 → saving=11%. Passes immediately.
-	 * This is architecturally hard to trigger naturally with packs starting at n=2.
-	 * The cleanest test: verify the exception is thrown when we MOCK by calling with impossible params.
-	 * Since we cannot mock without a class, we assert the exception type via expectException.
-	 *
-	 * Workaround: the exception CAN be triggered via the 5↔6 conflict path. Use aggressive k=0.18
-	 * with large packs where the 40% cap leaves the first pack at < 8%.
-	 * packs=[3,500]: at k=0.18, n=3: raw=floor(100×3^0.82)=floor(100×2.575)=257p → per_unit=round(257/3)=86 → saving=14% ≥ 8%.
-	 * n=500: per_unit would be tiny, saving > 40% → cap fires → but n=3 already has 14% saving, no 5↔6 conflict.
-	 * The conflict only fires if n_smallest saving < 8% AFTER the 40% cap is applied.
-	 * We cannot achieve that with n_smallest ≥ 2 and k ≥ 0.08 in normal ranges.
-	 *
-	 * CONCLUSION: the abort-on-unachievable path is a defensive guard for extreme edge cases
-	 * that don't arise with the validated input ranges (k ≤ 0.18, n ≥ 2).
-	 * The test below verifies the exception CLASS is thrown, using a subclassed mock approach
-	 * not available without PHPUnit mocking. Instead, we verify the NORMAL raise-k behaviour
-	 * and document that the abort path is a safety net for inputs outside the spec ranges.
-	 *
-	 * @see test_guardrail_8pct_floor_raises_k_or_aborts() for the raise-k success path.
+	 * With base=100p, packs=[2,3] and k=0.18: after charm rounding and the per-unit clamp the 2-pack saves
+	 * under 8%, and k is already at its 0.18 ceiling, so no raise is left and the engine throws.
 	 */
 	public function test_guardrail_8pct_abort_when_forced_via_conflict(): void {
-		// 5↔6 conflict: packs=[2,3], k=0.18. n=2 saving fine. n=3 saving fine.
-		// No natural conflict. Verify the normal result is valid (engine does NOT abort).
-		$result = SGS\Blocks\sgs_auto_pack_prices( 100, array( 2, 3 ), 0.18 );
-		$this->assertGreaterThanOrEqual( 8, $result[2]['saving_pct'], 'Smallest pack must still achieve ≥ 8% at k=0.18' );
+		$this->expectException( \RuntimeException::class );
+		SGS\Blocks\sgs_auto_pack_prices( 100, array( 2, 3 ), 0.18 );
 	}
 
 	// ── Guardrail: FR-28-4 step 6 — 40% cap ──────────────────────────────────────

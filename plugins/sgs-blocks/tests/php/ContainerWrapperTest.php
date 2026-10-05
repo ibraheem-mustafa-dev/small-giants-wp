@@ -44,6 +44,18 @@ use PHPUnit\Framework\TestCase;
 // Guarded so this composes safely regardless of PHPUnit's file load order.
 // ---------------------------------------------------------------------------
 
+if ( ! function_exists( 'attachment_url_to_postid' ) ) {
+	/**
+	 * No media library in unit tests: a background URL never resolves to an attachment id.
+	 *
+	 * @param string $url Attachment URL.
+	 * @return int Always 0.
+	 */
+	function attachment_url_to_postid( $url ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+		return 0;
+	}
+}
+
 if ( ! function_exists( 'wp_json_encode' ) ) {
 	/**
 	 * Minimal wp_json_encode() stub — the uid is derived from this.
@@ -186,11 +198,11 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $this->section_attrs(), null, '<p>inner</p>', 'section' );
 
 		$this->assertStringContainsString( '<style id="sgs-container-', $html, 'scoped <style> tag present' );
-		$this->assertStringContainsString( '<section class="sgs-container sgs-container--flex sgs-container-', $html, 'exact class-list prefix (sgs-container sgs-container--flex + uid)' );
+		$this->assertStringContainsString( '<section class="sgs-container has-global-padding sgs-container--flex sgs-container-', $html, 'exact class-list prefix (core gutter class + flex + uid)' );
 		$this->assertStringContainsString( 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', $html, 'base spacing golden rule' );
 		$this->assertStringContainsString( '{max-width:1200px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', $html, 'base content-band golden rule' );
-		$this->assertStringContainsString( '>.sgs-container__inner{gap:24px;display:flex;flex-wrap:wrap}', $html, 'base grid/flex golden rule (grid-on-inner)' );
+		$this->assertStringContainsString( '>.sgs-container__inner{gap:24px;display:flex}', $html, 'base grid/flex golden rule (grid-on-inner); flex-wrap is a block.json default, emitted only when the attribute is set' );
 		$this->assertStringContainsString( '<div class="sgs-container__inner">', $html, '__inner band wrapper present, no inline style (no grid-item vars on flex)' );
 		$this->assertStringContainsString( '<p>inner</p>', $html, 'inner_html passed through verbatim' );
 	}
@@ -202,10 +214,11 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $this->layout_attrs(), null, '<p>cols</p>', 'layout' );
 
 		$this->assertStringContainsString(
-			'<section class="sgs-container sgs-container--grid sgs-cols-3 sgs-cols-tablet-2 sgs-cols-mobile-1 sgs-container-',
+			'<section class="sgs-container has-global-padding sgs-container--grid sgs-container-',
 			$html,
-			'exact class-list prefix incl. default column-shorthand classes'
+			'exact class-list prefix (core gutter class + grid + uid)'
 		);
+		$this->assertStringNotContainsString( 'sgs-cols-', $html, 'column counts come from the scoped grid rule on __inner, never shorthand classes' );
 		$this->assertStringContainsString( 'padding-top:32px;padding-bottom:32px;', $html, 'base spacing golden rule (top+bottom only)' );
 		$this->assertStringContainsString( '{max-width:960px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--wide-size,1400px);margin-inline:auto}', $html, 'base content-band golden rule (wide token)' );
@@ -219,7 +232,7 @@ final class ContainerWrapperTest extends TestCase {
 	public function test_content_kind_golden_output(): void {
 		$html = SGS_Container_Wrapper::render( $this->content_attrs(), null, '<p>text</p>', 'content' );
 
-		$this->assertStringContainsString( '<section class="sgs-container sgs-container-', $html, 'default tag=section, no layout class (content kind has no grid/flex)' );
+		$this->assertStringContainsString( '<section class="sgs-container has-global-padding sgs-container-', $html, 'default tag=section, no layout class (content kind has no grid/flex)' );
 		$this->assertStringContainsString( 'padding-top:16px;padding-bottom:16px;', $html, 'base spacing golden rule (WP-native style.spacing.padding, applied to the OUTER)' );
 		$this->assertStringContainsString( '{max-width:800px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', $html, 'base content-band golden rule (contentWidth only)' );
@@ -228,11 +241,10 @@ final class ContainerWrapperTest extends TestCase {
 	}
 
 	/**
-	 * KIND gate — the mechanism that makes composite wrapper (D294) safe.
-	 * Section-only layers must be completely absent for 'layout'/'content',
-	 * even given the EXACT SAME $attributes that produce them under 'section'.
+	 * Background layers render for every KIND (D6: background/overlay are not gated on
+	 * container_kind), and a simple background paints as a real <img> (D719).
 	 */
-	public function test_kind_gate_suppresses_section_only_layers(): void {
+	public function test_background_layer_renders_for_every_kind(): void {
 		$bg_attrs = array(
 			'maxWidth'        => '1200px',
 			'backgroundImage' => array( 'url' => 'https://example.com/bg.jpg' ),
@@ -242,12 +254,11 @@ final class ContainerWrapperTest extends TestCase {
 		$layout_html  = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'layout' );
 		$content_html = SGS_Container_Wrapper::render( $bg_attrs, null, '<p>x</p>', 'content' );
 
-		$this->assertStringContainsString( 'sgs-container--has-bg-image', $section_html, 'section kind WITH backgroundImage emits the has-bg-image class' );
-		$this->assertStringContainsString( 'background-image:url(https://example.com/bg.jpg)', $section_html, 'section kind WITH backgroundImage emits the background-image scoped rule' );
-		$this->assertStringNotContainsString( 'sgs-container--has-bg-image', $layout_html, 'layout kind with the SAME attr does NOT emit has-bg-image' );
-		$this->assertStringNotContainsString( 'background-image:', $layout_html, 'layout kind with the SAME attr does NOT emit background-image' );
-		$this->assertStringNotContainsString( 'sgs-container--has-bg-image', $content_html, 'content kind with the SAME attr does NOT emit has-bg-image' );
-		$this->assertStringNotContainsString( 'background-image:', $content_html, 'content kind with the SAME attr does NOT emit background-image' );
+		foreach ( array( 'section' => $section_html, 'layout' => $layout_html, 'content' => $content_html ) as $kind => $html ) {
+			$this->assertStringContainsString( 'sgs-container--has-bg-image', $html, "$kind kind emits the has-bg-image class" );
+			$this->assertStringContainsString( 'sgs-container__image-bg', $html, "$kind kind paints the background as an <img>" );
+			$this->assertStringNotContainsString( 'background-image:', $html, "$kind kind paints no CSS background-image" );
+		}
 
 		// uid basis is $attributes+anchor only — KIND never enters the hash, so
 		// identical attrs legitimately SHARE a uid across all three KINDs even

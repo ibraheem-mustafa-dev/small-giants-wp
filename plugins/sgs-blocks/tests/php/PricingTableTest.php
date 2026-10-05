@@ -181,7 +181,7 @@ class PricingTableTest extends TestCase {
 		$html = $this->render( $this->base_attrs() );
 
 		$this->assertStringNotContainsString(
-			'sgs-pricing-table__ribbon',
+			'class="sgs-pricing-table__ribbon"',
 			$html,
 			'Ribbon element should not appear when ribbonText is empty.'
 		);

@@ -102,8 +102,9 @@ if ( ! function_exists( 'is_user_logged_in' ) ) {
 	}
 }
 if ( ! function_exists( 'is_admin' ) ) {
+	// Shared by every test file loaded after this one; a test opts into admin context with this global.
 	function is_admin(): bool {
-		return false;
+		return (bool) ( $GLOBALS['sgs_test_is_admin'] ?? false );
 	}
 }
 if ( ! function_exists( 'sanitize_key' ) ) {

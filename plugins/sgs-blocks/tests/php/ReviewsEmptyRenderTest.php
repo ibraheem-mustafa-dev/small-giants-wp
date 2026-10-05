@@ -85,10 +85,11 @@ final class ReviewsEmptyRenderTest extends TestCase {
 
 	public function test_the_hover_filter_still_decorates_a_block_that_rendered_something(): void {
 		$out = $this->hover( '<div class="sgs-google-reviews sgs-gr-abc">x</div>' );
-		$this->assertStringContainsString( 'sgs-has-hover', $out );
+		// google-reviews' only hover default is the focus ring: no grow, shadow or lift (register S3, S4).
 		$this->assertStringContainsString( 'sgs-has-focus-ring', $out );
 		$this->assertStringContainsString( '<style>.sgs-hover-', $out );
-		$this->assertStringContainsString( '--sgs-hover-scale:1.02', $out );
+		$this->assertStringNotContainsString( 'sgs-has-hover', $out );
+		$this->assertStringNotContainsString( '--sgs-hover-scale', $out );
 		$this->assertStringContainsString( '>x</div>', $out );
 	}
 

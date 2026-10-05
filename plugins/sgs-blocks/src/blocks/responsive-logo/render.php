@@ -558,17 +558,15 @@ if ( $mobile_decls ) {
 // No `style` key (inline `--var` custom properties are forbidden, no
 // exception). `--logo-width` lives in the scoped uid-class rule above.
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'          => 'sgs-responsive-logo' . $animation_modifier . $has_dark_logo_modifier . $colour_auto_modifier . ' ' . $uid,
-		'data-animation' => 'none' !== $animation_style ? esc_attr( $animation_style ) : false,
-	)
+// data-animation is present only when an animation is set: get_block_wrapper_attributes()
+// escapes every value it is given, so a falsy value would still print as data-animation="".
+$sgs_rl_wrapper_args = array(
+	'class' => 'sgs-responsive-logo' . $animation_modifier . $has_dark_logo_modifier . $colour_auto_modifier . ' ' . $uid,
 );
-
-// Remove data-animation when falsy (get_block_wrapper_attributes doesn't strip false values).
-if ( 'none' === $animation_style ) {
-	$wrapper_attributes = preg_replace( '/\s*data-animation="false"/', '', $wrapper_attributes );
+if ( 'none' !== $animation_style ) {
+	$sgs_rl_wrapper_args['data-animation'] = $animation_style;
 }
+$wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
 // ── SVG inline render (animation mode) ───────────────────────────────────────
 

@@ -67,25 +67,17 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$this->assertSame( 'dashicons-art', $entry['icon_url'] );
 			$this->assertSame( 58, $entry['position'] );
 			$this->assertSame( 'SGS', $entry['menu_title'] );
+			// No callback: the Site Info submenu registered under the parent slug renders for "SGS".
+			$this->assertSame( '', $entry['callback'] );
 		}
 
 		public function test_register_is_idempotent_and_uses_priority_5(): void {
 			// register() simply wires add_action — verify class loads and the method exists.
 			$this->assertTrue( method_exists( Sgs_Admin_Menu::class, 'register' ) );
 			$this->assertTrue( method_exists( Sgs_Admin_Menu::class, 'add_menu' ) );
-			$this->assertTrue( method_exists( Sgs_Admin_Menu::class, 'render_landing' ) );
 			Sgs_Admin_Menu::register();
 			Sgs_Admin_Menu::register();
 			$this->assertTrue( true ); // No exception = idempotent at the static-method level.
-		}
-
-		public function test_render_landing_outputs_wrap_for_capable_user(): void {
-			\Wp_Options_Stub::$user_can = true;
-			ob_start();
-			Sgs_Admin_Menu::render_landing();
-			$html = (string) ob_get_clean();
-			$this->assertStringContainsString( 'wrap', $html );
-			$this->assertStringContainsString( 'SGS Framework', $html );
 		}
 	}
 }

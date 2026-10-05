@@ -265,14 +265,15 @@ class ResponsiveLogoTest extends TestCase {
 	}
 
 	/**
-	 * supports.sgs.imageControls must be true (image-controls discipline).
+	 * Supports.sgs.imageControls stays undeclared: the logo has no fixed-size crop box for
+	 * object-fit/position to act on (Spec 35 capability routing).
 	 */
-	public function test_block_json_declares_image_controls_support(): void {
+	public function test_block_json_omits_image_controls_support(): void {
 		$data = json_decode(
 			file_get_contents( SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/responsive-logo/block.json' ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			associative: true
 		);
-		$this->assertSame( true, $data['supports']['sgs']['imageControls'] );
+		$this->assertArrayNotHasKey( 'imageControls', $data['supports']['sgs'] ?? array() );
 	}
 
 	// ── render.php: desktop-only slot ────────────────────────────────────────
@@ -325,13 +326,13 @@ class ResponsiveLogoTest extends TestCase {
 		$mobile_url  = 'https://example.com/wp-content/uploads/logo-30.png';
 
 		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width: 600px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
+			'#<source media="\(max-width: 767px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
 			$html,
 			'Mobile source must use logoIdMobile URL.'
 		);
 
 		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width: 1024px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
+			'#<source media="\(max-width: 1023px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
 			$html,
 			'Tablet source must use logoIdTablet URL.'
 		);
@@ -537,11 +538,12 @@ class ResponsiveLogoTest extends TestCase {
 	// ── render.php: alt text ──────────────────────────────────────────────────
 
 	/**
-	 * Empty alt must fall back to the site name (get_bloginfo stub returns 'Test Site').
+	 * Empty alt falls back to "[site name] home", naming the link's destination (FR-36-22;
+	 * the get_bloginfo stub returns 'Test Site').
 	 */
-	public function test_render_alt_text_uses_site_name_when_empty(): void {
+	public function test_render_alt_text_uses_site_name_home_when_empty(): void {
 		$html = render_responsive_logo( array( 'logoId' => 10 ) );
-		$this->assertStringContainsString( 'alt="Test Site"', $html );
+		$this->assertStringContainsString( 'alt="Test Site home"', $html );
 	}
 
 	/**

@@ -1,10 +1,11 @@
 <?php
 /**
- * Tests: Style variation manifest FR-S2-2 contract.
+ * Tests: client theme-snapshot manifest, FR-S2-2 contract.
  *
- * Asserts that every named client variation JSON declares
- * settings.custom.sgs.headerPattern and settings.custom.sgs.footerPattern
- * as non-empty strings matching the sgs/framework-* slug prefix.
+ * Asserts that each named client's sites/<client>/theme-snapshot.json (Spec 33; the per-client
+ * token file push-theme-snapshot.py deploys) declares settings.custom.sgs.headerPattern and
+ * settings.custom.sgs.footerPattern as non-empty strings with the sgs/ prefix, the keys
+ * class-sgs-template-part-seeder.php reads.
  *
  * Self-contained — no WordPress installation required.
  *
@@ -15,45 +16,45 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
- * Class StyleVariationManifestTest
+ * Class ThemeSnapshotManifestTest
  */
-class StyleVariationManifestTest extends TestCase {
+class ThemeSnapshotManifestTest extends TestCase {
 
 	/**
-	 * Path to the theme styles directory, resolved at runtime.
+	 * Path to the repository's sites/ directory, resolved at runtime.
 	 *
 	 * @var string
 	 */
-	private static string $styles_dir;
+	private static string $sites_dir;
 
 	/**
-	 * Set up the styles directory path once per test class.
+	 * Set up the sites directory path once per test class.
 	 *
-	 * Navigate from plugins/sgs-blocks/tests/php/ up to theme/sgs-theme/styles/.
+	 * Navigate from plugins/sgs-blocks/tests/php/ up to the repository's sites/.
 	 */
 	public static function setUpBeforeClass(): void {
-		self::$styles_dir = dirname( __DIR__, 4 ) . '/theme/sgs-theme/styles';
+		self::$sites_dir = dirname( __DIR__, 4 ) . '/sites';
 	}
 
 	/**
-	 * Provide the 3 client variation file names and their expected pattern slugs.
+	 * Provide 3 client slugs and their expected pattern slugs.
 	 *
 	 * @return array<string, array<int, string>>
 	 */
-	public static function client_variations_provider(): array {
+	public static function client_snapshots_provider(): array {
 		return array(
 			"The bakery client" => array(
-				'mamas-munches.json',
+				'mamas-munches',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
 			),
 			'The wholesale-food client' => array(
-				'indus-foods.json',
+				'indus-foods',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
 			),
 			'The charity client' => array(
-				'helping-doctors.json',
+				'helping-doctors',
 				'sgs/framework-header-default',
 				'sgs/framework-footer-default',
 			),
@@ -61,14 +62,14 @@ class StyleVariationManifestTest extends TestCase {
 	}
 
 	/**
-	 * Read and decode a variation JSON file from the styles directory.
+	 * Read and decode a client's theme-snapshot.json.
 	 *
-	 * @param string $filename Bare filename (e.g. a client variation file).
+	 * @param string $filename Client slug (its folder under sites/).
 	 * @return array<mixed> Decoded JSON data.
 	 */
-	private function load_variation( string $filename ): array {
-		$path = self::$styles_dir . '/' . $filename;
-		$this->assertFileExists( $path, "Style variation file missing: {$filename}" );
+	private function load_snapshot( string $filename ): array {
+		$path = self::$sites_dir . '/' . $filename . '/theme-snapshot.json';
+		$this->assertFileExists( $path, "Theme snapshot missing for client: {$filename}" );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$raw  = file_get_contents( $path );
 		$data = json_decode( $raw, true );
@@ -77,39 +78,39 @@ class StyleVariationManifestTest extends TestCase {
 	}
 
 	/**
-	 * Each named client variation must parse as valid JSON.
+	 * Each named client snapshot must parse as valid JSON.
 	 *
-	 * @dataProvider client_variations_provider
+	 * @dataProvider client_snapshots_provider
 	 *
-	 * @param string $filename        Variation filename.
+	 * @param string $filename        Client slug.
 	 * @param string $expected_header Expected headerPattern slug.
 	 * @param string $expected_footer Expected footerPattern slug.
 	 */
-	#[DataProvider( 'client_variations_provider' )]
-	public function test_variation_is_valid_json(
+	#[DataProvider( 'client_snapshots_provider' )]
+	public function test_snapshot_is_valid_json(
 		string $filename,
 		string $expected_header,
 		string $expected_footer
 	): void {
-		$this->load_variation( $filename ); // Assertions inside load_variation.
+		$this->load_snapshot( $filename ); // Assertions inside load_snapshot.
 	}
 
 	/**
-	 * Each named client variation must declare settings.custom.sgs.headerPattern.
+	 * Each named client snapshot must declare settings.custom.sgs.headerPattern.
 	 *
-	 * @dataProvider client_variations_provider
+	 * @dataProvider client_snapshots_provider
 	 *
-	 * @param string $filename        Variation filename.
+	 * @param string $filename        Client slug.
 	 * @param string $expected_header Expected headerPattern slug.
 	 * @param string $expected_footer Expected footerPattern slug.
 	 */
-	#[DataProvider( 'client_variations_provider' )]
+	#[DataProvider( 'client_snapshots_provider' )]
 	public function test_header_pattern_key_present(
 		string $filename,
 		string $expected_header,
 		string $expected_footer
 	): void {
-		$data = $this->load_variation( $filename );
+		$data = $this->load_snapshot( $filename );
 
 		$this->assertArrayHasKey( 'settings', $data, "Missing 'settings' in {$filename}" );
 		$this->assertArrayHasKey( 'custom', $data['settings'], "Missing 'settings.custom' in {$filename}" );
@@ -131,21 +132,21 @@ class StyleVariationManifestTest extends TestCase {
 	}
 
 	/**
-	 * Each named client variation must declare settings.custom.sgs.footerPattern.
+	 * Each named client snapshot must declare settings.custom.sgs.footerPattern.
 	 *
-	 * @dataProvider client_variations_provider
+	 * @dataProvider client_snapshots_provider
 	 *
-	 * @param string $filename        Variation filename.
+	 * @param string $filename        Client slug.
 	 * @param string $expected_header Expected headerPattern slug.
 	 * @param string $expected_footer Expected footerPattern slug.
 	 */
-	#[DataProvider( 'client_variations_provider' )]
+	#[DataProvider( 'client_snapshots_provider' )]
 	public function test_footer_pattern_key_present(
 		string $filename,
 		string $expected_header,
 		string $expected_footer
 	): void {
-		$data = $this->load_variation( $filename );
+		$data = $this->load_snapshot( $filename );
 
 		$this->assertArrayHasKey( 'settings', $data );
 		$this->assertArrayHasKey( 'custom', $data['settings'] );
@@ -169,19 +170,19 @@ class StyleVariationManifestTest extends TestCase {
 	/**
 	 * Pattern slugs must start with the sgs/ prefix.
 	 *
-	 * @dataProvider client_variations_provider
+	 * @dataProvider client_snapshots_provider
 	 *
-	 * @param string $filename        Variation filename.
+	 * @param string $filename        Client slug.
 	 * @param string $expected_header Expected headerPattern slug.
 	 * @param string $expected_footer Expected footerPattern slug.
 	 */
-	#[DataProvider( 'client_variations_provider' )]
+	#[DataProvider( 'client_snapshots_provider' )]
 	public function test_pattern_slugs_use_sgs_prefix(
 		string $filename,
 		string $expected_header,
 		string $expected_footer
 	): void {
-		$data   = $this->load_variation( $filename );
+		$data   = $this->load_snapshot( $filename );
 		$sgs    = $data['settings']['custom']['sgs'] ?? array();
 		$header = $sgs['headerPattern'] ?? '';
 		$footer = $sgs['footerPattern'] ?? '';
@@ -195,57 +196,6 @@ class StyleVariationManifestTest extends TestCase {
 			'sgs/',
 			$footer,
 			"footerPattern must begin with 'sgs/' in {$filename}"
-		);
-	}
-
-	/**
-	 * The 5 internal preset variations must NOT declare sgs pattern keys.
-	 * They fall back to framework defaults — no explicit override needed.
-	 *
-	 * @dataProvider internal_variations_provider
-	 *
-	 * @param string $filename Internal preset filename.
-	 */
-	#[DataProvider( 'internal_variations_provider' )]
-	public function test_internal_variations_have_no_sgs_pattern_keys( string $filename ): void {
-		$path = self::$styles_dir . '/' . $filename;
-		if ( ! file_exists( $path ) ) {
-			$this->markTestSkipped( "Internal variation {$filename} not present in this environment." );
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$data = json_decode( file_get_contents( $path ), true );
-		$sgs  = $data['settings']['custom']['sgs'] ?? null;
-
-		if ( null !== $sgs ) {
-			$this->assertArrayNotHasKey(
-				'headerPattern',
-				$sgs,
-				"Internal variation {$filename} should not declare headerPattern."
-			);
-			$this->assertArrayNotHasKey(
-				'footerPattern',
-				$sgs,
-				"Internal variation {$filename} should not declare footerPattern."
-			);
-		} else {
-			// No sgs key at all — this is the expected state.
-			$this->assertNull( $sgs );
-		}
-	}
-
-	/**
-	 * Provide the 5 internal preset variation file names.
-	 *
-	 * @return array<string, array<int, string>>
-	 */
-	public static function internal_variations_provider(): array {
-		return array(
-			'The optician client' => array( 'eye-care-ward-end.json' ),
-			'Construction' => array( 'sgs-construction.json' ),
-			'Healthcare'   => array( 'sgs-healthcare.json' ),
-			'Mosque'       => array( 'sgs-mosque.json' ),
-			'Professional' => array( 'sgs-professional.json' ),
 		);
 	}
 }

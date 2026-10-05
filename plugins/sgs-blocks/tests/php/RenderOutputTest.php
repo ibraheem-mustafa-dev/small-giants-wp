@@ -60,14 +60,15 @@ class RenderOutputTest extends TestCase {
     }
 
     /**
-     * Key blocks with their expected root HTML element.
+     * Key blocks with their expected root HTML element. A block whose root comes from the shared
+     * container wrapper names its default tag through resolve_kind(), so its needle is that call.
      *
      * @return array<string, array{0: string, 1: string}>
      */
     public static function key_block_element_provider(): array {
         return [
-            'hero outputs section'       => [ 'hero',        '<section' ],
-            'cta-section outputs section'=> [ 'cta-section', '<section' ],
+            'hero outputs section'       => [ 'hero',        "SGS_Container_Wrapper::resolve_kind( \$block, 'section' )" ],
+            'cta-section outputs section'=> [ 'cta-section', "SGS_Container_Wrapper::resolve_kind( \$block, 'section' )" ],
             'icon-list outputs ul'       => [ 'icon-list',   '<ul'      ],
             'form contains form element' => [ 'form',        '<form'    ],
         ];
@@ -168,7 +169,7 @@ class RenderOutputTest extends TestCase {
         $this->assertStringContainsString(
             $expected_tag,
             file_get_contents( $path ),
-            "sgs/{$slug} render.php should output a {$expected_tag}> element."
+            "sgs/{$slug} render.php should contain {$expected_tag}."
         );
     }
 

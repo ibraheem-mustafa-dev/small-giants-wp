@@ -83,22 +83,23 @@ class ConfiguratorCompatTest extends TestCase {
 	}
 
 	/**
-	 * The product-card save() emits <InnerBlocks.Content/> only — it serialises the
-	 * InnerBlocks slot, never attribute values — so adding scalar configurator
-	 * attrs (sourceMode, productId, future swatch attrs) cannot change the stored
-	 * output and is therefore deprecation-free. (This project uses no block
+	 * The product-card is dynamic (D275): save() returns null and there is no InnerBlocks slot, so
+	 * adding scalar configurator attrs (sourceMode, productId, future swatch attrs) cannot change
+	 * the stored output and is therefore deprecation-free. (This project uses no block
 	 * deprecations — see plugins/sgs-blocks/CLAUDE.md, D270.)
 	 */
-	public function test_product_card_save_serialises_innerblocks_only(): void {
+	public function test_product_card_is_dynamic_with_null_save(): void {
 		$json = self::read_json( '/src/blocks/product-card/block.json' );
 		$this->assertSame( 'file:./render.php', $json['render'] ?? '' );
+		$this->assertArrayNotHasKey( 'allowedBlocks', $json, 'product-card has no InnerBlocks slot, so no allowedBlocks.' );
 
 		$index = self::read_file( '/src/blocks/product-card/index.js' );
-		$this->assertStringContainsString(
-			'InnerBlocks.Content',
+		$this->assertMatchesRegularExpression(
+			'/save:\s*\(\)\s*=>\s*null/',
 			$index,
-			'product-card save must emit InnerBlocks.Content only — no attr serialisation — keeping attr additions deprecation-free.'
+			'product-card save must return null (dynamic) so adding attrs needs no deprecation.'
 		);
+		$this->assertStringNotContainsString( '<InnerBlocks', $index, 'product-card renders no InnerBlocks element.' );
 	}
 
 	/**

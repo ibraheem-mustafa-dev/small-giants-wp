@@ -203,14 +203,15 @@ class TimelineTest extends TestCase {
 	// =========================================================================
 
 	/**
-	 * Block.json must declare supports.sgs.imageControls = true.
+	 * Block.json does not declare supports.sgs.imageControls: the timeline has no fixed-size image
+	 * crop box for object-fit/position to act on (Spec 35 capability routing).
 	 */
-	public function test_block_json_declares_image_controls(): void {
+	public function test_block_json_omits_image_controls(): void {
 		$data = $this->read_json( $this->block_dir() . '/block.json' );
-		$this->assertTrue(
-			isset( $data['supports']['sgs']['imageControls'] )
-			&& true === $data['supports']['sgs']['imageControls'],
-			'block.json must declare supports.sgs.imageControls = true.'
+		$this->assertArrayNotHasKey(
+			'imageControls',
+			$data['supports']['sgs'] ?? array(),
+			'timeline has no image crop box, so supports.sgs.imageControls stays undeclared.'
 		);
 	}
 
