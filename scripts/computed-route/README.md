@@ -65,7 +65,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint; B4: a ledger entry citing an item the register lacks, or none, fails; a house-rule entry needs none; a ledger with entries and no register fails; without `--register` the register comes from `qa/ledger.config.json`, and a named register that does not exist fails. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
-| `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused. |
+| `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused; a landmark exclusion holding the surface is lifted. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
 | `tests/walker-reads.test.mjs` | A-1 at unit level: motion timings and `::before`/`::after` layers are rows Solve can write on calibration's layer path; a declared width passes Solve's used-value gate; a text run's spacing is a `row-gap` row. |
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count; a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
@@ -222,14 +222,15 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `lib/pairs-page.mjs`
 
-- `collectTagged(page, side, cfg)` → the page's words with their tagged elements, as the walker's automatic check collects them.
+- `collectTagged(page, side, cfg, lifted?)` → the page's words with their tagged elements, as the walker's automatic check collects them (less the `lifted` landmark exclusions).
 - `liveBlocks(page, prefix)` → `{ refs, boxes, parents }`: the refs around each live word (innermost first), each block's border box, content box and text run, and each block's parent block on this surface.
 - `draftChains(page, want, wordEls, match)` → per block, the chain from the smallest draft element holding its chosen words up to `<body>`, the first carrying `own` (the words are its own text) and `run` (its text run's extent).
 - `formControls(page, prefix, side, idents?)` → live: each block's first visible control identity (name, else id, placeholder, label, a select's first option); draft (with `idents`): per block, the chain from the visible control with that identity through every ancestor holding no other control. Hidden controls (a honeypot) never count.
 - `groupBoxes(page, groups)` → per block, the union box of the draft elements at its children's partner paths.
 - `handElements(page, finders, side, prefix)` → per hand pair, its draft path or its live block ref and whether it is that block's root.
 - `openDraft(browser, cfg, width, state?)` → the draft page opened through the hand config's navigation with every scroll reveal fired, then the walker state's draft action run (a panel surface).
-- `openLive(browser, cfg, width, state?)` → the live page loaded past the host check, then the walker state's live action run.
+- `openLive(browser, cfg, width, state?)` → the live page loaded past the host check and opened through the hand config's live navigation (`live.open`), then the walker state's live action run.
+- `liftedExclusions(page, prefix)` → the automatic check's landmark exclusions whose live element holds one of this surface's blocks (lifted for its pairing).
 
 ### `lib/pairs.mjs`
 - `PAIRING_LIMITS`: a pairing is left out under 80% of the block's words matched, with a word from outside the block, with a box outside half to double the block's, or when it holds no padding where the block does and their content boxes match within `boxTolerance` (2px) (the padding sits on a draft ancestor).
@@ -245,6 +246,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `chooseGroupPartner(childPaths, groupBox, liveBox, limits?)` → `{ partner, verdict }` for a block whose draft element holds other blocks' words but whose children are paired: the group of its children's draft partners (`group: { paths }`), compared by union box only (the walker's `{ group }` finder, `paint.mjs::groupBox`).
 - `reconcileHandPairs(hand, kept)` → `{ retarget, duplicate }`: a hand pair measuring a kept block's draft element on an element inside that block moves to the block root (`retarget`), and the generated pair it then duplicates is dropped (`duplicate`).
 - `configText(handFile, surface, pairs, retarget?)` → the generated walker config's source (hand pairs named in `retarget` measure the given live finder).
+- `liftExclusions(exclude, holdsSurface)` → the selector exclusions that hold the surface (a header, footer or drawer surface pairs its own words).
 - `pairingState(cfg, name)` → the hand config's walker state that opens a panel surface on both sides (`pairs.mjs --state`), null without a name; throws when the state is missing or lacks a draft or live action.
 
 ### `lib/guard.mjs`

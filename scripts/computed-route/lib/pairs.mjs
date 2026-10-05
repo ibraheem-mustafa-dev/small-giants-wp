@@ -251,3 +251,10 @@ export function pairingState( cfg, name ) {
 	}
 	return st;
 }
+
+// The walker's automatic check leaves out the site header and footer landmarks, which is right for a page but leaves a
+// surface that lives inside one (the header, the footer, the phone drawer) with none of its own words. An exclusion
+// whose element holds one of the surface's blocks is lifted for that surface's pairing, on both sides.
+export function liftExclusions( exclude, holdsSurface ) {
+	return exclude.filter( ( sel ) => 'string' === typeof sel && holdsSurface( sel ) );
+}

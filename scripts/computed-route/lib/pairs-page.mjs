@@ -3,12 +3,13 @@
 import { collectAuto } from '../../parity/lib/auto-collect.mjs';
 import { AUTO_EXCLUDE } from '../../parity/lib/auto-walk.mjs';
 import { makeHelpers, waitOutHostCheck } from '../../parity/lib/helpers.mjs';
+import { liftExclusions } from './pairs.mjs';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 
 // The words (tagged with their elements) of the page, as the walker's automatic check collects them.
-export function collectTagged( page, side, cfg ) {
-	const exclude = [ ...AUTO_EXCLUDE, ...( cfg.auto?.exclude?.[ side ] || [] ) ];
+export function collectTagged( page, side, cfg, lifted = [] ) {
+	const exclude = [ ...AUTO_EXCLUDE.filter( ( sel ) => ! lifted.includes( sel ) ), ...( cfg.auto?.exclude?.[ side ] || [] ) ];
 	return page.evaluate( ( [ fn, rootSel, ex ] ) => {
 		// eslint-disable-next-line no-new-func
 		const collect = new Function( `return (${ fn });` )();
@@ -255,11 +256,22 @@ export async function openLive( browser, cfg, width, state = null ) {
 	await page.goto( cfg.live.url.replace( '{cb}', String( Date.now() ) ), { waitUntil: 'networkidle', timeout: 90000 } ).catch( () => {} );
 	await page.waitForTimeout( 2500 );
 	await waitOutHostCheck( page );
+	const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
+	h.log = [];
+	// The live side's own navigation (a pop-up opened from its page), as the walker runs it.
+	if ( cfg.live.open ) {
+		await cfg.live.open( h );
+	}
 	if ( state ) {
-		const h = makeHelpers( page, 'live', { cb: ( u ) => u.replace( '{cb}', String( Date.now() ) ), RESOLVE: resolveFinder.toString(), onAction: null } );
-		h.log = [];
 		await state.live( h );
 		await page.waitForTimeout( 700 );
 	}
 	return page;
+}
+
+// The automatic check's exclusions (AUTO_EXCLUDE) whose live element holds one of this surface's blocks
+// (lib/pairs.mjs::liftExclusions).
+export async function liftedExclusions( page, prefix ) {
+	const holding = await page.evaluate( ( [ sels, pre ] ) => sels.filter( ( sel ) => [ ...document.querySelectorAll( sel ) ].some( ( el ) => [ el, ...el.querySelectorAll( `[class*="${ pre }"]` ) ].some( ( e ) => [ ...e.classList ].some( ( c ) => c.startsWith( pre ) && /^\d+$/.test( c.slice( pre.length ) ) ) ) ) ), [ AUTO_EXCLUDE, prefix ] );
+	return liftExclusions( AUTO_EXCLUDE, ( sel ) => holding.includes( sel ) );
 }

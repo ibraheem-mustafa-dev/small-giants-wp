@@ -16,7 +16,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, reconcileHandPairs, configText, pairingState } from './lib/pairs.mjs';
-import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive } from './lib/pairs-page.mjs';
+import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -43,8 +43,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
 	const draft = await openDraft( browser, cfg, width, state );
 	const live = await openLive( browser, cfg, width, state );
-	const dWords = await collectTagged( draft, 'draft', cfg );
-	const lWords = await collectTagged( live, 'live', cfg );
+	// A surface inside the header or footer landmark pairs its own words there (lib/pairs.mjs::liftExclusions).
+	const lifted = await liftedExclusions( live, prefix );
+	const dWords = await collectTagged( draft, 'draft', cfg, lifted );
+	const lWords = await collectTagged( live, 'live', cfg, lifted );
 	const { refs: liveRefs, boxes, parents } = await liveBlocks( live, prefix );
 	const matches = matchWords( dWords, lWords ) || [];
 	const lRefsOfWord = lWords.map( ( w ) => liveRefs[ w.e ] || [] );
@@ -130,7 +132,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const fullFile = `${ surface }.full.mjs`;
 	fs.writeFileSync( path.join( path.dirname( handPath ), fullFile ), configText( handFile, surface, kept, retarget ) );
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
-	const report = { surface, when: new Date().toISOString(), ...( state ? { state: state.name } : {} ), width, recheck, blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };
+	const report = { surface, when: new Date().toISOString(), ...( state ? { state: state.name } : {} ), width, recheck, lifted, blocks: all.length, kept: kept.length, coveredByHand: [ ...duplicate ], retargeted: Object.fromEntries( retarget ), left: [ ...left, ...unworded ], keptPairs: kept };
 	fs.writeFileSync( path.join( buildDir, 'qa', 'pairs', `${ surface }.json` ), JSON.stringify( report, null, 1 ) );
 	console.log( JSON.stringify( { surface, blocks: all.length, kept: kept.length, left: report.left.length, config: path.join( path.dirname( s.walker ), fullFile ) } ) );
 }

@@ -2,7 +2,7 @@
 // is kept only when it holds its words and nothing that belongs outside it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText, pairingState } from '../lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText, pairingState, liftExclusions } from '../lib/pairs.mjs';
 
 // Live words 0-3: 0-1 in a heading (ref h) inside a section (ref s), 2-3 in a text (ref t) inside the same section.
 const liveRefs = [ [ 'h', 's' ], [ 'h', 's' ], [ 't', 's' ], [ 't', 's' ] ];
@@ -214,4 +214,11 @@ test( 'MUST FAIL: a panel state that is missing or opens one side only is refuse
 	assert.throws( () => pairingState( cfg, 'mega-shop' ), /no state "mega-shop"/ );
 	assert.throws( () => pairingState( cfg, 'draft-only' ), /does not open both sides/ );
 	assert.throws( () => pairingState( cfg, 'closed' ), /does not open both sides/ );
+} );
+
+// The phone drawer lives inside the header landmark the automatic check leaves out: its pairing found no words at all.
+test( 'MUST FAIL: an excluded landmark holding the surface blocks is lifted; one that does not stays excluded', () => {
+	const exclude = [ 'header', 'footer', '.sgs-site-header', { js: '() => null' } ];
+	assert.deepEqual( liftExclusions( exclude, ( sel ) => [ 'header', '.sgs-site-header' ].includes( sel ) ), [ 'header', '.sgs-site-header' ] );
+	assert.deepEqual( liftExclusions( exclude, () => false ), [] );
 } );
