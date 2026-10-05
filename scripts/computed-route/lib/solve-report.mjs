@@ -3,14 +3,15 @@
 import fs from 'fs';
 import path from 'path';
 import { openRows } from './solve-rows.mjs';
+// The counted row kinds and the issue key are shared with lib/sweep.mjs and lib/triage.mjs: wholePage's count, a
+// surface's sweep count and its triage count are the same number, so all three read one definition (C0.5).
+import { VISUAL, issueKey } from './issue-classes.mjs';
 
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 160 );
 
 // The whole page in distinct issues (a style, hover or box difference on one element and property, whatever the width
 // or state), before and after: closed, new, still open and labelled a gap by Solve (Hardcode or Missing setting: a gap
 // counts as handled only once proven outside the tool), and still open with no label.
-const VISUAL = [ 'style', 'hover', 'box' ];
-const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 export function wholePage( before, after, classes, prefix = null ) {
 	// A surface sharing its walker with another (a page and the form post it embeds) is judged on its own blocks' rows
 	// and the rows that carry no block.
