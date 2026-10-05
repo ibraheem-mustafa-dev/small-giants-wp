@@ -99,6 +99,18 @@ export async function readAll( page, url, instances ) {
 	return Object.assign( out, { scrolled, scrollMissed, hoverMissed } );
 }
 
+// Clicks the marked panel toggle. A toggle hidden at this width (a burger at desktop) cannot take a real click even
+// forced, so it is clicked in the page: the block's own handler still runs, and a panel that stays shut leaves its
+// target hidden (reported as missed) instead of failing the block.
+export async function openToggle( page ) {
+	const toggle = page.locator( '[data-cr-toggle]' ).first();
+	if ( await toggle.isVisible() ) {
+		await toggle.click( { force: true } );
+		return;
+	}
+	await toggle.evaluate( ( el ) => el.click() );
+}
+
 const args = ( count, only ) => [ count, CAL_PREFIX, READ_PROPS, elementPath.toString(), PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
@@ -115,7 +127,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	let mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target ] );
 	let opened = false;
 	if ( mark && ! mark.visible && mark.toggle ) {
-		await page.locator( '[data-cr-toggle]' ).first().click( { force: true } );
+		await openToggle( page );
 		await page.waitForTimeout( 500 );
 		opened = true;
 		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target ] );

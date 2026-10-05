@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { readInstancesInPage } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -36,6 +36,21 @@ test( 'MUST FAIL (dead: read cap, pseudo layer, controlled panel): the reader se
 		assert.equal( els[ '.sgs-x__ring::after' ]?.[ 'background-color' ], 'rgb(19, 87, 155)' );
 		assert.equal( els[ '.sgs-x__field::placeholder' ]?.color, 'rgb(1, 2, 3)' );
 		assert.equal( els[ '@controls > .sgs-x__panel-title' ]?.color, 'rgb(4, 5, 6)' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (nav-bar-menu "Element is not visible"): a panel toggle hidden at this width still opens its panel', async () => {
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<button data-cr-toggle style="display:none" onclick="document.getElementById('p').hidden=false">menu</button><div id="p" hidden>panel</div>` );
+		// The old step, a forced real click, throws on the hidden toggle.
+		await assert.rejects( page.locator( '[data-cr-toggle]' ).first().click( { force: true, timeout: 2000 } ) );
+		await openToggle( page );
+		assert.equal( await page.locator( '#p' ).isVisible(), true );
 	} finally {
 		await browser.close();
 	}
