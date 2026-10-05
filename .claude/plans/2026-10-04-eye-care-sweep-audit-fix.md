@@ -364,7 +364,7 @@ Shape:
    --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
    blocks through the queue, one measure-only sweep.
 
-Google reviews attribution (2026-10-05): done and live on eye-care-test (deploy at `2f3280554`; commits `a818861ab`, `463b18ab5`, `b551d9eb5`, `31a199682`, `063244054`, `38d97b4e4`, `2f3280554`; the block's detail is in `.claude/plans/2026-10-05-google-reviews-attribution.md`); sandybrown is not deployed, because `build-deploy.py --target sandybrown` aborts on the oldshape audit for the 155 old-shape `sgs/cta-section` blocks on its calibration page 4750.
+Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `b70e3688d`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). Open for Bean: the Eye Care draft sets the google-reviews arrows and both buttons to 40px (`sites/eye-care-ward-end/build/home.tree.json`: `arrowSize`, `seeAllMinHeight`, `writeReviewMinHeight`), below the 44px standard; an author value beats the block's 44px default, so the home page stays at 40px until the draft values change.
 
 ## Session D: back to walker work
 

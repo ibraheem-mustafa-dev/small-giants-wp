@@ -225,7 +225,7 @@ re-report as fresh candidates on the footer and header every time those surfaces
 `plugins/sgs-blocks/scripts/`. Each fix needs a MUST-FAIL test shown red before it and a negative control after.
 **The browser read moves here from W1**: the three medium-confidence rows it settles sit on `sgs/site-footer` and
 `sgs/container`, both in Q5, so it is a W2 dependency and must be answered before dispatch. It is one headed Chrome
-job at 1440 and 1920, about five minutes, and must wait for the Google reviews session's host jobs to finish.
+job at 1440 and 1920, about five minutes, and runs as one host job at a time.
 
 **W0b — one measure-only sweep after W0, before W2.** R1 and R2 change which rows resolve. Re-run the sweep and
 re-count F *before* writing 38 controls on `social-icons`, or some of that work is aimed at rows that are no longer
@@ -478,7 +478,6 @@ From the Phase 3 pre-mortem and the two cold reviews. Mitigations marked **befor
 | A reseed during W2 breaks another session's deploy | High | Low | W3 owns the reseed; queue agents are told not to run one; message peers before reseeding | during |
 | The tail overruns badly (deploy, sweep and recalibration are four long steps) | Medium | High | W3 estimated at 60 min, not 25; recalibrate only touched blocks, on the WSL mirrors; sweep scoped to affected surfaces with the scope stated | during |
 | Hostinger's edge challenges the automated browser after bursts | Medium | Medium | `SGS_HEADED=1`, one host job at a time, WSL mirrors as the fallback | during |
-| **W3's deploy to sandybrown aborts today.** The parallel google-reviews track reported (2026-10-05) that `build-deploy.py --target sandybrown` fails its oldshape audit on 155 old-shape `sgs/cta-section` blocks on the Spec 47 calibration page (post 4750) — not caused by this work, but it blocks W3's second target | Medium | **High** | migrate that page with `scripts/wp-migrate-oldshape-blocks.js` or empty it (calibration replaces it with an empty tree at the end of each run anyway), before W3. Never `--skip-oldshape-audit` | **before** |
 | A queue agent hits a pre-existing gate failure it cannot bypass from a worktree | Low | Medium | agents do not run gates or commit; the main thread runs gates in W3 and uses a disclosed `[gates-ok:<reason>]` only for genuinely pre-existing violations | during |
 
 **Not a risk worth mitigating:** changed defaults on other clients. The framework is pre-production with no content
