@@ -1,0 +1,24 @@
+head	1ea514ae8
+started	2026-10-05T11:11:41+01:00
+about	qa\solve\about\2026-10-05T10-11-41	35s
+lenses	qa\solve\lenses\2026-10-05T10-12-17	38s
+help	qa\solve\help\2026-10-05T10-12-55	90s
+contact	qa\solve\contact\2026-10-05T10-14-26	49s
+home	qa\solve\home\2026-10-05T10-15-15	348s
+footer	qa\solve\footer\2026-10-05T10-21-03	73s
+header	qa\solve\header\2026-10-05T10-22-16	76s
+mobile-menu	qa\solve\mobile-menu\2026-10-05T10-23-32	66s
+mega-sunglasses	qa\solve\mega-sunglasses\2026-10-05T10-24-38	82s
+mega-brands	qa\solve\mega-brands\2026-10-05T10-26-00	111s
+mega-lenses	qa\solve\mega-lenses\2026-10-05T10-27-52	87s
+mega-help	qa\solve\mega-help\2026-10-05T10-29-19	76s
+size-guide	qa\solve\size-guide\2026-10-05T10-30-35	54s
+lens	qa\solve\lens\2026-10-05T10-31-29	130s
+shop	qa\solve\shop\2026-10-05T10-33-39	273s
+product	qa\solve\product\2026-10-05T10-38-12	167s
+contact-form	qa\solve\contact-form\2026-10-05T10-40-59	44s
+walk-bag	sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/bag	120s
+walk-checkout	sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/checkout	195s
+walk-confirmation	sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/confirmation	1s
+finished	2026-10-05T11:46:59+01:00
+walk-confirmation	sites/eye-care-ward-end/build/qa/sweep/2026-10-05/walks/confirmation (order 652, cancelled: EYECARE_ORDER_URL; the first run had no URL)	
