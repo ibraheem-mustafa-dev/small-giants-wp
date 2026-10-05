@@ -339,12 +339,12 @@ Shape:
    --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
    blocks through the queue, one measure-only sweep.
 
-Carried into Session C's serial tail (2026-10-05):
+Google reviews attribution (2026-10-05): its own parallel track (Bean), not Session B or C. It ships the five policy fixes below, the `showGoogleLogo` live rebuild and the reseed, then removes this note:
 - **`showGoogleLogo` removed** (`f19a66e27`, not deployed; Google's Places API policy makes attribution mandatory). After
   the deploy, rebuild eye-care-test's single-product template from its tree (it was saved with the setting), check the
   deploy's oldshape audit for live pages still carrying it, and include it in the reseed (/sgs-update regenerates
   `plugins/sgs-blocks/scripts/consistency/` and the block reference).
-- **Google reviews attribution gaps (Bean to decide; found 2026-10-05, policy
+- **Google reviews attribution gaps (Bean approved fixing all five, 2026-10-05; policy
   https://developers.google.com/maps/documentation/places/web-service/policies):** the block prints a plain "G"
   (`plugins/sgs-blocks/assets/google-logo.svg`), not the Google Maps logo or the text "Google Maps"; the logo exists
   only with the aggregate header or a badge variant, so a list variant with `showAggregate` off prints no attribution;
