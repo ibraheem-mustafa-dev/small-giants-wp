@@ -70,6 +70,16 @@
         </properties>
     </rule>
 
+    <!--
+        A block's render.php (block.json "render": "file:./render.php") is required inside the
+        closure register_block_type_from_metadata() builds, so its top-level variables are local
+        to that call, never globals. Other PHP files in a block folder stay checked: some are
+        loaded at plugin start, where their variables are real globals.
+    -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound">
+        <exclude-pattern>*/src/blocks/*/render\.php$</exclude-pattern>
+    </rule>
+
     <!-- ── Performance ──────────────────────────────────────────────────── -->
     <arg name="parallel" value="8"/>
 
