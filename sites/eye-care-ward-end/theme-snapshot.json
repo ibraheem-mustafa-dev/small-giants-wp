@@ -671,7 +671,7 @@
             "text": "var:preset|color|primary-dark"
           }
         },
-        ":focus": {
+        ":focus-visible": {
           "color": {
             "text": "var:preset|color|primary-dark"
           },
