@@ -2,7 +2,7 @@
 title: "Eye Care Session C: repair the measuring route (Spec 47 gaps only)"
 project: small-giants-wp
 created: 2026-10-05
-status: in progress (sitting i, Wave 0 done)
+status: in progress (sitting i complete: Wave 0, Wave 1 and Gate 1 all passed)
 governs: Session C of .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
 references:
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
@@ -428,6 +428,66 @@ FAIL: a lane fails its own tests, or the ambiguous count rises
 ON FAIL: the other lanes still merge. The failing lane's items stay open in this plan WITH THE LANE NAMED.
 TYPE: auto-gate, then a main-thread read of every diff
 ```
+
+### Gate 1 PASSED, 2026-10-05. All six lanes merged.
+
+Measured in the main checkout after each merge, with the identical command over all 17 surfaces, not
+taken from any lane's report.
+
+| | W | F | T | U | total | ambiguous |
+|---|---|---|---|---|---|---|
+| Baseline (C0.4) | 1562 | **338** | 445 | 28 | 2373 | 43 |
+| After Gate 1 | 1764 | **177** | 445 | 28 | 2414 | 43 |
+
+**Every transition accounted for, nothing unexplained:**
+
+| Rows | Movement |
+|---|---|
+| **161** | `F/no-setting` → `W/canvas-settable` |
+| 33 | `W/resolver-unmapped-element` → `W/canvas-settable` (same class, truer reason) |
+| 26 | `W/resolver-ambiguous` → `W/canvas-settable` (same class, truer reason) |
+| 41 | new keys, all `W/content` (13 text + 28 presence) |
+| 0 | keys gone. **T and U unchanged**, so no row that resolved before stopped resolving |
+
+**The sweep-to-triage identity holds on all 17 surfaces** (site total 2,414 on both sides), and the
+only delta against 2,373 is those 41 content rows. `byClass`: unresolved 1618, derived 432,
+unmapped-state 323, content 41.
+
+**The canvas-only guarantee is measured, not assumed: 0 class changes on any non-canvas surface.**
+F held at 58 (home), 36 (help), 1 (contact), 0 (about), 0 (lenses). All 161 reclassifications are on
+canvases: footer 76→21, product 42→5, mega-lenses 24→4, header 15→0, contact-form 10→0,
+mega-brands 14→8, mobile-menu 12→4, shop 7→2, lens 38→34, mega-sunglasses 2→1. **Session C2's
+worklist shrinks from 338 to 177 and no genuine framework gap on an ordinary page is masked.**
+
+**Gates after the final merge:** `node --test` **322 of 322**; `lint.mjs` green including the R-47-1
+export index; `check-no-client-names.py` green; `enumSettings` exactly 633; `calibration.discovered`
+untouched at 623 entries across 94 blocks.
+
+**⚠️ The F figure to carry forward is 177 against a baseline of 338 — raw against raw.** It is
+**not** comparable to the audited 163. See the Wave 0 results table: Session B audited the 338 raw-F
+rows down to 163, and an audited equivalent of 177 needs Session C2's judgement, which this session
+cannot produce.
+
+#### What is still open after Gate 1, with its owner
+
+Nothing is dropped. Every item below is named with where it goes.
+
+| Open item | Owner |
+|---|---|
+| **The `known` twin in `solve.mjs::writeRound`**, which holds the identical set and still omits `cal.discovered[*][*].slots`; plus plumbing `canvas`/`ancestors`/`measuredSlots` into `writeRound` so a `canvas-settable` write goes through the same hop. **Until it lands the write path and the classification can disagree**: triage reaches `resolveDiscovered` for a row Solve still gaps `unmapped-element` | **L8.7** (Wave 2) |
+| **The state-conflict guard**: refuse a group whose mapped walker states disagree, rather than writing the last run's value. The 7 rows are named in `scripts/parity/flows/state-map-reasons.json` | **L8.8** (Wave 2) |
+| **`mega-group`'s empty discovery data.** `cache/mega-group.json::discovered.sgsChildSizing` is `{}` and all five entries are empty, so no resolver change can reach it. The fixture already had `sgs/mega-panel` as its parent (the earlier "loose fixture" theory was wrong), so the cause is unproven: the Wave 3 probe is whether the rendered group carries `sgs-child-sizing` and its scoped `<style>` at all. **Spec 47's L1.3 line claiming this resolves through discovery is still open** | Wave 3 probe, then C2 |
+| **`benchmark.mjs --noise` must still catch 5 of 5 with no new noise rows.** It drives a live site, so no lane could run it | Wave 3, main thread |
+| **The flows have never run against eye-care-test.** Selectors come from source, so one may need adjusting; a miss reports as ERROR, never as a pass or fail. `lens-skip-to-bag` will fail until N38 lands, and `bag-second-unit` must PASS because N11(b) is already fixed | Wave 3, main thread (one host job) |
+| **`theme-toggle` cannot calibrate on any client.** Its gate is derived at deploy by `push-theme-snapshot.py::apply_dark_palette` from a `_sgsDark` key no committed snapshot has. Enabling it changes the snapshot md5 and therefore stales every cached `paintKey` | a decision for Bean, not a calibration bug |
+| **13 rows whose DB `css_state` is NULL** (`DB_STATE_MISSING_HOVER` 11, `STATE_FOCUS_UNROUTED` 2), listed in lane L5's commit. A missing **state**, not a missing property, so not part of C3.1's 32 | a later routing pass |
+| **Register rows 150, 152, 155** need `surfaces.json` entries for checkout, bag and confirmation, which have walker configs but no tree and no target | Session D (the trees), then a manifest entry |
+| **Rows 88 and N36A** are sub-elements with no `cr-ref` of their own, so they need hand pairs; **S3 and D7** can have no pair at all; **CR6 and CR18** are stale premises now About is paired | C2's list / closed |
+| **106 UNEXPLAINED dead calibration rows**, plus multi-button's 8 `oneWidth`, notice-banner 4, wishlist-panel 3, nav-bar-menu burger 2, google-reviews star sizes 2 — each with the probe that would settle it, and **no guessing** | Wave 3 probe, then C2 if real |
+| **`sgs/product-card` throws a TypeError in the block editor** (`Me is not a function` at `edit()`), reproducible with that block alone on an empty page. Pre-existing, inherited from the repairs track | its own handoff item, not a Spec 47 finding |
+| **`lint.mjs` does not list the new `(region)` pair name** among those a walker `accept` may use | a one-line fix when an accept needs it |
+
+**No lane failed its gate, so no lane's items are left open for that reason.**
 
 **A clean stop.** Sitting i ends here. A follow-on session resumes at Wave 2 from this plan without re-reading
 anything else.
