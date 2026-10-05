@@ -721,7 +721,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `reviewRequestUrl` — URL (optional — "Write a review" CTA linking to Google)
 - `theme` — light | dark | transparent (default: light)
 - `cardStyle` — flat | bordered | elevated (default: bordered)
-- `starColour` — token slug (default: accent)
+- `starColour` — colour or token slug (default: none, so the stars, breakdown bars and active dot use Google's yellow)
 - `textColour` — token slug
 - `backgroundColour` — token slug
 - `autoplay` — boolean (for slider variant, default: false)
@@ -736,7 +736,7 @@ The icon circle has an overridable default border; a title placeholder never lea
 - Connection test button (fetches one review to verify API key + Place ID)
 
 **Google Places API (New) Integration:**
-- Endpoint: `POST https://places.googleapis.com/v1/places/{placeId}` with `fieldMask=reviews,rating,userRatingCount`
+- Endpoint: `GET https://places.googleapis.com/v1/places/{placeId}` with the field mask `reviews,rating,userRatingCount,displayName,googleMapsUri` (`Google_Reviews_Settings::FIELD_MASK`; the cache key carries the mask)
 - Authentication: API key in `X-Goog-Api-Key` header
 - Free tier: 10,000 requests/month (Essentials plan, post-March 2025)
 - Server-side only — API key never exposed to frontend

@@ -126,7 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: starColour,
-								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
+								onChange: ( val ) => setAttributes( { starColour: val || '' } ),
 								gradientValue: starColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { starColourGradient: val ?? '' } ),

@@ -78,7 +78,7 @@ $show_date          = $attributes['showDate'] ?? true;
 $review_request_url = $attributes['reviewRequestUrl'] ?? '';
 $theme              = $attributes['theme'] ?? 'light';
 $card_style         = $attributes['cardStyle'] ?? 'google-card';
-$star_colour        = $attributes['starColour'] ?? 'accent';
+$star_colour        = $attributes['starColour'] ?? '';
 $autoplay           = $attributes['autoplay'] ?? false;
 $autoplay_speed     = $attributes['autoplaySpeed'] ?? 5000;
 $show_arrows        = $attributes['showArrows'] ?? true;
@@ -233,7 +233,7 @@ $gr_extra_classes = array(
 	'sgs-google-reviews--' . sanitize_key( $variant ),
 	'sgs-google-reviews--theme-' . sanitize_key( $theme ),
 	'sgs-google-reviews--card-' . sanitize_key( $card_style ),
-	'sgs-google-reviews--star-' . sanitize_key( $star_colour ),
+	'sgs-google-reviews--star-' . ( '' !== $star_colour ? sanitize_key( $star_colour ) : 'google' ),
 	'sgs-google-reviews--cols-' . (int) $columns,
 	'sgs-google-reviews--cols-tablet-' . (int) $columns_tablet,
 	'sgs-google-reviews--cols-mobile-' . (int) $columns_mobile,
@@ -251,9 +251,8 @@ if ( in_array( $gr_logo_position, array( 'leading', 'trailing' ), true ) && $gr_
 // Only the inner star colour remains as a custom CSS variable
 // (targets SVG fill on inner elements).
 $sgs_gr_star     = sgs_colour_value( $star_colour );
-$gr_extra_styles = array(
-	'--sgs-gr-star-colour:' . $sgs_gr_star,
-);
+// Empty (the default) writes nothing, so the stars, breakdown bars and active dot stay Google's yellow.
+$gr_extra_styles = '' !== $sgs_gr_star ? array( '--sgs-gr-star-colour:' . $sgs_gr_star ) : array();
 
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -512,9 +511,9 @@ $gr_responsive_css .= $gr_colour_rule( $gr_root_sel . ' .sgs-google-reviews__cou
 // stars can differ under one look: the header rule is written after the general one and wins.
 $gr_responsive_css  .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__stars', $attributes['starSize'] ?? null, array( '--sgs-gr-star-size' ) );
 $gr_responsive_css  .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__aggregate-stars', $attributes['aggregateStarSize'] ?? null, array( '--sgs-gr-star-size' ) );
-$gr_star_full_colour = (string) ( $attributes['starColour'] ?? 'accent' );
+$gr_star_full_colour = (string) ( $attributes['starColour'] ?? '' );
 // A gradient set on the stars (above) wins over the flat colour.
-if ( '' === $gr_star_colour_gradient && $gr_is_set( 'starColour', 'accent' ) && '' !== sgs_colour_value( $gr_star_full_colour ) ) {
+if ( '' === $gr_star_colour_gradient && $gr_is_set( 'starColour', '' ) && '' !== sgs_colour_value( $gr_star_full_colour ) ) {
 	$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__star--full,' . $gr_root_sel . ' .sgs-google-reviews__star--half .sgs-google-reviews__star-fill{fill:' . sgs_colour_value( $gr_star_full_colour ) . ';}';
 }
 $gr_star_empty = sgs_colour_value( (string) ( $attributes['starEmptyColour'] ?? '' ) );

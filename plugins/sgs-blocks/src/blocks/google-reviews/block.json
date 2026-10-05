@@ -717,7 +717,7 @@
 		},
 		"starColour": {
 			"type": "string",
-			"default": "accent"
+			"default": ""
 		},
 		"starColourGradient": {
 			"type": "string",

@@ -349,4 +349,24 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		// The border default still applies: the author set only the background hover.
 		$this->assertStringContainsString( 'border-color:var(--sgs-gr-blue)', $this->rule_decls( $r['css'], '.sgs-google-reviews__arrow:hover' ) );
 	}
+
+	/**
+	 * The star colour default is empty: a theme `accent` preset must not reach the breakdown bars or the active dot
+	 * through `--sgs-gr-star-colour` (it did, painting them taupe on a site whose accent is taupe).
+	 */
+	public function test_the_default_star_colour_writes_no_theme_accent(): void {
+		$attrs = array(
+			'dataSource' => 'inline',
+			'variant'    => 'slider',
+			'reviews'    => array( array( 'author' => 'A', 'text' => 'Fine', 'rating' => 5 ) ),
+		);
+		$default = $this->render_full( $attrs );
+		$this->assertStringNotContainsString( '--sgs-gr-star-colour', $default['html'] . $default['css'] );
+		$this->assertStringNotContainsString( 'preset--color--accent', $default['html'] . $default['css'] );
+		$block = json_decode( (string) file_get_contents( __DIR__ . '/../../src/blocks/google-reviews/block.json' ), true );
+		$this->assertSame( '', $block['attributes']['starColour']['default'] );
+		// A colour the author picks is still written.
+		$set = $this->render_full( $attrs + array( 'starColour' => '#FBBC04' ) );
+		$this->assertStringContainsString( '--sgs-gr-star-colour:#FBBC04', $set['html'] . $set['css'] );
+	}
 }
