@@ -434,6 +434,70 @@
 .sgs-option-picker--medium .sgs-option-picker__pill--has-image { padding-inline: 10px; }
 .sgs-option-picker--large  .sgs-option-picker__pill--has-image { padding-inline: 12px; }
 
+/* ── A pill carrying a photo: the draft's colour-option layout ──────
+ *
+ * The photo is a band of its own and the option name sits in a strip beneath
+ * it, which is how the Eye Care draft builds a colour option: a `padding:0`
+ * button in a column, a `width:100%` photo at `aspect-ratio:4/3`, then the
+ * name centred in its own strip. Laid out as a ROW instead, a full-size photo
+ * sits beside a one- or two-character name and a 7px tick, and reads as broken.
+ *
+ * Scoped off `--tile`, which already stacks its swatch this way.
+ *
+ * The swatch selector is deliberately three classes deep. The <img> also
+ * carries `.sgs-media-el` from the shared media-atom layer, whose
+ * `width: var(--sgs-media-width, auto)` has the SAME (0,1,0) specificity as
+ * `.sgs-option-picker__swatch--image` and loads after it — so the atom wins
+ * the tie, `auto` resolves, and the photo renders at its intrinsic size
+ * (measured live: 150x150 against the 2rem the block asked for). Anything
+ * sizing this photo must out-specify the atom, not merely declare a size.
+ *
+ * Grid, not flex, so the tick and the name share ONE cell: the tick is a
+ * ::before on the pill, not on the name, so in a column flex it would become
+ * a row of its own between the photo and the name. Sharing the cell also
+ * means revealing it on :checked moves nothing, and the name's symmetric
+ * `padding-inline` reserves its space in BOTH states, so a centred name can
+ * never collide with it.
+ */
+.sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill--has-image {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto auto;
+	gap: 0;
+	padding: 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+.sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill--has-image .sgs-option-picker__swatch--image {
+	grid-area: 1 / 1;
+	width: 100%;
+	height: auto;
+	aspect-ratio: var(--sgs-op-swatch-ratio, 4 / 3);
+	border: 0;
+	border-radius: 0;
+}
+
+.sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill--has-image .sgs-option-picker__pill-text {
+	grid-area: 2 / 1;
+	display: block;
+	width: 100%;
+	/* Symmetric, and wide enough for the tick, so the name stays optically
+	   centred whether or not this option is the selected one. */
+	padding: 6px 1.3em;
+	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface, #ffffff));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill--has-image::before {
+	grid-area: 2 / 1;
+	justify-self: start;
+	align-self: center;
+	margin: 0 0 0 0.5em;
+}
+
 /* ── Focus ring — carries through to swatch pills unchanged ────────
    The existing focus-visible rule already targets all pills via the
    class selector .sgs-option-picker__pill, so no new rule needed.   */
