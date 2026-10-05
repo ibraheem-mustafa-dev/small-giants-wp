@@ -222,7 +222,7 @@
 |---|---|---|---|---| --- |
 | 67 | Description inset 24px and fluid-sized | Tabs gain a panel padding setting (set 0); description uses a fixed 16.5px size preset. core/post-content stays (see answers). | framework new + tree | proven | still open |
 | 68 | Colour tiles 8px taller with a gap above the photo or colour | Remove the tile's top padding whenever the tile shows a photo or a colour block (it is meant only for text-only tiles) | framework repair | proven | still open |
-| 69 | Size pop-up | See Help 123 (one fix for the pop-up) | | | partly measured |
+| 69 | Size pop-up | See Help 123 (one fix for the pop-up) | | | still open |
 | 70 | Accordion | S5 | | | still open |
 | 71 | Swatch names bigger and bolder | The product block passes text styling through to the options (size, weight, tracking, colour) | framework new + tree | proven | still open |
 | 72 | Sections do not fade up on scroll | fade-up 26px on the three section containers | tree | proven | still open |
@@ -235,8 +235,8 @@
 | 83 | "Add my prescription" text 6px further in | button side padding 22px | tree | proven | still open |
 | 87 | Breadcrumb | Show the product name as the last crumb; the current crumb follows the weight setting (400). See answers. | tree + framework repair | proven | clean on the walker |
 | 88 | Stock line bold | New stock-text weight setting, set to 400 | framework new + tree | proven | partly measured |
-| 89 | Price on the Add to bag button bold | The button's price text follows the button weight | framework repair | proven | partly measured |
-| 90, N36B | "from +£59" grey on the black button | The note follows the button's text colour (white) | framework repair | proven | partly measured |
+| 89 | Price on the Add to bag button bold | The button's price text follows the button weight | framework repair | proven | clean on the walker |
+| 90, N36B | "from +£59" grey on the black button | The note follows the button's text colour (white) | framework repair | proven | clean on the walker |
 | 91 | "In stock" missing in the Details tab | Fall back to "In stock" / "Out of stock" when the stock is not tracked | framework repair | proven | not walker-measurable |
 | 93 | Red basket notice instead of the draft's toast | Item 18 | | | still open |
 | 94 | Photo does not zoom and brighten on hover | Gallery photo joins the shared hover zoom | framework new + tree | proven | still open |
@@ -253,7 +253,7 @@
 | N36C | White "add to bag" button changes ground on hover | New add-to-bag hover ground setting, set to white; lift per S1 | framework new + tree | proven | clean on the walker |
 | N36D | WhatsApp card text | S4 | | | still open |
 | N36E, N36F | "Which size am I?" links: no hover; the Sizing-tab copy's underline touches the text | One shared "quiet link" style for both: muted text, 1px line 2px below. Text and line turn black on hover. | framework repair + tree | proven | partly measured |
-| N36S | Sizing tab: no diagram; 3 rows not 4; no description column; no note | Now, with existing blocks: a 4-row table (Lens width, Bridge, Lens height, Temple) with name, value and full description, plus your note under it (its "56▫17 145" written plain, per N30). Lens height needs adding to the product data (the draft's 74% of lens width is a placeholder). Diagram: D1. The interim table shows the default size; following the size chosen in the picker comes with the D1 block. | tree + content (+ D1) | proven | partly measured |
+| N36S | Sizing tab: no diagram; 3 rows not 4; no description column; no note | Now, with existing blocks: a 4-row table (Lens width, Bridge, Lens height, Temple) with name, value and full description, plus your note under it (its "56▫17 145" written plain, per N30). Lens height needs adding to the product data (the draft's 74% of lens width is a placeholder). Diagram: D1. The interim table shows the default size; following the size chosen in the picker comes with the D1 block. | tree + content (+ D1) | proven | not walker-measurable |
 
 ## Lens pop-up
 
@@ -267,11 +267,11 @@
 
 | Ref | What is wrong | Fix | Type | Status | Sweep |
 |---|---|---|---|---| --- |
-| 99 | Heading line spacing | line height 1.02 all sizes | tree | Solve closed (2026-10-03) | closed earlier |
+| 99 | Heading line spacing | line height 1.02 all sizes | tree | Solve closed (2026-10-03) | clean on the walker |
 | 100 | Price cards 4px shorter | 4px top margin on each price (page padding does not change card height) | tree | Solve closed (2026-10-03): the margin; the card height closed once the four price cards dropped their stack layout and 6px gap (a flex-column gap stacked on the price's own margins) | still open |
 | 101 | Gap under section headings 16px too big | heading bottom margin 0 | tree | Solve closed (2026-10-03) | still open |
 | 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, gaps 16/15px; each step's text aligned to its number's line | tree (check the alignment setting exists) | Solve closed (2026-10-03) | still open |
-| 103 | "Choose a frame" text too bold | weight 400 | tree | closed (2026-10-03): weight 400, with the button's draft padding box (0 26px) and 50px height | closed earlier |
+| 103 | "Choose a frame" text too bold | weight 400 | tree | closed (2026-10-03): weight 400, with the button's draft padding box (0 26px) and 50px height | partly measured |
 | N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | proven (top); to prove (sides) | still open |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove | still open |
 | N41 | "Choose a frame" does not lift | S1 | | | still open |
@@ -280,11 +280,11 @@
 
 | Ref | What is wrong | Fix | Type | Status | Sweep |
 |---|---|---|---|---| --- |
-| 104 | Shop the range hover | S1 (lifts like every button) | | done (2026-10-04): lifts 3px, no ground; ledgered (D-2, D-4, D-6, D-7..D-9) as the decided difference from the draft | clean on the walker |
-| 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | Solve closed (2026-10-03) | closed earlier |
-| 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | Solve closed (2026-10-03) | closed earlier |
-| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | closed (2026-10-03): the tree held `1.1fr 0.9fr`; set to `1.1fr 1fr` and the credential column width reads closed on the Solve re-walk | closed earlier |
-| 107b | Credential column 2px narrower than the draft at every width (independent check, 2026-10-04) | The cards match; the column's own 1px border (rgb(230,225,218)) paints on the draft and not live, though the tree sets borderWidth, borderStyle and borderColour on cr-ref-about-11. Trace which element paints it (wrapper or inner) | tree or framework repair | closed (2026-10-04): the border paints on the column's root once Solve measured the root (hand pair moved off the inner band); Solve also wrote the column's ground (border token), 1px gap and 'Page loads' entrance | closed earlier |
+| 104 | Shop the range hover | S1 (lifts like every button) | | done (2026-10-04): lifts 3px, no ground; ledgered (D-2, D-4, D-6, D-7..D-9) as the decided difference from the draft | still open |
+| 105 | Heading, credentials and intro spacing | name heading bottom margin 20px | tree | Solve closed (2026-10-03) | clean on the walker |
+| 106 | Credential cards come out shorter | card headings line height 1.5, bottom margin 6px | tree | Solve closed (2026-10-03) | clean on the walker |
+| 107 | Columns the wrong widths | grid columns 1.1fr 1fr | tree | closed (2026-10-03): the tree held `1.1fr 0.9fr`; set to `1.1fr 1fr` and the credential column width reads closed on the Solve re-walk | clean on the walker |
+| 107b | Credential column 2px narrower than the draft at every width (independent check, 2026-10-04) | The cards match; the column's own 1px border (rgb(230,225,218)) paints on the draft and not live, though the tree sets borderWidth, borderStyle and borderColour on cr-ref-about-11. Trace which element paints it (wrapper or inner) | tree or framework repair | closed (2026-10-04): the border paints on the column's root once Solve measured the root (hand pair moved off the inner band); Solve also wrote the column's ground (border token), 1px gap and 'Page loads' entrance | clean on the walker |
 | 108, 109 | WhatsApp button | S4. Sizing done in the tree (2026-10-03): the home button's icon 20px and gap 11px, no vertical padding, 50px tall (draft); 1px wider than the draft from the 20px icon (draft 19px, your rule 109). Icon colour and the hover grow-and-shadow stay with S4 | tree (done) + S4 | proven | clean on the walker |
 | N42 | Content starts too low | S6 | | | clean on the walker |
 
@@ -296,10 +296,10 @@
 | 111 | FAQ answers wrap differently | answer width 72ch (the draft's value) | tree | proven | still open |
 | 112 | "Call the clinic" grey and height | colour text-muted, line height 1.5, no minimum height | tree | proven | still open |
 | 113 | Call / Contact me hover | S1 | | | still open |
-| 115 | Size-guide pop-up first sentence lighter | colour text-soft | tree | proven | partly measured |
-| 116 | Size numbers smaller on a phone | 32px on phone | tree | proven | partly measured |
-| 117, 123, 69, 81, N29 | Size pop-up: wider at tablet, no header bar, padding wrong, close button has a grey circle | (1) Close button: transparent ground, square. (2) Header bar as a container in the pop-up's own layout file: title, divider, sticky. Pop-up gets a padding setting (draft: flat 24px; header 20px 24px). (3) Screen-edge gap from a token: 32px each side above phone size, 16px on a phone. | framework repair + framework new + tree | proven | partly measured |
-| 119 | Title line spacing on a phone | line height 1.02 on phone | tree | Solve closed (2026-10-03) | closed earlier |
+| 115 | Size-guide pop-up first sentence lighter | colour text-soft | tree | proven | still open |
+| 116 | Size numbers smaller on a phone | 32px on phone | tree | proven | still open |
+| 117, 123, 69, 81, N29 | Size pop-up: wider at tablet, no header bar, padding wrong, close button has a grey circle | (1) Close button: transparent ground, square. (2) Header bar as a container in the pop-up's own layout file: title, divider, sticky. Pop-up gets a padding setting (draft: flat 24px; header 20px 24px). (3) Screen-edge gap from a token: 32px each side above phone size, 16px on a phone. | framework repair + framework new + tree | proven | still open |
+| 119 | Title line spacing on a phone | line height 1.02 on phone | tree | Solve closed (2026-10-03) | clean on the walker |
 | 120, 121 | Questions heading and links side by side on a phone; links look plain | Two text-link buttons with the draft's static line 3px below the text (like N19, not the S2 sweep); they then wrap under the heading like the draft. A block swap Solve cannot make: today the two links sit inside one sgs/text, so their 126 style rows are unwritable (2026-10-04) | tree | proven | still open |
 | N43 | Content starts too low | S6 | | | still open |
 
@@ -307,20 +307,20 @@
 
 | Ref | What is wrong | Fix | Type | Status | Sweep |
 |---|---|---|---|---| --- |
-| 124 | Heading 63px on 3 lines; draft 48px on 2 | 48px (phone 34), line height 1.02, bottom margin 20, text-wrap pretty | tree | Solve closed (2026-10-03) | closed earlier |
-| 125 | Gaps under eyebrow and intro | 10px and 28px | tree | Solve closed (2026-10-03) | closed earlier |
-| 126, 137 | Column widths; map too narrow | grid 1.1fr 1fr; map container as a stack so the map fills | tree | proven | partly measured |
+| 124 | Heading 63px on 3 lines; draft 48px on 2 | 48px (phone 34), line height 1.02, bottom margin 20, text-wrap pretty | tree | Solve closed (2026-10-03) | clean on the walker |
+| 125 | Gaps under eyebrow and intro | 10px and 28px | tree | Solve closed (2026-10-03) | clean on the walker |
+| 126, 137 | Column widths; map too narrow | grid 1.1fr 1fr; map container as a stack so the map fills | tree | proven | clean on the walker |
 | 127, 138 | WhatsApp button | S4 | | | clean on the walker |
-| 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | done (2026-10-04): the grid's desktop-only `repeat(2, …)` columns applied at every width over `columns.mobile: 1`; a phone value `minmax(0, 1fr)` added, and the details stack on a phone | closed earlier |
+| 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | done (2026-10-04): the grid's desktop-only `repeat(2, …)` columns applied at every width over `columns.mobile: 1`; a phone value `minmax(0, 1fr)` added, and the details stack on a phone | clean on the walker |
 | 129 | Label too close to its value | detail cell gap 14px | tree | Solve closed (2026-10-03) | clean on the walker |
 | 130 | Hours | Same as footer 38 | | | still open |
 | 131 | Phone/email hover | S3 (mirrors the page's other links) | | Solve closed (2026-10-04): the phone label takes the page hover colour (calibration `reaches`) | still open |
-| 133 | Form heading sits high | line height 1.5 | tree | Solve closed (2026-10-03) | closed earlier |
-| 134 | Social cards compact | card row as a 2-column grid | tree | Solve closed (2026-10-04): both cards fill the row equally (`sgsChildSizing` fill) | closed earlier |
+| 133 | Form heading sits high | line height 1.5 | tree | Solve closed (2026-10-03) | clean on the walker |
+| 134 | Social cards compact | card row as a 2-column grid | tree | Solve closed (2026-10-04): both cards fill the row equally (`sgsChildSizing` fill) | clean on the walker |
 | 135 | Send button full width on a phone | The form's narrow-width stretch becomes switchable | framework new + tree | proven | still open |
-| 136 | Intro wraps one word early | text-wrap pretty | tree | Solve closed (2026-10-03) | closed earlier |
+| 136 | Intro wraps one word early | text-wrap pretty | tree | Solve closed (2026-10-03) | clean on the walker |
 | 139 | Phone/email fade | S3 | | | still open |
-| 140 | Address on one line | Same as footer 36 | | | not walker-measurable |
+| 140 | Address on one line | Same as footer 36 | | | still open |
 | N44 | Content starts too low | S6 | | | clean on the walker |
 | N45 + 142-145 | Contact form | (1) The form gets its own full-width row: one main column, not half the page. (2) Repair: fields without a visible label still get the floating-label space and invisible placeholders; that rule should apply only when a label exists. This also removes the 24px dead gap. (3) New: one "field style" setting group (ground, border colour, corner radius, minimum height, padding, text size, placeholder colour, gap between rows, button alignment). Set to the draft: white fields, square corners, 52px tall, 14px sides, 15px text, 10px gaps, button on the left. | tree + framework repair + framework new | framework built and live (2026-10-04, bac2fb2cf: Field style group, label-less fields, step gap); the contact form Solve is open (plan 2026-10-04-spec47-full-coverage Progress) |  |
 | N45b | Contact form spacing measured (2026-10-04) | Fields sit 87px apart at 375 against the draft's 62 (walker flow rows), and the subtext-to-name-field gap is 46px against 22 at 1440 (the subtext's own box is shorter on live), and at 375 the name field sits 23px lower than the draft (the subtext keeps its 22px margin: Bean, 2026-10-05; the fix is the form's own top spacing, not the margin). All belong to the contact-form surface (post 285) | tree + framework repair (with N45) | proven live | still open |

@@ -68,9 +68,9 @@ Hostinger shows a captcha (`scripts/local-wp/README.md`).
 **Session A, the whole-site sweep (2026-10-05, complete, measure only, from `1ea514ae8`; tooling through `197ba10c3`).**
 Live = HEAD proven by checksum (blocks at `4726700c1` on eye-care-test). 2,373 distinct open issues over 17 surfaces
 (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; table per surface in the Spec 47 plan's Progress).
-Every register item has a Sweep status (71 still open, 63 not walker-measurable, 32 closed earlier, 22 partly
-measured, 13 clean), judged by Opus agents under a merge gate that demands one exact element row and its values per
-verdict (a first, shallow pass was rejected). Two register "closed" items are open again: 101 and N15. Live checks
+Every register item has a Sweep status (77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly
+measured, 27 clean), judged by Opus agents under a merge gate that demands one exact element row and its values per
+verdict (a first, shallow pass was rejected). Register items recorded closed but open on the sweep: 100, 101, 102, 104, 131, N15. Live checks
 (`qa/sweep/2026-10-05/a5/README.md`): framework fixes 37/37 PASS; About independent check 0 differences; Contact's
 independent check finds 106 rows against the walker's 27 (Session B input); S3's no-fade fix holds (footer and contact phone; header phone
 untested at 375/768) but its black hover colour is not yet in the trees;

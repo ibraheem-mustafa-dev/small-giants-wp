@@ -238,14 +238,15 @@ webpack's module ids are set aside, and the deployed theme.json equals the snaps
 - **A3:** `qa/sweep/2026-10-05/sweep.json`: 2,373 distinct open issues over 17 surfaces, each surface's total equal to its
   report's `wholePage` count once the sweep counted unmapped-state rows (`62f1f0e04`; shop had lost 163). About's walk
   35s against 31s on 2026-10-04: the DevTools lookups stay unbatched.
-- **A4:** the register's Sweep column: 71 still open, 63 not walker-measurable, 32 closed earlier, 22 partly measured,
-  13 clean on the walker. A first Sonnet pass was rejected as shallow (it cited any row on a wrapper block and gave no
+- **A4:** the register's Sweep column: 77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly measured,
+  27 clean on the walker. A first Sonnet pass was rejected as shallow (it cited any row on a wrapper block and gave no
   values); `register-sweep.mjs merge` now refuses a still-open verdict that does not cite one exact row (report, ref,
   element path, property) and quote its values with a sentence tying the item to that element, a clean claim without
   that sentence, and hover given alone as unmeasurable (`79ad3953f`). Eight Opus agents redid it under that gate
-  (verdicts and brief in `qa/sweep/2026-10-05/a4/`). It found two register "closed" items open again: 101 (the
-  Lenses icon list sits 16px further below its heading) and N15 (the See all reviews button paints black where the
-  draft paints blue). The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
+  (verdicts and brief in `qa/sweep/2026-10-05/a4/`). Groups 4 and 5 were re-run once Help and the product page were mapped to the size-guide surface
+  (`lib/register-sweep.mjs::SECTION_SURFACES`). Register items recorded closed or clean but open on the sweep:
+  100, 101, 102, 104 and 131 (Lenses, About, Contact) and N15 (the See all reviews button black where the draft is
+  blue). N41 and 113 are open only because S1's agreed lift has no ledger entry on Lenses and Help yet. The main thread checked 6 still-open verdicts and every clean one against their rows, 7 of the
   not-walker-measurable items and every closed claim without a report.
 - **A5:** `qa/sweep/2026-10-05/a5/README.md`: framework fixes 37/37 PASS; About independent 0 differences; Contact
   independent 106 rows against the walker's 27 (Session B input); the header sticks but CR2's scrolled-state class was not
@@ -272,7 +273,7 @@ None blocks Session B.
 
 ## Session B: audit the three-way split, protect decisions, plan the fixes
 
-**Done when:** the route's use of the block source and DB is audited (B0); every open distinct issue from Session A sits in exactly one class below with its proof; every real
+**Done when:** the route's use of the block source and DB is audited (B0); every open distinct issue from Session A sits in exactly one class below with its proof; every not-measured or partly measured register item carries its measure-gap tag (below); every real
 framework gap is grouped by mechanism and matched to a shared helper; Bean's decided differences can no longer be
 overwritten by Solve; Session C's plan is written. **Estimate:** ~1 h 10 (realistic ~2 h).
 
@@ -287,6 +288,15 @@ overwritten by Solve; Session C's plan is written. **Estimate:** ~1 h 10 (realis
 
 Rule: Solve's "Missing setting" starts as **W until proven F**. A walker gap is never closed by calling it missing
 functionality.
+
+**Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly
+measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why the walker cannot see it: `outside-visual` (content,
+Site Info, product data: the walker compares style, not wording), `FR-47-6` (a walker read Spec 47 has not built yet:
+focus and active states, script-driven entrance or load motion), `FR-47-7` (a functional flow: clicks, filters, add to
+bag, step changes), `pairing` (the element exists on a measured surface but no pair reaches it), or `PA-1` to `PA-5`
+(the parked items). The fix side comes from the register's Type column (framework repair, framework new, tree,
+content). Output: one table in this plan's appendix, so Session C's framework list and Spec 47's remaining work
+separate cleanly; the `pairing` and `FR-47-*` rows go to Spec 47 §5 Residual.
 
 | Unit | Does | Files | Depends on | Test |
 |---|---|---|---|---|

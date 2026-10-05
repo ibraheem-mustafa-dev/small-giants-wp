@@ -3,7 +3,7 @@
 // Sweep column without changing any existing cell.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { registerItems, groupItems, checkStatuses, addSweepColumn, bundleGroup } from '../lib/register-sweep.mjs';
+import { registerItems, groupItems, checkStatuses, addSweepColumn, bundleGroup, itemSurfaces } from '../lib/register-sweep.mjs';
 
 const REGISTER = [
 	'# Register',
@@ -199,3 +199,12 @@ test( 'MUST FAIL: a second merge rewrites the Sweep column instead of adding ano
 	assert.ok( twice.split( /\n/ ).some( ( l ) => l.startsWith( '| 1 | Top bar' ) && l.endsWith( '| proven | not walker-measurable |' ) ) );
 	assert.equal( twice.split( /\n/ ).length, once.split( /\n/ ).length );
 } );
+
+// 2026-10-05: Help's and the product page's size pop-up items were judged without the size-guide surface's rows.
+test( 'MUST FAIL: Help and product page items sit on the size-guide surface too', () => {
+	const reg = [ '## Help', '', '| Ref | What is wrong |', '|---|---|', '| 115 | Pop-up text |', '', '## Product page', '', '| Ref | What is wrong |', '|---|---|', '| 69 | Size pop-up |', '' ].join( String.fromCharCode( 10 ) );
+	const its = registerItems( reg );
+	assert.ok( itemSurfaces( its[ 0 ], its ).includes( 'size-guide' ) );
+	assert.ok( itemSurfaces( its[ 1 ], its ).includes( 'size-guide' ) );
+} );
+
