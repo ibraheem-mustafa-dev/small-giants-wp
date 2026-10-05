@@ -491,7 +491,7 @@ the agent.
 tests whether the cited block really can hold the value on the live site. A reclassification is a claim, and C2
 is where it is checked.
 
-## The §6 question for Bean, with a recommendation
+## The two answers owed by Bean, each with a recommendation
 
 **Should the text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)?**
 
