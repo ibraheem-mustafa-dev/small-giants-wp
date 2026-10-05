@@ -504,6 +504,32 @@ FAIL: the identity breaks and a delta cannot be explained
 TYPE: auto-gate, then a main-thread read of every diff
 ```
 
+## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
+
+That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no
+reseed**, so this session's baseline is intact. It shares this checkout, so its thirteen commits are
+already in `main`'s history and interleave with this session's — which is why every commit here uses
+an explicit pathspec.
+
+**Wave 3's deploy order is agreed with it and must not be rearranged:**
+
+1. **C3.6 measures eye-care-test at `7f375f765`** — the code live there now. This is the count Session C exists to produce, and it is only attributable to the route while that code is unchanged.
+2. **Then deploy `a62ae6fdb`** to eye-care-test (block and theme code only; no trees, no snapshot, no ledger entries).
+3. **Then read one Eye Care button's computed `transitionDuration`** and record it against register S1. sandybrown sets no `buttonPresets.default.hover-transition`, so its buttons fell to the stylesheet's 0.18s fallback and S1 could not be proven end to end there; eye-care-test sets 0.25s, so this deploy is what proves it. The register row already states that limit, so an unread measurement leaves no false claim — but taking it closes the last gap in that track's evidence.
+
+**Three findings from its verification, each of which would otherwise arrive as fresh work:**
+
+| Finding | Why it matters here |
+|---|---|
+| **`sgs/product-card` throws a TypeError in the block editor** (`Me is not a function` at `edit()`), reproducible with that block alone on an empty new page | Pre-existing and neither track's. It is a **real defect and not a Spec 47 finding**, so it travels to the handoff as its own item rather than surfacing as route noise |
+| **The canary's `sgs_block_defaults` option pins `sgs/button` (127 attributes) and `sgs/text` (112) to `transitionDuration: 300`**, and `extensions/block-defaults.js::applyBlockDefaults` merges it over `block.json` at registration | So a **newly inserted** button on sandybrown still gets 300 despite the new 0 default, while existing buttons compute 0.18s. This is site data, not framework code: **do not read a 300ms transition on a freshly inserted canary button as S1 being unfixed.** Directly relevant to Session C2, which will judge button findings |
+| **`sgs_header_rows_align_css()` shares N46's latent shape.** Its own comment says header rows render into the outer element "in the common case (no content band)", so a header **with** a content band would collapse its rows exactly as the footer did | Deliberately left untouched, because this session is measuring that surface. **If a capped header row reads collapsed in C3.6's sweep, this is the cause and it is a real gap**, not a measuring artefact |
+
+**Two measurement limits inherited with its items**, both already in the register:
+
+- **Register 38 and 68 could not be exercised on sandybrown at all** — nothing there renders `.sgs-business-hours__day` or a tile-style option picker, so those stylesheets are never even enqueued. That reads later as "fix unverified" when it is really "the canary cannot show it". Eye Care renders both, so this session's sweep is where they are exercised.
+- **S12 is larger than its register row.** The framework half (`theme/sgs-theme/theme.json`'s `:focus` → `:focus-visible`) is fixed, but the canary's `wp_global_styles` post (post 7) carries the same `:focus` node and overrides the file, as do three client snapshots. `8aa7274ef` changed `sites/eye-care-ward-end/theme-snapshot.json` in the repo, but **nothing has been pushed to the site**, so the underline is still live on eye-care-test. **Do not record a residual focus underline against the framework**: the framework half is done and the remainder is a user-layer value awaiting a snapshot push, which is Bean's call and outside this session.
+
 ### Wave 3, main thread, serial, one host job at a time
 
 | id | Item | Done when |
