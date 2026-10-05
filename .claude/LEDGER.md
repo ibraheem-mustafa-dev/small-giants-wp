@@ -54,11 +54,10 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-05).** sandybrown runs `1b96cf786`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy `75364c71a` (the repairs track's finished range `7689ebb70..75364c71a`, block and theme code only). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
-Step 0 is done (all 17 trees
-rebuilt, zero invalid blocks). The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the work list:
-12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9 taken, three build rules, and the proven
-behaviour bugs (N11, 75/82, N25, 15, N46). It is the source of truth for what gets fixed. No blockers.
+**Now (2026-10-06).** sandybrown runs block code `82f54f351`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy the then-current `main` — NOT `75364c71a`, which ENDS the repairs range and so predates the Tier 1 range `65573118c..82f54f351`. Real delta `7f375f765..82f54f351`: 33 files, 13 blocks, plus `theme.json` (agreed with Session C). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
+The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
+truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
+No blockers.
 
 **Spec 47 (v0.15): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker (the
@@ -102,12 +101,13 @@ collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carr
 roster's policy is deliberate (reasons per family in the plan's "R1 decided"). The three `!important` spacing rows
 are diagnosed from the source as two causes, so both go on the C2 list rather than waiting.
 
-**Parallel track, the register-proven repairs — CLOSED, all twelve built and verified on sandybrown, pushed**
-(`plans/2026-10-05-eye-care-register-proven-repairs.md`; detail and the corrected register citations are in their
-rows). **Open: its eye-care-test deploy (`75364c71a`) and the one reseed are handed to Session C's Wave 3.** Its
-remaining functional work is tiered in `plans/2026-10-05-eye-care-functionality-backlog.md`.
+**Register repairs and backlog Tier 1 — both CLOSED, built and verified on sandybrown, pushed** (twelve proven
+repairs, then N11(a), 52, 75/82/158, 91, 68, N17b; each register row carries its hash and what was measured).
+CR6 unbuilt: needs `scripts/computed-route/lib/resolve.mjs`, Session C's. QC (`reports/2026-10-06-qc-eye-care-tier1/`)
+added PRE-EXISTING Q1 (no quantity ceiling when stock tracking is off) and Q2 (tab contrast 2.24:1) to the
+backlog; both need `/qc-council`. **Open: the eye-care-test deploy (HEAD) and the one reseed — Session C's Wave 3.**
 
-**Session 0 (complete).** P0-3 to P0-10 are parked in the sweep plan; the wiring gate blocks new gaps only (201 baselined).
+The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompts** for Sessions C and C2: `.claude/prompts/` (single-use; C's handoff updates C2's).
 **Resume from:**
@@ -116,7 +116,7 @@ lanes (L7, L8 with its new L8.7 and L8.8, L9), Gate 2, then Wave 3's host jobs C
 C3.8's output and cannot start before it. Per-surface Solve work is Session D
 (`plans/2026-10-04-spec47-full-coverage.md` "Progress").
 
-**Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
+**Separators** (live on both sites): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
 hours, the mini-cart's items and the seven wrapper composites (`plans/archive/2026-10-01-separators-plan.md`). Open, only if
 asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page).
