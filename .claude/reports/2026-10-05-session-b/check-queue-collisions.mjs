@@ -10,7 +10,8 @@
 // Exits 1 on a collision or an unowned edit target, 0 when the partition is safe.
 import fs from 'node:fs';
 
-// The W2 partition from .claude/plans/2026-10-05-eye-care-session-c-framework-fixes.md
+// The W2 partition from .claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md
+// (written for Session B's 163 rows; rebuild the queues from Bean-approved items and re-run this).
 const QUEUES = {
 	Q1: [ 'sgs/social-icons' ],
 	Q2: [ 'sgs/choice-flow-question', 'sgs/choice-flow', 'sgs/choice-flow-result' ],

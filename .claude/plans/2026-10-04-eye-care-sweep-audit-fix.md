@@ -17,7 +17,8 @@ per-surface walker work resumes.
 fixed, what the register still needs, or whether "missing setting" labels are true.
 
 **Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
-still open + divergence protection + writes Session C's plan) → Session C (framework gaps the sweep still shows) →
+still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each
+remaining finding against the fix register, then fix what Bean approves) →
 Session D (back to walker work, ranked by the sweep). Each session ends with `/handoff`. Session 0 goes first so the
 sweep measures a repaired framework and the route sees the settings the seeder and calibration were missing.
 
@@ -136,7 +137,7 @@ Each item is named so nothing is lost; none blocks Session A.
   `DesignTokenPicker.js` now names the `statesProvidedByParent` marker.
 - **P0-2 PHPUnit — DONE 2026-10-05 (`34b92c5e5`, `a930251c1`):** `php vendor/bin/phpunit` → `Tests: 2055,
   Assertions: 5988, Skipped: 1` (green; the skip is the opt-in real-kses proof). One code bug fixed:
-  `responsive-logo/render.php` printed an empty `data-animation=""` (built, NOT deployed: waits for Session C's
+  `responsive-logo/render.php` printed an empty `data-animation=""` (built, NOT deployed: waits for Session C2's
   deploy). Every other failure was a stale test, each updated to the commit that changed the behaviour on purpose
   (cited in `34b92c5e5`); `StyleVariationManifestTest` is now `ThemeSnapshotManifestTest` on
   `sites/<client>/theme-snapshot.json`. The 18 PHPUnit doc-comment deprecations became attributes, and LeanSeedSize
@@ -299,7 +300,9 @@ None blocks Session B.
 `919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one class with proof (W 1,710, F 163, T 447,
 U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer
 be overwritten (B4, N41 and 113 closed); Session C's plan is written
-(`plans/2026-10-05-eye-care-session-c-framework-fixes.md`). **Gate B is the only thing left and it waits on Bean.**
+(since re-split into `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
+and `plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). **Gate B is answered: yes,
+route fixes first (Bean, 2026-10-05).**
 Actual against the estimate: about 2 h, matching the realistic figure.
 
 ### The classes (written into Spec 47 §5 as the rule)
@@ -315,7 +318,7 @@ Rule: Solve's "Missing setting" starts as **W until proven F**. A walker gap is 
 functionality.
 
 **Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly
-measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47 v0.13's
+measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47's role
 split: `content-fixable` (the draft shows it and a block setting can hold it: words in a `content` setting, an element
 shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, not built yet),
 `handover` (content outside the tree: Site Info, product data, WooCommerce text, a page the draft never shows; name its
@@ -331,7 +334,7 @@ remaining work separate cleanly; the `content-fixable`, `pairing` and `FR-47-*` 
 | B0 Route data audit | **Investigation done 2026-10-04:** `.claude/reports/2026-10-04-route-data-audit/README.md` (wiring fingerprints, seeder routing gaps, every calibration outcome classified, DB and block-file inventory; rerun scripts beside it). Its fixes were Session 0. **Rerun done 2026-10-05 at `b551d9eb5`:** the production wiring gate passes with no new gaps (201 baselined, 10.5s); 5,742 attributes split paint-css 4,288, js 166, not-paint 1,288 (the link split the report's §7 left unrecorded); blocking findings unchanged from Session 0 (L3 186, L5 12, L2 1, L3-tier 1, L6 1); advisory L3-state 624, L3-runtime 25, L6-token 20 against 19, the one new entry being `sgs/google-reviews::dataSource`'s `maps-link--place` modifier from the parallel attribution track (advisory, never blocking). Rerun the split with `python plugins/sgs-blocks/scripts/check-wiring-fingerprint.py --json <file>` (the dump is 2.8 MB and regenerable, so it is not committed). Not rerun, with the reason the report's §7 already records: the `seeder/` chain does not run as committed (`final.py` needs `why.py`'s output, `runcls.py` and `runpatched.py` open a database without `property_suffixes`, `cmp.py` needs the agent's `regen-classifications.json`), and the inventory needs no rerun because no DB table changed. Residual into B1: none blocking; the 368 unrouted core-styling rows and the 605 dead and 117 no-marker calibration settings are B1's source-pass input | the report; fix designs into Session C's catalogue | Session 0 | residual counts recorded beside the 2026-10-04 ones: done |
 | B1 Triage script | **Script built 2026-10-05 (Track P):** `node scripts/computed-route/triage.mjs --client eye-care-ward-end --surface <s>` writes `qa/triage/<s>.json`: a candidate class per distinct issue, W, F, T or U (a box row nothing explains), with its evidence. Its checks: the resolver run read-only; fitting attributes (NULL css_property rows and discovered enums included); roster extensions; enclosing calibration `reaches`; consequence; transient; used value; and a string-level source pass: the block's own `render.php` and `style.css`, plus the PHP helpers `render.php` reaches two hops deep under `includes/` (`lib/triage-source.mjs`), cited as `file::symbol` (Lenses' container gap: `class-sgs-container-wrapper.php::SGS_Container_Wrapper` emits `'gap:' . sgs_container_gap_value( $gap )`). On 2026-10-04's reports: contact-form 23 issues (W 17, F 6), lenses 33 (W 25, F 3, U 5). For B2, check these: lenses container-25 gap is held at 0px but paints 16px (does the helper treat 0 as empty?); `layout-row` consequences compare no deltas; parent heights that sum several child deltas land in U. **Done 2026-10-05:** rerun on all 17 surfaces, and every surface's triage count equals its sweep `issues` (2,373 = 2,373; W 1,562, F 338, T 445, U 28). The rerun found the script read only the four Solve classes while the sweep counts a fifth, so 323 unmapped-state rows carried no class at all; `issuesOf` now reads them in the sweep's order (`97ac6f95a`, with a negative control). The calibration dead and no-marker audit is P0-11, done above. Built from B0's findings. For every Hardcode, Missing and Unresolved row of the sweep, checks mechanically: attributes on the block whose name or `css_property` fits (DB, NULL rows included); extension roster settings; enclosing blocks' calibrated `reaches`; whether the row's node has an open parent row with the same delta (consequence); transient properties (transform, opacity, transition mid-animation); used values. With `--rounds 0` Solve writes no gaps, so every row reads "not written": the script runs the resolver read-only (`lib/resolve.mjs`, no `setAttr`) to get each row's `no-setting`, `uncalibrated` or `breaks-layout` reason first. Then reads the block's own source for the rows still labelled missing or hardcode: does `render.php` read the attribute, and how does it emit it (class modifier, custom property, inline wrapper attribute); which rule in the block's `style.css` declares the property (the matched rule's stylesheet and selector from A-1's `CSS.getMatchedStylesForNode` names it on the live page). The same pass audits whatever calibration dead and no-marker settings and no-route styling attributes remain after Session 0 (B0's rerun counts), classing each as marker gap, missing DB route or render that never reads the attribute. Writes a candidate class and its evidence per row | new `scripts/computed-route/triage.mjs` + `lib/triage.mjs`, `tests/triage.test.mjs` | Session A | MUST FAIL tests: a known existing setting (textarea width via its extension) is never labelled F; a known consequence row is labelled W |
 | B2 Prove each candidate | **Done 2026-10-05:** six parallel read-only **Opus** agents (not Sonnet: the proof gate needs source reading) grouped by mechanism, one shared brief (`.claude/reports/2026-10-05-session-b/b2/BRIEF.md`), 271 combos over 338 candidate-F rows. Result: F 163 rows, W 148, D 17, T 2, deferred 8. Gate: 130 of 130 F cite a DB row or query, 128 cite both that and a `file::symbol`, 0 cite neither, every one names a precedent. Main thread re-verified every F mechanism (~15 claims) and the W sub-mechanism split; one agent claim corrected (the heading `text-wrap` reach) | Appendix B of this plan | B1 | every F has the proof the class table requires: met |
-| B3 Group and match helpers | Proven F gaps grouped by mechanism (for example layout alignment on blocks without it, inner-element typography, text max-width, hover effects) and matched to the shared helpers and declarations that already solve it elsewhere (`SgsLengthControl`, box control, typography helpers, `supports.sgs.boxFamilies`, extensions, the form's Field style group as the parent-styles-children precedent) | fix catalogue section in Session C's plan | B2 | each group names its precedent block and helper |
+| B3 Group and match helpers | Proven F gaps grouped by mechanism (for example layout alignment on blocks without it, inner-element typography, text max-width, hover effects) and matched to the shared helpers and declarations that already solve it elsewhere (`SgsLengthControl`, box control, typography helpers, `supports.sgs.boxFamilies`, extensions, the form's Field style group as the parent-styles-children precedent) | the catalogue `reports/2026-10-05-session-b/b3-catalogue.json`, now read by Session C2 (the groups are filing labels for review, never a unit of work) | B2 | each group names its precedent block and helper |
 | B4 Divergence protection | **(1), (3), (4) built 2026-10-05 (`5c20163c2`, `fde61f00d`):** decided values are Solve's target (`judgeDivergence` sets `decided`, `draftValues` reads it); entries carry `register: [ids]` checked by `lint.mjs --register`; D-1 removed (Bean 2026-10-05: the subtext keeps its margin; the 375px name-field drop stays open under CR15/N45b). **(2) done 2026-10-05 (Session B).** S1's agreed lift is ledgered on Lenses and Help, closing register N41 and 113: D-34 and D-35 on `cr-ref-lenses-28` (`sgs/button` "Choose a frame"), D-36 and D-37 on `cr-ref-help-39` ("Contact me") and D-38 and D-39 on `cr-ref-help-40` ("Call"), each a `transform` entry targeting `matrix(1, 0, 0, 1, 0, -3)` and a `hover-effects` entry targeting `lifts`, over widths 768, 1440 and 1920, citing `["N41","S1"]` and `["113","S1"]`. Each ref was confirmed against the surface tree before writing, and the rows read draft `none` against live `matrix(1, 0, 0, 1, 0, -3)`: the draft does not lift, so without an entry Solve would write the draft's no-lift back over Bean's decision. `lint.mjs --register` passes, and a planted `NOT-A-REAL-ID` turns it red (negative control). The `solve.test.mjs` decision tests are green ("MUST FAIL TO OVERWRITE A DECISION", both cases). Audit for any other register decision that changes a measured value and lacks an entry: none. Eight register items read as decisions; S4 and 104 are already ledgered; S6 (page top spacing 48/90) and 93 with 18 (the red inline notice is the current wrong state, and item 18's toast removes it; its row is `cr-ref-product-4` `position`, draft `fixed` against live `static`) are fixes **towards** the draft, not divergences; N11 is behaviour; 160 and 162 are content decisions no walker read reaches; D7 belongs to the parallel google-reviews session. No lint enforces the register-to-ledger direction because the register carries no machine-readable marker for "this decision changes a measured value", so a check would be heuristic; Gate B asks Bean whether to add that marker. Proven 2026-10-04 by reading the code: Solve skips a row the ledger accepts, but when live drifts from a decided value `parity/lib/divergences.mjs::judgeDivergence` leaves the row open with `diff.draft` set to the text `"<value> (D-n)"`, while `solve.mjs::writeRound` takes its target from `solve-rows.mjs::draftValues` (the raw draft style). So the next Solve writes the draft over Bean's decision, and `guard.mjs` cannot measure that row (`"0px (D-1)"` fails its px parse). Build: (1) Solve's target for a ledgered row is the entry's decided value, parsed from the entry, not from the text; (2) every register decision that changes a measured value becomes a ledger entry citing its register ID; (3) `lint.mjs` fails an entry whose ID is not in the register; (4) the independent check (fixed in A5) fails when live differs from the decided value | `lib/solve-rows.mjs::draftValues`, `solve.mjs::writeRound`, `parity/lib/divergences.mjs`, `lint.mjs`, `divergences.json` | Session A's statuses | MUST FAIL tests: with a value entry whose live has drifted, `writeRound`'s target equals the decided value; a planted drift turns the independent check red |
 | B5 Plan Session C | Write the orchestration (below) in detail from B3's catalogue | this plan | B3 | `/strategic-plan` gates |
 
@@ -347,22 +350,37 @@ No-go: the F gaps stay in the register (Sweep column) and work goes straight to 
 
 ---
 
-## Session C: framework fixes (outline; B5 writes the detail)
+## Session C: repair the measuring route, then Session C2: assess the findings
 
-**Done when:** every catalogued F gap has a working control (editor and front end), a reseed, a deploy, and a
-recalibration of the blocks it touched; a fresh measure-only sweep shows those rows closed and 0 new rows anywhere.
+**Gate B answered yes, and the work is re-split (Bean, 2026-10-05).** The plan is in two files:
+`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and
+`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`.
 
-Shape:
-1. **One group per agent, in parallel.** Each `wp-sgs-developer` agent takes one mechanism group, phase 1 read-only
-   diagnosis, main-thread check, phase 2 implementation in an isolated worktree (`isolation: "worktree"`), no build,
-   commit or deploy.
-2. **Scripts for repeated edits.** A group touching more than 3 files with the same change gets a detector first
-   (`.claude/THE-MIGRATION-METHOD.md`), then a codemod.
-3. **Shared helpers first.** A group whose fix belongs in a shared control or helper lands that helper once, then the
-   per-block wiring.
-4. **One serial tail in the main thread:** merge each worktree, read every diff, one `npm run build`, `run-gates.py
-   --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
-   blocks through the queue, one measure-only sweep.
+**Why the split.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth: it already
+holds the decided issues and the agreed fixes. The 163 **F** rows are *findings to assess*, not a list of gaps to
+build, and a walker row never creates a new fix. Many of those findings ignore how the framework works — a mega
+menu, a modal and a choice flow are CPT canvases composed from blocks, and a setting can arrive from a parent by
+block context — so "this block declares no setting" is not a defect by itself. Bean: the lens flow looks almost
+perfect, yet it carries 35 F rows. **That is a route defect, so the route is repaired before the findings are
+judged.** The grouping G1 to G8 is rejected as a unit of work: groups are filing labels for review only,
+`SGS_Container_Wrapper` is never a blanket fix, and "the only hover-decoration control" was false
+(`sgs/button::textDecorationHover`, `sgs/nav-drawer-menu` and the underline-slide utilities all exist; S2 and S12
+already decide link behaviour).
+
+**Session C: Spec 47 route and logic gaps only. No block controls, no shared CSS files.** Every "not built", "not
+started", "open" and "known measuring gap" in Spec 47, plus the new canvas-awareness rule (**FR-47-8**, **R-47-12**),
+plus the calibration-failure fixtures and the sandybrown oldshape blocker. The main thread writes no feature code:
+nine lanes in three waves, each lane one worktree subagent with a fixed file list, a gate after each wave.
+**Done when** a fresh measure-only sweep and triage have run on the repaired route and the new F count is recorded.
+Nothing is deferred; the one item not built is Spec 47 stage 5, a second draft, which is blocked on a second draft
+existing.
+
+**Session C2: assess every finding, on the post-C sweep, never on the old 163.** Match each row to a register Ref,
+fact-check it against canvas surfaces, parent-by-context settings, existing controls and decided register items,
+then live-test it with Playwright at 375, 768, 1440 and 1920 with screenshots and computed values. Register items
+still marked open that the findings do not cover get a live verdict too, and **each one the route missed is a new
+Spec 47 gap, listed against the section that should have caught it.** Only then does Bean get one yes/no list, and
+only approved items become framework fixes (the old W1 and W2, one owner per block, under gates W1, W2 and TAIL).
 
 Google reviews attribution (2026-10-05): done and live on eye-care-test and sandybrown (deploys at `b70e3688d`; detail in `.claude/plans/archive/2026-10-05-google-reviews-attribution.md`). The block's colours and sizes follow Google's UI (40px pills and arrows), an accepted difference from the theme's colours and the 44px target (Bean, 2026-10-05); do not flag them as gaps.
 
@@ -381,7 +399,7 @@ then each surface to 100% with Solve under the existing done line (Spec 47 plan 
 | Shared hand configs | The same header row counted 6 times; panels pair nothing | A2's per-panel configs; A3 dedupes by ref and property |
 | Register edited by other sessions | Lost edits | the main thread is the only writer; re-read the file and `git diff` it right before writing |
 | Bean's points file staged by accident | Bean's private notes committed | check `git diff --cached --name-only` before each commit has no `Bean Points` path |
-| Session C merges clash in shared helpers | One reseed hides which group regressed | helpers merge and build first, sweep, then the per-block wiring, sweep again |
+| Session C2 merges clash in shared helpers | One reseed hides which queue regressed | the four shared files land first in the main thread under Gate W1, then the per-block queues under Gate W2, then one tail and one sweep. Session C touches no block, theme or shared-helper file at all |
 | A panel or per-width layout pairs few blocks | Under-counted issues | Panels pair with their walker state open (`pairs.mjs --state`); what stays unpaired is listed with its reason (PA-1 drawer, PA-2 per-width finders) |
 | Triage over-labels W to keep F small | Real gaps ignored | B2 agents prove both directions; main thread re-checks every reclassification to W from Solve's Missing label |
 
@@ -390,8 +408,9 @@ then each surface to 100% with Solve under the existing done line (Spec 47 plan 
 | Gate | After | Pass | Type |
 |---|---|---|---|
 | A | A0 to A6 | every surface measured from one HEAD; every register item has a status | review-gate |
-| B | B1 to B5 | every open issue classed with proof; divergence MUST FAIL test red then green | go/no-go (Bean) |
-| C | Session C | catalogue rows closed on a fresh sweep; 0 new rows. Fail: revert that group's merge, re-sweep; never start Session D with new rows | auto-gate |
+| B | B1 to B5 | every open issue classed with proof; divergence MUST FAIL test red then green. **Answered 2026-10-05: yes, route fixes first**, and the remaining work re-split into Session C (route) and Session C2 (findings) | go/no-go (Bean) |
+| C | Session C | every unbuilt Spec 47 item built or proved already built; a fresh measure-only sweep and triage run on the repaired route; the new F count recorded. Gates 1 to 3 in Session C's own plan | auto-gate |
+| C2 | Session C2 | every finding matched, fact-checked with a citation and live-tested; Bean has answered yes or no per item; approved rows closed on a fresh sweep. Gates C2-1 to C2-3, then W1, W2 and TAIL, in Session C2's own plan. Fail: revert that queue's merge, re-sweep; never start Session D with new rows | go/no-go (Bean), then auto-gate |
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.14"
+spec_version: "0.15"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -63,6 +63,7 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 | **R-47-9 Bounded loop** | Solve runs at most three write rounds. After each round, a row that got worse (`lib/solve-rows.mjs::regressedRows`) is pinned on its own node, top-down (`lib/guard.mjs::guardRound`): a setting whose calibration explains the row (the property itself, a calibrated side effect, or a discovered layout effect) is reverted at once; otherwise one suspect setting is undone at a time (layout-mode settings first, then layout properties, then the latest) and the next walk decides, restoring an innocent one. A row on a node with no write of its own takes as suspects the writes inside that node and inside the pair a distance row is measured from (`guard.mjs::anchorRef`). Reverted settings are blocked and classified Hardcode, and only they count as wrong writes. A guard round is not a write round. A setting written in round N is rewritten later only if the match improves at every width. A write needs the row's element to be one calibration ties to that setting. |
 | **R-47-10 Gates** | Every tree passes `scripts/wp-build-page.js --dry-run` before a real build. The resolver writes only settings with `block_attributes.source = 'sgs'`; never a core `style` attribute or a `native_wp` setting, because those serialise as inline `style="…"` (Spec 32). `lint.mjs` enforces this on every tree the route writes, and fails a Fill skeleton that carries any attribute whose `css_property` is not null. Route code passes `python scripts/check-no-client-names.py --check`. Ref classes use the `cr-ref-` prefix, never `sgs-`. |
 | **R-47-11 Live-site safety** | The route writes only to the posts listed in `calibration-targets.json` and to the surface targets in the site's `surfaces.json` (§2). `lib/tree.mjs` refuses any write to the canary's homepage (2742) or posts page (2741), to a motion-QA fixture (2103, 2109, 2113, 2603, 2740, 3037), or to a target in neither list. It never deletes posts and never changes an active header, footer, drawer or snapshot pointer. Before a build it checks that no deploy or reseed is running on that site. |
+| **R-47-12 Canvas awareness** | A surface composed by the author from arbitrary blocks inside its own post (a mega menu, a modal, a drawer, a choice flow, and any other surface the manifest marks `canvas: true`) may not have a row classed **Missing setting** on the evidence of the attributed block alone. The route checks, in order: the attributed block; every ancestor block in the same canvas tree, including the canvas root; every block already present in that canvas tree that declares the property, ancestor or not; and the block context channel (`providesContext` / `usesContext`) for that property. If any of them can hold the value the row is a route gap, reason `canvas-settable`, citing the block and attribute that can hold it. The route never decides which sibling *should* hold a value: a `canvas-settable` row is handed to a human with its citation (§3.8). |
 
 ## 2. Inputs and outputs
 
@@ -71,7 +72,8 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 - **Surface manifest:** `sites/<client>/build/surfaces.json`, one entry per surface:
   `{ "<surface>": { "tree": "footer.tree.json", "envFile": ".claude/secrets/<site>.env", "envKey": "<KEY>", "target": { "postId": 182 } | { "templatePart": "<slug>" }, "walker": "qa/parity/footer.mjs", "draftUrl": "<url>" } }`.
   Solve and Fill take `--client <slug> --surface <name>` and read only this. An entry also names its walker states'
-  setting states (`states`), optionally the states to walk (`walkStates`), and the linked blocks and template parts
+  setting states (`states`), optionally the states to walk (`walkStates`), whether the surface is an author-composed
+  canvas (`canvas: true`, §3.8), and the linked blocks and template parts
   whose post it is (`provides`, `"<block>:<value>"`, e.g. `"sgs/form:contact"`, `"core/template-part:header"`).
 - **Reference blocks.** Some blocks print another post (`lib/references.mjs`, found from each block's render.php):
   a linked placeholder (`formIsLinked`, `flowIsLinked`) ignores its own settings and renders the referenced post's
@@ -414,7 +416,33 @@ separately from parity rows:
 - the lens pop-up's skip-to-bag.
 
 **Done when:** each flow passes on eye-care-test after its register fix, and fails against the bug it was written for
-(the register's N11 and N25).
+(the register's N11 and N25). Every row measured in a state no setting state maps to is reported in that surface's UNMAPPED
+list with the state named, never classed as a gap.
+
+### 3.8 Canvas awareness: `lib/resolve.mjs` and `lib/triage.mjs` (FR-47-8)
+
+A mega menu, a modal, a drawer and a choice flow are empty canvases held in their own post and composed by the
+author from whatever blocks suit. On such a surface, "the block this element belongs to declares no setting for this
+property" says nothing about whether the value can be set: the author is expected to reach for a block that can hold
+it. A route that asks the attributed block and nothing else reports a framework gap where the framework works as
+designed.
+
+- **The manifest marks a canvas.** `surfaces.json` carries `canvas: true` per surface (§2), derived from the surface's
+  post type, so a new canvas kind needs no code change.
+- **The resolver** (`lib/resolve.mjs`) hops to an ancestor block in the same canvas tree, and to a setting arriving by
+  block context (`providesContext` / `usesContext`), **ordered strictly after** a direct match and a calibration
+  `reaches` tie, so a row that resolves today keeps resolving. The hop may **explain** a row; it **writes** a parent
+  attribute only where that attribute's paint reaches exactly one measured descendant. Otherwise the write belongs on
+  the child (R-47-5).
+- **Triage** (`lib/triage.mjs`) refuses **F** when any block already in the canvas declares the property, and cites the
+  block and attribute. This is a classification, not a write path: the route cannot decide which sibling should own
+  the value.
+- **A `canvas-settable` row closes nothing by itself.** It is a claim with a citation, and the citation is tested on
+  the live site before the row is called resolved.
+
+**Done when:** a draft padding row on an `sgs/mega-group` inside a mega-menu canvas whose `sgs/mega-panel` ancestor
+declares a padding box family classes `canvas-settable` citing that ancestor's attribute, and the same row classes a
+framework gap with the rule disabled (the negative control).
 
 ## 4. Files
 
@@ -565,8 +593,15 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (77 still
        open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
        verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
-       one class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8) and wrote Session C's plan. Next:
-       Session C makes the framework fixes, on Bean's Gate B answer.
+       one class with proof (W 1,710, F 163, T 447, U 28, D 17, deferred 8).
+       **Gate B answered yes, and the remaining work is re-split (Bean, 2026-10-05).** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
+       is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
+       framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
+       So **Session C repairs the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
+       and records a new framework-gap count (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). **Session C2** then matches
+       each remaining row to a register item, fact-checks it, tests it live at four widths, and builds only what Bean approves
+       (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). The grouping G1 to G8 is rejected as a unit of work: groups are
+       filing labels for review only, and `SGS_Container_Wrapper` is never a blanket fix.
      - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
@@ -582,14 +617,18 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        business-info `textBefore` element remains.
      - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
        hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
-       child.
+       child. 38 rows came out Missing setting where the evidence says Hardcode. Session C lane L7 records the
+       overriding child.
      - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
        writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
        settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 600,
        `presence-boolean` 3, `content` 84, `text-content` 235; counted 2026-10-05). §3.2 scopes the text read to
        `role` `content` alone, which would miss the 235 `text-content` rows that hold most of this register's words
        (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`):
-       §6 carries the question. The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
+       §6 carries the question, with the recommendation to read both roles. §3.3's `handover` owners are
+       `site-info`, `product-data`, `content-page` and `behaviour`; a fifth, `woocommerce-text`, is used by one
+       register item below and is recommended as an owner in its own right. Session C lanes L7 and L8 build all
+       of this. The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
        text and presence rows reach no register check until it carries them.
      - Residual from the measure-gap tags (Session B, 2026-10-05; the table is Appendix A of
        `plans/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
@@ -597,17 +636,23 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        §3.2/§3.3's unbuilt presence, text and link reads block it: S7, 9, N16b, N27, N30, N31, N33B, 159), **17 `pairing`**
        (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (an unbuilt walker read: focus and
        active states, script-driven entrance motion, link coverage; 13 of these have no setting at all and carry
-       "no setting exists; framework gap" in their reason, so they are Session C's, not content's), **15 `behaviour`**
+       "no setting exists; framework gap" in their reason, so they are Session C2's findings, not content's), **15 `behaviour`**
        (FR-47-7 flows), **6 `handover`** (`site-info` 2, `content-page` 2, `product-data` 1, `woocommerce-text` 1), and one
        each of `PA-1` (N7), `PA-3` (103, measured by the hand pair `choose-a-frame` and refused only by the A4 validator)
        and `PA-5` (157). 37 of the 78 can be held by no block setting. One item (N24) belongs to the parallel
        google-reviews session.
-     - The functional flows (FR-47-7) and the walker's items 2, 4, 5 and focus and active states (FR-47-6): not started;
+     - The functional flows (FR-47-7, Session C lane L3, which also maps the form-flow and filter
+       states the 323 unmapped-state rows wait on) and the walker's items 2, 4, 5 and focus and active states
+       (FR-47-6, lane L2): not started;
        items 1 and 3's hover, plus items 10 to 13, are built and proven (2026-10-05: About measure-only on the local mirror,
        1 open issue, real: S1's button timing; register S1). Contact and its form walk
        only their rest state until FR-47-7 maps the form-flow states.
-4. **Fill on an unbuilt surface,** compared with a hand-checked answer.
-5. **A second draft** from a different designer, to test generality.
+4. **Fill on an unbuilt surface,** compared with a hand-checked answer. All 17 Eye Care surfaces are built, so
+   Session C lane L9 proves `fill.mjs` and `lib/draft.mjs` against a built surface with its committed tree
+   withheld as the hand-checked answer. The unbuilt-surface demonstration carries forward to the first client
+   that has one.
+5. **A second draft** from a different designer, to test generality. **Blocked: no second draft exists.** This is
+   the only item in this spec Session C does not build, and no route work unblocks it.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed
    once script-rendered drafts route here. This route never edits it.
 
@@ -616,5 +661,6 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 | Question | Who | When |
 |---|---|---|
 | Does `wp-build-page.js` support building into a dedicated `sgs_header`, `sgs_footer` or `sgs_drawer` calibration post with `--post-id` as it does for pages? | Answered 2026-10-03: yes. `--post-id` opens `post.php?post=<id>&action=edit` for any post type (footer 182 is rebuilt that way). The footer's blocks need no dedicated post: `sgs/site-footer` has no `parent` lock, so it and its rows calibrate on the calibration page. | Closed |
-| Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? Found in Session B (2026-10-05): most of the Eye Care register's words live in `text-content` (`sgs/product-card::noReviewsText`, `sgs/buybox::stockInStockLabel`), so the read as specified would leave register items S7, N27, N31, 91 and N28 unreachable. Reading both roles is the obvious answer; it is recorded rather than applied because it widens FR-47-2's scope. | Bean | before FR-47-2's presence and text reads are built |
+| Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? Found in Session B (2026-10-05): most of the Eye Care register's words live in `text-content` (`sgs/product-card::noReviewsText`, `sgs/buybox::stockInStockLabel`), so the read as specified would leave register items S7, N27, N31, 91 and N28 unreachable. **Recommendation: read both** (319 settings instead of 84). The cost is calibration time, which is already chunked and cached; the benefit is that the feature does the job it was specified for. Recorded rather than applied because it widens FR-47-2's scope. | Bean | before Session C lane L7 builds the text read; Session C Waves 0 and 1 do not depend on it |
+| Which surfaces are canvases, for FR-47-8's `canvas: true` flag? Proposed: every mega menu, modal, drawer and choice flow, because each is its own post composed from arbitrary blocks. A page is not a canvas even though it is also composed from blocks, because its blocks are the route's own output rather than an author's composition. | Bean | with the FR-47-8 answer, before Session C lane L1.4 |
 | Which noindex mechanism does each site already have for the calibration page? | Answered 2026-10-03: none per page (the plugin noindexes only WooCommerce utility pages). The calibration page is built private instead (§3.2). | Closed |

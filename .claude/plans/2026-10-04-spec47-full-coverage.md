@@ -88,7 +88,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
      it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
      draft's); left: a Solve run on Contact to write the hours row gap setting. Session B's triage (2026-10-05)
      found the row gap is a confirmed framework gap: `sgs/business-info` has no gap control for the hours row, so it
-     is in Session C's group G1 (`hoursRowGap`, css_element `hours-row`).
+     is in a Session C2 finding (the old group label G1) (`hoursRowGap`, css_element `hours-row`).
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
      lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
      (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; left: a Solve run on Contact. Session B's triage

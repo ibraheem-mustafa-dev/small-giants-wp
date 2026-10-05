@@ -1,0 +1,462 @@
+---
+title: "Eye Care Session C2: assess every finding against the fix register, then fix what Bean approves"
+project: small-giants-wp
+created: 2026-10-05
+status: not started; blocked on Session C
+governs: the assessment and framework-fix stage after Session C
+references:
+  - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
+  - .claude/plans/2026-10-02-eye-care-fix-register.md
+  - .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
+  - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
+  - .claude/reports/2026-10-05-session-b/b2/
+---
+
+# Eye Care Session C2: assess every finding, then fix what Bean approves
+
+**Goal:** every walker finding on the post-Session-C sweep is matched to the fix register where one fits,
+fact-checked against how the framework really works, and live-tested; Bean approves or rejects each one; and only
+the approved items become framework fixes.
+
+**Status: not started. Blocked on Session C** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`), which
+repairs the measuring route first. **This session runs on the post-C sweep, never on Session B's 163 rows.**
+
+## The rule this session exists to enforce
+
+**The fix register is the source of truth.** `.claude/plans/2026-10-02-eye-care-fix-register.md` holds the issues
+Bean decided and the fixes Bean agreed. A walker finding is a *measurement*, and a measurement never creates a new
+fix. Where a finding matches a register item, **the register's fix stands** and the finding is at most a detail of
+it. Where a finding matches nothing, it is accepted as-is unless a live test shows it visibly wrong.
+
+Do not edit the register's content. It is correct.
+
+## Why the old plan's grouping is gone
+
+The first Session C plan grouped the findings as G1 to G8 and treated each group as a unit of work. Bean rejected
+that, and the evidence backs it:
+
+- `SGS_Container_Wrapper` must not be applied as a blanket fix: it brings far more than a layout panel, and only
+  **5 of G2's 25 rows** actually name it. 6 more want a single alignment member on one inner element; the other
+  **14 are a changed default or a one-line opt-in with no wrapper at all**.
+- "the framework's only hover-decoration control" was false. `sgs/button::textDecorationHover` and
+  `sgs/nav-drawer-menu` exist; the animated underline exists as `.sgs-hover-underline-slide` and `-fade` in the
+  theme's `utilities.css` and `.sgs-underline-slide` in the plugin's `extensions.css`. Register items **S2 and
+  S12 already decide link behaviour**.
+- G1's 72 rows are 17 items of four different kinds (6 missing box families, 6 hardcoded gaps, 3 hardcoded margins,
+  2 wrappers with no margin family), 16 of them the contested mega-menu rows. **Only 2 of G6's 8 rows are a
+  control.** G3 mixes typed-in timings with a hardcoded hover scale.
+
+So the groups survive only as **filing labels for review**, never as a unit of dispatch or a single fix shape.
+The unit of work is **one item, one owner block**.
+
+## Scope
+
+**In scope:** every row on the post-C sweep that is not already closed, decided or owned elsewhere; every register
+item marked "still open" or "partly measured"; and the framework fixes for whatever Bean approves.
+
+**Out of scope, with where each lives instead:**
+
+| Left out | Where it goes |
+|---|---|
+| Any Spec 47 route or logic work | Session C |
+| The 447 **T** rows and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
+| `sgs/google-reviews`: its F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track. Its colours and sizes follow Google's UI (40px pills and arrows), an **accepted difference** from the theme and the 44px target (Bean, 2026-10-05): never flag them as gaps |
+| Writing page-tree or Site Info values | Session D |
+
+## Step 1: MATCH every remaining row to a register Ref
+
+**Start from the matching already done in the Gate B doc** (https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f,
+tab "Tool rows (not reconciled)", section "Matched to the confirmed register"; its other tab, "Fix register
+(confirmed)", is the register itself). It splits Session B's 163 rows three ways. **Correct it against the post-C sweep and show
+what changed**, row by row, with a reason per change.
+
+The starting state, to be corrected rather than trusted:
+
+### A. Already in the register (32 rows). The register's fix stands
+
+| Register Ref | Tool rows | What the tool saw | Does the tool's fix agree? |
+|---|---|---|---|
+| 39-43 social icons | 3.1 (6 rows) | icons scale up on hover | yes: no scale-up |
+| 39-43 social icons | 5.2 (3 rows) | no hover ring | yes: a 1px ring in the network's colour |
+| 39-43 social icons | 6.1 (3 rows) | 44px not 40px | yes: stays 44px, recorded as decided |
+| 39-43 social icons | 4.1 (12 rows) | border shows the brand colour, not the light border | **different route.** Register: a glyph-only brand variant, box stays white with a light border. Tool: patch brand mode per property. **Use the register's** |
+| 94 gallery photo hover | 3.8 (1), 5.3 (2) | no zoom, no brighten | zoom yes; brighten: the tool wants new filter settings, the register says join the shared hover zoom. **Use the register's**, and check brighten is covered |
+| 77 chosen colour frame | 5.1 (5 rows) | option tile has no border width | partly: the register adds a selected-tile width, the tool wants width and style at rest too |
+
+### B. Under a register item, but a detail it never mentions (42 rows)
+
+**Default: no extra work.** Each is judged when that register item's own fix is done and the result is looked at.
+
+| Register Ref | Tool rows | The detail the tool flagged |
+|---|---|---|
+| S5 accordions | 1.4 (6), 2.8 (2), 6.2 (2) | FAQ header gap, header alignment, header height 56 against 44 |
+| N45, N45b contact form | 1.7 (1), 2.1 (4), 3.2 (5) | label-to-input gap, input display, input 0.2s transition |
+| 39-43 social icons | 1.5 (12), 2.9 (2) | icon box padding, row alignment and wrap |
+| 38 hours | 1.6 (3) | the gap inside the hours row |
+| 48 space above the footer | 4.2 (1) | footer top margin not painting at desktop |
+| N20 shapes section width | 4.3 (2) | content band side margins at 1920 |
+| 68 colour tiles | 1.17 (1) | option chip bottom margin |
+| 73 main photo fade | 3.7 (1) | gallery fade timing |
+
+### C. Not in the register at all (89 rows)
+
+**Default: accepted, no work, unless a live test shows it visibly wrong.** Bean has already said the lens flow
+looks right and has challenged the mega-menu rows.
+
+| Screen | Tool rows | Rows | What they are |
+|---|---|---|---|
+| Lens pop-up | 1.2, 1.3, 1.10 to 1.14, 2.3, 2.4, 2.14, 3.6, 5.4, 5.5 | 35 | small gaps, margins, a border and one extra shadow transition inside the flow. The register's lens items (96, N37, N38) are about behaviour, not these |
+| Mega menus | 1.1, 3.3, 1.9, 2.6 | 22 | group padding and transition (**contested: CPT canvas**), brand grid margin, brand tile stacking |
+| Product page | 1.15, 1.16, 2.10, 2.13, 7.2, 7.3, 8.2 | 12 | add-to-bag padding, gap and line height, option row alignment and ground, tab hover underline |
+| Home | 1.8, 2.2, 2.12, 3.5, 8.1 | 9 | glyph margin, step title growth, logo strip alignment, image transition, dark mat behind a photo |
+| Shop | 7.1, 6.3, 6.4 | 5 | product title hover underline (also on Home), two WooCommerce width rows |
+| Header and footer | 2.5, 2.7, 2.11 | 3 | three alignment details |
+| Google reviews | 3.4 | 3 | the other session's |
+
+**Done when:** every post-C row carries either a register Ref or an explicit "not in the register", and every
+change against the table above is listed with its reason.
+
+**Expect the C table to shrink a lot.** Session C's canvas-awareness rule (FR-47-8) targets exactly the mega-menu
+22 and much of the lens-pop-up 35, and its walker guards retire the two WooCommerce width rows. A row Session C
+reclassified to **W** / `canvas-settable` carries a cited block and attribute: step 2 tests that citation rather
+than taking it.
+
+## Step 2: FACT-CHECK every row before it counts
+
+A row counts only once it has survived a check against how the framework really works. Each row gets one verdict,
+with a cited `file::symbol` or a tree node:
+
+| Verdict | Means |
+|---|---|
+| **real** | no setting on the block, its canvas, its ancestors by context, its extensions or the utilities can produce the draft value; or a hardcode beats one that can |
+| **not a gap (already settable)** | a setting exists and can hold it. Name the block, the attribute and where it already works |
+| **wrong block** | the value belongs on a different block (usually a parent that emits the custom property the child consumes) |
+| **measuring artefact** | the walker or the route produced it, not the site |
+| **decided** | Bean already decided this difference. Name the register item |
+
+**What must be checked, every time:**
+
+1. **Canvas surfaces.** mega menu, modal, drawer, choice flow: a block already in the canvas, or one the author
+   would add, may hold the value. Session C's FR-47-8 marks these; verify the citation.
+2. **Parent settings by block context.** `providesContext` / `usesContext`. `accordion-item/render.php` reads
+   `$block->context['sgs/accordionHeaderPadding']`; `sgs/container` carries 13 typography attributes that inherit
+   into every descendant declaring none.
+3. **Existing controls and utilities**, including the ones the Gate B doc got wrong:
+   `sgs/button::textDecorationHover`, `sgs/nav-drawer-menu`, `.sgs-hover-underline-slide`, `-fade`,
+   `.sgs-underline-slide`, `sgs/button::minHeight`, `sgs/nav-drawer::chromeRowHeight`,
+   `sgs/card-grid::imageFallbackColour`, `includes/helpers-shadow-hover.php`, `includes/helpers-border-style.php`,
+   `includes/image-controls.php`, `includes/helpers-box.php::sgs_label_box_css_rule`.
+4. **Decided register items**, which are not gaps: 39-43, S1, S2, S5, S12, N45, N45b, 77, 94, 68, 73, 38, 48, N20,
+   and every item in the register's "Decisions" section.
+5. **The four known edit-target shifts**, where the fix edits a different block from the one the row is filed
+   under:
+
+| Rows filed under | The fix actually edits | Why |
+|---|---|---|
+| `sgs/accordion-item` gap, justify-content | **`sgs/accordion`** | `headerGap` goes on the parent, emitted as `--sgs-accordion-header-gap` beside the existing header-padding tiers |
+| `sgs/buybox` border, margin, layout on the picker | **`sgs/option-picker`** | the pill is option-picker's own element; buybox only embeds it (`buybox/block.json::supports.sgs.elements.wrapper._note`) |
+| `sgs/mega-group` padding, transition | **`sgs/mega-panel`** | `mega-group/block.json` states it carries no styling attributes by design (parent-paints-child); the duration pair sits beside `mega-panel::panelCardLift` |
+| `sgs/form-field-textarea` label gap | **`sgs/form`** | `fieldLabelGap` belongs to the Field style group on the parent |
+
+**The citation gate.** Every verdict names an exact DB row (with its values) or a `file::symbol`, and quotes it.
+A verdict with neither is rejected and re-run. This is the gate that cut Session B's candidate gaps from 338 to
+163, and it is why the surviving ones are worth Bean's time.
+
+**Dispatch:** parallel read-only Opus agents, grouped by **mechanism** for review value, under the merge gate
+`lib/register-sweep.mjs::checkStatuses`. The main thread re-checks **every** `real` verdict and a sample of the
+others. One shared brief, as in Session B (`.claude/reports/2026-10-05-session-b/b2/BRIEF.md` is the template).
+
+## Step 3: LIVE TEST with Playwright
+
+At **375, 768, 1440 and 1920**, with a screenshot and computed values as the evidence for every claim. One headed
+Chrome, one host job at a time.
+
+**3a. Every row that matches no register Ref.** Two questions: is it **visibly wrong** on the live site, and can an
+**existing setting in the tree** fix it? A row that is not visibly wrong is accepted and closed with that evidence.
+A row an existing setting fixes is Session D's tree work, not a framework fix.
+
+**3b. Every register item marked "still open" or "partly measured" that the walker findings do NOT cover.** Is it
+actually resolved live, or is it open and the route failed to see it? **Each one the route missed is a Spec 47
+gap**, and it is listed against the spec section that should have caught it:
+
+| If the route missed it because | List it against |
+|---|---|
+| the element was never paired | §3.3 pairing; `lib/pairs.mjs` |
+| the state was never walked | FR-47-7 (flows), or FR-47-6 items 2 to 5 (focus, active, 1920, line counts) |
+| the words or presence were never read | FR-47-2's presence, text and link reads |
+| the row kind never reached a register check | §5 R6a, `lib/sweep.mjs` |
+| the gap was typed wrongly | §5 R5, gap typing |
+| a canvas or parent setting was not checked | FR-47-8, canvas awareness |
+
+Session C builds all six of those. A miss that survives Session C is a **new** Spec 47 gap and goes into §5
+Residual with its section, not into this session's fix list.
+
+**Measurement discipline** (from `live-probe-measurement-traps` and `compare-draft-vs-live-at-all-three-device-widths`):
+read computed styles with the winning rule's origin, not just the value; let transitions settle; account for Lenis
+and scroll variables; never reason from a screenshot alone, and never from one width.
+
+## Step 4: one list to Bean, then only the approved fixes
+
+**Only after steps 1 to 3.** Bean gets one list, one line per item: what it is in plain English, which register Ref
+it sits under (or none), the verdict with its citation, whether it is visibly wrong live, the proposed fix, and the
+effort. **Yes or no per item.** Nothing is built before that.
+
+Then, for approved items only, the framework fixes, which are what the old plan called W1 and W2. Their gates are
+**Gate W1**, **Gate W2** and **Gate TAIL** below; the three assessment gates are **C2-1**, **C2-2** and
+**C2-3**. The old plan called the fix-stage gates C1, C2 and C3; they are renamed because "Gate C2" inside Session
+C2 reads as a gate on the whole session.
+
+### W1: the shared files, main thread, one at a time
+
+Each with a cross-client check, because these reach clients that are not Eye Care:
+
+| Shared file | Blocks affected |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` | all five `form-field-*` blocks |
+| `theme/sgs-theme/assets/css/woocommerce.css` | `woocommerce/catalog-sorting`, `woocommerce/product-template` (Spec 47 §2: WooCommerce blocks hold no SGS setting, so this is the only channel) |
+| `plugins/sgs-blocks/includes/image-controls.php` | `sgs/buybox`'s gallery filter |
+| `plugins/sgs-blocks/assets/css/media-element.css::.sgs-media-el` | every image in the framework carries this class |
+
+**`choice-flow/style.css` also declares `.sgs-form-field__input`.** Read both files together and state the cascade
+before either lands, or a `form/style.css` default is silently overridden on the choice-flow surfaces.
+
+### W2: one owner per block, in parallel
+
+**The parallel axis is the block, not the mechanism group.** Measured on Session B's catalogue, every group shared
+at least one block with another and two blocks were hubs (`sgs/social-icons` in six groups, `sgs/buybox` in six).
+Group-per-agent would have put six concurrent editors on one `block.json`. **A queue owns every block its fixes
+edit, not only the block the row is filed under** (see the four shifts in step 2).
+
+One `wp-sgs-developer` agent per queue, `isolation: "worktree"`, phase 1 read-only diagnosis, main-thread check,
+phase 2 implementation. **No build, commit, deploy or reseed inside an agent.**
+
+**Rebuild the queues from the approved list**, not from Session B's. Session B's partition is the starting shape
+and its collision checker still applies:
+`node .claude/reports/2026-10-05-session-b/check-queue-collisions.mjs` (exits 1 on a collision or an unowned edit
+target). Re-run it before dispatch and after any agent changes its chosen fix shape, because several shapes offer a
+choice of target block and the choice decides the collision set.
+
+**Tie-break when a fix shape offers a choice:** take the shape that keeps the edit inside the queue's own blocks;
+if both do, the one whose precedent block is closest in kind; if still tied, the one that adds the control where a
+client would look for it. Record the choice in the phase-1 deliverable.
+
+### What each W2 agent delivers in phase 1, before writing anything
+
+Per row it will fix:
+
+1. The **attribute name** and its **type** (`string` for a single CSS length, `object` for a box or a per-device
+   tier set). The precedents differ — `mega-panel::drawerCardPadding` is a string,
+   `google-reviews::headerGap` an object, `icon-list::itemPaddingBlock` a string — so the type is chosen and
+   stated, never assumed.
+2. Whether it is **responsive** (a per-device tier object plus `ResponsiveOverride`, or a flat value).
+3. Its **default**, and what that default changes for existing instances on other clients.
+4. **Where the declaration goes**: `block.json` `attributes`, a `supports.sgs.boxFamilies` entry, or
+   `supports.sgs.elements.<el>.attrMap` — and the `css_element` it routes to.
+5. The **editor side**: the control component (`SgsBoxControl`, `SgsLengthControl`, `ResponsiveOverride`), the
+   translated label (`__()` with the `sgs-blocks` text domain), and the editor preview path if the block has one.
+   `social-icons/edit.js` already imports `tierBoxShorthand` and `usePreviewTier`, so its canvas preview is a
+   separate code path that must be updated too, or the control works on the front end and not in the editor.
+6. Whether `plugins/sgs-blocks/scripts/add-control.js` scaffolds this shape (it covers shadow and typography, not
+   box) or it is hand-written across `block.json`, `edit.js` and `render.php` — the three hand-kept copies that
+   script exists to stop drifting.
+7. The **chosen fix shape** where the verdict offered a choice, with the tie-break reason.
+
+**File-size rule.** `social-icons/edit.js` is 786 lines and `render.php` 673, already past the 400 and 500
+guidelines. Its queue extracts new inspector panels into a sibling module and new CSS emission into a helper under
+`includes/`, rather than growing either file. One responsibility per file is the rule; the line count is the
+signal it has been broken.
+
+**No deprecations.** `.claude/rules/block-authoring.md` is explicit: no `deprecated.js`, none wired into
+`registerBlockType`, no version bumps pre-production. Several candidate blocks (`accordion-item`, `tabs`, `buybox`,
+`mega-group`, `choice-flow`) have a `save.js` returning `InnerBlocks.Content`, so adding an attribute does not
+change saved markup at all and only `render.php` changes. Adding an attribute is safe; do not write a deprecation
+for it.
+
+**Changed defaults are not a risk worth mitigating.** The framework is pre-production with no content to protect,
+so a default is chosen on merit and recorded in the commit, not patched around.
+
+## Known candidates to settle in step 3
+
+These were medium or low confidence in Session B, and each cheap check comes **before** its fix. Session C may
+retire some of them outright.
+
+| Candidate | Confidence | What settles it |
+|---|---|---|
+| `sgs/choice-flow` `border-radius` | medium | read which live node `cr-ref-lens-0` path `""` resolves to: `.sgs-choice-flow`, or a focused inner control with its own 4px radius |
+| `sgs/buybox` option `margin-bottom` | medium | a live computed-style read with the winning rule's origin on the product page |
+| `sgs/choice-flow-question` option-button `align-items` | medium | re-measure at the exact path; the 0-row DB query carries the verdict alone |
+| `sgs/brand-strip` `__track > __set` `align-items` | medium | the open diff sits at the parent path; confirm it is its own combo, not a knock-on |
+| `sgs/choice-flow` `__summary-summary` `justify-content` | **low** | no open diff at that exact path in the walk; re-measure before touching it, and drop it if it does not reproduce |
+| `woocommerce/product-template` `max-width` ×2 | medium | Session C's L2.7 guard (dropping rows from unmatched refs) is expected to retire both. Confirm after the post-C sweep |
+| `sgs/site-footer-row` per-device `gap` and `contentWidth` at 768 | unproven | Session C's L5.5 proves or refutes it read-only; if real it arrives here as a finding |
+
+## Two items held for their own session
+
+Neither is dropped. Each names what releases it.
+
+| Held | Why | Released by |
+|---|---|---|
+| **The three `!important` spacing rows** (`sgs/container::margin-left`/`-right`, `sgs/site-footer::margin-top`) | the proposed fix changes a spacing rule across every `SGS_Container_Wrapper` block and every client. `sgs/container` occurs **5,022 times in Eye Care's trees alone** and is live on other clients. The cause is **not proven**: the winning rule may be core's constrained-layout `margin-left: auto !important`, in which case the fix is to stop that class reaching the SGS band, a far smaller scoped change. An Eye-Care-scoped sweep could not detect the damage | **one live read on a non-Eye-Care client** of `.sgs-container__inner` `margin-left`/`-right` at 768 and 1440, with the winning rule's origin. About 5 minutes, one host job. Run it in step 3 |
+| **`sgs/social-icons`'s `iconBorderColour` with no border width or style** | a colour control that can never paint. Adjacent to the border rows, but it is a defect in its own right, not a finding | fix it in the same pass as whatever border row Bean approves. **Decide the width default deliberately**: `1px` changes every existing outlined icon on every client |
+
+## One cheap win just outside the findings
+
+`theme/sgs-theme/assets/css/core-blocks-critical.css` declares
+`h1, h2, h3, h4, h5, h6, .wp-block-heading { text-wrap: balance }` with no `:where()`, framework-wide for every
+client, with nothing allowing a block to override it. **The comment directly above that rule records that a
+framework-wide heading `letter-spacing: -0.01em` default was removed for exactly this reason** — it "tightened
+EVERY client's headings and made clones drift from their reference sites". The same argument applies. Removing it,
+or wrapping it in `:where()`, is one line, and one finding (`core/query-title` text-wrap) depends on it. Put it on
+Bean's step-4 list as a one-line item.
+
+## Gates
+
+```
+GATE C2-1: the matching and the fact-check are sound
+AFTER: steps 1 and 2
+PASS: every post-C row carries a register Ref or an explicit "not in the register";
+      every change against the Gate B doc's A/B/C tables is listed with its reason;
+      every verdict cites an exact DB row with its values, or a file::symbol, and quotes it;
+      the main thread has re-checked EVERY "real" verdict and a sample of the others;
+      no verdict rests on a group label
+FAIL: a verdict cites neither a DB row nor a file::symbol
+TYPE: auto-gate (the merge gate), then a main-thread re-check
+```
+
+```
+GATE C2-2: the live evidence is real
+AFTER: step 3
+PASS: every 3a row has a screenshot and computed values at 375, 768, 1440 and 1920, with the winning rule's
+      origin recorded;
+      every 3b register item has a live verdict: resolved, or open with the Spec 47 section that should have
+      caught it;
+      the non-Eye-Care read on .sgs-container__inner is done and the three !important rows are decided
+FAIL: a claim rests on one width, or on a screenshot with no computed value
+TYPE: review-gate (Bean sees the before and after)
+```
+
+```
+GATE C2-3: Bean's list
+AFTER: step 3, before any code
+PASS: one line per item, in plain English, with its Ref, verdict, live result, proposed fix and effort;
+      Bean has answered yes or no on each
+FAIL: anything is built before the answer
+TYPE: go/no-go (Bean)
+```
+
+```
+GATE W1: the shared files are safe for other clients
+AFTER: W1
+PASS: for each shared file, sandybrown's motion-QA fixture pages (2103, 2109, 2113, 2603, 2740, 3037) show no
+      computed-style change at 375/768/1440 against a before-capture, or the rule is scoped so it cannot reach a
+      non-Eye-Care client;
+      python plugins/sgs-blocks/scripts/run-gates.py --tier full passes;
+      the form/style.css and choice-flow/style.css cascade on .sgs-form-field__input is read together and stated
+FAIL: a change alters a non-Eye-Care client's paint. Scope it per block instead
+TYPE: review-gate (Bean sees the before and after)
+```
+
+```
+GATE W2: every block's controls work on both surfaces
+AFTER: W2, before the deploy
+PASS: each new setting appears in the block inspector AND paints on the front end, checked separately on the real
+      editor and the real front end (a green build proves neither);
+      node plugins/sgs-blocks/scripts/check-editor-render-parity.js passes;
+      node plugins/sgs-blocks/scripts/check-dead-controls.js passes;
+      node plugins/sgs-blocks/scripts/check-element-manifest-conformance.js passes;
+      python plugins/sgs-blocks/scripts/check-box-family-guard.py passes;
+      node plugins/sgs-blocks/scripts/audit-inline-styling.js --check exits 0 (Spec 32);
+      python scripts/check-no-client-names.py --check passes;
+      every diff read in the main thread
+FAIL: a control exists but does not paint, or paints only in the editor preview, or only on the front end
+TYPE: review-gate
+```
+
+```
+GATE TAIL: the rows actually closed
+AFTER: the serial tail (merge, build, gates, one reseed, deploy, recalibrate, measure-only sweep)
+PASS: the approved rows are closed on a fresh measure-only sweep, run with the SAME command, flags and surface
+      list as the post-C baseline, from clean HEAD, with the surfaces measured stated beside the result;
+      new rows are capped, not forbidden: at most 1 new row per 10 closed, EVERY new row classed with its proof
+      in the same commit, and none left unexplained;
+      NO divergences.json entry was added to close a row;
+      every touched block recalibrates with no new dead or noMarker outcome for the settings added;
+      each row closed because its new attribute is present and painting, not because a reclassification moved it
+SCOPE, stated honestly: this gate measures Eye Care's 17 surfaces only. Other clients are covered by C1's
+      before-and-after on sandybrown's fixture pages and by run-gates.py, not by a re-sweep. A shared-file
+      regression on a third client would not be caught here, which is why C1 gates W1 separately
+FAIL: revert the failing QUEUE's merge (the revert unit is the queue, not the group) and re-sweep
+TYPE: auto-gate
+```
+
+**Why "0 new rows" is a cap and not a zero.** The original condition was unreachable and gameable. Unreachable
+because an empty-tier fall-through can genuinely open one row while closing another: a write to an inherited value
+changes every descendant that inherits it. Gameable three ways — register the new row as a divergence, leave the
+fix uncalibrated so the resolver reports `uncalibrated` instead of writing, or narrow the sweep's surface list. The
+cap, plus "every new row classed with proof in the same commit", plus the no-new-ledger-entries rule, plus the
+stated-scope rule, closes all four holes.
+
+**Partial failure.** If one queue fails **Gate W2**, the others merge and deploy without it; its items stay open
+on this plan with the queue named. The exception is W1: a shared file failing **Gate W1** blocks every queue whose
+rows depend on that file.
+
+## Guardrails that carry into the fix stage
+
+- **Never add a `divergences.json` entry to close a row.** After Session B's B4 the ledger is Solve's write target
+  (`judgeDivergence` sets `decided`, `draftValues` reads it), so a wrongly-added entry freezes a wrong value
+  permanently and turns no check red.
+- **Never route `css_property` onto a row whose `enum_values` is non-NULL.** 633 rows work through calibration
+  discovery precisely because that column is empty.
+- **Pair every new control family with its `style.css` or `render.php` reader in the same commit**, or the control
+  exists, paints nothing, and `check-dead-controls.js` goes red.
+- **Test the empty `{}` tier default per family.** An empty mobile tier inherits the nearest wider tier, so one
+  desktop write silently changes 375px. Sweep at all widths, never 1440 alone.
+- **Add the attribute and confirm `calibrate.mjs` plans a hover instance for it**, or a new hover attribute stays
+  `uncalibrated` and closes nothing.
+- **One reseed, main thread, from clean HEAD, after messaging peer sessions.** Queue agents never reseed.
+- **Never `--skip-oldshape-audit`, never `--allow-dirty`, never `--skip-verify`.** `build-deploy.py`'s oldshape
+  audit fails on the *deploy target's* stored content, so `eye-care-test` can pass while `sandybrown` fails: run
+  both.
+
+## Do not stage another session's work
+
+Two or more sessions share this worktree, so the commit discipline is part of the plan, not a detail.
+
+- **Commit straight to `main` with an explicit pathspec** (`git commit -- <paths>`), checking
+  `git branch --show-current` in the same command. **Never `git add -A`, never a glob, never `git stash`**: on a shared
+  worktree a stash sweeps another session's uncommitted files and a glob sweeps a half-done edit into your commit.
+- **Read `git diff --cached --name-only` before every commit.**
+- **Never stage** `.claude/reports/serverside-render-disabled-audit.*`,
+  `plugins/sgs-blocks/scripts/consistency/*.json`, `plugins/sgs-blocks/scripts/dbschema/seed-history.json`,
+  `plugins/sgs-blocks/.phpunit.cache/*`, `reports/phase4-*.txt`,
+  `.claude/reports/2026-10-04-route-data-audit/fingerprint/*.json`, any path containing `Bean Points` (Bean's
+  private notes), or another session's `plugins/sgs-blocks/tests/php/*` edits.
+- **Agents never commit at all.** The main thread commits each lane after reading its diff.
+- A gate bypass is allowed only for violations that are genuinely not this session's work, and it is disclosed in
+  the commit message as `[gates-ok:<reason>]`. **Never `--no-verify`.**
+
+## Effort
+
+Headline figures are the optimistic ones. Steps 1 to 3 are the session's real work; step 4's size is unknown until
+Bean has answered, because the approved list may be a fraction of the findings.
+
+| Unit | Headline | Band |
+|---|---|---|
+| Step 1 matching, corrected against the post-C sweep | 25 min | Block |
+| Step 2 fact-check, parallel Opus agents under the citation gate | 40 min | Session |
+| Step 2 main-thread re-check of every `real` verdict | 25 min | Block |
+| Step 3a live tests, 4 widths, one host job at a time | 45 min | Session |
+| Step 3b the register items the findings do not cover | 30 min | Block |
+| Step 4 Bean's list | 15 min | Quick |
+| W1 the shared files | 15 min | Quick |
+| W2 per approved item | **unknown until step 4** | — |
+| The serial tail (build, gates, reseed, deploy, recalibrate, sweep) | 60 min | Session |
+
+**Steps 1 to 4 are about 3 hours and produce no code.** That is the point: the old plan would have spent about four
+hours writing controls for findings nobody had checked, including 38 controls on one block.
+
+## First action (under 5 minutes, no dependencies)
+
+Read Session C's **C3.8 table** (the new F count and what moved, per lane) at the end of
+`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, and list every row that is still open after the
+repaired route measured it. That list, not Session B's 163, is this session's input.
