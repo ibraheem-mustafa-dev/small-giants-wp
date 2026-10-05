@@ -1,0 +1,23 @@
+[
+{"id":"CR1","status":"not walker-measurable","evidence":{"reason":"A finding about the calibration tooling (a per-device setting that skips the tablet width), marked 'to prove', with no page surface or sweep row."}},
+{"id":"CR2","status":"not walker-measurable","evidence":{"reason":"Scroll-triggered header behaviour (the is-header-scrolled script), which the walker's static painted-style measurement cannot see; still marked 'to prove'."}},
+{"id":"CR3","status":"not walker-measurable","evidence":{"reason":"A calibration finding about accordion settings, with recalibration still queued; it has no page surface or sweep row."}},
+{"id":"CR4","status":"not walker-measurable","evidence":{"reason":"Triage of dead settings in calibration, mostly states such as collapsed menus and closed drawers; still to prove and has no page surface."}},
+{"id":"CR5","status":"not walker-measurable","evidence":{"reason":"Calibration coverage gap (brand-strip timeout, shrunk and drawer states), recorded as open with no page surface."}},
+{"id":"CR6","status":"not walker-measurable","evidence":{"reason":"Behaviour of the PHP box-shorthand helper, proven by a one-off live read on About, with no sweep surface or row to confirm it."}},
+{"id":"CR7","status":"not walker-measurable","evidence":{"reason":"A route and calibration mapping bug; the register says accordion-item still reads dead, so it is not fully closed, and it has no sweep surface."}},
+{"id":"CR8","status":"closed earlier","evidence":{"reason":"The register records it fixed (7d465cff2) and proven on 2026-10-04 by calibration finding every instance (cache/decorative-image.json); the sweep has no rows to contradict it."}},
+{"id":"CR9","status":"not walker-measurable","evidence":{"reason":"Calibration finding that per-device settings skip one width on several blocks, marked 'to prove', with no page surface."}},
+{"id":"CR10","status":"not walker-measurable","evidence":{"reason":"A route-tooling gap (aspect-ratio not measured); the register lists open follow-ups (recalibration, live proof on Home), so it is not closed."}},
+{"id":"CR11","status":"not walker-measurable","evidence":{"reason":"A calibration-tooling fix with recalibration of the other blocks still open; it has no sweep surface."}},
+{"id":"CR12","status":"not walker-measurable","evidence":{"reason":"Behaviour and content: the dark-mode toggle returns early without a dark palette in any client snapshot; recorded open and not a painted-style difference."}},
+{"id":"CR13","status":"closed earlier","evidence":{"reason":"The register records the block.json example fixed (7d465cff2) and deployed to eye-care-test on 2026-10-04; the sweep has no rows against it."}},
+{"id":"CR14","status":"not walker-measurable","evidence":{"reason":"A Solve-tooling limitation recorded as only partly fixed (child media other than the icon still unmeasured), with no sweep surface."}},
+{"id":"CR15","status":"closed earlier","evidence":{"reason":"The guard fix is recorded as fixed (52874c825) with the Contact evidence; the sweep has no rows contradicting it, and the name-field drop at 375 is tracked separately under N45b."}},
+{"id":"CR16","status":"closed earlier","evidence":{"reason":"The register records it done on 2026-10-04 (ratio.mjs::sameTracks, normalise.mjs::tracksSetting); the sweep has no rows contradicting it."}},
+{"id":"CR17","status":"not walker-measurable","evidence":{"reason":"A calibration fixture gap; the register says the business-info recalibration timed out twice and is still to run."}},
+{"id":"CR18","status":"not walker-measurable","evidence":{"reason":"A pairing-coverage finding recorded as fixed only on About and Contact, with Lenses and the other surfaces still to re-pair, and no sweep surface for it."}},
+{"id":"CR19","status":"closed earlier","evidence":{"reason":"The register records it fixed (4606ba598) with a live check (About y-in-main 68 against 124); the sweep has no rows contradicting it."}},
+{"id":"CR20","status":"closed earlier","evidence":{"reason":"The register records it fixed (4606ba598) with a live check (About 56 rows to 0); the sweep has no rows contradicting it."}},
+{"id":"CR21","status":"closed earlier","evidence":{"reason":"The register records it fixed (0128554bb) with Contact evidence (four wrong padding writes reverted); the sweep has no rows contradicting it."}}
+]

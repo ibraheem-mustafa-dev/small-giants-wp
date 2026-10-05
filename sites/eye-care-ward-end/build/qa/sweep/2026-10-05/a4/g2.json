@@ -1,0 +1,19 @@
+[
+{"id":"25","status":"closed earlier","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-1","property":"padding-top"}},
+{"id":"26","status":"closed earlier","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-3","property":"line-height"}},
+{"id":"27","status":"closed earlier","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-4","property":"margin-top"}},
+{"id":"28","status":"closed earlier","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-5","property":"width"}},
+{"id":"29","status":"closed earlier","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-8","property":"font-size"}},
+{"id":"30","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-10","property":"font-size"}},
+{"id":"32, 33, 44","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-30","property":"color"}},
+{"id":"34, 35","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-24","property":"h"}},
+{"id":"36","status":"not walker-measurable","evidence":{"reason":"This is a Site Info content change (a line break stored in the address), which the walker's painted-style rows cannot judge."}},
+{"id":"37","status":"not walker-measurable","evidence":{"reason":"This is a new block setting and Site Info link target for the address, which is content and behaviour rather than painted style."}},
+{"id":"38","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-26","property":"font-weight"}},
+{"id":"45","status":"not walker-measurable","evidence":{"reason":"Creating the /privacy and /terms pages is content work, not painted style on the footer."}},
+{"id":"47","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-24","property":"text-inset-x"}},
+{"id":"48","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-0","property":"margin-top"}},
+{"id":"N46","status":"still open","evidence":{"report":"sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json","ref":"cr-ref-footer-1","property":"max-width"}},
+{"id":"N13","status":"not walker-measurable","evidence":{"reason":"The button stepping aside while the footer strip is on screen is scroll-triggered behaviour on a floating element the walker never measured."}},
+{"id":"49","status":"not walker-measurable","evidence":{"reason":"The floating WhatsApp button (cr-ref-footer-32) is not among the measured refs on any surface, and its collapsed state is interactive."}}
+]

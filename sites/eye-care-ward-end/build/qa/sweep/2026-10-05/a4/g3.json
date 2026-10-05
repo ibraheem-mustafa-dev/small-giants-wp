@@ -1,0 +1,178 @@
+[
+ {
+  "id": "50, 60",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-5",
+   "property": "hover-effects"
+  }
+ },
+ {
+  "id": "51",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-0",
+   "property": "transform"
+  }
+ },
+ {
+  "id": "52",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-8",
+   "property": "transform"
+  }
+ },
+ {
+  "id": "53",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-0",
+   "property": "transform"
+  }
+ },
+ {
+  "id": "54, 55",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "No measured ref or row in the home sweep can be tied to the WhatsApp button, so its colours are not confirmed either way."
+  }
+ },
+ {
+  "id": "57",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records it closed as a kept choice with no change to make, and no sweep row contradicts it."
+  }
+ },
+ {
+  "id": "58",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Entrance and load motion: the walker compares animation timings only where both sides use CSS keyframes (Track P), and SGS entrances are script-driven, so this timing is not compared.",
+   "rejudged": "main thread 2026-10-05: walker timings are compared only where both sides use CSS keyframes"
+  }
+ },
+ {
+  "id": "59",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Swatches becoming focusable buttons that change a card photo is click and keyboard behaviour."
+  }
+ },
+ {
+  "id": "N14",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-14",
+   "property": "hover-effects"
+  }
+ },
+ {
+  "id": "N15",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "background-color",
+   "rejudged": "main thread 2026-10-05: hover is forced on every pair (devtools.mjs::forcedHover)"
+  }
+ },
+ {
+  "id": "N16a",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "hover-effects"
+  }
+ },
+ {
+  "id": "N16b",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Whether Best sellers is a live WooCommerce collection or hand-picked cards is content and data source, not painted style."
+  }
+ },
+ {
+  "id": "N17a",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "transform"
+  }
+ },
+ {
+  "id": "N17b",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-4",
+   "property": "align-items"
+  }
+ },
+ {
+  "id": "N18",
+  "status": "closed earlier",
+  "evidence": {
+   "reason": "The register records the decision to keep the live overlay as closed, and no sweep row contradicts it."
+  }
+ },
+ {
+  "id": "N19",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-14",
+   "property": "hover-effects"
+  }
+ },
+ {
+  "id": "N20",
+  "status": "partly measured",
+  "evidence": {
+   "reason": "Painted-ground rows exist on several home containers (cr-ref-home-30, 47, 35) but none can be tied with certainty to the shapes section's own ground."
+  }
+ },
+ {
+  "id": "N21",
+  "status": "still open",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-53",
+   "property": "painted-ground"
+  }
+ },
+ {
+  "id": "N22",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-53",
+   "property": "border-color"
+  }
+ },
+ {
+  "id": "N23",
+  "status": "clean on the walker",
+  "evidence": {
+   "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-05T10-15-15/solve-report.json",
+   "ref": "cr-ref-home-58",
+   "property": "background-color",
+   "rejudged": "main thread 2026-10-05: hover is forced on every pair (devtools.mjs::forcedHover)"
+  }
+ },
+ {
+  "id": "N24",
+  "status": "not walker-measurable",
+  "evidence": {
+   "reason": "Whether the Google logo links to the review is link behaviour and content, not painted style."
+  }
+ }
+]
