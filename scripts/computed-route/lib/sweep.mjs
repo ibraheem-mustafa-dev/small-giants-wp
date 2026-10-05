@@ -49,6 +49,8 @@ export function issueRows( report, surface, reportPath ) {
 			row: {
 				surface,
 				ref: group[ 0 ].ref ?? null,
+				// A block-less row (a hand pair measuring no block) is named by its pair.
+				pair: group[ 0 ].ref ? null : group[ 0 ].pair ?? null,
 				path: group[ 0 ].path ?? null,
 				block: group.find( ( x ) => x.block )?.block ?? null,
 				property: group[ 0 ].key,
@@ -57,6 +59,9 @@ export function issueRows( report, surface, reportPath ) {
 				kind: group[ 0 ].kind,
 				class: cls,
 				reason: group.find( ( x ) => x.reason )?.reason ?? null,
+				// What the row reads: each distinct draft and live pair over its widths and states (at most 6), so a verdict can
+				// quote the difference it relies on.
+				values: [ ...new Map( group.map( ( x ) => [ JSON.stringify( [ x.draft, x.live ] ), { draft: x.draft ?? null, live: x.live ?? null } ] ) ).values() ].slice( 0, 6 ),
 				report: reportPath,
 			},
 		};

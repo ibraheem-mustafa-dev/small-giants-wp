@@ -10,9 +10,9 @@ import { registerIds } from '../lint.mjs';
 export const STATUSES = [ 'still open', 'clean on the walker', 'not walker-measurable', 'closed earlier', 'partly measured' ];
 
 export const STATUS_RULES = [
-	'- still open: a sweep.json row on the item\'s surface touches the element and property the item names.',
-	'- clean on the walker: a paired ref covers the item\'s element and no row touches it. A site-wide item (S1 to S12) is clean only when every surface in its Covers column is clean; one unmeasured surface makes it partly measured.',
-	'- not walker-measurable: the item is behaviour, motion timing, keyboard, a11y, content or Site Info. The agent decides; the main thread checks 10% of them (at least 5), plus every item marked clean or closed earlier without a cited report path.',
+	'- still open: a sweep.json row on the item\'s surface touches the element and property the item names. The verdict cites that one row exactly (report, ref or pair, path, property), quotes one of its draft and live values, and says in evidence.element why that element is the one the item names. A row on a wrapper that merely contains the item\'s element does not count.',
+	'- clean on the walker: a paired ref covers the item\'s element and no row touches it; evidence.element says why that ref holds the item\'s element. A site-wide item (S1 to S12) is clean only when every surface in its Covers column is clean; one unmeasured surface makes it partly measured.',
+	'- not walker-measurable: the item is behaviour, entrance or load motion (the walker compares animation timings only where both sides use CSS keyframes; SGS entrances are script-driven), keyboard, focus, a11y, content or Site Info. Hover is walker-measurable: the walker forces :hover on every pair, so a hover item is still open or clean. The main thread checks 10% of these (at least 5), plus every item marked clean or closed earlier without a cited report path.',
 	'- closed earlier: the register already records it closed with evidence, and the sweep agrees. If the sweep disagrees, it is still open (a regression), flagged in the handoff.',
 	'- partly measured: only some of the surfaces the item touches have a sweep report.'
 ].join( '\n' );
@@ -117,10 +117,39 @@ export function verdictsFor( item, items, verdicts ) {
 export const measuredRefs = ( pairing ) => [ ...new Set( [ ...( pairing?.keptPairs || [] ).map( ( p ) => p.ref ), ...( pairing?.coveredByHand || [] ) ] ) ];
 
 const sweepReports = ( sweep ) => new Set( Object.values( sweep.surfaces || {} ).map( ( s ) => s.report ) );
+const same = ( a, b ) => JSON.stringify( a ?? null ) === JSON.stringify( b ?? null );
+const quotes = ( values, e ) => ( values || [] ).some( ( v ) => same( v.draft, e.draft ) && same( v.live, e.live ) );
+// The sentence tying the item's words to the cited element (a verdict without it is a guess).
+const ELEMENT_MIN = 20;
+
+// A still-open verdict's row: one sweep row matched exactly (report, ref or pair, path, property) whose values it quotes, or
+// an open diff of a walk report (evidence.walk: the walk's folder, with pair, property, draft and live). -> problem or null.
+function openRowProblem( key, e, rows, reports, walks ) {
+	if ( ! e.element || String( e.element ).length < ELEMENT_MIN ) {
+		return `${ key }: still open needs evidence.element, one sentence tying the item's words to the cited element`;
+	}
+	if ( e.walk ) {
+		const rep = walks?.[ e.walk ];
+		if ( ! rep ) {
+			return `${ key }: still open cites walk ${ e.walk }, whose report.json was not given`;
+		}
+		const hit = ( rep.runs || [] ).some( ( run ) => ( run.pairs?.[ e.pair ]?.diffs || [] ).some( ( d ) => 'accepted' !== d.status && d.key === e.property && same( d.draft, e.draft ) && same( d.live, e.live ) ) );
+		return hit ? null : `${ key }: still open cites ${ e.pair } ${ e.property } ${ JSON.stringify( e.draft ) } -> ${ JSON.stringify( e.live ) }, which is no open diff of walk ${ e.walk }`;
+	}
+	if ( ! reports.has( e.report ) ) {
+		return `${ key }: still open cites report ${ e.report }, which sweep.json does not hold`;
+	}
+	const hit = rows.find( ( r ) => r.report === e.report && r.property === e.property && ( r.path ?? '' ) === ( e.path ?? '' ) && ( r.ref ? r.ref === e.ref : !! e.pair && r.pair === e.pair ) );
+	if ( ! hit ) {
+		return `${ key }: still open cites ${ e.ref || e.pair } path "${ e.path ?? '' }" ${ e.property }, which is no row of ${ e.report }`;
+	}
+	return quotes( hit.values, e ) ? null : `${ key }: still open quotes ${ JSON.stringify( e.draft ) } -> ${ JSON.stringify( e.live ) }; the row reads ${ ( hit.values || [] ).map( ( v ) => `${ JSON.stringify( v.draft ) } -> ${ JSON.stringify( v.live ) }` ).join( ', ' ) }`;
+}
 
 // → problems (strings). Verdicts are [{ id, status, evidence }]; the item an id belongs to is the one holding it.
 // measured ({ surface: [refs] }, optional): a clean claim must cite a ref the item's surfaces measured.
-export function checkStatuses( items, verdicts, sweep, measured = null ) {
+// walks ({ folder: report.json }, optional): the walk reports still-open verdicts cite by evidence.walk.
+export function checkStatuses( items, verdicts, sweep, measured = null, walks = {} ) {
 	const problems = [];
 	const reports = sweepReports( sweep );
 	const rows = sweep.rows || [];
@@ -143,12 +172,24 @@ export function checkStatuses( items, verdicts, sweep, measured = null ) {
 			problems.push( `${ key }: status "${ status }" is not one of ${ STATUSES.join( ', ' ) }` );
 			continue;
 		}
-		if ( ! evidence || ! ( evidence.reason || evidence.report || evidence.ref ) ) {
+		if ( ! evidence || ! ( evidence.reason || evidence.report || evidence.ref || evidence.walk ) ) {
 			problems.push( `${ key }: no evidence` );
+			continue;
+		}
+		if ( 'still open' === status ) {
+			const p = openRowProblem( key, evidence, rows, reports, walks );
+			p && problems.push( p );
+			continue;
+		}
+		if ( 'not walker-measurable' === status && /\bhover/i.test( evidence.reason || '' ) ) {
+			problems.push( `${ key }: not walker-measurable gives hover as the reason, but the walker measures hover (forced :hover on every pair)` );
 			continue;
 		}
 		if ( 'clean on the walker' !== status ) {
 			continue;
+		}
+		if ( ! evidence.element || String( evidence.element ).length < ELEMENT_MIN ) {
+			problems.push( `${ key }: clean needs evidence.element, one sentence saying why the ref holds the item's element` );
 		}
 		if ( ! evidence.ref || ! evidence.report ) {
 			problems.push( `${ key }: clean needs evidence.report and evidence.ref` );

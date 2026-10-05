@@ -39,7 +39,10 @@ export function merge( registerFile, sweepFile, pairsDir, verdictFiles, out ) {
 	const items = registerItems( markdown );
 	const verdicts = verdictFiles.flatMap( readJson );
 	const sweep = readJson( sweepFile );
-	const problems = checkStatuses( items, verdicts, sweep, measuredFrom( pairsDir, sweep ) );
+	// Walk reports a still-open verdict cites (evidence.walk: the walk's output folder).
+	const walkDirs = [ ...new Set( verdicts.map( ( v ) => v.evidence?.walk ).filter( Boolean ) ) ];
+	const walks = Object.fromEntries( walkDirs.filter( ( w ) => fs.existsSync( path.join( w, 'report.json' ) ) ).map( ( w ) => [ w, readJson( path.join( w, 'report.json' ) ) ] ) );
+	const problems = checkStatuses( items, verdicts, sweep, measuredFrom( pairsDir, sweep ), walks );
 	const { ungrouped } = groupItems( items );
 	problems.push( ...ungrouped.map( ( x ) => `${ x.ids.join( ', ' ) }: section "${ x.section }" is in no group` ) );
 	if ( ! problems.length ) {
