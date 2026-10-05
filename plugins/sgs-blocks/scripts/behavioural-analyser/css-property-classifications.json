@@ -6821,15 +6821,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "logoOpacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_layer": "OUTER",
-        "css_element": "google-logo"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
@@ -23415,15 +23406,6 @@
         "css_property": "padding",
         "css_layer": "OUTER",
         "css_element": "header"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "logoSize",
-      "fields": {
-        "css_property": "height,width",
-        "css_layer": "OUTER",
-        "css_element": "google-logo"
       }
     },
     {
