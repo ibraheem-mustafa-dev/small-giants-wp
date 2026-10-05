@@ -1363,5 +1363,23 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 150
+  },
+  {
+    "id": "check-border-width-defaults",
+    "cmd": "python scripts/check-border-width-defaults.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 151
+  },
+  {
+    "id": "check-border-width-defaults-selftest",
+    "cmd": "python scripts/check-border-width-defaults.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 152
   }
 ]

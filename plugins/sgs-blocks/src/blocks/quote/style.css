@@ -34,6 +34,10 @@
 /* Style: pull-quote — centred, left-right border accents. */
 .wp-block-sgs-quote.is-style-pullquote {
 	text-align: center;
+}
+
+/* The pull-quote's side accents: zero specificity, so the block's border control wins. */
+:where( .wp-block-sgs-quote.is-style-pullquote ) {
 	border-left: 4px solid var( --wp--preset--color--primary, currentColor );
 	border-right: 4px solid var( --wp--preset--color--primary, currentColor );
 }

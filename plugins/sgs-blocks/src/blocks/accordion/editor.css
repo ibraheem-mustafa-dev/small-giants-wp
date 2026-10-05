@@ -16,9 +16,10 @@
 	cursor: text;
 }
 
-/* Subtle border in editor for visibility */
+/* Editing outline: an outline, never a border, so it never paints over the block's own border. */
 .sgs-accordion-item {
-	border: 1px dashed rgba(0, 0, 0, 0.1);
+	outline: 1px dashed rgba(0, 0, 0, 0.1);
+	outline-offset: -1px;
 	border-radius: 4px;
 	margin-bottom: 4px;
 }

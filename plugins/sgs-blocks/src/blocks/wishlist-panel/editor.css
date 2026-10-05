@@ -1,6 +1,8 @@
+/* Editing outline: an outline, never a border, so it never paints over the block's own border. */
 .wp-block-sgs-wishlist-panel {
 	padding: 1rem;
-	border: 1px dashed #ccc;
+	outline: 1px dashed #ccc;
+	outline-offset: -1px;
 }
 
 .wp-block-sgs-wishlist-panel .sgs-wishlist-panel__editor-note {

@@ -1,5 +1,7 @@
+/* Editing outline: an outline, never a border, so it never paints over the block's own border. */
 .sgs-form {
-	border: 1px dashed var(--wp--preset--color--border, #ccc);
+	outline: 1px dashed var(--wp--preset--color--border, #ccc);
+	outline-offset: -1px;
 	padding: 1rem;
 	border-radius: 4px;
 }

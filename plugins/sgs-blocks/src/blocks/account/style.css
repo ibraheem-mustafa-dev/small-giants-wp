@@ -155,7 +155,8 @@
 /* -- Cards (dashboard quick-cards, latest order, tracking, auth) --------- */
 .sgs-account__card {
 	background: var(--wp--preset--color--surface-alt, #f7f7f7);
-	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	/* Width 0: the card border control (sgs_account_card_border_shape_css) is the only width. */
+	border: 0 solid var(--wp--preset--color--border, #e2e2e2);
 	border-radius: 10px;
 	padding: 1.25rem;
 	margin-block-end: 1rem;

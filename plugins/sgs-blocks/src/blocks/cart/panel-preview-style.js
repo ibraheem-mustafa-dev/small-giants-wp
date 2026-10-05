@@ -211,8 +211,8 @@ export function triggerStyles( attributes, tier, palette, hasPill ) {
 	if ( fill.backgroundImage || fill.backgroundColor ) {
 		trigger[ '--sgs-cart-editor-pill-fill' ] = fill.backgroundImage || fill.backgroundColor;
 	}
-	// The pill's stylesheet already paints a 1px solid border, so each chosen part applies on its own.
-	Object.assign( trigger, sgsBorderPreview( { widthValues: attributes.pillBorderWidth, styleValue: attributes.pillBorderStyle, colourValue: attributes.pillBorderColour }, tier, palette, { defaultBorder: true } ) );
+	// The pill's stylesheet gives no width, so the border paints only beside a chosen width.
+	Object.assign( trigger, sgsBorderPreview( { widthValues: attributes.pillBorderWidth, styleValue: attributes.pillBorderStyle, colourValue: attributes.pillBorderColour }, tier, palette ) );
 	const radius = sgsLengthPreview( attributes.pillBorderRadius );
 	if ( radius ) {
 		trigger.borderRadius = radius;

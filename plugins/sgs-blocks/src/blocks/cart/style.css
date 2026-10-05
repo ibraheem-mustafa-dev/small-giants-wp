@@ -116,7 +116,8 @@
 	min-width: auto;
 	gap: 8px;
 	padding: 0 14px;
-	border: 1px solid transparent;
+	/* Width 0 (the pill border control is the only width); solid stands ready for a chosen width. */
+	border: 0 solid transparent;
 	border-radius: 999px;
 	font-size: 0.8rem;
 	font-weight: 600;

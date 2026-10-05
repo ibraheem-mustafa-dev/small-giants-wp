@@ -14,8 +14,12 @@
 
 .sgs-team-member--flat { background: transparent; }
 .sgs-team-member--bordered {
-	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* The bordered look is its border: zero specificity, so the block's border control wins. */
+:where( .sgs-team-member--bordered ) {
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 }
 .sgs-team-member--elevated {
 	background: var(--wp--preset--color--surface-alt, #fff);

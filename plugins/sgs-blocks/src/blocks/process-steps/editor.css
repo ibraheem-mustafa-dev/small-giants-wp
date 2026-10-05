@@ -1,11 +1,13 @@
 /* ===== SGS Process Steps — Editor Only ===== */
 
+/* Editing outline: an outline, never a border, so it never paints over the block's own border. */
 .sgs-process-steps {
-	border: 1px dashed rgba(0, 0, 0, 0.1);
+	outline: 1px dashed rgba(0, 0, 0, 0.1);
+	outline-offset: -1px;
 	min-height: 100px;
 	padding: var(--wp--preset--spacing--30);
 }
 
 .sgs-process-steps:hover {
-	border-color: var(--wp--preset--color--primary, #0F7E80);
+	outline-color: var(--wp--preset--color--primary, #0F7E80);
 }

@@ -395,7 +395,7 @@
 		"iconCircleBorderWidth": {
 			"type": "object",
 			"default": {},
-			"description": "4-side box-object family (box_family 'iconCircleBorderWidth'). Empty (unset) falls through to style.css's framework-default fallback (1px) so an unmodified badge still reads as a circle; an explicit 0 on every side removes the border entirely."
+			"description": "4-side box-object family (box_family 'iconCircleBorderWidth'). Empty (unset) paints no border (style.css gives the circle width 0); a set width paints solid unless another style is chosen."
 		},
 		"iconCircleBorderStyle": {
 			"type": "string",

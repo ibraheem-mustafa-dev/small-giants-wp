@@ -93,7 +93,8 @@ if ( ! function_exists( 'sgs_account_card_border_shape_css' ) ) {
 	/**
 	 * Card border width and style (the colour comes from sgs_border_states_css).
 	 * A width paints solid unless another style was chosen; no width, or
-	 * 'none', leaves the stylesheet's default border (sgs_border_box_decls).
+	 * 'none', paints no border: the stylesheet gives the card width 0
+	 * (sgs_border_box_decls).
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $selector   Scoped card selector.

@@ -45,7 +45,7 @@ function sgs_whatsapp_cta_card_css( array $attributes, string $uid, string $root
 	}
 
 	// Border width — box object, base only (Spec 35 §14, no per-device width).
-	// The CSS default (1px, style.css) applies when unset.
+	// The card variant's zero-specificity outline (1px, style.css) applies when unset.
 	$border_width_box = is_array( $attributes['cardBorderWidth'] ?? null ) ? $attributes['cardBorderWidth'] : array();
 	$border_width_val = sgs_box_object_shorthand( $border_width_box );
 	if ( null !== $border_width_val ) {

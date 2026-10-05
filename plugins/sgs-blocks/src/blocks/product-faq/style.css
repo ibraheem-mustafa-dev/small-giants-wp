@@ -18,7 +18,8 @@
 /* ─── FAQ ITEM ─── */
 
 .sgs-product-faq-item {
-	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
+	/* Width 0: the item's border control (product-faq-item render.php) is the only width. */
+	border: 0 solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background: var(--wp--preset--color--surface, #ffffff);
 }

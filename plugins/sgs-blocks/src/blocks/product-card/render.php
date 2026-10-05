@@ -314,7 +314,7 @@ $sgs_attribute_tag_border_colour = sgs_colour_value( $attributes['attributeTagBo
 // Border width — 4-side object attr (Spec 32 S6), paired with the border
 // colour in the editor's SgsBorderControl. sgs_box_object_shorthand()
 // returns null when every side is empty, so an unset value leaves the
-// style.css default (1px solid) untouched.
+// style.css default (width 0, solid) and the chip paints no border.
 $sgs_attribute_tag_border_width = sgs_box_object_shorthand(
 	is_array( $attributes['attributeTagBorderWidth'] ?? null ) ? $attributes['attributeTagBorderWidth'] : array()
 );
@@ -592,26 +592,14 @@ if ( 'none' !== $sgs_pc_border_style ) {
 		)
 	);
 } elseif ( $sgs_pc_has_border_width || '' !== $sgs_pc_border_colour_raw ) {
-	// G5 negative-control fix (2026-08-29, check-border-roundtrip.js): the card
-	// ROOT has an always-on 1px definitional border in style.css (`.product-card`,
-	// ~:43 — a WCAG §1.4.11 boundary, present by design for every card the
-	// operator has never touched border controls on; block.json's own default is
-	// borderStyle:"none" + borderWidth:{} + borderColour:"", so "untouched" and
-	// "explicitly none" are the SAME attribute state and cannot be told apart from
-	// borderStyle alone).
-	//
-	// borderWidth/borderColour being non-default is the signal that the operator
-	// DID engage these controls (an untouched card carries {} and ""), so
-	// borderStyle:"none" in that combination is a deliberate "remove the border"
-	// request, not the passive default. Without this branch, that request was
-	// silently ignored: render.php emitted NOTHING (per G5 — a style must only be
-	// emitted alongside a real width), leaving the base 1px rule as the only
-	// same-specificity (0,1,0 vs the scoped 0,2,0 rule below) declaration in
-	// play... except with THIS branch there IS a scoped (0,2,0) rule again, which
-	// reliably beats the base rule's (0,1,0) regardless of source order.
-	//
-	// An operator who has never touched borderWidth/borderColour at all keeps the
-	// default definitional border untouched — this branch does not fire for them.
+	// The card root's stylesheet width is 0 (`style.css::.product-card`), but a
+	// variant can still paint a border (the trial card's dashed :where() rule).
+	// block.json's default is borderStyle:"none" + borderWidth:{} + borderColour:"",
+	// so "untouched" and "explicitly none" are the same borderStyle state;
+	// a non-default borderWidth/borderColour is the signal that the operator
+	// engaged the controls, so "none" here is a deliberate "remove the border"
+	// request and this scoped (0,2,0) rule clears any variant border. An operator
+	// who never touched borderWidth/borderColour keeps the variant's border.
 	$sgs_card_typo_css .= $sgs_pc_root_sel . '{border-style:none;border-width:0;}';
 }
 

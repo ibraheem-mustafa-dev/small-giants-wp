@@ -23,16 +23,24 @@
 
 .sgs-toc--card {
 	background: var(--wp--preset--color--surface-alt, #fff);
-	border: 1px solid var(--wp--preset--color--border, #e2e8f0);
 	border-radius: var(--wp--custom--border-radius--md, 0.5rem);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+/* The card's outline: zero specificity, so the block's border control wins. */
+:where( .sgs-toc--card ) {
+	border: 1px solid var(--wp--preset--color--border, #e2e8f0);
 }
 
 /* ─── Minimal style ─── */
 
 .sgs-toc--minimal {
-	border-left: 3px solid var(--wp--preset--color--primary, #0F7E80);
 	padding-left: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* The minimal look's accent rule: zero specificity, so the block's border control wins. */
+:where( .sgs-toc--minimal ) {
+	border-left: 3px solid var(--wp--preset--color--primary, #0F7E80);
 }
 
 /* ─── Flush style ─── */

@@ -213,7 +213,8 @@
 	justify-content: center;
 	min-height: 44px;
 	padding: 0 16px;
-	border: 1px solid currentColor;
+	/* Width 0: chromeButtonBorderWidth is the only width; solid and currentColor stand ready for it. */
+	border: 0 solid currentColor;
 	border-radius: 4px;
 	color: inherit;
 	text-decoration: none;

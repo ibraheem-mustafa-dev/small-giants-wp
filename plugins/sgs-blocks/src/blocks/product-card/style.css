@@ -40,7 +40,8 @@
 	   none, so declaring it here bought nothing and cost the variant its gradient. */
 	border-radius: 16px;
 	overflow: hidden;
-	border: 1px solid var( --wp--preset--color--border, #D4DBE5 );
+	/* Width 0: the card's border control (render.php) is the only width; solid and the colour stand ready. */
+	border: 0 solid var( --wp--preset--color--border, #D4DBE5 );
 	display: flex;
 	flex-direction: column;
 	/* Card fills its grid/flex cell; previously this lived only in the theme's
@@ -51,8 +52,8 @@
 	margin-inline: auto;
 	/*
 	 * A6 (QC): subtle shadow boundary so the card is visible on cream/light
-	 * backgrounds without depending on the low-contrast border (WCAG §1.4.11).
-	 * Border is kept for definition; shadow adds perceivable depth.
+	 * backgrounds without depending on a border (WCAG §1.4.11). The border is
+	 * the operator's choice; the shadow is the card's boundary by default.
 	 */
 	box-shadow: var(--sgs-product-card-shadow, 0 2px 12px color-mix(in srgb, var(--wp--custom--shadow-colour) 10%, transparent));
 }
@@ -1402,10 +1403,9 @@
 /*
  * Generic attribute tag — shown beside the title when the resolved product
  * carries an operator-chosen product attribute term or product tag (e.g. an
- * optician site's "Polarised" lens attribute). Bordered-only chip, no fill,
- * matching Frame Card.dc.html (`border:1px solid #D8D2C8;color:#5E584F`).
- * Colour/border/padding/radius all come from attributeTag* attrs when set
- * (render.php scoped rule); these are the theme-default fallbacks.
+ * optician site's "Polarised" lens attribute). No fill and no border width
+ * by default. Colour/border/padding/radius all come from attributeTag* attrs
+ * when set (render.php scoped rule); these are the theme-default fallbacks.
  */
 .sgs-product-card__attribute-tag {
 	flex-shrink: 0;
@@ -1413,7 +1413,8 @@
 	text-transform: uppercase;
 	white-space: nowrap;
 	background: transparent;
-	border: 1px solid var( --wp--preset--color--border, #d8d2c8 );
+	/* Width 0: attributeTagBorderWidth is the only width; solid and the colour stand ready for it. */
+	border: 0 solid var( --wp--preset--color--border, #d8d2c8 );
 	color: var( --wp--preset--color--text-muted, #5e584f );
 }
 

@@ -13,8 +13,12 @@
 	/* The site-wide button hover timing (buttonPresets.default.hover-transition). */
 	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
-	border: none;
 	line-height: 1;
+}
+
+/* Button reset at zero specificity, so the card variant's :where() outline below still paints. */
+:where(.sgs-whatsapp-cta__btn) {
+	border: none;
 }
 
 /* Spec 32: no block emits an inline `style` property declaration any more,
@@ -177,9 +181,13 @@
 	white-space: normal;
 	padding: 16px 18px;
 	min-height: 0;
-	border: 1px solid var(--wp--preset--color--border-light, #ddd);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background-color: var(--wp--preset--color--success-light, #e9f9ef);
+}
+
+/* The card button's outline: zero specificity, so the card border control wins. */
+:where( .sgs-whatsapp-cta--card.sgs-whatsapp-cta__btn ) {
+	border: 1px solid var(--wp--preset--color--border-light, #ddd);
 }
 
 .sgs-whatsapp-cta--card .sgs-whatsapp-cta__icon-badge {

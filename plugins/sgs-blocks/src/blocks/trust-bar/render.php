@@ -68,10 +68,9 @@ $icon_circle_border_radius  = isset( $attributes['iconCircleBorderRadius'] ) ? (
 // (box_family 'iconCircleBorderWidth', mirrors sgs/hero's splitMediaBorderWidth
 // shape: sgs_box_object_shorthand() takes a MIXED value and guards internally,
 // but the riskiest caller casts first — see helpers-box.php docblock). Left
-// UNSET by default so style.css's own framework-default fallback (1px solid
-// rgba(0,0,0,.08)) keeps painting the circle exactly as before; an operator
-// override — including an explicit 0 on every side to remove the border —
-// rides the scoped custom-property VALUE below, never inline (Spec 32 FR-32-4).
+// UNSET by default, so style.css's fallback (width 0, solid, rgba(0,0,0,.08))
+// paints no border; an operator's width rides the scoped custom-property
+// VALUE below, never inline (Spec 32 FR-32-4).
 $icon_circle_border_width_obj = is_array( $attributes['iconCircleBorderWidth'] ?? null ) ? $attributes['iconCircleBorderWidth'] : array();
 $icon_circle_border_style     = isset( $attributes['iconCircleBorderStyle'] ) ? (string) $attributes['iconCircleBorderStyle'] : '';
 $icon_circle_border_colour    = $attributes['iconCircleBorderColour'] ?? '';
@@ -178,9 +177,8 @@ if ( 'icon-circle' === $badge_style ) {
 		$styles[] = '--sgs-trust-badge-circle-shadow: ' . $safe_icon_circle_shadow;
 	}
 	// Border width/style/colour: only emit when the operator has set something —
-	// unset means "inherit style.css's framework-default fallback" (Spec 32
-	// FR-32-6), which is how a client can dial the width down to 0 on every
-	// side to remove the default circle border entirely.
+	// unset means "inherit style.css's fallback" (Spec 32 FR-32-6): width 0,
+	// so the circle paints a border only once the operator sets a width.
 	$icon_circle_border_width_val = sgs_box_object_shorthand( $icon_circle_border_width_obj );
 	if ( null !== $icon_circle_border_width_val ) {
 		$styles[] = '--sgs-trust-badge-circle-border-width: ' . $icon_circle_border_width_val;

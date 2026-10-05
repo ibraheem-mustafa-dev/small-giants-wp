@@ -29,8 +29,12 @@
 }
 
 .sgs-info-box--bordered {
-	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* The bordered look is its border: zero specificity, so the block's border control wins. */
+:where( .sgs-info-box--bordered ) {
+	border: 1px solid var(--wp--preset--color--border, #D4DBE5);
 }
 
 .sgs-info-box--elevated {

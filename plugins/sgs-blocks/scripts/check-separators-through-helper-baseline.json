@@ -1,8 +1,5 @@
 {
   "files": {
-    "src/blocks/accordion/style.css": {
-      "last-child-reset": 2
-    },
     "src/blocks/account/style.css": {
       "last-child-reset": 1
     }

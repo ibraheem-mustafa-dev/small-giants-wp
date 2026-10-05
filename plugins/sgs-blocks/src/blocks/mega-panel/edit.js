@@ -422,7 +422,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				: undefined,
 		'--sgs-mm-group-gap': resolveTier( groupGap, deviceTier ).value || undefined,
 		'--sgs-mm-aside-w': asideWidth || undefined,
-		'--sgs-mm-aside-sep-width': asideSeparator?.width || undefined,
+		// The divider width render.php paints: the chosen width, else 2px when
+		// none was ever set, else 1px (a cleared field).
+		'--sgs-mm-aside-sep-width': asideSeparator?.width || ( undefined === asideSeparator?.width ? '2px' : '1px' ),
 		'--sgs-mm-aside-sep-colour': asideSeparator?.colour
 			? colourVar( asideSeparator.colour ) || asideSeparator.colour
 			: undefined,

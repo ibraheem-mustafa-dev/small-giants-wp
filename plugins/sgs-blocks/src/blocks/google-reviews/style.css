@@ -58,7 +58,8 @@
 	gap: 22px 16px;
 	margin-bottom: 22px;
 	padding: 0 0 22px;
-	border-bottom: 1px solid var( --wp--preset--color--border-light, #e8eaed );
+	/* Width 0: headerDividerWidth is the only width; solid and the colour stand ready for it. */
+	border-bottom: 0 solid var( --wp--preset--color--border-light, #e8eaed );
 }
 
 /* The logo and the rating text form one group at their natural width (the draft's own structure), so the
@@ -310,7 +311,8 @@
 :where( .sgs-google-reviews__review ) {
 	gap: 12px;
 	padding: 20px;
-	border: 1px solid var( --wp--preset--color--border-light, #e8eaed );
+	/* Width 0: cardBorderWidth is the only width the baseline card paints. */
+	border: 0 solid var( --wp--preset--color--border-light, #e8eaed );
 	border-radius: 8px;
 	background-color: var( --wp--preset--color--surface, #fff );
 	box-shadow: none;
@@ -318,8 +320,12 @@
 
 /* Card looks on the baseline. flat: no line, a soft fill. bordered: a firmer line. elevated: a shadow. */
 .sgs-google-reviews--card-bordered .sgs-google-reviews__review {
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
 	box-shadow: none;
+}
+
+/* The bordered look is its line: zero specificity, so the card border control wins. */
+:where( .sgs-google-reviews--card-bordered .sgs-google-reviews__review ) {
+	border: 1px solid var( --wp--preset--color--border, #dadce0 );
 }
 
 /* Flat: no line and no shadow. Named here so the look exists as a class (the seeder derives its values from
@@ -793,9 +799,13 @@
 .sgs-google-reviews.sgs-google-reviews--card-google-card {
 	box-sizing: border-box;
 	padding: 28px 26px;
-	border: 1px solid var( --wp--preset--color--border, #dadce0 );
 	border-radius: 12px;
 	background-color: var( --wp--preset--color--surface, #fff );
+}
+
+/* The Google panel's frame: zero specificity, so the block's border control wins. */
+:where( .sgs-google-reviews.sgs-google-reviews--card-google-card ) {
+	border: 1px solid var( --wp--preset--color--border, #dadce0 );
 }
 
 @media ( max-width: 767px ) {
@@ -906,9 +916,13 @@
 .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review {
 	gap: 8px;
 	padding: 16px;
-	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
 	border-radius: 0;
 	box-shadow: none;
+}
+
+/* The tile's hairline: zero specificity, so the card border control wins. */
+:where( .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review ) {
+	border: 1px solid var( --wp--preset--color--border, #e0e0e0 );
 }
 
 .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review:hover {

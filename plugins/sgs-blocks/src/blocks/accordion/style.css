@@ -8,13 +8,10 @@
 
 /* ─── ACCORDION ITEM ─── */
 
-.sgs-accordion-item {
-	border: 0;
-	border-bottom: 1px solid var(--wp--preset--color--border-light, var(--wp--preset--color--border, #e0e0e0));
-}
-
-.sgs-accordion-item:last-child {
-	border-bottom: 0;
+/* No stylesheet width: the item's border control (render.php's scoped rule) is the only width the
+   base item paints. Style and colour stand ready for a width the client chooses. */
+:where(.sgs-accordion-item) {
+	border: 0 solid var(--wp--preset--color--border-light, var(--wp--preset--color--border, #e0e0e0));
 }
 
 /* Remove native marker */
@@ -186,8 +183,12 @@
 
 /* ─── STYLE: BORDERED ─── */
 
-.sgs-accordion--bordered .sgs-accordion-item {
+/* The bordered look is its border: zero specificity, so the item's border control wins. */
+:where(.sgs-accordion--bordered .sgs-accordion-item) {
 	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
+}
+
+.sgs-accordion--bordered .sgs-accordion-item {
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
@@ -209,19 +210,24 @@
 
 /* ─── STYLE: FLUSH ─── */
 
-.sgs-accordion--flush .sgs-accordion-item {
+/* The flush look is its divider: zero specificity, so the item's border control wins. */
+:where(.sgs-accordion--flush .sgs-accordion-item) {
 	border-bottom: 1px solid var(--wp--preset--color--border, #e0e0e0);
 }
 
-.sgs-accordion--flush .sgs-accordion-item:last-child {
+:where(.sgs-accordion--flush .sgs-accordion-item:last-child) {
 	border-bottom: 0;
 }
 
 /* ─── STYLE: CARD ─── */
 
+/* The card's outline: zero specificity, so the item's border control wins. */
+:where(.sgs-accordion--card .sgs-accordion-item) {
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
+}
+
 .sgs-accordion--card .sgs-accordion-item {
 	background: var(--wp--preset--color--surface-alt, #ffffff);
-	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: 0 1px 3px color-mix(in srgb, var(--wp--custom--shadow-colour) 4%, transparent);
 }

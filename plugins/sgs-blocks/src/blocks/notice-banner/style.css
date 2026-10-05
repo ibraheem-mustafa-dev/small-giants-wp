@@ -6,6 +6,10 @@
 	gap: var(--wp--preset--spacing--20);
 	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* The accent edge is the banner's identity: zero specificity, so the block's border control wins. */
+:where(.sgs-notice-banner) {
 	border-left: 4px solid transparent;
 }
 
@@ -96,7 +100,8 @@
 	border-radius: 50%;
 	background-color: var(--wp--preset--color--surface, #FAF9F6);
 	background-image: none;
-	border-width: 1px;
+	/* Width 0: iconCircleBorderWidth is the only width; solid and the colour stand ready for it. */
+	border-width: 0;
 	border-style: solid;
 	border-color: rgba(0, 0, 0, 0.08);
 	box-shadow: none;

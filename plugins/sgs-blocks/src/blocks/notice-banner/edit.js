@@ -230,8 +230,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				borderRadius: iconCircleBorderRadius || '50%',
 				backgroundColor: colourVar( iconCircleBackground ) || 'var(--wp--preset--color--surface, #FAF9F6)',
 				backgroundImage: iconCircleBackgroundGradient || 'none',
-				// The circle's stylesheet paints a 1px solid border; set parts override it.
-				...sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop', undefined, { defaultBorder: true } ),
+				// The circle's stylesheet gives no width, so the border paints only beside a chosen width.
+				...sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop' ),
 				boxShadow: resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour ) || 'none',
 		  }
 		: undefined;

@@ -1,9 +1,12 @@
 /* ===== SGS Info Box — Editor Only ===== */
 
+/* Editing outline: an outline, never a border, so it never paints over the box's own border (the bordered style
+   or the client's border settings). */
 .sgs-info-box {
-	border: 1px dashed rgba(0, 0, 0, 0.1);
+	outline: 1px dashed rgba(0, 0, 0, 0.1);
+	outline-offset: -1px;
 }
 
 .sgs-info-box:hover {
-	border-color: var(--wp--preset--color--primary, #0F7E80);
+	outline-color: var(--wp--preset--color--primary, #0F7E80);
 }

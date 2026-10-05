@@ -515,10 +515,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		: undefined;
 	const circleShadowValue = resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour );
 	// Icon circle border: the "Icon circle border" panel's own values through its
-	// twin, painted on the circle. The circle's stylesheet already paints a 1px
-	// solid border, which each chosen part overrides on its own (render.php sets
-	// each custom property alone).
-	const circleBorderPreview = sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop', colourPalette, { defaultBorder: true } );
+	// twin, painted on the circle. The circle's stylesheet gives no width, so the
+	// border paints only beside a chosen width.
+	const circleBorderPreview = sgsBorderPreview( { widthValues: iconCircleBorderWidth, styleValue: iconCircleBorderStyle, colourValue: iconCircleBorderColour }, 'desktop', colourPalette );
 
 	// Grid preview (icon-circle only — text-only/image-badge always render
 	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,

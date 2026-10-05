@@ -100,8 +100,8 @@ export function typedCardPreview( attrs, tier ) {
 			...typographyPreviewStyle( attrs, 'attributeTag', tier ),
 			...labelBox( attrs.attributeTagPadding, attrs.attributeTagBorderRadius, attrs.attributeTagBackgroundColour, false ),
 			color: colour( attrs.attributeTagTextColour ),
-			// The chip's stylesheet paints a 1px solid border; set parts override it.
-			...sgsBorderPreview( { widthValues: attrs.attributeTagBorderWidth, colourValue: attrs.attributeTagBorderColour }, tier, undefined, { defaultBorder: true } ),
+			// The chip's stylesheet gives no width, so the border paints only beside a chosen width.
+			...sgsBorderPreview( { widthValues: attrs.attributeTagBorderWidth, colourValue: attrs.attributeTagBorderColour }, tier ),
 		},
 		rating: { color: colour( attrs.ratingColour ) },
 		swatch: { borderColor: colour( attrs.swatchBorderColour ) },

@@ -19,8 +19,12 @@
 }
 
 .sgs-countdown--bordered {
-	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* The bordered look is its border: zero specificity, so the block's border control wins. */
+:where( .sgs-countdown--bordered ) {
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 }
 
 .sgs-countdown--elevated {
