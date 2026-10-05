@@ -1,453 +1,579 @@
 [
-  {
-    "id": "D-2",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+ {
+  "id": "D-2",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-4",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-4",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-6",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-6",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-7",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision, 2026-10-02): Shop the range lifts 3px on hover like every button; the draft's outline button does not",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-7",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-8",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-8",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-9",
-    "scope": "about",
-    "node": "cr-ref-about-10",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
-    "register": [
-      "104",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-9",
+  "scope": "about",
+  "node": "cr-ref-about-10",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-10",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 104 / S1 (Bean's decision): Shop the range lifts 3px and the outline style's hover ground (the wash) is removed; the draft's outline button shows a ground and does not lift",
+  "register": [
+   "104",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-10",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-11",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      768
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-11",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-12",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-12",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-13",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1440
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-13",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1440
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-14",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "transform",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "matrix(1, 0, 0, 1, 0, -3)"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-14",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
   },
-  {
-    "id": "D-15",
-    "scope": "about",
-    "node": "cr-ref-about-9",
-    "state": "opening",
-    "property": "hover-effects",
-    "widths": [
-      1920
-    ],
-    "expected": {
-      "value": "lifts"
-    },
-    "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
-    "register": [
-      "S4",
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-15",
+  "scope": "about",
+  "node": "cr-ref-about-9",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
   },
-  {
-    "id": "D-16",
-    "scope": "contact",
-    "node": "cr-ref-contact-25",
-    "state": "opening",
-    "property": "*",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
-    "register": [
-      "132",
-      "141"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S4 / S1 (Bean's decision): the green WhatsApp button lifts 3px on hover (S1 lift only); the draft's does not lift",
+  "register": [
+   "S4",
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-16",
+  "scope": "contact",
+  "node": "cr-ref-contact-25",
+  "state": "opening",
+  "property": "*",
+  "expected": {
+   "rule": "bean-choice"
   },
-  {
-    "id": "D-17",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "Register 418 (Bean, 2026-10-02): the real embedded Google Map replaces the draft's sketch placeholder, whose own caption asks for that swap; no setting should copy the sketch's paint",
+  "register": [
+   "132",
+   "141"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-17",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "padding-top",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-18",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-18",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "padding-right",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-19",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-19",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "padding-bottom",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-20",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "padding-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-20",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "padding-left",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-21",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-top",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-21",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "margin-top",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-22",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-right",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-22",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "margin-right",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-23",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-bottom",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-23",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "margin-bottom",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-24",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "margin-left",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-24",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "margin-left",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-25",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "w",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-25",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "w",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-26",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "h",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-26",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "h",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-27",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "width",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-27",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "width",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-28",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "text-inset-x",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-28",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "text-inset-x",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-29",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "text-inset-y",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-29",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "text-inset-y",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-30",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "display",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-30",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "display",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-31",
-    "scope": "contact",
-    "node": "cr-ref-contact-5",
-    "state": "opening",
-    "property": "transform",
-    "expected": {
-      "rule": "bean-choice"
-    },
-    "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
-    "register": [
-      "S1"
-    ],
-    "decided": "2026-10-04 Bean"
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link pads its tap area to 44px and cancels the padding with negative margins, so its text paints where the draft's does",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-31",
+  "scope": "contact",
+  "node": "cr-ref-contact-5",
+  "state": "opening",
+  "property": "transform",
+  "expected": {
+   "rule": "bean-choice"
   },
-  {
-    "id": "D-32",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "y-from-detail-phone-label",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
-    "decided": "2026-10-04 Bean"
+  "reason": "Register S1 (Bean, 2026-10-02): every button lifts 3px on hover site-wide; the draft's WhatsApp button lifts 2px",
+  "register": [
+   "S1"
+  ],
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-32",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "y-from-detail-phone-label",
+  "expected": {
+   "rule": "touch-target"
   },
-  {
-    "id": "D-33",
-    "scope": "contact",
-    "node": "cr-ref-contact-9",
-    "state": "opening",
-    "property": "y-after-detail-phone-value",
-    "expected": {
-      "rule": "touch-target"
-    },
-    "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
-    "decided": "2026-10-04 Bean"
-  }
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-33",
+  "scope": "contact",
+  "node": "cr-ref-contact-9",
+  "state": "opening",
+  "property": "y-after-detail-phone-value",
+  "expected": {
+   "rule": "touch-target"
+  },
+  "reason": "CLAUDE.md non-negotiable (44px touch targets): the phone link's box is its 44px tap area, which starts above the text it centres; the text itself sits on the draft's line (layout-neutral since the business-info link fix)",
+  "decided": "2026-10-04 Bean"
+ },
+ {
+  "id": "D-34",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-28",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
+  "register": [
+   "N41",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-35",
+  "scope": "lenses",
+  "node": "cr-ref-lenses-28",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register N41 / S1 (Bean's decision, 2026-10-02): Choose a frame lifts 3px on hover like every button; the draft's button does not lift",
+  "register": [
+   "N41",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-36",
+  "scope": "help",
+  "node": "cr-ref-help-39",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-37",
+  "scope": "help",
+  "node": "cr-ref-help-39",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Contact me button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-38",
+  "scope": "help",
+  "node": "cr-ref-help-40",
+  "state": "opening",
+  "property": "transform",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "matrix(1, 0, 0, 1, 0, -3)"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ },
+ {
+  "id": "D-39",
+  "scope": "help",
+  "node": "cr-ref-help-40",
+  "state": "opening",
+  "property": "hover-effects",
+  "widths": [
+   768,
+   1440,
+   1920
+  ],
+  "expected": {
+   "value": "lifts"
+  },
+  "reason": "Register 113 / S1 (Bean's decision, 2026-10-02): the Call button lifts 3px on hover like every button, and the outline style's hover ground is removed; the draft's button does not lift",
+  "register": [
+   "113",
+   "S1"
+  ],
+  "decided": "2026-10-05 Bean (S1)"
+ }
 ]
