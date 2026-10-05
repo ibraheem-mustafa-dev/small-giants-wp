@@ -74,6 +74,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/triage-source.test.mjs` | B1 source pass: a gap a class under `includes/` emits is cited by `file::symbol` with the setting it reads (MUST FAIL); calls traced two hops through functions, classes and required files; a word in prose is not a citation. |
 | `tests/walker-devtools.test.mjs` | A-1 in headless Chromium on local HTML: the walker settles on finished animations, forces `:hover` on every pair, reads declared sizes from the matched rules and a text run's row spacing. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
+| `tests/wp-session.test.mjs` | `scripts/lib/wp-session.js` in headless Chromium: a child attached to the shared browser and the owner both survive a page dialog, which is dismissed (MUST FAIL: the two auto-dismissals raced and one crashed with "No dialog is showing"). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
 

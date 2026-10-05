@@ -16,6 +16,11 @@
 
 const net = require( 'net' );
 
+// Every connection to the shared browser sees each page dialog; with no listener each one auto-dismisses it, and the
+// one that loses the race throws "No dialog is showing" and crashes its process. A listener replaces the auto-dismiss:
+// still dismissed (the old behaviour), the loser's error ignored.
+const dismissDialogs = ( context ) => context.on( 'dialog', ( dialog ) => dialog.dismiss().catch( () => {} ) );
+
 /**
  * A free local TCP port.
  *
@@ -50,6 +55,7 @@ async function launchShared( chromium, { profileDir, headless, args = [] } ) {
 		viewport: { width: 1280, height: 800 },
 		args: [ ...args, `--remote-debugging-port=${ port }` ],
 	} );
+	dismissDialogs( context );
 	process.env.SGS_CDP_URL = `http://127.0.0.1:${ port }`;
 	const page = context.pages()[ 0 ] || ( await context.newPage() );
 	return {
@@ -75,6 +81,7 @@ async function connectShared( chromium ) {
 	}
 	const browser = await chromium.connectOverCDP( process.env.SGS_CDP_URL );
 	const context = browser.contexts()[ 0 ];
+	dismissDialogs( context );
 	const page = await context.newPage();
 	return {
 		context,
