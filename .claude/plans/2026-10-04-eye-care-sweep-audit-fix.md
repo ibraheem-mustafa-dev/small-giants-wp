@@ -339,6 +339,19 @@ Shape:
    --tier full`, one reseed from clean HEAD, one deploy to eye-care-test then sandybrown, recalibrate the touched
    blocks through the queue, one measure-only sweep.
 
+Carried into Session C's serial tail (2026-10-05):
+- **`showGoogleLogo` removed** (`f19a66e27`, not deployed; Google's Places API policy makes attribution mandatory). After
+  the deploy, rebuild eye-care-test's single-product template from its tree (it was saved with the setting), check the
+  deploy's oldshape audit for live pages still carrying it, and include it in the reseed (/sgs-update regenerates
+  `plugins/sgs-blocks/scripts/consistency/` and the block reference).
+- **Google reviews attribution gaps (Bean to decide; found 2026-10-05, policy
+  https://developers.google.com/maps/documentation/places/web-service/policies):** the block prints a plain "G"
+  (`plugins/sgs-blocks/assets/google-logo.svg`), not the Google Maps logo or the text "Google Maps"; the logo exists
+  only with the aggregate header or a badge variant, so a list variant with `showAggregate` off prints no attribution;
+  `style.css::.sgs-google-reviews__google-logo` allows 30px against the policy's 16 to 19; `showAvatar` can hide the
+  author avatar the policy requires at minimum; the author name has no profile link; nothing links the place on Google
+  Maps (`googleMapsUri`).
+
 ## Session D: back to walker work
 
 Ranked by the sweep, not by a fixed surface order: walker gaps that hold the most open rows across surfaces first,
