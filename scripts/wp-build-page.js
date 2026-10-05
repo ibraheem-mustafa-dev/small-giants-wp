@@ -234,15 +234,18 @@ async function main() {
 	const cloudProxy = process.env.PARITY_PROXY_SPKI && process.env.HTTPS_PROXY;
 	// fail() calls process.exit(), which skips the finally below; the tagged browser still dies.
 	const closeOnExit = require( './lib/close-browser-on-exit' );
-	closeOnExit.closeBrowserOnExit();
-	const browser = await chromium.launch( {
+	const wpSession = require( './lib/wp-session' );
+	// SGS_CDP_URL set (scripts/lib/wp-session.js): a tab in the run's shared, logged-in window; the cloud proxy needs its own.
+	const shared = cloudProxy ? null : await wpSession.connectShared( chromium );
+	shared || closeOnExit.closeBrowserOnExit();
+	const browser = shared ? null : await chromium.launch( {
 		// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load).
 		headless: ! process.env.SGS_HEADED,
 		args: [ ...closeOnExit.browserOwnerArgs(), ...( cloudProxy ? [ '--ignore-certificate-errors-spki-list=' + process.env.PARITY_PROXY_SPKI ] : [] ) ],
 		...( cloudProxy ? { proxy: { server: process.env.HTTPS_PROXY } } : {} ),
 		...( process.env.PARITY_CHROMIUM ? { executablePath: process.env.PARITY_CHROMIUM } : {} ),
 	} );
-	const context = await browser.newContext( { ignoreHTTPSErrors: true } );
+	const context = shared ? shared.context : await browser.newContext( { ignoreHTTPSErrors: true } );
 	if ( cloudProxy ) {
 		// The cloud proxy drops connections when the editor opens its ~600 assets at once
 		// (net::ERR_TOO_MANY_RETRIES, then every request stalls). Funnel them through Node,
@@ -283,13 +286,10 @@ async function main() {
 			}
 		} );
 	}
-	const page = await context.newPage();
+	const page = shared ? shared.page : await context.newPage();
 	try {
 		try {
-			await page.goto( `${ url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 45000 } );
-			await page.fill( '#user_login', user );
-			await page.fill( '#user_pass', pwd );
-			await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 90000, waitUntil: 'commit' } ), page.click( '#wp-submit' ) ] );
+			await wpSession.ensureLoggedIn( page, { url, user, pwd } );
 		} catch ( e ) {
 			fail( 2, `login failed: ${ e.message }` );
 		}
@@ -445,7 +445,7 @@ async function main() {
 		console.log( JSON.stringify( result ) );
 		if ( ! result.ok ) process.exitCode = 6;
 	} finally {
-		await browser.close();
+		await ( shared ? shared.close() : browser.close() );
 	}
 }
 

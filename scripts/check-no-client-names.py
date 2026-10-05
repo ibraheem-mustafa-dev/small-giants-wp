@@ -136,10 +136,10 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
 POINTER_RE = re.compile(r"[\w./\-]*(?:nav-qa|gate3c)/[\w./\-]*|[\w-]*(?:tree\.json|parity-[\w-]+\.mjs)|(?:\.\./|\./)*(?:sites|reference|reports|pipeline-state|\.claude/(?:secrets|reports|archive))/[\w.\-/\ ]*", re.IGNORECASE)
 
 # Operational identifiers that name a client's own test site (deploy target keys and the env files
-# and keys that go with them). They stay until the target registry moves into sites/<client>/;
+# and keys that go with them, and the local WSL mirror keys). They stay until the target registry moves into sites/<client>/;
 # listed here so the survey counts them instead of hiding them, and so a rename is one decision.
 OPERATIONAL_TOKENS = re.compile(
-    r"(?:eye-care-test|indus-test|eye-care-ward-end|EYECARETEST|INDUSTEST|EYECARE)", re.IGNORECASE
+    r"(?:local-eye-care|eye-care-test|indus-test|eye-care-ward-end|EYECARETEST|INDUSTEST|EYECARE)", re.IGNORECASE
 )
 
 # Content is scanned only in text files; these suffixes are skipped outright.

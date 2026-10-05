@@ -16,5 +16,25 @@
       "id": 3459,
       "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
     }
+  },
+  "local-eye-care": {
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "postId": 668,
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-eye-care/wp-content/plugins/sgs-blocks",
+    "image": {
+      "id": 458,
+      "url": "http://localhost:8081/wp-content/uploads/2026/09/use-varifocal.png"
+    }
+  },
+  "local-sandybrown": {
+    "envFile": ".claude/secrets/local-sandybrown.env",
+    "envKey": "LOCALSANDYBROWN",
+    "postId": 4750,
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-sandybrown/wp-content/plugins/sgs-blocks",
+    "image": {
+      "id": 3459,
+      "url": "http://localhost:8082/wp-content/uploads/2026/09/cookies-stacked-5.jpeg"
+    }
   }
 }

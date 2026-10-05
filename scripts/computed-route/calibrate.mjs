@@ -8,7 +8,8 @@
 // default paint, keyed by the deployed build's md5 and the site snapshot's md5. The page is emptied at the end.
 import fs from 'fs';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import { spawn } from 'child_process';
+import { createRequire } from 'module';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
@@ -28,8 +29,21 @@ const CACHE = path.join( HERE, 'cache' );
 // SGS_CAL_CHUNK overrides it for a run (a block whose page times out on the host is read in smaller chunks).
 export const CHUNK = Number( process.env.SGS_CAL_CHUNK ) > 0 ? Number( process.env.SGS_CAL_CHUNK ) : 150;
 
-function build( target, treeFile, extra = [] ) {
-	const r = spawnSync( 'node', [ path.join( REPO, 'scripts', 'wp-build-page.js' ), '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, ...extra ], { cwd: REPO, encoding: 'utf8', timeout: 300000 } );
+// Asynchronous on purpose: the run's own Playwright connection must keep answering while the child opens its tab in the
+// shared browser (Chrome holds a new tab paused until every attached client lets it run; a blocked event loop never does).
+async function build( target, treeFile, extra = [] ) {
+	const r = await new Promise( ( resolve ) => {
+		const child = spawn( 'node', [ path.join( REPO, 'scripts', 'wp-build-page.js' ), '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, ...extra ], { cwd: REPO } );
+		let stdout = '';
+		let stderr = '';
+		child.stdout.on( 'data', ( d ) => ( stdout += d ) );
+		child.stderr.on( 'data', ( d ) => ( stderr += d ) );
+		const timer = setTimeout( () => child.kill(), 300000 );
+		child.on( 'close', ( status ) => {
+			clearTimeout( timer );
+			resolve( { status, stdout, stderr } );
+		} );
+	} );
 	const last = ( r.stdout || '' ).trim().split( '\n' ).pop();
 	let json = null;
 	try {
@@ -38,18 +52,31 @@ function build( target, treeFile, extra = [] ) {
 	return { code: r.status, json, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
 }
 
-async function openBrowser( env ) {
+// One browser for the whole run (scripts/lib/wp-session.js): every block's reads and every wp-build-page.js child use
+// the same window and one login, kept between runs in a per-site profile under the gitignored cache.
+// SGS_CDP_URL already set: attach to that browser instead (an everyday Chrome started with --remote-debugging-port,
+// which the host's edge does not challenge as it does Playwright's Chrome for Testing); only the run's own tab closes.
+async function openBrowser( site, env ) {
+	const require = createRequire( import.meta.url );
+	const wpSession = require( '../lib/wp-session.js' );
+	const closeOnExit = require( '../lib/close-browser-on-exit.js' );
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	if ( process.env.SGS_CDP_URL ) {
+		const attached = await wpSession.connectShared( chromium );
+		await wpSession.ensureLoggedIn( attached.page, env );
+		return attached;
+	}
+	closeOnExit.closeBrowserOnExit();
 	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
 	// or a headed window lays the page out about 15px narrower than its viewport.
-	const browser = await chromium.launch( { headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars' ] } );
-	const ctx = await browser.newContext( { ignoreHTTPSErrors: true } );
-	const page = await ctx.newPage();
-	await page.goto( `${ env.url }/wp-login.php`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-	await page.fill( '#user_login', env.user );
-	await page.fill( '#user_pass', env.pwd );
-	await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 90000, waitUntil: 'commit' } ), page.click( '#wp-submit' ) ] );
-	return { browser, page };
+	const shared = await wpSession.launchShared( chromium, { profileDir: path.join( CACHE, `.profile-${ site }` ), headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars', ...closeOnExit.browserOwnerArgs() ] } );
+	await wpSession.ensureLoggedIn( shared.page, env );
+	return shared;
+}
+
+// Tabs a child left open (a wp-build-page.js that exited through fail()) are closed so the window does not fill up.
+async function closeStrayTabs( shared ) {
+	await Promise.all( shared.context.pages().filter( ( p ) => p !== shared.page ).map( ( p ) => p.close().catch( () => {} ) ) );
 }
 
 function readEnv( file, key ) {
@@ -63,7 +90,7 @@ function readEnv( file, key ) {
 	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
 }
 
-async function calibrateBlock( block, { site, target, env, fixtures, snapshot, db, slotKey, paintKey, rejectedOut, image } ) {
+async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, db, slotKey, paintKey, rejectedOut, image } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
 	if ( ! fixture ) {
@@ -96,7 +123,7 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 		let list = chunks[ c ];
 		for ( let attempt = 0; attempt < 3; attempt++ ) {
 			writeTree( treeFile, buildTree( block, fixture, list ) );
-			const dry = build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
+			const dry = await build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
 			if ( 0 === dry.code ) {
 				break;
 			}
@@ -110,17 +137,12 @@ async function calibrateBlock( block, { site, target, env, fixtures, snapshot, d
 			}
 			list = list.filter( ( _, i ) => ! bad.has( i ) );
 		}
-		const built = build( target, treeFile, [ '--post-id', String( target.postId ) ] );
+		const built = await build( target, treeFile, [ '--post-id', String( target.postId ) ] );
 		if ( ! built.json?.ok ) {
 			return { block, error: `calibration build failed${ chunks.length > 1 ? ` (chunk ${ c + 1 } of ${ chunks.length })` : '' }: ${ built.err.slice( -600 ) }` };
 		}
-		const { browser, page } = await openBrowser( env );
-		let reads;
-		try {
-			reads = await readAll( page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, list );
-		} finally {
-			await browser.close();
-		}
+		await closeStrayTabs( shared );
+		const reads = await readAll( shared.page, built.json.link || `${ env.url }/?page_id=${ target.postId }`, list );
 		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
 		const chunkDefault = {};
 		const chunkBase = {};
@@ -235,16 +257,20 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	for ( const b of blocks ) {
 		const short = b.replace( /^sgs\//, '' );
 		const local = localBlockHash( path.join( REPO, 'plugins/sgs-blocks/build/blocks', short ) );
-		const remote = remoteBlockHash( site, short );
+		// A local mirror (calibration-targets.json pluginDir, a WSL path Node reads directly) is hashed from its files.
+		const remote = target.pluginDir ? localBlockHash( path.join( target.pluginDir, 'build', 'blocks', short ) ) : remoteBlockHash( site, short );
 		if ( local !== remote ) {
 			console.error( `[FAIL] ${ b }: the deployed build/blocks/${ short }/ (${ remote }) differs from the local build (${ local }). Deploy or rebuild first; nothing was written.` );
 			process.exit( 3 );
 		}
 		keys[ b ] = local;
 	}
-	assertQuiet();
+	// A local mirror has no host deploy to wait for; this machine's deploy or reseed still blocks the run.
+	assertQuiet( target.pluginDir ? null : undefined );
 	fs.mkdirSync( CACHE, { recursive: true } );
-	const ctx = { site, target, env: readEnv( target.envFile, target.envKey ), fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ), snapshot: loadSnapshot( snapFile ), db: openDb(), rejectedOut: [], image: target.image || null };
+	const env = readEnv( target.envFile, target.envKey );
+	const shared = await openBrowser( site, env );
+	const ctx = { site, target, env, shared, fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ), snapshot: loadSnapshot( snapFile ), db: openDb(), rejectedOut: [], image: target.image || null };
 	const results = [];
 	try {
 		for ( const b of blocks ) {
@@ -260,8 +286,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	} finally {
 		const empty = path.join( CACHE, 'empty.tree.json' );
 		writeTree( empty, [] );
-		const r = build( target, empty, [ '--post-id', String( target.postId ) ] );
+		const r = await build( target, empty, [ '--post-id', String( target.postId ) ] );
 		console.log( r.json?.ok ? 'calibration page emptied' : `[WARN] calibration page not emptied: ${ r.err.slice( -300 ) }` );
+		await shared.close();
 	}
 	process.exit( results.some( ( r ) => r.error ) ? 1 : 0 );
 }

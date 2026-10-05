@@ -137,7 +137,8 @@ export function assertWritable( target, manifests ) {
 // R-47-11: no deploy or reseed running on the host. build-deploy.py keeps no lock file, so this reads the host's
 // process list for its tar/rsync/wp steps and the local one for a running build-deploy.py or framework reseed.
 export function assertQuiet( sshArgs = [ '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ] ) {
-	const remote = execFileSync( 'ssh', [ ...sshArgs, "ps -eo args | grep -E '^(tar|rsync) ' | grep -v grep || true" ], { encoding: 'utf8', timeout: 60000 } ).trim();
+	// sshArgs null: a local mirror, no remote host to check.
+	const remote = null === sshArgs ? '' : execFileSync( 'ssh', [ ...sshArgs, "ps -eo args | grep -E '^(tar|rsync) ' | grep -v grep || true" ], { encoding: 'utf8', timeout: 60000 } ).trim();
 	if ( remote ) {
 		throw new Error( `R-47-11: the host is busy (a deploy is unpacking):\n${ remote }` );
 	}

@@ -20,6 +20,7 @@ DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a cens
 - [Render helpers](#render-helpers)
 - [Extensions architecture](#extensions-architecture)
 - [Deployment process](#deployment-process)
+- [Local WordPress mirrors (WSL)](#local-wordpress-mirrors-wsl)
 - [WP-CLI](#wp-cli)
 - [Environment and tools](#environment-and-tools)
 - [Tooling catalogue — every gate, audit and codemod](#tooling-catalogue--every-gate-audit-and-codemod)
@@ -633,6 +634,15 @@ cd plugins/sgs-blocks ; npm run build ; cd ..\..
 - `src/` — compiled output from `build/` is what WordPress uses
 - `.gitignore`, `package.json`, `package-lock.json` — server does not need these
 - `theme/sgs-theme/styles/*.json` — per-client snapshots live at `sites/<client>/theme-snapshot.json`
+
+---
+
+## Local WordPress mirrors (WSL)
+
+`http://localhost:8081` (Eye Care) and `http://localhost:8082` (Sandybrown) are WSL copies of the two Hostinger test
+sites (database and `wp-content`, WordPress 7.1.2), for browser-heavy runs Hostinger's edge would challenge.
+Calibration targets them as `local-eye-care` / `local-sandybrown`; one run opens one browser and logs in once
+(`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`.
 
 ---
 

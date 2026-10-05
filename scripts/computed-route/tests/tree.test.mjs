@@ -1,7 +1,7 @@
 // Proves R-47-11 (live-site safety) and the tree operations Solve relies on: refs, deep writes, stripping.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addRefs, stripRefs, nodeByRef, setAttr, assertWritable, refOf } from '../lib/tree.mjs';
+import { addRefs, stripRefs, nodeByRef, setAttr, assertWritable, assertQuiet, refOf } from '../lib/tree.mjs';
 
 const tree = () => [ { name: 'sgs/container', attributes: { className: 'keep' }, innerBlocks: [ { name: 'sgs/heading', attributes: { padding: { desktop: { top: '8px' }, mobile: { top: '4px' } } } } ] } ];
 const manifests = { calibrationTargets: { 'eye-care-test': { postId: 900 } }, surfaces: { footer: { target: { postId: 182 } }, product: { target: { template: 'single-product' } } } };
@@ -35,4 +35,9 @@ test( 'MUST FAIL: the canary homepage, a motion fixture or an unlisted post is r
 	assert.throws( () => assertWritable( { postId: 2603 }, manifests ), /R-47-11/ );
 	assert.throws( () => assertWritable( { postId: 199 }, manifests ), /neither/ );
 	assert.throws( () => assertWritable( { templatePart: 'header' }, manifests ), /neither/ );
+} );
+
+test( 'MUST FAIL: a local mirror (sshArgs null) skips the host check; an unreachable host still fails the run', () => {
+	assert.throws( () => assertQuiet( [ '-o', 'ConnectTimeout=2', '-o', 'BatchMode=yes', '-p', '1', 'nobody@127.0.0.1' ] ) );
+	assert.equal( assertQuiet( null ), true );
 } );
