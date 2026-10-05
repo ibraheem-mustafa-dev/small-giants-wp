@@ -424,3 +424,130 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
 - **Falsified by:** a row read while an entrance still runs, a hover row missing on a pair whose CSS hover differs, a
   declared width written where the draft declares none, a layer row on an element whose layers do not paint, or a
   `row-gap` row between lists with the same line-box spacing.
+
+The sections from 20 on are Session C lane L2 (Spec 47 FR-47-6). Every one has a planted fault in
+`scripts/computed-route/tests/walker-l2.test.mjs` (headless Chromium on local HTML, never a site), red against the walker at
+the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/parity at the old commit>` shows it red).
+
+## 20. Two different kinds of element are one `tag` row (Spec 47 FR-47-6, L2.6)
+
+- **Gap:** four combos in Session B compared a draft `<div>` against a live `<img>`, or a `<span>` against an `<h1>`; every
+  style, box and hover row between two elements of different kinds is false (`object-fit`, `max-width` and `display` of an
+  image against a block).
+- **Detected by:** `lib/compare.mjs::comparePair` classes each side's tag (`tagClass`: media img, picture, video, canvas,
+  svg, iframe; control input, select, textarea; inline text span, em, strong, b, i, small, abbr, code, label; block
+  everything else). Different classes give one row, kind `tag`, key `tag`, values `<div> (block)` and `<img> (media)`, and
+  nothing else: `compare-state.mjs::compareState` also leaves out the structure, scroll, flow and full-check rows
+  (painted ground, timeline, hover) for that pair. Pairs whose finder is a `textRun` or `group` skip the guard (the recorded
+  tag is the wrapper's). Configured pairs and the generated `gen-*` ones both run through `comparePair`; the automatic check
+  pairs by words and control type, so it cannot meet this. `tag` rows are not in `issue-classes.mjs::VISUAL`, so they
+  replace rows rather than adding to the issue count. A link (`a`, block class) against a `span` (inline text) is a `tag` row.
+- **Proof:** `walker-l2.test.mjs`: a real `collectPair` of a `<div>` against an `<img>` gives 1 `tag` row and 0
+  `object-fit`/`max-width`/`display` rows; `<span>` against `<h1>` gives 1; a `<div>` against a `<section>` still gives its
+  `font-size` row (negative control).
+- **Falsified by:** a style, box or hover row on a pair whose two elements are of different classes.
+
+## 21. Rows on blocks the pairing left unmatched are dropped, and listed (Spec 47 FR-47-6, L2.7)
+
+- **Gap:** `qa/pairs/<surface>.json::left` names the blocks the pairing could not pair with a draft element, yet a row on
+  one still reached triage (24 of one agent's 58 rows in Session B, and two medium-confidence `woocommerce/product-template`
+  rows).
+- **Detected by:** `lib/ref-trace.mjs::dropUnmatched` (called from `compare-state.mjs::compareState` after `stampRefs`).
+  The walker cannot import from the route, so `loadUnmatched` reads the pairing file: the config's `pairing: '<path>'`
+  (relative to the config), else `../pairs/<name>.json` beside it (`<name>` = the config's file name without extension and
+  without a trailing `.full`). A ref is dropped only when it is in `left` and in neither `keptPairs[].ref` nor
+  `coveredByHand`, and only for the six reasons in `DROP_REASONS` (no draft element holds its words; only N% of its words
+  matched; its draft element at N does not hold the same words; the draft element also holds N word(s) that belong outside
+  this block; no matched words; no draft control with its name, id, placeholder or label). **Never dropped:** "no painted
+  words (an image, an icon or an empty wrapper)" (images and icons were never doubtful pairings) and "its width is Npx on
+  the draft against Npx live" (the width difference is the finding). Dropped rows are recorded as
+  `run.pairs[name].unmatched = [{ ref, why, count }]` in `report.json` and listed under "Rows dropped for unmatched blocks"
+  in `report.md` (`appendUnmatchedReport`), so nothing disappears silently. This is the one L2 item that lowers the sweep totals.
+- **Proof:** `walker-l2.test.mjs`: a row stamped `cr-ref-x-5` with `x-5` in `left` for a drop reason disappears and is
+  counted; the same row stays when `x-5` is in `keptPairs` or `coveredByHand`, or was left for a width or image reason; an
+  unlisted reason is kept; through `compareState` the same four cases hold. Against the Eye Care pairings in the repo, 68 of the
+  127 `left` entries are droppable (header 5, help 2, home 11, lens 2, lenses 1, product 12, shop 25, size-guide 10), 48
+  "no painted words" and 11 "its width is" entries are kept.
+- **Falsified by:** a dropped row whose ref is in `keptPairs` or `coveredByHand`, a dropped row with no entry in
+  `unmatched`, or a width or image `left` entry whose rows were dropped.
+
+## 22. 1920 is in every standard run (Spec 47 FR-47-6 item 2, L2.1)
+
+- **Gap:** a hand-run walk used `cfg.widths || [1440, 768, 375]`, so the 1920 layout was read only when `solve.mjs` asked
+  for it.
+- **Detected by:** `draft-live-walk.mjs`'s default and both usage strings name `[1440, 768, 375, 1920]`;
+  `benchmark/score.mjs` has the same fallback (it changes no present behaviour: the benchmark cases pass `--widths`
+  explicitly, and `solve.mjs` passes all four itself).
+- **Proof:** `walker-l2.test.mjs` reads the three strings.
+- **Falsified by:** a walk with no `--widths` and no `cfg.widths` that reads three widths.
+
+## 23. Focus and press feedback of every interactive element (Spec 47 FR-47-6 item 3, L2.2)
+
+- **Gap:** focus rings were read only on pairs a config flagged (a real Tab), hover only through `forcedHover`, and
+  `:active` never; an unflagged button with a focus ring or a press effect on one side only was invisible.
+- **Detected by:** `collect.mjs::ACTIVE_PROPS` (beside `FOCUS_PROPS`); `devtools.mjs::forcedPseudo( cdp, page, finder,
+  RESOLVE, states[], read )` forces `hover`, `active`, `focus` or `focus-visible` on the element (and the matching state on
+  each ancestor: hover, active, `:focus-within`) and `forcedHover` is now its `['hover']` case. Configured pairs: 
+  `state-passes.mjs::activePass` reads `:active` on every pair of a ref-traced walk (opt out `active: false`) and on pairs
+  flagged `active: true` otherwise; `compare.mjs::comparePair` judges it as it judges hover and emits kind `active`
+  (`ref-trace.mjs::stampRefs` stamps it). Every interactive element: `auto-collect.mjs::collectAuto` lists links, buttons,
+  form controls, summaries and tabs in `interactives` (and `window.__crInter`); `state-passes.mjs::readInteractives` reads the
+  first 60 per state at rest, with focus forced (not on a phone) and with `:active` forced; `auto-compare.mjs::compareInteractive`
+  pairs them by type and name and emits kind `auto`, keys `focus:<property> "<type name>"` and `active:<property> "<type name>"`
+  where the end value moves off rest on at least one side and the two differ (an outline's width, colour and offset are no
+  row while either side's outline style is none). Phones keep skipping focus and hover; a touch presses, so `:active` is read there.
+- **Proof:** `walker-l2.test.mjs`: `:focus-visible { outline: 3px solid red }` on one side only gives a `focus` row (real Tab)
+  and an `focus:outline-style` auto row for the button and the link; `:active { transform: scale(.9) }` gives an `active` row
+  and an `active:transform` auto row; identical pages give none; 70 buttons are read 60 at a time; `forcedPseudo` forces
+  `:focus-within` on the parent and clears the force. Cost: about 90ms per interactive element, so a state of 60 reads in
+  about 6s per side.
+- **Falsified by:** a focus ring or press effect that differs on a matched interactive element with no row.
+
+## 24. Link coverage: the same words must sit inside a link on both sides (Spec 47 FR-47-6 item 4, L2.3)
+
+- **Gap:** `links.mjs::compareLinks` drops the draft's `#` links (`realDraftHref`), so a draft link whose live words are
+  plain (or the reverse) was never caught.
+- **Detected by:** `auto-collect.mjs::collectAuto` sets `lk: true` on each word inside an `a[href]`;
+  `auto-compare.mjs::compareAuto` (`compareLinkCoverage`) groups consecutive matched words with the same difference into one
+  row, kind `auto`, key `link-missing "<words>"` (a link in the draft, plain on live: draft `link`, live `plain`) or
+  `link-extra "<words>"` (the reverse). The walker cannot know whether the block has a link setting, so a row says only that
+  one side links the words and the other does not; triage decides the rest. The kind stays `auto` (no new kind): the sweep
+  and triage filter on the key prefix.
+- **Proof:** `walker-l2.test.mjs`: draft `<a href="#">Shop now</a>` against live `<span>Shop now</span>` gives one
+  `link-missing "shop now"` row; both linked and both plain give none; the reverse is one `link-extra` row.
+- **Falsified by:** matched words linked on one side only with no `link-missing` or `link-extra` row.
+
+## 25. Line counts during state transitions (Spec 47 FR-47-6 item 5, L2.4)
+
+- **Gap:** no line-count code existed: a header title that wraps to 2 lines for 300ms during a shrink (or a drawer's text
+  that reflows as it opens) on one side only painted a different frame and produced no row.
+- **Detected by:** `paint.mjs::lineRows( el )` (self-contained, in `PAINT_SRC`): the number of line boxes of the text inside
+  an element, text rects grouped by top within 2px as `textRun` groups its rows. `state-passes.mjs::sampleLines` reads it for
+  pairs flagged `lines: true` and any flagged `timeline: true` at 30, 120, 250 and 450ms after each action (run concurrently with
+  the motion timeline from `draft-live-walk.mjs`'s `onAction`), `settledLines` reads the settled count into
+  `snap.lines = { at: { <ms>: n }, settled: n }`, and `compare.mjs::compareLines` (from `comparePair`) emits kind `lines`, keys
+  `lines@<t>ms` for a count that differs at that instant and `lines` for the settled count. `lines` rows are stamped with
+  the ref like style rows and are not in `VISUAL`. Only actions (click, tap, hover) are sampled, not scrolls.
+- **Proof:** `walker-l2.test.mjs`: a title that wraps for 300ms after an action on one side only gives `lines@120ms` (1 against
+  3 lines here) and no settled `lines` row; both steady gives none; `lineRows` counts 1, a wrapped title and 0.
+- **Falsified by:** a pair whose text wraps to a different number of lines at the same instant of an action with no `lines@` row.
+
+## 26. Entrance motion of a region opened by an action (Spec 47 FR-47-6, L2.5)
+
+- **Gap:** three, not one. (1) The walker sampled entrances only once, at page load, so a drawer or panel that staggers its
+  items in after a click was never read; (2) `entrance` is not in `issue-classes.mjs::VISUAL`, so its rows are not counted as
+  visual rows (lane L6's decision, untouched here); (3) a row carried no ref, so it could not be mapped to a block.
+  A CSS keyframe on one side against none was reported as a row where the region is sampled (the third premise needed no
+  separate fix: the sampler reads the painted pose, not the technique).
+- **Detected by:** `entrances.mjs::sampleRegion( page, side, cfg, rootSel )` waits up to `cfg.regionWait` (400ms) for the
+  region to show, then samples blocks as `sampleEntrances` does for `cfg.regionWindow` (1200ms), counted from the call. A state
+  names the region with `region: { draft: '<selector>', live: '<selector>' }`; `draft-live-walk.mjs`'s `onAction` samples it
+  as the action fires and `compare-state.mjs::compareState` compares it into the pseudo-pair `(region)`. Live blocks carry
+  their `ref`, `block` and `path` (`ref-trace.mjs::traceRef`, ref-traced walks), and `compareEntrances` copies them onto its
+  rows, load entrances included. Note the sampler starts after the click returns, so an entrance finished inside that gap is
+  missed; `lint.mjs` does not list `(region)` among the pairs an `accept` may name.
+- **Proof:** `walker-l2.test.mjs`: items staggered in 80ms steps by script on one side against all fading together on the other
+  give an `entrance "charlie"` row carrying `ref: cr-ref-x-3` and `path: ''` and none for the first item; both together gives
+  none; a CSS keyframe on one side against none gives a row.
+- **Falsified by:** a drawer item that enters later on one side with no `entrance` row, or an `entrance` row of a ref-traced
+  walk with no `ref`.

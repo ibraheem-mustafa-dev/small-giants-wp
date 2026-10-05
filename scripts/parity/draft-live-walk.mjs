@@ -9,11 +9,14 @@
 // shot with its review note). Exits 1 on a config lint problem, a difference that is not
 // accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
 //
-// Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375]
+// Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375,1920]
 //        [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"] [--inject-live-js "js"]
 //        [--headless] [--self draft|live] [--no-auto] [--dump-auto] [--lean] [--draft-cache file]
 // --lean reads only what a settings writer uses (styles, boxes, hover end states, structure, scroll-ins): no load
 // entrances, motion timelines, automatic check, links, reveal sweep, screenshots or focus pass (Spec 47 Solve rounds).
+// A state may name `region: { draft: '<selector>', live: '<selector>' }` (a drawer or panel its action opens): its entrance is
+// sampled as the action fires and compared as the pair "(region)" (GAP-CHECKLIST.md section 26). A pair may set `lines: true`
+// (line counts during the action, section 25) and `active: true` (the pressed state, section 23).
 // --draft-cache keeps the draft side's reads per width, state list and mode in a file and reuses them: the draft does not
 // change between the walks of one run.
 // Runs headed unless --headless is passed. Needs NODE_EXTRA_CA_CERTS set to certifi's bundle for the Hostinger sites.
@@ -24,9 +27,9 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair, collectRunning, hoverStyles } from './lib/collect.mjs';
 import { PAINT_SRC } from './lib/paint.mjs';
-import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses } from './lib/state-passes.mjs';
+import { SCROLL_PROPS, scrollInPass, revealSweep, hoverPass, focusPasses, activePass, readInteractives, sampleLines, settledLines } from './lib/state-passes.mjs';
 import { collectLinks, probeLinks, unseenLabels } from './lib/links.mjs';
-import { sampleEntrances } from './lib/entrances.mjs';
+import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
@@ -37,7 +40,7 @@ import { makeHelpers } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
 import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
-import { REF_PROPS, elementPath, traceRef } from './lib/ref-trace.mjs';
+import { REF_PROPS, elementPath, traceRef, loadUnmatched, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
 import { openDevtools, settleAnimations, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
 
@@ -51,7 +54,7 @@ const flag = ( name ) => {
 };
 const cfgPath = path.resolve( argv[ 0 ] || '' );
 if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
-	console.error( 'Usage: node draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375] [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]' );
+	console.error( 'Usage: node draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375,1920] [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]' );
 	process.exit( 2 );
 }
 const cfg = ( await import( pathToFileURL( cfgPath ).href ) ).default;
@@ -60,7 +63,7 @@ if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );
 }
-const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375 ] ).join( ',' ) ).split( ',' ).map( Number );
+const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375, 1920 ] ).join( ',' ) ).split( ',' ).map( Number );
 const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
 const lean = argv.includes( '--lean' );
@@ -80,6 +83,8 @@ const PATH = elementPath.toString();
 // writing settings sees every property a setting could fix.
 const propsFor = ( p ) => ( refPrefix ? [ ...new Set( [ ...DEFAULT_PROPS, ...( p.props || [] ), ...REF_PROPS ] ) ] : p.props || DEFAULT_PROPS );
 const divergences = loadDivergences( cfgPath, cfg );
+// The blocks the pairing left unmatched (qa/pairs/<surface>.json, section 21): their rows are dropped and listed, never silent.
+const unmatched = refPrefix ? loadUnmatched( cfgPath, cfg ) : new Map();
 const cb = ( url ) => url.replace( '{cb}', String( Date.now() ) );
 // The full checks (GAP-CHECKLIST.md section 11: motion timelines, painted grounds, inventories, hover
 // effects, phone widths) run on every page; `mode: 'basic'` turns them off for a quick look.
@@ -128,14 +133,29 @@ async function walkSide( browser, side, width ) {
 	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
 	page.on( 'console', ( m ) => m.type() === 'error' && errors.push( m.location()?.url ? `${ m.text() } (${ m.location().url })` : m.text() ) );
 	let tracked = [];
+	let regionRoot = null;
+	// Right after each action, concurrently: the motion timeline (30, 120, 250, 450ms), the pairs' line counts at the same
+	// instants (GAP-CHECKLIST.md section 25) and, for a state naming a `region` (a drawer or panel its action opens), the
+	// region's entrance as it paints in (section 26). The first sample of a region that found blocks is kept.
 	const onAction = header && ! lean ? async () => {
-		const t = await sampleTimeline( page, tracked, side, RESOLVE );
+		const [ t, ln, reg ] = await Promise.all( [
+			sampleTimeline( page, tracked, side, RESOLVE ),
+			sampleLines( page, tracked, side, RESOLVE ),
+			regionRoot && ! h.region ? sampleRegion( page, side, cfg, regionRoot ) : null,
+		] );
 		h.timeline = t.samples;
-		return t.spent;
+		h.lines = ln.samples;
+		if ( reg && Object.keys( reg.blocks ).length ) {
+			h.region = reg;
+		}
+		return Math.max( t.spent, ln.spent, reg ? cfg.regionWindow ?? 1200 : 0 );
 	} : null;
 	const h = makeHelpers( page, side, { cb, RESOLVE, onAction } );
 	// Ref-traced walks read through the DevTools protocol too: every pair's forced hover and its declared sizes.
 	const cdp = refPrefix ? await openDevtools( page ) : null;
+	// Pressed states (section 23): a ref-traced walk reads every pair through that session; a hand config flags pairs
+	// `active: true` and gets a session of its own. The automatic check's interactive elements use whichever exists.
+	const pressCdp = cdp || ( header && ! lean && ( autoOn || cfg.pairs.some( ( q ) => q.active ) ) ? await openDevtools( page ) : null );
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;
@@ -147,6 +167,9 @@ async function walkSide( browser, side, width ) {
 	for ( const state of cfg.states ) {
 		h.log = [];
 		h.timeline = null;
+		h.lines = null;
+		h.region = null;
+		regionRoot = state.region?.[ side ] || null;
 		tracked = pairsFor( state );
 		if ( state[ side ] ) {
 			await state[ side ]( h );
@@ -194,6 +217,11 @@ async function walkSide( browser, side, width ) {
 			snap[ p.name ].scroll = { pre: await page.evaluate( hoverStyles, [ p[ side ], SCROLL_PROPS, RESOLVE, PAINT_SRC ] ) };
 		}
 		const auto = autoOn ? await collectAutoOn( page, side, cfg ) : null;
+		// Focus and press feedback of the first 60 interactive elements, read now while the page is as collected.
+		await readInteractives( page, pressCdp, auto, RESOLVE, { phone: !! phone.isMobile } );
+		if ( header && ! lean ) {
+			await settledLines( page, pairs, side, RESOLVE, snap, h.lines );
+		}
 		// Links (section 14): the live side's same-origin targets are fetched once per run.
 		const links = false === cfg.links || lean ? null : await collectLinks( page, side, cfg );
 		if ( links && 'live' === side ) {
@@ -222,8 +250,9 @@ async function walkSide( browser, side, width ) {
 		await hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full: header, phone: !! phone.isMobile, cdp } );
 		if ( header && ! lean ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
+			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp } );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ) };
+		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}
@@ -267,7 +296,7 @@ for ( const width of widths ) {
 			await sideBySide( browser, d.shot, l.shot, shot, width );
 		}
 		const run = { state: state.name, width, shot: shot ? path.basename( shot ) : null, pairs: {} };
-		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } );
+		compareState( run, d, l, { state, width, cfg, accept, divergences, tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched } );
 		results.runs.push( run );
 	}
 }
@@ -279,6 +308,7 @@ if ( unseen.length ) {
 	last.pairs[ '(links)' ].diffs.push( ...unseen.map( ( r ) => ( { ...r, accepted: isAccepted( accept, { pair: '(links)', state: last.state, width: last.width, boxMatches: true }, r )?.reason || null } ) ) );
 }
 const { open, accepted } = writeReport( outDir, cfg, results );
+appendUnmatchedReport( outDir, results );
 const unreviewed = argv.includes( '--no-review' ) ? 0 : writeContactSheet( outDir, cfg, results.runs );
 const liveErrors = Object.values( results.errors ).flatMap( ( e ) => e.live );
 console.log( `${ cfg.name }: ${ open } open, ${ accepted } accepted, ${ unreviewed } shots unreviewed, ${ liveErrors.length } live console errors. Report: ${ path.join( outDir, 'report.md' ) }, contact sheet: ${ path.join( outDir, 'contact.md' ) }` );

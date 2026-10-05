@@ -67,24 +67,33 @@ async function chainOf( cdp, finder, resolveSrc, ancestors ) {
 	return ids;
 }
 
-// The hover end state of one pair, read with :hover forced on its element and every ancestor (as a real pointer hovers
-// the whole chain, so `.card:hover .title` rules apply), after its transitions finish; the force is cleared after.
+// What an ancestor of the forced element matches while the element is in a state: a pointer over or a press on an
+// element hovers or presses the whole chain (so `.card:hover .title` and `.card:active .title` rules apply); focus on an
+// element makes each ancestor :focus-within, never :focus.
+const ANCESTOR_STATE = { hover: 'hover', active: 'active', focus: 'focus-within', 'focus-visible': 'focus-within' };
+
+// One pair's end state with `states` (any of hover, active, focus, focus-visible) forced on its element through the
+// DevTools protocol, and the matching state on every ancestor, after its transitions finish; the force is cleared after.
 // read( ) reads the styles in the page (collect.mjs::hoverStyles). Returns its result, or null for a missing element.
-export async function forcedHover( cdp, page, finder, resolveSrc, read ) {
+export async function forcedPseudo( cdp, page, finder, resolveSrc, states, read ) {
 	const ids = await nodeChain( cdp, finder, resolveSrc, true );
 	if ( ! ids ) {
 		return null;
 	}
-	const force = ( classes ) => Promise.all( ids.map( ( nodeId ) => cdp.send( 'CSS.forcePseudoState', { nodeId, forcedPseudoClasses: classes } ) ) );
-	await force( [ 'hover' ] );
+	const up = [ ...new Set( states.map( ( s ) => ANCESTOR_STATE[ s ] ).filter( Boolean ) ) ];
+	const force = ( own, above ) => Promise.all( ids.map( ( nodeId, i ) => cdp.send( 'CSS.forcePseudoState', { nodeId, forcedPseudoClasses: 0 === i ? own : above } ) ) );
+	await force( states, up );
 	try {
 		await settleAnimations( page, { floor: 30, cap: 3000 } );
 		return await read();
 	} finally {
-		await force( [] );
+		await force( [], [] );
 		await settleAnimations( page, { floor: 0, cap: 3000 } );
 	}
 }
+
+// The hover end state of one pair: forcedPseudo with :hover (read( ) is collect.mjs::hoverStyles).
+export const forcedHover = ( cdp, page, finder, resolveSrc, read ) => forcedPseudo( cdp, page, finder, resolveSrc, [ 'hover' ], read );
 
 // Node side: the declared value of `prop` from CSS.getMatchedStylesForNode's answer, as the cascade picks it: the
 // matched author rules in ascending precedence then the inline style, the last declaration winning, an !important

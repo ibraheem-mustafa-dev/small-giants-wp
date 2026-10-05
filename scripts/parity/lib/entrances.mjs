@@ -5,11 +5,22 @@
 // `entranceWindow` ms (default 1600): its effective opacity and the transforms on it and its ancestors.
 // A block's entrance is the time its pose first changed and the time it last changed.
 import { AUTO_EXCLUDE } from './auto-walk.mjs';
+import { traceRef, elementPath } from './ref-trace.mjs';
 
-function sampleIn( [ rootSel, exclude, windowMs ] ) {
-	const root = rootSel ? [ ...document.querySelectorAll( rootSel ) ].find( ( e ) => e.getClientRects().length ) : document.body;
+// The live side's ref arguments for sampleIn: [ refPrefix, traceSrc, pathSrc ], or null (the draft, or a walk with no refPrefix).
+const traceArgs = ( side, cfg ) => ( 'live' === side && cfg.refPrefix ? [ cfg.refPrefix, traceRef.toString(), elementPath.toString() ] : null );
+const excludeFor = ( side, cfg ) => [ ...AUTO_EXCLUDE, ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e ) ];
+
+async function sampleIn( [ rootSel, exclude, windowMs, trace, waitMs ] ) {
+	const findRoot = () => ( rootSel ? [ ...document.querySelectorAll( rootSel ) ].find( ( e ) => e.getClientRects().length ) : document.body );
+	// A region that opens with the action (a drawer, a panel) is waited for: its root shows a moment after the click.
+	let root = findRoot();
+	for ( let waited = 0; ! root && waited < waitMs; waited += 20 ) {
+		await new Promise( ( r ) => setTimeout( r, 20 ) );
+		root = findRoot();
+	}
 	if ( ! root ) {
-		return { loops: [], blocks: {} };
+		return { loops: [], blocks: {}, refs: {} };
 	}
 	// A config rooted at one element (a footer) samples only it, exclusions aside.
 	const ex = rootSel ? [] : exclude.flatMap( ( s ) => [ ...document.querySelectorAll( s ) ] );
@@ -40,7 +51,21 @@ function sampleIn( [ rootSel, exclude, windowMs ] ) {
 		}
 		return `${ Math.round( op * 20 ) / 20 }|${ tf.join( ',' ) }`;
 	};
-	const dcl = performance.getEntriesByType( 'navigation' )[ 0 ]?.domContentLoadedEventStart || 0;
+	// A page load counts from DOMContentLoaded; a region sampled during a state action (waitMs set) from now.
+	const dcl = waitMs ? performance.now() : performance.getEntriesByType( 'navigation' )[ 0 ]?.domContentLoadedEventStart || 0;
+	// The live side's blocks name their ref and path (ref-trace.mjs::traceRef), so a row maps back to one block. `trace`
+	// is [ refPrefix, traceSrc, pathSrc ] on the live side, null otherwise.
+	const refs = {};
+	if ( trace ) {
+		// eslint-disable-next-line no-new-func
+		const tracer = new Function( `return (${ trace[ 1 ] });` )();
+		for ( const [ key, el ] of blocks ) {
+			const t = tracer( el, null, trace[ 0 ], trace[ 2 ] );
+			if ( t ) {
+				refs[ key ] = { ref: t.ref, block: t.block, path: t.path };
+			}
+		}
+	}
 	const track = [ ...blocks ].map( ( [ key, el ] ) => ( { key, el, last: pose( el ), start: null, end: null } ) );
 	const t0 = performance.now();
 	return new Promise( ( done ) => {
@@ -60,7 +85,7 @@ function sampleIn( [ rootSel, exclude, windowMs ] ) {
 				// A block still changing in the last 120ms is a loop (a ticker, a marquee, Ken Burns), not an
 				// entrance: whether its next turn lands inside the window is chance. Loops are left out.
 				const loops = track.filter( ( b ) => null !== b.end && t - b.end < 120 ).map( ( b ) => b.key );
-				done( { loops, blocks: Object.fromEntries( track.map( ( b ) => [ b.key, null === b.start ? null : [ b.start, b.end ] ] ) ) } );
+				done( { loops, blocks: Object.fromEntries( track.map( ( b ) => [ b.key, null === b.start ? null : [ b.start, b.end ] ] ) ), refs } );
 			}
 		};
 		tick();
@@ -74,10 +99,17 @@ export async function sampleEntrances( page, side, cfg ) {
 	for ( let t = 0; t < 50 && /checking your browser/i.test( await page.title().catch( () => '' ) ); t++ ) {
 		await page.waitForTimeout( 300 );
 	}
-	const exclude = [ ...AUTO_EXCLUDE, ...( cfg.auto?.exclude?.[ side ] || [] ).filter( ( e ) => 'string' === typeof e ) ];
-	const out = await page.evaluate( sampleIn, [ cfg.auto?.root?.[ side ] || null, exclude, cfg.entranceWindow ?? 1600 ] ).catch( () => null );
+	const out = await page.evaluate( sampleIn, [ cfg.auto?.root?.[ side ] || null, excludeFor( side, cfg ), cfg.entranceWindow ?? 1600, traceArgs( side, cfg ), 0 ] ).catch( () => null );
 	await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 	return out;
+}
+
+// Samples what moves or fades in inside `rootSel` (a drawer or panel the state's action opens) from the moment it is called,
+// during the action, not at page load (GAP-CHECKLIST.md section 26). Call it as the action fires: it waits up to
+// `cfg.regionWait` ms (default 400) for the region to show, then samples for `cfg.regionWindow` ms (default 1200). Returns the
+// same { loops, blocks, refs } as sampleEntrances, with times counted from the call, or null when the page was lost mid-sample.
+export function sampleRegion( page, side, cfg, rootSel ) {
+	return page.evaluate( sampleIn, [ rootSel, excludeFor( side, cfg ), cfg.regionWindow ?? 1200, traceArgs( side, cfg ), cfg.regionWait ?? 400 ] ).catch( () => null );
 }
 
 // Times from the side's own first entrance: a draft that renders its page by script after
@@ -102,6 +134,7 @@ export function compareEntrances( draft, live, tol = 150 ) {
 		const a = d[ k ];
 		const b = l[ k ];
 		const differs = !! a !== !! b || ( a && ( Math.abs( a[ 0 ] - b[ 0 ] ) > tol || Math.abs( a[ 1 ] - b[ 1 ] ) > tol ) );
-		return differs ? [ { kind: 'entrance', key: `entrance "${ k }"`, draft: fmt( a ), live: fmt( b ) } ] : [];
+		// The live block's ref and path (ref-traced walks), so the row maps back to one block as a style row does.
+		return differs ? [ { kind: 'entrance', key: `entrance "${ k }"`, draft: fmt( a ), live: fmt( b ), ...( live.refs?.[ k ] || {} ) } ] : [];
 	} );
 }

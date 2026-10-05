@@ -1,10 +1,11 @@
 // The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep
 // before a full-page shot, hover end states and keyboard focus rings.
-import { HOVER_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
+import { HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
-import { forcedHover } from './devtools.mjs';
+import { forcedHover, forcedPseudo } from './devtools.mjs';
 import { focusPass } from './focus.mjs';
+import { INTERACTIVE_CAP } from './auto-compare.mjs';
 
 export const SCROLL_PROPS = [ 'opacity', 'transform', 'translate', 'scale', 'filter' ];
 
@@ -75,5 +76,88 @@ export async function focusPasses( page, pairs, side, snap, RESOLVE, phone ) {
 		if ( ! snap[ p.name ].missing ) {
 			snap[ p.name ].focus = await focusPass( page, p, side, RESOLVE );
 		}
+	}
+}
+
+// Pressed (:active) end states, read with :active forced on the element and its ancestors (devtools.mjs::forcedPseudo), after
+// the transitions finish (GAP-CHECKLIST.md section 23). `all` (a ref-traced walk, which already holds a DevTools session)
+// reads every pair that does not opt out with `active: false`; otherwise only pairs flagged `active: true`. A text run or a
+// group measures no one element, so it has no pressed state. Unlike hover and focus, a phone is read: a touch presses.
+export async function activePass( page, pairs, side, snap, RESOLVE, cdp, { all = false } = {} ) {
+	if ( ! cdp ) {
+		return;
+	}
+	for ( const p of pairs.filter( ( q ) => ( all ? false !== q.active : true === q.active ) && ! snap[ q.name ].missing && ! q[ side ]?.textRun && ! q[ side ]?.group ) ) {
+		const props = p.activeProps || ACTIVE_PROPS;
+		snap[ p.name ].active = await forcedPseudo( cdp, page, p[ side ], RESOLVE, [ 'active' ], () => page.evaluate( hoverStyles, [ p[ side ], props, RESOLVE, PAINT_SRC ] ) );
+	}
+}
+
+// Focus and press feedback of the automatic check's interactive elements (auto-collect.mjs's `interactives`, window.__crInter),
+// the first INTERACTIVE_CAP (60) of a state: each is read at rest, with focus and focus-visible forced (not on a phone, which
+// has no Tab key) and with :active forced, onto auto.interactives[i].rest / .focus / .active. Compared by
+// auto-compare.mjs::compareInteractive.
+export async function readInteractives( page, cdp, auto, RESOLVE, { phone = false } = {} ) {
+	if ( ! cdp || ! auto?.interactives?.length ) {
+		return;
+	}
+	const rest = [ ...new Set( [ ...FOCUS_PROPS, ...ACTIVE_PROPS ] ) ];
+	for ( const [ i, c ] of auto.interactives.slice( 0, INTERACTIVE_CAP ).entries() ) {
+		const finder = { js: `() => window.__crInter[${ i }]` };
+		const read = ( props ) => () => page.evaluate( hoverStyles, [ finder, props, RESOLVE, PAINT_SRC ] ).catch( () => null );
+		c.rest = await read( rest )();
+		if ( ! c.rest ) {
+			continue;
+		}
+		if ( ! phone ) {
+			c.focus = await forcedPseudo( cdp, page, finder, RESOLVE, [ 'focus', 'focus-visible' ], read( FOCUS_PROPS ) ).catch( () => null );
+		}
+		c.active = await forcedPseudo( cdp, page, finder, RESOLVE, [ 'active' ], read( ACTIVE_PROPS ) ).catch( () => null );
+	}
+}
+
+// Line counts (GAP-CHECKLIST.md section 25) of the pairs flagged `lines: true` and any flagged `timeline: true`: the number of
+// line boxes of each pair's text (paint.mjs::lineRows) at 30, 120, 250 and 450ms after the state's action (run from
+// draft-live-walk.mjs's onAction beside the motion timeline). Returns { samples: [{ t, data: { name: count|null } }], spent }.
+export const LINE_SAMPLES = [ 30, 120, 250, 450 ];
+const countLines = ( [ finders, resolveSrc, paintSrc ] ) => {
+	// eslint-disable-next-line no-new-func
+	const resolve = new Function( `return (${ resolveSrc });` )();
+	// eslint-disable-next-line no-new-func
+	const { lineRows } = new Function( `${ paintSrc }; return { lineRows };` )();
+	return Object.fromEntries( Object.entries( finders ).map( ( [ name, f ] ) => {
+		const el = resolve( f );
+		return [ name, el ? lineRows( el ) : null ];
+	} ) );
+};
+const lineRoots = ( pairs ) => pairs.filter( ( p ) => ! p.draft?.group && ! p.live?.group && ( p.lines || p.timeline ) );
+export async function sampleLines( page, pairs, side, RESOLVE ) {
+	const roots = lineRoots( pairs );
+	if ( ! roots.length ) {
+		return { samples: [], spent: 0 };
+	}
+	const finders = Object.fromEntries( roots.map( ( p ) => [ p.name, p[ side ] ] ) );
+	const samples = [];
+	let last = 0;
+	for ( const t of LINE_SAMPLES ) {
+		await page.waitForTimeout( t - last );
+		last = t;
+		// A tap that navigates destroys the page mid-sample: the sample reads as nothing there.
+		const data = await page.evaluate( countLines, [ finders, RESOLVE, PAINT_SRC ] ).catch( () => Object.fromEntries( roots.map( ( p ) => [ p.name, null ] ) ) );
+		samples.push( { t, data } );
+	}
+	return { samples, spent: last };
+}
+
+// Each flagged pair's settled count, then the snapshot's `lines`: { at: { <ms>: count }, settled: count }.
+export async function settledLines( page, pairs, side, RESOLVE, snap, samples ) {
+	const roots = lineRoots( pairs ).filter( ( p ) => snap[ p.name ] && ! snap[ p.name ].missing );
+	if ( ! roots.length ) {
+		return;
+	}
+	const finders = Object.fromEntries( roots.map( ( p ) => [ p.name, p[ side ] ] ) );
+	const settled = await page.evaluate( countLines, [ finders, RESOLVE, PAINT_SRC ] ).catch( () => ( {} ) );
+	for ( const p of roots ) {
+		snap[ p.name ].lines = { at: Object.fromEntries( ( samples || [] ).map( ( s ) => [ s.t, s.data?.[ p.name ] ?? null ] ) ), settled: settled[ p.name ] ?? null };
 	}
 }

@@ -159,6 +159,8 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 				}
 			}
 			styleCache.set( el, skip ? null : {
+				// A word inside a link (a[href]): the link-coverage rows (auto-compare.mjs::compareAuto) read it.
+				...( el.closest( 'a[href]' ) ? { lk: true } : {} ),
 				fs: cs.fontSize, fw: cs.fontWeight, ff: cs.fontFamily.split( ',' )[ 0 ].replace( /["']/g, '' ).trim().toLowerCase(),
 				fst: cs.fontStyle, tt: cs.textTransform, ls: cs.letterSpacing, c: srgb( cs.color ), td, tsh: cs.textShadow, fixed: fixedOf( el ), m: inModal( el ),
 			} );
@@ -222,5 +224,24 @@ export function collectAuto( [ scope, exclude, maxWords ] ) {
 			client: { l: r.left, r: r.right, t: range && r.height < 16 ? r.top + r.height / 2 - 8 : r.top, b: range && r.height < 16 ? r.top + r.height / 2 + 8 : r.bottom }, clip,
 		} );
 	}
-	return { words, controls, dpr: window.devicePixelRatio, scrollX: sx, scrollY: sy, vw: innerWidth, vh: innerHeight };
+	// Every interactive element (links, buttons, form controls, tabs), in reading order: the walker reads each one's focus
+	// ring and press feedback (state-passes.mjs::readInteractives) from window.__crInter, so a control no config names
+	// is still compared. An element is named by its words, else its label, placeholder, title or name.
+	const INTERACTIVE = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab], [role=link], [role=switch], [tabindex]:not([tabindex="-1"])';
+	const interactives = [];
+	window.__crInter = [];
+	for ( const el of root.querySelectorAll( INTERACTIVE ) ) {
+		if ( excluded( el ) || el.disabled || 'true' === el.getAttribute( 'aria-disabled' ) ) {
+			continue;
+		}
+		const r = el.getBoundingClientRect();
+		const cs = getComputedStyle( el );
+		if ( r.width < 6 || r.height < 6 || 'hidden' === cs.visibility || srOnly( el ) || hidden( el, r ) ) {
+			continue;
+		}
+		const name = ( el.innerText || el.getAttribute( 'aria-label' ) || el.getAttribute( 'placeholder' ) || el.getAttribute( 'title' ) || el.getAttribute( 'alt' ) || el.querySelector( 'img' )?.alt || el.getAttribute( 'name' ) || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase().slice( 0, 40 );
+		interactives.push( { type: 'INPUT' === el.tagName ? `input:${ el.type }` : el.getAttribute( 'role' ) || el.tagName.toLowerCase(), name, m: inModal( el ) } );
+		window.__crInter.push( el );
+	}
+	return { words, controls, interactives, dpr: window.devicePixelRatio, scrollX: sx, scrollY: sy, vw: innerWidth, vh: innerHeight };
 }

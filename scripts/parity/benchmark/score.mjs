@@ -62,7 +62,7 @@ export function scoreDir( outDir, meta = {} ) {
 		.filter( ( c ) => has( `case-${ c.id }` ) && has( `${ c.config }-control` ) );
 	const results = cases.map( ( c ) => {
 		const control = rowsOf( path.join( outDir, `${ c.config }-control`, 'report.json' ) );
-		const widths = c.widths || [ 1440, 768, 375 ];
+		const widths = c.widths || [ 1440, 768, 375, 1920 ];
 		const rows = newRows( control, rowsOf( path.join( outDir, `case-${ c.id }`, 'report.json' ) ), widths );
 		const hits = c.match ? rows.filter( ( r ) => c.match.test( rowText( r ) ) ) : [];
 		return { id: c.id, config: c.config, label: c.label, fix: c.fix, noise: !! c.noise, match: String( c.match || '' ), caught: hits.length > 0, onlyAccepted: hits.length > 0 && hits.every( ( r ) => r.accepted ), hits, rows };

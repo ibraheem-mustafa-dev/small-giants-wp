@@ -136,5 +136,26 @@ export function groupBox( paths ) {
 	return { box: { x: Math.round( l ), y: Math.round( t + window.scrollY ), w: Math.round( w ), h: Math.round( h ) }, carrier: null };
 }
 
+// Self-contained. The number of line boxes the text inside `el` is laid out on: every text node's per-line client rects,
+// grouped by their top the way textRun groups its text boxes (rects within 2px of one top are one line). A title that
+// wraps is 2, a one-line label 1; 0 when no text paints. (GAP-CHECKLIST.md section 25.)
+export function lineRows( el ) {
+	const tops = [];
+	const tw = document.createTreeWalker( el, NodeFilter.SHOW_TEXT );
+	for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
+		if ( ! n.textContent.trim() ) {
+			continue;
+		}
+		const rg = document.createRange();
+		rg.selectNodeContents( n );
+		for ( const b of rg.getClientRects() ) {
+			if ( b.width && b.height && ! tops.some( ( t ) => Math.abs( t - b.top ) <= 2 ) ) {
+				tops.push( b.top );
+			}
+		}
+	}
+	return tops.length;
+}
+
 // The source collectPair and hoverStyles rebuild their paint helpers from.
-export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun, groupBox ].map( ( f ) => f.toString() ).join( ';\n' );
+export const PAINT_SRC = [ textCarrier, paintedDecoration, layoutElement, textRun, groupBox, lineRows ].map( ( f ) => f.toString() ).join( ';\n' );

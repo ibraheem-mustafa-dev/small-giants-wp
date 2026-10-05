@@ -166,6 +166,25 @@ const SAME = { 'text-align': [ [ 'start', 'left' ] ] };
 const FLEX_SAME = { 'justify-content': [ [ 'normal', 'flex-start', 'start' ] ], 'align-items': [ [ 'normal', 'stretch' ] ] };
 const equivalent = ( p, a, b, flex = false ) => [ ...( SAME[ p ] || [] ), ...( flex ? FLEX_SAME[ p ] || [] : [] ) ].some( ( set ) => set.includes( a ) && set.includes( b ) );
 
+// Tag classes (GAP-CHECKLIST.md section 20): what an element is, for the guard against comparing different things. A
+// draft <div> against a live <img>, or a <span> against an <h1>, shares no style, box or hover meaning, so every row
+// between them would be false. Different classes give one `tag` row and nothing else.
+const MEDIA_TAGS = new Set( [ 'img', 'picture', 'video', 'canvas', 'svg', 'iframe' ] );
+const CONTROL_TAGS = new Set( [ 'input', 'select', 'textarea' ] );
+const INLINE_TAGS = new Set( [ 'span', 'em', 'strong', 'b', 'i', 'small', 'abbr', 'code', 'label' ] );
+export function tagClass( tag ) {
+	const t = String( tag || '' ).toLowerCase();
+	if ( MEDIA_TAGS.has( t ) ) {
+		return 'media';
+	}
+	if ( CONTROL_TAGS.has( t ) ) {
+		return 'control';
+	}
+	return INLINE_TAGS.has( t ) ? 'inline text' : 'block';
+}
+// A text-run or group finder measures a set of text nodes or a union box: its recorded tag is the wrapper's, not the thing measured.
+const wrapperFinder = ( f ) => !! ( f && 'object' === typeof f && ( f.textRun || f.group ) );
+
 // Returns [{ kind, key, draft, live }] for one pair in one state at one width.
 export function comparePair( pair, d, l, tol ) {
 	const diffs = [];
@@ -174,6 +193,10 @@ export function comparePair( pair, d, l, tol ) {
 		if ( d.missing !== l.missing ) {
 			add( 'presence', 'element', d.missing ? 'missing' : 'present', l.missing ? 'missing' : 'present' );
 		}
+		return diffs;
+	}
+	if ( d.tag && l.tag && ! wrapperFinder( pair.draft ) && ! wrapperFinder( pair.live ) && tagClass( d.tag ) !== tagClass( l.tag ) ) {
+		add( 'tag', 'tag', `<${ d.tag }> (${ tagClass( d.tag ) })`, `<${ l.tag }> (${ tagClass( l.tag ) })` );
 		return diffs;
 	}
 	if ( pair.text !== false && ! sameWords( d.text, l.text ) ) {
@@ -228,19 +251,42 @@ export function comparePair( pair, d, l, tol ) {
 	}
 	// A hover row is a difference in what hovering changes: where neither side's hover end state moves a property off
 	// its rest value, a difference there is the rest row's (a rest colour that differs is not also a hover colour).
-	if ( d.hover && l.hover ) {
-		const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s.hover[ p ], s.styles[ p ], tol.px );
-		for ( const p of Object.keys( d.hover ) ) {
-			if ( borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
-				continue;
-			}
-			if ( ! sameValue( p, d.hover[ p ], l.hover[ p ], tol.px ) ) {
-				add( 'hover', p, d.hover[ p ], l.hover[ p ] );
+	// The same judgement for the pressed state (:active, GAP-CHECKLIST.md section 23): rows of kind `active`.
+	for ( const [ kind, field ] of [ [ 'hover', 'hover' ], [ 'active', 'active' ] ] ) {
+		if ( d[ field ] && l[ field ] ) {
+			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
+			for ( const p of Object.keys( d[ field ] ) ) {
+				if ( borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
+					continue;
+				}
+				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {
+					add( kind, p, d[ field ][ p ], l[ field ][ p ] );
+				}
 			}
 		}
 	}
-	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ) );
+	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ), ...compareLines( d.lines, l.lines ) );
 	return diffs;
+}
+
+// Line counts (GAP-CHECKLIST.md section 25): the number of lines a pair's text wraps to, sampled during a state's action
+// (state-passes.mjs::sampleLines at 30, 120, 250 and 450ms) and once settled. `lines@<t>ms` rows are a count that differs at
+// that instant (a title wrapping to 2 lines for 300ms during a header's shrink on one side only); `lines` is the settled
+// count. A count either side could not read (the pair gone mid-action) is no row.
+export function compareLines( d, l ) {
+	const rows = [];
+	if ( ! d || ! l ) {
+		return rows;
+	}
+	for ( const t of Object.keys( d.at || {} ).filter( ( k ) => k in ( l.at || {} ) ) ) {
+		if ( null != d.at[ t ] && null != l.at[ t ] && d.at[ t ] !== l.at[ t ] ) {
+			rows.push( { kind: 'lines', key: `lines@${ t }ms`, draft: d.at[ t ], live: l.at[ t ] } );
+		}
+	}
+	if ( null != d.settled && null != l.settled && d.settled !== l.settled ) {
+		rows.push( { kind: 'lines', key: 'lines', draft: d.settled, live: l.settled } );
+	}
+	return rows;
 }
 
 // Scroll-in: the element's opacity and transform before it is scrolled to, after it

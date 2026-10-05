@@ -7,7 +7,7 @@ import { compareChrome } from './chrome-walk.mjs';
 import { autoPair } from './auto-walk.mjs';
 import { compareEntrances } from './entrances.mjs';
 import { compareLinks } from './links.mjs';
-import { stampRefs } from './ref-trace.mjs';
+import { stampRefs, dropUnmatched } from './ref-trace.mjs';
 import { judgeDivergence } from './divergences.mjs';
 
 // Where each pair sits in the page's flow (ref-traced walks): pairs with no configured anchor, in draft reading
@@ -36,7 +36,7 @@ export function flowOffsets( pairs, ds, ls, mainY, t ) {
 	return out;
 }
 
-export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks } ) {
+export function compareState( run, d, l, { state, width, cfg, accept, divergences = [], tol, header, autoOn, pairsFor, origins, linksSeen, allLiveLinks, unmatched } ) {
 	// Box differences are judged first: a notPainted accept holds only while every
 	// box difference on the pair is itself accepted (a 44px touch target, say).
 	// The config's accepts first, then the divergence ledger.
@@ -56,17 +56,24 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	run.pairs[ '(state)' ] = { draft: d.log, live: l.log, diffs: judge( '(state)', driveDiffs( d.log, l.log ) ) };
 	const flow = cfg.refPrefix ? flowOffsets( pairsFor( state ), d.snap, l.snap, { draft: d.mainY, live: l.mainY }, tol ) : {};
 	for ( const p of pairsFor( state ) ) {
-		const diffs = [
+		const own = comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } );
+		// Two elements of different kinds (a draft <div> against a live <img>, GAP-CHECKLIST.md section 20) are one `tag` row
+		// and nothing else: no structure, scroll, flow, painted-ground or timeline row between them either.
+		const mismatch = own.some( ( x ) => 'tag' === x.kind );
+		const diffs = mismatch ? own : [
 			...( flow[ p.name ] || [] ),
-			...comparePair( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) } ),
+			...own,
 			...compareStructure( p.name, d.structure, l.structure ),
 			...compareScroll( d.snap[ p.name ].scroll, l.snap[ p.name ].scroll ),
 			...anchorOffset( p, d.snap, l.snap, { ...tol, ...( p.tolerance || {} ) } ),
 		];
-		const all = header ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
+		const all = header && ! mismatch ? compareChrome( p, d.snap[ p.name ], l.snap[ p.name ], { ...tol, ...( p.tolerance || {} ) }, diffs ) : diffs;
 		// Stamped after the full-check rows too: a painted ground or text inset is the pair element's, like its styles.
 		stampRefs( all, l.snap[ p.name ].trace );
-		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, all ) };
+		// Rows on a block the pairing left unmatched are false findings (GAP-CHECKLIST.md section 21); each dropped one is
+		// recorded on the pair as `unmatched`, never silently.
+		const { diffs: kept, unmatched: dropped } = dropUnmatched( all, unmatched );
+		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, kept ), ...( dropped.length ? { unmatched: dropped } : {} ) };
 	}
 	if ( autoOn ) {
 		const a = autoPair( d.auto, l.auto, cfg );
@@ -74,6 +81,10 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	}
 	if ( d.entrances && l.entrances ) {
 		run.pairs[ '(entrance)' ] = { diffs: judge( '(entrance)', compareEntrances( d.entrances, l.entrances, cfg.entranceTolerance ) ) };
+	}
+	// The region a state's action opened (a drawer, a panel), sampled as it painted in (entrances.mjs::sampleRegion).
+	if ( d.region && l.region ) {
+		run.pairs[ '(region)' ] = { diffs: judge( '(region)', compareEntrances( d.region, l.region, cfg.entranceTolerance ) ) };
 	}
 	if ( l.links ) {
 		allLiveLinks.push( ...l.links );

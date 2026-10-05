@@ -113,7 +113,7 @@ export function compareAuto( D, L, opts = {} ) {
 	}
 	// Both sides show a modal: compare what is in it, not the page behind.
 	if ( D.words.some( ( w ) => w.m ) && L.words.some( ( w ) => w.m ) ) {
-		const only = ( x ) => ( { ...x, words: x.words.filter( ( w ) => w.m ), controls: x.controls.filter( ( c ) => c.m ) } );
+		const only = ( x ) => ( { ...x, words: x.words.filter( ( w ) => w.m ), controls: x.controls.filter( ( c ) => c.m ), interactives: ( x.interactives || [] ).filter( ( c ) => c.m ) } );
 		D = only( D );
 		L = only( L );
 	}
@@ -174,8 +174,75 @@ export function compareAuto( D, L, opts = {} ) {
 		}
 		flush();
 	}
+	compareLinkCoverage( D, L, pairs, add );
 	rows.push( ...compareControls( D, L, pairs, t, add ) );
+	compareInteractive( D, L, t, add );
 	return rows;
+}
+
+// Link coverage (GAP-CHECKLIST.md section 24): the same matched words must sit inside a link on both sides. Consecutive
+// words with the same difference make one row: `link-missing` (a link in the draft, plain on live) or `link-extra` (plain
+// in the draft, a link on live). The walker cannot know whether the block has a link setting, so a row says only that
+// one side links the words and the other does not; links.mjs::compareLinks never sees this (it drops the draft's "#" links).
+function compareLinkCoverage( D, L, pairs, add ) {
+	for ( const [ draftLinked, key ] of [ [ true, 'link-missing' ], [ false, 'link-extra' ] ] ) {
+		let run = null;
+		const flush = () => run && add( `${ key } ${ quote( run ) }`, draftLinked ? 'link' : 'plain', draftLinked ? 'plain' : 'link' );
+		let last = -2;
+		for ( const [ di, li ] of pairs ) {
+			const differs = !! D.words[ di ].lk === draftLinked && !! L.words[ li ].lk !== draftLinked;
+			if ( ! differs ) {
+				flush();
+				run = null;
+			} else if ( run && last === di - 1 ) {
+				run.push( D.words[ di ] );
+			} else {
+				flush();
+				run = [ D.words[ di ] ];
+			}
+			last = differs ? di : -2;
+		}
+		flush();
+	}
+}
+
+// Focus and press feedback of every interactive element (GAP-CHECKLIST.md section 23). state-passes.mjs::readInteractives
+// reads, for the first 60 interactive elements of a state on each side, the element at rest, with focus forced and with
+// :active forced. A draft element pairs with the live element of the same type and name, in reading order; a property
+// differs when it moves off its rest value on at least one side and the two end values differ. Rows are
+// `focus:<property> "<name>"` and `active:<property> "<name>"`, kind auto. An outline's width, colour and offset paint
+// nothing while its style is none, so they are no row while either side's style is none.
+export const INTERACTIVE_CAP = 60;
+export function pairInteractives( D, L ) {
+	const taken = new Set();
+	const out = [];
+	for ( const d of D.interactives || [] ) {
+		const j = ( L.interactives || [] ).findIndex( ( l, k ) => ! taken.has( k ) && l.type === d.type && l.name === d.name );
+		if ( j >= 0 ) {
+			taken.add( j );
+			out.push( [ d, L.interactives[ j ] ] );
+		}
+	}
+	return out;
+}
+export function compareInteractive( D, L, t, add ) {
+	const none = ( s ) => 'none' === s?.[ 'outline-style' ];
+	for ( const [ d, l ] of pairInteractives( D, L ) ) {
+		for ( const state of [ 'focus', 'active' ] ) {
+			if ( ! d[ state ] || ! l[ state ] ) {
+				continue;
+			}
+			const moved = ( s, k ) => ! s.rest || ! sameValue( k, s.rest[ k ], s[ state ][ k ], t.px );
+			for ( const k of Object.keys( d[ state ] ) ) {
+				if ( ! ( moved( d, k ) || moved( l, k ) ) || ( /^outline-(width|color|offset)$/.test( k ) && ( none( d[ state ] ) || none( l[ state ] ) ) ) ) {
+					continue;
+				}
+				if ( ! sameValue( k, d[ state ][ k ], l[ state ][ k ], t.px ) ) {
+					add( `${ state }:${ k } "${ d.type }${ d.name ? ` ${ d.name }` : '' }"`, d[ state ][ k ], l[ state ][ k ] );
+				}
+			}
+		}
+	}
 }
 
 // The word nearest a control on its own side (edge to edge, same fixed layer): its anchor.
