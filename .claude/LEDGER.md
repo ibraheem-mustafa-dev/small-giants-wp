@@ -23,8 +23,12 @@ and the contact form from 94 to 58 (2026-10-05 sweep, with the stricter comparis
 framework bugs, editor-canvas gaps) is built, deployed to both test sites and complete (2026-10-05), every block
 recalibrated on local copies of the test sites in WSL. The whole-site sweep is done
 (2026-10-05): every page and panel measured against the draft without changing anything, 2,373 differences found,
-and every fix-register item now says whether it is still open, fixed, or something the tool cannot measure. Next: sort
-what stays open (Session B), then one framework fix pass (Session C).
+and every fix-register item now says whether it is still open, fixed, or something the tool cannot measure. The sort
+is also done (2026-10-05): every one of those 2,373 differences is now in one labelled box with evidence, and only
+**163 are real gaps in the framework** rather than measuring artefacts, knock-on effects or things that write
+themselves. Every one of the 163 has a pattern elsewhere in the framework to copy, so nothing needs inventing.
+**One decision waits on you: Gate B** — a one-page brief is in your artifacts, and the question is whether to fix the
+eight groups of gaps, with two measuring-tool fixes first. Session C's plan is written and ready for a yes.
 
 **Nav / header / footer.** Waves 1-3C are built and live on sandybrown. Gate 3C items 1, 2, 3, 5 pass; item 4 (the
 Indus and lamalama copies) has every open row classified with no new foundational gap, and its last mile is deferred
@@ -70,20 +74,44 @@ Live = HEAD proven by checksum (blocks at `4726700c1` on eye-care-test). 2,373 d
 (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; table per surface in the Spec 47 plan's Progress).
 Every register item has a Sweep status (77 still open, 63 not walker-measurable, 19 closed earlier, 15 partly
 measured, 27 clean), judged by Opus agents under a merge gate that demands one exact element row and its values per
-verdict (a first, shallow pass was rejected). Register items recorded closed but open on the sweep: 100, 101, 102, 104, 131, N15. Live checks
-(`qa/sweep/2026-10-05/a5/README.md`): framework fixes 37/37 PASS; About independent check 0 differences; Contact's
-independent check finds 106 rows against the walker's 27 (Session B input); S3's no-fade fix holds (footer and contact phone; header phone
-untested at 375/768) but its black hover colour is not yet in the trees;
-S1's 0.25s button timing reaches no button. Parked PA-1 to PA-5 in the sweep plan.
+verdict (a first, shallow pass was rejected). Live checks (`qa/sweep/2026-10-05/a5/README.md`): framework fixes
+37/37 PASS; About independent check 0 differences; S3's no-fade fix holds (footer and contact phone; header phone
+untested at 375/768) but its black hover colour is not yet in the trees. Parked PA-1 to PA-5 in the sweep plan.
+
+**Session B, the audit (2026-10-05, complete; measure and read only, no block writes, no deploys).** Every one of the
+2,373 open issues now sits in exactly one class with proof (`plans/2026-10-04-eye-care-sweep-audit-fix.md`
+Appendix B): **W 1,710, F 163, T 447, U 28, D 17, deferred 8** (the google-reviews track's). Six parallel Opus agents
+grouped by mechanism proved or disproved all 338 candidate-F rows under a citation gate; **only 48% survived** as real
+framework gaps, and all 130 confirmed combos name an existing precedent, so none needs a new control primitive
+(verdicts `.claude/reports/2026-10-05-session-b/b2/`). `triage.mjs` gained the sweep's fifth class so no row is left
+unclassed (`97ac6f95a`: 323 unmapped-state rows had none). The 78 unmeasurable register items each carry a
+measure-gap tag (Appendix A): 51 of them wait on route work, not block work. B4 closed register N41 and 113 by
+ledgering S1's agreed lift on Lenses and Help (`D-34`-`D-39`). P0-11 is closed: the 605 dead, 40 oneWidth and 55
+untestedStates calibration outcomes are split by cause and **no cause needs block code** (four fixture or harness
+fixes clear 203). Spec 47 to v0.14: its role counts were stale (`boolean-visibility` 600, not 94) and its text read is
+scoped to 84 `content` rows when most of this register's words live in 235 `text-content` rows — a §6 question for Bean.
+Contact's 106 independent rows against the walker's 27 reconcile to a **6-row residual**, all padding, hypothesis
+recorded and unproven (`.claude/reports/2026-10-05-session-b/contact-independent-reconciliation.md`).
+
+**Gate B is open and waits on Bean.** The brief is an artifact (2026-10-05); the question is whether Session C fixes
+the eight groups, route fixes first. Session C's plan is written and ready:
+`plans/2026-10-05-eye-care-session-c-framework-fixes.md` — **157 rows**, parallelised **by block, not by mechanism**
+(every group shares a block with another; `sgs/social-icons` and `sgs/buybox` each appear in six), with a
+pre-dispatch collision check (`.claude/reports/2026-10-05-session-b/check-queue-collisions.mjs`). Three rows are
+deferred to their own session: their fix would change a spacing rule on `sgs/container` (5,022 occurrences in Eye
+Care's trees, live on other clients) on an unproven cause. **R1 was mis-scoped and corrected in review**: the
+resolver never reads `css_element`, routing an enum row would delete a working discovery path, and the animation
+half needs a resolver change — of 188 NULL rows, 28 must be left alone, 128 are resolver work, 32 are routable.
 
 **Session 0 (2026-10-05, complete):** the route data audit's repairs (`.claude/reports/2026-10-04-route-data-audit/README.md`),
 every block recalibrated on the WSL mirrors; parked P0-1 to P0-11 in the sweep plan. The wiring gate
 (`check-wiring-fingerprint.py`) blocks new gaps only (201 baselined).
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Resume from:**
-`plans/2026-10-04-eye-care-sweep-audit-fix.md` Session B (audit what stays open into its classes, protect Bean's
-decisions, plan the fixes), then C (framework fixes); per-surface Solve work (`plans/2026-10-04-spec47-full-coverage.md`
-"Progress") resumes in its Session D.
+**Bean's Gate B answer** (the brief is an artifact, 2026-10-05). On a go, run the five pre-session checks at the end
+of `plans/2026-10-05-eye-care-session-c-framework-fixes.md`, then its waves W0 to W3. On a no-go, the 163 gaps stay
+on the register's Sweep column and work goes straight to Session D. Per-surface Solve work
+(`plans/2026-10-04-spec47-full-coverage.md` "Progress") is that Session D.
 
 **Separators.** Complete and live on sandybrown and eye-care-test (same build, 942edab25 on `main`): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

@@ -1,0 +1,265 @@
+{
+ "G1": {
+  "rows": 72,
+  "combos": 48,
+  "blocks": [
+   "sgs/mega-group",
+   "sgs/choice-flow-question",
+   "sgs/accordion-item",
+   "sgs/form-field-textarea",
+   "sgs/social-icons",
+   "sgs/business-info",
+   "sgs/card-grid",
+   "sgs/choice-flow",
+   "sgs/choice-flow-result",
+   "sgs/buybox"
+  ],
+  "mechanisms": [
+   "M2-box-spacing"
+  ],
+  "precedents": [
+   "box control on a non-wrapper css_element (role layout, css_property pa",
+   "gap control on a non-wrapper css_element (role layout, css_property ga",
+   "gap control on css_element header (role layout, css_property gap)",
+   "margin control on a non-wrapper css_element (role layout, css_property",
+   "supports.sgs.boxFamilies.fieldPadding (css_element field-input) - the ",
+   "padding control on css_element item (role layout, css_property padding",
+   "single-side margin control on a non-wrapper css_element",
+   "per-region padding box family on a non-wrapper css_element",
+   "gap control on a named button element",
+   "supports.sgs.boxFamilies.margin (wrapper)",
+   "box family on css_element submit-button",
+   "box family on css_element pill",
+   "supports.sgs.boxFamilies.submitPadding (css_element submit-button)"
+  ],
+  "sampleFixShapes": [
+   "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box contro",
+   "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box contro",
+   "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box contro",
+   "Add a `padding` box family to sgs/mega-group (supports.sgs.boxFamilies.padding) or a `groupPadding` box contro",
+   "Add an `optionGap` gap control on sgs/choice-flow-question (css_element option-button) and have style.css read",
+   "Add an `optionGap` gap control on sgs/choice-flow-question (css_element option-button) and have style.css read"
+  ],
+  "notHighConfidence": [
+   "sgs/buybox|.sgs-buybox__config-col > .sgs-option-picker:nth- (medium)"
+  ]
+ },
+ "G2": {
+  "rows": 25,
+  "combos": 22,
+  "blocks": [
+   "sgs/choice-flow-question",
+   "sgs/accordion-item",
+   "sgs/form-field-text",
+   "sgs/form-field-email",
+   "sgs/form-field-phone",
+   "sgs/form-field-select",
+   "sgs/social-icons",
+   "sgs/business-info",
+   "sgs/trust-bar",
+   "sgs/brand-strip",
+   "sgs/process-steps",
+   "sgs/choice-flow",
+   "sgs/button",
+   "sgs/buybox"
+  ],
+  "mechanisms": [
+   "M3-layout-alignment"
+  ],
+  "precedents": [
+   "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (the f",
+   "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (css_e",
+   "plugins/sgs-blocks/includes/helpers-box.php::sgs_label_box_css_rule, w",
+   "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper (`if (",
+   "plugins/sgs-blocks/includes/child-sizing.php + block.json::supports.sg",
+   "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper, calib",
+   "includes/child-sizing.php"
+  ],
+  "sampleFixShapes": [
+   "Add an option-card alignment member (align-items) to the question's layout group, or make the showcase default",
+   "Extend `sgs/accordion::justifyContent` (and alignItems) to a header slot, or add a header alignment member on ",
+   "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected fr",
+   "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected fr",
+   "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected fr",
+   "Add `display:block` to `plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field__input` - a corrected fr"
+  ],
+  "notHighConfidence": [
+   "sgs/choice-flow-question|.sgs-choice-flow-question__options  (medium)",
+   "sgs/brand-strip|.sgs-brand-strip__track > .sgs-brand-strip__ (medium)",
+   "sgs/choice-flow|.sgs-choice-flow__body > .sgs-choice-flow__s (low)"
+  ]
+ },
+ "G3": {
+  "rows": 23,
+  "combos": 20,
+  "blocks": [
+   "sgs/mega-group",
+   "sgs/form-field-text",
+   "sgs/form-field-email",
+   "sgs/form-field-phone",
+   "sgs/form-field-select",
+   "sgs/form-field-textarea",
+   "sgs/social-icons",
+   "sgs/google-reviews",
+   "sgs/media",
+   "sgs/choice-flow-question",
+   "sgs/buybox"
+  ],
+  "mechanisms": [
+   "M5-motion"
+  ],
+  "precedents": [
+   "sgs_hover_state_rules + sgs_css_single_length_value",
+   "sgs/form's field-level style attributes already reach .sgs-form-field_",
+   "select-from-enum scale control (css_property=transform, css_element=fa",
+   "select-from-enum scale control",
+   "var(--wp--custom--button-presets--default--hover-transition)",
+   "transition-duration / transition-timing-function attributes on the sam",
+   "transition-timing-function attribute",
+   "var(--wp--custom--transition--fast)",
+   "transition-duration / transition-timing-function attributes",
+   "css-gate role, css_property=transform, css_element=image, css_state=ho"
+  ],
+  "sampleFixShapes": [
+   "a duration/easing pair beside mega-panel::panelCardLift (or read --wp--custom--button-presets--default--hover-",
+   "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) ",
+   "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) ",
+   "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) ",
+   "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) ",
+   "one fieldTransitionDuration + fieldTransitionEasing pair on sgs/form (or read duration.fast / easing.default) "
+  ],
+  "notHighConfidence": []
+ },
+ "G4": {
+  "rows": 15,
+  "combos": 15,
+  "blocks": [
+   "sgs/social-icons",
+   "sgs/site-footer",
+   "sgs/container"
+  ],
+  "mechanisms": [
+   "M1-hardcode"
+  ],
+  "precedents": [
+   "scoped nth-child custom-property rule in render.php",
+   "class-sgs-container-wrapper.php $has_responsive_margin branch",
+   "class-sgs-container-wrapper.php $has_responsive_margin branch, which u"
+  ],
+  "sampleFixShapes": [
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa",
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa",
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa",
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa",
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa",
+   "In social-icons/render.php, brand mode must override only the custom property the active iconStyle actually pa"
+  ],
+  "notHighConfidence": [
+   "sgs/site-footer||margin-top (medium)",
+   "sgs/container|.sgs-container__inner|margin-right (medium)",
+   "sgs/container|.sgs-container__inner|margin-left (medium)"
+  ]
+ },
+ "G5": {
+  "rows": 13,
+  "combos": 12,
+  "blocks": [
+   "sgs/social-icons",
+   "sgs/buybox",
+   "sgs/choice-flow"
+  ],
+  "mechanisms": [
+   "M7-decoration"
+  ],
+  "precedents": [
+   "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+   "includes/helpers-border-style.php::sgs_border_box_decls",
+   "supports.sgs.imageControls + includes/image-controls.php (the universa",
+   "supports.sgs.boxFamilies.borderRadius + includes/helpers-border-style."
+  ],
+  "sampleFixShapes": [
+   "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rule",
+   "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rule",
+   "Add `iconShadowHover` + `iconShadowHoverColour` @item to sgs/social-icons routed through sgs_shadow_hover_rule",
+   "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, c",
+   "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, c",
+   "Add `pillBorderWidth` + `pillBorderStyle` @pill to sgs/option-picker's block.json attrMap (css:border-width, c"
+  ],
+  "notHighConfidence": [
+   "sgs/choice-flow||border-radius (medium)"
+  ]
+ },
+ "G6": {
+  "rows": 8,
+  "combos": 7,
+  "blocks": [
+   "sgs/accordion-item",
+   "sgs/social-icons",
+   "woocommerce/catalog-sorting",
+   "woocommerce/product-template"
+  ],
+  "mechanisms": [
+   "M9-measure"
+  ],
+  "precedents": [
+   "db row (sgs/nav-drawer, chromeRowHeight, layout, min-height, chrome) -",
+   "the setting already paints width/height on this element; divergences.j",
+   "theme/sgs-theme/assets/css/woocommerce.css"
+  ],
+  "sampleFixShapes": [
+   "Add `headerMinHeight` (layout, min-height, css_element 'header') to sgs/accordion-item, emitting `max(44px, va",
+   "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-ta",
+   "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-ta",
+   "Register as a `touch-target` divergence in `sites/eye-care-ward-end/build/qa/divergences.json` (rule 'touch-ta",
+   "Add a rule to `theme/sgs-theme/assets/css/woocommerce.css` for the catalog-sorting select (`max-width:100%`).",
+   "Either a `max-width:none` rule for the product-template list and items in `theme/sgs-theme/assets/css/woocomme"
+  ],
+  "notHighConfidence": [
+   "woocommerce/product-template||max-width (medium)",
+   "woocommerce/product-template|li:nth-of-type(7)|max-width (medium)"
+  ]
+ },
+ "G7": {
+  "rows": 5,
+  "combos": 4,
+  "blocks": [
+   "sgs/tabs",
+   "sgs/product-card",
+   "sgs/buybox"
+  ],
+  "mechanisms": [
+   "M4-typography"
+  ],
+  "precedents": [
+   "a css_state='hover' typography attribute emitted through the block's h",
+   "product-card/style.css::`line-height: var(--sgs-product-card-btn-line-"
+  ],
+  "sampleFixShapes": [
+   "Add sgs/tabs::tabTextDecorationHover (css_state hover, css_element tab) emitted through the block's hover rule",
+   "Add sgs/tabs::tabTextDecorationHover (css_state hover, css_element tab) emitted through the block's hover rule",
+   "Add sgs/product-card::titleTextDecorationHover (css_state hover, scoped to the title link) copying sgs/nav-bar",
+   "Add sgs/buybox::addToCartLineHeight (+Unit) to the existing addToCart typography group and paint it as `line-h"
+  ],
+  "notHighConfidence": []
+ },
+ "G8": {
+  "rows": 2,
+  "combos": 2,
+  "blocks": [
+   "sgs/media",
+   "sgs/buybox"
+  ],
+  "mechanisms": [
+   "M8-colour"
+  ],
+  "precedents": [
+   "role `color`, background-color on css_element `image-wrap`",
+   "role `color`, background-color on css_element `pill`, with pillBgColou"
+  ],
+  "sampleFixShapes": [
+   "Add a `mediaBackgroundColour` colour control to sgs/media (background-color on the figure / image wrap), clone",
+   "Forward sgs/option-picker's pill colour group (pillBgColour / pillBgColourHover / pillSelectedBgColour and the"
+  ],
+  "notHighConfidence": []
+ }
+}
