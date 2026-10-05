@@ -52,7 +52,10 @@ final class Cart_Proxy {
 	const RL_WINDOW_SECONDS = 30;
 
 	/**
-	 * Per-fingerprint cooldown window in seconds.
+	 * Per-fingerprint cooldown window in seconds. After a successful add, the
+	 * same visitor (IP + cart token) cannot add that product or variation for
+	 * this long, unless it is already in their cart: topping up an item that is
+	 * already in the bag is never put on cooldown.
 	 *
 	 * @var int
 	 */
@@ -707,10 +710,23 @@ final class Cart_Proxy {
 		$cooldown_key = 'sgs_cd_' . $fingerprint . '_' . $rl_target_id;
 		$on_cooldown  = \get_transient( $cooldown_key );
 
-		if ( false !== $on_cooldown ) {
+		// The cooldown only guards a first add. An item already in the bag may
+		// always be topped up.
+		$already_in_cart = false;
+		if ( false !== $on_cooldown && isset( \WC()->cart ) && \WC()->cart ) {
+			foreach ( \WC()->cart->get_cart() as $existing_item ) {
+				if ( (int) $existing_item['product_id'] === (int) $cart_product_id
+					&& (int) $existing_item['variation_id'] === (int) $cart_variation_id ) {
+					$already_in_cart = true;
+					break;
+				}
+			}
+		}
+
+		if ( false !== $on_cooldown && ! $already_in_cart ) {
 			return new \WP_Error(
 				'sgs_rate_limited',
-				\__( 'Please wait before adding more of this item.', 'sgs-blocks' ),
+				\__( 'You have just added this item. Please wait a few seconds before adding it again.', 'sgs-blocks' ),
 				array( 'status' => 429 )
 			);
 		}
