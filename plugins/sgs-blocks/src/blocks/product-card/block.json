@@ -1698,6 +1698,11 @@
 			"default": false,
 			"description": "Live-data mode: a heart button on the image (top-right) that saves the product to the visitor's wishlist, kept in their browser. aria-pressed carries the saved state."
 		},
+		"showGalleryThumbs": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a strip of thumbnail images above the product title, allowing visitors to select alternate product images."
+		},
 		"imageAspectRatio": {
 			"type": "string",
 			"default": "",

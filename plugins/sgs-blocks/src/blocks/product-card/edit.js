@@ -704,6 +704,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		savingBadgeBorderRadius,
 		colourSwatches,
 		swatchMaxVisible,
+		showGalleryThumbs,
 		showAttributeTag,
 		attributeTagSource,
 		attributeTagTaxonomy,
@@ -1953,6 +1954,19 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							) }
 						</>
 					) }
+
+					<ToggleControl
+						label={ __( 'Show image thumbnails', 'sgs-blocks' ) }
+						help={ __(
+							'Displays a strip of thumbnail images above the product title, allowing visitors to select alternate product images.',
+							'sgs-blocks'
+						) }
+						checked={ !! showGalleryThumbs }
+						onChange={ ( v ) =>
+							setAttributes( { showGalleryThumbs: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
 
 					<ToggleControl
 						label={ __( 'Show brand overlay', 'sgs-blocks' ) }

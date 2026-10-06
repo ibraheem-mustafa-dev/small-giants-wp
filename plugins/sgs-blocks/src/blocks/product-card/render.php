@@ -1306,6 +1306,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'gallery'             => $def['gallery'],
 			'thumbsHidden'        => ( count( $def['gallery'] ) < 2 ),
 			'selectedThumb'       => 0,
+			'showGalleryThumbs'   => $attributes['showGalleryThumbs'] ?? false,
 			// FP-H: buy-now behaviour — seeded so view.js can read it without a DOM query.
 			// $sgs_cta_behaviour is resolved (and Q2-demoted) once above; 'buy-now' here
 			// guarantees wc_get_checkout_url() exists.
@@ -1519,13 +1520,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			<?php endif; ?>
 			</div><?php // end .product-card__media (image only — the aspect-ratio/overflow:hidden box must NOT wrap the thumbnails or they get clipped). ?>
 
-			<?php // A4: thumbnail strip — hidden when < 2 images via context.thumbsHidden. ?>
+			<?php // A4: thumbnail strip — only render when showGalleryThumbs is true and gallery has 2+ images. ?>
+			<?php if ( $attributes['showGalleryThumbs'] && count( $def['gallery'] ) >= 2 ) : ?>
 			<div
 				class="product-card__thumbs"
 				role="list"
 				aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
-				data-wp-bind--hidden="context.thumbsHidden"
-				<?php echo count( $def['gallery'] ) < 2 ? 'hidden' : ''; // FP-H FINAL-FORM: strip behaviour identical with or without an image override. ?>
 			>
 				<?php foreach ( $def['gallery'] as $thumb_idx => $thumb ) : ?>
 					<?php
@@ -1552,6 +1552,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</button>
 				<?php endforeach; ?>
 			</div>
+			<?php endif; ?>
 
 			<div class="product-card-body">
 				<?php // FP-H: in-body badge (trial only — F7 moved the featured badge into the media box above). ?>
