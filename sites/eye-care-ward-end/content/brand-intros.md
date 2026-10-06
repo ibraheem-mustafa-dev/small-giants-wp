@@ -1,12 +1,6 @@
 # Brand intros
 
-> **Draft for Bean and Fatima. Register row 161.** One short intro per brand for the brand pages, covering the 40 brands in `woo-seed/data.json` (`BRANDS`), in that file's order (the twelve sunglasses-led names first). Each is written separately from what the brand is actually known for, so none is a template. The facts are well-established public history (founding place and year, signature designs), kept deliberately light so they don't date.
->
-> **Needs checking before publishing:**
-> 1. **Does Fatima stock each brand?** The list is the draft's, copied from the competitor's brand facet. Only 14 brands have seeded products (Ray-Ban, Gucci, Oakley, Prada, Versace, Dolce & Gabbana, Balenciaga, Michael Kors, Polaroid, Police, Carrera, Ferrari Scuderia, Emporio Armani, Superdry). Delete any intro for a brand she doesn't carry. Brand pages with no products should stay hidden or unpublished, consistent with the site's `brandHideEmpty` setting.
-> 2. **Optical versus sunglasses.** The intros mention both where it's a safe general statement. Fatima should confirm which ranges she actually has.
-> 3. **Brand claims.** Statements like "authorised UK suppliers" come from the site's own FAQ. No intro says anything about price or discounts, because her pricing isn't confirmed.
-> 4. **Family facts.** Any line about who makes or licenses a brand's eyewear has been left out on purpose, since licences change.
+One short intro per brand for the brand pages. Delete the intro for any brand we do not stock before publishing.
 
 ---
 
