@@ -57,7 +57,24 @@ stale-report failure mode and the `canvasSettable` masking.
 **The number this session consumes is raw F = 192**, in `sites/eye-care-ward-end/build/qa/triage/*.json` (17 files, rewritten 2026-10-06). It is a **raw machine classification** and is **not** comparable to Session B's audited 163: Session B audited 338 raw rows down to 163, so an audited equivalent of 192 is this session's own judgement to produce. Per surface: lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4, mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, and 0 on about, lenses, header and size-guide. There are also **29 U rows** that nothing explains.
 
 **Four things to absorb before judging any row.**
-1. **193 rows carry `W/canvas-settable` on the baseline sweep, 209 on the re-sweep** (the figure of 161 in the original brief was wrong on both),, each citing a block and attribute that could hold the value. That citation is a **claim to test live, never a closure**, and task 2 tests it. The canvas roster is 12 of the 17 surfaces, and it is load-bearing: stripping its flags takes F to 345 (measured; the 338 first recorded was the Gate 2 figure carried forward), so a wrong roster would mask genuine page gaps.
+1. **193 rows carry `W/canvas-settable` on the baseline sweep, 209 on the re-sweep** (the figure of 161 in the original brief was wrong on both),, each citing a block and attribute that could hold the value. That citation is a **claim to test live, never a closure**, and task 2 tests it.
+
+   **OUTCOME, 2026-10-06 (`29f2e30c1`, `7b65419f2`, `84c818fe1`; full detail in
+   `reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md`).** After R1 the population is **168 claims
+   across 63 families** of (cited block, cited setting, row property) — the unit the claim is made in, since a
+   family spans surfaces and 20 of them do. **17 families (82 claims) were confirmed against the live DOM and ALL
+   17 were REFUTED**, by value-independent CSSOM rule enumeration rather than computed styles (which cannot
+   separate "the cited rule loses" from "the setting is unset"). **Root cause MEASURED, one mechanism not 17:**
+   `lib/triage.mjs::reachesElement` **fails open** — `emissionOf` returned null for **17 of 17**, so each row was
+   classed W on a citation that was never tested, which is what R-47-12 requires be tested. `reachabilityVerified`
+   now records which citations were actually assessed; **no row was reclassified.** The real repair is to supply
+   `ctx.emissionFor`, read in `emissionOf` but set by no caller.
+
+   **STILL OWED: the remaining 46 families need the REMOTE site**, because the local WSL mirror carries no
+   `cr-ref` instrumentation for `header`, `mega-*`, `shop`, `product`, `lens` or `size-guide` (its header layout
+   and WooCommerce templates predate the instrumented ones) — measured, with all 46 failing as "ref missing
+   entirely" and **zero** as state-gated. The **W-to-F reclassification is deliberately NOT applied** until all 63
+   are read, so the F figure keeps one meaning rather than two in one document. The canvas roster is 12 of the 17 surfaces, and it is load-bearing: stripping its flags takes F to 345 (measured; the 338 first recorded was the Gate 2 figure carried forward), so a wrong roster would mask genuine page gaps.
 2. **The count was measured at block code `7f375f765`, which is NOT current.** eye-care-test now runs `94122e326`. Every register row fixed between those commits still reads open in this triage — including 87's breadcrumb weight (`9776e7d86`) and 15's drawer column (`31aa51090`). **Those are fixed in code; do not re-investigate them as regressions.** Re-sweeping at current code is the honest way to clear them.
 3. **45 content rows** (13 text, 32 presence) are classed `W/content` and are not framework gaps.
 4. **Session C's own Gate 3 council corrected 12 of its claims.** In particular the 338 → 192 headline is NOT a clean before/after: only **338 → 176** is a single-variable result (the route code on identical reports). The step to 192 mixes new walker code, new live block code and newly walked states and is not separable. Treat 192 as the current measured state, not as a measure of the route's improvement.
