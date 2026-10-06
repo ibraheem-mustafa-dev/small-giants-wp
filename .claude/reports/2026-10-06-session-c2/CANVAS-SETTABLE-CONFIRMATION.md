@@ -159,9 +159,25 @@ The 46 owed families are on `product` (14), `header` (9), `shop` (9), `lens` (6)
 node ../../scripts/computed-route/confirm-canvas.mjs ../../sites/eye-care-ward-end/build/qa/triage out.json https://darkcyan-grouse-898606.hostingersite.com
 ```
 
-Some will still read `ABSENT` there because their row only exists with a walker state open (`filters-open`,
-`tab-description`, `drawer-open`, the mega panels). Those need the state driven before the read, which this
-tool does not yet do — it is the one piece of the instrument still missing.
+The tool now distinguishes the two reasons a row can be absent, and locally **all 46 are the first**:
+
+| `ABSENT` because | Families | Claims |
+|---|---|---|
+| the page carries NO `cr-ref-<surface>-*` at all, so it is unmeasurable here and NOT a refutation | 46 | 86 |
+| the surface IS instrumented but that row needs its walker state opened | 0 | 0 |
+
+So nothing is currently blocked on state-driving; the blocker is purely which pages carry instrumentation.
+Run remotely, some of the 46 may convert to the second reason (`filters-open`, `tab-description`,
+`drawer-open`, the mega panels), and the tool will say so per family rather than reporting a bare `ABSENT`.
+Driving a state before the read is the one piece of the instrument still missing.
+
+**Two guards make the remote run safe to trust**, both added before it was attempted rather than after a bad
+result. Hostinger's edge answers automated browsers with a "Checking your browser" 403 for 45+ minutes after a
+burst; a challenged page carries no markup, so every family on it would read `ABSENT` and 46 refutations would
+look like a finding. The tool therefore waits the challenge out (`parity/lib/helpers.mjs::waitOutHostCheck`),
+cache-busts each URL, and **refuses** a page carrying no instrumentation or no stylesheets instead of
+reporting verdicts for it. And because every page carries the footer's 34 refs, a generic "are there any
+`cr-ref` elements" check would pass on a page lacking the surface under test — so the check is per-surface.
 
 ## Two corrections made during this measurement
 

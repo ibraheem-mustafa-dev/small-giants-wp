@@ -25,6 +25,7 @@
 // Nothing is written: no tree, no setting, no page, no stylesheet.
 import { chromium } from 'playwright';
 import fs from 'fs';
+import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -91,8 +92,18 @@ async function main() {
 	const openPage = async ( url ) => {
 		if ( pages[ url ] ) { return; }
 		const p = await browser.newPage( { viewport: { width: 1440, height: 1000 } } );
-		await p.goto( BASE + url, { waitUntil: 'networkidle', timeout: 90000 } ).catch( ( e ) => console.error( `goto ${ url }: ${ e.name }` ) );
+		const bust = BASE + url + ( url.includes( '?' ) ? '&' : '?' ) + `cb=${ Date.now() }`;
+		await p.goto( bust, { waitUntil: 'networkidle', timeout: 90000 } ).catch( ( e ) => console.error( `goto ${ url }: ${ e.name }` ) );
+		// Hostinger's edge answers automated browsers with a "Checking your browser" 403 for 45+ minutes after a
+		// burst. A challenged page carries no markup, so EVERY family on it would read ABSENT - refutations that
+		// look like a finding. Wait the challenge out, then REFUSE a page with no instrumentation at all.
+		await waitOutHostCheck( p );
 		await p.waitForTimeout( 1500 );
+		const reach = await p.evaluate( () => ( { refs: document.querySelectorAll( '[class*="cr-ref-"]' ).length, sheets: document.styleSheets.length, title: document.title.slice( 0, 60 ) } ) );
+		if ( ! reach.refs || ! reach.sheets ) {
+			throw new Error( `${ BASE + url } carries no route instrumentation (cr-ref ${ reach.refs }, stylesheets ${ reach.sheets }, title "${ reach.title }"). Every family on it would read ABSENT, so the run refuses rather than reporting refutations.` );
+		}
+		console.error( `opened ${ url }: ${ reach.refs } cr-ref elements, ${ reach.sheets } stylesheets` );
 		await p.evaluate( async () => {
 			for ( let y = 0; y < document.body.scrollHeight; y += 800 ) {
 				window.scrollTo( 0, y );
@@ -119,13 +130,16 @@ async function main() {
 		const [ ref, pathSel ] = ( fam.keys[ 0 ] || '' ).split( '|' );
 		rec.ref = ref;
 		rec.path = pathSel || null;
-		const r = await pages[ url ].evaluate( ( [ refCls, sel, citedRefs, prop, block ] ) => {
+		const r = await pages[ url ].evaluate( ( [ refCls, sel, citedRefs, prop, block, surfacePrefix ] ) => {
+			// How many refs this SURFACE has on this page. A page carrying only another surface's refs (every
+			// page carries the footer's) passes a generic reachability check while still lacking this one.
+			const surfaceRefs = document.querySelectorAll( `[class*="${ surfacePrefix }"]` ).length;
 			const refEl = document.querySelector( `.${ refCls }` );
 			const row = ! refEl ? null
 				: sel ? ( refEl.matches( sel ) ? refEl : refEl.querySelector( sel ) ) || document.querySelector( `.${ refCls } ${ sel }` )
 					: refEl;
 			if ( ! row ) {
-				return { rowPresent: false, refPresent: !! refEl };
+				return { rowPresent: false, refPresent: !! refEl, surfaceRefs };
 			}
 			const cited = citedRefs.map( ( c ) => document.querySelector( `.${ c }` ) ).find( Boolean ) || null;
 			const citedClasses = cited ? [ ...cited.classList ] : [];
@@ -184,7 +198,7 @@ async function main() {
 				for ( let a = row; a; a = a.parentElement, d++ ) { if ( a === cited ) { depth = d; break; } }
 			}
 			return {
-				rowPresent: true, refPresent: true,
+				rowPresent: true, refPresent: true, surfaceRefs,
 				rowTag: row.tagName, rowClasses: [ ...row.classList ].join( ' ' ),
 				citedPresent: !! cited, citedClasses: citedClasses.join( ' ' ), depthFromCited: depth, ownNames,
 				sheets,
@@ -198,11 +212,15 @@ async function main() {
 					return { selector: m.selector, value: m.value, vars: names.map( ( n ) => ( { name: n, setOn: ( varSetters[ n ] || [] ).slice( 0, 6 ) } ) ) };
 				} ),
 			};
-		}, [ ref, pathSel, fam.citedRefs, fam.property, fam.block ] );
+		}, [ ref, pathSel, fam.citedRefs, fam.property, fam.block, `cr-ref-${ surface }-` ] );
 		Object.assign( rec, r );
 		if ( ! r.rowPresent ) {
 			rec.verdict = 'ABSENT';
-			rec.why = r.refPresent ? `ref ${ ref } present but no "${ pathSel }" under it` : `ref ${ ref } is not in the DOM on ${ url }`;
+			rec.why = r.refPresent
+			? `ref ${ ref } present but no "${ pathSel }" under it`
+			: r.surfaceRefs
+				? `ref ${ ref } is not in the DOM on ${ url }, though ${ r.surfaceRefs } other ${ surface } refs are: the row needs its walker state opened`
+				: `${ url } carries NO ${ surface } instrumentation at all (0 cr-ref-${ surface }-* elements), so this is an unmeasurable page for this surface, NOT a refutation`;
 		} else if ( r.citedOwned.length ) {
 			rec.verdict = 'CONFIRMED';
 			rec.why = `${ r.citedOwned.length } rule(s) matching this row belong to the cited ${ fam.block }: ${ r.citedOwned.map( ( m ) => m.selector ).slice( 0, 3 ).join( ' | ' ) }`;
