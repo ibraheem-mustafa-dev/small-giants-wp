@@ -5,6 +5,15 @@
 import { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT } from './calibrate-props.mjs';
 import { CORNERS } from './resolve.mjs';
 
+// The duration marker is a whole number of milliseconds, never a CSS time: helpers-tokens.php::sgs_transition_vars
+// refuses anything that is not a non-negative integer. 437 reads unmistakably as 0.437s in a computed style.
+export const MARKER_DURATION_MS = 437;
+// The easing marker is drawn from sgs_transition_vars' whitelist and is never ease-in-out, which is both its fallback
+// and several blocks' default (a marker equal to it would read dead for the wrong reason). ease-out is the stand-in
+// when a block's own default is linear.
+export const MARKER_EASING = 'linear';
+const MARKER_EASING_ALT = 'ease-out';
+
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
 // Minimum sizes a render floors at the 44px touch target.
 const FLOORED = /^min-(height|width)$/;
@@ -135,6 +144,25 @@ function nonLengthTiers( prop, def ) {
 	return kw ? Object.fromEntries( TIERS.map( ( t ) => [ t, kw[ 0 ] ] ) ) : null;
 }
 
+// The marker for a transition duration or easing setting, or null when the row is not one. The duration is written in
+// the setting's own type (a number or a digit string); the easing is a keyword that differs from the default.
+function transitionMarker( row, def, t, prop ) {
+	const name = row.attr_name;
+	const listed = row.css_property.split( ',' ).map( ( x ) => x.trim() );
+	const set = ( v ) => ( { [ name ]: v } );
+	if ( /(^|[a-z])Transition(Duration)$|^transitionDuration$/.test( name ) && ( listed.includes( 'transition-duration' ) || 'transition' === prop ) ) {
+		if ( t.includes( 'number' ) || t.includes( 'integer' ) ) {
+			return MARKER_DURATION_MS === Number( def.default ) ? [] : [ { label: 'duration-ms', attrs: set( MARKER_DURATION_MS ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ];
+		}
+		return t.includes( 'string' ) ? [ { label: 'duration-ms', attrs: set( String( MARKER_DURATION_MS ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ] : [];
+	}
+	if ( /(^|[a-z])Transition(Easing)$|^transitionEasing$/.test( name ) && ( listed.includes( 'transition-timing-function' ) || 'transition' === prop ) && t.includes( 'string' ) ) {
+		const value = MARKER_EASING === def.default ? MARKER_EASING_ALT : MARKER_EASING;
+		return [ { label: 'easing', attrs: set( value ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, value ] ) ) } ];
+	}
+	return null;
+}
+
 // The markers for one setting. `ctx.image` is a media object that exists on the calibration site.
 export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 	const def = defOf( row, schema );
@@ -185,6 +213,12 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 		const pair = 'border-style' === prop ? companionWidth( row.attr_name, schema ) : null;
 		const extra = pair ? pair.attrs : {};
 		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { ...set( v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
+	}
+	// Transition timing: only the settings named transitionDuration / transitionEasing (a block with no such attribute
+	// has no control to write to, so it gets no marker). An enum setting returned above.
+	const timing = transitionMarker( row, def, t, prop );
+	if ( timing ) {
+		return timing;
 	}
 	if ( t.includes( 'boolean' ) ) {
 		return [ { label: 'bool', attrs: set( ! def.default ), expect: null } ];

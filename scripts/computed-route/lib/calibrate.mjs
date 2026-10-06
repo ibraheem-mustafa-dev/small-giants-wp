@@ -4,9 +4,10 @@
 // preconditions: lib/calibrate-instances.mjs; the browser reader: lib/calibrate-read.mjs.
 import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
+import { timingSet } from '../../parity/lib/compare.mjs';
 
 export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, INHERITED, longhands } from './calibrate-props.mjs';
-export { markersFor, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
+export { markersFor, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget } from './calibrate-instances.mjs';
 export { readInstancesInPage, readAll, SCROLL_Y } from './calibrate-read.mjs';
 export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
@@ -29,6 +30,10 @@ export function buildTree( block, fixture, instances ) {
 }
 
 const sameVal = ( a, b ) => String( a ).replace( /\s+/g, '' ) === String( b ).replace( /\s+/g, '' );
+// A transition's timing lists one value per transitioned property; two lists hold the same timing when their distinct
+// values match, whatever the order or repetition (the parity comparer's own rule).
+const TIMING_PROPS = [ 'transition-duration', 'transition-timing-function' ];
+const sameFor = ( prop, a, b ) => ( TIMING_PROPS.includes( prop ) && 'string' === typeof a && 'string' === typeof b ? timingSet( a ) === timingSet( b ) : sameVal( a, b ) );
 
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
 // Returns { slot, slots, property, transform, reachedAt, oneWidth, effects } or { dead }. containerQuery: the block's
@@ -45,11 +50,11 @@ export function slotFor( row, marker, defReads, markReads, { containerQuery = fa
 		const m = markReads[ w ] || {};
 		for ( const [ p, styles ] of Object.entries( m ) ) {
 			for ( const [ prop, v ] of Object.entries( styles ) ) {
-				if ( sameVal( v, d[ p ]?.[ prop ] ) ) {
+				if ( sameFor( prop, v, d[ p ]?.[ prop ] ) ) {
 					continue;
 				}
 				if ( props.includes( prop ) ) {
-					changes.push( { w, path: p, prop, value: v, hit: marker.expect ? sameVal( v, marker.expect[ w ] ) : true } );
+					changes.push( { w, path: p, prop, value: v, hit: marker.expect ? sameFor( prop, v, marker.expect[ w ] ) : true } );
 				} else {
 					side.add( `${ p }|${ prop }` );
 				}

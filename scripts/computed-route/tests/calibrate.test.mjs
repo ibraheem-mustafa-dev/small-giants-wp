@@ -147,3 +147,54 @@ test( 'MUST FAIL: a minimum size marks above the 44px touch-target floor', () =>
 	const flat = markersFor( { attr_name: 'minHeight', css_property: 'min-height', tier_shape: null, box_family: null }, { minHeight: { type: 'string', default: '' } }, { palette: [], spacing: [], fontSizes: [] } );
 	assert.ok( parseFloat( flat[ 0 ].attrs.minHeight ) > 44 );
 } );
+
+// P4: transition calibration markers.
+import { MARKER_DURATION_MS, MARKER_EASING } from '../lib/calibrate.mjs';
+
+const snap = { palette: [] };
+const durRow = ( over = {} ) => ( { attr_name: 'transitionDuration', attr_type: 'string', default_value: '"300"', enum_values: null, css_property: 'transition,transition-duration', ...over } );
+const easeRow = ( over = {} ) => ( { attr_name: 'transitionEasing', attr_type: 'string', default_value: '"ease-in-out"', enum_values: null, css_property: 'transition,transition-timing-function', ...over } );
+
+test( 'MUST FAIL ON REVERT: the duration marker is the integer millisecond 437, never a CSS time', () => {
+	const [ m ] = markersFor( durRow(), {}, snap );
+	assert.equal( MARKER_DURATION_MS, 437 );
+	assert.equal( m.attrs.transitionDuration, '437' );
+	assert.match( m.attrs.transitionDuration, /^[0-9]+$/ );
+	const [ n ] = markersFor( durRow( { attr_type: 'number', default_value: '0', css_property: 'transition-duration' } ), {}, snap );
+	assert.strictEqual( n.attrs.transitionDuration, 437 );
+	assert.equal( n.expect[ 1440 ], '0.437s' );
+} );
+
+test( 'MUST FAIL ON REVERT: the easing marker is whitelisted and is never ease-in-out', () => {
+	const allowed = [ 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' ];
+	for ( const def of [ '"ease-in-out"', '"ease"', '"linear"' ] ) {
+		const [ m ] = markersFor( easeRow( { default_value: def } ), {}, snap );
+		const v = m.attrs.transitionEasing;
+		assert.ok( allowed.includes( v ) );
+		assert.notEqual( v, 'ease-in-out' );
+		assert.notEqual( v, JSON.parse( def ) );
+	}
+	assert.equal( MARKER_EASING, 'linear' );
+} );
+
+test( 'NO OVER-REACH: an enum easing row (heading, text, nav-bar-menu, icon-list) keeps the enum branch', () => {
+	const en = '["ease", "ease-in", "ease-out", "ease-in-out", "linear"]';
+	const ms = markersFor( easeRow( { default_value: '"ease"', enum_values: en, css_property: 'transition-timing-function' } ), {}, snap );
+	assert.deepEqual( ms.map( ( m ) => m.label ), [ 'enum-ease-in', 'enum-ease-out', 'enum-ease-in-out', 'enum-linear' ] );
+	assert.ok( ! ms.some( ( m ) => 'easing' === m.label ) );
+} );
+
+test( 'NO OVER-REACH: a block with no transition attribute produces no marker', () => {
+	// google-reviews, accordion-item, media and choice-flow-question have no transition* attribute: a row that merely
+	// paints a transition from some other setting, or carries no type, has no control to write to.
+	assert.deepEqual( markersFor( { attr_name: 'hoverLift', attr_type: 'string', default_value: null, enum_values: null, css_property: 'transition,transition-duration' }, {}, snap ), [] );
+	assert.deepEqual( markersFor( durRow( { attr_type: null, default_value: null } ), {}, snap ), [] );
+	assert.deepEqual( markersFor( easeRow( { attr_type: null, default_value: null } ), {}, snap ), [] );
+} );
+
+test( 'slotFor reads a transition marker through timingSet: repeated and reordered lists are one timing', () => {
+	const [ m ] = markersFor( durRow(), {}, snap );
+	const at = ( v ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '': { 'transition-duration': v } } ] ) );
+	assert.deepEqual( slotFor( durRow(), m, at( '0.3s' ), at( '0.437s, 0.437s' ) ).slot, '' );
+	assert.equal( slotFor( durRow(), m, at( '0.3s, 0.3s' ), at( '0.3s' ) ).dead, true );
+} );
