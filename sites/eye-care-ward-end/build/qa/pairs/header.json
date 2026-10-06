@@ -1,6 +1,6 @@
 {
  "surface": "header",
- "when": "2026-10-05T10:08:22.051Z",
+ "when": "2026-10-06T16:18:05.594Z",
  "width": 1440,
  "recheck": [
   375,
@@ -11,11 +11,100 @@
   ".sgs-site-header"
  ],
  "blocks": 13,
- "kept": 3,
+ "kept": 4,
  "coveredByHand": [
   "cr-ref-header-3",
   "cr-ref-header-8",
   "cr-ref-header-13"
+ ],
+ "handMeasured": [
+  "cr-ref-header-0",
+  "cr-ref-header-3",
+  "cr-ref-header-6",
+  "cr-ref-header-8",
+  "cr-ref-header-12",
+  "cr-ref-header-11",
+  "cr-ref-header-13",
+  "cr-ref-header-4"
+ ],
+ "handScope": [
+  {
+   "name": "trust-ticker",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-bar",
+   "ok": true,
+   "checked": 13,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-logo",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-wordmark",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-about",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-phone",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-bag",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shop-trigger",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brands-trigger",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "lenses-trigger",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "help-trigger",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  }
  ],
  "retargeted": {
   "header-bag": ".cr-ref-header-13"
@@ -33,7 +122,7 @@
   {
    "ref": "cr-ref-header-10",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 768)",
    "words": 9,
    "matched": 9,
    "first": "0121",
@@ -46,25 +135,16 @@
     "direct": true,
     "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
    },
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 3,
    "matched": 3,
    "first": "0121",
    "last": "8233"
   },
   {
-   "ref": "cr-ref-header-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
-   "words": 17,
-   "matched": 17,
-   "first": "sunglasses",
-   "last": "0"
-  },
-  {
    "ref": "cr-ref-header-4",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > nav:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 5,
    "matched": 5,
    "first": "sunglasses",
@@ -76,10 +156,24 @@
   },
   {
    "ref": "cr-ref-header-6",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 1 picture live against 0 on the draft"
   }
  ],
  "keptPairs": [
+  {
+   "ref": "cr-ref-header-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 17,
+   "matched": 17,
+   "first": "sunglasses",
+   "last": "0",
+   "drafts": {
+    "375": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+    "768": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+    "1440": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)"
+   }
+  },
   {
    "ref": "cr-ref-header-7",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)",

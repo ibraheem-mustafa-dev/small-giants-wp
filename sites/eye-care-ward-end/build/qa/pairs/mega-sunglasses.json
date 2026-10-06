@@ -1,263 +1,168 @@
 {
  "surface": "mega-sunglasses",
- "when": "2026-10-05T09:57:23.364Z",
+ "when": "2026-10-06T16:43:20.911Z",
  "state": "mega-shop",
  "width": 1440,
- "recheck": [],
+ "recheck": [
+  375,
+  768,
+  1920
+ ],
+ "lifted": [
+  "header",
+  ".sgs-site-header"
+ ],
  "blocks": 31,
- "kept": 29,
+ "kept": 0,
  "coveredByHand": [
   "cr-ref-mega-sunglasses-3",
   "cr-ref-mega-sunglasses-19"
  ],
+ "handMeasured": [
+  "cr-ref-mega-sunglasses-3",
+  "cr-ref-mega-sunglasses-19",
+  "cr-ref-mega-sunglasses-5",
+  "cr-ref-mega-sunglasses-21",
+  "cr-ref-mega-sunglasses-26"
+ ],
+ "handScope": [
+  {
+   "name": "trust-ticker",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-bar",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-wordmark",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-about",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-phone",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "header-bag",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-panel",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "shop-heading-style",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-heading-shopby",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-link-pilot",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-link-best-sellers",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-link-mens",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brands-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "lenses-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  }
+ ],
  "retargeted": {},
- "left": [],
- "keptPairs": [
+ "left": [
   {
-   "ref": "cr-ref-mega-sunglasses-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": null,
-   "words": 14,
-   "matched": 14,
-   "first": "by",
-   "last": "oversized"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": null,
-   "words": 14,
-   "matched": 14,
-   "first": "by",
-   "last": "oversized"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-0",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": null,
-   "words": 32,
-   "matched": 32,
-   "first": "by",
-   "last": "£59"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-5",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "pilot",
-   "last": "pilot"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-4",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 12,
-   "matched": 12,
-   "first": "pilot",
-   "last": "oversized"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-6",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "wayfarer",
-   "last": "wayfarer"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-7",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "square",
-   "last": "square"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-8",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(4) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "rectangle",
-   "last": "rectangle"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-9",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(5) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "round",
-   "last": "round"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(6) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "oval",
-   "last": "oval"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-11",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(7) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "cat-eye",
-   "last": "cat-eye"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-12",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(8) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "butterfly",
-   "last": "butterfly"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-13",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(9) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "browline",
-   "last": "browline"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-14",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(10) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "geometric",
-   "last": "geometric"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-15",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(11) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "shield",
-   "last": "shield"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-16",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(12) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "oversized",
-   "last": "oversized"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-18",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 11,
-   "matched": 11,
-   "first": "shop",
-   "last": "men's"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-17",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 11,
-   "matched": 11,
-   "first": "shop",
-   "last": "men's"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-21",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1) > span:nth-child(1)",
-   "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "best",
-   "last": "sellers"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-20",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
-   "why": null,
-   "words": 9,
-   "matched": 9,
-   "first": "best",
-   "last": "men's"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-22",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
-   "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "biggest",
-   "last": "savings"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-23",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(3) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "polarised",
-   "last": "polarised"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-24",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(4) > span:nth-child(1)",
-   "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "under",
-   "last": "£100"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-25",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(5) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "women's",
-   "last": "women's"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-26",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(6) > span:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "men's",
-   "last": "men's"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-29",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3) > span:nth-child(1)",
-   "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "prescription",
-   "last": "sunglasses"
-  },
-  {
-   "ref": "cr-ref-mega-sunglasses-28",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3)",
-   "textRun": {
-    "direct": false,
-    "match": "(^|[^\\p{L}\\p{N}])(prescription|sunglasses|any|frame|here,|from|£59)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 7,
-   "matched": 7,
-   "first": "prescription",
+   "ref": "cr-ref-mega-sunglasses-30",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3) > span:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 5,
+   "matched": 5,
+   "first": "any",
    "last": "£59"
   },
   {
@@ -267,20 +172,259 @@
     "direct": false,
     "match": "(^|[^\\p{L}\\p{N}])(prescription|sunglasses|any|frame|here,|from|£59)($|[^\\p{L}\\p{N}])"
    },
-   "why": null,
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 7,
    "matched": 7,
    "first": "prescription",
    "last": "£59"
   },
   {
-   "ref": "cr-ref-mega-sunglasses-30",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3) > span:nth-child(2)",
-   "why": null,
-   "words": 5,
-   "matched": 5,
-   "first": "any",
+   "ref": "cr-ref-mega-sunglasses-28",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(prescription|sunglasses|any|frame|here,|from|£59)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 7,
+   "matched": 7,
+   "first": "prescription",
    "last": "£59"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-29",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(3) > span:nth-child(3) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 2,
+   "matched": 2,
+   "first": "prescription",
+   "last": "sunglasses"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(6) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "men's",
+   "last": "men's"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-25",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(5) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "women's",
+   "last": "women's"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(4) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 2,
+   "matched": 2,
+   "first": "under",
+   "last": "£100"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(3) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "polarised",
+   "last": "polarised"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-22",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 2,
+   "matched": 2,
+   "first": "biggest",
+   "last": "savings"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 9,
+   "matched": 9,
+   "first": "best",
+   "last": "men's"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 2,
+   "matched": 2,
+   "first": "best",
+   "last": "sellers"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 11,
+   "matched": 11,
+   "first": "shop",
+   "last": "men's"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 11,
+   "matched": 11,
+   "first": "shop",
+   "last": "men's"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(12) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "oversized",
+   "last": "oversized"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(11) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "shield",
+   "last": "shield"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(10) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "geometric",
+   "last": "geometric"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(9) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "browline",
+   "last": "browline"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(8) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "butterfly",
+   "last": "butterfly"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(7) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "cat-eye",
+   "last": "cat-eye"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(6) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "oval",
+   "last": "oval"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(5) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "round",
+   "last": "round"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(4) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "rectangle",
+   "last": "rectangle"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "square",
+   "last": "square"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "wayfarer",
+   "last": "wayfarer"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 12,
+   "matched": 12,
+   "first": "pilot",
+   "last": "oversized"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "pilot",
+   "last": "pilot"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 32,
+   "matched": 32,
+   "first": "by",
+   "last": "£59"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 14,
+   "matched": 14,
+   "first": "by",
+   "last": "oversized"
+  },
+  {
+   "ref": "cr-ref-mega-sunglasses-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 14,
+   "matched": 14,
+   "first": "by",
+   "last": "oversized"
   }
- ]
+ ],
+ "keptPairs": []
 }

@@ -1,184 +1,182 @@
 {
  "surface": "mega-help",
- "when": "2026-10-05T10:01:59.170Z",
+ "when": "2026-10-06T16:40:35.673Z",
  "state": "mega-help",
  "width": 1440,
- "recheck": [],
+ "recheck": [
+  375,
+  768,
+  1920
+ ],
+ "lifted": [
+  "header",
+  ".sgs-site-header"
+ ],
  "blocks": 22,
- "kept": 20,
+ "kept": 0,
  "coveredByHand": [
   "cr-ref-mega-help-3",
   "cr-ref-mega-help-17"
  ],
+ "handMeasured": [
+  "cr-ref-mega-help-20",
+  "cr-ref-mega-help-3",
+  "cr-ref-mega-help-17",
+  "cr-ref-mega-help-5"
+ ],
+ "handScope": [
+  {
+   "name": "trust-ticker",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-bar",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-wordmark",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-about",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-phone",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-bag",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "shop-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brands-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "lenses-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-trigger",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-panel",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "help-heading-buying",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-heading-talk",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-link-delivery",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "help-link-phone",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  }
+ ],
  "retargeted": {},
- "left": [],
- "keptPairs": [
+ "left": [
   {
-   "ref": "cr-ref-mega-help-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": null,
-   "words": 10,
-   "matched": 10,
-   "first": "buying",
-   "last": "questions"
-  },
-  {
-   "ref": "cr-ref-mega-help-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": null,
-   "words": 10,
-   "matched": 10,
-   "first": "buying",
-   "last": "questions"
-  },
-  {
-   "ref": "cr-ref-mega-help-0",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": null,
-   "words": 32,
-   "matched": 32,
-   "first": "buying",
-   "last": "me"
-  },
-  {
-   "ref": "cr-ref-mega-help-5",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+   "ref": "cr-ref-mega-help-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(3)",
    "textRun": {
     "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(delivery|&|returns)($|[^\\p{L}\\p{N}])"
+    "match": "(^|[^\\p{L}\\p{N}])(whatsapp|me)($|[^\\p{L}\\p{N}])"
    },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "delivery",
-   "last": "returns"
-  },
-  {
-   "ref": "cr-ref-mega-help-4",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 8,
-   "matched": 8,
-   "first": "delivery",
-   "last": "questions"
-  },
-  {
-   "ref": "cr-ref-mega-help-6",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(size|guide)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 2,
    "matched": 2,
-   "first": "size",
-   "last": "guide"
-  },
-  {
-   "ref": "cr-ref-mega-help-7",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(frequently|asked|questions)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "frequently",
-   "last": "questions"
-  },
-  {
-   "ref": "cr-ref-mega-help-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "prescriptions",
-   "last": "prescriptions"
-  },
-  {
-   "ref": "cr-ref-mega-help-9",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 10,
-   "matched": 10,
-   "first": "prescriptions",
-   "last": "pd"
-  },
-  {
-   "ref": "cr-ref-mega-help-8",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
-   "why": null,
-   "words": 10,
-   "matched": 10,
-   "first": "prescriptions",
-   "last": "pd"
-  },
-  {
-   "ref": "cr-ref-mega-help-12",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(how|lenses|work)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "how",
-   "last": "work"
-  },
-  {
-   "ref": "cr-ref-mega-help-11",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
-   "why": null,
-   "words": 9,
-   "matched": 9,
-   "first": "how",
-   "last": "pd"
-  },
-  {
-   "ref": "cr-ref-mega-help-13",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(2)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(reading|your|prescription)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "reading",
-   "last": "prescription"
-  },
-  {
-   "ref": "cr-ref-mega-help-14",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(3)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(measuring|your|pd)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "measuring",
-   "last": "pd"
-  },
-  {
-   "ref": "cr-ref-mega-help-16",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
-   "why": null,
-   "words": 12,
-   "matched": 12,
-   "first": "talk",
+   "first": "whatsapp",
    "last": "me"
   },
   {
-   "ref": "cr-ref-mega-help-15",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
-   "why": null,
-   "words": 12,
-   "matched": 12,
-   "first": "talk",
+   "ref": "cr-ref-mega-help-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-mega-help-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 9,
+   "matched": 9,
+   "first": "contact",
    "last": "me"
   },
   {
@@ -188,42 +186,180 @@
     "direct": true,
     "match": "(^|[^\\p{L}\\p{N}])(contact|&|visit|us)($|[^\\p{L}\\p{N}])"
    },
-   "why": null,
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 4,
    "matched": 4,
    "first": "contact",
    "last": "us"
   },
   {
-   "ref": "cr-ref-mega-help-18",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2)",
-   "why": null,
-   "words": 9,
-   "matched": 9,
-   "first": "contact",
+   "ref": "cr-ref-mega-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 12,
+   "matched": 12,
+   "first": "talk",
    "last": "me"
   },
   {
-   "ref": "cr-ref-mega-help-20",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(2) > span:nth-child(1)",
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "0121",
-   "last": "8233"
+   "ref": "cr-ref-mega-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 12,
+   "matched": 12,
+   "first": "talk",
+   "last": "me"
   },
   {
-   "ref": "cr-ref-mega-help-21",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > a:nth-child(3)",
+   "ref": "cr-ref-mega-help-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(3)",
    "textRun": {
     "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(whatsapp|me)($|[^\\p{L}\\p{N}])"
+    "match": "(^|[^\\p{L}\\p{N}])(measuring|your|pd)($|[^\\p{L}\\p{N}])"
    },
-   "why": null,
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "measuring",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(reading|your|prescription)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "reading",
+   "last": "prescription"
+  },
+  {
+   "ref": "cr-ref-mega-help-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 9,
+   "matched": 9,
+   "first": "how",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(how|lenses|work)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "how",
+   "last": "work"
+  },
+  {
+   "ref": "cr-ref-mega-help-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 10,
+   "matched": 10,
+   "first": "prescriptions",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 10,
+   "matched": 10,
+   "first": "prescriptions",
+   "last": "pd"
+  },
+  {
+   "ref": "cr-ref-mega-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 1,
+   "matched": 1,
+   "first": "prescriptions",
+   "last": "prescriptions"
+  },
+  {
+   "ref": "cr-ref-mega-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(frequently|asked|questions)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "frequently",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(size|guide)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 2,
    "matched": 2,
-   "first": "whatsapp",
+   "first": "size",
+   "last": "guide"
+  },
+  {
+   "ref": "cr-ref-mega-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 8,
+   "matched": 8,
+   "first": "delivery",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-5",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(delivery|&|returns)($|[^\\p{L}\\p{N}])"
+   },
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 3,
+   "matched": 3,
+   "first": "delivery",
+   "last": "returns"
+  },
+  {
+   "ref": "cr-ref-mega-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 32,
+   "matched": 32,
+   "first": "buying",
    "last": "me"
+  },
+  {
+   "ref": "cr-ref-mega-help-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 10,
+   "matched": 10,
+   "first": "buying",
+   "last": "questions"
+  },
+  {
+   "ref": "cr-ref-mega-help-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 10,
+   "matched": 10,
+   "first": "buying",
+   "last": "questions"
   }
- ]
+ ],
+ "keptPairs": []
 }

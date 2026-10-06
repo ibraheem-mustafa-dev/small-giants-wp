@@ -1,11 +1,12 @@
 {
  "surface": "home",
- "when": "2026-10-05T09:43:23.879Z",
+ "when": "2026-10-06T16:19:31.549Z",
  "width": 1440,
  "recheck": [
   375,
   768
  ],
+ "lifted": [],
  "blocks": 79,
  "kept": 35,
  "coveredByHand": [
@@ -40,95 +41,673 @@
   "cr-ref-home-77",
   "cr-ref-home-78"
  ],
+ "handMeasured": [
+  "cr-ref-home-1",
+  "cr-ref-home-2",
+  "cr-ref-home-3",
+  "cr-ref-home-5",
+  "cr-ref-home-6",
+  "cr-ref-home-0",
+  "cr-ref-home-8",
+  "cr-ref-home-12",
+  "cr-ref-home-13",
+  "cr-ref-home-14",
+  "cr-ref-home-15",
+  "cr-ref-home-17",
+  "cr-ref-home-18",
+  "cr-ref-home-23",
+  "cr-ref-home-27",
+  "cr-ref-home-28",
+  "cr-ref-home-29",
+  "cr-ref-home-32",
+  "cr-ref-home-33",
+  "cr-ref-home-36",
+  "cr-ref-home-37",
+  "cr-ref-home-40",
+  "cr-ref-home-41",
+  "cr-ref-home-44",
+  "cr-ref-home-45",
+  "cr-ref-home-50",
+  "cr-ref-home-51",
+  "cr-ref-home-52",
+  "cr-ref-home-53",
+  "cr-ref-home-56",
+  "cr-ref-home-57",
+  "cr-ref-home-58",
+  "cr-ref-home-25",
+  "cr-ref-home-55",
+  "cr-ref-home-61",
+  "cr-ref-home-71",
+  "cr-ref-home-60",
+  "cr-ref-home-62",
+  "cr-ref-home-63",
+  "cr-ref-home-64",
+  "cr-ref-home-65",
+  "cr-ref-home-66",
+  "cr-ref-home-69",
+  "cr-ref-home-72",
+  "cr-ref-home-73",
+  "cr-ref-home-74",
+  "cr-ref-home-75",
+  "cr-ref-home-77",
+  "cr-ref-home-78"
+ ],
+ "handScope": [
+  {
+   "name": "hero-label",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-heading",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-subtext",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-btn-shop",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-btn-prescription",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-image",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hero-image-layer",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-strip",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-link",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-track",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bestsellers-eyebrow",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bestsellers-heading",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bestsellers-see-all",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bestsellers-grid",
+   "ok": true,
+   "checked": 35,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-gucci",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-holbrook",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "tag-holbrook",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-7",
+   "ok": true,
+   "checked": 5,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-media",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-photo",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-brand",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-save",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-wishlist",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-body",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-name",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-price",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-rrp",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "card-dot",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-eyebrow",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-heading",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-text",
+   "ok": true,
+   "checked": 23,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-1-number",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-1-heading",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-2-number",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-2-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-3-number",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-3-heading",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-4-number",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-4-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetiles-eyebrow",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetiles-heading",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetiles-see-all",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetile-wayfarer",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetile-wayfarer-title",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetile-wayfarer-photo",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetile-wayfarer-glyph",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "shapetile-oversized",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "reviews-eyebrow",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "reviews-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "review-card",
+   "ok": true,
+   "checked": 12,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "review-arrow-prev",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "review-arrow-next",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "reviews-see-all",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "reviews-write",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "review-card-2",
+   "ok": true,
+   "checked": 28,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whybuy-reveal",
+   "ok": true,
+   "checked": 29,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "reviews-reveal",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-reveal",
+   "ok": true,
+   "checked": 28,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-reveal",
+   "ok": true,
+   "checked": 25,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-photo-reveal",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-photo",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-eyebrow",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-heading",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-text",
+   "ok": true,
+   "checked": 12,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-step-1",
+   "ok": true,
+   "checked": 5,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-step-2",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-step-3",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "about-button",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-photo",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-eyebrow",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-heading",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-text-1",
+   "ok": true,
+   "checked": 12,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-text-2",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-whatsapp-cta",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "optician-qualifications-button",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  }
+ ],
  "retargeted": {},
  "left": [
   {
    "ref": "cr-ref-home-9",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
-   "why": "only 76% of its words matched the draft",
-   "words": 101,
-   "matched": 77,
+   "why": "only 74% of its words matched the draft",
+   "words": 93,
+   "matched": 69,
    "first": "moving",
    "last": "£75"
   },
   {
    "ref": "cr-ref-home-16",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 77% of its words matched the draft",
-   "words": 13,
-   "matched": 10,
+   "why": "only 75% of its words matched the draft",
+   "words": 12,
+   "matched": 9,
    "first": "photo",
    "last": "£171"
   },
   {
    "ref": "cr-ref-home-15",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2)",
-   "why": "only 74% of its words matched the draft",
-   "words": 93,
-   "matched": 69,
+   "why": "only 72% of its words matched the draft",
+   "words": 85,
+   "matched": 61,
    "first": "photo",
    "last": "£75"
   },
   {
    "ref": "cr-ref-home-17",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 70% of its words matched the draft",
-   "words": 10,
-   "matched": 7,
-   "first": "gucci",
+   "why": "only 67% of its words matched the draft",
+   "words": 9,
+   "matched": 6,
+   "first": "save",
    "last": "£340"
   },
   {
    "ref": "cr-ref-home-18",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 70% of its words matched the draft",
-   "words": 10,
-   "matched": 7,
-   "first": "oakley",
+   "why": "only 67% of its words matched the draft",
+   "words": 9,
+   "matched": 6,
+   "first": "save",
    "last": "£146"
   },
   {
    "ref": "cr-ref-home-19",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 75% of its words matched the draft",
-   "words": 12,
-   "matched": 9,
+   "why": "only 73% of its words matched the draft",
+   "words": 11,
+   "matched": 8,
    "first": "photo",
    "last": "£296"
   },
   {
    "ref": "cr-ref-home-20",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(5) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 11,
-   "matched": 8,
-   "first": "ray-ban",
+   "why": "only 70% of its words matched the draft",
+   "words": 10,
+   "matched": 7,
+   "first": "save",
    "last": "+2"
   },
   {
    "ref": "cr-ref-home-21",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(6) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 70% of its words matched the draft",
-   "words": 10,
-   "matched": 7,
-   "first": "ray-ban",
+   "why": "only 67% of its words matched the draft",
+   "words": 9,
+   "matched": 6,
+   "first": "save",
    "last": "£164"
   },
   {
    "ref": "cr-ref-home-22",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 77% of its words matched the draft",
-   "words": 13,
-   "matched": 10,
+   "why": "only 75% of its words matched the draft",
+   "words": 12,
+   "matched": 9,
    "first": "photo",
    "last": "£246"
   },
   {
    "ref": "cr-ref-home-23",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(8) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 79% of its words matched the draft",
-   "words": 14,
-   "matched": 11,
+   "why": "only 77% of its words matched the draft",
+   "words": 13,
+   "matched": 10,
    "first": "photo",
    "last": "£75"
   },
@@ -151,7 +730,7 @@
   },
   {
    "ref": "cr-ref-home-60",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 1 img live against 0 on the draft"
   }
  ],
  "keptPairs": [

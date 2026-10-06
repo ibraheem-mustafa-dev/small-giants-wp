@@ -1,6 +1,13 @@
 {
  "surface": "help",
- "when": "2026-10-05T09:37:04.047Z",
+ "when": "2026-10-06T16:18:51.287Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768,
+  1920
+ ],
+ "lifted": [],
  "blocks": 41,
  "kept": 14,
  "coveredByHand": [
@@ -15,6 +22,166 @@
   "cr-ref-help-14",
   "cr-ref-help-35",
   "cr-ref-help-37"
+ ],
+ "handMeasured": [
+  "cr-ref-help-1",
+  "cr-ref-help-2",
+  "cr-ref-help-5",
+  "cr-ref-help-6",
+  "cr-ref-help-8",
+  "cr-ref-help-9",
+  "cr-ref-help-11",
+  "cr-ref-help-12",
+  "cr-ref-help-14",
+  "cr-ref-help-15",
+  "cr-ref-help-17",
+  "cr-ref-help-19",
+  "cr-ref-help-35",
+  "cr-ref-help-37",
+  "cr-ref-help-39",
+  "cr-ref-help-40"
+ ],
+ "handScope": [
+  {
+   "name": "eyebrow",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "title",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-uk-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-uk-text",
+   "ok": true,
+   "checked": 15,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-collect-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-collect-text",
+   "ok": true,
+   "checked": 12,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-returns-heading",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "info-returns-text",
+   "ok": true,
+   "checked": 15,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "questions-heading",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "size-guide-link",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "contact-link-top",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "faq-question-1",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "faq-answer-1",
+   "ok": true,
+   "checked": 21,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "faq-icon-1",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "faq-question-2",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "faq-icon-2",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "still-heading",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "phone-text",
+   "ok": true,
+   "checked": 10,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "contact-button",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "call-button",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  }
  ],
  "retargeted": {
   "phone-text": ".cr-ref-help-37"

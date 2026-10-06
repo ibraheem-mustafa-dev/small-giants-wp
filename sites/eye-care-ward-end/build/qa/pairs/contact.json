@@ -1,6 +1,13 @@
 {
  "surface": "contact",
- "when": "2026-10-04T05:32:04.489Z",
+ "when": "2026-10-06T16:16:29.217Z",
+ "width": 1440,
+ "recheck": [
+  375,
+  768,
+  1920
+ ],
+ "lifted": [],
  "blocks": 32,
  "kept": 14,
  "coveredByHand": [
@@ -21,6 +28,217 @@
   "cr-ref-contact-22",
   "cr-ref-contact-28",
   "cr-ref-contact-31"
+ ],
+ "handMeasured": [
+  "cr-ref-contact-2",
+  "cr-ref-contact-3",
+  "cr-ref-contact-4",
+  "cr-ref-contact-5",
+  "cr-ref-contact-6",
+  "cr-ref-contact-8",
+  "cr-ref-contact-9",
+  "cr-ref-contact-11",
+  "cr-ref-contact-10",
+  "cr-ref-contact-14",
+  "cr-ref-contact-13",
+  "cr-ref-contact-17",
+  "cr-ref-contact-16",
+  "cr-ref-contact-20",
+  "cr-ref-contact-21",
+  "cr-ref-contact-22",
+  "cr-ref-contact-form-1",
+  "cr-ref-contact-form-2",
+  "cr-ref-contact-form-3",
+  "cr-ref-contact-form-4",
+  "cr-ref-contact-form-5",
+  "cr-ref-contact-form-0",
+  "cr-ref-contact-25",
+  "cr-ref-contact-28",
+  "cr-ref-contact-31"
+ ],
+ "handScope": [
+  {
+   "name": "eyebrow",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "heading",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "intro-text",
+   "ok": true,
+   "checked": 15,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "whatsapp-cta",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-grid",
+   "ok": true,
+   "checked": 13,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-phone-label",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-phone-value",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-email-label",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-email-value",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-clinic-label",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-clinic-value",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-hours-label",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "detail-hours-value",
+   "ok": true,
+   "checked": 5,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "form-card",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "form-heading",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "form-subtext",
+   "ok": true,
+   "checked": 6,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-name",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-email",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-phone",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-topic",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-message",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "field-name-focus-look",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "submit-button",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "map",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-google-label",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-instagram-label",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  }
  ],
  "retargeted": {},
  "left": [

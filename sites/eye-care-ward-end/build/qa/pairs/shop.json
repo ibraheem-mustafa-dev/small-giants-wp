@@ -1,16 +1,318 @@
 {
  "surface": "shop",
- "when": "2026-10-05T09:51:33.200Z",
+ "when": "2026-10-06T16:45:06.702Z",
  "width": 1440,
  "recheck": [
   375,
   768
  ],
- "blocks": 45,
- "kept": 8,
+ "lifted": [],
+ "blocks": 48,
+ "kept": 4,
  "coveredByHand": [
   "cr-ref-shop-9",
   "cr-ref-shop-31"
+ ],
+ "handMeasured": [
+  "cr-ref-shop-5",
+  "cr-ref-shop-6",
+  "cr-ref-shop-8",
+  "cr-ref-shop-9",
+  "cr-ref-shop-11",
+  "cr-ref-shop-12",
+  "cr-ref-shop-25",
+  "cr-ref-shop-31",
+  "cr-ref-shop-32",
+  "cr-ref-shop-35",
+  "cr-ref-shop-28",
+  "cr-ref-shop-50",
+  "cr-ref-shop-49"
+ ],
+ "handScope": [
+  {
+   "name": "eyebrow",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "title",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "count",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "sort",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "filters",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "gender-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "gender-all",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "gender-women",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "swatch-black",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "brand-search",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "brand-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brand-ray-ban",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "style-chip",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "price-min",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "price-max",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "size-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brand-label-hover",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brand-list",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "sort-select",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "sort-first-name",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "price-slider",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "polarised-toggle",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "grid",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-gucci",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-holbrook",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "tag-holbrook",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-lewis",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "tag-lewis",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-7",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-media",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-photo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-brand",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-save",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-wishlist",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-body",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "card-name",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-price",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-rrp",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "card-dot",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  }
  ],
  "retargeted": {
   "sort": ".cr-ref-shop-9 :is(input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea)",
@@ -19,31 +321,130 @@
  },
  "left": [
   {
+   "ref": "cr-ref-shop-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1)",
+   "why": "only 75% of its words matched the draft",
+   "words": 4,
+   "matched": 3,
+   "first": "shop",
+   "last": "frames"
+  },
+  {
+   "ref": "cr-ref-shop-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": "only 77% of its words matched the draft",
+   "words": 242,
+   "matched": 187,
+   "first": "shop",
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": "only 77% of its words matched the draft",
+   "words": 242,
+   "matched": 187,
+   "first": "shop",
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
+   "why": "only 50% of its words matched the draft",
+   "words": 2,
+   "matched": 1,
+   "first": "frames",
+   "last": "frames"
+  },
+  {
+   "ref": "cr-ref-shop-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
+   "why": "only 50% of its words matched the draft",
+   "words": 2,
+   "matched": 1,
+   "first": "frames",
+   "last": "frames"
+  },
+  {
+   "ref": "cr-ref-shop-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
+   "why": "only 77% of its words matched the draft",
+   "words": 238,
+   "matched": 184,
+   "first": "gender",
+   "last": "them."
+  },
+  {
    "ref": "cr-ref-shop-28",
    "draft": null,
    "why": "no draft element holds its words",
    "words": 2,
-   "matched": 2,
-   "first": "£59",
+   "matched": 1,
+   "first": "£339",
+   "last": "£339"
+  },
+  {
+   "ref": "cr-ref-shop-27",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(2) > span:nth-child(2)",
+   "why": "only 50% of its words matched the draft",
+   "words": 2,
+   "matched": 1,
+   "first": "£339",
    "last": "£339"
   },
   {
    "ref": "cr-ref-shop-50",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": "only 79% of its words matched the draft",
-   "words": 199,
-   "matched": 157,
+   "why": "only 73% of its words matched the draft",
+   "words": 178,
+   "matched": 130,
    "first": "photo",
-   "last": "£145"
+   "last": "come"
   },
   {
    "ref": "cr-ref-shop-49",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": "only 79% of its words matched the draft",
-   "words": 199,
-   "matched": 157,
+   "why": "only 73% of its words matched the draft",
+   "words": 178,
+   "matched": 130,
    "first": "photo",
-   "last": "£145"
+   "last": "come"
+  },
+  {
+   "ref": "cr-ref-shop-48",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "why": "only 75% of its words matched the draft",
+   "words": 210,
+   "matched": 158,
+   "first": "photo",
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-53",
+   "draft": null,
+   "why": "no matched words",
+   "words": 2,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-shop-51",
+   "draft": null,
+   "why": "no matched words",
+   "words": 4,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-shop-54",
+   "draft": null,
+   "why": "no matched words",
+   "words": 2,
+   "matched": 0,
+   "first": null,
+   "last": null
   },
   {
    "ref": "cr-ref-shop-32",
@@ -98,9 +499,9 @@
   {
    "ref": "cr-ref-shop-12",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 26,
-   "matched": 25,
+   "matched": 24,
    "first": null,
    "last": null,
    "group": {
@@ -109,7 +510,6 @@
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(2)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
@@ -120,27 +520,9 @@
    }
   },
   {
-   "ref": "cr-ref-shop-57",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(2)",
-   "why": "its draft element at 375 does not hold the same words",
-   "words": 28,
-   "matched": 28,
-   "first": "every",
-   "last": "them."
-  },
-  {
-   "ref": "cr-ref-shop-48",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
-   "why": "its draft element at 375 does not hold the same words",
-   "words": 227,
-   "matched": 185,
-   "first": "photo",
-   "last": "them."
-  },
-  {
    "ref": "cr-ref-shop-45",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(10) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 2,
    "matched": 2,
    "first": "nose",
@@ -149,7 +531,7 @@
   {
    "ref": "cr-ref-shop-42",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(9) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "hinge",
@@ -158,7 +540,7 @@
   {
    "ref": "cr-ref-shop-39",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 2,
    "matched": 2,
    "first": "frame",
@@ -167,7 +549,7 @@
   {
    "ref": "cr-ref-shop-36",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "material",
@@ -176,7 +558,7 @@
   {
    "ref": "cr-ref-shop-34",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 9,
    "matched": 9,
    "first": "pilot",
@@ -185,7 +567,7 @@
   {
    "ref": "cr-ref-shop-35",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 9,
    "matched": 9,
    "first": "pilot",
@@ -194,29 +576,16 @@
   {
    "ref": "cr-ref-shop-33",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "style",
    "last": "style"
   },
   {
-   "ref": "cr-ref-shop-27",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(2)",
-   "textRun": {
-    "direct": false,
-    "match": "(^|[^\\p{L}\\p{N}])(£59|£339)($|[^\\p{L}\\p{N}])"
-   },
-   "why": "its draft element at 375 does not hold the same words",
-   "words": 2,
-   "matched": 2,
-   "first": "£59",
-   "last": "£339"
-  },
-  {
    "ref": "cr-ref-shop-26",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "price",
@@ -225,7 +594,7 @@
   {
    "ref": "cr-ref-shop-23",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "colour",
@@ -234,34 +603,25 @@
   {
    "ref": "cr-ref-shop-20",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "size",
    "last": "size"
   },
   {
-   "ref": "cr-ref-shop-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
-   "why": "its draft element at 375 does not hold the same words",
-   "words": 255,
-   "matched": 212,
-   "first": "gender",
-   "last": "them."
-  },
-  {
    "ref": "cr-ref-shop-11",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 28,
-   "matched": 27,
+   "matched": 26,
    "first": "gender",
    "last": "only"
   },
   {
    "ref": "cr-ref-shop-17",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
    "words": 1,
    "matched": 1,
    "first": "gender",
@@ -332,33 +692,6 @@
    "last": "sunglasses"
   },
   {
-   "ref": "cr-ref-shop-3",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1)",
-   "why": null,
-   "words": 4,
-   "matched": 4,
-   "first": "shop",
-   "last": "frames"
-  },
-  {
-   "ref": "cr-ref-shop-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
-   "why": null,
-   "words": 259,
-   "matched": 216,
-   "first": "shop",
-   "last": "them."
-  },
-  {
-   "ref": "cr-ref-shop-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
-   "why": null,
-   "words": 259,
-   "matched": 216,
-   "first": "shop",
-   "last": "them."
-  },
-  {
    "ref": "cr-ref-shop-6",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > h1:nth-child(2) > span:nth-child(1)",
    "why": null,
@@ -368,26 +701,18 @@
    "last": "sunglasses"
   },
   {
-   "ref": "cr-ref-shop-8",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
+   "ref": "cr-ref-shop-57",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(2)",
    "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "16",
-   "last": "frames"
-  },
-  {
-   "ref": "cr-ref-shop-7",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(16|frames)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 2,
-   "matched": 2,
-   "first": "16",
-   "last": "frames"
+   "words": 28,
+   "matched": 28,
+   "first": "every",
+   "last": "them.",
+   "drafts": {
+    "375": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)",
+    "768": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)",
+    "1440": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(2)"
+   }
   }
  ]
 }

@@ -1,6 +1,6 @@
 {
  "surface": "footer",
- "when": "2026-10-05T10:08:48.455Z",
+ "when": "2026-10-06T16:17:05.401Z",
  "width": 1440,
  "recheck": [
   375,
@@ -42,6 +42,284 @@
   "cr-ref-footer-30",
   "cr-ref-footer-31"
  ],
+ "handMeasured": [
+  "cr-ref-footer-0",
+  "cr-ref-footer-1",
+  "cr-ref-footer-2",
+  "cr-ref-footer-7",
+  "cr-ref-footer-14",
+  "cr-ref-footer-21",
+  "cr-ref-footer-3",
+  "cr-ref-footer-4",
+  "cr-ref-footer-5",
+  "cr-ref-footer-6",
+  "cr-ref-footer-8",
+  "cr-ref-footer-15",
+  "cr-ref-footer-22",
+  "cr-ref-footer-10",
+  "cr-ref-footer-11",
+  "cr-ref-footer-12",
+  "cr-ref-footer-13",
+  "cr-ref-footer-17",
+  "cr-ref-footer-18",
+  "cr-ref-footer-19",
+  "cr-ref-footer-20",
+  "cr-ref-footer-23",
+  "cr-ref-footer-24",
+  "cr-ref-footer-25",
+  "cr-ref-footer-26",
+  "cr-ref-footer-27",
+  "cr-ref-footer-28",
+  "cr-ref-footer-30",
+  "cr-ref-footer-31"
+ ],
+ "handScope": [
+  {
+   "name": "footer-root",
+   "ok": true,
+   "checked": 51,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "columns-row",
+   "ok": true,
+   "checked": 39,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-brand",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-shop",
+   "ok": true,
+   "checked": 9,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-help",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-visit",
+   "ok": true,
+   "checked": 14,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-wordmark",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-tagline",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "brand-description",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-row",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-instagram",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-instagram-icon",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-google",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-google-icon",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-whatsapp",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "social-whatsapp-icon",
+   "ok": true,
+   "checked": 0,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-shop-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-help-heading",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "col-visit-heading",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-sunglasses",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-all-brands",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-prescription-lenses",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "text-glasses-soon",
+   "ok": true,
+   "checked": 4,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-delivery",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-faqs",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-size-guide",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-contact",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-about",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-phone",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "address",
+   "ok": true,
+   "checked": 5,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "hours",
+   "ok": true,
+   "checked": 2,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bottom-bar",
+   "ok": true,
+   "checked": 12,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "bottom-copyright",
+   "ok": true,
+   "checked": 10,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-privacy",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "link-terms",
+   "ok": true,
+   "checked": 1,
+   "split": [],
+   "why": null
+  }
+ ],
  "retargeted": {
   "col-brand": ".cr-ref-footer-2",
   "col-shop": ".cr-ref-footer-7",
@@ -63,16 +341,16 @@
  },
  "left": [
   {
-   "ref": "cr-ref-footer-6",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
    "ref": "cr-ref-footer-32",
    "why": "no painted words (an image, an icon or an empty wrapper)"
   },
   {
    "ref": "cr-ref-footer-33",
    "why": "no painted words (an image, an icon or an empty wrapper)"
+  },
+  {
+   "ref": "cr-ref-footer-6",
+   "why": "no draft element around its media is near its size (307x44)"
   }
  ],
  "keptPairs": [

@@ -1,16 +1,190 @@
 {
  "surface": "product",
- "when": "2026-10-05T09:54:14.565Z",
+ "when": "2026-10-06T16:44:03.407Z",
  "width": 1440,
  "recheck": [
   375,
   768
  ],
+ "lifted": [],
  "blocks": 37,
  "kept": 14,
  "coveredByHand": [
   "cr-ref-product-8",
   "cr-ref-product-11"
+ ],
+ "handMeasured": [
+  "cr-ref-product-6",
+  "cr-ref-product-5",
+  "cr-ref-product-4",
+  "cr-ref-product-8",
+  "cr-ref-product-12",
+  "cr-ref-product-9",
+  "cr-ref-product-11",
+  "cr-ref-product-100",
+  "cr-ref-product-110"
+ ],
+ "handScope": [
+  {
+   "name": "title",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "brand",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "price",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "colour-picker",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "colour-swatch",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "add-prescription",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "add-to-bag",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "gallery-photo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "tab-description-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "tab-details-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "tab-sizing-heading",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "tab-panel",
+   "ok": true,
+   "checked": 48,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "gallery-thumb",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "gallery-thumb-selected",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "colour-chosen",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "colour-value",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "size-chosen",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "size-button-m",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "gallery-photo-zoom",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "whatsapp-card",
+   "ok": true,
+   "checked": 8,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "tabs-reveal",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "reviews-reveal",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "similar-reveal",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  }
  ],
  "retargeted": {},
  "left": [
@@ -18,8 +192,8 @@
    "ref": "cr-ref-product-1",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
    "why": "the draft element also holds 2 word(s) that belong outside this block",
-   "words": 300,
-   "matched": 263,
+   "words": 299,
+   "matched": 262,
    "first": "home",
    "last": "£296"
   },
@@ -125,38 +299,42 @@
   {
    "ref": "cr-ref-product-110",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)",
-   "why": "only 79% of its words matched the draft",
-   "words": 14,
-   "matched": 11,
+   "why": "only 77% of its words matched the draft",
+   "words": 13,
+   "matched": 10,
    "first": "similar",
    "last": "£296"
   },
   {
    "ref": "cr-ref-product-114",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 75% of its words matched the draft",
-   "words": 12,
-   "matched": 9,
+   "why": "only 73% of its words matched the draft",
+   "words": 11,
+   "matched": 8,
    "first": "photo",
    "last": "£296"
   },
   {
    "ref": "cr-ref-product-113",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 75% of its words matched the draft",
-   "words": 12,
-   "matched": 9,
+   "why": "only 73% of its words matched the draft",
+   "words": 11,
+   "matched": 8,
    "first": "photo",
    "last": "£296"
   },
   {
    "ref": "cr-ref-product-112",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 75% of its words matched the draft",
-   "words": 12,
-   "matched": 9,
+   "why": "only 73% of its words matched the draft",
+   "words": 11,
+   "matched": 8,
    "first": "photo",
    "last": "£296"
+  },
+  {
+   "ref": "cr-ref-product-115",
+   "why": "no painted words (an image, an icon or an empty wrapper)"
   },
   {
    "ref": "cr-ref-product-92",
@@ -172,10 +350,6 @@
   },
   {
    "ref": "cr-ref-product-98",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-product-115",
    "why": "no painted words (an image, an icon or an empty wrapper)"
   }
  ],
@@ -309,8 +483,8 @@
    "ref": "cr-ref-product-2",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
    "why": null,
-   "words": 300,
-   "matched": 263,
+   "words": 299,
+   "matched": 262,
    "first": null,
    "last": null,
    "group": {
