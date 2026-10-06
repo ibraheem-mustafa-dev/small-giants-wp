@@ -2,7 +2,7 @@
 title: "Eye Care Session C2: assess every finding against the fix register, then fix what Bean approves"
 project: small-giants-wp
 created: 2026-10-05
-status: not started; blocked on Session C
+status: runnable (Session C complete 2026-10-06; its count is raw F 192)
 governs: the assessment and framework-fix stage after Session C
 references:
   - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
@@ -14,14 +14,22 @@ references:
 
 # Eye Care Session C2: assess every finding, then fix what Bean approves
 
-⚠️ **This session cannot start yet (2026-10-05).** Session C is **part-done**: its Wave 0, Wave 1 and Gate 1 have passed, but **Waves 2 and 3 are outstanding**, and C3.8 — the post-route framework-gap count that is this session's input — **does not exist**. Gate 1's figure is **raw F 177 against a raw baseline of 338**, measured on the committed Solve reports; it is **not** comparable to the audited 163 this plan was written against, and it is not the post-sweep number either, because the fresh measure-only sweep is Wave 3's C3.6. Wait for Session C's sitting ii. What already changed that this plan must absorb when it does start: 161 rows moved from F to `W/canvas-settable` with a cited block and attribute (a claim to test live, never a closure), the mega-menu and lens-flow rows shrank as expected, 41 content rows entered the sweep as a new `content` class, and the canvas roster is 12 of 17 surfaces. See `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` sections "Gate 1 PASSED" and "QC council".
+✅ **This session is RUNNABLE (2026-10-06).** Session C is complete: Waves 0 to 3 and Gates 1 to 3 all passed, and **C3.8 — the post-route framework-gap count that is this session's input — exists.** Read it in `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, section "C3.8 — the new framework-gap count", with its corrections in "Gate 3 — QC council on this sitting's own claims".
+
+**The number this session consumes is raw F = 192**, in `sites/eye-care-ward-end/build/qa/triage/*.json` (17 files, rewritten 2026-10-06). It is a **raw machine classification** and is **not** comparable to Session B's audited 163: Session B audited 338 raw rows down to 163, so an audited equivalent of 192 is this session's own judgement to produce. Per surface: lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4, mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, and 0 on about, lenses, header and size-guide. There are also **29 U rows** that nothing explains.
+
+**Four things to absorb before judging any row.**
+1. **161 rows moved from F to `W/canvas-settable`**, each citing a block and attribute that could hold the value. That citation is a **claim to test live, never a closure**, and task 2 tests it. The canvas roster is 12 of the 17 surfaces, and it is load-bearing: stripping its flags takes F back to 338, so a wrong roster would mask genuine page gaps.
+2. **The count was measured at block code `7f375f765`, which is NOT current.** eye-care-test now runs `94122e326`. Every register row fixed between those commits still reads open in this triage — including 87's breadcrumb weight (`9776e7d86`) and 15's drawer column (`31aa51090`). **Those are fixed in code; do not re-investigate them as regressions.** Re-sweeping at current code is the honest way to clear them.
+3. **45 content rows** (13 text, 32 presence) are classed `W/content` and are not framework gaps.
+4. **Session C's own Gate 3 council corrected 12 of its claims.** In particular the 338 → 192 headline is NOT a clean before/after: only **338 → 176** is a single-variable result (the route code on identical reports). The step to 192 mixes new walker code, new live block code and newly walked states and is not separable. Treat 192 as the current measured state, not as a measure of the route's improvement.
 
 **Goal:** every walker finding on the post-Session-C sweep is matched to the fix register where one fits,
 fact-checked against how the framework really works, and live-tested; Bean approves or rejects each one; and only
 the approved items become framework fixes.
 
 **Status: not started. Blocked on Session C** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`), which
-repairs the measuring route first. **This session runs on the post-C sweep, never on Session B's 163 rows.**
+repairs the measuring route first. **This session runs on the post-C sweep (raw F 192), never on Session B's audited 163 rows.**
 
 ## The rule this session exists to enforce
 
@@ -70,7 +78,7 @@ item marked "still open" or "partly measured"; and the framework fixes for whate
 
 **Start from the matching already done in the Gate B doc** (https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f,
 tab "Tool rows (not reconciled)", section "Matched to the confirmed register"; its other tab, "Fix register
-(confirmed)", is the register itself). It splits Session B's 163 rows three ways. **Correct it against the post-C sweep and show
+(confirmed)", is the register itself). It splits Session B's 163 rows three ways. **Correct it against the post-C sweep's 192 raw F rows and show
 what changed**, row by row, with a reason per change.
 
 The matching below is the starting point. It is one reading of both lists, not a re-test, so correct it rather than
@@ -120,16 +128,21 @@ looks right and has challenged the mega-menu rows.
 **Done when:** every post-C row carries either a register Ref or an explicit "not in the register", and every
 change against the table above is listed with its reason.
 
-⚠️ **Re-measure before matching.** Session C's count is taken on unrepaired block code, because the parallel
-repairs track (`plans/2026-10-05-eye-care-register-proven-repairs.md`) holds its deploy so that count stays
-attributable to the route. That track closes register-decided rows on `sgs/button`, `sgs/business-info`,
-`sgs/site-footer-row`, the nav drawer, the cart proxy and the colour tiles. **Confirm it has deployed, then
-take a fresh measure-only sweep**, or this session re-judges rows that are already fixed.
+⚠️ **The count was measured at block code `7f375f765`; eye-care-test now runs `94122e326`.** The sweep deliberately
+ran before that deploy so the figure stayed attributable to the route. **Consequence: every register row fixed between
+those two commits still reads OPEN in this triage** — including 87's breadcrumb weight (`9776e7d86`) and 15's drawer
+column (`31aa51090`), and the `sgs/button`, `sgs/business-info`, `sgs/site-footer-row`, nav-drawer, cart-proxy and
+colour-tile rows the register-proven repairs track closed. **Those are fixed in code: do not re-judge them as
+findings.** A fresh measure-only sweep at current code is the honest way to clear them, and it is cheap —
+`solve.mjs --rounds 0` per surface, then `sweep.mjs`.
 
-**Expect the C table to shrink a lot.** Session C's canvas-awareness rule (FR-47-8) targets exactly the mega-menu
-22 and much of the lens-pop-up 35, and its walker guards retire the two WooCommerce width rows. A row Session C
-reclassified to **W** / `canvas-settable` carries a cited block and attribute: step 2 tests that citation rather
-than taking it.
+**The C table did shrink, and here is by how much.** Session C's canvas-awareness rule (FR-47-8) moved **161 rows**
+from F to **W** / `canvas-settable`, and the roster covers 12 of the 17 surfaces. Per surface it took footer 76 to 21,
+product 42 to 5, mega-lenses 24 to 4, header 15 to 0, contact-form 10 to 0, mega-brands 14 to 8, mobile-menu 12 to 4,
+shop 7 to 2, lens 38 to 34 and mega-sunglasses 2 to 1, with **zero change on any non-canvas page**. Every one of those
+rows carries a cited block and attribute, and **that citation is a claim to test live, never a closure**: step 2 tests
+it rather than taking it. The roster is load-bearing: stripping its flags takes F back to 338, so a wrong roster would
+mask genuine page gaps.
 
 ## Step 2: FACT-CHECK every row before it counts
 
@@ -170,7 +183,8 @@ with a cited `file::symbol` or a tree node:
 
 **The citation gate.** Every verdict names an exact DB row (with its values) or a `file::symbol`, and quotes it.
 A verdict with neither is rejected and re-run. This is the gate that cut Session B's candidate gaps from 338 to
-163, and it is why the surviving ones are worth Bean's time.
+163, and it is why the surviving ones are worth Bean's time. Session C's own Gate 3 council applied the same gate to
+Session C and corrected 12 of its claims, so expect it to bite here too.
 
 **Dispatch:** parallel read-only Opus agents, grouped by **mechanism** for review value, under the merge gate
 `lib/register-sweep.mjs::checkStatuses`. The main thread re-checks **every** `real` verdict and a sample of the

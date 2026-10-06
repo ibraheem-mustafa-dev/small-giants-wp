@@ -16,7 +16,7 @@ per-surface walker work resumes.
 134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already
 fixed, what the register still needs, or whether "missing setting" labels are true.
 
-**Session C sitting i is done (2026-10-05):** Wave 0, Wave 1's six lanes and Gate 1 all passed, so Spec 47 §5 stage 3's walker items 2, 4 and 5 and the focus and active half of item 3 are built, FR-47-7's flows are built, and FR-47-8 canvas awareness is live. Raw F fell 338 to 177 (not comparable to Session B's audited 163). Sitting ii — Wave 2, Gate 2 and Wave 3's host jobs — is outstanding, and Wave 3 is what produces the count Session C2 consumes. Detail: `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
+**Session C is COMPLETE (2026-10-06):** Waves 0 to 3 and Gates 1 to 3 all passed. Spec 47 §5 stage 3's walker items 2, 4, 5 and the focus and active half of 3 are built, FR-47-7's flows ran live, FR-47-8 canvas awareness is live, and FR-47-2's presence/text/link reads, FR-47-3's content writes and handover, and FR-47-4's Fill are built. **The route result is raw F 338 to 176 on identical reports; the current measured figure on a fresh sweep is 192** (`qa/triage/*.json`), neither comparable to Session B's audited 163. Session C2 is runnable and consumes the 192. Detail: `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
 
 **Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
 still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each
@@ -322,7 +322,7 @@ functionality.
 **Measure-gap tag (Bean, 2026-10-05).** Every register item Session A left **not walker-measurable** or **partly
 measured** (78 on the strict A4 pass: 63 and 15) also gets one tag saying why it is not measured, using Spec 47's role
 split: `content-fixable` (the draft shows it and a block setting can hold it: words in a `content` setting, an element
-shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, not built yet),
+shown by a `boolean-visibility` or variant setting, a link; Spec 47 §3.2/§3.3 presence, text and link, **built 2026-10-06** but their one real-data run recorded nothing, see §5 Residual),
 `handover` (content outside the tree: Site Info, product data, WooCommerce text, a page the draft never shows; name its
 owner), `behaviour` (FR-47-7 flows: clicks, filters, add to bag, step changes), `FR-47-6` (a walker read not built:
 focus and active states, script-driven entrance motion, link coverage), `pairing` (the element exists on a measured

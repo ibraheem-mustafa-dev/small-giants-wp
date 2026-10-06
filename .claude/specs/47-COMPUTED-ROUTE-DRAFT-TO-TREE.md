@@ -5,7 +5,7 @@ spec_version: "0.15"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-05
+last_verified: 2026-10-06
 status: draft
 references:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
@@ -632,8 +632,11 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        **The remaining work runs in two sessions.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`)
        is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
        framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
-       So **Session C repairs the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
-       and records a new framework-gap count (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). **Session C2** then matches
+       So **Session C repaired the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
+       and recorded the new framework-gap count (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): **the route
+       result is raw F 338 to 176 on identical Solve reports, and the current measured state on a fresh sweep of all 17
+       surfaces at block code `7f375f765` is raw F 192**, in `qa/triage/*.json`. Session C is complete, with ten route
+       defects carried in the bullet below. **Session C2** then matches
        each remaining row to a register item, fact-checks it, tests it live at four widths, and builds only what Bean approves
        (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). A mechanism group is a filing label for review and never a unit of
        work, and `SGS_Container_Wrapper` is never a blanket fix.
@@ -660,6 +663,51 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        excluded, since their absence proves nothing. Emitted for inherited properties only. **The 38 rows are not yet
        re-typed:** that needs a calibration run per affected block and then a Solve run, so the mechanical bound is
        that only a setting painting an inherited property can be re-typed at all.
+     - **Route defects found by Session C's Gate 3 council (2026-10-06), each with its owner.** None is a Session C2
+       finding; all are route work.
+       - **No `transition,*` row calibrates anywhere in the library.** `lib/calibrate-markers.mjs::markersFor`
+         dispatches on the first comma-segment of `css_property`, which is `transition`, and every branch misses it
+         (not colour, not `KEYWORDS`, not enum, not box, not `tier_object` — `LENGTH` fails — not weight, opacity,
+         transform, letter-spacing, number or count), so it falls through to `return []`. Confirmed on all six routed
+         blocks: `sgs/hero`, `sgs/brand-strip`, `sgs/card-grid`, `sgs/info-box`, `sgs/testimonial` and
+         `sgs/cta-section` all carry the pair in `noMarker` with no slot. A transition marker needs a new shape (set a
+         duration and an easing, read `transition-duration` and `transition-timing-function` off the root).
+       - **`settings[<attr>].overriddenBy` names non-rendering elements.** All ten of `sgs/hero`'s entries name
+         `.sgs-hero__video-bg > source`, a metadata element inside `<video>` that renders no box and no text and so
+         cannot override `font-size`, `color` or `line-height`. `lib/calibrate.mjs::overridingChildren` infers "has its
+         own rule" from the path's absence from `reaches` without checking the element renders. **Needs a rendered-box
+         guard.**
+       - **The content reads returned nothing on their one real-data run.** `cache/hero.json` was measured after the
+         reads landed (it carries `overriddenBy`) and `sgs/hero` has 17 content-role rows — 10 `boolean-visibility`,
+         6 `content`, 1 `text-content` — yet the file carries no `text`, `presence` or `link` key, and
+         `lib/calibrate-content.mjs::collectContent` omits a key only when empty. Whether that is legitimate (no
+         marker, nothing shown or hidden) or a silent failure is **undetermined**. Consequence: no cache anywhere
+         carries those keys, so `lib/solve-rows.mjs::resolveContent` has never fired on real data either.
+       - **`lib/solve-rows.mjs::resolveContent` belongs in `lib/resolve.mjs`** under R-47-3's one-resolver rule. It
+         sits in `solve-rows.mjs` only because the lane that wrote it could not edit `resolve.mjs`.
+       - **`lib/triage.mjs`'s CONTENT verdict ignores Solve's outcome**, returning `W`/`content` for every content row
+         whatever `contentClass` says.
+       - **20 presence rows and every `link-missing` row are unwritable.** A presence row for an element missing from
+         the live page has no live element, so no trace and no node: it needs a `ref` in the pair config and
+         `scripts/parity/lib/ref-trace.mjs::stampRefs` extended to stamp content rows. `link-missing` needs
+         `auto-collect.mjs` to store the href rather than `lk: true`.
+       - **`lib/resolve.mjs::resolveViaAncestor` should be deleted.** With `measuredSlots` supplied it was called
+         1,583 times over 2,414 issues and returned 0 writes; its inner `resolve` receives inputs identical to
+         `solve.mjs::writeRound`'s owners-retry; and `where: 'ancestor'` is written into evidence but never read for a
+         decision, with `lib/triage.mjs::canvasSettable` stamping that field itself. Deleting it changes no verdict.
+         One test assertion on its own citation goes with it.
+       - **The `scroll` row kind vanished** between the 2026-10-05 and 2026-10-06 sweeps: 24 to 0 on product, 2 to 0
+         on shop. Unexplained.
+       - **`benchmark.mjs --noise` is unproven in both directions.** It caught 5 of 5 planted faults, but read 13
+         noise rows on shop and 9 on lens where an earlier run read 0. Host load and walker-read drift are both
+         candidates and neither is excluded — the control's own hover rows fell 18 to 6 with an unchanged config. Needs
+         control and noise back to back on a quiet host.
+       - **A gate exists that would have caught an unwalkable surface, and it never ran.**
+         `scripts/parity/draft-live-walk.mjs` calls `lib/lint.mjs::lintConfig` and exits 1 before any browser opens,
+         but a whole sitting passed without re-walking, so a surface stayed unwalkable. **A route gate should run
+         `draft-live-walk.mjs --lint` over every surface's `walkerFull`** — no browser, no host.
+       - **The 338 to 176 decomposition is machine-local.** `.gitignore` ignores `sites/*/build/qa/solve/`, so it
+         re-derives only while the 2026-10-05 report folders survive on disk.
      - **The divergence ledger cannot scope a decision to one element path** (found 2026-10-05, Session C C0.3).
        `lib/ledger.mjs::match` matches on node, state, pseudo, property and width, with **no path discriminator**, so
        a node holding several rows of the same property and state cannot have one of them accepted on its own. It

@@ -2,7 +2,7 @@
 title: "Eye Care Session C: repair the measuring route (Spec 47 gaps only)"
 project: small-giants-wp
 created: 2026-10-05
-status: in progress (sitting i complete: Wave 0, Wave 1 and Gate 1 all passed)
+status: complete at `b0492a5af` (Waves 0 to 3 and Gates 1 to 3 all passed; three host jobs owed, see "Wave 3's remaining items")
 governs: Session C of .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
 references:
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
@@ -18,7 +18,7 @@ references:
 that ignore how the framework works, and a fresh measure-only sweep and triage on the repaired route record a new
 framework-gap count. **No block controls and no shared CSS files are touched in this session.**
 
-**Status: sitting i DONE at `cac1f346f`** — Wave 0, Wave 1's six lanes and Gate 1 all passed. **Resume at "Wave 2".** Bean approved this work and set its order: the route first, the findings afterwards.
+**Status: COMPLETE at `b0492a5af`** — Waves 0 to 3 and Gates 1 to 3 all passed, no block code touched. **The route result is raw F 338 to 176, measured on identical Solve reports. The current measured state, on a fresh sweep of all 17 surfaces at block code `7f375f765`, is raw F 192** (`qa/triage/*.json`), and the 176 to 192 step is not separable. A Gate 3 council corrected 12 of this plan's own claims; read "Gate 3 — QC council" before quoting any figure from it. **Three host jobs remain owed** — see "Wave 3's remaining items". Bean approved this work and set its order: the route first, the findings afterwards.
 The brief he worked from is the Gate B doc, https://claude.ai/code/artifact/d3b24008-a0bc-403f-83ae-a8788dd7501f.
 
 ## Why the route is repaired before any finding is judged

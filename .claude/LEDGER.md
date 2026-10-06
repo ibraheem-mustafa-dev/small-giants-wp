@@ -60,46 +60,41 @@ truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, d
 No blockers.
 
 **Spec 47 (v0.15): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
-compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker (the
-draft-vs-live comparison tool, `scripts/parity/`) reads what DevTools shows. Every surface is paired (`pairs.mjs`;
-a panel pairs with its walker state open, `--state`). **About is at 100%.** Per-surface counts moved at Gate 1: read
-`qa/triage/*.json`, never a cached figure (causes in `plans/2026-10-04-spec47-full-coverage.md` "Progress").
-Built by Session C's sitting i: the FR-47-8 canvas rule, the walker's 1920 default, focus and active on every
-interactive element, link coverage, line counts, region entrances, the four functional flows, the pairing gaps, and
-the calibration fixtures and harness. Still unbuilt and owned by its **sitting ii**: calibration's presence, text
-and link reads, Solve writing them, the handover list, gap typing, and Fill. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at localhost:8081/8082 if
-Hostinger shows a captcha (`scripts/local-wp/README.md`).
+compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker
+(`scripts/parity/`) reads what DevTools shows. Every surface is paired. **About is at 100%.** Always read per-surface
+counts from `qa/triage/*.json`, never a cached figure. **Session C built everything except stage 5 (a second draft,
+none exists)** — including Fill (`fill.mjs`, `lib/draft.mjs`, twelve `lib/fill-*.mjs`). Ten known route defects with
+owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at
+localhost:8081/8082 if Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
-**Sessions A and B (2026-10-05, both complete, measure and read only).** The whole-site sweep measured all 17
-surfaces at **2,373** distinct open issues (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`), and the
-audit put every one in exactly one class with proof: **W 1,710, F 163, T 447, U 28, D 17, deferred 8**
-(`plans/2026-10-04-eye-care-sweep-audit-fix.md` Appendix B; per-surface in `plans/2026-10-04-spec47-full-coverage.md`).
-⚠️ **Those are AUDITED figures.** `qa/triage/*.json` holds the **raw** classification, W 1,562 / F 338 / T 445 /
-U 28; Session B audited the 338 raw-F rows to 163 (148 W, 17 D, 8 deferred, 2 T). Both total 2,373, and **a triage
-re-run compares to 338, never to 163.** Every register item carries a Sweep status; the 78 unmeasurable ones carry a
-measure-gap tag (Appendix A).
+**Sessions A and B (2026-10-05, complete, measure and read only).** ⚠️ **Their headline W 1,710 / F 163 / T 447 /
+U 28 / D 17 / deferred 8 are AUDITED figures and are NOT comparable to any triage re-run**, which is raw. Session B
+audited 338 raw-F rows down to 163. Detail and Appendices A and B:
+`plans/2026-10-04-eye-care-sweep-audit-fix.md`; per-surface in `plans/2026-10-04-spec47-full-coverage.md`.
 
-**Session C — sitting i DONE at `cac1f346f`, sitting ii outstanding** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`,
-resume at "Wave 2"). No block code was touched. Wave 0, Wave 1's six lanes and Gate 1 all passed, 17 commits.
-**Raw F 338 to 177**, W 1,562 to 1,764, T and U unchanged, total 2,373 to 2,414 (41 content rows), every transition
-accounted for, the identity holding on all 17 surfaces, 322 tests green. ⚠️ **177 is RAW and NOT comparable to the
-audited 163.** Canvas roster: 12 of 17 (every CPT plus shop and product); text read covers both roles, 319 settings
-(both Bean's answers). A QC council falsified one of the session's own claims: the canvas **hop** is not what moved
-F — `triage.mjs::canvasSettable` plus the manifest flag is — and the hop must earn its place at L8.7 or be deleted.
-**Sitting ii:** Wave 2 (L7 calibration reads, L8 Solve writes with new items L8.7 and L8.8, L9 Fill), Gate 2, then
-Wave 3's host jobs C3.1 to C3.8 — which produce the post-route count. R1 is already decided: **2 rows routed of the
-32**, both on `sgs/hero`, the other 31 must stay NULL. Twelve open items each carry an owner in the plan's
-"Gate 1 PASSED" section. Only Spec 47 stage 5 (a second draft) is not built: no second draft exists.
+**Session C — COMPLETE at `b0492a5af`** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). No block code
+touched; 523 route tests green. **The route result is raw F 338 to 176, on identical Solve reports; the current
+measured state, on a fresh sweep of all 17 surfaces at block code `7f375f765`, is raw F 192.**
+⚠️ **Both are RAW and neither is comparable to the audited 163, and 176 to 192 is NOT separable** — the walker code,
+the deployed block code and the walked states all changed between the sweeps, so treat 192 as the current state and
+not as the route's improvement. A Gate 3 council corrected 12 of the plan's own claims: read "Gate 3 — QC council"
+before quoting any figure from it. Ten route defects with owners are in Spec 47 §5 Residual.
+**Three host jobs are owed to Session C2 as prerequisites** (quiet shared host needed): the C3.5 confirmation walk
+(order 652 is `processing` and paid), an `sgs/media` recalibration to exercise the content reads on a block that has
+them, and a `benchmark.mjs --noise` re-run. Commands in the plan's "Wave 3's remaining items".
 
-**Session C2 — assess every finding, BLOCKED until Session C's Wave 3 runs** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`).
-Its input is C3.8's post-route count, which does not exist yet; Gate 1's raw 177 is not that number. On the post-C sweep, never on the old 163: match each row to a register Ref, fact-check it with a cited
+**Session C2 — assess every finding, RUNNABLE NOW** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`).
+Its input exists: **raw F 192 in `sites/eye-care-ward-end/build/qa/triage/*.json`** (17 files, 2026-10-06), per
+surface lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4,
+mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, zero elsewhere, plus 29 U rows. On that sweep, never
+on the old 163: match each row to a register Ref, fact-check it with a cited
 `file::symbol` or DB row, live-test it at 375/768/1440/1920, then one yes/no list for Bean before any code. The
 block work the first draft called W1 and W2 lives there, behind that approval, with the queue partition and the
 collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carried over.
 
-**R1 is decided: 2 rows get routed, not 32** — both on `sgs/hero`; the other 31 must stay NULL because the extension
-roster's policy is deliberate (reasons per family in the plan's "R1 decided"). The three `!important` spacing rows
-are diagnosed from the source as two causes, so both go on the C2 list rather than waiting.
+**Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). ⚠️ **No `transition,*`
+row calibrates anywhere** because `markersFor` has no branch for it — Spec 47 §5 Residual owns the fix. The three
+`!important` spacing rows are diagnosed as two causes and both go on the C2 list.
 
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified on sandybrown, pushed.**
 Tier 2's five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10
@@ -108,16 +103,12 @@ Tier 1 regression a stale page cache had hidden.
 `brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the 375/768/1440 readings with
 their negative controls, what was NOT measured, and every open item — two S10 `/qc` defects, a
 `Product_Manifest::build()` divergence blocking 59's photo swap, and the 20+23 surfaces needing eye-care-test.
-CR6 unbuilt: needs `scripts/computed-route/lib/resolve.mjs`, Session C's. Canary QA fixtures are listed in the register's S9 and 18 rows.
+CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
 
 The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
-**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompt** for Session C2: `.claude/prompts/session-c2-finding-assessment.md` (single-use).
-**Resume from:**
-**Session C sitting ii** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, resume at "Wave 2"): three
-lanes (L7, L8 with its new L8.7 and L8.8, L9), Gate 2, then Wave 3's host jobs C3.1 to C3.8. Session C2 runs on
-C3.8's output and cannot start before it. Per-surface Solve work is Session D
-(`plans/2026-10-04-spec47-full-coverage.md` "Progress").
+**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
+**Resume from:** Session C2 (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). Per-surface Solve work is Session D.
 
 **Separators** (live on both sites): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

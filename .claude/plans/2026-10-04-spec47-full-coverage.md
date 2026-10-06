@@ -140,7 +140,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 | contact-form | 6 of 6 | 58 | 48 | 10 | 0 |
 | **Site** (a row two surfaces share counts once) | | **2,373** | 1,618 | 432 | 323 |
 
-**Superseded by Session C's Gate 1 (2026-10-05):** the site total is now **2,414** — unresolved 1,618, derived 432, unmapped-state 323 and a new **content** class of 41 (13 text, 28 presence) that the sweep previously dropped. Triage classes moved W 1,562 to 1,764 and F 338 to 177, with T 445 and U 28 unchanged. The identity still holds on all 17 surfaces. The per-surface totals above are therefore the pre-Gate-1 figures; re-read them from `qa/triage/*.json` after Wave 3's sweep.
+**The per-surface totals above are the 2026-10-05 pre-Session-C figures. Current truth, from Session C's Wave 3 sweep (2026-10-06, all 17 surfaces, block code `7f375f765`):** site total **1,841** per surface (1,836 site-deduped, five ref-less `contact`/`contact-form` presence rows collapsing because both declare the same walker), split unresolved 1,396, derived 395, **unmapped-state 0** (was 323) and content 45. Triage classes: **W 1,242 / F 192 / T 378 / U 29**. Read the live per-surface numbers from `qa/triage/*.json`, never from this table.
 
   Pairing left out, with reasons in `qa/pairs/<surface>.json`: mobile-menu pairs nothing (the collector reads no words
   inside the open live drawer, cause unproven; header.mjs's drawer pairs still measure it); shop's and product's draft

@@ -2,8 +2,8 @@
 title: "Eye Care: the register-proven framework repairs (parallel track)"
 project: small-giants-wp
 created: 2026-10-05
-status: built and verified on sandybrown 2026-10-05; one item open (the eye-care-test deploy)
-governs: a track that runs beside Session C, never inside it
+status: complete - built and verified on sandybrown 2026-10-05; the eye-care-test deploy landed 2026-10-06 (`94122e326`, by Session C's Wave 3)
+governs: a track that ran beside Session C (Session C is now complete)
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
   - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
@@ -103,7 +103,7 @@ This track shares a worktree and a test site with Session C. These are not style
 | **Never touch `scripts/computed-route/` or `scripts/parity/`** | Session C owns every file in both, across nine lanes. This track's files are `plugins/sgs-blocks/` and `theme/sgs-theme/` only |
 | **Never write a page tree** (`sites/eye-care-ward-end/build/*.tree.json`) | The trees are the route's write target and Session D's work. Where an item's remainder is a tree value, build the framework half and **record the value needed** against its register row |
 | **Never add a `divergences.json` entry** | The ledger is Solve's write target, so a wrongly added entry freezes a wrong value permanently and turns no check red |
-| **Never deploy to eye-care-test, and never reseed, until Session C's Wave 3 sweep has run** | See below. This is the one that will bite |
+| **eye-care-test is deployed and reseeded; no hold remains.** Session C swept at `7f375f765`, then deployed `94122e326` and ran one reseed (2026-10-06) | - |
 
 ### The deploy and reseed rule, and why
 
@@ -116,7 +116,7 @@ So this track:
 
 1. Builds, runs the gates, and verifies **on sandybrown**, the canary. That is the designated place for this.
 2. Commits to `main` with an explicit pathspec, as normal. Committing is safe; deploying to the measured site is not.
-3. **Hands its reseed and its eye-care-test deploy to Session C's Wave 3**, which already runs exactly one of each,
+3. **Handed its reseed and its eye-care-test deploy to Session C's Wave 3**, which ran exactly one of each (done 2026-10-06),
    or runs them itself after Session C's Gate 3 has passed. Message the other session either way.
 
 **sandybrown is deployed** at `a62ae6fdb`. Its oldshape audit passed without intervention: calibration had already replaced the Spec 47 calibration page (post 4750) with an empty tree, which Session C confirmed by running the audit itself (483 posts, exit 0). The only deploy still owed is eye-care-test, in Deferred above.
@@ -127,7 +127,7 @@ So this track:
 |---|---|
 | `sgs/business-info` | This track takes item 38's day-label weight. Session C2 has a separate finding on the same block, the hours row gap, which Session B confirmed as a real gap. C2 runs after this track, so it inherits the weight fix. No concurrent edit |
 | `sgs/button` | S1's timing repair is this track's. Any button finding on C2's list is judged against the repaired code, not today's |
-| The F count | Every fix here closes rows the walker was reporting. Session C's C3.8 count is measured **before** this track deploys, so C2's input is a count taken on unfixed block code. **C2's step 1 must re-measure after this track deploys**, or it will re-judge rows that are already fixed. Recorded in C2's plan |
+| The F count | Every fix here closes rows the walker was reporting, and Session C's count (raw F 192) was measured at `7f375f765`, **before** this track's fixes reached eye-care-test. **So those rows still read OPEN in `qa/triage/*.json` and must not be re-judged as findings.** A fresh measure-only sweep at current code clears them. Recorded in C2's plan |
 
 ## Gates
 
@@ -190,7 +190,7 @@ Tier 2. Start there, not here.
 
 | Item | Why it is open | Who |
 |---|---|---|
-| **The eye-care-test deploy and the reseed** | Held deliberately so Session C's framework-gap count stays attributable to the route. Session C has accepted both into its Wave 3 and will deploy the then-current `main` after its measure-only sweep — not `a62ae6fdb` or `75364c71a`, both of which now predate the Tier 1 range `65573118c..82f54f351`, then report the Eye Care button's computed `transitionDuration` to close S1's evidence gap | Session C's Wave 3 |
+| **The eye-care-test deploy and the reseed** | **DONE 2026-10-06.** Session C swept at `7f375f765`, then deployed `94122e326` (verified by host marker and per-block checksum) and ran one reseed. **S1's evidence gap is closed**: every Eye Care button reads `transition-duration: 0.25s` across all seven properties including `translate` and `box-shadow`, which the canary could not show because it sets no `buttonPresets.default.hover-transition` | closed |
 | **Regenerate `specs/02-SGS-BLOCKS-REFERENCE.md`** | It is auto-generated from `sgs-framework.db` and its header forbids hand-editing. Six rows are now stale: `sgs/button` and `sgs/heading` show `transitionDuration` default `300`, which is `0` as of `c1c660428`; `sgs/buybox` shows `pickerVariationSwatch` default `false`, which is `true` as of `65573118c`; and the selection-tick defaults are all shown as `true` where they are now `false` as of `23d3f5aea` — `sgs/buybox` and `sgs/product-card` `pickerShowSelectedTick`, and `sgs/option-picker` `showSelectedTick`. The database is rebuilt by `/sgs-update`, which is frozen until the reseed runs, so this must wait for it. Then: `python plugins/sgs-blocks/scripts/generate-block-reference.py` | Whoever runs the reseed |
 | **`sgs_header_rows_align_css()` shares N46's latent shape** | Its own comment scopes it to "the common case (no content band)", so a header **with** a content band collapses its capped rows exactly as the footer did. Not fixed here: outside N46, and the header surface is being measured by another session. Recorded in the register's N46 row with the citation | Session C's sweep will surface it; fix belongs with whoever owns the header surface |
 | **`sgs/product-card` throws a TypeError in the block editor** | `Me is not a function` at `edit()`. Proven unrelated to this track: inserting the block alone on an empty new page throws it, with no other SGS block present. Real defect, pre-existing, and not a Spec 47 finding | Session C is carrying it into its handoff as its own item |
