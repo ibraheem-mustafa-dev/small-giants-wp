@@ -16,7 +16,7 @@ Measured at block code `94122e326`, verified by marker checksum. Raw F = 193.
 | − already decided by the register | 25 | the register's fix stands |
 | − already settable today | 22 | a control exists and reaches it |
 | − wrong block (tree work, Session D) | 11 | the value belongs on a parent |
-| − Google reviews (parallel track) | 14 | its 40px sizes follow Google's UI, your 2026-10-05 ruling |
+| − Google reviews | 14 | **accepted differences, verified by value** — see below. Not "the parallel track's to do": that track is closed (`434dbf15d`) and all 12 of its commits are deployed at `94122e326` |
 | **= genuine framework gaps** | **~30 rows** | **which collapse to 7 fixes** |
 
 Half the count was measurement noise. Every `real` verdict was re-checked by me against the cited
@@ -64,6 +64,24 @@ mask non-transition gaps on the next client.
 
 ---
 
+## C4. Correction: the Google Reviews rows, verified by value
+
+The first version of this list excluded these 14 rows as "the parallel track's". **That was wrong on the
+premise** — the Google Reviews attribution track is closed (`434dbf15d`) and all 12 of its commits are
+ancestors of `94122e326`, so the implementation was live at the measurement. The rows need a real reason,
+and they have one. Read from the walk report:
+
+| Rows | Draft | Live | What it actually is |
+|---|---|---|---|
+| arrow `icon-fill` ×2 | `none` | `rgb(26,115,232)` | **The same Google blue on both sides.** The draft draws the arrow as a *stroked* path, SGS as a *filled* one |
+| arrow `icon-stroke` ×2 | `rgb(26,115,232)` | `none` | The mirror of the row above — stroke and fill inverted, identical painted colour |
+| arrow `icon-width` / `icon-height` ×4 | `18px` | `20px` | A 2px glyph difference inside Google's 40px pill — your closed 40px ruling (`0b538cecb`) |
+| `transition-duration` ×6 | `0.2s` | `0.15s` / `0.25s` | The transition exclusion: no `transition,*` row calibrates anywhere, and register S1 decided transition behaviour |
+
+So **none of the 14 is a gap.** Four are a stroke-versus-fill SVG construction painting the identical
+Google blue, four are the 40px ruling, six are excluded transitions. Nothing to build and nothing owed to
+another track.
+
 ## D. Stated scope — what the 193 does not cover
 
 Not items, just honesty about the number you are deciding against.
@@ -79,6 +97,37 @@ Not items, just honesty about the number you are deciding against.
   shape as your Google-reviews ruling.
 - **17 local commits are not deployed**, so rows they fix still read open. Register 75/82/158 is in that
   set and must not be judged as a gap.
+
+## D2. THE BIG ONE: 63 register items the walker cannot see at all
+
+**This list covers the walker's visual half only.** It is the most important limitation in it, and the
+first version did not state it.
+
+**63 of the register's 208 rows carry Sweep = `not walker-measurable`.** They are invisible to the 193 by
+design, not by oversight, and they are not trivia — they are the behavioural, content and motion half of
+the build, where most remaining *user-visible* work lives.
+
+| What they are | Count | Examples |
+|---|---|---|
+| **Motion and load animation** | ~8 | bag count pop (3, 17), hero photo slow zoom-out (51), hero buttons appear instantly (58), main product photo fade (73), drawer links arriving one by one (14), free-delivery bar speed (19) |
+| **Interaction and behaviour** | ~10 | card colour dots not focusable or clickable (59, 61), only photo and title are links (N26), **a second different product never reaches the bag (N11)**, choosing then removing a filter breaks the filter panel (N25), lens steps should advance on pick (N37), "Skip the lenses" opens an extra step (N38) |
+| **Content and data** | ~15 | `.00` on prices (S8, N9, N34), brand names typed where logos belong (S9, N10, N33A), "No reviews yet" (S7, N27, N31), empty spec rows (95), "In stock" missing (91), address on one line / not a link (36, 37), `/privacy` and `/terms` missing (45) |
+| **Structure** | ~6 | "Added to bag" toast missing (18), sizing tab has no diagram (N36S), the shop's Google rating needs a home (D7), top bar should marquee when items do not fit (N4) |
+| **Route and calibration (CR items)** | 14 | CR1 to CR18 — per-device settings skipping a width, aspect-ratio never measured, border style reading dead on ~50 blocks, CR6's box zero-fill |
+| Other | ~10 | S12, N2A, N6, 9, N8, N13, N16b, N24, 64, 96, 151, 152, 159, 161 |
+
+**Only 7 of the 63 narrate a completion in their Fix cell.**
+
+**Six are built but NOT deployed at `94122e326`**, so they were absent from the site I measured and would
+not have shown even if the walker could see them: **18** (`c8c2c4162`), **20+23** (`e4735072d`),
+**59/61** (`5a9e28ee5`), **S10** (`80b9deaa4`), **S9** (`2b4122c77`), and the 75/82/158 gallery strip
+(`b68db67c9`). Only the Tier 1 batch (`65573118c`) was deployed.
+
+**What this means for the decision.** Saying yes to all five of my A-list fixes closes 19 walker rows. It
+does not touch N11 (a second product never reaching the bag), N25 (the filter panel breaking), the missing
+toast, the `.00` prices or the absent spec rows — and those are what a visitor would notice first. **The
+walker was never going to surface them, so a clean F count is not a measure of how finished the site is.**
+A separate pass over these 63 is owed, and it is probably worth more than the seven fixes above.
 
 ---
 
