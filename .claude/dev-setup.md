@@ -829,8 +829,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 154 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 1022 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 223 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 1024 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1316,7 +1316,7 @@ Every field below is extracted from the script's own executable code (regex over
 
 **`plugins/sgs-blocks/scripts/check-single-instance-invariants.py`** (build)
 - Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `MEGA_PANEL_STYLE`, `PRODUCT_CARD_RENDER`, `SITE_HEADER_RENDER`, `TESTIMONIAL_SLIDER_RENDER`
+- Reads: `MEGA_PANEL_STYLE`, `SITE_HEADER_RENDER`, `TESTIMONIAL_SLIDER_RENDER`, `VALUE_LADDER_HELPER`
 - Writes: **read-only** — no write call site found in source
 - CLI flags read: `--check`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
@@ -1795,7 +1795,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 864 scripts
+#### `plugins/sgs-blocks/scripts/` — 866 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1823,7 +1823,7 @@ for the verb you happen to have in mind.
 | `behavioural-analyser/php_preprocess.py` | script-call | Source rewrites that let the seeder's statement scanner read more PHP shapes. |
 | `behavioural-analyser/php_source_index.py` | script-call+test-import | Index of the PHP functions the css_property seeder can follow. |
 | `behavioural-analyser/seeder_shapes.py` | script-call+test-import | Evidence shapes the css_property seeder adds on top of its statement tracer. |
-| `build-deploy.py` | manifest+script-call+skill+test-import | One-shot SGS build + tar + scp + remote extract + cleanup. |
+| `build-deploy.py` | manifest+script-call+settings+skill+test-import | One-shot SGS build + tar + scp + remote extract + cleanup. |
 | `build-font-collection.py` | manifest | Generates a WordPress Font Library collection manifest (google-fonts.json) from the |
 | `build-tier-fixture-page.py` | manifest+script-call | Build (and publish) ONE canary page carrying every block that has migrated |
 | `business_info/__init__.py` | manifest+script-call+test-import | Business-details extraction and push for Spec 33 FR-33-14. |
@@ -2494,6 +2494,7 @@ for the verb you happen to have in mind.
 | `qa/lib/wp-stubs.php` | manifest+script-call | Minimal WordPress core function/class stubs for standalone render.php execution (scripts/qa/lib/render-css-harness.php). |
 | `qa/probe-native-colour-ui-close.js` | manifest | intent_capture probe for the native-colour-ui class closure (2026-08-23). |
 | `qa/probe-row-gradient.js` | manifest | Set an attribute on every instance of one block inside a header/footer CPT, measure the live paint, and restore. |
+| `qa/verify-brand-logo.mjs` | — | S9 verification — brand logos instead of typed brand names. |
 | `recogniser/__init__.py` | manifest+script-call+test-import | SGS clone-pipeline recogniser modules. |
 | `recogniser/array_schema_eliminator.py` | manifest+script-call | Stage B recognition for a repeated, classless draft group — Spec 44 §5. |
 | `recogniser/attribute-gap-writer.py` | manifest+script-call+skill | - Spec 31 Phase 5a.4 attribute-gap writes. |
@@ -2639,6 +2640,7 @@ for the verb you happen to have in mind.
 | `value-matcher/inheritance.py` | manifest+script-call+test-import | Default-inheritance lookup module. |
 | `value-matcher/match.py` | manifest+script-call+test-import | Token value-matcher for the SGS Deterministic Draft-to-SGS Converter pipeline. |
 | `variant-value-extractor/extract-variation-values.js` | manifest+script-call | each variation's `attributes` object as PLAIN JSON to stdout. |
+| `verify-toast.mjs` | — | Verify the one shared "Added to bag" toast on a live site. |
 | `visual-report-sha.py` | manifest+script-call | Content hash binding a visual-diff report to the change it actually describes. |
 | `wiring-fingerprint/editor_facts.js` | script-call | Editor-side facts for the wiring-fingerprint gate (read-only). |
 | `wiring-fingerprint/editor_facts_resolve.js` | script-call | Module resolution for editor_facts.js: parsing (cached), each file's exports, relative import specifiers, barrel re-exports followed to the declaring… |
@@ -2664,7 +2666,7 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 82 scripts
+#### `scripts/` — 113 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2673,8 +2675,13 @@ for the verb you happen to have in mind.
 | `check-no-client-names.py` | manifest+script-call | : keep client names and reference-site names out of the framework. |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
 | `computed-route/calibrate.mjs` | — | Block calibration command (FR-47-2). |
+| `computed-route/confirm-canvas.mjs` | — | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
+| `computed-route/fill.mjs` | manifest+script-call+skill+test-import | Fill (FR-47-4): from a skeleton tree (which blocks, nested how, with the draft's words, each node naming the draft element it copies) to a tree… |
 | `computed-route/ledger.mjs` | script-call+skill+test-import | Divergence ledger command (FR-47-5). |
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2): one library-wide folder, one file per block, whichever site measured it. A block calibrated on one site is never… |
+| `computed-route/lib/calibrate-chunk.mjs` | script-call | How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of each piece, and halving a… |
+| `computed-route/lib/calibrate-container.mjs` | script-call | What a block's source says about how it renders, for calibration to act on before any browser opens (FR-47-2): whether its tiers follow its… |
+| `computed-route/lib/calibrate-content.mjs` | script-call | The content side of calibration (FR-47-2, Spec 47 §3.2): which elements a setting makes appear or disappear |
 | `computed-route/lib/calibrate-instances.mjs` | script-call | Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked instance per setting and marker, each… |
 | `computed-route/lib/calibrate-markers.mjs` | script-call | The marker values calibration writes into one setting (Spec 47 §3.2 marker table). Each marker: { label, attrs, expect: { width: value } \| null… |
 | `computed-route/lib/calibrate-props.mjs` | script-call | What calibration reads and how a setting's css_property maps onto it (FR-47-2). |
@@ -2682,27 +2689,42 @@ for the verb you happen to have in mind.
 | `computed-route/lib/calibrate.mjs` | script-call | Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one marked instance per setting and… |
 | `computed-route/lib/db.mjs` | manifest+script-call+skill+test-import | Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses every write; the route never seeds… |
 | `computed-route/lib/deploy-hash.mjs` | script-call | The deploy key calibration stamps on a cache: md5 of a block's front-end build files, locally and on the site, so a cache is used only while the… |
+| `computed-route/lib/draft.mjs` | manifest+script-call+skill+test-import | Serves a draft that exists only as local files (Fill step 1, FR-47-4): a static server on 127.0.0.1 at an ephemeral port, so the browser reads the… |
 | `computed-route/lib/entrance.mjs` | manifest+script-call | Entrance start (Spec 38, sgsAnimationStart): a block with an entrance that the draft shows at rest while live still holds it hidden is one whose… |
+| `computed-route/lib/fill-config.mjs` | script-call | The walker config Fill generates (FR-47-4 step 4): one pair per skeleton node that has a draftRef, drawn from the node's own ref class, with… |
+| `computed-route/lib/fill-entrance.mjs` | script-call | Entrances for Fill (FR-47-4 "values that need care"): what a draft element does as it paints in, measured in a real browser, and the settings that… |
+| `computed-route/lib/fill-handover.mjs` | script-call | The handover list (§3.3, shared with Solve): content a draft shows that no block setting could hold, because it lives outside the tree. Each entry… |
+| `computed-route/lib/fill-page.mjs` | script-call | The page baseline for inherited properties (R-47-5). Calibration records no default for an inherited property |
+| `computed-route/lib/fill-presence.mjs` | script-call | Presence and content for Fill (FR-47-4): which elements a block shows, and the draft's words and links, decided from calibration's `presence`, `text`… |
+| `computed-route/lib/fill-prop.mjs` | script-call | One property of one element, from the draft's measured values to the setting writes (FR-47-4 step 2). Every write comes from lib/resolve.mjs::resolve… |
+| `computed-route/lib/fill-read.mjs` | script-call | Reading the draft for Fill (FR-47-4 step 1): the draft rendered in a real browser, every target's computed styles read through the walker's own… |
+| `computed-route/lib/fill-report.mjs` | script-call | Fill's report (FR-47-4 step 5): fill-report.md for a reader and fill-report.json for a tool. The UNMAPPED list is the framework work for the surface… |
+| `computed-route/lib/fill-resolve.mjs` | script-call | Fill's root-down resolution (FR-47-4 steps 2 and 3): every node and slot of the skeleton, every property that differs from what the node already… |
+| `computed-route/lib/fill-skeleton.mjs` | script-call | The Fill skeleton (FR-47-4): a normal block tree whose nodes also carry `draftRef` (the walker finder of the draft element the block copies) and… |
+| `computed-route/lib/fill-spacing.mjs` | script-call | Spacing ownership (FR-47-4 step 3). Who owns the space between a parent's children is decided per tier from what rendered, never from the draft's… |
+| `computed-route/lib/fill-values.mjs` | script-call | The values FR-47-4 says need care. Fluid sizes: sampled at five widths, linear within 0.5px means fluid, written as clamp() only where calibration… |
 | `computed-route/lib/guard.mjs` | manifest+script-call | The regression guard (R-47-9): when a round makes rows worse, find the write that did it and revert only that. |
+| `computed-route/lib/issue-classes.mjs` | script-call | The one definition of what counts as a distinct open issue, and under which class (Spec 47 §3.3, FR-47-3). |
 | `computed-route/lib/ledger.mjs` | script-call+skill+test-import | Divergence ledger library (FR-47-5): the rules an entry may name, matching a row, finding stale entries, migrating walker accepts, and building a new… |
 | `computed-route/lib/normalise.mjs` | script-call | Value normalisation and token snapping (R-47-7). Measured values arrive as computed styles (px lengths, rgb() colours). Tokens come from the site's… |
+| `computed-route/lib/pair-scope.mjs` | script-call | Twin containment: whether a hand pair's two elements hold the same words (scripts/computed-route/pairs.mjs). |
 | `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft element… |
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 47 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
 | `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/solve-report.mjs` | script-call | Writes Solve's report (FR-47-3): solve-report.json (everything) and solve-report.md (counts per class, every write with its before and after values… |
-| `computed-route/lib/solve-rows.mjs` | script-call | Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each |
+| `computed-route/lib/solve-rows.mjs` | manifest+script-call | Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each |
 | `computed-route/lib/sweep.mjs` | script-call | The whole-site sweep (FR-47-3): every surface's latest Solve report as one row per distinct open issue. An issue is solve-report.mjs::wholePage's: a… |
 | `computed-route/lib/tree.mjs` | script-call | Layout trees: read, write, ref classes, setting writes, and the live-site safety guard (R-47-11). |
 | `computed-route/lib/triage-source.mjs` | script-call | Triage's source pass (B1), string search only (no PHP or CSS parsing): what a block's own render.php and style.css say about a row's property and… |
 | `computed-route/lib/triage.mjs` | script-call | Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that decided it. Classes: W (walker or… |
 | `computed-route/lint.mjs` | script-call | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
-| `computed-route/register-sweep.mjs` | — | Register <-> sweep command (A4). |
+| `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |
 | `computed-route/solve.mjs` | script-call | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
 | `computed-route/sweep.mjs` | script-call | Sweep command: reads every surface's latest Solve report (`<buildDir>/qa/solve/<surface>/<timestamp>/solve-report.json`) and writes… |
-| `computed-route/triage.mjs` | — | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U) with its evidence for every distinct open issue of a surface's Solve report… |
+| `computed-route/triage.mjs` | script-call | Triage command (Spec 47, Session B1): a candidate class (W, F, T, U) with its evidence for every distinct open issue of a surface's Solve report… |
 | `css-pattern-audit.js` | — | CSS pattern audit — static analysis for risky patterns in deployed/built CSS. |
 | `font-source-audit.js` | manifest+npm | Font source audit — static analysis for external CDN URLs in theme.json fontFace declarations. |
 | `global-styles-reset.js` | skill | wp_global_styles reset + reapply. |
@@ -2716,6 +2738,16 @@ for the verb you happen to have in mind.
 | `parity/benchmark/score.mjs` | manifest+script-call+skill | Scores a catch-rate benchmark run from its recorded walker reports (<out>/<config>-control and <out>/case-<id>): benchmark.mjs calls it after the… |
 | `parity/benchmark.mjs` | script-call+skill | The walker's catch-rate benchmark. For each page config it runs the walker once as a control |
 | `parity/draft-live-walk.mjs` | manifest+script-call | Draft-versus-live parity walker. Drives the design draft and the live site through the same states (tabs, steps, open panels, filters, modals) at… |
+| `parity/flows/bag-second-unit.mjs` | script-call | Flow 2: a second unit of the same product, within 20 seconds (register N11(b)). |
+| `parity/flows/bag-two-products.mjs` | script-call | Flow 1: two different products in the bag (register N11(a)). |
+| `parity/flows/filter-apply-clear.mjs` | script-call | Flow 3: choose a shop filter, then clear it (register N25's own test). |
+| `parity/flows/lens-skip-to-bag.mjs` | script-call | Flow 4: the lens pop-up's "Skip the lenses" adds the frame straight to the bag (register N38). |
+| `parity/flows/lib/bag.mjs` | script-call | The bag, read and judged independently of how the drawer renders (Spec 47 FR-47-7). |
+| `parity/flows/lib/browser.mjs` | script-call | Playwright launch, base-URL resolution and env loading for the functional flows (Spec 47 FR-47-7). |
+| `parity/flows/lib/filters.mjs` | manifest+script-call | The shop filter panel, probed and judged (Spec 47 FR-47-7; register N25). |
+| `parity/flows/lib/flow.mjs` | script-call | The flow result shape, the per-flow JSON writer, the flows-only table and the shared command-line entry |
+| `parity/flows/run-all.mjs` | script-call | Runs the four functional flows in order against one site (Spec 47 FR-47-7). |
+| `parity/flows/toast-added-to-bag.mjs` | — | Flow 5: the shared "Added to bag" toast actually speaks on an add (register 18). |
 | `parity/lib/auto-align.mjs` | script-call | Word and control alignment for the walker's automatic check (auto-compare.mjs). |
 | `parity/lib/auto-collect.mjs` | script-call | In-page collector for the walker's automatic check (GAP-CHECKLIST.md section 12): every painted word and every control or media item on the page, so… |
 | `parity/lib/auto-compare.mjs` | script-call | The walker's automatic check (GAP-CHECKLIST.md section 12): aligns every painted word of the draft with the live page's, then reports what no config… |
@@ -2745,9 +2777,10 @@ for the verb you happen to have in mind.
 | `qc_anti_cheat_checks.py` | script-call+test-import | Cheat-pattern definitions, AST visitor, and file analysers. |
 | `render-mobile-override-audit.js` | — | Render.php inline-vs-media audit. |
 | `sgs-block-grep.py` | — | SGS block-name search utility — fixes the block-name-search-blindspot failure mode. |
+| `verify-card-swatch-buttons.mjs` | — | Verify the product-card colour-swatch buttons on a live site. |
 | `verify-restored-page.js` | — | The Track B definition-of-done requires the restore to be proven on the REAL page via computed DOM (R-31-11), not on assertion output or the emitted… |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
-| `wp-build-page.js` | manifest+script-call | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
+| `wp-build-page.js` | manifest+script-call+settings | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
 | `wp-migrate-oldshape-blocks.js` | manifest+script-call | block migrations (Track B, 2026-07-15), through the BLOCK EDITOR ONLY. |
 | `wp-update-block-attrs.js` | script-call+skill | Reusable Playwright helper that updates a block's attributes on a live WordPress post by going through the editor — using wp.blocks.createBlock(name… |
 
@@ -2803,6 +2836,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_whatsapp_glyph_svg` | `function sgs_whatsapp_glyph_svg( string $class_name, int $size = 24 ): string` | The WhatsApp logo (official brand path), filled with `currentColor` so CSS sets its colour. Decorative: the caller's own text names the… |
+
+#### `includes/helpers-brand-logo.php` — 6 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_brand_logo_taxonomy` | `function sgs_brand_logo_taxonomy()` | The brand taxonomy's name, filterable so a site can point every brand surface at its own taxonomy in one place. |
+| `sgs_brand_logo_taxonomy_available` | `function sgs_brand_logo_taxonomy_available()` | Whether the brand taxonomy is registered on this site. False when WooCommerce is off, or on a WooCommerce without core Product Brands —… |
+| `sgs_brand_logo_media` | `function sgs_brand_logo_media( $term_id )` | Resolve a brand term's thumbnail into the unified media-slot shape that `sgs/brand-strip`'s `logos[]` items already use. |
+| `sgs_brand_logo_term_for_product` | `function sgs_brand_logo_term_for_product( $product_id )` | A product's first brand term. |
+| `sgs_brand_logo_for_product` | `function sgs_brand_logo_for_product( $product_id )` | Everything a surface needs to print one product's brand: the name, its logo when the brand has one, and the brand archive URL. |
+| `sgs_brand_logo_img_markup` | `function sgs_brand_logo_img_markup( array $logo, string $class_name )` | One brand logo as an `<img>`, with the BRAND NAME as its text alternative. |
 
 #### `includes/helpers-button-note.php` — 1 function(s)
 
@@ -2932,6 +2976,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_gradient_resolve_value` | `function sgs_gradient_resolve_value( string $value ): string` | Resolve a gradient attribute value to a literal CSS gradient string. |
 | `sgs_gradient_tone` | `function sgs_gradient_tone( string $value ): string` | Judge a gradient's tone as the WEIGHTED MEAN luminance of its stops — each stop weighted by the share of the 0-100% line closest to it… |
 
+#### `includes/helpers-grid-item.php` — 7 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_grid_item_cell_filter` | `function sgs_grid_item_cell_filter( bool $under_inner = false ): string` | The `:not()` chain that turns "any direct child" into "a grid cell". |
+| `sgs_grid_item_cell_selectors` | `function sgs_grid_item_cell_selectors( string $uid ): array` | The two scoped cell selectors of one grid container instance, each at specificity (0,1,0): `.{uid} > :where(cell)` and `.{uid} >… |
+| `sgs_grid_item_settings` | `function sgs_grid_item_settings( array $attributes ): array` | Read the flat (scalar) grid-item attributes. A value of the wrong shape (an array where a string belongs) reads as unset, so a malformed… |
+| `sgs_grid_item_border_value` | `function sgs_grid_item_border_value( string $raw ): string` | Resolve a `gridItemBorder` shorthand ("1px solid primary") to a safe CSS `border` value: width and style as written, the colour through… |
+| `sgs_grid_item_vars` | `function sgs_grid_item_vars( array $s ): array` | The resting `--sgs-gi-*` declarations from the flat settings (ground, border, shadow, text colour). The background gradient, when valid, is… |
+| `sgs_grid_item_needs_scoped_css` | `function sgs_grid_item_needs_scoped_css( array $s ): bool` | Does any grid-item state need a scoped rule (and so a uid)? |
+| `sgs_grid_item_state_css` | `function sgs_grid_item_state_css( array $s, string $uid, array $attributes = array(), string $block_name = ''…` | The scoped grid-item state rules at both cell depths: background hover, text-colour gradient and hover, the border-gradient ring, and the… |
+
 #### `includes/helpers-hover-links.php` — 1 function(s)
 
 | Function | Signature | Purpose |
@@ -3045,6 +3101,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_nav_drawer_stagger_axes` | `function sgs_nav_drawer_stagger_axes(): array` | Every `itemStaggerAxis` tier value, with its (x, y) travel multipliers. |
 | `sgs_nav_drawer_stagger_shape` | `function sgs_nav_drawer_stagger_shape( array $attributes, string $root_sel ): array` | The shaped-entrance CSS and class for one drawer. |
 
+#### `includes/helpers-preselect-url.php` — 2 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_preselect_axes_from_url` | `function sgs_preselect_axes_from_url( array $axes ): array` | The requested term slug per axis, keyed by taxonomy. |
+| `sgs_preselect_apply_to_manifest` | `function sgs_preselect_apply_to_manifest( array $manifest ): array` | Point a manifest's default at the combination the URL asks for. |
+
 #### `includes/helpers-responsive.php` — 15 function(s)
 
 | Function | Signature | Purpose |
@@ -3065,7 +3128,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_resolve_on_tiers` | `function sgs_resolve_on_tiers( $raw, $on_marker, $default )` | Resolve a `{desktop,tablet,mobile}` responsive object into the list of tiers where the effective value equals $on_marker, via the canonical… |
 | `sgs_merge_tri_state_declarations` | `function sgs_merge_tri_state_declarations( $selector, $behaviours, $default = 'off', $on_marker = 'on' )` | Merge several tri-state ('on'/'off'/'inherit') behaviours that may write to the SAME selector into ONE set of declarations per tier, with a… |
 
-#### `includes/helpers-reviews-inline.php` — 6 function(s)
+#### `includes/helpers-reviews-inline.php` — 7 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
@@ -3075,6 +3138,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_reviews_place_id` | `function sgs_reviews_place_id( array $attributes, string $settings_place_id ): string` | The Google place ID to fetch: the block's own, else the site-wide one from the plugin settings. |
 | `sgs_reviews_resolve` | `function sgs_reviews_resolve( array $attributes, string $place_id, ?callable $fetcher = null ): ?array` | Decide what `sgs/google-reviews` may show, in order: written, live Google, sample, or nothing. |
 | `sgs_reviews_may_emit_schema` | `function sgs_reviews_may_emit_schema( string $source, array $data ): bool` | Whether `LocalBusiness` + `AggregateRating` JSON-LD may be printed for this data. |
+| `sgs_reviews_log_missing_attribution` | `function sgs_reviews_log_missing_attribution( array $data ): void` | Log, once per request, that live Places data lacks the fields the Google attribution links need. |
 
 #### `includes/helpers-row-behaviour.php` — 4 function(s)
 
@@ -3211,6 +3275,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_slider_nav_enqueue_style` | `function sgs_slider_nav_enqueue_style(): void` | Enqueue the shared stylesheet. Called by a slider block's render when its navigation renders. |
 | `sgs_slider_nav_editor_assets` | `function sgs_slider_nav_editor_assets(): void` | Editor: the canvas preview is a server render, which never runs the page's enqueue, so the stylesheet is always loaded into the editor… |
 
+#### `includes/helpers-stretched-link.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_stretched_link_active` | `function sgs_stretched_link_active( array $attributes ): bool` | Whether the operator has turned the whole-block link on. |
+| `sgs_stretched_link_apply` | `function sgs_stretched_link_apply( $block, string $url, string $label = '' ): bool` | Hand a render-time URL to the `blockLink` extension. |
+| `sgs_stretched_link_handover` | `function sgs_stretched_link_handover( $block, array $attributes, string $url, string $label = '' ): bool` | The whole decision in one call: is the toggle on, and did the handover succeed? |
+
 #### `includes/helpers-surface-ground.php` — 3 function(s)
 
 | Function | Signature | Purpose |
@@ -3328,14 +3400,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_typography_css_rule` | `function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = ''…` | Build a scoped typography CSS rule string (base + responsive) for one element. The caller wraps the return value in a single <style> tag. |
 | `sgs_link_colour_css` | `function sgs_link_colour_css( array $attributes, $prefix, $selector )` | Two-state, flat-or-gradient LINK colour for a RichText field whose `allowedFormats` permits `core/link` — a linked selection and the… |
 
-#### `includes/helpers-value-ladder.php` — 2 function(s)
+#### `includes/helpers-value-ladder.php` — 3 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
+| `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 28 P1). |
 
-**58 files, 269 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**62 files, 289 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -3388,6 +3461,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SgsSeparatorControl.js` | `SgsSeparatorControl (default)` | SgsSeparatorControl — the one control for the lines drawn between a list's items. |
 | `ShadowControl.js` | `ShadowControl (default)`, `shadowAttrName`, `shadowAttrKeys` | ShadowControl — the shared layered box-shadow control. |
 | `ShadowLiftControls.js` | `ShadowLiftControls (default)` | ShadowLiftControls: the ONE hover-shadow control (Bean's ruling, 2026-09-24). |
+| `ShapeDividerPreview.js` | `ShapeDividerPreview (default)` | Editor-canvas twin of sgs_render_shape_divider(): the top or bottom shape divider of any block routed through… |
 | `SpacingControl.js` | `SpacingControl (default)` | Spacing control that reads theme.json spacing presets. |
 | `SsrPreviewGuard.js` | `SsrPreviewGuard (default)` | SsrPreviewGuard — replaces `<Disabled>` around `<ServerSideRender>` previews. |
 | `starter-look-owned-keys.js` | `deepClone`, `parseExplicitBlocks`, `findExplicitRoot`, `collectOwnedKeys`… | Owned-key derivation for the Starter Look preset control (FR-37-47). |
@@ -3397,7 +3471,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**53 files.**
+**54 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 

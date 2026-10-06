@@ -15,7 +15,7 @@ Headline numbers:
 | | Count |
 |---|---|
 | E14 findings triaged | 137 |
-| CLASS 2 + CLASS 3 (73) judged FIX | 26 (22 CLASS 2, 4 CLASS 3) |
+| CLASS 2 + CLASS 3 (73) judged FIX | 26 (22 CLASS 2, 4 CLASS 3) — **4 closed 2026-10-06, 22 open** |
 | ... DEFENSIBLE (documented intent or UI chrome) | 34 (33 CLASS 2, 1 CLASS 3) |
 | ... DEAD (no markup emits the class) | 10 |
 | ... EDITOR-ONLY | 3 |
@@ -130,11 +130,11 @@ Verdict key: **FIX** a control cannot reach a live element. **DEFENSIBLE** docum
 
 | Rank | Block | Element (declaring class) | Decls | Class | Verdict | Elements per instance | Leak |
 |---|---|---|---|---|---|---|---|
-| 1 | `sgs/buybox` | `.buybox__value-ladder` | 1 | CLASS-3 | FIX | 12 | permanent (no ladder font-size control) |
+| 1 | `sgs/buybox` | `.buybox__value-ladder` | 1 | CLASS-3 | **CLOSED `6f1963c28`** | 12 | was: permanent. Now `valueLadder` + `valueLadderSaving` surfaces; the literal sits in `:where()` |
 | 2 | `sgs/process-steps` | `.sgs-process-steps__step` | 1 | CLASS-3 | FIX | 12 | icon, number and description: permanent (no `text-align` control). Title: default-state only (`titleTextAlign`) |
-| 3 | `sgs/product-card` | `.product-card__value-ladder` | 1 | CLASS-3 | FIX | 12 | permanent (no ladder font-size control) |
-| 4 | `sgs/form` | `.sgs-form-field__label` | 1 | CLASS-2 | FIX | 6 | permanent (no label typography control) |
-| 5 | `sgs/form` | `.sgs-form-field__input` | 1 | CLASS-2 | FIX | 5 | permanent (`fieldFontSize` exists, no field line-height control) |
+| 3 | `sgs/product-card` | `.product-card__value-ladder` | 1 | CLASS-3 | **CLOSED `6f1963c28`** | 12 | was: permanent. Now `valueLadder` + `valueLadderSaving` surfaces; the literal sits in `:where()` |
+| 4 | `sgs/form` | `.sgs-form-field__label` | 1 | CLASS-2 | **CLOSED `6f1963c28`** | 6 | was: permanent. Now a `label` surface on `sgs/form`; the literal and the floated state's size/weight sit in `:where()` |
+| 5 | `sgs/form` | `.sgs-form-field__input` | 1 | CLASS-2 | **CLOSED `6f1963c28`** | 5 | was: no field line-height control. Now the full `field` surface; `fieldFontSize` moved onto the shared helper |
 | 6 | `sgs/product-faq` | `.sgs-product-faq-item__question` | 3 | CLASS-2 | FIX | 4 | permanent (no question typography control anywhere) |
 | 7 | `sgs/countdown-timer` | `.sgs-countdown__number` | 2 | CLASS-2 | FIX | 4 | permanent (the block has root controls only; none per element) |
 | 8 | `sgs/countdown-timer` | `.sgs-countdown__label` | 2 | CLASS-2 | FIX | 4 | permanent |
@@ -533,6 +533,8 @@ CANNOT-RESOLVE did not fall, and the composition changed: unifying the ladder ma
 `readBlockPhpFiles`'s block-directory walk (cause B below), which cost 4 rows, and buybox's first
 `line-height` control made one pre-existing literal visible. Both were absorbed by de-specifying
 those literals, so the number held at 64 rather than being raised.
+
+24 `sgs/product-card::valueLadder*::L3` gaps were accepted into `scripts/wiring-fingerprint-baseline.json`, which has no per-entry reason field: the justification is in `6f1963c28`'s commit message under `[gates-ok]`, which is the form that gate's own output asks for. In short, the gate credits `ServerSideRender` only when it is unconditional, and product-card's is gated to bound mode with a real typed-mode branch; the ladder exists only in bound mode and its inspector targets are gated to it too, so the canvas shows render.php's own output wherever a client can set these. The fixed `sgs/cart::hideOnCartCheckoutPages::L3` entry was removed in the same pass.
 
 | Step | Where | CLASS-2 | CLASS-3 | CANNOT-RESOLVE |
 |---|---|---|---|---|

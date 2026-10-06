@@ -528,9 +528,11 @@ Per row it will fix:
    translated label (`__()` with the `sgs-blocks` text domain), and the editor preview path if the block has one.
    `social-icons/edit.js` already imports `tierBoxShorthand` and `usePreviewTier`, so its canvas preview is a
    separate code path that must be updated too, or the control works on the front end and not in the editor.
-6. Whether `plugins/sgs-blocks/scripts/add-control.js` scaffolds this shape (it covers shadow and typography, not
-   box) or it is hand-written across `block.json`, `edit.js` and `render.php` — the three hand-kept copies that
-   script exists to stop drifting.
+6. Whether `plugins/sgs-blocks/scripts/add-control.js` scaffolds this shape — it does not cover box, and its
+   typography mode is unusable for the current surface (it predates the 2026-09-07 full-set rule: legacy flat
+   attribute shapes, five members missing, and it emits the hover trio the helper cannot read). So this is
+   hand-written across `block.json`, `edit.js` and `render.php` — the three hand-kept copies that script
+   exists to stop drifting.
 7. The **chosen fix shape** where the verdict offered a choice, with the tie-break reason.
 
 **File-size rule.** `social-icons/edit.js` is 786 lines and `render.php` 673, already past the 400 and 500

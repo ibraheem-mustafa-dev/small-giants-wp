@@ -55,7 +55,6 @@ BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 
 MEGA_PANEL_STYLE = BLOCKS_DIR / "mega-panel" / "style.css"
 SITE_HEADER_RENDER = BLOCKS_DIR / "site-header" / "render.php"
-PRODUCT_CARD_RENDER = BLOCKS_DIR / "product-card" / "render.php"
 # The value-ladder markup (check C) is shared by sgs/product-card and
 # sgs/buybox and lives in the helper, so one check covers both blocks.
 VALUE_LADDER_HELPER = PLUGIN_ROOT / "includes" / "helpers-value-ladder.php"
