@@ -50,7 +50,7 @@ Each verified against the running site tonight, not against its commit.
 | **N38** | `lens-skip-to-bag` **FAIL** `skip-opens-extra-step` | — | `block.json` has no "skip adds to bag" setting; `flow-skip.js::handleSkipClick` routes to the add-to-bag ending | framework new + tree |
 | **51** | **confirmed: the hero paints nothing.** `@keyframes sgs-hero-ken-burns` exists, but only **1** element carries a ken-burns class and the hero's own `.sgs-hero__bg-img--parallax` computes `animation-name: none`, `duration: 0s`, `transform: none` | one-off 3s zoom, 108% → 100% | repair the paint, add a "zoom out once on load" mode | framework repair + new |
 | **96** | focus ring computes **`rgb(20,20,20)`** — black | draft taupe | focus rules read the client focus-ring token | framework repair |
-| **N26 / S10** | the card is clickable only on the name (1-2% of its area) and the image (73%); imageless cards fall to **2-5%** | the whole card is one link | the stretched surface never reaches the card: `sgs-block-link-overlay` is absent everywhere | framework - see §5(a) |
+| **N26 / S10** | was clickable only on the name (1-2%) and image (73%); imageless cards 2-5% | the whole card is one link | **FIXED IN CODE 2026-10-06 (`3db77f090`)** - permanent, not a toggle; see §5(a) | awaiting live verify |
 | **N4** | no marquee markers found live | — | repair so "drop" and "scroll" coexist; pause button for WCAG 2.2.2 | framework repair |
 
 ## 3. Needs content from the client
@@ -85,7 +85,23 @@ Every card carries `a.product-card__title-link` around the title text, covering 
 with an image add `a.product-card__img-link` at **73%**. Nothing stretches a link across the card:
 `sgs-block-link-overlay` appears **zero** times on home, shop and product.
 
-**So the card is clickable only on the product name and the image.** Bean confirms the card is *supposed* to be
+**So the card WAS clickable only on the product name and the image.**
+
+> **FIXED IN CODE, 2026-10-06 (`3db77f090`) - not yet verified live.** The mechanism was never broken: the card
+> already supported a whole-surface link, but it hung on an operator toggle (`sgsBlockLinkAuto`) that was simply
+> off. Bean's ruling is that it must not be switchable off at all, so a new `supports.sgs.blockLinkAlways` flag
+> replaces `blockLinkAutoUrl` on this block: `render.php` calls `sgs_stretched_link_apply()` directly instead of
+> `sgs_stretched_link_handover()`, which gates on that toggle, and the Block Link panel renders no toggle, so no
+> dead control is left behind. The title's hover underline is also removed - the whole card is the link, so the
+> cursor already carries the affordance.
+>
+> **The URL field deliberately stays** (Bean caught this): a TYPED card resolves no product and so no permalink,
+> `apply()` is handed `''` and no-ops, and that field is its only way to have a destination. On a live card
+> `apply()` overwrites whatever is typed, so it is inert there rather than conflicting.
+>
+> Verified in the built artifact; the live check is held because the shared host is busy (a peer's
+> `benchmark.mjs --noise` run, then that peer's deploy, which carries this commit). **Expected on re-measure:
+> near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.** Bean confirms the card is *supposed* to be
 fully clickable, so **N26 is genuinely OPEN**, and S10's "one shared stretched link" has not reached the product
 card on these surfaces even though S10's commits are live. The S10 row's own note records that `e62f45952`
 rebuilt the pattern so "a block's OWN visible link owns the surface" - on the product card that visible link is

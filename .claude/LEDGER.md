@@ -104,10 +104,11 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
 
 - **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy needed.
   **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 14 CR, 11 to measure.
-  ⚠️ **The product card is NOT a stretched link, and the WHOLE card should be** (§5a, Bean) — only the name
-  (1-2%) and image (73%) are clickable, `sgs-block-link-overlay` absent, so **N26 is OPEN** though S10 is live.
-  The 12 imageless cards are CONTENT, not a defect (only 4 products have real photos; the rest carry
-  `photo-to-come.png`) — they just fall to **2-5%**, which the card-wide link also fixes.
+  **N26 FIXED IN CODE `3db77f090`, live verify owed** — the card was clickable only on the name (1-2%) and
+  image (73%). `supports.sgs.blockLinkAlways` makes the whole-card link PERMANENT (Bean: not
+  switchable off); `render.php` calls `sgs_stretched_link_apply()`, the panel has no toggle, and the title's
+  hover underline is gone. The URL field STAYS: a typed card has no permalink and that is its only
+  destination. The 12 imageless cards are CONTENT (only 4 products have real photos).
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
@@ -115,8 +116,8 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
 five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own hash. `brandUseLogo` ships
 `true` (a cross-client default).
-**All four open items CLOSED, a `/qc-council` then found six defects in those fixes, and Bean then hit LIVE
-BREAKAGE — every one fixed and verified live (2026-10-06).** Causes, measurements and negative controls are in
+**All four open items CLOSED; a `/qc-council` then found six defects in those fixes and Bean hit LIVE BREAKAGE,
+all fixed and verified live (2026-10-06).** Causes, measurements and negative controls are in
 register rows S10, 59 and 20+23; the lessons that generalise are in auto-memory. The one still load-bearing:
 the stretched link was rebuilt so a block's OWN visible link owns the surface — which is exactly why the
 product card now reads as dead outside its name and image (see the 63's report §5a).
