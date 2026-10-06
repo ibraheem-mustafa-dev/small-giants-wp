@@ -14,7 +14,7 @@ Measured at block code `94122e326`, verified by marker checksum. Raw F = 193.
 | Raw F measured | 193 | |
 | − measuring artefacts | 90 | the route comparing a draft and a live page that paint the same pixels by different means, or the walker pairing the wrong node |
 | − already decided by the register | 25 | the register's fix stands |
-| − already settable today | 22 | a control exists and reaches it |
+| − already settable, or an accepted divergence | 22 | a control exists and reaches it. **Correction:** the 14 brand-strip typography rows are an **accepted divergence**, not merely "settable" — the draft types brand NAMES as placeholders for the LOGOS the live site carries, which register **S9** already records ("Brand names typed where logos belong… prints a brand's logo with the brand NAME as its text alternative"). Nobody should ever try to close them |
 | − wrong block (tree work, Session D) | 11 | the value belongs on a parent |
 | − Google reviews | 14 | **accepted differences, verified by value** — see below. Not "the parallel track's to do": that track is closed (`434dbf15d`) and all 12 of its commits are deployed at `94122e326` |
 | **= genuine framework gaps** | **~30 rows** | **which collapse to 7 fixes** |
@@ -24,7 +24,32 @@ symbol, and 25 of the 148 non-real verdicts were spot-checked (17%, against the 
 
 ---
 
-## A. The 7 framework fixes — yes or no on each
+## A. The framework fixes — BEAN'S ANSWERS, 2026-10-06
+
+| # | Item | Bean's answer |
+|---|---|---|
+| A1 | `sgs/accordion` `headerGap` | **YES.** Correction to my description: we do not control individual product pages, we design the **product page template**. So the 16px is the template's accordion |
+| A2 | Delete the header's hardcoded `line-height: 1.4` | **YES** — "hardcoding is a violation of our rules anyway" |
+| A3 | `sgs/accordion` `headerMinHeight` | **YES, overriding my caution.** Default 44px, customisable. A sub-44px exception can be legitimate in context. See the standing principle below |
+| A4 | `sgs/card-grid` `noImageLabelLineHeight` | **WITHDRAWN.** "Photo to come" is a draft placeholder, not content — it ceases to exist once the client uploads images. Not required to clone |
+| A5 | `sgs/buybox` selected-value typography | **YES** |
+| A6 | Delete the `sgs/tabs` hover underline | **YES** — and if a tab underline is ever wanted, it is done with border-bottom width and colour, not a text-decoration hardcode |
+| A7 | `sgs/whatsapp-cta` | **INVESTIGATE.** Three symptoms, not one: the icon is black instead of white, the text carries more weight than the draft, and there is an underline hover effect the draft does not have |
+
+**Five approved: A1, A2, A3, A5, A6. One withdrawn: A4. One to investigate: A7.**
+
+### The standing principle behind A3, which outranks my objection
+
+> Our main objective is to make these blocks as modular and mouldable as possible so that our draft
+> sites, no matter how they're coded, are able to be cloned with little to no effort. The padding setup
+> is a workaround that wastes valuable time and tokens.
+
+So where a draft needs a value, the answer is a real control with a sensible default, **not** a workaround
+that reaches the same pixels by another route. A 44px default satisfies the touch-target rule by default;
+a client choosing otherwise in context is their call, not a reason to withhold the control. **Do not
+re-argue this on the next block.**
+
+## A-original. The seven as first presented
 
 | # | In plain English | What breaks without it | Blast radius | My call |
 |---|---|---|---|---|
@@ -57,10 +82,23 @@ These are **not** new decisions. You already decided them; they were never built
 | **C2** | **A cosmetic path change re-keys rows wholesale.** `sgs/brand-strip` kept exactly 51 rows but 18 changed key because the walker's path gained `:nth-of-type(1)`. No verdict changed. | Gate TAIL plans to judge fixes by "1 new row per 10 closed". This would read as a wave of closes and opens and pass or fail for the wrong reason. | **Fix before anyone relies on Gate TAIL.** Compare on a normalised path, not the raw key. |
 | **C3** | **The canvas roster masks real gaps, with a proven mechanism.** `lib/triage.mjs::canvasSettable` matches on CSS property name and treats a control with no recorded element as able to reach any descendant. | **20 rows proven wrong.** Every claim citing `bgHoverZoomDuration` / `Easing` / `Scale` sits on a form input, social icon, tab button, gallery div or filter input — never on the background layer those controls actually paint (`.<uid> > .sgs-container__image-bg` or `.<uid>::before`, with `transition-property: transform`). So 20 rows are held as "settable" when they are genuinely gaps. | **Fix.** `canvasSettable` should respect the emission selector, not just the property name. This is the load-bearing worry you named, realised. |
 
-**C3's practical impact here is small**: 18 of the 20 are transition-family rows, already excluded because
-no `transition,*` row calibrates anywhere (Spec 47 §5) and register S1 decided transition behaviour. Two
-are `transform` on buybox gallery divs. **The mechanism is the problem, not these 20 rows** — it would
-mask non-transition gaps on the next client.
+**C3's practical impact here is small**: 18 of the 20 are transition-family rows, and two are `transform`
+on buybox gallery divs. **The mechanism is the problem, not these 20 rows** — it would mask
+non-transition gaps on the next client.
+
+### Correction: "excluded" was doing too much work
+
+I described transition rows as "excluded", and Bean rightly challenged it. **Excluded is not a verdict,
+it is a deferral.** The rows are real differences: `sgs/google-reviews` reads draft `0.2s` against live
+`0.15s` and `0.25s` with different property lists on each side.
+
+The honest statement is that **no transition row can be actioned by the route at all**, because
+`lib/calibrate-markers.mjs::markersFor` has no branch for `transition,*` and falls through to
+`return []`. Calibration therefore never sees them and the resolver can never write one. Register **S1**
+decided the framework's *base* transition behaviour, not these per-instance durations.
+
+So transition rows are not "not gaps" — they are **unmeasurable until `markersFor` gains a transition
+marker**, which is now a phase-1 diagnosis target alongside the walker defects.
 
 ---
 
@@ -123,11 +161,20 @@ not have shown even if the walker could see them: **18** (`c8c2c4162`), **20+23*
 **59/61** (`5a9e28ee5`), **S10** (`80b9deaa4`), **S9** (`2b4122c77`), and the 75/82/158 gallery strip
 (`b68db67c9`). Only the Tier 1 batch (`65573118c`) was deployed.
 
-**What this means for the decision.** Saying yes to all five of my A-list fixes closes 19 walker rows. It
-does not touch N11 (a second product never reaching the bag), N25 (the filter panel breaking), the missing
-toast, the `.00` prices or the absent spec rows — and those are what a visitor would notice first. **The
-walker was never going to surface them, so a clean F count is not a measure of how finished the site is.**
-A separate pass over these 63 is owed, and it is probably worth more than the seven fixes above.
+**What this means for the decision.** Saying yes to all five approved A-list fixes closes 17 walker rows.
+It does not touch N11 (a second product never reaching the bag), N25 (the filter panel breaking), the
+missing toast, the `.00` prices or the absent spec rows — and those are what a visitor would notice
+first. **The walker was never going to surface them, so a clean F count is not a measure of how finished
+the site is.**
+
+**Bean's correction, and the next session it defines.** Several of these are not walker problems at all —
+they are things that simply need building. N11 and N25 are the clearest cases. Calling them
+"not walker-measurable" describes the measuring tool, not the work.
+
+**Agreed next session:** go through this list of 63, **deploy and test live**, compare each against the
+draft, and categorise the remainder — built, genuinely open, needs content from the client, or an
+accepted divergence. That session is worth more than the five fixes above and should not wait behind
+them.
 
 ---
 
