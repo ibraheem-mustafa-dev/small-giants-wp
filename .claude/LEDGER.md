@@ -104,18 +104,16 @@ compare on a **normalised** path, because a cosmetic path change re-keys rows wh
 
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
 five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`),
-S9 (`2b4122c77`). `brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the
-375/768/1440 readings with their negative controls, and what was NOT measured.
-**All four open items CLOSED 2026-10-06** (proofs in the register rows). A `/qc-council` (Bean's prompt) then found **six defects in this session's own fixes**, all repaired in `295676ed2` and re-verified live: sandybrown at `295676ed2`, eye-care-test at `e1f95a569` by marker
-(sandybrown's reads `20c503516`: doc-only commits later, same plugin code). (a) **No `Product_Manifest` divergence
-ever existed** — the readings were different products (950 vs 897, both 48 variations, near-identical names),
-masking 950's context exceeding render.php's 24,576-byte cap; **Bean's call: not fixed**, 950 is a test item.
-(b) **Heart and swatches clickable** (`6cb273a18`): the trapping ancestor was `container/style.css`'s
-`:where(.sgs-container) > *{z-index:1}`. (c) **Duplicate tab stop gone by rebuilding the pattern** (`e62f45952`,
-Bean approved after `/research-buddies`): the block's own visible link owns the stretched surface, further
-same-href links are demoted, the overlay stays inert for geometry — also fixes `container`, `info-box`,
-`notice-banner`, `team-member`, where it was live for any client. (d) **20+23 verified on eye-care-test**: client
-wording, real order #1110, foreign-row negative control.
+S9 (`2b4122c77`). `brandUseLogo` ships `true` (a cross-client default).
+**All four open items CLOSED, a `/qc-council` then found six defects in those fixes, and Bean then hit LIVE
+BREAKAGE — every one fixed and verified live (2026-10-06).** Causes, measurements and negative controls are in
+register rows S10, 59 and 20+23; the lessons that generalise past this client are in auto-memory. The three
+worth knowing here: the `Product_Manifest` "divergence" never existed (two products, near-identical names) and
+Bean ruled the real masked defect not worth fixing (950's context exceeds render.php's 24,576-byte cap, but it
+is a test item); the stretched link was rebuilt so a block's OWN visible link owns the surface, which also
+fixed `container`, `info-box`, `notice-banner` and `team-member`; and the bag was DEAD on any site with a
+variable product in the cart, because the Store API's `extensions` is a stdClass and was read as an array.
+Live by marker: both sites at `f41a35c62`.
 CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
 
 The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
