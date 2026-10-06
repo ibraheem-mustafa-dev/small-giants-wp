@@ -11,13 +11,13 @@ including `ea72eab7b`, which the register still calls "committed but NOT yet dep
 
 | Category | Rows |
 |---|---|
-| Built and verified live | 10 |
-| Genuinely open | 9 |
-| Needs content from the client | 5 |
+| Built and verified live | 11 (10 verified live + 152, confirm-only) |
+| Genuinely open | 20 (9 measured + 11 now root-caused) |
+| Needs content from the client | 4, drafted in `sites/eye-care-ward-end/content/` |
 | Accepted divergence / beyond the draft | 2 |
-| Alias of a parent row | 12 |
-| CR — route, not client-visible | 14 |
-| Still to measure | 11 |
+| Alias of a parent row | 12 (9 modelled by the register's Covers column, 3 not) |
+| CR — route, not client-visible | 14, with 2 orphans needing an owner |
+| Still to measure | **0** |
 
 Plus **one defect found that is not in the 63 at all** — see §5.
 
@@ -130,11 +130,35 @@ What survives is (a), and it absorbs this entirely: a card with no real photo ha
 from 73-79% clickable to **2-5%**. Making the whole card the link fixes the imageless cards too, and does not
 wait on the photography.
 
-## 6. Out of scope — the 14 CR rows
+## 6. The 14 CR rows — answered by the route owner
 
-CR1, CR2, CR3, CR4, CR5, CR6, CR7, CR9, CR10, CR11, CR12, CR14, CR17, CR18 are route and calibration findings
-belonging to the Spec 47 route owner. **They have no Fix column** (`Ref/Finding/Evidence/Status/Sweep`), so they
-can carry no Fix-cell proof — report-only, by schema.
+CR1-CR12, CR14, CR17, CR18 are route and calibration findings. **Their table has no Fix column**
+(`Ref/Finding/Evidence/Status/Sweep`), so none can carry Fix-cell proof. Session `small-giants-wp-c8`, the route
+owner, answered on 2026-10-06:
+
+**None of the 14 were closed by the route cleanup.** Its 16 tasks are H1, H2, P1, P2a, P2b1-3, P3a-d, P4 and
+R1-R3, and no CR reference appears anywhere in `plans/2026-10-06-spec47-route-cleanup.md`. State that precisely:
+it is strong evidence the two sets are disjoint, **not** a line-by-line proof that no CR row was incidentally
+fixed by one of the 16. So no CR status is stale on that account, and none is marked closed here.
+
+| Group | Rows | What they need |
+|---|---|---|
+| Route already fixed, waiting on a **re-calibration host window** | CR3, CR7, CR10, CR11, CR17 | a quiet host, not a decision |
+| Still to prove, so no owner needed yet | CR1, CR2, CR4, CR5, CR9 (prove CR9 with CR1 — same pattern) | investigation |
+| Partly fixed | CR14, CR18 | finish (CR18: Lenses and the rest still to re-pair) |
+| **ORPHANED — needs an owner** | **CR6**, **CR12** | **a decision from Bean** |
+
+**CR6** was genuinely orphaned: `LEDGER.md` named "Spec 47 §5 Residual" as its owner and that section never
+mentioned it, so the one CR row marked proven-and-unbuilt had nobody. Now recorded there (`c0d45ec20`) with its
+blocker: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides`
+**must land together** or the route re-introduces what it just removed. Not scheduled. c8 offered to take it as
+one focused piece.
+
+**CR12** (the dark-mode toggle renders nothing for every current client) is the second orphan and the only CR
+row that is client-visible, so it arguably does not belong in this bucket at all.
+
+⚠️ **Any re-calibration must run AFTER the framework-DB reseed now in flight**, or it measures against a DB
+that is about to change.
 
 ## 7. Aliases, not independent work
 
@@ -142,17 +166,55 @@ A third of the "to assess" rows only point at a parent. Six point at a parent th
 N2A, N26 → S10 · N10, N33A → S9 · N6 → S12 · 61 → 59.
 The rest inherit their parent's open state: 3 → 17 · N9, N34 → S8 · N27, N31 → S7 · N8 → N2B.
 
-## 8. Still to measure
+## 8. The 15 unmeasured rows — classified from source
 
-**64** filter bar pinning · **N13** WhatsApp over footer links · **N37** advance-on-pick · **D7** Google rating
-placement · **9** Ferrari tile double-read · **N24** Google logo link · **N30** bridge size format ·
-**N33B** duplicate Save tag · **N36S** sizing tab · **152** switch-off confirmation · and the motion rows
-14, 17/3, 19, 58, 73, which need per-frame sampling against the draft.
+Root-caused 2026-10-06 under `/systematic-debugging`, from code and the client's built trees only (the shared
+host was held by two peers). Each carries the one live measurement that would confirm it.
+
+**Three verified directly by me**, because they are the cheapest wins in the whole list:
+
+| Ref | Cause, verified | Fix |
+|---|---|---|
+| **58** hero buttons appear instantly | `home.tree.json`: the hero heading and text carry `sgsAnimation: fade-up`; the `sgs/multi-button` node carries **none**. The attribute exists on the block. | **TREE** — add fade-up, 18, 900, ease, 560 |
+| **N33B** Save shown twice | `single-product.tree.json` sets `gallerySavingBadge: true`; the `block.json` default is `false`. The price-row pill comes separately from `rrpMetaKey`. | **TREE** — remove the flag (and from `gen_single_product.py`) |
+| **9** Ferrari tile reads its name twice | `mega-brands.tree.json`: **1 of 12** tiles carries a `title`, and it is Ferrari Scuderia with `title` identical to its `media.alt`. Every other tile has `title: ""`. | **TREE** — set the title to `""` |
+
+**The rest:**
+
+| Ref | Class | Root cause |
+|---|---|---|
+| 152 coupon / note / terms | **BUILT** | the three are separate unlocked inner blocks in `parts/sgs-checkout-content.html`; confirm-only |
+| N30 bridge-size box | TREE + seed data | the seeder writes `U+25A1` into `_sgs_size_measure` (`woo-seed/seed.php::sgs_seed_find_or_create_size_term`); the draft uses the same glyph |
+| N36S sizing tab | mixed | 4th row is a tree change needing lens-height data that does not exist; the diagram is a new block (D1). **The register's "no description column" is STALE — it is already built** |
+| 64 filter bar scrolls | FRAMEWORK | `sgs-shop-filters.js::ensureParts` puts the header inside `.sgs-shop-filters__scroll`, which has `overflow-y:auto`; the footer is appended outside it, which is why it stays pinned |
+| 14 drawer stagger | FRAMEWORK | `nav-drawer-menu/style.css` staggers only direct children of `.sgs-nav-drawer__body`; the tree's `sgs/container` is one child, so everything inside it arrives together |
+| 17, 3 bag count pop | FRAMEWORK | `count-pop.js::maybeAnimateCountPop` pops only on increase and the first call is `NaN`, so no pop on load; the CSS is fixed at 0.35s against the draft's 0.5s |
+| 19 delivery bar | FRAMEWORK | `cart/style.css` hardcodes `transition: width 0.3s ease`; no duration or easing attribute exists |
+| 73 photo fade | FRAMEWORK | `sgs/buybox` has no photo-entrance attribute; the existing crossfade fires only on variation swap |
+| N13 WhatsApp overlap | FRAMEWORK | `whatsapp-cta/view.js` observes only another `sgs/whatsapp-cta`; nothing exists for a footer strip |
+| N37 advance on pick | FRAMEWORK | `block.json::advanceMode` is an enum of `continue` and `tap` only; tap hides Continue, so Back cannot return without re-picking |
+| D7 Google rating | FRAMEWORK or tree | the top bar is `sgs/trust-bar`, dynamic with no InnerBlocks and an icon-and-label repeater, so it cannot host `sgs/google-reviews` |
+| N24 review logo link | FRAMEWORK | `google-reviews/render.php` draws the logo as a bare `<img aria-hidden="true">`; a per-review `reviewUrl` already reaches the render |
+
+**Fix together — these share one mechanism:**
+- **Cart motion (17, 3, 19)** — one pass over `cart/count-pop.js` and `cart/style.css`
+- **Tree-only batch (58, N33B, 9, + confirming 152)** — about 5 minutes on one build
+- **Entrance motion (14, 73, 17)** — all want a draft-shaped entrance; fix against one shared keyframe and timing convention (rise 18px, 0.5-0.9s, `cubic-bezier(.2,.7,.2,1)`) rather than re-typing it three times
+
+**Not settled from source, stated rather than guessed:** 152 (a live-DB copy of the part could carry locks),
+N36S (whether real lens-height values exist), 14 (whether the live drawer uses the tree's `sgs/button` nav
+container), 19 (whether the bar transitions at all, a different cause from the duration).
 
 ## What I would do next, in order
 
-1. **Prove or kill the manifest-cache hypothesis** (§5). One transient delete. It is the only item here that
-   makes 12 of 16 shop cards both imageless and unclickable.
-2. **36 and S8** — the address line break is minutes; the `.00` switch is one filter and closes three rows.
-3. **51 and 96** — both now have a measured cause rather than a description.
-4. Leave the 14 CR rows with the route owner.
+1. **The 5-minute tree batch** — `58`, `N33B`, `9`, and confirm `152`. Three one-line tree edits, all three
+   causes verified directly, one build. The largest visible return per minute in this whole document.
+2. **Verify N26 live** once the host frees. `3db77f090` is built and pushed; the number to beat is 73-79%
+   clickable on photographed cards and 2-5% on the rest.
+3. **The cart-motion pass** (`17`, `3`, `19`) — one file pair, three rows.
+4. **Give `CR6` and `CR12` owners**, or park them deliberately. They are the only two CR rows with nobody.
+5. **Hand the content drafts to Fatima** with their 59 `[CONFIRM: …]` questions, and get a solicitor onto the
+   privacy policy and terms before launch: the eye test and prescription are special-category health data.
+
+**One thing not to do:** build anything on the manifest-cache theory in this document's history. It was
+withdrawn - the imageless cards are 12 products carrying `photo-to-come.png`, which is content, not a defect.

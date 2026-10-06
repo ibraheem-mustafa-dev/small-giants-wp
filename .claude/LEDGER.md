@@ -106,13 +106,19 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy needed.
-  **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 14 CR, 11 to measure.
-  **N26 FIXED IN CODE `3db77f090`, live verify owed** — the card was clickable only on the name (1-2%) and
-  image (73%). `supports.sgs.blockLinkAlways` makes the whole-card link PERMANENT (Bean: not
-  switchable off); `render.php` calls `sgs_stretched_link_apply()`, the panel has no toggle, and the title's
-  hover underline is gone. The URL field STAYS: a typed card has no permalink and that is its only
-  destination. The 12 imageless cards are CONTENT (only 4 products have real photos).
+- **The 63 walker-blind rows — ALL CLASSIFIED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy was
+  needed. **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 11 built, 20 open, 4 content
+  (drafted in `sites/eye-care-ward-end/content/`, 59 `[CONFIRM]`s for Fatima), 2 divergences, 12 aliases, 14 CR,
+  **0 left to measure**.
+  **N26 FIXED IN CODE `3db77f090`, live verify owed** — the card was clickable only on the name (1-2%) and image
+  (73%). `blockLinkAlways` makes the whole-card link PERMANENT (Bean: not switchable off); the panel has no
+  toggle, the title's hover underline is gone, and `sgsBlockLinkAuto` is deliberately no longer a product-card
+  attribute (gone, not lost). The URL field STAYS: a typed card has no permalink. The 12 imageless cards are
+  CONTENT (4 products have real photos).
+  **Next, ~5 min on one build:** `58` multi-button has no `sgsAnimation` · `N33B` `gallerySavingBadge: true`
+  against a `false` default · `9` a brand tile duplicates its alt. `152` BUILT. **CR: none of the 14 closed by
+  the cleanup; `CR6` and `CR12` are ORPHANS needing an owner.**
+
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
@@ -120,13 +126,11 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
 five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own hash. `brandUseLogo` ships
 `true` (a cross-client default).
-**All four open items CLOSED; a `/qc-council` then found six defects in those fixes and Bean hit LIVE BREAKAGE,
-all fixed and verified live (2026-10-06).** Causes, measurements and negative controls are in
-register rows S10, 59 and 20+23; the lessons that generalise are in auto-memory. The one still load-bearing:
-the stretched link was rebuilt so a block's OWN visible link owns the surface — which is exactly why the
-product card now reads as dead outside its name and image (see the 63's report §5a).
-Option B then landed (`578a8830b`): the "no add-ons" lead needs a variation attribute, so it no longer prints on a line that configured nothing. Both sites live at `578a8830b` by marker.
-CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
+**All four open items CLOSED, with a `/qc-council` pass and Bean's live-breakage finds all fixed and verified
+(2026-10-06).** Causes and negative controls are in register rows S10, 59 and 20+23; the generalising lessons
+are in auto-memory. The one still load-bearing: the stretched link was rebuilt so a block's OWN visible link
+owns the surface, which is exactly why the product card read as dead outside its name and image (report §5a).
+Both sites live at `578a8830b` by marker. CR6 is owned by Spec 47 §5 Residual (`c0d45ec20`).
 
 The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
@@ -134,12 +138,9 @@ The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-ba
 **Resume from:** the 63's §5 — prove or kill the manifest-cache cause behind the 12 imageless, unclickable
 shop cards, then the quick wins 36 and S8. Per-surface Solve work is Session D.
 
-**Separators** (live on both sites): the shared
-lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
-hours, the mini-cart's items and the seven wrapper composites (`plans/archive/2026-10-01-separators-plan.md`). Open, only if
-asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page).
-The container roster script (`scripts/sync-container-wrapping-blocks.py`) reports the roster and KINDs and writes
-the DB only; container capabilities are opt-in per block at panel level.
+**Separators** (DONE, live on both sites): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked:
+the composites' editor canvases and the cart panel show spacing only in the editor. The container roster script
+(`scripts/sync-container-wrapping-blocks.py`) writes the DB only; container capabilities are opt-in per block.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
