@@ -153,9 +153,26 @@ unchanged: **catch rate 5 of 5, noise figure unproven in both directions.**
 ⚠️ **Run it on the local WSL mirror next time, not the remote host** — but understand what that changes.
 `dev-setup.md` §"Local WordPress mirrors (WSL)" documents `http://localhost:8081` (Eye Care) and `:8082`
 (Sandybrown) as WSL copies of the two Hostinger test sites, explicitly "for browser-heavy runs Hostinger's
-edge would challenge". They were **down** throughout this session (both ports time out); start them with
-`wsl -d Ubuntu -u root -- bash -lc 'service mariadb start; service apache2 start'`, and note
-`scripts/local-wp/sync-build.sh` wants a build first.
+edge would challenge". Note `scripts/local-wp/sync-build.sh` wants a build first.
+
+**The mirrors were UP the whole session and are fast. An earlier version of this report said they were
+down; that was wrong, and the error was in the measuring tool.** Playwright — the consumer that matters —
+reaches `localhost:8081` at **HTTP 200, networkidle in 3.3s**, title "Eye Care Birmingham (SGS test)",
+1131 `sgs-*` elements, and `:8082` in 1.9s.
+
+**Why `curl http://localhost:8081/` times out while the browser is fine:** the WSL port proxy binds 8081
+and 8082 on **IPv6 loopback only** (`netstat` shows `[::1]:8081`), and curl resolves `localhost` to IPv4
+first. `curl -6 localhost:8081` returns HTTP 200 in 0.68s, and Chrome tries IPv6 under Happy Eyeballs, so
+it never saw a problem. SearXNG's `:8888` is bound on IPv4 (`127.0.0.1:8888`), which is why that one
+answers to plain curl — same machine, same proxy, different address family. **Use `curl -6`, or test with
+the real browser; a reachability claim measured with curl is a claim about curl.**
+
+⚠️ **Do NOT run `wsl --shutdown` to "fix" this.** There is nothing to fix, and **SearXNG runs inside that
+same WSL instance on port 8888** — the engine `search.py` and the `/search` skill depend on. Shutting WSL
+down to repair a non-existent fault would have taken the search stack with it. `dev-setup.md`'s
+"start the services after a reboot" line is also a no-op here: `systemctl` shows apache2 and mariadb
+already loaded and listening, and the site roots `/var/www/local-eye-care` and `/var/www/local-sandybrown`
+are present.
 
 **But a local run answers a different question.** This benchmark's open question is "were the 22 noise rows
 walker flakiness or host load?", and the 0-noise baseline it must be compared against was measured
