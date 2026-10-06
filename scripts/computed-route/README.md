@@ -85,6 +85,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused; a landmark exclusion holding the surface is lifted. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
+| `tests/confirm-canvas.test.mjs` | Grouping the canvas-settable claims into families of (cited block, cited setting, row property): a family spanning two surfaces stays one family, a different setting on the same block and property is its own family, a row not decided by `canvas-settable` is not a claim, and a resolver-hop citation (no `where` key) stays distinguishable from a canvas-roster one. |
 | `tests/calibrate-chunk.test.mjs` | FR-47-2: the build child gets the bigger heap, a fixture names its own chunk size, and a timed-out chunk is halved with every default kept. |
 | `tests/calibrate-container.test.mjs` | FR-47-2: a block that emits `@container` rules at render time is not read as a one-width hardcode; a comment naming the flag, a false flag or a variable does not count. |
 | `tests/calibrate-fixtures.test.mjs` | FR-47-2: each planned fixture variant, parent chain and `<p>` text variant traces to the render source that needs it. |
@@ -361,6 +362,32 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `liftExclusions(exclude, holdsSurface)` → the selector exclusions that hold the surface (a header, footer or drawer surface pairs its own words).
 - `pairingState(cfg, name)` → the hand config's walker state that opens a panel surface on both sides (`pairs.mjs --state`), null without a name; throws when the state is missing or lacks a draft or live action.
 - `rootFor(cfg, side, state?)` → the root the pairing collectors walk on one side: the hand config's `pairRoot[<state>][side]` for a panel that leaves the landmark it opens from (the live phone drawer, which `store.js::reparentToBody` appends to `<body>`), else `auto.root`.
+## `confirm-canvas.mjs`
+
+Live confirmation of the `canvas-settable` claims, read-only: it writes no tree, setting, page or stylesheet.
+
+```
+node scripts/computed-route/confirm-canvas.mjs <triage dir | families.json> <out.json> [base url] [only indices]
+```
+
+A claim classes a row W because another block declares a setting whose `css_property` covers the row's property
+and the reachability gate judged its emission to reach the row's element. Confirming that needs a
+value-independent test, because computed styles and CDP matched-styles cannot separate "the cited setting loses"
+from "the cited setting is unset". So this enumerates every rule in every loaded stylesheet that declares the
+property and whose selector matches the row element, and asks whether any of them is the cited block's. The walk
+recurses into `@media` blocks without checking whether they apply, so the test is generous to the claim and a
+refutation is conservative. Verdicts: `CONFIRMED`, `VAR-CHANNEL` (a matching rule reads a custom property the
+framework sets on the cited block), `REFUTED` (rules govern the row but none is the cited block's), `NO-RULE`
+(nothing declares the property for this element at all) and `ABSENT` (the row is not in the DOM on that page).
+
+- `familiesFrom(triageDir)` → the claims grouped into families of (cited block, cited setting, row property),
+  read from the triage reports so there is no separate hand step to go stale. A family is the unit the claim is
+  made in: 168 rows collapse to 63 families, and surface is the wrong axis because a family spans surfaces.
+  A resolver-hop citation has no `where` key and a canvas-roster citation has `ancestor` or `sibling`; the two
+  are the same claim reached from two directions and are reported apart.
+
+Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md`.
+
 - `collectContext({side, width, state?, root?, message})` → the message `pairs.mjs::runPairing` throws when a pairing collector fails: a failure raised inside the page carries no side, width or state, so a missing pair root read as a bare `page.evaluate` error four frames from its cause. A pair-root failure also names the root and that a state opener which did not fire leaves it absent; any other failure keeps its own text and only gains the side, width and state.
 - `RECHECK_WIDTHS`: the widths a kept finder is re-checked at besides the pairing width (375, 768, 1920).
 - `joinFinders(perWidth)` → one CSS selector list from a block's distinct per-width draft paths, in width order.
