@@ -117,10 +117,25 @@ the live test, and it is why the citation was always a claim and never a closure
 
 ## Lane D is the strongest single result
 
-All 28 lens rows are measuring artefacts and the lane needs **zero** fixes. In every row the draft and
-live paint the same box by different means: the draft pads an outer `aside` where live pads the inner
-toggle, the draft uses flex where live uses grid, and so on. Boxes match exactly, for example
-`[20,386,335,271]` on both sides.
+All 28 lens rows are measuring artefacts and the lane needs **zero** fixes.
+
+**The conclusion holds, but the lane's evidence was overstated and the real account is better.** A
+main-thread spot-check of the walk report found two distinct situations, not one:
+
+- **`option-card` padding rows: boxes genuinely identical.** Draft `0px` padding against live `16px` /
+  `18px`, with the same box on both sides, because the draft pads an inner span. A true artefact.
+- **`stage` and `close` rows: boxes differ by exactly 2px.** `close` is draft `h: 42` against live
+  `h: 44`; `stage` is draft `{x:0,y:74,w:375,h:100}` against live `{x:0,y:76,w:375,h:98}`.
+
+That 2px has a proven, deliberate cause:
+`choice-flow/style.css::.sgs-choice-flow__chrome-close` sets `width: 44px; height: 44px; padding: 0`,
+and the file comments nearby on elements "shrinking under 44px tall — both stay comfortably tappable".
+The draft's close button is 42px. So live is 2px taller **by design**, to meet the 44px touch target, and
+the `stage` offset is that button pushing content down by the same 2px.
+
+**This is an accepted difference, not a gap** — the same shape as Bean's existing ruling that
+`sgs/google-reviews`' 40px pills follow Google's own UI and are never flagged. Worth stating on the list
+so the lens surface's residual has a named cause rather than reading as unexplained.
 
 This independently corroborates Bean's own read that the lens flow looks right, and it retires all three
 low-confidence candidates earlier sessions carried:
