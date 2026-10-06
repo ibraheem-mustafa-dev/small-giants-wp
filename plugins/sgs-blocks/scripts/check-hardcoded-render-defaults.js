@@ -52,6 +52,10 @@
  *  ADDED (E1–E10, converged from 5-agent audit of 268 baseline findings):
  *  - E1  Selector-context awareness: sub-element selectors (__foo) only flagged
  *        when the attr name semantically maps to that element token.
+ *        NARROWED by E14: it still exempts every NON-inherited property (the
+ *        `size`-suffix flood it exists to stop), but it no longer exempts an
+ *        INHERITED property on a sub-element when a control for that property is
+ *        emitted onto a different element; E14 decides those by element identity.
  *  - E2  Variant/modifier scope: selectors containing --modifier or .is-style-*
  *        implement the class-switch pattern, not competing defaults.
  *  - E3  Interactive/pseudo states: :hover, :focus*, :active, [open], ::before/after etc.
@@ -63,8 +67,18 @@
  *        property → style.css literal is a dormant fallback beaten by specificity.
  *  - E9  WP Block Selectors API typography: block.json declares selectors.typography
  *        → WP pipeline applies user values; base font-size literal is not competing.
+ *        NARROWED by E14: the block-wide removal of font-size / line-height /
+ *        letter-spacing / font-weight / text-transform is gone. The legacy
+ *        attr-name path still skips them, but E14 treats the selectors.typography
+ *        target as a control, so a hardcode on any OTHER element is classified.
  *  - E10 HTML-attribute consumption: render.php reads the attr as an HTML attribute
  *        (e.g. width="..." on <img>) rather than a CSS property — no CSS competition.
+ *  - E14 Element identity for INHERITED properties (font-*, line-height,
+ *        letter-spacing, text-*, color, ...): a hardcode on a DESCENDANT of the
+ *        element a control paints (CLASS 2), or on a wrapper that leaks into text
+ *        sub-elements declaring no value of their own (CLASS 3), is reported;
+ *        the same element (CLASS 1) is not. Unresolvable controls or markup are
+ *        reported as CANNOT-RESOLVE, never guessed. See the E14 section below.
  *
  * BASELINE
  * --------
@@ -85,6 +99,8 @@
  *   node scripts/check-hardcoded-render-defaults.js --check          # prebuild/CI gate (exit 1 on net-new)
  *   node scripts/check-hardcoded-render-defaults.js --write-baseline # seed / refresh the baseline
  *   node scripts/check-hardcoded-render-defaults.js --json           # machine-readable output
+ *   node scripts/check-hardcoded-render-defaults.js --survey         # counts by class + resolver coverage (never fails)
+ *   node scripts/check-hardcoded-render-defaults.js --survey --verbose  # ... plus every net-new finding and CLASS 1 classification
  *
  * Wired into prebuild / prestart in package.json.
  */
@@ -737,6 +753,10 @@ function isKnownCssProp( name ) {
 // design-system default and is NOT competing with the attr at the same
 // specificity level. We exempt font-size / line-height / letter-spacing /
 // font-weight / text-transform for any block that declares selectors.typography.
+//
+// NARROWED (E14): the exemption now covers only the legacy attr-name path. A
+// declaration on the selectors.typography element itself is the same element as
+// the control (CLASS 1); one on any other element is classified by E14.
 // ---------------------------------------------------------------------------
 
 const WP_NATIVE_TYPOGRAPHY_PROPS = new Set( [
@@ -1432,6 +1452,828 @@ function captureFullValue( lines, startLine, colonPos ) {
 	return collected.trim();
 }
 
+// ---------------------------------------------------------------------------
+// E14 — ELEMENT IDENTITY (CLASS 2 / CLASS 3 INHERITED-PROPERTY HARDCODES)
+//
+// E1 (sub-element name heuristic), E9 (selectors.typography) and E11 (helper
+// selector tokens) all answer "does this declaration's selector LOOK LIKE the
+// element the control paints?" and EXEMPT it when it does not. For a
+// NON-inherited property that is right (a `gap` on a child is simply a
+// different box). For an INHERITED property it hides the exact defect shape the
+// gate exists to catch: a direct declaration on a descendant beats an inherited
+// value at ANY specificity, so a control painting an ANCESTOR can never reach
+// it.
+//
+// For a hardcoded declaration of an INHERITED property P on selector S, against
+// the controls for P (each with its own emitted selector S_c):
+//   CLASS 1  S and S_c target the SAME element. SGS controls emit >= 2 classes
+//            (0,2,0) against a (0,1,0) base rule, so the control wins.
+//            NOT a finding.
+//   CLASS 2  S targets a DESCENDANT of S_c's element. The control can never
+//            reach it. FINDING.
+//   CLASS 3  S is a wrapper/shared class that is an ANCESTOR of text
+//            sub-elements which declare no P of their own, so S's value leaks
+//            into them. FINDING. (Sub-elements with no control at all leak
+//            permanently; sub-elements with a control leak in their default
+//            state. The finding note says which.)
+//   CANNOT-RESOLVE  a control selector, a helper prefix or the markup could not
+//            be resolved well enough to tell the cases apart. Reported rather
+//            than guessed either way, and counted separately.
+//
+// SCOPING (load-bearing): CLASS 2 and 3 exist ONLY for the INHERITED_PROPS
+// below. Non-inherited properties (gap, padding, margin, border*, background*,
+// width, height...) keep E1/E6/E11/E13 exactly as before; a leak reported for
+// `gap` would be a bug.
+//
+// Where the controls come from: every call to sgs_typography_css_rule() and
+// sgs_button_element_style_css() in ANY .php file of the block directory (not
+// only render.php). The prefix argument is resolved to the real attribute names
+// (prefix + Suffix, mirroring sgs_typography_attr()) and kept only when the
+// block.json really declares the attribute. The selector argument is a PHP
+// string expression: it is resolved by evaluating the block's own simple
+// string assignments (`$root_sel = '.' . $uid . '.wp-block-x';`). Per-instance
+// class variables (`$uid`...) become an instance marker that carries no
+// identity. Anything else (a function call, a ternary, a parameter) is
+// unresolved. A block.json `selectors.typography` target is also a control for
+// the WP-native typography properties.
+//
+// What is NOT modelled (scope limits): specificity beyond the CLASS 1 rule,
+// block.json `supports.typography` root controls, colour controls emitted by
+// helpers other than sgs_button_element_style_css(), and markup built outside
+// literal HTML tags in the block's own .php files.
+// ---------------------------------------------------------------------------
+
+/** The CSS properties that inherit. Only these can leak (CLASS 3) or be unreachable (CLASS 2). */
+const INHERITED_PROPS = new Set( [
+	'font-family', 'font-size', 'font-weight', 'font-style', 'line-height',
+	'letter-spacing', 'text-transform', 'text-align', 'text-indent', 'text-wrap',
+	'color', 'visibility', 'white-space', 'word-spacing',
+] );
+
+/** The inherited typography properties that make a sub-element a "text element". */
+const TEXT_EVIDENCE_PROPS = new Set( [
+	'font-family', 'font-size', 'font-weight', 'font-style', 'line-height',
+	'letter-spacing', 'text-transform',
+] );
+
+/**
+ * Controls emitted through a shared prefixed helper: argument positions and the
+ * suffix → CSS property table. A suffix with tiers/units lists its attr variants.
+ */
+const CONTROL_HELPERS = {
+	sgs_typography_css_rule: {
+		prefixArg: 1,
+		selectorArg: 2,
+		suffixes: [
+			{ base: 'FontSize', prop: 'font-size', variants: [ '', 'Unit', 'Tablet', 'Mobile' ] },
+			{ base: 'FontFamily', prop: 'font-family', variants: [ '' ] },
+			{ base: 'FontWeight', prop: 'font-weight', variants: [ '' ] },
+			{ base: 'FontStyle', prop: 'font-style', variants: [ '' ] },
+			{ base: 'TextTransform', prop: 'text-transform', variants: [ '' ] },
+			{ base: 'LineHeight', prop: 'line-height', variants: [ '', 'Unit', 'Tablet', 'Mobile' ] },
+			{ base: 'LetterSpacing', prop: 'letter-spacing', variants: [ '', 'Unit', 'Tablet', 'Mobile' ] },
+			{ base: 'TextAlign', prop: 'text-align', variants: [ '' ] },
+			{ base: 'TextWrap', prop: 'text-wrap', variants: [ '' ] },
+			{ base: 'TextIndent', prop: 'text-indent', variants: [ '' ] },
+		],
+	},
+	sgs_button_element_style_css: {
+		prefixArg: 1,
+		selectorArg: 2,
+		suffixes: [
+			{ base: 'ColourText', prop: 'color', variants: [ '' ] },
+			{ base: 'FontWeight', prop: 'font-weight', variants: [ '' ] },
+			{ base: 'FontSize', prop: 'font-size', variants: [ '' ] },
+		],
+	},
+};
+
+const UNK       = '\u0001'; // marks an unresolved PHP fragment inside a resolved string
+const INST_CLASS = '__inst__'; // stands for a per-instance class (`$uid`)
+const INST_VAR_RE = /^(?:\w*_)?uid$|^(?:\w*_)?(?:block|unique|instance)_?id$|^id$/i;
+const VOID_TAGS = new Set( [ 'img', 'br', 'hr', 'input', 'meta', 'link', 'source', 'wbr', 'area', 'col', 'embed', 'param', 'track' ] );
+
+// Advisory-with-ratchet for the E14 findings, mirroring
+// check-editor-render-parity.js + editor-render-parity/lib-ceiling.js.
+// E14_BLOCKS_BUILD = false: the existing backlog does not red the build.
+// E14_OPEN_BACKLOG: per-category ceilings. --check exits 1 when a category's
+// net-new count EXCEEDS its ceiling, so a brand-new defect still reds the build.
+// The numbers are the counts MEASURED when E14 was introduced: a starting point
+// to be LOWERED as the findings are triaged and fixed, never raised to absorb
+// new debt. Legacy (non-E14) findings are unaffected and remain blocking.
+const E14_BLOCKS_BUILD = false;
+const E14_OPEN_BACKLOG = {
+	'CLASS-2':        68,
+	'CLASS-3':        5,
+	'CANNOT-RESOLVE': 64,
+};
+
+/** Stats and the CLASS 1 evidence list, surfaced by --survey. */
+const ELEMENT_MODEL_STATS = {
+	helperCalls: 0,
+	selectorResolved: 0,
+	selectorUnresolved: 0,
+	prefixUnresolved: 0,
+	blocksWithControls: 0,
+	class1: [],
+	unresolvedControls: [],
+};
+
+// ── PHP string-expression resolver ────────────────────────────────────────
+
+/** Index just after the quoted string that opens at str[ i ] (backslash-aware). */
+function skipQuoted( str, i ) {
+	const q = str[ i ];
+	let j = i + 1;
+	while ( j < str.length ) {
+		if ( '\\' === str[ j ] ) {
+			j += 2;
+		} else if ( q === str[ j ] ) {
+			return j + 1;
+		} else {
+			j++;
+		}
+	}
+	return str.length;
+}
+
+/** Split `str` on `sep` at bracket depth 0, outside quotes. */
+function splitTopLevel( str, sep ) {
+	const out = [];
+	let depth = 0;
+	let cur   = '';
+	for ( let i = 0; i < str.length; i++ ) {
+		const ch = str[ i ];
+		if ( "'" === ch || '"' === ch ) {
+			const end = skipQuoted( str, i );
+			cur += str.slice( i, end );
+			i = end - 1;
+			continue;
+		}
+		if ( '([{'.includes( ch ) ) {
+			depth++;
+		} else if ( ')]}'.includes( ch ) ) {
+			depth--;
+		}
+		if ( ch === sep && 0 === depth ) {
+			out.push( cur );
+			cur = '';
+			continue;
+		}
+		cur += ch;
+	}
+	out.push( cur );
+	return out;
+}
+
+/** Index of the `;` ending the statement that starts at `from` (or the enclosing `)`), quote- and bracket-aware. */
+function findStatementEnd( src, from ) {
+	let depth = 0;
+	for ( let i = from; i < src.length; i++ ) {
+		const ch = src[ i ];
+		if ( "'" === ch || '"' === ch ) {
+			i = skipQuoted( src, i ) - 1;
+			continue;
+		}
+		if ( '([{'.includes( ch ) ) {
+			depth++;
+		} else if ( ')]}'.includes( ch ) ) {
+			if ( 0 === depth ) {
+				return i;
+			}
+			depth--;
+		} else if ( ';' === ch && 0 === depth ) {
+			return i;
+		}
+		if ( i - from > 4000 ) {
+			return i;
+		}
+	}
+	return src.length;
+}
+
+/** Resolve one concat term of a PHP expression to a string (UNK-marked when it cannot be resolved). */
+function resolvePhpTerm( term, resolveVar ) {
+	const t = term.trim();
+	let m = /^'((?:[^'\\]|\\.)*)'$/s.exec( t );
+	if ( m ) {
+		return m[ 1 ].replace( /\\(['\\])/g, '$1' );
+	}
+	m = /^"((?:[^"\\]|\\.)*)"$/s.exec( t );
+	if ( m ) {
+		return m[ 1 ]
+			.replace(
+				/\{\$([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)(?![\w[]|->)|\{\$[^}]*\}|\$[A-Za-z_]\w*(?:\[[^\]]*\]|->\w+)/g,
+				( all, braced, bare ) => {
+					const name = braced || bare;
+					return name ? resolveVar( name ) : UNK;
+				}
+			)
+			.replace( /\\(["\\])/g, '$1' );
+	}
+	m = /^\$([A-Za-z_]\w*)$/.exec( t );
+	if ( m ) {
+		return resolveVar( m[ 1 ] );
+	}
+	if ( '(' === t[ 0 ] && ')' === t[ t.length - 1 ] ) {
+		return resolvePhpExpr( t.slice( 1, -1 ), resolveVar );
+	}
+	return UNK;
+}
+
+/** Resolve a PHP string-concatenation expression (`'.' . $uid . ' .x'`) to a string. */
+function resolvePhpExpr( expr, resolveVar ) {
+	if ( ! expr || '' === expr.trim() ) {
+		return UNK;
+	}
+	return splitTopLevel( expr, '.' ).map( ( p ) => resolvePhpTerm( p, resolveVar ) ).join( '' );
+}
+
+/** Build a resolver for the block's PHP variables from its simple `$x = <expr>;` assignments. */
+function buildPhpVarResolver( files ) {
+	const raw = new Map(); // name → { exprs: Set<string>, append: boolean }
+	for ( const f of files ) {
+		const re = /\$([A-Za-z_]\w*)\s*(\.?=)(?![=>])/g;
+		let m;
+		while ( ( m = re.exec( f.src ) ) !== null ) {
+			const prev = m.index > 0 ? f.src[ m.index - 1 ] : '';
+			if ( '>' === prev || ':' === prev ) {
+				continue; // $this->$x / Class::$x — not a plain variable
+			}
+			const end  = findStatementEnd( f.src, re.lastIndex );
+			const expr = f.src.slice( re.lastIndex, end ).trim();
+			if ( ! raw.has( m[ 1 ] ) ) {
+				raw.set( m[ 1 ], { exprs: new Set(), append: false } );
+			}
+			const entry = raw.get( m[ 1 ] );
+			if ( '.=' === m[ 2 ] ) {
+				entry.append = true;
+			} else {
+				entry.exprs.add( expr );
+			}
+		}
+	}
+	const memo  = new Map();
+	const stack = new Set();
+	const resolveVar = ( name ) => {
+		if ( INST_VAR_RE.test( name ) ) {
+			return INST_CLASS;
+		}
+		if ( memo.has( name ) ) {
+			return memo.get( name );
+		}
+		const entry = raw.get( name );
+		if ( ! entry || entry.append || 0 === entry.exprs.size || stack.has( name ) ) {
+			return UNK;
+		}
+		stack.add( name );
+		const values = new Set( [ ...entry.exprs ].map( ( e ) => resolvePhpExpr( e, resolveVar ) ) );
+		stack.delete( name );
+		const value = 1 === values.size ? [ ...values ][ 0 ] : UNK;
+		memo.set( name, value );
+		return value;
+	};
+	return resolveVar;
+}
+
+/** Argument regions of every call to `fnName` (quote- and bracket-aware; skips the definition). */
+function captureCallRegions( src, fnName ) {
+	const regions = [];
+	const needle  = fnName + '(';
+	let from = 0;
+	let idx;
+	while ( ( idx = src.indexOf( needle, from ) ) !== -1 ) {
+		from = idx + needle.length;
+		if ( idx > 0 && /[A-Za-z0-9_]/.test( src[ idx - 1 ] ) ) {
+			continue;
+		}
+		if ( /function\s+&?$/.test( src.slice( Math.max( 0, idx - 24 ), idx ) ) ) {
+			continue; // the definition, not a call
+		}
+		const end = findStatementEnd( src, from );
+		regions.push( src.slice( from, end ) );
+		from = end;
+	}
+	return regions;
+}
+
+// ── Selector parsing ──────────────────────────────────────────────────────
+
+/** Replace `:where( x )` with `x`, and drop the argument of the other functional pseudo-classes. */
+function simplifyPseudos( selector ) {
+	let s = selector;
+	for ( let guard = 0; guard < 6; guard++ ) {
+		const next = s
+			.replace( /:where\(([^()]*)\)/gi, ' $1 ' )
+			.replace( /:(?:is|not|has|nth-[a-z-]+|lang|dir|host)\([^()]*\)/gi, '' );
+		if ( next === s ) {
+			break;
+		}
+		s = next;
+	}
+	return s.replace( /\[[^\]]*\]/g, '' );
+}
+
+function parseCompound( text ) {
+	const classes = [];
+	const re = /\.(-?[A-Za-z_][\w-]*)/g;
+	let m;
+	while ( ( m = re.exec( text ) ) !== null ) {
+		classes.push( m[ 1 ] );
+	}
+	const inst = classes.includes( INST_CLASS );
+	return {
+		classes: classes.filter( ( c ) => c !== INST_CLASS ),
+		inst,
+		unknown: text.includes( UNK ),
+		tag:     ( /^[a-z][\w-]*/i.exec( text ) || [ '' ] )[ 0 ],
+	};
+}
+
+/**
+ * Parse a selector list into members; each member is the chain of compounds
+ * that are ancestors-or-self of the targeted element (a sibling combinator
+ * discards everything before it, because a sibling is not an ancestor).
+ */
+function parseSelectorMembers( selector ) {
+	const out = [];
+	for ( const member of splitTopLevel( simplifyPseudos( selector ), ',' ) ) {
+		const text = member.trim();
+		if ( ! text ) {
+			continue;
+		}
+		const chain = [];
+		const re = /\s*([>+~])\s*|\s+/g;
+		let last = 0;
+		let m;
+		const push = ( piece ) => {
+			if ( piece.trim() ) {
+				chain.push( parseCompound( piece.trim() ) );
+			}
+		};
+		while ( ( m = re.exec( text ) ) !== null ) {
+			if ( '' === m[ 0 ] ) {
+				re.lastIndex++;
+				continue;
+			}
+			push( text.slice( last, m.index ) );
+			if ( '+' === m[ 1 ] || '~' === m[ 1 ] ) {
+				chain.length = 0;
+			}
+			last = re.lastIndex;
+		}
+		push( text.slice( last ) );
+		if ( chain.length ) {
+			out.push( chain );
+		}
+	}
+	return out;
+}
+
+// ── Block model: root classes, controls, markup ───────────────────────────
+
+function readBlockPhpFiles( blockDir ) {
+	const files = [];
+	const walk = ( dir ) => {
+		for ( const e of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+			const p = path.join( dir, e.name );
+			if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
+				walk( p );
+			} else if ( e.isFile() && /\.php$/i.test( e.name ) ) {
+				const src = fs.readFileSync( p, 'utf8' )
+					.replace( /\/\*[\s\S]*?\*\//g, ( c ) => c.replace( /[^\n]/g, ' ' ) )
+					// A `//` comment ends at the line break OR at a `?>` — keep the `?>`
+					// so an inline `<?php // note ?>` does not leave an unclosed PHP tag.
+					.replace( /(^|[^:'"])\/\/([^\n]*)/g, ( all, pre, rest ) => {
+						const close = rest.indexOf( '?>' );
+						return pre + ' ' + ( close >= 0 ? rest.slice( close ) : '' );
+					} );
+				files.push( { file: p, src } );
+			}
+		}
+	};
+	walk( blockDir );
+	return files;
+}
+
+/**
+ * Class names carried by the block's ROOT element: the WP wrapper classes, the
+ * block.json selectors.root classes, and any class literal that flows into
+ * get_block_wrapper_attributes() (followed through up to three variable hops).
+ */
+function collectRootClasses( files, slug, meta ) {
+	const roots = new Set( [ `wp-block-sgs-${ slug }`, `sgs-${ slug }`, slug ] );
+	const rootSel = meta.selectors && 'string' === typeof meta.selectors.root ? meta.selectors.root : '';
+	for ( const m of rootSel.matchAll( /\.(-?[A-Za-z_][\w-]*)/g ) ) {
+		roots.add( m[ 1 ] );
+	}
+	const ownsClass = ( c ) => c.startsWith( `sgs-${ slug }` ) || c.startsWith( `wp-block-sgs-${ slug }` ) || c === slug;
+	for ( const f of files ) {
+		for ( const region of captureCallRegions( f.src, 'get_block_wrapper_attributes' ) ) {
+			const seenVars = new Set();
+			let frontier   = [ region ];
+			for ( let hop = 0; hop < 4 && frontier.length; hop++ ) {
+				const next = [];
+				for ( const text of frontier ) {
+					for ( const lm of text.matchAll( /'([^']*)'|"([^"]*)"/g ) ) {
+						for ( const tok of ( lm[ 1 ] !== undefined ? lm[ 1 ] : lm[ 2 ] ).split( /\s+/ ) ) {
+							if ( /^[A-Za-z_][\w-]*$/.test( tok ) && ownsClass( tok ) ) {
+								roots.add( tok );
+							}
+						}
+					}
+					for ( const vm of text.matchAll( /\$([A-Za-z_]\w*)/g ) ) {
+						if ( seenVars.has( vm[ 1 ] ) || 'attributes' === vm[ 1 ] ) {
+							continue;
+						}
+						seenVars.add( vm[ 1 ] );
+						const stmtRe = new RegExp( '\\$' + vm[ 1 ] + '(?:\\[[^\\]]*\\])?\\s*\\.?=(?![=>])', 'g' );
+						for ( const g of files ) {
+							let sm;
+							while ( ( sm = stmtRe.exec( g.src ) ) !== null ) {
+								next.push( g.src.slice( stmtRe.lastIndex, findStatementEnd( g.src, stmtRe.lastIndex ) ) );
+							}
+						}
+					}
+				}
+				frontier = next;
+			}
+		}
+	}
+	return roots;
+}
+
+/** Controls emitted by the shared helpers, plus the selectors.typography target. */
+function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSelectorsTypography ) {
+	const controls         = [];
+	const wildcardProps    = new Set();
+	const addControl       = ( prop, attrs, selectorText, source ) => {
+		// A control member is usable when its last compound carries a class (or the
+		// instance class). A bare-tag member (`.uid h3`) is kept apart: it can only
+		// be compared with a bare-tag declaration of the same tag.
+		const parsed      = parseSelectorMembers( selectorText );
+		const last        = ( chain ) => chain[ chain.length - 1 ];
+		const classed     = parsed.filter( ( c ) => ! last( c ).unknown && ( last( c ).classes.length || last( c ).inst ) );
+		const bareTags    = parsed.filter( ( c ) => ! last( c ).unknown && ! last( c ).classes.length && ! last( c ).inst && last( c ).tag ).map( ( c ) => last( c ).tag.toLowerCase() );
+		const unusable    = parsed.length - classed.length - bareTags.length;
+		const members     = parsed.length && classed.length && 0 === unusable ? classed : null;
+		const control     = { prop, attrs, members, bareTags, selectorText, source };
+		controls.push( control );
+		return control;
+	};
+
+	for ( const [ fnName, spec ] of Object.entries( CONTROL_HELPERS ) ) {
+		for ( const f of files ) {
+			for ( const region of captureCallRegions( f.src, fnName ) ) {
+				ELEMENT_MODEL_STATS.helperCalls++;
+				const args   = splitTopLevel( region, ',' );
+				const prefix = args[ spec.prefixArg ] !== undefined ? resolvePhpExpr( args[ spec.prefixArg ], resolveVar ) : UNK;
+				const selRaw = args[ spec.selectorArg ] !== undefined ? resolvePhpExpr( args[ spec.selectorArg ], resolveVar ) : UNK;
+				if ( prefix.includes( UNK ) || prefix.includes( INST_CLASS ) ) {
+					ELEMENT_MODEL_STATS.prefixUnresolved++;
+					for ( const s of spec.suffixes ) {
+						wildcardProps.add( s.prop );
+					}
+					continue;
+				}
+				let callControl = null;
+				for ( const s of spec.suffixes ) {
+					const attrs = s.variants
+						.map( ( v ) => ( '' !== prefix ? prefix + s.base + v : s.base.charAt( 0 ).toLowerCase() + s.base.slice( 1 ) + v ) )
+						.filter( ( a ) => declaredAttrs.has( a ) );
+					if ( 0 === attrs.length ) {
+						continue; // the call site does not correspond to a declared control
+					}
+					const added = addControl( s.prop, attrs, selRaw, `${ fnName }@${ path.basename( f.file ) }` );
+					callControl = callControl || added;
+				}
+				if ( callControl ) {
+					ELEMENT_MODEL_STATS[ callControl.members ? 'selectorResolved' : 'selectorUnresolved' ]++;
+				}
+			}
+		}
+	}
+
+	if ( hasSelectorsTypography && meta.selectors && 'string' === typeof meta.selectors.typography ) {
+		for ( const prop of WP_NATIVE_TYPOGRAPHY_PROPS ) {
+			addControl( prop, [ 'selectors.typography' ], meta.selectors.typography, 'block.json selectors.typography' );
+		}
+	}
+	return { controls, wildcardProps };
+}
+
+/** Literal-HTML markup tree of the block: instances with their class sets and parent links. */
+function buildMarkupModel( files, rootClasses ) {
+	const instances = [];
+	const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)\b((?:"[^"]*"|'[^']*'|<\?[\s\S]*?\?>|[^<>"'])*?)(\/?)>/g;
+	for ( const f of files ) {
+		const stack = [];
+		let m;
+		tagRe.lastIndex = 0;
+		while ( ( m = tagRe.exec( f.src ) ) !== null ) {
+			const tag = m[ 2 ].toLowerCase();
+			if ( '/' === m[ 1 ] ) {
+				for ( let k = stack.length - 1; k >= 0; k-- ) {
+					if ( instances[ stack[ k ] ].tag === tag ) {
+						stack.length = k;
+						break;
+					}
+				}
+				continue;
+			}
+			const attrText = m[ 3 ];
+			const cm       = /class\s*=\s*\\?(["'])([\s\S]*?)\\?\1/.exec( attrText );
+			const classes  = new Set(
+				cm ? cm[ 2 ].replace( /<\?[\s\S]*?\?>/g, ' ' ).split( /\s+/ ).filter( ( c ) => /^[A-Za-z_][\w-]*$/.test( c ) && ! /[-_]$/.test( c ) ) : []
+			);
+			let root = /wrapper_attr|get_block_wrapper/i.test( attrText );
+			for ( const c of classes ) {
+				if ( rootClasses.has( c ) ) {
+					root = true;
+				}
+			}
+			if ( root ) {
+				for ( const c of rootClasses ) {
+					classes.add( c );
+				}
+			}
+			// A class attribute built at run time (a PHP echo / variable) means this
+			// element can carry classes the literal markup does not show.
+			const dynamic = ! root && ( cm ? /<\?|\$|'\s*\.|\.\s*'/.test( cm[ 2 ] ) : /<\?|\$|\becho\b/.test( attrText ) );
+			instances.push( {
+				tag,
+				classes,
+				root,
+				dynamic,
+				mainFile: /(?:^|[\\/])render\.php$/.test( f.file ),
+				parent:   stack.length ? stack[ stack.length - 1 ] : -1,
+			} );
+			if ( ! VOID_TAGS.has( tag ) && '/' !== m[ 4 ] ) {
+				stack.push( instances.length - 1 );
+			}
+		}
+	}
+	return instances;
+}
+
+function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypography ) {
+	const files = readBlockPhpFiles( blockDir );
+	const slug  = path.basename( blockDir );
+	if ( 0 === files.length ) {
+		return null;
+	}
+	const resolveVar = buildPhpVarResolver( files );
+	const { controls, wildcardProps } = collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSelectorsTypography );
+	if ( 0 === controls.length && 0 === wildcardProps.size ) {
+		return null;
+	}
+	ELEMENT_MODEL_STATS.blocksWithControls++;
+	for ( const c of controls ) {
+		if ( ! c.members ) {
+			ELEMENT_MODEL_STATS.unresolvedControls.push( { block: slug, source: c.source, selector: c.selectorText } );
+		}
+	}
+	const rootClasses = collectRootClasses( files, slug, meta );
+	const props = new Set( [ ...controls.map( ( c ) => c.prop ), ...wildcardProps ] );
+	return {
+		props,
+		controls,
+		wildcardProps,
+		rootClasses,
+		instances: buildMarkupModel( files, rootClasses ),
+	};
+}
+
+// ── Relations ─────────────────────────────────────────────────────────────
+
+const lastCompound = ( chain ) => chain[ chain.length - 1 ];
+const isSubset     = ( a, b ) => a.classes.length > 0 && a.classes.every( ( c ) => b.classes.includes( c ) );
+
+function isRootCompound( c, model ) {
+	if ( c.unknown ) {
+		return false;
+	}
+	return c.classes.length > 0
+		? c.classes.every( ( cl ) => model.rootClasses.has( cl ) )
+		: c.inst;
+}
+
+function matchInstances( c, model ) {
+	if ( isRootCompound( c, model ) ) {
+		return model.instances.map( ( inst, i ) => ( inst.root ? i : -1 ) ).filter( ( i ) => i >= 0 );
+	}
+	if ( 0 === c.classes.length ) {
+		return [];
+	}
+	return model.instances.map( ( inst, i ) => ( c.classes.every( ( cl ) => inst.classes.has( cl ) ) ? i : -1 ) ).filter( ( i ) => i >= 0 );
+}
+
+function isDescendantInstance( model, i, ancestor ) {
+	for ( let p = model.instances[ i ].parent; p >= 0; p = model.instances[ p ].parent ) {
+		if ( p === ancestor ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * True when instance `i` and every ancestor of it have a fully literal class
+ * attribute and the chain ends in the block's own render.php (whose markup is
+ * the whole block). Then no run-time-built element can sit above it.
+ */
+function hasFullyLiteralAncestry( model, i ) {
+	let top = i;
+	for ( let p = i; p >= 0; p = model.instances[ p ].parent ) {
+		if ( model.instances[ p ].dynamic ) {
+			return false;
+		}
+		top = p;
+	}
+	return model.instances[ top ].mainFile;
+}
+
+/**
+ * Relation of the element targeted by control compound `a` to the element
+ * targeted by the declaration chain `bChain`:
+ *   'same' | 'control-above' (S is a descendant of the control's element) |
+ *   'control-below' (S is an ancestor of the control's element) | 'unrelated' | 'unknown'
+ */
+function relateElements( a, bChain, model ) {
+	const b = lastCompound( bChain );
+	if ( 0 === b.classes.length && ! b.inst ) {
+		// A bare tag (`.x__label span`): strictly inside the nearest classed ancestor.
+		if ( bChain.length < 2 ) {
+			return 'unknown';
+		}
+		const rel = relateElements( a, bChain.slice( 0, -1 ), model );
+		if ( 'same' === rel || 'control-above' === rel ) {
+			return 'control-above';
+		}
+		return 'unrelated' === rel ? 'unrelated' : 'unknown';
+	}
+	const aRoot = isRootCompound( a, model );
+	const bRoot = isRootCompound( b, model );
+	if ( aRoot && bRoot ) {
+		return 'same';
+	}
+	if ( isSubset( a, b ) || isSubset( b, a ) ) {
+		return 'same';
+	}
+	for ( const anc of bChain.slice( 0, -1 ) ) {
+		if ( aRoot ? isRootCompound( anc, model ) : isSubset( a, anc ) ) {
+			return 'control-above';
+		}
+	}
+	const aInst = matchInstances( a, model );
+	const bInst = matchInstances( b, model );
+	if ( aInst.some( ( i ) => bInst.includes( i ) ) ) {
+		return 'same';
+	}
+	if ( aRoot ) {
+		return ( bInst.length > 0 || b.classes.some( ( c ) => /__/.test( c ) ) ) ? 'control-above' : 'unknown';
+	}
+	if ( bRoot ) {
+		return 'control-below';
+	}
+	if ( bInst.length && 0 === aInst.length && bInst.every( ( i ) => hasFullyLiteralAncestry( model, i ) ) ) {
+		// The control's element is never emitted as literal markup, and every
+		// ancestor of the declaring element is: the control's element cannot be one of them.
+		return 'unrelated';
+	}
+	if ( aInst.length && bInst.length ) {
+		if ( bInst.some( ( i ) => aInst.some( ( j ) => isDescendantInstance( model, i, j ) ) ) ) {
+			return 'control-above';
+		}
+		if ( aInst.some( ( j ) => bInst.some( ( i ) => isDescendantInstance( model, j, i ) ) ) ) {
+			return 'control-below';
+		}
+		return 'unrelated';
+	}
+	return 'unknown';
+}
+
+/** Does a CSS compound target the markup instance `inst` (non-root compounds only)? */
+const compoundMatchesInstance = ( c, inst ) => c.classes.length > 0 && c.classes.every( ( cl ) => inst.classes.has( cl ) );
+
+/**
+ * CLASS 3: text descendants of S's element that declare no `prop` of their own.
+ * Returns { leaks, unknown }.
+ */
+function findLeakTargets( bChain, prop, model, declLog ) {
+	const b     = lastCompound( bChain );
+	const bRoot = isRootCompound( b, model );
+	const sInst = matchInstances( b, model );
+	if ( ! bRoot && 0 === sInst.length ) {
+		return { leaks: [], unknown: true };
+	}
+	const ownDecls = declLog.map( ( d ) => ( { prop: d.property, members: parseSelectorMembers( d.selector ) } ) );
+	const seen  = new Set();
+	const leaks = [];
+	model.instances.forEach( ( inst, idx ) => {
+		const isDescendant = bRoot
+			? ! inst.root
+			: sInst.some( ( s ) => isDescendantInstance( model, idx, s ) );
+		if ( ! isDescendant || 0 === inst.classes.size ) {
+			return;
+		}
+		const key = [ ...inst.classes ].sort().join( '.' );
+		if ( seen.has( key ) ) {
+			return;
+		}
+		seen.add( key );
+		const declares = ( p ) => ownDecls.some( ( d ) => d.prop === p && d.members.some( ( ch ) => compoundMatchesInstance( lastCompound( ch ), inst ) ) );
+		const controlsHere = ( p ) => model.controls.filter( ( c ) => c.members && ( ! p || c.prop === p ) && c.members.some( ( ch ) => compoundMatchesInstance( lastCompound( ch ), inst ) ) );
+		const textEvidence = controlsHere( null ).length > 0 || [ ...TEXT_EVIDENCE_PROPS ].some( declares );
+		if ( ! textEvidence || declares( prop ) ) {
+			return;
+		}
+		const primary = [ ...inst.classes ].find( ( c ) => ! model.rootClasses.has( c ) ) || [ ...inst.classes ][ 0 ];
+		leaks.push( { cls: primary, hasControl: controlsHere( prop ).length > 0 } );
+	} );
+	return { leaks, unknown: false };
+}
+
+/**
+ * Classify one hardcoded declaration of an INHERITED property.
+ * Returns null (no controls for the property), or { cls, attrs, note } where cls is
+ * 'CLASS-1' (same element, not a finding), 'CLASS-2', 'CLASS-3' or 'CANNOT-RESOLVE'.
+ */
+function classifyInheritedHardcode( cand, model, declLog ) {
+	const prop     = cand.property;
+	const controls = model.controls.filter( ( c ) => c.prop === prop );
+	const wildcard = model.wildcardProps.has( prop );
+	if ( 0 === controls.length && ! wildcard ) {
+		return null;
+	}
+	const members = parseSelectorMembers( cand.selector );
+	const attrsOf = ( list ) => [ ...new Set( list.flatMap( ( c ) => c.attrs ) ) ].join( ', ' );
+	let sawSame   = false;
+	let worst     = null;
+	for ( const chain of members ) {
+		const b = lastCompound( chain );
+		if ( b.unknown ) {
+			worst = worst || { cls: 'CANNOT-RESOLVE', attrs: attrsOf( controls ), note: 'the declaring selector is not statically resolvable' };
+			continue;
+		}
+		const rels = controls.map( ( c ) => {
+			if ( ! c.members ) {
+				return { c, rel: 'unknown' };
+			}
+			if ( 0 === b.classes.length && ! b.inst && c.bareTags.includes( b.tag.toLowerCase() ) ) {
+				return { c, rel: 'same' };
+			}
+			const set = c.members.map( ( cm ) => relateElements( lastCompound( cm ), chain, model ) );
+			const pick = [ 'same', 'control-above', 'control-below', 'unrelated' ].find( ( r ) => set.includes( r ) );
+			return { c, rel: pick || 'unknown' };
+		} );
+		const above = rels.filter( ( r ) => 'control-above' === r.rel ).map( ( r ) => r.c );
+		if ( above.length ) {
+			return {
+				cls:   'CLASS-2',
+				attrs: attrsOf( above ),
+				note:  `a descendant of the element ${ attrsOf( above ) } paints (${ above[ 0 ].source }); a direct declaration beats the inherited value`,
+			};
+		}
+		const unresolved = rels.filter( ( r ) => 'unknown' === r.rel ).map( ( r ) => r.c );
+		if ( unresolved.length || wildcard ) {
+			worst = worst || {
+				cls:   'CANNOT-RESOLVE',
+				attrs: attrsOf( unresolved.length ? unresolved : controls ),
+				note:  unresolved.some( ( c ) => ! c.members )
+					? 'a control selector in the PHP could not be resolved to a class'
+					: ( wildcard ? 'a helper call has an unresolvable prefix' : 'the element relationship could not be established from the markup' ),
+			};
+			continue;
+		}
+		if ( rels.some( ( r ) => 'same' === r.rel ) ) {
+			sawSame = true;
+			continue;
+		}
+		const { leaks, unknown } = findLeakTargets( chain, prop, model, declLog );
+		if ( unknown ) {
+			worst = worst || { cls: 'CANNOT-RESOLVE', attrs: attrsOf( controls ), note: 'the declaring class is not found in the block markup' };
+			continue;
+		}
+		if ( leaks.length ) {
+			const noControl = [ ...new Set( leaks.filter( ( l ) => ! l.hasControl ).map( ( l ) => l.cls ) ) ];
+			const withControl = [ ...new Set( leaks.filter( ( l ) => l.hasControl ).map( ( l ) => l.cls ) ) ];
+			return {
+				cls:   'CLASS-3',
+				attrs: attrsOf( controls ),
+				note:  'leaks into ' + [
+					noControl.length ? `${ noControl.join( ', ' ) } (no ${ prop } control: permanent)` : '',
+					withControl.length ? `${ withControl.join( ', ' ) } (has a control: default state only)` : '',
+				].filter( Boolean ).join( '; ' ),
+			};
+		}
+	}
+	if ( worst ) {
+		return worst;
+	}
+	return sawSame ? { cls: 'CLASS-1', attrs: attrsOf( controls ), note: 'same element as the control' } : null;
+}
+
 /**
  * Scan `src` for CSS declarations matching any property in `targetProps`.
  * Applies all exemptions:
@@ -1453,10 +2295,18 @@ function captureFullValue( lines, startLine, colonPos ) {
  * @param {Map}      helperGov   E11: attrName → Set of governed selector tokens
  *                               for prefixed-helper attrs (authoritative
  *                               element-ownership, replaces E1/E6 for them).
+ * @param {Object|null} model    E14: element model (controls, markup) or null.
+ * @param {Set|null}  e9Props    E9: properties the legacy attr-name path leaves to
+ *                               the E14 classifier (blocks with selectors.typography).
  */
-function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper ) {
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper, model, e9Props ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
+	// E14: every default-state declaration of an inherited property (any value),
+	// so a sub-element's OWN declaration can be told apart from one it inherits.
+	const declLog    = [];
+	const candidates = [];
+	const legacyForAudit = [];
 
 	let depthTotal    = 0; // { } brace depth
 	let whereDepth    = 0;
@@ -1539,7 +2389,7 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		}
 
 		// ── Exempt contexts ───────────────────────────────────────────────────
-		if ( inWhere || inKeyframes ) {
+		if ( inKeyframes ) {
 			continue;
 		}
 		// E4: skip everything inside @media / @container
@@ -1571,7 +2421,23 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		}
 		const property = m[ 1 ].toLowerCase().trim();
 
-		if ( ! targetProps.has( property ) ) {
+		// E14: log the declaration (any value, :where included) before the
+		// :where / target-property filters below.
+		if ( INHERITED_PROPS.has( property ) ) {
+			declLog.push( { property, selector: currentSelector } );
+		}
+
+		// :where( ... ) declarations are low-specificity defaults — never a finding.
+		if ( inWhere ) {
+			continue;
+		}
+
+		// E9 (narrowed): on a selectors.typography block the legacy attr-name path
+		// still leaves the WP-native typography properties alone; the E14
+		// classifier below decides them by element identity instead.
+		const legacyEligible = targetProps.has( property ) && ! ( e9Props && e9Props.has( property ) );
+		const modelEligible  = !! ( model && model.props.has( property ) && INHERITED_PROPS.has( property ) );
+		if ( ! legacyEligible && ! modelEligible ) {
 			continue;
 		}
 
@@ -1589,10 +2455,7 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		}
 
 		// ── Per-attr checks (E1, E6) for every attr that maps to this property ──
-		const owningAttrs = cssToAttrs.get( property );
-		if ( ! owningAttrs ) {
-			continue;
-		}
+		const owningAttrs = legacyEligible ? cssToAttrs.get( property ) : null;
 
 		// Extract BEM sub-element tokens from the current selector (for E1/E6).
 		const bemElements = extractBemElements( currentSelector );
@@ -1600,7 +2463,7 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		// Check whether ALL owning attrs are exempt for this selector.
 		// If at least one owning attr is NOT exempt, the finding stands.
 		const nonExemptAttrs = [];
-		for ( const attrName of owningAttrs ) {
+		for ( const attrName of ( owningAttrs || [] ) ) {
 			// E11: prefixed-helper attr — element-ownership is authoritative from
 			// the helper's call selector(s), NOT the attr-name/element heuristic.
 			// Flag ONLY when the rule's selector references a governed token; this
@@ -1646,17 +2509,63 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		}
 
 		if ( nonExemptAttrs.length === 0 ) {
-			continue; // all owning attrs are exempt for this declaration
+			// Every owning attr is exempt by the legacy name heuristics (E1/E9/E11).
+			// E14 narrows that: for an INHERITED property that has a control emitted
+			// elsewhere, element identity decides, not the attr name.
+			if ( modelEligible ) {
+				candidates.push( { line: lineNum, property, value: rawValue, selector: currentSelector } );
+			}
+			continue;
 		}
 
-		findings.push( {
+		const legacyFinding = {
 			line:     lineNum,
 			property,
 			value:    rawValue,
 			selector: currentSelector,
 			attrs:    nonExemptAttrs,
+		};
+		findings.push( legacyFinding );
+		if ( modelEligible ) {
+			legacyForAudit.push( legacyFinding );
+		}
+	}
+
+	// E14 (information only): what element identity says about each legacy
+	// finding. It never changes whether the finding is reported; it lets the
+	// triage see which legacy findings are really CLASS 1 (same element).
+	for ( const f of legacyForAudit ) {
+		const verdict = classifyInheritedHardcode( f, model, declLog );
+		f.e14Class = verdict ? verdict.cls : null;
+	}
+
+	// E14: classify the deferred candidates once every declaration is logged.
+	for ( const cand of candidates ) {
+		const verdict = classifyInheritedHardcode( cand, model, declLog );
+		if ( ! verdict ) {
+			continue;
+		}
+		if ( 'CLASS-1' === verdict.cls ) {
+			ELEMENT_MODEL_STATS.class1.push( {
+				block:    model.block,
+				property: cand.property,
+				value:    cand.value,
+				selector: cand.selector,
+				attrs:    verdict.attrs,
+			} );
+			continue;
+		}
+		findings.push( {
+			line:     cand.line,
+			property: cand.property,
+			value:    cand.value,
+			selector: cand.selector,
+			attrs:    [ verdict.attrs || '-' ],
+			cls:      verdict.cls,
+			note:     verdict.note,
 		} );
 	}
+	findings.sort( ( a, b ) => a.line - b.line );
 
 	return findings;
 }
@@ -1783,19 +2692,25 @@ function checkBlock( blockDir ) {
 		}
 	}
 
-	if ( cssToAttrs.size === 0 ) {
+	// ── E14: element model — where each inherited-property control really paints ──
+	const elementModel = buildElementModel( blockDir, meta, new Set( attrs ), hasSelectorsTypography );
+	if ( elementModel ) {
+		elementModel.block = blockName;
+	}
+
+	if ( cssToAttrs.size === 0 && ! elementModel ) {
 		return []; // no layout-related attrs → nothing to check
 	}
 
-	// ── E9: Remove WP-native typography props when block uses selectors.typography ──
+	// ── E9 (narrowed): selectors.typography no longer removes the WP-native
+	// typography props from the whole block. The legacy attr-name path still
+	// leaves them alone (e9Props, applied per declaration in scanCssDeclarations);
+	// the E14 classifier decides them by element identity, with the
+	// selectors.typography target as a control. ─────────────────────────────────
 	const targetProps = new Set( cssToAttrs.keys() );
-	if ( hasSelectorsTypography ) {
-		for ( const prop of WP_NATIVE_TYPOGRAPHY_PROPS ) {
-			targetProps.delete( prop );
-		}
-	}
+	const e9Props     = hasSelectorsTypography ? WP_NATIVE_TYPOGRAPHY_PROPS : null;
 
-	if ( targetProps.size === 0 ) {
+	if ( targetProps.size === 0 && ! elementModel ) {
 		return [];
 	}
 
@@ -1843,7 +2758,7 @@ function checkBlock( blockDir ) {
 		effectiveTargetProps.add( prop );
 	}
 
-	if ( effectiveTargetProps.size === 0 ) {
+	if ( effectiveTargetProps.size === 0 && ! elementModel ) {
 		return [];
 	}
 
@@ -1863,26 +2778,40 @@ function checkBlock( blockDir ) {
 			attrs,
 			cssToAttrs,
 			helperGov,
-			usesWrapper
+			usesWrapper,
+			elementModel,
+			e9Props
 		);
 		for ( const f of cssFindings ) {
 			const owningAttrs = f.attrs.join( ', ' );
-			violations.push( {
+			const violation   = {
 				block:    blockName,
 				file:     path.relative( ROOT, styleCssPath ),
 				line:     f.line,
 				property: f.property,
 				value:    f.value,
 				attr:     owningAttrs,
-			} );
+			};
+			if ( f.e14Class ) {
+				violation.e14Class = f.e14Class; // information only; not part of the baseline key
+			}
+			if ( f.cls ) {
+				// E14 findings carry their class, the declaring selector and why.
+				violation.class    = f.cls;
+				violation.selector = f.selector;
+				violation.note     = f.note;
+			}
+			violations.push( violation );
 		}
 	}
 
 	// --- render.php — inline style attributes ------------------------------
 	if ( fs.existsSync( renderPhpPath ) ) {
+		// The inline-style scan keeps E9's block-wide exemption: element identity
+		// is an E14 concern for style.css, which has selectors to compare.
 		const phpFindings = scanPhpInlineStyles(
 			renderPhpSrc,
-			effectiveTargetProps
+			new Set( [ ...effectiveTargetProps ].filter( ( p ) => ! ( e9Props && e9Props.has( p ) ) ) )
 		);
 		for ( const f of phpFindings ) {
 			const owningAttrs = [ ...( cssToAttrs.get( f.property ) || [] ) ].join( ', ' );
@@ -1920,7 +2849,18 @@ function findingKey( f ) {
 	// Stable key for baseline deduplication. Does NOT include line number
 	// because a minor refactor (adding a comment line) must not invalidate
 	// an accepted baseline entry.
-	return `${ f.block }:${ f.file }:${ f.property }:${ f.value }`;
+	//
+	// The path is normalised to `/` on every call, and the baseline entries go
+	// through this same function, so a baseline written on Windows
+	// (`src\blocks\...`) matches on a POSIX runner and the reverse.
+	//
+	// An E14 finding (CLASS 2 / CLASS 3 / CANNOT-RESOLVE) also keys on its class
+	// and declaring selector: two sub-elements hardcoding the same value in one
+	// file are distinct defects and must not share one baseline slot. Legacy
+	// findings carry no class, so their keys are unchanged.
+	const file = String( f.file ).replace( /\\/g, '/' );
+	const base = `${ f.block }:${ file }:${ f.property }:${ f.value }`;
+	return f.class ? `${ base }:${ f.class }:${ f.selector }` : base;
 }
 
 function writeBaseline( allFindings ) {
@@ -2109,11 +3049,81 @@ function selfTestE12() {
 // MAIN
 // ---------------------------------------------------------------------------
 
+/** E14 class of a finding: legacy findings carry none. */
+const findingClass = ( f ) => f.class || 'LEGACY';
+
+function countBy( list, keyFn ) {
+	const out = new Map();
+	for ( const item of list ) {
+		const k = keyFn( item );
+		out.set( k, ( out.get( k ) || 0 ) + 1 );
+	}
+	return out;
+}
+
+/** --survey: the element-identity counts, resolver coverage and per-block net-new. Never fails. */
+function printSurvey( allFindings, netNew, accepted, baselineSize, blockCount, verbose ) {
+	const out  = ( line ) => process.stdout.write( line + '\n' );
+	const rows = ( map ) => [ ...map.entries() ].sort( ( a, b ) => b[ 1 ] - a[ 1 ] );
+	const st   = ELEMENT_MODEL_STATS;
+	out( '[check-hardcoded-render-defaults --survey]' );
+	out( `Blocks scanned:                     ${ blockCount }` );
+	out( `Blocks with a resolvable control:   ${ st.blocksWithControls }` );
+	out( `Helper calls found:                 ${ st.helperCalls }` );
+	out( `  selector resolved to a class:     ${ st.selectorResolved }` );
+	out( `  selector NOT resolved:            ${ st.selectorUnresolved }` );
+	out( `  prefix NOT resolved (wildcard):   ${ st.prefixUnresolved }` );
+	out( `Baseline entries:                  ${ baselineSize }` );
+	out( `All findings:                       ${ allFindings.length }` );
+	for ( const [ cls, n ] of rows( countBy( allFindings, findingClass ) ) ) {
+		out( `  ${ cls.padEnd( 16 ) } ${ n }` );
+	}
+	out( `Accepted by the baseline:           ${ accepted.length }` );
+	out( `NET-NEW:                            ${ netNew.length }` );
+	for ( const [ cls, n ] of rows( countBy( netNew, findingClass ) ) ) {
+		out( `  ${ cls.padEnd( 16 ) } ${ n }` );
+	}
+	out( `Classified CLASS 1 (same element, not a finding): ${ st.class1.length }` );
+	const legacyAudit = allFindings.filter( ( f ) => ! f.class && f.e14Class );
+	out( `Legacy findings re-classified by element identity:  ${ legacyAudit.length }` );
+	for ( const [ cls, n ] of rows( countBy( legacyAudit, ( f ) => f.e14Class ) ) ) {
+		out( `  ${ cls.padEnd( 16 ) } ${ n }` );
+	}
+	out( 'Net-new by block (top 15):' );
+	for ( const [ block, n ] of rows( countBy( netNew, ( f ) => f.block ) ).slice( 0, 15 ) ) {
+		out( `  ${ block }: ${ n }` );
+	}
+	if ( verbose ) {
+		out( 'CLASS 1 classifications:' );
+		for ( const c of st.class1 ) {
+			out( `  ${ c.block } | ${ c.selector } { ${ c.property }: ${ c.value } } (controls: ${ c.attrs })` );
+		}
+		out( 'Legacy findings and their element-identity class:' );
+		for ( const f of legacyAudit ) {
+			out( `  [${ f.e14Class }] ${ f.block } | ${ f.file } | ${ f.property }: ${ f.value }` );
+		}
+		out( 'Control selectors that could not be resolved to a class:' );
+		const seenUnresolved = new Set();
+		for ( const u of st.unresolvedControls ) {
+			const line = `  ${ u.block } | ${ u.source } | ${ String( u.selector ).replace( /\u0001/g, '?' ) }`;
+			if ( ! seenUnresolved.has( line ) ) {
+				seenUnresolved.add( line );
+				out( line );
+			}
+		}
+		out( 'Net-new findings:' );
+		for ( const f of netNew ) {
+			out( `  [${ findingClass( f ) }] ${ f.block } | ${ f.file } | ${ f.selector || '' } { ${ f.property }: ${ f.value } } ${ f.note || '' }` );
+		}
+	}
+}
+
 function main() {
 	const args            = process.argv.slice( 2 );
 	const check           = args.includes( '--check' );
 	const asJson          = args.includes( '--json' );
 	const doWriteBaseline = args.includes( '--write-baseline' );
+	const survey          = args.includes( '--survey' );
 
 	if ( args.includes( '--self-test' ) ) {
 		selfTestE12();
@@ -2138,6 +3148,12 @@ function main() {
 	const baselineKeys = new Set( ( baseline.accepted || [] ).map( findingKey ) );
 	const netNew       = allFindings.filter( ( f ) => ! baselineKeys.has( findingKey( f ) ) );
 	const accepted     = allFindings.filter( ( f ) => baselineKeys.has( findingKey( f ) ) );
+
+	// --survey: counts only, never fails (exit 0).
+	if ( survey ) {
+		printSurvey( allFindings, netNew, accepted, baselineKeys.size, blockDirs.length, args.includes( '--verbose' ) );
+		return;
+	}
 
 	// --write-baseline: seed / refresh the baseline with ALL current findings.
 	if ( doWriteBaseline ) {
@@ -2186,14 +3202,44 @@ function main() {
 		}
 	}
 
-	if ( netNew.length ) {
-		process.stderr.write(
-			`[check-hardcoded-render-defaults] ${ netNew.length } NET-NEW F3 violation(s):\n`
+	// Legacy findings stay BLOCKING exactly as before. E14 findings (CLASS-2,
+	// CLASS-3, CANNOT-RESOLVE) are ADVISORY with a per-category ratchet.
+	const legacyNew = netNew.filter( ( f ) => ! f.class );
+	const e14New    = netNew.filter( ( f ) => f.class );
+	const e14Counts = {};
+	for ( const cls of Object.keys( E14_OPEN_BACKLOG ) ) {
+		e14Counts[ cls ] = e14New.filter( ( f ) => f.class === cls ).length;
+	}
+	const e14Over = Object.keys( E14_OPEN_BACKLOG ).filter( ( cls ) => e14Counts[ cls ] > E14_OPEN_BACKLOG[ cls ] );
+
+	if ( e14New.length ) {
+		process.stdout.write(
+			`[check-hardcoded-render-defaults] E14 element-identity findings (${ E14_BLOCKS_BUILD ? 'BLOCKING' : 'advisory' }, ratcheted): ` +
+			Object.keys( E14_OPEN_BACKLOG ).map( ( c ) => `${ c } ${ e14Counts[ c ] }/${ E14_OPEN_BACKLOG[ c ] }` ).join( ', ' ) +
+			'. Run --survey --verbose to list them.\n'
 		);
-		for ( const f of netNew ) {
+	}
+	if ( e14Over.length ) {
+		process.stderr.write(
+			`[check-hardcoded-render-defaults] E14 ceiling EXCEEDED for ${ e14Over.join( ', ' ) }: a NEW defect of this class was introduced. ` +
+			'Fix it; do not raise the ceiling.\n'
+		);
+		for ( const f of e14New.filter( ( x ) => e14Over.includes( x.class ) ) ) {
+			process.stderr.write( `  - [${ f.class }] ${ f.block } | ${ f.file }:${ f.line } | ${ f.selector } { ${ f.property }: ${ f.value } } (${ f.note })\n` );
+		}
+	}
+
+	if ( legacyNew.length ) {
+		process.stderr.write(
+			`[check-hardcoded-render-defaults] ${ legacyNew.length } NET-NEW F3 violation(s):\n`
+		);
+		for ( const f of legacyNew ) {
 			process.stderr.write(
-				`  - ${ f.block } | ${ f.file }:${ f.line } | ${ f.property }: ${ f.value } ` +
-				`(attr "${ f.attr }" should own this)\n`
+				f.class
+					? `  - [${ f.class }] ${ f.block } | ${ f.file }:${ f.line } | ${ f.selector } { ${ f.property }: ${ f.value } } ` +
+						`(controls: ${ f.attr }; ${ f.note })\n`
+					: `  - ${ f.block } | ${ f.file }:${ f.line } | ${ f.property }: ${ f.value } ` +
+						`(attr "${ f.attr }" should own this)\n`
 			);
 		}
 		process.stderr.write(
@@ -2206,12 +3252,12 @@ function main() {
 		);
 	} else {
 		process.stdout.write(
-			`[check-hardcoded-render-defaults] OK — 0 net-new F3 violations across ${ blockDirs.length } blocks ` +
+			`[check-hardcoded-render-defaults] OK — 0 net-new legacy F3 violations across ${ blockDirs.length } blocks ` +
 			`(${ baselineCount } known debt item(s) in baseline).\n`
 		);
 	}
 
-	if ( check && netNew.length ) {
+	if ( check && ( legacyNew.length || e14Over.length || ( E14_BLOCKS_BUILD && e14New.length ) ) ) {
 		process.exit( 1 );
 	}
 }
