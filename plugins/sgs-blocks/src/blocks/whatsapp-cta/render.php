@@ -254,10 +254,20 @@ $scoped_css[] = sgs_text_states_css(
 // takes its own `color`; the label rule above only reaches the label span. Flat
 // label colours only: a label gradient (background-clip:text) cannot paint an SVG
 // fill, so the icon then keeps the button's own colour. Hover is keyed to the whole
-// button (touch-guarded through sgs_hover_state_rules()), matching the label. ---
+// button (touch-guarded through sgs_hover_state_rules()), matching the label.
+//
+// EXCEPT in the card variant. There the glyph sits alone inside
+// .sgs-whatsapp-cta__icon-badge, a filled circle whose own style.css rule sets the
+// glyph colour to text-inverse; the label text sits in a separate column. Following
+// labelColour there paints `color` straight onto the <svg>, and a declaration on the
+// child always beats the badge's inherited one, so the glyph took labelColour's
+// default ('text') and rendered dark on the green badge. The other three variants
+// put glyph and label side by side on one surface, where following the label is
+// right. ---
+$icon_follows_label = 'card' !== $variant;
 $icon_colour_sel   = $root_sel . ' .sgs-whatsapp-cta__icon';
-$icon_label_flat   = '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColour'] ?? '' );
-$icon_label_hover  = '' !== (string) ( $attributes['labelColourHoverGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColourHover'] ?? '' );
+$icon_label_flat   = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColour'] ?? '' );
+$icon_label_hover  = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourHoverGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColourHover'] ?? '' );
 if ( '' !== $icon_label_flat ) {
 	$scoped_css[] = $icon_colour_sel . '{color:' . sgs_colour_value( $icon_label_flat ) . ';}';
 }

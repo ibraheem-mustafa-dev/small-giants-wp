@@ -215,14 +215,20 @@
 	text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty);
 }
 
+/* Title and subline each declare their own font-weight. The root <a> is also
+ * .sgs-whatsapp-cta__btn, which carries the button-label weight 600, so without
+ * these the card's heading AND its body copy inherited it. The existing
+ * cardTitleFontWeight / cardSublineFontWeight controls override either. */
 .sgs-whatsapp-cta__card-title {
 	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
 	color: var(--wp--preset--color--text);
 }
 
 .sgs-whatsapp-cta__card-subline {
 	display: block;
 	font-size: var(--wp--preset--font-size--small);
+	font-weight: 400;
 	color: var(--wp--preset--color--text-muted);
 }
 
