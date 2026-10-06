@@ -8,6 +8,10 @@ import path from 'path';
 import { issueRows, aggregate, sweepDelta, reportStatus, walkerCaveats, readWalkerCaveats } from '../lib/sweep.mjs';
 import { issueKey, normalisedIssueKey } from '../lib/issue-classes.mjs';
 import { wholePage } from '../lib/solve-report.mjs';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+const require2 = createRequire( import.meta.url );
+const REPO_ROOT = path.resolve( fileURLToPath( new URL( '.', import.meta.url ) ), '..', '..', '..' );
 
 const row = ( over = {} ) => ( { kind: 'style', key: 'padding-top', draft: '10px', live: '0px', ref: 'cr-ref-a-1', path: '0', block: 'sgs/hero', pair: 'hero', state: 'rest', width: 375, reason: 'no setting', ...over } );
 const widths = ( over = {} ) => [ 375, 768, 1440 ].map( ( width ) => row( { width, ...over } ) );
@@ -229,4 +233,43 @@ test( 'the sweep CLI calls reportStatus and readWalkerCaveats, so staleness and 
 	// --since must stay optional: Solve always writes before the sweep reads, so defaulting it to the
 	// aggregation's own clock would mark every surface stale.
 	assert.ok( ! /sweepStart\s*=\s*Date\.now\(\)/.test( cli ), 'the sweep start must never default to now' );
+} );
+
+// The CLI prints `stale` and `caveated`, and aggregate returns both keyed BY SURFACE rather than as arrays.
+// Reading them as arrays leaves `.length` undefined, so the command printed "no stale reports" over a real sweep
+// in which 13 of 17 solves had failed and every surface was serving an older run's numbers. The earlier detector
+// here asserted only that the CLI CALLS reportStatus and mentions stale, which that bug passed. This runs the
+// command and reads what it actually printed, which is the only thing that would have caught it.
+test( 'MUST FAIL TO HIDE: the sweep command names a stale surface in its output', () => {
+	const { spawnSync } = require2( 'child_process' );
+	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-sweep-cli-' ) );
+	const build = path.join( d, 'build' );
+	const solve = path.join( build, 'qa', 'solve', 'one' );
+	// An older run holding a report, and a newer run holding none: a Solve that failed part-way.
+	fs.mkdirSync( path.join( solve, '2026-01-01T00-00-00' ), { recursive: true } );
+	fs.mkdirSync( path.join( solve, '2026-01-02T00-00-00' ), { recursive: true } );
+	fs.writeFileSync( path.join( solve, '2026-01-01T00-00-00', 'solve-report.json' ),
+		JSON.stringify( { classes: {}, gaps: {}, writes: [] } ) );
+	const surfaces = path.join( build, 'surfaces.json' );
+	fs.writeFileSync( surfaces, JSON.stringify( { one: { walker: 'qa/parity/one.mjs' } } ) );
+
+	const r = spawnSync( process.execPath,
+		[ path.join( REPO_ROOT, 'scripts', 'computed-route', 'sweep.mjs' ), '--surfaces', surfaces,
+			'--out', path.join( d, 'sweep.json' ) ],
+		{ encoding: 'utf8', timeout: 60000 } );
+	assert.equal( r.status, 0, r.stderr );
+	assert.match( r.stdout, /STALE \(1 of 1\)/, 'the command must name the stale surface, not swallow it' );
+	assert.match( r.stdout, /one \(incomplete-run\)/ );
+	assert.doesNotMatch( r.stdout, /no stale reports/ );
+
+	// Not over-reporting: a surface whose newest run holds its report is not stale, and the command says so.
+	fs.writeFileSync( path.join( solve, '2026-01-02T00-00-00', 'solve-report.json' ),
+		JSON.stringify( { classes: {}, gaps: {}, writes: [] } ) );
+	const ok = spawnSync( process.execPath,
+		[ path.join( REPO_ROOT, 'scripts', 'computed-route', 'sweep.mjs' ), '--surfaces', surfaces,
+			'--out', path.join( d, 'sweep2.json' ) ],
+		{ encoding: 'utf8', timeout: 60000 } );
+	assert.equal( ok.status, 0, ok.stderr );
+	assert.match( ok.stdout, /no stale reports and no measurement caveats/ );
+	assert.doesNotMatch( ok.stdout, /STALE/ );
 } );

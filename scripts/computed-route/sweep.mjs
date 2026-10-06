@@ -61,13 +61,17 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	console.log( `sweep ${ date }: ${ result.total } open issues (hardcode ${ c.hardcode }, missing ${ c.missing }, unresolved ${ c.unresolved }, derived ${ c.derived }, unmapped-state ${ c[ 'unmapped-state' ] }, content ${ c.content }) across ${ Object.keys( result.surfaces ).length } surfaces; unmeasured: ${ result.unmeasured.join( ', ' ) || 'none' }; ${ file }` );
 	// A stale surface served an older run's numbers as current, and a caveated one was measured by a walker that
 	// reported its own read untrustworthy. Neither changes a count, so neither is visible unless it is printed.
-	const stale = result.stale || [];
-	const caveated = result.caveated || [];
+	// aggregate returns both of these keyed BY SURFACE, not as arrays. Reading them as arrays makes `.length`
+	// undefined and prints "no stale reports" over a sweep where 13 of 17 surfaces were stale - a false negative
+	// in the very output written to end false negatives.
+	const stale = Object.entries( result.stale || {} );
+	const caveated = Object.entries( result.caveated || {} );
 	if ( stale.length ) {
-		console.log( `  STALE (${ stale.length }): ${ stale.map( ( s ) => `${ s.surface } (${ s.reason })` ).join( ', ' ) }` );
+		console.log( `  STALE (${ stale.length } of ${ Object.keys( result.surfaces ).length }): ${ stale.map( ( [ surface, s ] ) => `${ surface } (${ s.reason })` ).join( ', ' ) }` );
+		console.log( '  ^ these surfaces report numbers from an OLDER run. The totals above are not a current measurement.' );
 	}
 	if ( caveated.length ) {
-		console.log( `  MEASUREMENT CAVEATS (${ caveated.length }): ${ caveated.map( ( s ) => `${ s.surface } (${ ( s.caveats || [] ).map( ( x ) => x.kind || x ).join( '; ' ) })` ).join( ', ' ) }` );
+		console.log( `  MEASUREMENT CAVEATS (${ caveated.length }): ${ caveated.map( ( [ surface, list ] ) => `${ surface } (${ ( list || [] ).map( ( x ) => x.kind || x ).join( '; ' ) })` ).join( ', ' ) }` );
 	}
 	if ( ! stale.length && ! caveated.length ) {
 		console.log( '  no stale reports and no measurement caveats' );
