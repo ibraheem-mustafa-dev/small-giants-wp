@@ -82,6 +82,10 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// `blockLinkAutoHelp` string says, in the operator's words, where
 		// that destination goes.
 		const hasAutoUrl = isExtensionFlagged( name, 'blockLinkAutoUrl' );
+		// A block whose whole-surface link is permanent, not optional
+		// (supports.sgs.blockLinkAlways): the panel renders the help line
+		// only, and render.php applies the link with no attribute to read.
+		const hasAlwaysLink = isExtensionFlagged( name, 'blockLinkAlways' );
 		const autoUrlHelp = String( type?.supports?.sgs?.blockLinkAutoHelp || '' );
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
@@ -234,6 +238,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsBlockLinkAuto={ sgsBlockLinkAuto }
 							hasAutoUrl={ hasAutoUrl }
 							autoUrlHelp={ autoUrlHelp }
+							alwaysOn={ hasAlwaysLink }
 							setAttributes={ setAttributes }
 						/>
 					) }

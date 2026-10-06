@@ -997,8 +997,13 @@ $sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $at
 /*
  * S10 shared stretched link: the WHOLE card links to the product it is
  * showing, through the `blockLink` extension's overlay anchor. The card
- * resolves its own permalink, so the operator gets a toggle rather than a URL
- * field (block.json::supports.sgs.blockLinkAutoUrl); the handover goes to the
+ * resolves its own permalink, and the whole-card link is PERMANENT
+ * (block.json::supports.sgs.blockLinkAlways, Bean 2026-10-06), so this calls
+ * sgs_stretched_link_apply() directly rather than sgs_stretched_link_handover(),
+ * which gates on a sgsBlockLinkAuto toggle this block no longer has. A TYPED
+ * card resolves no product, so the URL here is '' and apply() no-ops, leaving
+ * the operator's own typed sgsBlockLink untouched as that card's destination.
+ * The handover goes to the
  * block INSTANCE, not this file's local $attributes copy, for the reason
  * includes/helpers-stretched-link.php documents. $product_id is the card's own
  * resolved product, never ambient loop state, so each card in a grid links to
@@ -1012,9 +1017,8 @@ $sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $at
  * skips it rather than lending to it — lending there would leave the card with
  * no keyboard route at all.
  */
-$sgs_pc_stretched_link = sgs_stretched_link_handover(
+$sgs_pc_stretched_link = sgs_stretched_link_apply(
 	$block,
-	$attributes,
 	$product_id > 0 ? (string) get_permalink( $product_id ) : '',
 	'' !== $sgs_resolved_title
 		/* translators: %s is the product name. */

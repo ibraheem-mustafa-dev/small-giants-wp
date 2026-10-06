@@ -34,6 +34,7 @@ export default function BlockLinkPanel( {
 	sgsBlockLinkAuto = false,
 	hasAutoUrl = false,
 	autoUrlHelp = '',
+	alwaysOn = false,
 	setAttributes,
 } ) {
 	return (
@@ -50,7 +51,22 @@ export default function BlockLinkPanel( {
 			   itself is handed to the same overlay mechanism from the
 			   block's render.php, through
 			   includes/helpers-stretched-link.php::sgs_stretched_link_handover. */ }
-			{ hasAutoUrl && (
+			{ /* A block whose whole-surface link is PERMANENT
+			   (supports.sgs.blockLinkAlways) offers no TOGGLE: there is
+			   nothing to switch off, so a toggle could only ever be a dead
+			   control. The URL field below still renders, because it is the
+			   only way to give a card that resolves NO destination of its own
+			   — a typed card, which has no product and so no permalink — a
+			   place to go. On a card that does resolve one, render.php
+			   overwrites whatever is typed, so the field is simply inert
+			   there rather than conflicting. */ }
+			{ alwaysOn && (
+				<p className="sgs-block-link-panel__always">
+					{ autoUrlHelp ||
+						__( 'The whole block is one link to the destination it already has. Buttons and controls inside it keep working. A block with no destination of its own uses the link below.', 'sgs-blocks' ) }
+				</p>
+			) }
+			{ hasAutoUrl && ! alwaysOn && (
 				<ToggleControl
 					label={ __( 'Make the whole block one link', 'sgs-blocks' ) }
 					help={
