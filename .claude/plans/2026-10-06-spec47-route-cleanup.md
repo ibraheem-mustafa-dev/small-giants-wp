@@ -150,7 +150,7 @@ they belong here rather than in a separate session:
    because R1 closed part of it: **168 claims across 63 families** remain, down from 209 across 69, with
    claims citing `bgHoverZoom*` at **0** (was 20). Work from `WAVE4-RESULTS.md`, and regenerate the family
    table — `WAVE4-CANVAS-FAMILIES.md` holds the pre-R1 69/209 grouping.
-2. **Session C's three host jobs — TWO ARE NOW DONE (2026-10-06), only `benchmark.mjs --noise` is owed.**
+2. **Session C's three host jobs — ALL THREE DONE (2026-10-06).**
    The **C3.5 confirmation walk** RAN (300 open rows, 0 live console errors) and the **`sgs/media`
    recalibration** RAN (38 settings, 0 dead; it proved L7's content reads on real data, and `sgs/hero`
    records none because it is a container whose copy lives in child blocks). `benchmark.mjs --noise` RAN IN FULL

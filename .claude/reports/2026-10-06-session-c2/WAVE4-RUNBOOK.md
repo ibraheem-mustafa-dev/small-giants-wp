@@ -127,9 +127,13 @@ they should no longer be classed `W/canvas-settable`, because
    `EYECARE_ORDER_URL` to its order-received URL and read the key with `wp eval`. **Never store the key.**
 2. **An `sgs/media` recalibration.** `sgs/hero`'s run recorded nothing across 17 qualifying settings and
    nobody knows whether that is legitimate; `sgs/media` has the content reads to exercise it.
-3. **`node scripts/parity/benchmark.mjs --noise`**, control and noise back to back on a quiet host. It
-   caught 5 of 5 planted faults, but read 13 noise rows on shop and 9 on lens where an earlier run read 0,
-   and the control's own hover rows fell 18 to 6 with an unchanged config. Unproven in both directions.
+3. ~~**`node scripts/parity/benchmark.mjs --noise`**~~ **DONE 2026-10-06** (`8210af3a1`,
+   `BENCHMARK-NOISE-RESULT.md`): 10 runs back to back on a quiet host, 5 of 5 scored cases caught, and the noise
+   figure settled at **5 rows, every one a phase artefact** — a draft view-swap fade, the `sgs/trust-bar`
+   marquee's scroll phase, and one `box-shadow` read at t≈0.999. Not host load and not detector flakiness. The
+   13-on-shop and 9-on-lens reading is superseded, and a run reading 0 was never evidence of absence because
+   every cause is phase-dependent. **Keep it REMOTE if ever re-run:** its question is host load, so localhost
+   removes the variable under measurement.
 
 ## 6. Closure
 

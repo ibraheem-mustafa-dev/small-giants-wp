@@ -53,7 +53,7 @@ gallery div and filter inputs — never on the background layer
 `container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` paints, since it emits only to
 `.<uid> > .sgs-container__image-bg` and `.<uid>::before`. They are no longer classed `W/canvas-settable`.
 
-**168 claims across 63 families remain unconfirmed against the live DOM** — still owed, and still best
+**168 claims across 63 families were unconfirmed against the live DOM at the time of this sweep; 17 families (82 claims) have since been confirmed and ALL REFUTED, leaving 46 families owed on the REMOTE site (`CANVAS-SETTABLE-CONFIRMATION.md`)** — still owed, and still best
 tested by family rather than by row (2 reads per family is 126 readings against 168). Families span
 surfaces, so surface is the wrong sampling axis. Table: `WAVE4-CANVAS-FAMILIES.md` (regenerate it; the
 counts there are the pre-R1 69/209).
@@ -126,7 +126,7 @@ true and explained nothing.
 `sgs/media`. A dead calibration is a marker or declaration gap, so 34 is worth its own look — not
 investigated here, and not previously recorded.
 
-### 3. `benchmark.mjs --noise` — STOPPED at 4 of 10 runs, still owed
+### 3. `benchmark.mjs --noise` — STOPPED at 4 of 10 runs here, COMPLETED later the same day
 
 Started 20:17 on a quiet host and **stopped deliberately at 20:54**, about an hour short, to release the
 host to the two sessions that had been holding it for nearly three hours (Bean's call). It blocks nothing.
@@ -189,15 +189,22 @@ both and treat the local result as the discriminator rather than as the figure.
 
 ## What is still owed
 
-1. **The 168 canvas claims across 63 families**, live-confirmed by family.
-2. **`mobile-menu` cannot be paired.** `pairs.mjs` dies with "the pair root for this state was not found on
-   the page" during the width recheck, so that surface has **no `handScope` and is "not yet judged"**, which
-   is not the same as passing. Not a regression from this session: the error predates it (`d605bb5ba`) and
-   W2-E's only change to that file was 19 added lines. The drawer's pair root is absent at a recheck width on
-   the current live site where it was present on 2026-10-05.
-3. **`benchmark.mjs --noise`, control and noise back to back** — the only one of Session C's three host jobs
-   still owed. The confirmation walk and the `sgs/media` recalibration are both DONE (§§1 and 2 above).
-   Stopped at 4 of 10 runs, so the catch rate of 5 of 5 stands and the noise figure is unproven in both
+1. **46 of the 63 canvas families** still need live confirmation, and they need the **REMOTE** site: the local
+   mirror carries no `cr-ref` instrumentation for `header`, `mega-*`, `shop`, `product`, `lens` or `size-guide`.
+   The other **17 families (82 of the 168 claims) are confirmed and ALL REFUTED** (`29f2e30c1`), with the root
+   cause measured — `lib/triage.mjs::reachesElement` fails open, `emissionOf` returning null for 17 of 17. The
+   W-to-F reclassification is held until all 63 are read so F keeps one meaning.
+   `CANVAS-SETTABLE-CONFIRMATION.md`.
+2. ~~**`mobile-menu` cannot be paired.**~~ **FIXED 2026-10-06** (`7255be68d`): its state opener matched the Menu
+   button by rendered text `^$`, and the label is hidden at 375 but reads "Menu" from 768, so the click silently
+   missed and `clickText`'s `optional` swallowed it. Both sides behaved identically, so it was never a site
+   regression and the earlier reading that the live pair root had gone missing is disproved. The command exits 0
+   and writes `handScope`; **all 17 surfaces are now judged.**
+3. ~~**`benchmark.mjs --noise`**~~ **DONE 2026-10-06** (`8210af3a1`, `BENCHMARK-NOISE-RESULT.md`): 10 runs back
+   to back on a quiet host, 5 of 5 scored cases caught, noise settled at 5 rows, every one a phase artefact
+   rather than host load or detector flakiness. All three of Session C's host jobs are now closed. The
+   superseded wording follows: stopped at 4 of 10 runs, so the catch rate of 5 of 5 stands and the noise figure
+   is unproven in both
    directions. **Keep it remote**: its baseline was measured remotely and its question is host load.
 4. **The 34 dead `sgs/hero` calibration settings** — cause established and NOT a defect ("dead" means only
    that no marker moved a computed style on the fixture the harness built, and 23 of 34 are

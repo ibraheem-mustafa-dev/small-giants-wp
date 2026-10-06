@@ -786,8 +786,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        **N11(b) is already fixed** at HEAD by `35e8b94d4`, so its flow must *pass* on a HEAD build and can only be shown
        failing against the pre-fix code or the mock; and register **N38's "skip adds to bag" setting does not exist** in
        `choice-flow/block.json`, so that flow fails on a live site until N38 lands, which the script says when it fails.
-       The walker's benchmark half (`benchmark.mjs --noise`, 5 of 5 with no new noise rows) drives a live site and is
-       owed to a main-thread run. Items 1 and 3's hover, plus items 10 to 13, were already built and proven (2026-10-05:
+       The walker's benchmark half (`benchmark.mjs --noise`) drives a live site and RAN 2026-10-06: 5 of 5 scored
+       cases caught, and the "no new noise rows" expectation was withdrawn — 5 noise rows, every one a phase
+       artefact, not host load (`reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`). Items 1 and 3's hover, plus items 10 to 13, were already built and proven (2026-10-05:
        About measure-only on the local mirror, 1 open issue, real: S1's button timing; register S1).
      - **The walker-state maps are complete** (Session C C0.7): `home`, `shop`, `product`, `lens`, `contact` and
        `contact-form` now map every state their walker defines, so no row is left in an unmapped state. Contact and its
