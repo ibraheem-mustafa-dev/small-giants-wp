@@ -104,9 +104,10 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
 
 - **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy needed.
   **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 14 CR, 11 to measure.
-  ⚠️ **The product card is NOT a stretched link, and Bean says the WHOLE card should be** (§5a) — only the name
+  ⚠️ **The product card is NOT a stretched link, and the WHOLE card should be** (§5a, Bean) — only the name
   (1-2%) and image (73%) are clickable, `sgs-block-link-overlay` absent, so **N26 is OPEN** though S10 is live.
-  12 of 16 cards also render no image, dropping to **2-5%**; unproven cause: the manifest is never purged.
+  The 12 imageless cards are CONTENT, not a defect (only 4 products have real photos; the rest carry
+  `photo-to-come.png`) — they just fall to **2-5%**, which the card-wide link also fixes.
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.

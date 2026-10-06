@@ -95,29 +95,26 @@ the 1-2% title anchor, which is why the card reads as dead almost everywhere.
 > measurement error: the hit-test landed on the title row's padding, and the title link covers only 1-2% of the
 > card. The link exists - it is just very small. The corrected figures are the table above.
 
-### (b) 12 of 16 shop cards render no image
+### (b) The imageless cards are a content state, NOT a defect — hypothesis withdrawn
 
-`product-card__no-image` appears **12 times in the server-rendered HTML**, while the Store API reports images for
-**16 of 17 products** (only the QA test item genuinely has none).
+**12 of 16 shop cards render no image, and that is correct.** Only **4 products have a real photograph**
+(Round Metal, Original Wayfarer, Holbrook, Oversized Cat-Eye). The other 12 carry `photo-to-come.png`, a
+deliberate stand-in awaiting the client's photography, and 1 (the QA test item) has no image at all.
 
-This compounds (a): a card with no image loses the 73% image link, which is what drops it to 2-5% clickable.
+> **Withdrawn.** An earlier version of this report proposed that a never-purged manifest transient
+> (`sgs_manifest_v8_<id>_<fingerprint>` written vs `sgs_manifest_<id>` deleted) was starving the cards of
+> images, and offered the fact that `gucci-oversized-cat-eye` rendered correctly as corroboration. That was a
+> coincidence: the Gucci product is simply one of the four with a real photo. The cache-key mismatch is still a
+> real bug — register row 59 records it — but it is **not** the cause of anything observed here, and no fix
+> should be built on it. Caught by Bean, who knew the photo inventory.
+>
+> The measuring error behind it: the check for a placeholder image tested only for the string `placeholder`,
+> so a client stand-in named `photo-to-come.png` counted as a real photo and 16 of 17 products looked
+> photographed.
 
-**Leading hypothesis, not yet proven - a cache key that can never match:**
-
-| | |
-|---|---|
-| Manifest **write** | `class-product-manifest.php:161` -> `sgs_manifest_v8_<id>_<tax-fingerprint>` |
-| Manifest **purge** | `class-cart-cache-purge.php:158,160` -> `sgs_manifest_<id>` |
-
-The purge key can never match the write key, so the manifest transient is **never purged** and expires only on
-TTL. Register row 59 already records this as "a real framework bug found and recorded, not fixed".
-
-**Corroboration:** the cards that *do* render images include `gucci-oversized-cat-eye` - the exact product the
-75/82/158 work was performed on. Those got fresh manifests; the rest appear to serve stale ones. That row also
-records "a stale cache was hiding it" once before.
-
-**One command proves or kills it**, and it is a host write: delete the stale transients for one affected product
-and reload `/shop/`. If that card gains its image, the cause is proven and the fix is the purge key.
+What survives is (a), and it absorbs this entirely: a card with no real photo has no image link, so it falls
+from 73-79% clickable to **2-5%**. Making the whole card the link fixes the imageless cards too, and does not
+wait on the photography.
 
 ## 6. Out of scope — the 14 CR rows
 
