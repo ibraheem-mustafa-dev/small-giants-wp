@@ -537,9 +537,9 @@ PASS: the approved rows are closed on a fresh measure-only sweep, run with the S
       NO divergences.json entry was added to close a row;
       every touched block recalibrates with no new dead or noMarker outcome for the settings added;
       each row closed because its new attribute is present and painting, not because a reclassification moved it
-SCOPE, stated honestly: this gate measures Eye Care's 17 surfaces only. Other clients are covered by C1's
+SCOPE, stated honestly: this gate measures Eye Care's 17 surfaces only. Other clients are covered by GATE W1's
       before-and-after on sandybrown's fixture pages and by run-gates.py, not by a re-sweep. A shared-file
-      regression on a third client would not be caught here, which is why C1 gates W1 separately
+      regression on a third client would not be caught here, which is why GATE W1 covers the shared files separately
 FAIL: revert the failing QUEUE's merge (the revert unit is the queue, not the group) and re-sweep
 TYPE: auto-gate
 ```
