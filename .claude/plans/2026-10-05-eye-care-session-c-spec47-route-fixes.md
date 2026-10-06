@@ -892,9 +892,15 @@ shop (2 → 0)**, which is a genuine unexplained loss. Owner: the next route ses
   weight (`9776e7d86`) and 15's drawer column (`31aa51090`). **Those are fixed in code and will clear on the next
   sweep; they are not regressions.** Measuring before the deploy is what keeps this count attributable to the route
   rather than to a fortnight of block work.
-- **The canvas roster is load-bearing data, re-measured here.** Triaging against a manifest with all 12 `canvas`
-  flags stripped gives **F 338** against this run's 192, with zero movement on any non-canvas surface. A wrong roster
-  would mask genuine page gaps.
+- **The canvas roster is load-bearing data.** Triaging against a manifest with all 12 `canvas` flags stripped
+  gives **F 345** against this run's 192, with zero movement on any non-canvas surface. A wrong roster would mask
+  genuine page gaps — and Session C2 proved it does, for a named class of claim (Spec 47 §5 Residual, the
+  `canvasSettable` entry).
+  **Session C2 re-measured this control twice (2026-10-06): 345 on these reports and 346 on its own fresh
+  reports, against the 338 first recorded here.** The two independent measurements agree with each other and
+  disagree with 338 by 7 and 8 rows; 338 appears to have been the Gate 2 figure (baseline 176) carried forward
+  rather than re-measured on this run. **The zero-movement-on-non-canvas half is confirmed**: stripped against
+  unstripped reads home 50/50, help 36/36, contact 17/17, about 0/0, lenses 0/0.
 
 #### Still open, row by row, as Session C2's input
 

@@ -67,34 +67,40 @@ none exists)** — including Fill (`fill.mjs`, `lib/draft.mjs`, twelve `lib/fill
 owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at
 localhost:8081/8082 if Hostinger shows a captcha (`scripts/local-wp/README.md`).
 
-**Sessions A and B (2026-10-05, complete, measure and read only).** ⚠️ **Their headline W 1,710 / F 163 / T 447 /
-U 28 / D 17 / deferred 8 are AUDITED figures and are NOT comparable to any triage re-run**, which is raw. Session B
-audited 338 raw-F rows down to 163. Detail and Appendices A and B:
-`plans/2026-10-04-eye-care-sweep-audit-fix.md`; per-surface in `plans/2026-10-04-spec47-full-coverage.md`.
+**Sessions A and B (2026-10-05, complete, measure and read only).** Session B audited 338 raw-F rows down to 163;
+that **audited 163 is never comparable to any raw triage count**. Detail: `plans/2026-10-04-eye-care-sweep-audit-fix.md`;
+per-surface in `plans/2026-10-04-spec47-full-coverage.md`.
 
 **Session C — COMPLETE at `b0492a5af`** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). No block code
-touched; 523 route tests green. **The route result is raw F 338 to 176, on identical Solve reports; the current
-measured state, on a fresh sweep of all 17 surfaces at block code `7f375f765`, is raw F 192.**
-⚠️ **Both are RAW and neither is comparable to the audited 163, and 176 to 192 is NOT separable** — the walker code,
-the deployed block code and the walked states all changed between the sweeps, so treat 192 as the current state and
-not as the route's improvement. A Gate 3 council corrected 12 of the plan's own claims: read "Gate 3 — QC council"
-before quoting any figure from it. Ten route defects with owners are in Spec 47 §5 Residual.
-**Three host jobs are owed to Session C2 as prerequisites** (quiet shared host needed): the C3.5 confirmation walk
-(order 652 is `processing` and paid), an `sgs/media` recalibration to exercise the content reads on a block that has
-them, and a `benchmark.mjs --noise` re-run. Commands in the plan's "Wave 3's remaining items".
+touched; 523 route tests green. Route result raw F 338 to 176 on identical reports. ⚠️ **RAW figures are never
+comparable to Sessions A and B's audited 163.** Gate 3 corrected 12 of its own claims; its stripped-control figure
+of 338 is **refuted — C2 measured 345 on those reports and 346 on fresh ones**, though the
+zero-movement-on-non-canvas half is confirmed.
 
-**Session C2 — assess every finding, RUNNABLE NOW** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`).
-Its input exists: **raw F 192 in `sites/eye-care-ward-end/build/qa/triage/*.json`** (17 files, 2026-10-06), per
-surface lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4,
-mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, zero elsewhere, plus 29 U rows. On that sweep, never
-on the old 163: match each row to a register Ref, fact-check it with a cited
-`file::symbol` or DB row, live-test it at 375/768/1440/1920, then one yes/no list for Bean before any code. The
-block work the first draft called W1 and W2 lives there, behind that approval, with the queue partition and the
-collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carried over.
+**Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). Raw
+**F 193 at block code `94122e326`**, verified by deploy-marker checksum; all evidence in
+`reports/2026-10-06-session-c2/`. **178 judged rows reduce to 5 approved block fixes**: 90 measuring artefacts,
+25 register-decided, 22 already settable or an accepted divergence, 11 wrong block (Session D's tree work), 14
+Google Reviews accepted differences. ⚠️ **eye-care-test now runs `6d6906b98`**; Eye Care's 17 surfaces were
+verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any future sweep, and
+compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
-**Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). ⚠️ **No `transition,*`
-row calibrates anywhere** because `markersFor` has no branch for it — Spec 47 §5 Residual owns the fix. The three
-`!important` spacing rows are diagnosed as two causes and both go on the C2 list.
+**Owed, each with its owner:**
+- **The 5 approved block fixes (A1, A2, A3, A5, A6)** — the C2 plan's "THE OWED WORK" section. A4 withdrawn
+  ("Photo to come" is a draft placeholder). A7 needs one live origin reading before any fix.
+- **Route cleanup, 4 waves off a file-ownership map** — `plans/2026-10-06-spec47-route-cleanup.md`. Carries two
+  **WRITE HAZARDS**: `lib/entrance.mjs::entranceStart` writes `sgsAnimationStart` from a measurement artefact, and
+  `sgs_transition_vars` strips a decimal so `"0.25s"` emits 25ms for 250ms. Also a forced-hover **false green**.
+  Every defect is itemised in Spec 47 §5 Residual.
+- **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
+  (N11 a second product never reaching the bag, N25 the filter panel breaking, 18's missing toast), not
+  measurement gaps; 6 are built but undeployed.
+- **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
+  `sgs/media` recalibration, and a `benchmark.mjs --noise` re-run. Commands in the Session C plan's "Wave 3's
+  remaining items".
+
+**Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
+`transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
 
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified on sandybrown, pushed.**
 Tier 2's five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10
@@ -108,7 +114,8 @@ CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so t
 The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
-**Resume from:** Session C2 (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). Per-surface Solve work is Session D.
+**Resume from:** `plans/2026-10-06-spec47-route-cleanup.md` (the route cleanup), then the 63 register items via
+`/phase-planner`. Per-surface Solve work is Session D.
 
 **Separators** (live on both sites): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info

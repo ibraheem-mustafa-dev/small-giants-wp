@@ -14,7 +14,34 @@ references:
 
 # Eye Care Session C2: assess every finding, then fix what Bean approves
 
-✅ **This session is RUNNABLE (2026-10-06).** Session C is complete: Waves 0 to 3 and Gates 1 to 3 all passed, and **C3.8 — the post-route framework-gap count that is this session's input — exists.** Read it in `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, section "C3.8 — the new framework-gap count", with its corrections in "Gate 3 — QC council on this sitting's own claims".
+✅ **The assessment ran on 2026-10-06 and is COMPLETE. Only the approved block fixes below are still owed.**
+
+**What ran, with its evidence:** `.claude/reports/2026-10-06-session-c2/` — `PREDICTION.md` (committed before
+measuring), `BRIEF.md` and `lane-*.tsv` (the five fact-check lanes), `FACT-CHECK-RESULTS.md`,
+`STEP3-RESWEEP.md` (the re-sweep and its addendum), `BEAN-LIST.md` (Bean's answers) and
+`QC-ROUTE-FIXES.md` (the QC of the four route-defect proposals).
+
+**Result: raw F 193 at block code `94122e326`, and 178 judged rows reduce to 5 approved block fixes.**
+Of 178: 90 measuring artefacts, 25 decided by the register, 22 already settable or an accepted divergence,
+11 wrong block (Session D's tree work), 14 Google Reviews accepted differences. Every `real` verdict was
+re-checked in the main thread and 17% of the rest spot-checked.
+
+**The two numbers in this plan's original text that were wrong, now corrected throughout:** the
+canvas-settable rows are **193** (209 on the later sweep), not 161; and the content rows are **50**
+(38 presence, 12 text), not 45.
+
+**Two documented causes were REFUTED and must not be built on:**
+- The footer `margin-top` "inline WP-native base margin" cause is false.
+  `class-sgs-container-wrapper.php` passes `'selector' => '.' . $uid` to `wp_style_engine_get_styles()` and
+  its own comment says the result is "just scoped to `.$uid` instead" of inlined. The "lands INLINE"
+  comment the diagnosis rested on is **stale** and sits in the tablet padding block. The cause is unproven.
+- Edit-target shift #1 names the right target and the wrong mechanism: `sgs/accordion` only **provides
+  context**; the **child** emits the custom property (`accordion-item/render.php` writes
+  `--sgs-accordion-header-pad`). `headerGap` does not exist in any form.
+
+**Route defects found while judging are NOT in this plan.** They are in Spec 47 §5 Residual and owned by
+`plans/2026-10-06-spec47-route-cleanup.md`, including two write hazards, a forced-hover false green, the
+stale-report failure mode and the `canvasSettable` masking.
 
 **The number this session consumes is raw F = 192**, in `sites/eye-care-ward-end/build/qa/triage/*.json` (17 files, rewritten 2026-10-06). It is a **raw machine classification** and is **not** comparable to Session B's audited 163: Session B audited 338 raw rows down to 163, so an audited equivalent of 192 is this session's own judgement to produce. Per surface: lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4, mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, and 0 on about, lenses, header and size-guide. There are also **29 U rows** that nothing explains.
 
@@ -223,7 +250,42 @@ source cannot answer.
 read computed styles with the winning rule's origin, not just the value; let transitions settle; account for Lenis
 and scroll variables; never reason from a screenshot alone, and never from one width.
 
-## Step 4: one list to Bean, then only the approved fixes
+## THE OWED WORK: the five block fixes Bean approved (2026-10-06)
+
+**This is the only part of this plan still outstanding.** It is not covered by
+`plans/2026-10-06-spec47-route-cleanup.md` (route only) or by the 63-item session (register items), so it
+lives here until built. Full reasoning per item in `.claude/reports/2026-10-06-session-c2/BEAN-LIST.md`.
+
+| Ref | Fix | Files | Rows |
+|---|---|---|---|
+| **A1** | `sgs/accordion` gains `headerGap` + a `providesContext` entry; `sgs/accordion-item` gains `usesContext` and emits `--sgs-accordion-header-gap`; `accordion/style.css` reads it with 12px as fallback. **The only one that changes visible paint** (draft wants 20px on Help, 16px on the product template) | `accordion/block.json`, `accordion/style.css`, `accordion-item/block.json`, `accordion-item/render.php` | 9 |
+| **A2** | **Delete** `line-height: 1.4` from `accordion/style.css::.sgs-accordion-item__header` so the block's existing `lineHeight` reaches the title. No new control. The same repair S5 already did for font-size | `accordion/style.css` | 2 |
+| **A3** | `sgs/accordion` gains `headerMinHeight`, **default 44px**, replacing the hardcoded `min-height: 44px`. Precedent `sgs/tabs::tabMinHeight` | `accordion/block.json`, `accordion/style.css`, `accordion-item/render.php` | 3 |
+| **A5** | `sgs/buybox` selected-value gains a typography call beside the existing `pickerLabel` one; it inherits 16px where the draft wants 13px, and line-height should follow at 1.5x | `buybox/render.php`, `buybox/block.json` | 2 |
+| **A6** | **Delete** `text-decoration: underline` from `tabs/style.css::.sgs-tabs__tab:hover`. If a tab underline is ever wanted it is done with border-bottom width and colour, not a text-decoration hardcode (Bean, 2026-10-06) | `tabs/style.css` | 4 |
+
+**A4 was WITHDRAWN by Bean:** `sgs/card-grid`'s `noImageLabelLineHeight` is not needed. "Photo to come" is a
+**draft placeholder**, not content — it ceases to exist once the client uploads images, so it is not
+required to clone.
+
+**A7 is an INVESTIGATION, not a fix.** `sgs/whatsapp-cta` shows three symptoms, and the cause of the first
+is unproven: the icon is black (`rgb(20,20,20)`) where the CSS says the badge should be `text-inverse` =
+`#FAF8F5`, which that CSS cannot produce, and the block is unchanged since `94122e326`; the text carries
+more weight than the draft; and there is an underline hover effect the draft does not have. **One live
+reading of the winning rule's origin on `.sgs-whatsapp-cta__icon-badge` and its `svg` settles the first.**
+
+### Bean's standing principle, which governs how these are built (2026-10-06)
+
+> Our main objective is to make these blocks as modular and mouldable as possible so that our draft sites,
+> no matter how they're coded, are able to be cloned with little to no effort. The padding setup is a
+> workaround that wastes valuable time and tokens.
+
+Where a draft needs a value, the answer is **a real control with a sensible default**, never a workaround
+reaching the same pixels another way. A 44px default satisfies the touch-target rule by default; a client
+choosing otherwise in context is their call and not a reason to withhold the control. This overrode a
+recommendation to refuse A3 on accessibility grounds. **Do not re-argue it per block.**
+
+## Step 4 (DONE 2026-10-06): one list to Bean, then only the approved fixes
 
 **Only after steps 1 to 3.** Bean gets one list, one line per item: what it is in plain English, which register Ref
 it sits under (or none), the verdict with its citation, whether it is visibly wrong live, the proposed fix, and the
