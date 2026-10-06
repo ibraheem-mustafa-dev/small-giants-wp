@@ -24,6 +24,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
+| `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config. |
 | `sweep.mjs` | Sweep command: `--surfaces <surfaces.json> [--date YYYY-MM-DD] [--out <file>]`; reads each surface's newest `solve-report.json` and writes `<build>/qa/sweep/<date>/sweep.json`: one row per distinct open issue across the site `{ surface, ref, pair, path, block, property, widths, state, kind, class, reason, values, report }` (`pair` names a block-less hand-pair row; `values` holds each distinct draft and live pair, at most 6), totals per surface and class, and the surfaces with no report. |
 | `register-sweep.mjs` | Register sweep command (A4): `bundle --register <md> --sweep <json> --pairs <qa/pairs dir> --out <folder>` writes one input file per A4 group (items, the sweep rows and measured refs of their surfaces, the status rules; agent brief `sites/eye-care-ward-end/build/qa/sweep/2026-10-05/a4/agent-brief.md`) and exits 1 on an item in no group; `merge … --verdicts <json> … --out <file>` checks the agents' verdicts and writes a copy of the register with a Sweep column (never in place). |
 | `triage.mjs` | Triage command (B1): `--client <slug> --surface <s> [--report <solve-report.json>] [--out <file>]`; reads the surface's newest (or given) Solve report and its final walk (highest `round-N/report.json`), every surface tree, the DB read-only, calibration, the extension roster, block sources and every PHP file under the plugin's `includes/`; writes `<build>/qa/triage/<surface>.json` (a candidate class W, F, T or U with evidence per distinct issue) and prints counts by class. |
@@ -45,6 +46,19 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
 | `lib/calibrate-content.mjs` | The content side of calibration: which elements a setting makes appear or disappear, whose text it prints and which it makes a link — the settings that paint no CSS property, queried by framework-database `role` because `attrsFor` never returns them. |
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
+| `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port: directory index, an explicit index file, content types, Range, no path escape, clean close. |
+| `lib/fill-skeleton.mjs` | The skeleton contract: `draftRef` and `draftSlots` are walker finders, slot finders resolve inside their node's element; node indices, targets, problems, and the clean tree. |
+| `lib/fill-read.mjs` | Reads the draft in Chromium through the walker's `collectPair` and `resolveFinder` at 375, 768, 1440 and the fluid widths, plus the 16px sweep; blocks or mirrors requests beyond the draft's origin. |
+| `lib/fill-prop.mjs` | One property of one element: which tiers differ from what the node shows, the slots a setting could paint, `clamp()` where a setting accepts one; every write is the resolver's. |
+| `lib/fill-resolve.mjs` | Root-down resolution of a whole skeleton: inherited baselines, spacing ownership, presence, words, links, the divergence ledger, UNMAPPED and handover. |
+| `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
+| `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
+| `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
+| `lib/fill-handover.mjs` | The handover entry shape Fill declares, validated against the five shared owners and four kinds. |
+| `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
+| `lib/fill-entrance.mjs` | Samples a draft's entrances (delay, duration, first-frame pose) and writes them through the resolver. |
+| `lib/fill-config.mjs` | Generates the walker config: one pair per node with a `draftRef`, `refPrefix: 'cr-ref-'` and the ledger path, via `pairs.mjs::configText`. |
+| `lib/fill-report.mjs` | `fill-report.md` and `fill-report.json`: UNMAPPED, handover, writes, spacing, fluid, breakpoints, entrances, ledger, snaps. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, the state-conflict refusal, content rows (text, presence, link) and their resolution, the handover list, classification. |
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json` (the whole-page line, content and handover counts, and the handover list). |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
@@ -92,6 +106,20 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/walker-l2.test.mjs` | Session C lane L2 (walker core, GAP-CHECKLIST sections 20 to 26): the tag-mismatch guard, the unmatched-ref drop, the 1920 default, focus and active reads on every interactive element, link coverage, line counts during a state transition, and region entrances; headless Chromium on local HTML. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 | `tests/wp-session.test.mjs` | `scripts/lib/wp-session.js` in headless Chromium: a child attached to the shared browser and the owner both survive a page dialog; a confirm is dismissed and a beforeunload left, as Playwright's default does (MUST FAIL: the two auto-dismissals raced and one crashed with "No dialog is showing"; dismissing a beforeunload aborted the editor navigation). |
+| `tests/draft-serve.test.mjs` | FR-47-4 draft server: no path escape or symlink escape (MUST FAIL), ephemeral port, directory index, content types, Range, and close frees the port. |
+| `tests/fill-skeleton.test.mjs` | FR-47-4: the finder vocabulary, slot scoping, node numbering, skeleton problems and the clean tree. |
+| `tests/fill-read.test.mjs` | FR-47-4: a local draft read in headless Chromium — widths, the carrier rule, scoping, the declared width, fluid samples and the sweep. |
+| `tests/fill-mirror.test.mjs` | FR-47-4: a script on another origin is blocked, answered from a `--mirror`, and the flag parses. |
+| `tests/fill-prop.test.mjs` | FR-47-4: tier carry, canonical values, not-painted leftovers, and that every write is the resolver's. |
+| `tests/fill-spacing.test.mjs` | FR-47-4 step 3: one unequal gap hands every gap to the children and writes the parent gap as 0 (MUST FAIL); equal, single, zero, both axes, tolerance, hidden and out-of-flow children. |
+| `tests/fill-values.test.mjs` | FR-47-4: a stepped value is never fluid and a step at 800px is logged against 768 (MUST FAIL); clamp shapes and the sweep log. |
+| `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
+| `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
+| `tests/fill-entrance.test.mjs` | FR-47-4: entrance timing and distance, a loop is not an entrance (MUST FAIL), and the resolver writes. |
+| `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
+| `tests/fill-config.test.mjs` | FR-47-4 step 4: a pair for every node with a `draftRef` and none without (MUST FAIL); the generated config passes the walker's own lint. |
+| `tests/fill-resolve.test.mjs` | FR-47-4: whole-tree resolution with fixture reads and calibration over the real database. |
+| `tests/fill-surface.test.mjs` | FR-47-4 step 5: `fillSurface` end to end over a local folder and a temp repo; an invalid skeleton is refused and only `--out` is written (MUST FAIL). |
 
 `cache/` (gitignored) holds calibration files: one per block for the whole library, each recording the `site` that measured it.
 
@@ -351,7 +379,92 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
 
+### `fill.mjs` (runs Chromium, serves a local folder)
+- `calibrationLoader(dir)` → the block-to-calibration function: `solve.mjs::calibrationFor` when `dir` is null, else reads `<dir>/<block>.json`.
+- `parseMirrors(argv)` → `{ url: absolute file }` from repeated `--mirror <url> <file>`; throws on a lone url.
+- `fillSurface(options)` → the report object (and writes `--out`): lints the skeleton, serves or opens the draft, reads it, resolves root-down, samples entrances and the sweep, and writes every output.
+
+### `lib/draft.mjs`
+- `contentType(file)` → the Content-Type for a file name.
+- `resolveRequest(root, urlPath, index)` → `{ file }`, `{ redirect }` or `{ status }`; never a path outside `root`.
+- `serveDraft(folder, { index, host })` → `{ url, port, close }` on 127.0.0.1 at an ephemeral port.
+
+### `lib/fill-skeleton.mjs`
+- `SCOPE_ATTR`: the attribute a node's draft element carries while its slots resolve. `scopeSelector(index)` → the selector for it.
+- `finderProblem(f)` → why a value is not a walker finder, or null. `finderKind(f)` → `selector`, `text`, `textRun`, `group` or `js`, else null.
+- `scopeFinder(f, scope)` → the finder rewritten to resolve inside the scoped element.
+- `skeletonNodes(tree)` → depth-first nodes with parent, children and targets.
+- `skeletonProblems(tree)` → readable problems in a skeleton's draft keys.
+- `cleanTree(tree)` → a copy without `draftRef`, `draftSlots` and `handover`.
+
+### `lib/fill-read.mjs` (Playwright by path; imports `scripts/parity/lib/*`)
+- `READ_WIDTHS`: 375, 768, 1440. `DECLARED`: properties whose computed value is a used size. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.
+- `loadChromium()` → Playwright, imported from `plugins/sgs-blocks/node_modules`.
+- `requestAllowed(url, origin, external)` → whether the draft may load a url.
+- `routeDraft(ctx, { origin, external, mirror })` → routes a context's requests (mirror, allow, abort).
+- `jobsFor(nodes)` → the collection jobs, roots before slots.
+- `readDraft(options)` → `{ origin, widths, declared, sweep }`.
+
+### `lib/fill-prop.mjs`
+- `TIER_WIDTHS`: 1440, 768, 375. `INHERITED`: calibration's inherited list, re-exported rather than copied. `CARRIED`: properties read from a text or layout carrier.
+- `knownPaths(cal)` → every path a calibration knows for a block.
+- `canon(prop, v)` → the value as painted, for comparison. `notPainted(prop, styles)` → whether the property paints nothing here.
+- `defaultPaint(cal, slot, width, prop)` → the calibrated default paint, or undefined.
+- `tiersDiffering(prop, draft, baseline)` → `{ width: value }` for the tiers that differ, carrying wider values down.
+- `resolveProperty(ctx)` → `{ status: 'equal' | 'written' | 'gap', … }`, always through `lib/resolve.mjs::resolve`.
+
+### `lib/fill-resolve.mjs`
+- `valueText(draft)` → a readable value for a per-width map.
+- `fillTree(options)` → `{ writes, unmapped, notes, handover, spacing, fluid, held, snaps }`, filling the tree in place.
+
+### `lib/fill-spacing.mjs`
+- `EQUAL_PX`: 0.5, the tolerance at which two rendered gaps are equal.
+- `spacingOwnership(rects, { unmeasured })` → `{ owner, count, decisions }`: the parent owns the gap only when every sibling gap is equal.
+- `decisionFor(ownership, prop)` → the decision for `row-gap` or `column-gap`, or null.
+
+### `lib/fill-values.mjs`
+- `FLUID_WIDTHS`, `SWEEP_WIDTHS`, `SGS_BOUNDARIES`, `LENGTH_PROPS`, `FLUID_TOL`: the sample widths, the 16px sweep range, the SGS breakpoints, the properties swept and the 0.5px linearity tolerance.
+- `fitFluid(samples)` → a line fit with its `clamp()` text, or null when the value steps.
+- `acceptsClamp(calibration, attr)` → whether the setting's `forms` lists `clamp`.
+- `applyClamp(writes, clamp, side)` → the writes with the per-tier values replaced by one clamp.
+- `nearestBoundary(width)` → `{ boundary, offset }`.
+- `breakpointSteps(prop, series)` → each step with its nearest SGS boundary.
+- `sweepSteps(sweep, labelOf)` → every step of a sweep, labelled and ordered.
+
+### `lib/fill-presence.mjs`
+- `plainText(s)` → text without markup, whitespace collapsed.
+- `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
+- `textDecisions(input)` → the same for words, from calibration's `text`.
+- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`.
+
+### `lib/fill-handover.mjs`
+- `HANDOVER_OWNERS`: re-exported from `lib/issue-classes.mjs`, the one definition Solve and Fill share. `HANDOVER_KINDS`: `text`, `presence`, `link`, `behaviour`.
+- `handoverEntry(entry)` → a validated entry; throws on an unknown owner or kind, because a handover nobody owns is the failure the list exists to prevent.
+- `handoverProblems(list, label)` → problems in a skeleton's declared handover list.
+- `handoverCounts(entries)` → the count per owner, every owner present.
+
+### `lib/fill-page.mjs`
+- `INITIAL`: the CSS initial values of the inherited properties a theme rarely sets.
+- `lineHeightPx(lh, fontPx)` → px for a ratio or a px value.
+- `pageBaseline(raw, tag)` → `{ value(prop, width, ownFontPx), own(prop) }`, the inherited baseline from the theme snapshot.
+
+### `lib/fill-entrance.mjs` (Playwright)
+- `STEP_MS`, `JITTER_MS`: 50 and 40, the probe's polling step and tolerance.
+- `sampleEntrances(options)` → the raw probe results by job id.
+- `translationOf(pose)` → `{ x, y }` in px. `shapeEntrance(raw)` → `{ delayMs, durationMs, distancePx, … }` or null.
+- `entranceValues(e)` → `[ prop, value ]` pairs for the resolver. `entranceWrites(options)` → `{ writes, unmapped }`.
+
+### `lib/fill-config.mjs`
+- `walkerPairs(nodes, tree)` → `{ ref, draft }` per node carrying a `draftRef`.
+- `baseConfigText(options)` → the base config file's text.
+- `walkerConfigs(options)` → `{ baseFile, baseText, fullFile, fullText }`.
+
+### `lib/fill-report.mjs`
+- `unmappedList(unmapped)` → property, value, node and reason (plus block and element) — the framework work for the surface, known before the first build.
+- `fillReport(r)` → `{ markdown, json }`.
+
 ### `lib/issue-classes.mjs`
+- `HANDOVER_OWNERS`: who edits content living outside the layout tree (`site-info`, `product-data`, `content-page`, `behaviour`, `woocommerce-text`). Defined here because Solve discovers a handover from a measured row while Fill carries one its skeleton declared, and a list kept in both would drift.
 - `VISUAL`: the row kinds counted as a distinct open issue: the painting kinds (`style`, `hover`, `box`) plus `CONTENT_KINDS`. Any other kind is reported, never counted.
 - `CONTENT_KINDS`: the row kinds carrying page content (`text`, `presence`).
 - `LINK_COVERAGE_PREFIXES`: the key prefixes that make a kind-`auto` row a link-coverage issue (`link-missing`, `link-extra`).

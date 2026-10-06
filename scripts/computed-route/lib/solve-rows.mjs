@@ -1,6 +1,6 @@
 // Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each
 // (node, element, property), and the classification of the rows that survive the last round.
-import { isContentRow } from './issue-classes.mjs';
+import { isContentRow, HANDOVER_OWNERS } from './issue-classes.mjs';
 
 // The property kinds Solve writes through the property-to-setting resolver (box rows are split off and never written).
 // Content rows (text, presence, link coverage) are not here: they resolve through calibration's content entries
@@ -215,7 +215,7 @@ const looseOf = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' )
 export const TEXT_READ_CAP = 400;
 // Who edits content that lives outside the layout tree (Spec 47 §3.3): Site Info, product data, a page the draft links to
 // but never shows, WooCommerce or core text, and behaviour the walker cannot drive.
-export const HANDOVER_OWNERS = [ 'site-info', 'product-data', 'content-page', 'behaviour', 'woocommerce-text' ];
+export { HANDOVER_OWNERS } from './issue-classes.mjs';
 
 // Which content kind a row is, or null: text, presence, or link (kind `auto` with a link-missing or link-extra key).
 export const contentTypeOf = ( r ) => ( isContentRow( r ) ? ( 'text' === r.kind ? 'text' : ( 'presence' === r.kind ? 'presence' : 'link' ) ) : null );

@@ -40,3 +40,9 @@ export const CONTENT = 'content';
 // solve-report.mjs::wholePage's issue key: one element and one property, whatever the width or state. `pair` stands in
 // for a row with no ref, which only identifies the same element within one walker config.
 export const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
+
+// Who edits content that lives OUTSIDE the layout tree, so no block setting can hold it (§3.3): Site Info values,
+// product data, a page the draft links to but never shows, behaviour the walker cannot drive (FR-47-7), and
+// WooCommerce's own strings. Shared, because Solve discovers a handover from a measured row while Fill carries one
+// the skeleton declared, and a list that lived in both would drift.
+export const HANDOVER_OWNERS = [ 'site-info', 'product-data', 'content-page', 'behaviour', 'woocommerce-text' ];
