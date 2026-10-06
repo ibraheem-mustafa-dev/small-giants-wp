@@ -94,8 +94,86 @@ Predicted: the 22 split settings, bgSvgOpacity and textIndent leave `dead`. Any 
 
 ## 9. Could not determine
 
-- Why backgroundImageTablet/Mobile are dead (shared wrapper versus Ken Burns).
-- Whether maxWidth is overridden by `section.sgs-hero` (specificity inferred, not measured).
+**Two of the three undetermined items are now CLOSED, measured live on the local mirror 2026-10-06
+(`scripts/computed-route/confirm-canvas.mjs` is unrelated; these were direct in-browser reads).**
+
+### CLOSED - `maxWidth` IS defeated by `section.sgs-hero`, and the QC correction below was itself wrong
+
+Measured on a real hero at 1440 by inserting one rule into the live page's CSSOM (nothing written to any tree,
+page or stylesheet; the rule was appended LAST so source order favoured it, making any failure to apply
+specificity and never ordering):
+
+| Selector inserted | Specificity | Computed `max-width` | Applied |
+|---|---|---|---|
+| `.sgs-hero-79714fdc` - **what the wrapper actually emits** | (0,1,0) | `none` | **no** |
+| `.sgs-hero-79714fdc.wp-block-sgs-hero` - hero's colour path | (0,2,0) | `37px` (width 1440 to 104px) | yes |
+| Control: `.sgs-container-c8ea12d8` on a container | (0,1,0) | `37px` | yes |
+
+The only rule matching the hero root is `section.sgs-hero {max-width:none}`.
+
+**Why the QC's arithmetic reached the opposite answer: it compared the wrong rule.** `maxWidth` is not emitted
+by `hero/render.php` at all - `render.php` itself records that content max-width "now lives on the universal
+wrapper attr", and `SGS_Container_Wrapper` emits the base value as a scoped **`.uid`** rule, one class, under
+the no-inline contract (Spec 32 / D293, `class-sgs-container-wrapper.php` ~:1821). `$root_sel`
+(`.uid.wp-block-sgs-hero`, two classes) is hero's **colour** selector, not its max-width one. So `.uid` (0,1,0)
+loses to `section.sgs-hero` (0,1,1), and the container control proves a one-class rule is not inherently
+powerless.
+
+A clean discriminator across the five blocks that declare `maxWidth`: **hero is the only one carrying an
+element+class `max-width:none` rule, and the only one where `maxWidth` calibrates dead.** `container`,
+`trust-bar`, `cta-section` and `site-header` carry no such rule and all four resolve it live, with the
+identical shape (`slot: ""`, effects `|margin-right |margin-left |width |height` - the calibration detects
+`maxWidth` by its consequences, never by reading `max-width` itself).
+
+**This is a real framework gap: the client's maxWidth control silently does nothing on `sgs/hero`.** The fix is
+NOT to remove `section.sgs-hero {max-width:none}` - that is deliberate, documented, and a 2026-09-08 qc-council
+proved live that removing it pushed the section 24px off-screen (D725). The wrapper would need to emit the base
+`maxWidth` at a specificity that beats a block stylesheet, as hero's own colour path already does. That is a
+change to the shared wrapper, which the file's own comments mark as design-gate territory, so **no fix is made
+here**.
+
+### CLOSED - why backgroundImageTablet/Mobile are dead: the tier rule paints on a box that is never created
+
+Established from the code, every step cited, no host needed:
+
+1. The tier images emit **only** `background-image`, `background-size` and `background-position`, into
+   `@media (max-width:1023px){.<uid>::before{...}}` (`class-sgs-container-wrapper.php`:2942).
+2. The declarations that make `.<uid>::before` an actual box - `content:""`, `position:absolute`, `inset:0`,
+   `z-index:-1`, `pointer-events:none` - are emitted only inside
+   `if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple )` (:1384). Its own comment states the
+   requirement: "`content` is mandatory: without it ::before generates no box and the background-image below
+   would never paint."
+3. `$has_bg_image = ! empty( $bg_image['url'] )` (:1044) - the **base** image only.
+
+So on an instance carrying a tier image but no base image, `::before` never becomes a box and the tier rule
+paints nothing. Calibration builds one instance per setting and does not pair a tier image with a base image,
+so the layer does not exist and no marker can move: `dead`.
+
+Two things this rules out. The calibration reader is **not** blind to pseudo layers - `calibrate-read.mjs`:26-30
+reads `::before` and `::after`, gated on computed `content` not being `none`/`normal`/`''`, and the framework's
+`content:""` computes to `""` (two characters), which that guard does not exclude. And Ken Burns is not the
+blocker.
+
+⚠ **Candidate LIVE gap, not just a measurement artefact.** The framework guards the opposite direction
+carefully: `$sgs_bg_img_is_simple` is false whenever any tier override exists, so the whole image stays on the
+CSS `::before` path rather than the `<img>` path, and its comment says why - migrating only the desktop tier
+"would silently drop a client's tablet/mobile background the moment they set one" (:1249-1257). **Nothing
+guards a client setting a tablet or mobile background with no desktop one**, which by the chain above paints
+nothing. Both fields sit in the same shared background panel, so that is a reachable client action.
+**Not confirmed live**: it needs one built instance with `backgroundImageTablet` set and `backgroundImage`
+empty, then a read of `getComputedStyle(root, '::before').content` (expected `none`) and its
+`background-image` at 768. That is a page build, so it is owed, not closed.
+
+### CLOSED - `site-header`'s `@controls:2` slot IS a real painted element
+
+The QC's caveat that site-header's success might be spurious does not hold. `@controls:N` is an element the
+instance references through `aria-controls` that lives OUTSIDE the block root - a drawer or panel moved to
+`<body>` - resolved by `document.getElementById()` and kept only when `! root.contains( t )`
+(`calibrate-read.mjs`:54, `calibrate-content.mjs`:198). It is a genuine DOM element, so site-header's resolution
+can be leaned on.
+
+### Still undetermined
+
 - Whether gridTemplateColumns has any live path on a standard hero.
 - `cache/hero.tree.json` holds only the last chunk (140 instances), so the per-instance attributes above come from the offline plan, which reuses the same planner but is not the exact chunk the host built.
 
