@@ -644,6 +644,18 @@ sites (database and `wp-content`, WordPress 7.1.2), for browser-heavy runs Hosti
 Calibration targets them as `local-eye-care` / `local-sandybrown`; one run opens one browser and logs in once
 (`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`.
 
+⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081 and
+8082 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4
+first. `curl -6 localhost:8081` returns 200, and Chrome and Playwright try IPv6 anyway, so browser-driven
+runs are unaffected. SearXNG's `:8888` is bound on IPv4, which is why that one answers plain curl — same
+machine, same proxy, different address family. **Check reachability with `curl -6` or a real browser.**
+
+⚠️ **Do not run `wsl --shutdown` to "fix" the mirrors, and do not assume they are stopped.** SearXNG runs in
+that same WSL instance on port 8888 and `search.py` and the `/search` skill depend on it. Before believing
+they are down, check `systemctl is-active apache2 mariadb` and `ss -ltnp` inside WSL: on 2026-10-06 both
+services were already running and listening while plain curl reported the ports unreachable, so the "start
+after a reboot" command below would have reported success and changed nothing.
+
 ---
 
 ## WP-CLI
