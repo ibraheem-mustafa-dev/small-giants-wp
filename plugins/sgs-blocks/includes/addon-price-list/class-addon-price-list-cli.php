@@ -40,7 +40,7 @@ final class Addon_Price_List_CLI {
 	 *
 	 * An OBJECT seeds the price list and the cart line summary's wording:
 	 * `{ "groups": [ ...as above... ], "summary": { "leadWithAddons",
-	 * "leadWithoutAddons", "attributeLabels", "sizeBand", "prescriptionLink" } }`
+	 * "leadWithoutAddons", "attributeLabels", "sizeBand" } }`
 	 *
 	 * Each option's `short` is optional and falls back to its `label`.
 	 * Both shapes go through the same normalisers as the settings page, so a

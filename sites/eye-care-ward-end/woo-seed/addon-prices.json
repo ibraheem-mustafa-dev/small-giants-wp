@@ -39,9 +39,6 @@
 		"sizeBand": {
 			"axis": "pa_frame-size",
 			"scale": "S:52,M:57,L"
-		},
-		"prescriptionLink": {
-			"label": "Add my prescription"
 		}
 	}
 }

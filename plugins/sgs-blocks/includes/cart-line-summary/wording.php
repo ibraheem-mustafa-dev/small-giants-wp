@@ -14,8 +14,7 @@
  *     "leadWithAddons":    "",         // opens line 1 when the line has add-ons
  *     "leadWithoutAddons": "",         // opens the single line when it has none
  *     "attributeLabels":   { "pa_x": "Shorter name" },
- *     "sizeBand":          { "axis": "pa_x", "scale": "S:52,M:57,L" },
- *     "prescriptionLink":  { "label": "" }
+ *     "sizeBand":          { "axis": "pa_x", "scale": "S:52,M:57,L" }
  *   }
  *
  * `attributeLabels` renames an attribute for the SHOPPER only, through the
@@ -42,7 +41,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording' ) ) {
 	/**
 	 * Read the client's summary wording, normalised, with empty defaults.
 	 *
-	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string},prescriptionLink:array{label:string}}
+	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
 	 */
 	function sgs_cart_line_summary_wording(): array {
 		$raw = \get_option( SGS_CART_LINE_SUMMARY_OPTION, array() );
@@ -58,7 +57,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 	 * line, an order email or a PayPal line description.
 	 *
 	 * @param array<string,mixed> $raw Raw wording.
-	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string},prescriptionLink:array{label:string}}
+	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
 	 */
 	function sgs_cart_line_summary_wording_normalise( array $raw ): array {
 		$labels     = array();
@@ -80,9 +79,6 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 		}
 
 		$raw_band = isset( $raw['sizeBand'] ) && \is_array( $raw['sizeBand'] ) ? $raw['sizeBand'] : array();
-		$raw_link = isset( $raw['prescriptionLink'] ) && \is_array( $raw['prescriptionLink'] )
-			? $raw['prescriptionLink']
-			: array();
 
 		return array(
 			'leadWithAddons'    => isset( $raw['leadWithAddons'] ) && \is_scalar( $raw['leadWithAddons'] )
@@ -98,11 +94,6 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 					: '',
 				'scale' => isset( $raw_band['scale'] ) && \is_scalar( $raw_band['scale'] )
 					? \sanitize_text_field( (string) $raw_band['scale'] )
-					: '',
-			),
-			'prescriptionLink'  => array(
-				'label' => isset( $raw_link['label'] ) && \is_scalar( $raw_link['label'] )
-					? \sanitize_text_field( (string) $raw_link['label'] )
 					: '',
 			),
 		);
