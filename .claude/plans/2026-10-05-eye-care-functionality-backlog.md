@@ -44,7 +44,7 @@ the predicted outcome, the baseline, the validation command and the commit gate.
 The register's wording ("the route builds the bag without loading the saved one") is crude but right,
 and an early grep wrongly cleared it because `class-cart-proxy.php` does call `wc_load_cart()`. That
 call only CONSTRUCTS `WC_Cart` and the session; it does not read the saved items. Verified against the
-**installed WooCommerce 11.1.0** on the canary, not trunk:
+**installed WooCommerce 11.1.0** on the canary, not trunk (the canary has since been upgraded to 11.1.2, so no 11.1.0 install remains on either site):
 
 - `class-wc-cart.php:663-665` — the saved items load lazily: `if ( ! did_action( 'woocommerce_load_cart_from_session' ) ) { $this->session->get_cart_from_session(); }`
 - `class-wc-cart.php:132` — `add_action( 'woocommerce_add_to_cart', array( $this, 'calculate_totals' ), 20, 0 )`
@@ -69,18 +69,22 @@ immune because `CartController::load_cart()` calls `get_cart()` BEFORE adding.
 - **Commit gate:** do not commit unless the bag holds both products after two sequential adds, AND a
   third add of a product at the global cap still returns 429 (proving the other rate limit survives).
 
-> **MEASURED 2026-10-06 on eye-care-test, and it did NOT reproduce — but this does NOT close the row.**
-> Two sequential adds through the PROXY itself (`POST /wp-json/sgs/v1/cart/add-item`, both returning 200) as a
-> GUEST in a fresh browser context, using two NON-stock-managed variations (420 of parent 136, then 417 of
-> parent 132) - which is the condition this row says should expose the bug, since its own negative control
-> notes a stock-managed B would be immune. The bag held BOTH lines: `["EA4033", "Chelsea"]`.
-> **Why that is not a close:** this row's mechanism was verified against the installed **WooCommerce 11.1.0 on
-> the canary**, and eye-care-test runs **11.1.2** (confirmed by `wp plugin get woocommerce` on both today).
-> The two differ by a patch and are not interchangeable for version-sensitive work, so a non-reproduction on
-> 11.1.2 is evidence about 11.1.2 only - it neither proves the mechanism wrong on 11.1.0 nor that the defect
-> is gone. **To settle it:** run the same two-proxy-add baseline on sandybrown (11.1.0). If it reproduces
-> there and not here, the row becomes version-scoped and the fix is still worth shipping for any client on
-> 11.1.0 or earlier; if it reproduces on neither, re-derive the mechanism before building anything.
+> **MEASURED 2026-10-06 on BOTH sites, and it does NOT reproduce on either. The condition it was diagnosed
+> under no longer exists anywhere, so it cannot now be settled by measurement.**
+> Two sequential adds through the PROXY itself (`POST /wp-json/sgs/v1/cart/add-item`, all four calls 200) as a
+> GUEST in a fresh browser context, using NON-stock-managed variations - the condition this row says should
+> expose the bug, since its own negative control notes a stock-managed B would be immune. Both bags held both
+> lines: eye-care-test `["EA4033", "Chelsea"]`, canary `["QA Photo Swap Target", "Classic Lactation Cookies"]`.
+> Two sites, two independent datasets, same result.
+> **The catch:** this row's mechanism was derived against the installed **WooCommerce 11.1.0**, and Bean
+> upgraded the canary on 2026-10-06, so BOTH sites now run **11.1.2** (confirmed by `wp plugin get woocommerce`
+> on each). There is no longer an 11.1.0 install to reproduce the original analysis on. A non-reproduction on
+> 11.1.2 is evidence about 11.1.2 only; it does not prove the 11.1.0 mechanism wrong.
+> **Disposition - needs Bean, and it is small.** The user-visible defect is absent on every site we run, so
+> there is nothing to fix here today. The one-line fix shape stays on record because it would still matter for
+> a client pinned to 11.1.0 or earlier. It is deliberately NOT built: with the behaviour working on both sites
+> the cause can no longer be proven, and this project does not commit a cause-specific fix for an unproven
+> cause (`~/.claude/rules/prove-the-cause-before-fix.md`).
 > Two earlier attempts of mine were VACUOUS and are recorded so they are not repeated: the first used a
 > simple product as B, which adds through WooCommerce's own classic form and never touches the proxy; the
 > second produced no cart POST at all. Only an add that POSTs to `/sgs/v1/cart/add-item` tests this row.
