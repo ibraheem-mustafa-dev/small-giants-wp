@@ -592,15 +592,32 @@ client. **The comment directly above that rule records that a framework-wide hea
 default was removed for exactly this reason** — it "tightened EVERY client's headings and made clones drift from
 their reference sites" — and then declares a framework-wide heading default immediately below it.
 
-**Correction (2026-10-06): "nothing allowing a block to override it" is wrong.** 19 blocks declare a `textWrap`
-attribute, `sgs/heading` among them, and each emits a scoped `.{uid}` rule that beats `h1…h6` (0,0,1) and
-`.wp-block-heading` (0,1,0) comfortably. So every SGS heading can already override it.
+**NOT WORTH BUILDING. Measured 2026-10-06 and dropped, on Bean's challenge:** “where do we use core blocks
+where this would be useful? The vast majority of core blocks have a direct sgs block that replaces them.” He was
+right, and the original framing of this item was wrong twice over.
 
-**Where it genuinely bites is CORE blocks**, which have no SGS control: `core/heading`, `core/post-title` and
-`core/query-title` match the rule through `h1…h6` / `.wp-block-heading` with no opt-out at all, and the one
-finding that depends on this is a `core/query-title` text-wrap row. Wrapping the rule in `:where()` drops it to
-zero specificity, keeping `balance` as the default while letting global styles, a client stylesheet or any block
-override it. One line. Still owed a decision from Bean.
+First, “nothing allowing a block to override it” is false: **19 blocks declare a `textWrap` attribute**,
+`sgs/heading` among them, each emitting a scoped `.{uid}` rule that beats `h1…h6` (0,0,1) and `.wp-block-heading`
+(0,1,0) comfortably.
+
+Second, the core-block exposure it rested on is close to empty:
+
+| The claim | What the code and the live page show |
+|---|---|
+| core blocks cannot override it | `core/heading` has **0 uses** across every client tree and theme pattern, and `scripts/migrate-core-blocks/pairings/heading_pairing.py` actively transforms it to `sgs/heading` |
+| a `core/query-title` finding depends on it | `core/query-title` appears in exactly 2 template sites — `templates/home.html` (the blog index) and `parts/sgs-archive-toolbar.html`. **Eye Care's 17 surfaces contain no archive or blog page**, and that part's own comment notes the title returns empty unless `is_archive()` |
+| `.wp-block-heading` is caught by the rule | **0 occurrences** on the live product page. SGS headings render `wp-block-sgs-heading`, so that half of the selector is dead in an SGS site |
+
+**The rule's real reach is SGS blocks' own sub-element headings**, not core blocks. Of 35 heading elements on the
+live product page, 22 are `sgs/heading` (already overridable) and 13 are component headings —
+`sgs-product-card__title`, `sgs-choice-flow-question__title`, `sgs-choice-flow-result__heading`,
+`sgs-cart__panel-heading`. None of `product-card`, `choice-flow-question`, `choice-flow` or `cart` declares a
+`textWrap` attribute, so those 13 take `balance` with no per-element opt-out.
+
+**Decision: do nothing here.** A `:where()` would be a framework-wide change bought for a core-block problem this
+framework does not have. If a draft ever needs an unbalanced component heading, the answer is a `textWrap` control
+on that component — a real control with a sensible default, per Bean's standing principle — not a specificity
+change to a shared theme rule. No current finding asks for one.
 
 ## Gates
 
