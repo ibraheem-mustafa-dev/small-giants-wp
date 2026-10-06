@@ -50,7 +50,7 @@ Each verified against the running site tonight, not against its commit.
 | **N38** | `lens-skip-to-bag` **FAIL** `skip-opens-extra-step` | — | `block.json` has no "skip adds to bag" setting; `flow-skip.js::handleSkipClick` routes to the add-to-bag ending | framework new + tree |
 | **51** | **confirmed: the hero paints nothing.** `@keyframes sgs-hero-ken-burns` exists, but only **1** element carries a ken-burns class and the hero's own `.sgs-hero__bg-img--parallax` computes `animation-name: none`, `duration: 0s`, `transform: none` | one-off 3s zoom, 108% → 100% | repair the paint, add a "zoom out once on load" mode | framework repair + new |
 | **96** | focus ring computes **`rgb(20,20,20)`** — black | draft taupe | focus rules read the client focus-ring token | framework repair |
-| **N26 / S10 partial** | on cards **with** an image the photo and body are links, but the **title is not** | the whole card is one link | the stretched surface does not reach the title row | measure before fixing — see §5 |
+| **N26 / S10** | the card is clickable only on the name (1-2% of its area) and the image (73%); imageless cards fall to **2-5%** | the whole card is one link | the stretched surface never reaches the card: `sgs-block-link-overlay` is absent everywhere | framework - see §5(a) |
 | **N4** | no marquee markers found live | — | repair so "drop" and "scroll" coexist; pause button for WCAG 2.2.2 | framework repair |
 
 ## 3. Needs content from the client
@@ -69,30 +69,55 @@ Each verified against the running site tonight, not against its commit.
 
 ## 5. The thing nobody was looking for
 
-**12 of 16 shop cards server-render a `product-card__no-image` placeholder, and those cards expose no link at
-all** — photo, body and title all hit-test to no anchor, so those products cannot be reached by clicking their
-card. Measured with `document.elementFromPoint`, not synthetic clicks, after scrolling each card into view.
+Two separate defects. The first is a stated design intent that is not met; the second compounds it.
 
-The products are not the problem: the Store API reports **16 of 17 products have images** (only the QA test item
-genuinely has none), while `product-card__no-image` appears **12 times in the server-rendered HTML**.
+### (a) The product card is not a stretched link
 
-**Leading hypothesis, not yet proven — a cache key that can never match:**
+Grid-sampled at 81 points per card with `document.elementFromPoint` (real hit-testing, not synthetic clicks),
+each card scrolled into view first:
+
+| Card | Clickable surface |
+|---|---|
+| with an image | **73-79%** |
+| without an image | **2-5%** |
+
+Every card carries `a.product-card__title-link` around the title text, covering **1-2%** of the card. Cards
+with an image add `a.product-card__img-link` at **73%**. Nothing stretches a link across the card:
+`sgs-block-link-overlay` appears **zero** times on home, shop and product.
+
+**So the card is clickable only on the product name and the image.** Bean confirms the card is *supposed* to be
+fully clickable, so **N26 is genuinely OPEN**, and S10's "one shared stretched link" has not reached the product
+card on these surfaces even though S10's commits are live. The S10 row's own note records that `e62f45952`
+rebuilt the pattern so "a block's OWN visible link owns the surface" - on the product card that visible link is
+the 1-2% title anchor, which is why the card reads as dead almost everywhere.
+
+> **Correction.** An earlier draft of this report said the imageless cards had "no link at all". That was a
+> measurement error: the hit-test landed on the title row's padding, and the title link covers only 1-2% of the
+> card. The link exists - it is just very small. The corrected figures are the table above.
+
+### (b) 12 of 16 shop cards render no image
+
+`product-card__no-image` appears **12 times in the server-rendered HTML**, while the Store API reports images for
+**16 of 17 products** (only the QA test item genuinely has none).
+
+This compounds (a): a card with no image loses the 73% image link, which is what drops it to 2-5% clickable.
+
+**Leading hypothesis, not yet proven - a cache key that can never match:**
 
 | | |
 |---|---|
-| Manifest **write** | `class-product-manifest.php:161` → `sgs_manifest_v8_<id>_<tax-fingerprint>` |
-| Manifest **purge** | `class-cart-cache-purge.php:158,160` → `sgs_manifest_<id>` |
+| Manifest **write** | `class-product-manifest.php:161` -> `sgs_manifest_v8_<id>_<tax-fingerprint>` |
+| Manifest **purge** | `class-cart-cache-purge.php:158,160` -> `sgs_manifest_<id>` |
 
 The purge key can never match the write key, so the manifest transient is **never purged** and expires only on
 TTL. Register row 59 already records this as "a real framework bug found and recorded, not fixed".
 
-**Corroboration:** the 4 cards that *do* render images include `gucci-oversized-cat-eye` — the exact product the
+**Corroboration:** the cards that *do* render images include `gucci-oversized-cat-eye` - the exact product the
 75/82/158 work was performed on. Those got fresh manifests; the rest appear to serve stale ones. That row also
 records "a stale cache was hiding it" once before.
 
-**One command proves or kills it**, and it is a host write, so it was not taken unilaterally while peer sessions
-are active: delete the stale transients for one affected product and reload `/shop/`. If that card gains its
-image and its link, the cause is proven and the fix is the purge key.
+**One command proves or kills it**, and it is a host write: delete the stale transients for one affected product
+and reload `/shop/`. If that card gains its image, the cause is proven and the fix is the purge key.
 
 ## 6. Out of scope — the 14 CR rows
 

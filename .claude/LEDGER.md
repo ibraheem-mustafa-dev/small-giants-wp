@@ -102,11 +102,11 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy was
-  needed; every commit the built rows cite is an ancestor of live `578a8830b`. **N11 and N25 verified CLOSED
-  live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 5 need client content, 14 CR, 11 to measure.
-  ⚠️ **Off-register:** 12 of 16 shop cards render no image and **no link**, though 16 of 17 products have
-  images. Unproven cause (report §5): the manifest transient is never purged. One delete settles it.
+- **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy needed.
+  **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 14 CR, 11 to measure.
+  ⚠️ **The product card is NOT a stretched link, and Bean says the WHOLE card should be** (§5a) — only the name
+  (1-2%) and image (73%) are clickable, `sgs-block-link-overlay` absent, so **N26 is OPEN** though S10 is live.
+  12 of 16 cards also render no image, dropping to **2-5%**; unproven cause: the manifest is never purged.
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
@@ -116,12 +116,9 @@ five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own has
 `true` (a cross-client default).
 **All four open items CLOSED, a `/qc-council` then found six defects in those fixes, and Bean then hit LIVE
 BREAKAGE — every one fixed and verified live (2026-10-06).** Causes, measurements and negative controls are in
-register rows S10, 59 and 20+23; the lessons that generalise past this client are in auto-memory. The three
-worth knowing here: the `Product_Manifest` "divergence" never existed (two products, near-identical names) and
-Bean ruled the real masked defect not worth fixing (950's context exceeds render.php's 24,576-byte cap, but it
-is a test item); the stretched link was rebuilt so a block's OWN visible link owns the surface, which also
-fixed `container`, `info-box`, `notice-banner` and `team-member`; and the bag was DEAD on any site with a
-variable product in the cart, because the Store API's `extensions` is a stdClass and was read as an array.
+register rows S10, 59 and 20+23; the lessons that generalise are in auto-memory. The one still load-bearing:
+the stretched link was rebuilt so a block's OWN visible link owns the surface — which is exactly why the
+product card now reads as dead outside its name and image (see the 63's report §5a).
 Option B then landed (`578a8830b`): the "no add-ons" lead needs a variation attribute, so it no longer prints on a line that configured nothing. Both sites live at `578a8830b` by marker.
 CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
 
