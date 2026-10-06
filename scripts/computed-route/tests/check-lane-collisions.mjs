@@ -32,11 +32,21 @@ const WAVES = {
 			'plugins/sgs-blocks/includes/helpers-tokens.php',
 			'scripts/computed-route/tests/entrance.test.mjs',
 			'scripts/computed-route/tests/resolve.test.mjs',
+			// H2's PHP half. Named exactly, following the tests/php/run-*-standalone.php convention, so the
+			// lane's PHP case is owned as precisely as its JS cases rather than owning the whole directory.
+			'plugins/sgs-blocks/tests/php/run-transition-vars-standalone.php',
 		],
 		'W1-B': [
 			'scripts/parity/lib/paint.mjs',
 			'sites/eye-care-ward-end/build/qa/parity/home.mjs',
 			'scripts/computed-route/tests/walker-refs.test.mjs',
+		],
+		// The main thread's own lane. H1's viewport narrowing is inert unless both resolvers pass the live rect,
+		// and neither caller belongs to a Wave 1 lane, so the wiring is main-thread work and is owned as such
+		// rather than left to report as an unowned edit. triage.mjs is W3-G's in Wave 3; the waves are serial.
+		'W1-MAIN': [
+			'scripts/computed-route/solve.mjs',
+			'scripts/computed-route/lib/triage.mjs',
 		],
 		'W1-C': [
 			'scripts/parity/lib/devtools.mjs',
