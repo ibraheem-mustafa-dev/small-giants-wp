@@ -57,10 +57,34 @@ failure.
 ## 3. The verification re-sweep
 
 ```bash
-node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface <s>   # per surface
+node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface <s> --rounds 0
 node scripts/computed-route/triage.mjs --client eye-care-ward-end --surface <s>
-node scripts/computed-route/sweep.mjs                                            # writes qa/sweep/<date>/sweep.json
+node scripts/computed-route/sweep.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json --since "<the ISO time the solve batch began>"
 ```
+
+⚠️ **`--rounds 0` is not optional, and leaving it off has already gone wrong once.** `solve.mjs`'s own
+header says *"maxRounds 0 is measure-only: one build and one walk, never a write"*, and the **default is 3
+write rounds**. Run without it and the route does its job: it writes settings into the client's tree files
+and rebuilds the pages on eye-care-test. On 2026-10-06 that put 18 writes into `home.tree.json`, 13 into
+`lenses.tree.json` and a partial set into `footer.tree.json`, all of which had to be reverted and the three
+pages rebuilt from the restored trees. The F 193 baseline was taken measure-only, so **a write-mode run
+cannot be compared with it**: "the artefacts went" and "the route wrote fixes" become one number.
+
+**Prove it afterwards, do not assume it:** `git status --porcelain -- 'sites/<client>/build/*.tree.json'`
+must come back empty. A measure-only run leaves every client tree untouched.
+
+⚠️ **`--since` matters too.** Without it the sweep skips the predates-sweep check. Pass the ISO time the
+SOLVE BATCH began, never the aggregation's own clock — solve always writes its report before the sweep reads
+it, so "now" would mark every surface stale.
+
+⚠️ **Space the surfaces out.** The host edge-challenges automated browsers after a burst. Running 17
+pairings straight into 17 solves made **13 of 17 fail with `editor did not load`** while `wp-admin` itself
+answered HTTP 200 in 3.2s — the host was fine, the automation was being challenged. A few seconds between
+surfaces, and a cool-down after a heavy run, fixes it. It is not a code defect and there is nothing to debug.
+
+⚠️ **Read the exit code of the command, not of a pipeline.** `node … | tail -3` returns *tail's* status, so
+a crashed run reports success. That is how a crashed `mobile-menu` pairing was recorded as "ok" in this
+session, and it is the same false-green shape the whole cleanup keeps finding.
 
 **Compare on the normalised key R2 added, never the raw `issueKey`.** P1 and P2b3 both change emitted paths
 (multi-svg containers lose their `icon-*` keys), so a raw-key comparison reads a cosmetic rename as mass
