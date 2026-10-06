@@ -155,9 +155,20 @@ swallows a genuine resting difference (`brand-link` opacity 0.75 against live 1)
 
 **Diagnosis verified, and it corrects two of my own claims.**
 
-1. **"No `transition,*` row calibrates anywhere" is too strong.** 7 transition rows carry `enum_values`
-   and already take the enum branch (I verified: `sgs/heading`, `sgs/text`, `sgs/nav-bar-menu` ×3,
-   `sgs/icon-list`). The proposal said 12; the DB says 7.
+1. **"No `transition,*` row calibrates anywhere" is too strong.** Transition rows carrying `enum_values`
+   already take the enum branch. The proposal said 12 and this verdict first said 7 with a block list that
+   summed to 6 and named `sgs/nav-bar-menu` three times. **The DB says 6**, re-queried 2026-10-06:
+
+   ```
+   sgs-db.py sql "SELECT block_slug, attr_name, css_property, enum_values FROM block_attributes
+     WHERE css_property LIKE 'transition%' AND enum_values IS NOT NULL AND enum_values != ''"
+   ```
+
+   `sgs/heading::transitionEasing`, `sgs/text::transitionEasing`, `sgs/nav-bar-menu::burgerMorphEasing`,
+   `sgs/nav-bar-menu::itemMotionEasing`, `sgs/icon-list::itemMotionEasing` and
+   `sgs/nav-drawer-menu::itemMotionEasing` — so `sgs/nav-bar-menu` twice, not three times, and
+   `sgs/nav-drawer-menu` was missing from the list. **All six are `transition-timing-function`: no duration
+   row takes the enum branch at all**, so P4's integer-millisecond duration marker cannot collide with one.
 2. **Most of Eye Care's transition rows are not a route gap at all.** `sgs/google-reviews`,
    `sgs/accordion-item`, `sgs/media` and `sgs/choice-flow-question` have **no `transition*` attribute in
    the DB**. Their rows are a *framework* gap (no control exists), S1-adjacent — not something a marker
