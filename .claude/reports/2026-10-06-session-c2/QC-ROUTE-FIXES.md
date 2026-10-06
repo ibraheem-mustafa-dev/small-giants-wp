@@ -53,9 +53,14 @@ And `scripts/computed-route/lib/resolve.mjs::formatValue` has **no time branch a
 seconds or ms handling anywhere in it). So a draft `0.25s` would either be refused for a number setting
 or written as the string `"0.25s"` for a string setting, producing the 25ms result.
 
-**Status: latent, not live.** `transitionDuration` is declared `type: number` on `sgs/button`,
-`sgs/heading` and `sgs/text`, so the inspector can only send milliseconds. **It becomes live the moment
-the route starts writing transitions** — i.e. the moment proposal P4 below lands.
+**Status: LIVE.** An earlier reading here called it latent on the grounds that `transitionDuration` is
+declared `type: number` on `sgs/button`, `sgs/heading` and `sgs/text` — but **those three blocks do not
+call this helper.** All eight that do call it — `sgs/hero`, `sgs/brand-strip`, `sgs/cta-section`,
+`sgs/gallery`, `sgs/info-box`, `sgs/post-grid`, `sgs/team-member`, `sgs/testimonial-slider` — declare it
+**`type: "string"`, default `"300"`**, so the inspector accepts a decimal: `"0.3"` emits 3ms and `"0.25s"`
+emits 25ms today. Only a pure-digit string survives. Eye Care's trees use `"250"` and are unaffected, so no
+client is damaged, but that is luck rather than safety. Fixed 2026-10-06 in commit `809d30f8d`:
+`sgs_transition_vars` refuses a non-integer instead of stripping it. It remains the hard gate for P4.
 
 **Fix:** add a time branch to `formatValue` converting seconds to integer milliseconds, **before**
 enabling any transition calibration. Separately, `sgs_transition_vars` should reject a non-integer rather

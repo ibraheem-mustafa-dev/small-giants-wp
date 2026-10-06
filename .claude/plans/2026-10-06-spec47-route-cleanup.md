@@ -120,6 +120,20 @@ Zero file overlap. **W1-A is the highest value in the whole plan and H2 is its f
 mangling any decimal transition duration on eight blocks today, and H1 stops the route writing an animation
 setting from a measurement artefact.
 
+**Wave 1 is complete.** Commits `809d30f8d` (H2 then H1, with the caller wiring), `1963180ac` (P2b1, P2b2),
+`d72c88afe` (P3b), `2590fc00d` (gate and lane reports). Suite **535 of 535**, the 523 baseline plus 12 new
+cases.
+
+A fourth lane, **W1-MAIN**, was needed and is recorded in the gate. H1's viewport narrowing was **inert as
+first written**: `entranceStart`'s `rects` parameter defaults to `g.rects`, which nothing in the codebase
+assigns, so `inFirstViewport` read `undefined`, returned false, and the write was suppressed for EVERY
+group — including the genuine first-screen case H1 exists to make. The lane's own over-suppression test
+passed because a unit test supplies the rect itself, which made that negative control vacuous. `solve.mjs`
+and `lib/triage.mjs` now pass `groupRects` of their own walker report, and `entrance.test.mjs` carries a
+source-level detector asserting both callers still do — proven by planting the three-argument call back and
+watching it go red. **The lesson generalises: a negative control that supplies the missing input itself
+cannot see a wiring gap.**
+
 ### Also owned by this plan, added 2026-10-06
 
 Two pieces of work were otherwise unassigned. Both are measurement work needing the same host window, so
@@ -174,9 +188,20 @@ released it, and depends on W1-B's corrected config.
 | Lane | Tasks | Files |
 |---|---|---|
 | **W3-F** | P4 | `calibrate-markers.mjs`, `calibrate.mjs` |
-| **W3-G** | P3d | `triage.mjs` |
+| **W3-G** | P3d + **R1** | `triage.mjs`, `tests/triage.test.mjs`, `tests/solve.test.mjs` |
+| **W3-H** | **R2 + R3 + R4** | `sweep.mjs`, `issue-classes.mjs`, `solve-report.mjs` |
 
-Both gated on earlier waves; files disjoint.
+All gated on earlier waves; files disjoint.
+
+**Four tasks were added to this plan on 2026-10-06** (Bean's decision, to close every open point). Spec 47
+§5 Residual gives a named fix to twelve Session C2 defects and this plan's table owned nine.
+
+| Task | What | Why it could not be left |
+|---|---|---|
+| **R1** | `triage.mjs::canvasSettable` respects the emission selector, not the property name alone | **This plan already depended on it** — Wave 4's 180-claim test is specified to run "after P2a and the `canvasSettable` fix land", and no lane built it. As written it would mask non-transition gaps on the next client |
+| **R2** | A normalised row key beside `issue-classes.mjs::issueKey`, additive so no ledger entry re-keys | It is what stops **this plan's own** verification sweep reading a cosmetic path change as mass close-and-reopen. P1 and P2b3 both change emitted paths |
+| **R3** | `sweep.mjs::latestReport` refuses a report older than the sweep's own start | A failed surface silently serves a stale measurement as a current one. Observed live on `header` |
+| **R4** | The sweep surfaces the walker's `findings` and `unsettled` keys | Out of W1-C's own report: P3b emits `reveal-unfired`, and **nothing in the codebase reads `findings`**. The walker knew its measurement was untrustworthy and told nobody |
 
 ### Wave 4 — verification and closure (main thread, serial)
 
@@ -216,10 +241,22 @@ last sweep.
 **A fall outside that band means something other than these fixes moved, and the cause must be named
 before the number is used.** Overlaps are possible, so the figures are not simply additive.
 
-⚠️ **The baseline has moved.** eye-care-test now runs `6d6906b98`, not the `94122e326` that F 193 was
-measured at. Eye Care's 17 surfaces were verified unaffected by that deploy on three axes
-(`STEP3-RESWEEP.md` addendum), so the comparison holds — but record the SHA on the sweep and expect the
-re-keying trap below.
+⚠️ **The baseline has moved TWICE, and only the first move was verified harmless.** eye-care-test runs
+**`578a8830b`**, read from `~/.sgs-deploy-marker-eye-care-test.json` on the host (deployed 2026-10-06
+16:12). Not `6d6906b98`, which this plan recorded, and not the `94122e326` that F 193 was measured at.
+
+`6d6906b98` was verified not to affect Eye Care's 17 surfaces on three axes (`STEP3-RESWEEP.md`
+addendum). **`578a8830b` was not.** 18 commits sit between them, and several touch rendering code:
+`src/blocks/product-card` (2), `includes/hover-effects` (1), `includes/cart-line-summary` (4),
+`includes/addon-price-list` (1), `src/shared/toast` (1). One of them, `e62f45952`, changes the stretched
+link so a card title carries a real anchor instead of an empty overlay — expected to move nothing on
+eye-care-test because no tree there enables `sgsBlockLinkAuto`, but that is a prediction, not a
+measurement.
+
+**So the single-variable claim behind the F band is weakened before the sweep runs.** Treat the band as
+corroboration, not proof, and lean on per-fix row attribution instead: the solve reports survive on disk
+under `sites/eye-care-ward-end/build/qa/solve/` (gitignored, so machine-local), which allows a row-level
+comparison that an aggregate count cannot give. Record the SHA on the sweep either way.
 
 ⚠️ **The re-keying trap applies to this verification.** Row identity is `ref|path|kind|property`, and P1
 and P2b3 change emitted paths. A cosmetic path change reads as mass close-and-reopen. Compare on a
