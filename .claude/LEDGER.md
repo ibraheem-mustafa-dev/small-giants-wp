@@ -106,7 +106,7 @@ compare on a **normalised** path, because a cosmetic path change re-keys rows wh
 five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`),
 S9 (`2b4122c77`). `brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the
 375/768/1440 readings with their negative controls, and what was NOT measured.
-**All four open items CLOSED 2026-10-06** (proofs in the register rows). Both sites live at `8dde5f5b7` by marker
+**All four open items CLOSED 2026-10-06** (proofs in the register rows). Both sites live at `8dde5f5b7` by marker (commits after it are docs and code COMMENTS only, no behaviour change, so live still matches HEAD's behaviour)
 (sandybrown's reads `20c503516`: doc-only commits later, same plugin code). (a) **No `Product_Manifest` divergence
 ever existed** — the readings were different products (950 vs 897, both 48 variations, near-identical names),
 masking 950's context exceeding render.php's 24,576-byte cap; **Bean's call: not fixed**, 950 is a test item.
