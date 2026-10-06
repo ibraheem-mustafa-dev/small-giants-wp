@@ -230,6 +230,25 @@ export function handElements( page, finders, side, prefix ) {
 	}, [ finders, resolveFinder.toString(), side, prefix ] );
 }
 
+// Each hand pair's word membership on one side: the indices (into the tagged words) of the words inside the pair's
+// element, or null when its finder is absent or resolves to nothing (a function finder is not read). `wordEls` is each
+// tagged word's element index, as collectTagged leaves it in window.__crEls.
+export function handScopes( page, finders, wordEls ) {
+	return page.evaluate( ( [ list, src, wEls ] ) => {
+		// eslint-disable-next-line no-new-func
+		const resolve = new Function( `return (${ src });` )();
+		return list.map( ( f ) => {
+			let el = null;
+			try {
+				el = f ? resolve( f ) : null;
+			} catch {
+				el = null;
+			}
+			return el ? wEls.map( ( e, j ) => ( el.contains( window.__crEls[ e ] ) ? j : -1 ) ).filter( ( j ) => j >= 0 ) : null;
+		} );
+	}, [ finders, resolveFinder.toString(), wordEls ] );
+}
+
 // Opens the surface's draft at a width, through its navigation, with every scroll reveal fired.
 export async function openDraft( browser, cfg, width, state = null ) {
 	const page = await browser.newPage( { viewport: { width, height: 900 } } );

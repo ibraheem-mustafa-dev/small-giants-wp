@@ -33,7 +33,7 @@ import { sampleEntrances, sampleRegion } from './lib/entrances.mjs';
 import { isAccepted } from './lib/compare.mjs';
 import { compareState } from './lib/compare-state.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
-import { lintConfig } from './lib/lint.mjs';
+import { lintConfig, loadHandScope } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
 import { makeHelpers } from './lib/helpers.mjs';
@@ -58,7 +58,7 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 	process.exit( 2 );
 }
 const cfg = ( await import( pathToFileURL( cfgPath ).href ) ).default;
-const problems = lintConfig( cfg );
+const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ) );
 if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );

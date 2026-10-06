@@ -21,14 +21,16 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
 import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, chooseMediaPartner, reconcileHandPairs, configText, pairingStates, mergeWidthFinders, joinFinders, assertReachable, RECHECK_WIDTHS } from './lib/pairs.mjs';
-import { collectTagged, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions, liveReach, mediaPartners } from './lib/pairs-page.mjs';
+import { judgePairScope } from './lib/pair-scope.mjs';
+import { collectTagged, handScopes, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions, liveReach, mediaPartners } from './lib/pairs-page.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 
 // One pairing run: the surface opened on both sides at one width (with its state open), every live block paired with
 // its draft element. check: refuse a live page that cannot be paired (lib/pairs.mjs::assertReachable).
-// Returns { kept, left, unworded, retarget, duplicate, measured, boxes, lifted }.
+// Returns { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope }: handScope is each resolvable
+// hand pair's twin-containment verdict (lib/pair-scope.mjs::judgePairScope).
 export async function runPairing( { browser, cfg, prefix, width, state = null, check = false } ) {
 	const draft = await openDraft( browser, cfg, width, state );
 	const live = await openLive( browser, cfg, width, state );
@@ -63,6 +65,12 @@ export async function runPairing( { browser, cfg, prefix, width, state = null, c
 		const serial = ( f ) => ( 'function' === typeof f ? null : f );
 		const hDraft = await handElements( draft, handPairs.map( ( p ) => serial( p.draft ) ), 'draft', prefix );
 		const hLive = await handElements( live, handPairs.map( ( p ) => serial( p.live ) ), 'live', prefix );
+		// Each hand pair's two elements must hold the same words: a matched word inside one with its twin outside the other is a mispair.
+		const dIn = await handScopes( draft, handPairs.map( ( p ) => serial( p.draft ) ), wordEls );
+		const lIn = await handScopes( live, handPairs.map( ( p ) => serial( p.live ) ), lWords.map( ( w ) => w.e ) );
+		const dTexts = dWords.map( ( w ) => w.t );
+		const lTexts = lWords.map( ( w ) => w.t );
+		const handScope = handPairs.map( ( p, i ) => ( dIn[ i ] && lIn[ i ] ? { name: p.name, ...judgePairScope( { draftIn: dIn[ i ], liveIn: lIn[ i ], matches, dTexts, lTexts } ) } : null ) ).filter( Boolean );
 		// For anchoring, a hand pair measuring any element of a block stands for that block (a field's input for the field).
 		const partnerPath = Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveRef && hDraft[ i ] ? [ hLive[ i ].liveRef, hDraft[ i ] ] : null ) ).filter( Boolean ) );
 		Object.entries( results ).forEach( ( [ ref, r ] ) => r.verdict.ok && ( partnerPath[ ref ] = r.partner.path ) );
@@ -125,7 +133,7 @@ export async function runPairing( { browser, cfg, prefix, width, state = null, c
 		for ( let i = kept.length - 1; i >= 0; i-- ) {
 			duplicate.has( kept[ i ].ref ) && kept.splice( i, 1 );
 		}
-		return { kept, left, unworded, retarget, duplicate, measured, boxes, lifted };
+		return { kept, left, unworded, retarget, duplicate, measured, boxes, lifted, handScope };
 	} finally {
 		await draft.close();
 		await live.close();
@@ -232,6 +240,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const duplicate = new Set();
 	const measured = new Set();
 	const allRefs = new Set();
+	const scopeBy = new Map();
 	let lifted = [];
 	try {
 		for ( const { state, scope } of runs ) {
@@ -244,6 +253,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			run.retarget.forEach( ( v, k ) => retarget.set( k, v ) );
 			run.duplicate.forEach( ( r ) => duplicate.add( r ) );
 			run.measured.forEach( ( r ) => measured.add( r ) );
+			// A pair judged in several states is a mispair when any state says so.
+			run.handScope.forEach( ( v ) => {
+				const prev = scopeBy.get( v.name );
+				scopeBy.set( v.name, prev ? { ...prev, ok: prev.ok && v.ok, checked: prev.checked + v.checked, split: [ ...prev.split, ...v.split ], why: prev.why || v.why } : v );
+			} );
 			Object.keys( run.boxes ).filter( ( r ) => r.startsWith( prefix ) ).forEach( ( r ) => allRefs.add( r ) );
 			lifted = run.lifted;
 		}
@@ -260,7 +274,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	fs.mkdirSync( path.join( buildDir, 'qa', 'pairs' ), { recursive: true } );
 	const stateNames = runs.map( ( r ) => r.scope || r.state?.name ).filter( Boolean );
 	// `handMeasured`: the block ref of every hand pair whose draft and live both resolve (read by lib/register-sweep.mjs).
-	const report = { surface, when: new Date().toISOString(), ...( 1 === runs.length && runs[ 0 ].state ? { state: runs[ 0 ].state.name } : {} ), ...( runs.length > 1 ? { states: stateNames } : {} ), width, recheck, lifted, blocks: allRefs.size, kept: kept.length, coveredByHand: [ ...duplicate ], handMeasured: [ ...measured ], retargeted: Object.fromEntries( retarget ), left, keptPairs: kept };
+	const report = { surface, when: new Date().toISOString(), ...( 1 === runs.length && runs[ 0 ].state ? { state: runs[ 0 ].state.name } : {} ), ...( runs.length > 1 ? { states: stateNames } : {} ), width, recheck, lifted, blocks: allRefs.size, kept: kept.length, coveredByHand: [ ...duplicate ], handMeasured: [ ...measured ], handScope: [ ...scopeBy.values() ], retargeted: Object.fromEntries( retarget ), left, keptPairs: kept };
 	fs.writeFileSync( path.join( buildDir, 'qa', 'pairs', `${ surface }.json` ), JSON.stringify( report, null, 1 ) );
 	console.log( JSON.stringify( { surface, blocks: allRefs.size, kept: kept.length, left: left.length, config: path.join( path.dirname( s.walker ), fullFile ) } ) );
 }

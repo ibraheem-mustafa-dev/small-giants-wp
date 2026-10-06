@@ -93,3 +93,43 @@ test( 'MUST FAIL TO SKIP: without --register the ledger is checked against the r
 	fs.writeFileSync( path.join( d, 'qa', 'ledger.config.json' ), JSON.stringify( { register: 'gone.md' } ) );
 	assert.match( lintSurfaceLedger( path.join( d, 'surfaces.json' ), null, d ).join(), /gone.md does not exist/ );
 } );
+
+// Twin containment at lint (parity/lib/lint.mjs::lintConfig): a hand pair that pairs two different parts of the page
+// stops the walker with exit 1 before any browser opens.
+import { spawnSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { lintConfig } from '../../parity/lib/lint.mjs';
+
+const WALKER = fileURLToPath( new URL( '../../parity/draft-live-walk.mjs', import.meta.url ) );
+const REPO = fileURLToPath( new URL( '../../..', import.meta.url ) );
+const split = { name: 'about-step-1', ok: false, checked: 9, split: [ { word: '1', inside: 'draft' } ], why: '1 of 9 matched words have their twin outside the other element: "1" (inside the draft element only)' };
+const fine = ( name ) => ( { name, ok: true, checked: 2, split: [], why: null } );
+const cfgOf = ( names ) => ( { name: 'x', pairs: names.map( ( name ) => ( { name } ) ) } );
+
+test( 'MUST FAIL TO PASS: lintConfig refuses a hand pair the pairing report says is a mispair, and names it', () => {
+	const problems = lintConfig( cfgOf( [ 'about-step-1' ] ), [ split ] );
+	assert.equal( problems.length, 1 );
+	assert.match( problems[ 0 ], /pair "about-step-1" pairs two different parts of the page.*"1"/ );
+} );
+
+test( 'NOT OVER-REFUSING: legitimate pairs (the phone link, the submit button) and a verdict for an unlisted pair pass', () => {
+	assert.deepEqual( lintConfig( cfgOf( [ 'phone-link', 'submit-button' ] ), [ fine( 'phone-link' ), fine( 'submit-button' ), split ] ), [] );
+	assert.deepEqual( lintConfig( cfgOf( [ 'phone-link' ] ) ), [] );
+	assert.deepEqual( lintConfig( cfgOf( [ 'phone-link' ] ), null ), [] );
+} );
+
+test( 'MUST FAIL TO RUN: the walker exits 1 on a mispaired config before launching a browser; a clean pairing passes', () => {
+	const d = tmp();
+	fs.mkdirSync( path.join( d, 'parity' ) );
+	fs.mkdirSync( path.join( d, 'pairs' ) );
+	fs.writeFileSync( path.join( d, 'parity', 'x.mjs' ), "export default { name: 'x', pairs: [ { name: 'about-step-1' }, { name: 'phone-link' } ] };\n" );
+	const run = ( args = [] ) => spawnSync( process.execPath, [ WALKER, path.join( d, 'parity', 'x.mjs' ), ...args ], { cwd: REPO, encoding: 'utf8', timeout: 60000 } );
+	fs.writeFileSync( path.join( d, 'pairs', 'x.json' ), JSON.stringify( { handScope: [ split, fine( 'phone-link' ) ] } ) );
+	const bad = run();
+	assert.equal( bad.status, 1 );
+	assert.match( bad.stdout, /config lint failed[\s\S]*about-step-1/ );
+	fs.writeFileSync( path.join( d, 'pairs', 'x.json' ), JSON.stringify( { handScope: [ fine( 'about-step-1' ), fine( 'phone-link' ) ] } ) );
+	const good = run( [ '--lint' ] );
+	assert.equal( good.status, 0 );
+	assert.match( good.stdout, /config lint passed/ );
+} );

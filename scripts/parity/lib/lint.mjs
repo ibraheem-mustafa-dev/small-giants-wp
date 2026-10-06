@@ -1,9 +1,27 @@
 // Config lint for draft-live-walk.mjs: runs before any browser opens and fails the run on
 // a config that cannot prove what it claims (GAP-CHECKLIST.md, "Config lint").
 
-// Returns a list of problems; an empty list means the config passes.
-export function lintConfig( cfg ) {
+import fs from 'fs';
+import { pairingPath } from './ref-trace.mjs';
+
+// The hand pairs' twin-containment verdicts from the surface's pairing report (qa/pairs/<surface>.json, written by
+// scripts/computed-route/pairs.mjs), or null when the surface has no pairing report or it carries none.
+export function loadHandScope( cfgPath, cfg ) {
+	const p = pairingPath( cfgPath, cfg );
+	return p ? JSON.parse( fs.readFileSync( p, 'utf8' ) ).handScope || null : null;
+}
+
+// Returns a list of problems; an empty list means the config passes. handScope: the verdicts loadHandScope reads; a hand
+// pair whose elements hold different words (lib/pair-scope.mjs::judgePairScope) is a problem, so the run stops before
+// any browser opens.
+export function lintConfig( cfg, handScope = null ) {
 	const problems = [];
+	const pairNames = new Set( ( cfg.pairs || [] ).map( ( p ) => p.name ) );
+	for ( const v of handScope || [] ) {
+		if ( ! v.ok && pairNames.has( v.name ) ) {
+			problems.push( `pair "${ v.name }" pairs two different parts of the page: ${ v.why } (point both finders at the same element)` );
+		}
+	}
 	const names = new Set();
 	for ( const p of cfg.pairs || [] ) {
 		if ( names.has( p.name ) ) {

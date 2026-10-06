@@ -328,3 +328,53 @@ test( 'a state-scoped pair is written with its states and a state-suffixed name'
 	const src = configText( 'product.mjs', 'product', [ { ref: 'cr-ref-product-9', draft: 'body > p', scope: 'tab-details' } ] );
 	assert.match( src, /name: "gen-product-9-tab-details", states: \["tab-details"\], text: false/ );
 } );
+
+// Twin containment (lib/pair-scope.mjs::judgePairScope): a hand pair is a mispair when a matched word inside one
+// element has its twin outside the other. Each case lists the word indices inside each pair element.
+import { judgePairScope } from '../lib/pair-scope.mjs';
+
+// A prescription step: draft words 0-8 are the step's number then its title (the draft's step holds both); live
+// words 0-8 are the same words, the number being its own element beside the title.
+const STEP = [ '1', 'pick', 'a', 'frame', 'then', 'add', 'my', 'prescription', 'now' ];
+const stepMatches = STEP.map( ( _, i ) => [ i, i ] );
+const scope = ( draftIn, liveIn, texts = STEP, matches = stepMatches ) => judgePairScope( { draftIn, liveIn, matches, dTexts: texts, lTexts: texts } );
+
+test( 'MUST FAIL TO PASS: the draft step against live\'s title alone is refused, naming the stranded number', () => {
+	const v = scope( [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ], [ 1, 2, 3, 4, 5, 6, 7, 8 ] );
+	assert.equal( v.ok, false );
+	assert.deepEqual( v.split, [ { word: '1', inside: 'draft' } ] );
+	assert.match( v.why, /"1" \(inside the draft element only\)/ );
+} );
+
+test( 'MUST FAIL TO PASS: the same mispair the other way round (live holds the number, the draft element does not) is refused', () => {
+	assert.equal( scope( [ 1, 2, 3, 4, 5, 6, 7, 8 ], [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] ).ok, false );
+} );
+
+test( 'positive control: the corrected step, both elements holding number and title, passes', () => {
+	const v = scope( [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ], [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ] );
+	assert.deepEqual( v, { ok: true, checked: 9, split: [], why: null } );
+} );
+
+// Pairs a box-ratio gate would wrongly refuse: the size differs, the words do not.
+test( 'NOT OVER-REFUSING: the phone link (91 wide against 109) holding the same words passes', () => {
+	const t = [ 'call', 'us', 'on', '0121' ];
+	assert.equal( scope( [ 0, 1, 2, 3 ], [ 0, 1, 2, 3 ], t, t.map( ( _, i ) => [ i, i ] ) ).ok, true );
+} );
+
+test( 'NOT OVER-REFUSING: the submit button (166 wide against 335) holding the same words passes', () => {
+	const t = [ 'send', 'message' ];
+	assert.equal( scope( [ 0, 1 ], [ 0, 1 ], t, [ [ 0, 0 ], [ 1, 1 ] ] ).ok, true );
+} );
+
+test( 'NOT OVER-REFUSING: an icon or image pair holding no words, and a pair of words with no twin, pass', () => {
+	assert.deepEqual( scope( [], [] ), { ok: true, checked: 0, split: [], why: null } );
+	const v = judgePairScope( { draftIn: [ 0, 1 ], liveIn: [ 0 ], matches: [ [ 0, 0 ] ], dTexts: [ 'shop', 'extra' ], lTexts: [ 'shop' ] } );
+	assert.equal( v.ok, true );
+} );
+
+test( 'NOT OVER-REFUSING: a repeated word is not judged, because its twin may be another occurrence', () => {
+	const t = [ 'add', 'to', 'basket', 'add', 'to', 'basket' ];
+	const m = t.map( ( _, i ) => [ i, i ] );
+	// The first pair's draft element holds words 0-2, live's holds 3-5: every word repeats, so none is a sure twin.
+	assert.equal( judgePairScope( { draftIn: [ 0, 1, 2 ], liveIn: [ 3, 4, 5 ], matches: m, dTexts: t, lTexts: t } ).ok, true );
+} );
