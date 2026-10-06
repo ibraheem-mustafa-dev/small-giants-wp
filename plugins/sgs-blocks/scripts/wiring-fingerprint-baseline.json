@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 187,
+  "L3": 188,
   "L5": 12,
   "L2": 1,
   "L3-tier": 1,
@@ -13,6 +13,7 @@
   "ext/parallax.js::sgsParallaxStrength::L3",
   "sgs/account::showLatestOrder::L5",
   "sgs/buybox::extrasBeforeCount::L3",
+  "sgs/buybox::pickerBandScale::L3",
   "sgs/card-grid::ctaBehaviour::L3",
   "sgs/cart::hideOnCartCheckoutPages::L3",
   "sgs/cart::hideWhenEmpty::L3",

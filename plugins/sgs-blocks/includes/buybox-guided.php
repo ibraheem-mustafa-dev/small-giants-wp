@@ -124,7 +124,7 @@ if ( ! function_exists( 'sgs_buybox_guided_picker' ) ) {
 	 * the taxonomy name.
 	 *
 	 * @param array $group          Group descriptor.
-	 * @param array $picker_forward {swatch_style, plain_style, sub_label_key, show_tick}.
+	 * @param array $picker_forward {swatch_style, plain_style, sub_label_key, show_tick, band_axis, band_scale}.
 	 * @return string Fully-rendered, escaped block markup.
 	 */
 	function sgs_buybox_guided_picker( array $group, array $picker_forward ): string {
@@ -132,14 +132,23 @@ if ( ! function_exists( 'sgs_buybox_guided_picker' ) ) {
 			? $picker_forward['swatch_style']
 			: $picker_forward['plain_style'];
 
+		// Band-letter labels for the configured axis only, through the SAME
+		// parser and mapper the standard 8b loop and the bag line both call,
+		// so all three surfaces derive the letter once rather than three times.
+		$band_axis  = (string) ( $picker_forward['band_axis'] ?? '' );
+		$band_scale = (array) ( $picker_forward['band_scale'] ?? array() );
+		$band_labels = ( '' !== $band_axis && $group['taxonomy'] === $band_axis && ! empty( $band_scale ) )
+			? sgs_buybox_band_labels( $group['terms'], $band_scale )
+			: array();
+
 		$attrs = array(
 			'label'            => $group['label'],
 			'showLabel'        => false,
 			'optionItems'      => array_map(
-				static function ( $t ) {
+				static function ( $t ) use ( $band_labels ) {
 					return array(
 						'key'   => $t['slug'],
-						'label' => $t['label'],
+						'label' => $band_labels[ $t['slug'] ] ?? $t['label'],
 					);
 				},
 				$group['terms']

@@ -248,13 +248,21 @@ $link_aria_label = sprintf(
 // tab stop, so the inner <a class="sgs-responsive-logo__link"> is NOT printed
 // — two anchors to the same destination would be two keyboard stops for one
 // action. The overlay carries the same accessible name.
-$stretched_home_link = $link_to_home && sgs_stretched_link_handover(
-	$block,
-	$attributes,
-	home_url( '/' ),
-	$link_aria_label
-);
-$print_inner_link    = $link_to_home && ! $stretched_home_link;
+// Hand the home URL to the block-link extension. Called for its SIDE EFFECT:
+// it writes the URL into `$block->parsed_block['attrs']`, which is the copy
+// the `render_block` filter sees — render.php's own `$attributes` is a copy
+// that filter never reads. The return value is not needed, because the real
+// logo link is printed either way.
+if ( $link_to_home ) {
+	sgs_stretched_link_handover( $block, $attributes, home_url( '/' ), $link_aria_label );
+}
+
+// The real logo link is ALWAYS printed when the block links home. It is what
+// the block-link extension lends the stretched surface to, so the link's
+// accessible name comes from the logo's own content rather than an
+// operator-typed label on an empty anchor
+// (`includes/hover-effects/link-overlay.php::insert_block_link_overlay`).
+$print_inner_link = $link_to_home;
 
 // ── Animation modifier class ──────────────────────────────────────────────────
 
@@ -387,14 +395,6 @@ if ( '' !== $bg_hover_decl ) {
 // :hover rule of its own. ---
 if ( $hover_opacity > 0 && $print_inner_link ) {
 	$scoped_css[] = "{$sel} .sgs-responsive-logo__link{--sgs-logo-hover-opacity:" . number_format( $hover_opacity, 2 ) . ';}';
-} elseif ( $hover_opacity > 0 && $stretched_home_link ) {
-	// Stretched-link mode has no inner &__link element for the compiled
-	// stylesheet's rule to match, so the fade moves to the block ROOT — the
-	// element that is now the link. Built through the shared touch-safe
-	// emitter (helpers-hover-state.php), which is where every :hover rule in
-	// render.php comes from; :focus-within is the right focus partner because
-	// the focusable element is the overlay INSIDE the root, not the root.
-	$scoped_css[] = sgs_hover_state_rules( $sel, 'opacity:' . number_format( $hover_opacity, 2 ), ':focus-within' );
 }
 
 // --- Colour treatment — forces the IMAGE (not the wrapper background above)

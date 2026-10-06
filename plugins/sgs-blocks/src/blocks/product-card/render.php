@@ -1018,8 +1018,15 @@ $sgs_pc_stretched_link = sgs_stretched_link_handover(
 		? sprintf( __( 'View %s', 'sgs-blocks' ), $sgs_resolved_title )
 		: ''
 );
-// The title keeps the tab stop whenever the overlay does not take it.
-$sgs_pc_title_link = ! $sgs_pc_stretched_link;
+// The title ALWAYS keeps its link. The accepted card pattern is one real,
+// visible, named link whose hit area is stretched over the card, so the title
+// is what the block-link extension lends the card surface to — it is the first
+// non-inert anchor to the product (the image anchor above it is deliberately
+// `tabindex="-1" aria-hidden="true"` and so is skipped). The extension demotes
+// any FURTHER link to the same product, which is what keeps a `learn-more` CTA
+// from being a second tab stop to one destination; see
+// `includes/hover-effects/link-overlay.php::insert_block_link_overlay`.
+$sgs_pc_title_link = true;
 
 $sgs_resolved_desc  = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )
 	? ''

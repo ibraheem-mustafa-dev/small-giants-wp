@@ -1129,6 +1129,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				'plain_style'   => $buybox_picker_plain_style,
 				'sub_label_key' => $buybox_picker_sub_label_key,
 				'show_tick'     => $buybox_picker_show_tick,
+				// The band axis and scale travel with the other forwarded
+				// overrides so a guided tile shows the same letter the
+				// standard tile and the bag line show. Without them the
+				// guided path printed the raw measurement while the bag
+				// printed the letter — two surfaces of one number disagreeing.
+				'band_axis'     => $buybox_band_axis,
+				'band_scale'    => $buybox_band_scale,
 			),
 			(bool) ( $attributes['guidedAutoAdvance'] ?? true ),
 			array(

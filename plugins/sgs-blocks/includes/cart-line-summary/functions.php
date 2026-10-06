@@ -29,6 +29,22 @@ defined( 'ABSPATH' ) || exit;
 /** Hidden order-line meta holding the frozen summary lines. */
 const SGS_CART_LINE_SUMMARY_META = '_sgs_line_summary';
 
+/**
+ * Hidden order-line meta holding the display keys the frozen summary subsumes.
+ *
+ * Frozen at purchase alongside the summary itself, for the same reason: the
+ * customer-facing renderer removes exactly these rows and keeps every other
+ * one, so a third-party row (gift wrap, a subscription term) survives on a
+ * summarised line. Computed from the cart item, where the add-on, flow and
+ * variation labels are all still available, rather than guessed back from the
+ * order line later.
+ *
+ * A line purchased before this existed has no such meta, and the renderer
+ * keeps its original behaviour for that line — a past order's email must not
+ * change shape.
+ */
+const SGS_CART_LINE_SUMMARY_KEYS_META = '_sgs_line_summary_keys';
+
 /** The separator between parts of a summary line (U+00B7 MIDDLE DOT). */
 const SGS_CART_LINE_SUMMARY_SEPARATOR = ' · ';
 

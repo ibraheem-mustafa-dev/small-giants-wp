@@ -183,6 +183,53 @@ final class Cart_Line_Summary_Cart {
 		}
 
 		$item->add_meta_data( SGS_CART_LINE_SUMMARY_META, $lines, true );
+		$item->add_meta_data( SGS_CART_LINE_SUMMARY_KEYS_META, self::subsumed_display_keys( $values ), true );
+	}
+
+	/**
+	 * The display keys this line's summary stands in for.
+	 *
+	 * Frozen at purchase because the cart item still has the add-on lines, the
+	 * flow answers and the variation map; an order line only has the rendered
+	 * result. The renderer removes exactly these rows and keeps every other
+	 * one, so a third-party row survives on a summarised line.
+	 *
+	 * Matched on the DISPLAY key, which is what `get_formatted_meta_data()`
+	 * returns and what the customer sees. For a variation row that is
+	 * `wc_attribute_label()`, i.e. already through `self::attribute_label`, so
+	 * a client-renamed axis ("Size" for `pa_frame-size`) matches on the same
+	 * string the row will print.
+	 *
+	 * @param array $values Cart item values.
+	 * @return array<int, string> Display keys, de-duplicated, never empty strings.
+	 */
+	private static function subsumed_display_keys( array $values ): array {
+		$keys = self::variation_row_labels( $values );
+
+		if ( sgs_cart_line_summary_has_addons( $values ) ) {
+			// The add-on list's single "Options" row...
+			$keys[] = (string) \apply_filters( 'sgs_addon_cart_label', \__( 'Options', 'sgs-blocks' ) );
+			// ...and its one priced row per group, which the staff order screen
+			// keeps (it reads the order line's own meta, not this filter).
+			foreach ( (array) $values[ Addon_Price_List_Cart::LINES_KEY ] as $line ) {
+				if ( \is_array( $line ) ) {
+					$keys[] = (string) ( $line['group_label'] ?? '' );
+				}
+			}
+		}
+
+		$flow_key = Flow_Fields_Cart::KEY;
+		if ( ! empty( $values[ $flow_key ] ) && \is_array( $values[ $flow_key ] ) ) {
+			foreach ( $values[ $flow_key ] as $entry ) {
+				if ( \is_array( $entry ) ) {
+					$keys[] = (string) ( $entry['label'] ?? '' );
+				}
+			}
+		}
+
+		$keys = \array_filter( \array_map( 'trim', $keys ), static fn( $key ) => '' !== $key );
+
+		return \array_values( \array_unique( $keys ) );
 	}
 
 	/**
@@ -212,17 +259,81 @@ final class Cart_Line_Summary_Cart {
 			return $html;
 		}
 
-		$args      = \is_array( $args ) ? $args : array();
-		$before    = (string) ( $args['before'] ?? '' );
-		$after     = (string) ( $args['after'] ?? '' );
-		$separator = (string) ( $args['separator'] ?? '' );
+		$args         = \is_array( $args ) ? $args : array();
+		$before       = (string) ( $args['before'] ?? '' );
+		$after        = (string) ( $args['after'] ?? '' );
+		$separator    = (string) ( $args['separator'] ?? '' );
+		$label_before = (string) ( $args['label_before'] ?? '' );
+		$label_after  = (string) ( $args['label_after'] ?? '' );
 
-		$escaped = array();
+		$rows = array();
 		foreach ( $lines as $line ) {
-			$escaped[] = \esc_html( $line );
+			// A summary line has no label, which is exactly how the stray
+			// leading colon disappears.
+			$rows[] = \esc_html( $line );
 		}
 
-		return $before . \implode( $separator, $escaped ) . $after;
+		// A surviving third-party row is rendered exactly as WooCommerce would
+		// have drawn it. Verified against the INSTALLED source rather than
+		// trunk: `wc-template-functions.php::wc_display_item_meta` wraps the
+		// key in the caller's label args and passes the value through
+		// `wp_kses_post( make_clickable( trim( … ) ) )`, or plain
+		// `wp_kses_post()` when the caller asked for `autop`.
+		$autop = ! empty( $args['autop'] );
+		foreach ( self::foreign_meta_rows( $item ) as $row ) {
+			$value  = $autop
+				? \wp_kses_post( $row['value'] )
+				: \wp_kses_post( \make_clickable( \trim( $row['value'] ) ) );
+			$rows[] = $label_before . \wp_kses_post( $row['key'] ) . $label_after . $value;
+		}
+
+		return $before . \implode( $separator, $rows ) . $after;
+	}
+
+	/**
+	 * The rows on this line that are NOT ours, in WooCommerce's own order.
+	 *
+	 * `woocommerce_display_item_meta` hands over already-rendered HTML for the
+	 * whole meta block, so returning only the summary silently destroyed every
+	 * other row — a third-party gift-wrap or subscription row vanished from the
+	 * customer's email on a summarised line. Rebuilding from
+	 * `get_formatted_meta_data()` and dropping only the keys the summary
+	 * subsumes keeps those rows.
+	 *
+	 * `$include_all` is deliberately left false: the default `$hideprefix` of
+	 * '_' is what hides this feature's own `_sgs_line_summary` meta, and
+	 * passing true would print the raw summary array back out.
+	 *
+	 * A line purchased before the keys meta existed returns an empty list, so
+	 * its email keeps the shape it had when it was sent.
+	 *
+	 * @param \WC_Order_Item $item The order line item.
+	 * @return array<int, array{key: string, value: string}>
+	 */
+	private static function foreign_meta_rows( $item ): array {
+		if ( ! \is_object( $item ) || ! \method_exists( $item, 'get_formatted_meta_data' ) ) {
+			return array();
+		}
+
+		$ours = $item->get_meta( SGS_CART_LINE_SUMMARY_KEYS_META, true );
+		if ( ! \is_array( $ours ) || empty( $ours ) ) {
+			return array();
+		}
+		$ours = \array_map( static fn( $key ) => \trim( (string) $key ), $ours );
+
+		$rows = array();
+		foreach ( (array) $item->get_formatted_meta_data() as $meta ) {
+			$display_key = \trim( \wp_strip_all_tags( (string) ( $meta->display_key ?? '' ) ) );
+			if ( '' === $display_key || \in_array( $display_key, $ours, true ) ) {
+				continue;
+			}
+			$rows[] = array(
+				'key'   => (string) ( $meta->display_key ?? '' ),
+				'value' => (string) ( $meta->display_value ?? '' ),
+			);
+		}
+
+		return $rows;
 	}
 
 	/**

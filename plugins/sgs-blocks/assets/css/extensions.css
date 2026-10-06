@@ -467,6 +467,21 @@
 }
 
 /*
+ * The LENDER — the block's own real link, which the extension found in the
+ * rendered output and gave the stretched surface to
+ * (`includes/hover-effects/link-overlay.php::insert_block_link_overlay`).
+ *
+ * It carries the same focus ring the overlay used to, because it is now the
+ * element a keyboard user lands on. The ring is on the link's own box rather
+ * than the whole card, which is where the ring was before this pattern and so
+ * is the behaviour a keyboard user already knows.
+ */
+.sgs-block-link-source:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #076a8e);
+	outline-offset: 2px;
+}
+
+/*
  * Real interactive descendants stay clickable ABOVE the overlay.
  *
  * Two rules, not one, because the two declarations need opposite strengths.
