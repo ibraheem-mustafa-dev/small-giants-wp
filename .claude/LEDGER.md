@@ -88,16 +88,20 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 findings with no
   typography control, in `plugins/sgs-blocks/reports/f3-e14-triage.md`.
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
-  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 587. **F 193 → 173**, all 17 surfaces,
-  measure-only, inside the 155-175 band committed BEFORE the sweep. `bgHoverZoom` 20 → 0.
-  **`mobile-menu` pairs** (`7255be68d`) — all 17 surfaces carry `handScope`.
-  **Canvas claims: 17 of 63 families (82/168) confirmed live, ALL REFUTED** (`29f2e30c1`, `confirm-canvas.mjs`,
-  `CANVAS-SETTABLE-CONFIRMATION.md`). W→F NOT applied until all 63 are read, so F keeps one meaning. **46 families
-  need the REMOTE site** — see the ⚠️ below.
-  **`sgs/hero`'s 3 undetermined settings closed** (`353b9b4ed`, `HERO-DEAD-SETTINGS.md` §9). `maxWidth` is a REAL
-  gap, proven live. **Never remove `section.sgs-hero{max-width:none}`** (D725, 24px off-screen). A tier background
-  with no base image paints nothing — **candidate live gap**, needs a built instance.
-  **Owed:** `benchmark.mjs --noise` (stopped 4/10; 5/5 catch rate stands, noise unproven).
+  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 587. **F 193 → 173**, measure-only,
+  inside the 155-175 band committed BEFORE the sweep. All four owed items closed or named.
+  **`--noise` DONE** (`BENCHMARK-NOISE-RESULT.md`): 10 runs, quiet host, **5 of 5 scored cases caught** (case a
+  unscorable, the draft shares the gap). **Noise 5 rows, not 0, all PHASE, not host load or flakiness**: a draft
+  view-swap fade (accepted at `shop.mjs`:286), the trust-bar marquee, and a shadow read at t≈0.999 (same colour;
+  alpha/blur/spread each exactly 0.10% short). C's 13-and-9 superseded.
+  **`mobile-menu` pairs** (`7255be68d`): all 17 surfaces carry `handScope`.
+  **Canvas: 17 of 63 families (82/168) confirmed live, ALL REFUTED** (`29f2e30c1`, `confirm-canvas.mjs`,
+  `CANVAS-SETTABLE-CONFIRMATION.md`). Cause MEASURED: `reachesElement` **fails open** — `emissionOf` null 17 of
+  17, so each row read W untested (`reachabilityVerified` records which; no row moved). W→F held until all 63 are
+  read. **46 families need the REMOTE site** — see the ⚠️.
+  **`sgs/hero`'s 3 undetermined closed** (`353b9b4ed`, `HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap,
+  proven live — **never remove `section.sgs-hero{max-width:none}`** (D725, 24px off-screen); and a tier background
+  with no base image paints nothing, a **candidate live gap** needing a built instance.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) are fast but carry
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
@@ -236,8 +240,6 @@ does not produce real matches on real data for it to consume.
   detector passing on every drill so far is not proof it generalises.
 - **"Reported broken in an earlier session" is not the same claim as "broken now."** Re-verify
   live before rebuilding a mechanism that already works.
-- **A computed-style read right after forcing a state (`:hover`, `aria-current`) can capture the
-  pre-transition value.** Disable transitions for measurement, or wait for `transitionend`.
 - **A count-based responsive column attribute (`columns:{desktop:N}`) can silently collapse below
   N** if the block opts into intrinsic/auto-fit sizing and the per-column minimum-width floor
   doesn't fit N tracks at the container's real width — CSS grid auto-fit working as designed, but
