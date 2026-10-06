@@ -514,7 +514,12 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 
 1. **Foundations.** The resolver, normaliser, read-only database and ledger (FR-47-1, FR-47-5), plus walker items 6 and
    7 (FR-47-6), with tests. **Done 2026-10-03:** 38 tests pass, the lint fails on a planted unlisted export, both walker
-   items turned red on planted faults (GAP-CHECKLIST §16), and the benchmark scores 5 of 5 with 0 noise rows.
+   items turned red on planted faults (GAP-CHECKLIST §16), and the benchmark scores 5 of 5. **The "0 noise rows"
+   figure recorded here was superseded on 2026-10-06:** a full 10-run `--noise` benchmark on a quiet host read
+   **5 noise rows**, every one a phase artefact (a draft view-swap fade, the trust-bar marquee's scroll phase, and
+   one shadow read at t≈0.999), not host load and not walker flakiness. A run reading 0 was never evidence of
+   absence, because all three causes are phase-dependent, so a phase-dependent count cannot be compared across
+   runs without pinning the phase. Detail: `.claude/reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
 2. **Footer proof.** Solve (FR-47-3) on Eye Care's footer, with calibration (FR-47-2) of the blocks it uses. **Passed
    2026-10-03 (run 3 below).**
    - **Baseline:** `sites/eye-care-ward-end/build/footer.tree.json` at commit `b7c09adc1`, built to `sgs_footer` 182 on
@@ -618,6 +623,14 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
+     - **CR6 — setting one side of a padding or margin box zeroes the other three. PROVEN, UNBUILT, owned here.**
+       Recorded 2026-10-06 because `LEDGER.md` named this section as its owner while this section did not mention
+       it, so nothing actually owned it. The fix is awkward rather than large: `lib/resolve.mjs::seedSides` models
+       the zero-fill that CR6 removes, so the helper change and `seedSides` **must land together** or the route
+       re-introduces the behaviour it just removed. Of the 14 route/calibration (CR) rows in the Eye Care register
+       (`plans/2026-10-02-eye-care-fix-register.md`, grouped in
+       `reports/2026-10-06-session-c2/BEAN-LIST.md`), this is the only one marked proven-and-unbuilt; the rest are
+       either route-fixed awaiting a re-calibration host window, or still to prove.
      - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
        (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
