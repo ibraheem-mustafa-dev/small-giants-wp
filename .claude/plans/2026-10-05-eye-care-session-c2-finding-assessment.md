@@ -273,6 +273,52 @@ framework DB its calibration reads.
 |---|---|
 | `776a93639` | A1, A2, A3, A5, A6 — the five Bean approved |
 | `12c0a0bb6` | A7 symptoms 1 and 2, cause proven live |
+| `21e65249a` | The `/qc-council` revision: reverts a hardcode `12c0a0bb6` introduced |
+
+### What `/qc-council` changed, 2026-10-06
+
+Bean challenged the set with: *"we don't want to accidentally hard code or force a
+design/choice on one website to the whole theme's sites."* Re-reading the diff against that
+found one real defect of mine and one capability gap. Two shapes went to council; **one was
+built, one was deliberately dropped.**
+
+**SHAPE 1, BUILT (`21e65249a`) — `12c0a0bb6` had hardcoded two font weights.** It declared
+`font-weight: 600` on `.sgs-whatsapp-cta__card-title` and `400` on `__card-subline`. 600 was
+chosen to preserve what the canary paints, which this project forbids reasoning from, and 400 was
+an assumption about the theme body weight — so a client on 300 or 500 would have been given mine.
+The real cause: `font-weight: 600` sat on `.sgs-whatsapp-cta__btn`, a class the card variant's
+root `<a>` also carries, and the card renders **no label at all**. The weight now sits on
+`.sgs-whatsapp-cta__label`, the element it was always for. Paint-identical for inline, banner and
+floating — verified in `render.php`: inside the `<a>` those variants render the SVG plus exactly
+one of `__label`, that span with `--floating`, or a clipped `.sgs-sr-only`. `labelFontWeight`
+still wins at `(0,2,0)` over the base rule's `(0,1,0)`. **Consequence to carry into Session D:**
+Eye Care's card title now paints the theme weight, not 600. If its draft wants heavier, that is
+`cardTitleFontWeight` per site, not a framework default.
+
+**SHAPE 2, DROPPED — a `tabs` hover indicator colour.** A6 deleted the hardcoded hover
+underline, and Bean said the replacement route is "border-bottom width and colour". **That route
+does not exist**: the `tab` element's hover state maps only `css:background-color` ->
+`tabHoverBgColour`. Costing it showed why it should not be built on spec: the indicator is a
+box-shadow scoped to `.sgs-tabs--style-underline`, so a hover member is **inert on the boxed and
+pills styles** — a control that cannot paint on two of the three styles unless the editor control
+is style-gated. It also needs a vertical-axis twin and a third twin inside the 767px collapse, and
+its gradient sibling is unbuildable (`helpers-tokens.php::sgs_border_gradient_css` returns `''`
+when the resting paint is empty, and paints a perimeter ring, not a bottom bar). Hover already
+carries a text-colour change plus optional `tabHoverBgColour`, and **no draft asks for a hover
+underline** — the register's own S2/S12 decisions scope underlines to text links, off buttons. The
+deletion removed a forced design choice; adding speculative surface would not improve on that.
+`tabs/style.css` now records what exists and what building it would take.
+
+**One rater finding checked and REJECTED.** A sweep flagged `button/style.css::.sgs-button`'s
+literal `line-height: 1.2` as the same defect as A2. It is not. `sgs/button` emits its typography
+to `.{uid}.sgs-button` `(0,2,0)`, which beats the base rule `(0,1,0)`, so the control already
+wins and the literal is a legitimate overridable default. A2 differed because the control painted
+the accordion **wrapper** while the hardcode sat on the **header child**, where specificity never
+came into it. Acting on the rater would have broken a working default.
+
+⚠️ **Two of three raters cited this session's own commits as independent prior art**, one
+misattributing A6's deletion to an older SHA and quoting my own commit message back as a
+"deliberate design decision". Recorded in auto memory under `agent-verdicts-need-a-citation-gate`.
 
 **Gates green at commit time**, each run individually: `audit-inline-styling.js --check`,
 `check-dead-controls.js --check`, `check-editor-render-parity.js --check`,
