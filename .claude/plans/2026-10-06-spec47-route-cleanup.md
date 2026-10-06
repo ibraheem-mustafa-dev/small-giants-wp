@@ -233,7 +233,34 @@ All gated on earlier waves; files disjoint.
 Recorded now so the verification is falsifiable rather than narrated, the same discipline that scored the
 last sweep.
 
-**F should fall from 193 to roughly 148–168, i.e. by 25 to 45 rows.** Expected contributions:
+### The prediction, REVISED 2026-10-06 before any sweep ran
+
+The original band counted only the fixes that REMOVE rows and missed that two of this plan's fixes ADD
+them. It must be restated before the sweep, not after, or the verification stops being falsifiable.
+
+**R1 and P3d both push F UP, by design.** R1 stops `canvasSettable` crediting a control that cannot reach
+the row, so rows previously classed `W/canvas-settable` become F — they were always F, and the masking was
+the defect. P3d stops `transientOf` swallowing a resting value, which also surfaces rows. **Measured, not
+estimated:** W3-G re-ran triage over all 17 surfaces against the stored Solve reports and F moved
+**193 → 201, up 8**, with `bgHoverZoom` canvas-settable claims going 20 → 0 and all canvas-settable claims
+209 → 199. Those stored reports came from the OLD walker, so that +8 is the triage-side effect alone.
+
+**The walker-side fixes push F DOWN, and none of them shows until a fresh walk**, because they change what
+is measured rather than how it is classified: P1 ~11, P2b3 ~8, P2b2 6, P2b1 ~5, P3b ~3, P3c 2 — about 35,
+with overlaps, so not simply additive.
+
+| Direction | Fixes | Effect on F |
+|---|---|---|
+| Down, needs a fresh walk | P1, P2b3, P2b2, P2b1, P3b, P3c | about −35 |
+| Up, already measurable | R1, P3d | **+8, measured** |
+| Neither | P2a | 6 pairs refused at lint, not reclassified |
+
+**Revised band: F 193 → roughly 155–175**, centred near 166. The old 148–168 would have called a perfectly
+correct 171 a failure and sent someone hunting a cause that did not exist.
+
+⚠️ **The baseline has moved TWICE, and only the first move was verified harmless.**
+
+**The original figure, kept for the record: F 193 → 148–168.** Its per-fix contributions:
 
 | Fix | Expected F rows cleared |
 |---|---|

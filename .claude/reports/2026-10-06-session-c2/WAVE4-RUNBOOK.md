@@ -66,7 +66,14 @@ node scripts/computed-route/sweep.mjs                                           
 (multi-svg containers lose their `icon-*` keys), so a raw-key comparison reads a cosmetic rename as mass
 close-and-reopen. This is the Gate TAIL defect, and this is the sweep it was going to bite.
 
-**The prediction, and its honest status.** The plan committed to **F 193 → roughly 148–168**. That band
+**The prediction, REVISED. Use 155–175, not 148–168.** The original band counted only the fixes that remove
+rows. **R1 and P3d both push F UP by design** — they unmask rows that were always F, which is the whole
+point of them — and that was measured, not guessed: re-running triage over the stored Solve reports moved
+F **193 → 201**, with `bgHoverZoom` canvas-settable claims 20 → 0. The walker-side fixes (about −35) show
+only on a fresh walk. Net: **roughly 155–175, centred near 166.** The old band would have called a correct
+171 a failure.
+
+**The original band's other caveat still stands.** It
 assumed the live site had not moved, and **it has**: 18 commits between `6d6906b98` and `578a8830b`, several
 touching `product-card`, `hover-effects`, `cart-line-summary`, `addon-price-list` and `toast`, and only the
 earlier move was verified harmless on three axes. So treat the band as corroboration and lean on **per-fix

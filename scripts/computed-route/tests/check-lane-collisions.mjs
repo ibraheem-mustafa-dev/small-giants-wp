@@ -95,6 +95,12 @@ const WAVES = {
 		// R2 + R3. R2 is deliberately ADDITIVE: it adds a normalised-path key beside `issueKey` rather than
 		// changing it, because re-keying `issueKey` itself would re-key every existing ledger entry — the very
 		// failure mode R2 exists to stop.
+		// The main thread's lane again, for the same reason as W1-MAIN. lib/sweep.mjs can be perfect while the
+		// CLI still prints the line it always did, because scripts/computed-route/sweep.mjs is a separate file
+		// that no lane owns. R3 and R4 are dead without this wiring.
+		'W3-MAIN': [
+			'scripts/computed-route/sweep.mjs',
+		],
 		'W3-H': [
 			'scripts/computed-route/lib/sweep.mjs',
 			'scripts/computed-route/lib/issue-classes.mjs',
