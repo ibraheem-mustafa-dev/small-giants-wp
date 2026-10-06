@@ -88,12 +88,12 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 findings with no
   typography control, in `plugins/sgs-blocks/reports/f3-e14-triage.md`.
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
-  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 587. **F 193 → 173**, measure-only,
+  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 589. **F 193 → 173**, measure-only,
   inside the 155-175 band committed BEFORE the sweep. All four owed items closed or named.
   **`--noise` DONE** (`BENCHMARK-NOISE-RESULT.md`): 10 runs, quiet host, **5 of 5 scored cases caught** (case a
   unscorable, the draft shares the gap). **Noise 5 rows, not 0, all PHASE, not host load or flakiness**: a draft
   view-swap fade (accepted at `shop.mjs`:286), the trust-bar marquee, and a shadow read at t≈0.999 (same colour;
-  alpha/blur/spread each exactly 0.10% short). C's 13-and-9 superseded.
+  alpha/blur/spread each an identical 0.0950% short). C's 13-and-9 superseded.
   **`mobile-menu` pairs** (`7255be68d`): all 17 surfaces carry `handScope`.
   **Canvas: 17 of 63 families (82/168) confirmed live, ALL REFUTED** (`29f2e30c1`, `confirm-canvas.mjs`,
   `CANVAS-SETTABLE-CONFIRMATION.md`). Cause MEASURED: `reachesElement` **fails open** — `emissionOf` null 17 of
@@ -117,7 +117,7 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   CONTENT (4 products have real photos).
   **Next, ~5 min on one build:** `58` multi-button has no `sgsAnimation` · `N33B` `gallerySavingBadge: true`
   against a `false` default · `9` a brand tile duplicates its alt. `152` BUILT. **CR: none of the 14 closed by
-  the cleanup; `CR6` and `CR12` are ORPHANS needing an owner.**
+  the cleanup; **`CR12` is the remaining ORPHAN** needing an owner (`CR6` is now owned, see below).**
 
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no

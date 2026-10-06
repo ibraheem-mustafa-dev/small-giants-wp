@@ -981,14 +981,31 @@ row count fell 18 → 6 between the two runs with an unchanged config, then read
 walker-read drift the deploy cannot explain. `link-missing` is also a read kind that did not exist on 2026-10-03
 (208 rows in both control and noise now), so that run could not have produced those noise rows at all.
 
-**The honest state: the 22 noise rows are unproven in both directions.** Host load from the deploy is an available
+**SUPERSEDED 2026-10-06 — the measurement was made and the answer was a third mechanism neither candidate
+below covers: PHASE.** 10 runs on a quiet host read 5 noise rows, every one a time-varying value sampled at a
+different moment (a draft view-swap fade, a CSS marquee's scroll phase, and a `box-shadow` read at t≈0.999).
+Host load is excluded and so is detector flakiness. `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
+The reasoning that follows is kept because it names the two candidates correctly and its demand for a
+back-to-back run on a quiet host is what settled it.
+
+**The position before that run: the 22 noise rows are unproven in both directions.** Host load from the deploy is an available
 contributor; the walker's read path changed substantially since the 0-noise run; neither is excluded. The earlier
 wording here replaced one unverified cause with another, which is the exact failure
 `~/.claude/rules/prove-the-cause-before-fix.md` exists to prevent. **The measurement that would separate them:** run
 control and noise back to back five minutes apart on a quiet host (same rows ⇒ walker flakiness; zero rows ⇒ load or
 the 45-minute gap), and separately run commit `6a4a02ecf`'s walker against today's host.
 
-**Owed, with the exact command:** re-run `node scripts/parity/benchmark.mjs --noise` on a quiet host and compare the
+**DONE 2026-10-06** (`8210af3a1`, `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`): 10 runs back to
+back on a quiet host. Catch rate 5 of 5 scored cases. **Noise settled at 5 rows — and the answer was NEITHER of
+the two options predicted here.** The prediction was "same rows ⇒ walker flakiness; zero rows ⇒ load or the
+45-minute gap"; the result was 5 rows, every one a **phase artefact**: a draft view-swap fade sampled mid-fade
+(already an accepted difference at `qa/parity/shop.mjs`:286), the `sgs/trust-bar` marquee's scroll phase, and one
+`box-shadow` read at t≈0.999 (the same shadow — identical colour, with alpha, blur and spread each short by an
+identical 0.0950%). So a third mechanism neither candidate covered, which is why the earlier 0-noise run was
+legitimate rather than contradictory: every cause is phase-dependent, so a phase-dependent count cannot be
+compared across runs without pinning the phase. The superseded wording follows.
+
+**Superseded — the original owed item:** re-run `node scripts/parity/benchmark.mjs --noise` on a quiet host and compare the
 noise counts against 0. Until then the catch rate stands at 5 of 5 and the noise figure is unproven in both
 directions. **Owner: the next route session**, since it needs ~80 minutes of uninterrupted shared host.
 

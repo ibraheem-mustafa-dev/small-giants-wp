@@ -101,8 +101,8 @@ Proven arithmetically rather than asserted:
 - Converting `color(srgb 0.611765 0.545098 0.470588)` to Oklab gives `oklab(0.64669 0.0115519 0.032210)`
   against the reported `oklab(0.64669 0.0115814 0.032222)`: **L identical to five decimal places**, a and b
   within 3e-5. Same colour.
-- Every numeric component is short by **exactly 0.10%**: alpha 0.39962 against 0.4, blur 7.9924px against 8px,
-  spread 1.9981px against 2px. A uniform deficit across three independent components is one interpolation
+- Every numeric component is short by an **identical 0.0950%**: alpha 0.39962 against 0.4, blur 7.9924px against
+  8px, spread 1.9981px against 2px. All three ratios are 0.999050 to six decimal places. A uniform deficit across three independent components is one interpolation
   progress value, not three coincidences.
 - The format change is the tell: Chrome serialises a mid-interpolation colour in the transition's
   **interpolation space** (`oklab`), and the settled value in its authored space (`color(srgb …)`). So the

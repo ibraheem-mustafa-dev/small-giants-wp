@@ -142,8 +142,10 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 
 **The per-surface totals above are the 2026-10-05 pre-Session-C figures. Current truth, from Session C's Wave 3 sweep (2026-10-06, all 17 surfaces, block code `7f375f765`):** site total **1,841** per surface (1,836 site-deduped, five ref-less `contact`/`contact-form` presence rows collapsing because both declare the same walker), split unresolved 1,396, derived 395, **unmapped-state 0** (was 323) and content 45. Triage classes: **W 1,242 / F 192 / T 378 / U 29**. Read the live per-surface numbers from `qa/triage/*.json`, never from this table.
 
-  Pairing left out, with reasons in `qa/pairs/<surface>.json`: mobile-menu pairs nothing (the collector reads no words
-  inside the open live drawer, cause unproven; header.mjs's drawer pairs still measure it); shop's and product's draft
+  Pairing left out, with reasons in `qa/pairs/<surface>.json`: mobile-menu now pairs (FIXED 2026-10-06,
+  `7255be68d`: its state opener matched the Menu button by rendered text `^$`, and the label is hidden at 375
+  but reads "Menu" from 768, so the click silently missed and `clickText`'s `optional` swallowed it — both sides
+  behaved alike, so it was never a site regression; all 17 surfaces now carry `handScope`); shop's and product's draft
   finders hold other words at 375 and 768 (the draft rebuilds its layout per width); Help's FAQ items are 319px on the
   draft against 996px live; lens shows 3 of its 24 blocks at step 1 (lens.mjs's hand pairs walk the later steps). Bag,
   checkout and confirmation are walked by their hand configs (`qa/sweep/2026-10-05/walks/`; confirmation against the

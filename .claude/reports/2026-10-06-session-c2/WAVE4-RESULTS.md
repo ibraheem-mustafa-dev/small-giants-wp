@@ -147,10 +147,16 @@ and a control per config):
 | `case-c` | — | in flight when stopped |
 
 **No catch-rate or noise figure can be read from this.** Scoring (`benchmark/score.mjs`) runs at the end
-over the whole set, and the noise cases — the entire point — had not started. The standing position is
-unchanged: **catch rate 5 of 5, noise figure unproven in both directions.**
+over the whole set, and the noise cases — the entire point — had not started. **SUPERSEDED the same day:** the run was
+repeated in full (`8210af3a1`, `BENCHMARK-NOISE-RESULT.md`) — 10 runs on a quiet host, **5 of 5 scored cases
+caught**, and the noise figure settled at **5 rows, every one a phase artefact** (a draft view-swap fade, the
+`sgs/trust-bar` marquee's scroll phase, and one `box-shadow` read at t≈0.999), not host load and not detector
+flakiness.
 
-⚠️ **Run it on the local WSL mirror next time, not the remote host** — but understand what that changes.
+⚠️ **Do NOT run this particular benchmark on the local mirror** — the advice that stood here was wrong for this
+tool, and the completed run kept it remote deliberately. Its question is "walker flakiness or HOST load", so
+localhost removes the variable under measurement rather than controlling for it. The guidance below is correct
+for browser-heavy route work in general, which is what it was written for.
 `dev-setup.md` §"Local WordPress mirrors (WSL)" documents `http://localhost:8081` (Eye Care) and `:8082`
 (Sandybrown) as WSL copies of the two Hostinger test sites, explicitly "for browser-heavy runs Hostinger's
 edge would challenge". Note `scripts/local-wp/sync-build.sh` wants a build first.

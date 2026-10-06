@@ -153,17 +153,17 @@ they belong here rather than in a separate session:
 2. **Session C's three host jobs — TWO ARE NOW DONE (2026-10-06), only `benchmark.mjs --noise` is owed.**
    The **C3.5 confirmation walk** RAN (300 open rows, 0 live console errors) and the **`sgs/media`
    recalibration** RAN (38 settings, 0 dead; it proved L7's content reads on real data, and `sgs/hero`
-   records none because it is a container whose copy lives in child blocks). `benchmark.mjs --noise` was
-   stopped at 4 of 10 runs to release the host, so the catch rate of 5 of 5 stands and the noise figure is
-   still unproven in both directions. Detail in `WAVE4-RESULTS.md` §"Session C's three owed host jobs".
+   records none because it is a container whose copy lives in child blocks). `benchmark.mjs --noise` RAN IN FULL
+   2026-10-06 (`8210af3a1`, `BENCHMARK-NOISE-RESULT.md`), after a first attempt was stopped at 4 of 10 to
+   release the host: 10 runs on a quiet host, 5 of 5 scored cases caught, and the noise figure settled at 5
+   rows, every one a phase artefact rather than host load or detector flakiness.
    The original description follows, for the commands: the **C3.5 confirmation walk** — order
    652 on eye-care-test is already `processing` and paid, so set `EYECARE_ORDER_URL` to its
    order-received URL and read the key with `wp eval`, **never store it**; an **`sgs/media` recalibration**
    to exercise the content reads on a block that has them, because `sgs/hero`'s run recorded nothing across
    17 qualifying settings and nobody knows whether that is legitimate; and a **`node scripts/parity/benchmark.mjs --noise`**
-   re-run with control and noise back to back, since it caught 5 of 5 planted faults but its noise figure is
-   unproven in both directions. Commands in `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
-   §"Wave 3's remaining items".
+   re-run with control and noise back to back (DONE, see above). Commands in
+   `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` §"Wave 3's remaining items".
 
 Both slot into **Wave 4**, alongside the verification sweep, since they share its host window.
 

@@ -711,10 +711,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
          One test assertion on its own citation goes with it.
        - **The `scroll` row kind vanished** between the 2026-10-05 and 2026-10-06 sweeps: 24 to 0 on product, 2 to 0
          on shop. Unexplained.
-       - **`benchmark.mjs --noise` is unproven in both directions.** It caught 5 of 5 planted faults, but read 13
-         noise rows on shop and 9 on lens where an earlier run read 0. Host load and walker-read drift are both
-         candidates and neither is excluded — the control's own hover rows fell 18 to 6 with an unchanged config. Needs
-         control and noise back to back on a quiet host.
+       - **`benchmark.mjs --noise` — DONE 2026-10-06** (`8210af3a1`). 10 runs back to back on a quiet host:
+         **5 of 5 scored cases caught** (case a is unscorable — the draft shares the gap — though the walker
+         still emitted a row for it), and the noise figure is settled at 5 noise rows, every one a PHASE artefact (a draft view-swap fade already accepted at `qa/parity/shop.mjs`:286, the `sgs/trust-bar` marquee's scroll phase, and one `box-shadow` read at t≈0.999 — alpha, blur and spread each short by an identical 0.0950%). Not host load and not detector flakiness; a run reading 0 was never evidence of absence because every cause is phase-dependent. `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
+         The earlier 13-on-shop and 9-on-lens reading is superseded.
        - **A gate exists that would have caught an unwalkable surface, and it never ran.**
          `scripts/parity/draft-live-walk.mjs` calls `lib/lint.mjs::lintConfig` and exits 1 before any browser opens,
          but a whole sitting passed without re-walking, so a surface stayed unwalkable. **A route gate should run
