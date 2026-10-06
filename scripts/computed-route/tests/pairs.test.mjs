@@ -2,7 +2,8 @@
 // is kept only when it holds its words and nothing that belongs outside it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText, pairingState, liftExclusions } from '../lib/pairs.mjs';
+import { readFileSync } from 'node:fs';
+import { wordsByBlock, twinsByBlock, judgePairing, paddedPartner, configText, pairingState, liftExclusions, collectContext } from '../lib/pairs.mjs';
 
 // Live words 0-3: 0-1 in a heading (ref h) inside a section (ref s), 2-3 in a text (ref t) inside the same section.
 const liveRefs = [ [ 'h', 's' ], [ 'h', 's' ], [ 't', 's' ], [ 't', 's' ] ];
@@ -421,4 +422,67 @@ test( 'MUST FAIL TO REFUSE: a verdict needs more than one or two matched words',
 	assert.equal( real.ok, false, 'the about-step shape, 1 split of 9 checked, must still be refused' );
 	assert.equal( real.checked, 9 );
 	assert.equal( real.split.length, 1 );
+} );
+
+// --- The phone drawer's state opener, and the context a collector failure carries -------------------------
+// mobile-menu could not be paired: pairs.mjs died with "the pair root for this state was not found on the page"
+// at the 768 recheck. Proven cause, read live on both sides: the Menu button's rendered label is empty at 375
+// and "Menu" from tablet up, and the opener matched it by text with '^$', so the click fired at 375 and matched
+// nothing at 768, where clickText's `optional` swallowed the miss and left the drawer shut.
+
+// resolveFinder's own rule: the pattern is tested, case-insensitively, against normalised innerText AND textContent.
+const finds = ( pattern, { innerText, textContent } ) => {
+	const re = new RegExp( pattern, 'i' );
+	const norm = ( s ) => ( s || '' ).replace( /\s+/g, ' ' ).trim();
+	return re.test( norm( innerText ) ) || re.test( norm( textContent ) );
+};
+
+// The two renderings of the SAME button, measured 2026-10-06 on the draft and on the live mirror.
+const MENU_AT_375 = { innerText: '', textContent: 'Menu' };
+const MENU_AT_768 = { innerText: 'Menu', textContent: 'Menu' };
+
+test( 'MUST FAIL: the phone drawer opener matches the Menu button at every width it is shown', () => {
+	const src = readFileSync( new URL( '../../../sites/eye-care-ward-end/build/qa/parity/header.mjs', import.meta.url ), 'utf8' );
+	const open = src.match( /const openMenu = async[\s\S]*?\n};/ );
+	assert.ok( open, 'header.mjs must still define openMenu' );
+	const pattern = open[ 0 ].match( /clickText\(\s*'([^']+)'/ );
+	assert.ok( pattern, 'openMenu must still click by a text pattern' );
+	// Red on revert: '^$' passes the 375 case and fails this one.
+	assert.ok( finds( pattern[ 1 ], MENU_AT_375 ), `${ pattern[ 1 ] } must match the button at 375 (label hidden)` );
+	assert.ok( finds( pattern[ 1 ], MENU_AT_768 ), `${ pattern[ 1 ] } must match the button at 768 (label shown)` );
+	// Not over-suppressing: a wider pattern that also swallowed the drawer's own close button, or the bag, would
+	// open the wrong control and pair the wrong tree.
+	assert.equal( finds( pattern[ 1 ], { innerText: 'Close menu', textContent: 'Close menu' } ), false, 'must not match the drawer close button' );
+	assert.equal( finds( pattern[ 1 ], { innerText: 'Bag', textContent: 'Bag' } ), false, 'must not match the bag button' );
+	assert.equal( finds( pattern[ 1 ], { innerText: 'Search', textContent: 'Search' } ), false, 'must not match search' );
+} );
+
+test( 'MUST FAIL: a collector failure names the side, width and state, and a non-root failure keeps its own text', () => {
+	const root = '.sgs-nav-drawer[open]';
+	const m = collectContext( { side: 'draft', width: 768, state: 'drawer-open', root, message: 'the pair root for this state was not found on the page' } );
+	assert.match( m, /draft/ );
+	assert.match( m, /768px/ );
+	assert.match( m, /drawer-open/ );
+	assert.match( m, /sgs-nav-drawer\[open\]/, 'the root that was missing must be named' );
+	assert.match( m, /state opener that did not fire/, 'the cause that produced this must be named' );
+	// Not over-suppressing: an unrelated failure must not be retold as a pair-root story, and must keep its text.
+	const other = collectContext( { side: 'live', width: 375, state: null, root, message: 'Execution context was destroyed' } );
+	assert.match( other, /live at 375px: Execution context was destroyed/ );
+	assert.equal( /pair root|state opener/.test( other ), false, 'a non-root failure must not gain the root explanation' );
+	assert.equal( /in state/.test( other ), false, 'a stateless run must not invent a state' );
+} );
+
+test( 'MUST FAIL: pairs.mjs routes both collectTagged calls through collectContext', () => {
+	// A unit test cannot see a wiring gap: collectContext would pass its own tests while pairs.mjs still threw the
+	// bare page error, and rootFor was in fact referenced before it was imported.
+	const src = readFileSync( new URL( '../pairs.mjs', import.meta.url ), 'utf8' );
+	assert.match( src, /import \{[^}]*\bcollectContext\b[^}]*\} from '\.\/lib\/pairs\.mjs'/s, 'collectContext must be imported, not just referenced' );
+	assert.match( src, /import \{[^}]*\brootFor\b[^}]*\} from '\.\/lib\/pairs\.mjs'/s, 'rootFor must be imported: it is read only on the error path' );
+	assert.match( src, /throw new Error\( collectContext\(/, 'the collector failure must be rethrown through collectContext' );
+	const direct = [ ...src.matchAll( /await collectTagged\(/g ) ];
+	assert.equal( direct.length, 1, 'collectTagged must be called in exactly one place, inside the wrapper' );
+	const wrapper = src.match( /const tagged = async[\s\S]*?\n\t\t\};/ );
+	assert.ok( wrapper && /await collectTagged\(/.test( wrapper[ 0 ] ), 'that one call must sit inside the tagged() wrapper' );
+	assert.match( src, /await tagged\( draft, 'draft' \)/ );
+	assert.match( src, /await tagged\( live, 'live' \)/ );
 } );

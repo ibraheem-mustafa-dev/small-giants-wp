@@ -273,6 +273,15 @@ export function rootFor( cfg, side, state = null ) {
 	return own ?? cfg.auto?.root?.[ side ] ?? null;
 }
 
+// A collector failure raised inside the page carries no side, width or state, which left a missing pair root
+// reading as a bare page.evaluate error four frames from its cause. Returns the message runPairing throws in its
+// place. A failure that is not about the pair root keeps its own text and only gains the side, width and state.
+export function collectContext( { side, width, state = null, root = null, message } ) {
+	const where = `${ side } at ${ width }px${ state ? ` in state "${ state }"` : '' }`;
+	const why = /pair root/.test( message ) ? ` (root ${ JSON.stringify( root ) }; a state opener that did not fire leaves the root absent)` : '';
+	return `${ where }: ${ message }${ why }`;
+}
+
 // The widths a kept finder is re-checked at besides the pairing width.
 export const RECHECK_WIDTHS = [ 375, 768, 1920 ];
 

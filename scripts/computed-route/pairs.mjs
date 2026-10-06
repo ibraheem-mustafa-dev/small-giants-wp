@@ -20,7 +20,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { matchWords } from '../parity/lib/auto-compare.mjs';
-import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, chooseMediaPartner, reconcileHandPairs, configText, pairingStates, mergeWidthFinders, joinFinders, assertReachable, RECHECK_WIDTHS } from './lib/pairs.mjs';
+import { wordsByBlock, twinsByBlock, twinPlan, commonPath, wordMatch, choosePartner, chooseControlPartner, chooseGroupPartner, chooseMediaPartner, reconcileHandPairs, configText, pairingStates, mergeWidthFinders, joinFinders, assertReachable, rootFor, collectContext, RECHECK_WIDTHS } from './lib/pairs.mjs';
 import { judgePairScope } from './lib/pair-scope.mjs';
 import { collectTagged, handScopes, liveBlocks, draftChains, formControls, groupBoxes, handElements, openDraft, openLive, liftedExclusions, liveReach, mediaPartners } from './lib/pairs-page.mjs';
 
@@ -37,8 +37,17 @@ export async function runPairing( { browser, cfg, prefix, width, state = null, c
 	try {
 		// A surface inside the header or footer landmark pairs its own words there (lib/pairs.mjs::liftExclusions).
 		const lifted = await liftedExclusions( live, prefix );
-		const dWords = await collectTagged( draft, 'draft', cfg, lifted, state );
-		const lWords = await collectTagged( live, 'live', cfg, lifted, state );
+		// collectTagged runs in the page and cannot name which side, width or state it was reading, so a missing
+		// pair root arrived as a bare page.evaluate error four frames from its cause. runPairing knows all three.
+		const tagged = async ( page, side ) => {
+			try {
+				return await collectTagged( page, side, cfg, lifted, state );
+			} catch ( e ) {
+				throw new Error( collectContext( { side, width, state: state?.name ?? null, root: rootFor( cfg, side, state ), message: e.message } ) );
+			}
+		};
+		const dWords = await tagged( draft, 'draft' );
+		const lWords = await tagged( live, 'live' );
 		const { refs: liveRefs, boxes, parents } = await liveBlocks( live, prefix );
 		if ( check ) {
 			assertReachable( { url: cfg.live?.url, blocks: Object.keys( boxes ).length, words: lWords.length, requires: cfg.live?.requires, ...( await liveReach( live, cfg ) ) } );

@@ -62,7 +62,12 @@ const openMega = ( label ) => async ( h ) => {
 
 // The Menu button exists below desktop only; on desktop this is a no-op on both sides.
 const openMenu = async ( h ) => {
-	await h.clickText( '^$', { within: 'header', tag: 'button[aria-label="Menu"]', optional: true, wait: 1100 } );
+	// The button's width-stable identity is aria-label="Menu", already in the tag selector. Its VISIBLE label is
+	// empty at phone width and reads "Menu" from tablet up, and resolveFinder tests the pattern against innerText
+	// and textContent, so '^$' matched only while the label was hidden: at 375 it clicked, at 768 it matched
+	// nothing and clickText's `optional` swallowed the miss, leaving the drawer shut. '^(menu)?$' matches both
+	// renderings. `optional` stays because desktop hides the button, where this state is legitimately a no-op.
+	await h.clickText( '^(menu)?$', { within: 'header', tag: 'button[aria-label="Menu"]', optional: true, wait: 1100 } );
 };
 
 // The phone drawer: draft is a fixed full-screen layer with no role; live is `<dialog class="sgs-nav-drawer">`.

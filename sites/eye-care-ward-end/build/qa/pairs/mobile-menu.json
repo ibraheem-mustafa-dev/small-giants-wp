@@ -1,6 +1,6 @@
 {
  "surface": "mobile-menu",
- "when": "2026-10-05T10:07:56.248Z",
+ "when": "2026-10-06T20:36:44.194Z",
  "state": "drawer-open",
  "width": 375,
  "recheck": [
@@ -8,30 +8,123 @@
  ],
  "lifted": [],
  "blocks": 16,
- "kept": 0,
- "coveredByHand": [],
+ "kept": 8,
+ "coveredByHand": [
+  "cr-ref-mobile-menu-0"
+ ],
+ "handMeasured": [
+  "cr-ref-mobile-menu-0",
+  "cr-ref-mobile-menu-2",
+  "cr-ref-mobile-menu-4",
+  "cr-ref-mobile-menu-9",
+  "cr-ref-mobile-menu-11",
+  "cr-ref-mobile-menu-15"
+ ],
+ "handScope": [
+  {
+   "name": "trust-ticker",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-bar",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-wordmark",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "header-bag",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "menu-button",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-panel",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "drawer-close",
+   "ok": true,
+   "judged": false,
+   "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-link-sunglasses",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-link-lenses",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-link-about",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-link-contact",
+   "ok": true,
+   "judged": false,
+   "checked": 1,
+   "split": [],
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "drawer-phone",
+   "ok": true,
+   "checked": 3,
+   "split": [],
+   "why": null
+  },
+  {
+   "name": "drawer-whatsapp",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  }
+ ],
  "retargeted": {},
  "left": [
-  {
-   "ref": "cr-ref-mobile-menu-0",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-1",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-2",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-3",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-4",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
   {
    "ref": "cr-ref-mobile-menu-5",
    "why": "no painted words (an image, an icon or an empty wrapper)"
@@ -45,37 +138,114 @@
    "why": "no painted words (an image, an icon or an empty wrapper)"
   },
   {
-   "ref": "cr-ref-mobile-menu-8",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-9",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-10",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-mobile-menu-11",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
    "ref": "cr-ref-mobile-menu-12",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 4 svg live against 0 on the draft"
   },
   {
    "ref": "cr-ref-mobile-menu-13",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 4 svg live against 0 on the draft"
   },
   {
    "ref": "cr-ref-mobile-menu-14",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 4 svg live against 0 on the draft"
   },
   {
    "ref": "cr-ref-mobile-menu-15",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "its paired ancestor holds 4 svg live against 0 on the draft"
   }
  ],
- "keptPairs": []
+ "keptPairs": [
+  {
+   "ref": "cr-ref-mobile-menu-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(2) > a:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(sunglasses)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "sunglasses",
+   "last": "sunglasses"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "sunglasses",
+   "last": "lenses"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(2) > a:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(brands)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "brands",
+   "last": "brands"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(2) > a:nth-child(3)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(prescription|lenses)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "prescription",
+   "last": "lenses"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(3)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "about",
+   "last": "contact"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-8",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > nav:nth-child(3)",
+   "why": null,
+   "words": 10,
+   "matched": 10,
+   "first": "about",
+   "last": "contact"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(4) > a:nth-child(1) > span:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  },
+  {
+   "ref": "cr-ref-mobile-menu-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(4) > a:nth-child(1) > span:nth-child(2)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "0121",
+   "last": "8233"
+  }
+ ]
 }
