@@ -777,11 +777,15 @@ It was incomplete in a second way: `surfaces.json`'s state map for footer is `["
 never mapped to a setting state either. Any row measured in it would have been an unmapped-state row — reported,
 never written. **It could not have produced a usable row this session under any circumstances.**
 
-**Why no gate caught it, which is the more important half.** The 2026-10-05 baseline sweep ran at `1ea514ae8`, which
-is **before** `d605bb5ba`, so footer walked cleanly then. Gate 1 re-ran **triage** over the already-committed Solve
-reports and never re-walked a surface, so a lane could break a surface's walkability while every gate stayed green.
-**A gate's scope is not the defect's scope**: Gate 1 measured classification, and walkability is a different
-property. C3.6 is the first thing to exercise it.
+**Why no gate caught it, corrected by the Gate 3 council.** An earlier version of this entry said "no gate could
+have caught it". **That is false: the gate exists.** `scripts/parity/draft-live-walk.mjs` calls
+`lib/lint.mjs::lintConfig` before any browser opens and `process.exit(1)`s on a problem, so the very first walk of
+footer after `d605bb5ba` would have failed loudly. **The accurate finding is that no gate RAN.** The 2026-10-05
+baseline ran at `1ea514ae8`, before `d605bb5ba`, and footer's walk history shows nothing between then and C3.6.
+Gate 1 re-ran **triage** over already-committed Solve reports and never re-walked a surface, so an existing
+walk-time gate sat unexercised for a whole sitting. **A gate's scope is not the defect's scope**: Gate 1 measured
+classification, and walkability is a different property that only a walk can test. The cheap structural fix is for
+Gate 1 to run `draft-live-walk.mjs --lint` over every surface's `walkerFull`, which needs no browser and no host.
 
 **Fixed by removing the incomplete state, not by completing it**, and the reason is comparability: completing it
 would *add* modal coverage, changing footer's issue count for reasons unrelated to the route repairs and confounding
@@ -801,7 +805,9 @@ deployed there. All 17 surfaces, no abort, `sweep.mjs` and `triage.mjs` with the
 `run-manifest.tsv` beside it recording the per-surface timings and the live block code. **Triage output, which is
 what Session C2 consumes: `sites/eye-care-ward-end/build/qa/triage/*.json`** (17 files, rewritten by this run).
 
-**Headline, raw against raw: F 338 → 192.** A 43% reduction in candidate framework gaps.
+**Headline, corrected by the Gate 3 council: the defensible result is F 338 → 176, the route code measured on
+identical reports. The current measured F on fresh reports is 192, and the step between them is NOT separable.**
+338 → 176 is a single-variable change (−162). 176 → 192 mixes three changes and no part of it is attributable.
 
 | Class | Baseline raw (2026-10-05) | Gate 2 (same reports, repaired route) | **C3.7 (fresh reports, repaired route)** |
 |---|---|---|---|
@@ -829,7 +835,7 @@ The movement decomposes cleanly, because Gate 2 triaged the **identical** report
 |---|---|---|
 | Baseline | 338 | old reports, old code |
 | → Gate 2 | **176** (−162) | **the route code alone.** Sitting i's canvas rule (161 rows) plus C3.1's hero routing (1 row) |
-| → C3.7 | **192** (+16) | **fresh measurement, same code.** Surfaces walked in states that had never been walked |
+| → C3.7 | **192** (+16) | **NOT attributable — three variables changed at once.** (a) the walker and Solve code (L2's `tag` rows 0 → 618, L4's per-width draft layout, L8, L9, C0.7's state mapping); (b) **the live block code**, because the baseline sweep ran 2026-10-05 11:11 while eye-care-test took `7f375f765` at 19:38 that evening, and `git diff 4726700c1 7f375f765` touches `google-reviews` and `responsive-logo/render.php`, which renders in the header and footer; (c) newly walked states on `contact` and `contact-form`. The per-surface pattern is consistent with state mapping, but nothing isolates it |
 
 **The +16 is rows gaining a class for the first time, not 16 new defects**, and it is per surface:
 
@@ -850,19 +856,32 @@ Every other surface's F is unchanged.
 A 573-row drop with nothing deployed demands proof it is not the walker going blind. Checked with the route's own
 reader (`lib/solve-rows.mjs::openRows` plus `lib/issue-classes.mjs::isIssue`) on the two surfaces that fell hardest:
 
-| Surface | distinct pairs | open rows | issues |
-|---|---|---|---|
-| mega-sunglasses | **37 → 37** | 467 → 165 | 421 → 115 |
-| product | 44 → **42** | 6,420 → 4,142 | 5,991 → 3,772 |
+| Surface | pairs MEASURED | pairs with an open row | open rows | issues |
+|---|---|---|---|---|
+| mega-sunglasses | **39 → 39** | 37 → 37 | 467 → 165 | 421 → 115 |
+| product | **44 → 44** | 44 → 42 | 6,420 → 4,142 | 5,991 → 3,772 |
 
-**The same pairs are measured and far fewer differences come back**, so the drop is genuine resolution. Total rows
-measured across all 17 surfaces fell only **6.7%** (3,940 → 3,677) while issues fell 24%. The probable cause is lane
+⚠️ **The council falsified the inference, and the honest evidence is different from what was first offered here.**
+A pair count cannot fail: the measured pair set is fixed by the walker config, so "37 → 37" would hold even if the
+walker read nothing. The first version of this section also mislabelled "pairs with at least one open row" as "pairs
+measured", which is why it reported product as losing 2 pairs. **Product measures 44 → 44; two pairs now carry zero
+open rows, which is an outcome, not a coverage loss.** The "6.7% (3,940 → 3,677)" figure was `issues + otherRows`
+summed from the two `sweep.json` files, which counts rows the sweep *classified* rather than rows measured, and it is
+withdrawn as a coverage measure.
+
+**The coverage dimension that can fail, measured by the council: the (pair × width × state) instance count held
+exactly at 5,060 → 5,060 across the 15 surfaces other than `contact` and `contact-form`**, rising only on those two
+(268 → 852) where states were walked for the first time. Accepted diffs fell 3,136 → 2,421, so the drop is not Solve
+accepting more. **One real coverage loss the first version missed: `scroll` rows fell 24 → 0 on product and 2 → 0 on
+shop — a row kind that vanished, unexplained.** So coverage held on the dimension that could have failed, with that
+one named exception, and the drop is consistent with resolution without being proven to be it. The suggested cause is lane
 L4's per-width draft layout fix: the walker had been comparing the wrong draft layout at some widths and reporting
 phantom differences. That is a measuring repair, which is what this session exists to do — the route was reporting
 false gaps.
 
-**Not claimed, and named instead: product lost 2 distinct pairs** (44 → 42). That is a small real coverage delta and
-it is Session D's to check, not something to count as an improvement.
+**Withdrawn: "product lost 2 distinct pairs."** Product measures 44 pairs in both runs; two now carry no open rows.
+That is resolution, not a coverage delta. **Owed instead: the `scroll` row kind disappearing on product (24 → 0) and
+shop (2 → 0)**, which is a genuine unexplained loss. Owner: the next route session.
 
 #### What this count is NOT
 
@@ -947,10 +966,21 @@ a 22-row stability regression and it is not one: **`sandybrown` was deployed at 
 `shop-control` (finished 03:40:32) and its `case-noise-shop` (finished 04:25:37).** A `build-deploy.py` purges
 OPcache, the LiteSpeed page cache and the theme pattern cache on that box, and sandybrown shares the Hostinger host
 with eye-care-test, so the control and its own noise case were measured either side of a cache purge and a burst of
-deploy verification traffic. The noise rows are consistent with that rather than with walker instability: hover rows
-where the draft shows its hover end state and live shows rest (`card-gucci` border/box-shadow/transform,
-`swatch-black` transform), a `focus` box-shadow, and lens rows where the flow landed on a different product between
-runs (`"m frame £289"` against `"55 frame £289.00"`).
+deploy verification traffic. ⚠️ **The Gate 3 council found this explanation insufficient, and it is downgraded.** A cache purge on sandybrown
+changes no CSS on eye-care-test, so it cannot produce the specific rows observed. The rows are hover rows where the
+draft shows its hover end state while live reads rest (`card-gucci` border/box-shadow/transform, `swatch-black`
+transform), a `focus` box-shadow flipping between two spellings of "no shadow", and lens rows landing on a different
+product between runs — all of which are read-timing properties of the walker. **Decisively, the CONTROL's own hover
+row count fell 18 → 6 between the two runs with an unchanged config, then read 11 in the noise run**, which is
+walker-read drift the deploy cannot explain. `link-missing` is also a read kind that did not exist on 2026-10-03
+(208 rows in both control and noise now), so that run could not have produced those noise rows at all.
+
+**The honest state: the 22 noise rows are unproven in both directions.** Host load from the deploy is an available
+contributor; the walker's read path changed substantially since the 0-noise run; neither is excluded. The earlier
+wording here replaced one unverified cause with another, which is the exact failure
+`~/.claude/rules/prove-the-cause-before-fix.md` exists to prevent. **The measurement that would separate them:** run
+control and noise back to back five minutes apart on a quiet host (same rows ⇒ walker flakiness; zero rows ⇒ load or
+the 45-minute gap), and separately run commit `6a4a02ecf`'s walker against today's host.
 
 **Owed, with the exact command:** re-run `node scripts/parity/benchmark.mjs --noise` on a quiet host and compare the
 noise counts against 0. Until then the catch rate stands at 5 of 5 and the noise figure is unproven in both
@@ -959,8 +989,84 @@ directions. **Owner: the next route session**, since it needs ~80 minutes of uni
 **Still owed and why:** the confirmation walk (needs the host) and the `sgs/media` recalibration that would prove
 L7's `text`, `presence` and `link` reads on real data rather than only in fixtures (needs the host, and
 `calibrate.mjs` calls `assertQuiet`). Both were blocked by a peer session's sandybrown deploys, which is the correct
-behaviour of R-47-11 rather than a fault. **L7.1 is already proven on real data** — `sgs/hero`'s recalibration
-recorded `overriddenBy` on ten inherited settings — so the unproven part is specifically the three content reads.
+behaviour of R-47-11 rather than a fault. **Both claims about L7 are corrected by the Gate 3 council.**
+
+**The content reads were exercised on real data and returned nothing — they are not merely untested.**
+`cache/hero.json` was measured at `2026-10-06T01:17:19Z`, **after** L7 landed (proven by the file carrying
+`overriddenBy`, which only L7 emits). `sgs/hero` has **17 content-role rows** in the framework database — 10
+`boolean-visibility`, 6 `content`, 1 `text-content` — and the file carries **no `text`, `presence` or `link` key at
+all**. Since `lib/calibrate-content.mjs::collectContent` omits a key only when empty, the reads ran and recorded
+nothing. That is a **real-data null result on a block with 17 qualifying settings, and it is uninvestigated**: it may
+be legitimate (no marker, nothing shown or hidden) or the read may be failing silently. Nothing distinguishes the two
+yet. A consequence worth stating: with no cache carrying those keys anywhere,
+`lib/solve-rows.mjs::resolveContent` has never fired on real data either, and returns `no-setting` by construction.
+
+**`overriddenBy` emits on real data, but its contents carry a systematic false positive.** Ten of hero's 45 settings
+carry it and all ten are inherited properties, which is the intended scope. But **all ten name
+`.sgs-hero__video-bg > source`** as an overriding child. A `<source>` is a metadata element inside `<video>`: it
+renders no box and no text, so it cannot override `font-size`, `color` or `line-height`. It is named because the
+marker's inherited value never reached it, and `lib/calibrate.mjs::overridingChildren` infers "has its own rule" from
+that absence without checking the element renders. The other two paths it names
+(`.sgs-hero__content > span`, `> h1`) look genuine. **Owed: a rendered-box guard in `overridingChildren`**, owner the
+next route session. Until then "L7.1 proven on real data" overstates it: the key emits, and its contents are partly
+wrong.
+
+### Gate 3 — QC council on this sitting's own claims, 2026-10-06. Three raters, cross-model, no Opus, read-only.
+
+Run as a **retrospective falsifiability gate**: for every load-bearing claim this sitting recorded, is it measured or
+asserted, what exact command reproduces it, and would it turn red if the underlying fix were reverted. Raters: a
+falsifiability auditor on the numbers and a confound/scope auditor (Sonnet), and a code-path tracer (Haiku). Each was
+told to find what the author wanted to be true, and pointed at the rival explanation the author had rejected.
+
+**Structural pre-gate first: all 50 `file::symbol` citations in this sitting's claims resolve, 0 phantom.**
+
+**The council corrected 12 claims and confirmed 7.** Every correction is applied in place above; this section records
+what moved and why, so the next session inherits the corrected version rather than the first draft.
+
+#### What held, with the command that reproduces it
+
+| Claim | Status |
+|---|---|
+| **The three endpoints 338, 176 and 192 all reproduce exactly.** 192 matches the committed `qa/triage/*.json` on every surface with 0 differences | MEASURED |
+| **338 → 176 is a genuine single-variable result.** The baseline triage files and Gate 2's run read *identical* `report` paths — verified field by field against `sweep/2026-10-05/sweep.json` — so only the triage code, the database and the manifest differed | MEASURED |
+| The canvas-roster control: stripping all 12 `canvas` flags takes F 176 → 338 | MEASURED |
+| **Zero block code touched**, verified independently across all 8 session SHAs; the only `plugins/` path is the sanctioned `attr-classification-overrides.json`, and no `*.tree.json` or `divergences.json` was touched | HONEST |
+| **Deleting `lib/resolve.mjs::resolveViaAncestor` would change no verdict.** The hop's inner `resolve` receives inputs identical to `writeRound`'s owners-retry, field by field; and `where: 'ancestor'` is written into evidence and report tables but **never read to make a decision**. `lib/triage.mjs::canvasSettable` stamps that same field itself from `r.owners`, so it is not the hop's to lose. The one real cost is a test assertion on the hop's own citation | CONFIRMED |
+| **No `transition,*` row calibrates anywhere.** `lib/calibrate-markers.mjs::markersFor` dispatches on the first comma-segment, `transition`, and every branch misses: not colour, not `KEYWORDS` (no entry), not enum, not box, not `tier_object` (`LENGTH` fails), not weight/opacity/transform/letter-spacing/number/count. Fallthrough returns `[]` | CONFIRMED |
+| The 5-row sweep dedupe: `contact` and `contact-form` share `qa/parity/contact.mjs`, `aggregate` keys ref-less rows `<config>\|<issue>`, and exactly 5 rows carry `alsoIn: ["contact-form"]`. **All five are W, so F is unaffected.** No other shared walker collapses anything | MEASURED |
+
+#### Three further findings the corrections above do not cover
+
+**1. The 176 is reproducible only from untracked local files.** `.gitignore:189` ignores `sites/*/build/qa/solve/`, and
+`git ls-files` finds 0 tracked report files there. The 338 → 176 half of the decomposition re-derives today **only
+because the 2026-10-05 report folders are still on this machine**. On a fresh checkout, or after any cleanup of that
+folder, it cannot be reproduced at all. The command that works while they exist is
+`triage.mjs --client eye-care-ward-end --surface <s> --report <the path in sweep/2026-10-05/sweep.json>`, which
+bypasses `lib/sweep.mjs::latestReport`. **Either snapshot those two report sets or treat the decomposition as
+machine-local.**
+
+**2. The sweep-to-triage identity is true by construction and is a weak gate.** `lib/sweep.mjs::issueRows` and
+`lib/triage.mjs` both import `isIssue`, `isContentRow` and `issueKey` from `lib/issue-classes.mjs`; triage
+re-implements only the grouping loop. So the identity guards against that one loop drifting and **cannot** detect a
+wrong shared predicate, a wrong classification, or a vanished measurement. It does not turn red when the canvas rule
+is reverted, because that changes classes rather than counts. It was presented in the Gate 2 table as evidence; it is
+a consistency check.
+
+**3. The per-surface class totals double-count the five shared rows.** W/F/T/U are summed per surface (1,841) while
+the sweep dedupes site-wide (1,836). All five are W, so **F 192 is unaffected**, but the W total of 1,242 is inflated
+by 5 against a deduped count of 1,237. Worth knowing before anyone compares W across the two figures.
+
+#### The honest headline, after the council
+
+- **The route code alone: raw F 338 → 176 (−162), on identical reports.** This is the defensible result and the one
+  to carry forward. It is the canvas rule's 161 rows plus C3.1's single hero row.
+- **The current measured state on fresh reports: F 192**, which is what Session C2 consumes from
+  `qa/triage/*.json`.
+- **The step between them is not separable** and no part of the +16 is attributable, because the walker and Solve
+  code, the deployed block code and the walked states all changed at once.
+- **The 573-row total drop is consistent with resolution and is not proven to be it.** Coverage held on the one
+  dimension that could fail — (pair × width × state) instances 5,060 → 5,060 across the 15 non-form surfaces — with
+  one named exception, the `scroll` row kind vanishing on product and shop.
 
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
