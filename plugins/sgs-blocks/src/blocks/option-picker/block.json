@@ -299,7 +299,7 @@
 		},
 		"showSelectedTick": {
 			"type": "boolean",
-			"default": true
+			"default": false
 		},
 		"pillBgColour": {
 			"type": "string",

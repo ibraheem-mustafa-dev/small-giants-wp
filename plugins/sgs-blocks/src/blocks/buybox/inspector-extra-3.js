@@ -80,7 +80,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						'Show a tick on the selected option',
 						'sgs-blocks'
 					) }
-					checked={ pickerShowSelectedTick !== false }
+					checked={ true === pickerShowSelectedTick }
 					onChange={ ( val ) =>
 						setAttributes( { pickerShowSelectedTick: val } )
 					}

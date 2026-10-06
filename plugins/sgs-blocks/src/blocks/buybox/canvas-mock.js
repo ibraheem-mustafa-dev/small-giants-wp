@@ -134,7 +134,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 	const format = 'percentage' === attributes.rrpSavingFormat ? 'percentage' : 'amount';
 	const savingText = `${ attributes.rrpSavingPrefix ?? __( 'Save', 'sgs-blocks' ) } ${ SAMPLE.saving[ format ] }`.trim();
 	const badgePosition = BADGE_POSITIONS.includes( attributes.gallerySavingBadgePosition ) ? attributes.gallerySavingBadgePosition : 'top-right';
-	const showTick = false !== attributes.pickerShowSelectedTick;
+	const showTick = true === attributes.pickerShowSelectedTick;
 	const labelStyle = {
 		...typographyPreviewStyle( attributes, 'pickerLabel', tier ),
 		...( attributes.pickerLabelColour ? { color: resolveColourToken( attributes.pickerLabelColour, palette ) || attributes.pickerLabelColour } : {} ),

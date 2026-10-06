@@ -1069,7 +1069,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_picker_plain_style    = sanitize_key( (string) ( $attributes['pickerStyle'] ?? '' ) );
 	$buybox_picker_plain_style    = in_array( $buybox_picker_plain_style, $buybox_allowed_picker_styles, true ) ? $buybox_picker_plain_style : '';
 	$buybox_picker_sub_label_key  = sanitize_key( (string) ( $attributes['pickerSubLabelMetaKey'] ?? '' ) );
-	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false;
 
 	// Axes that always show their picker (single-variant
 	// suppression bypass) and the size-band axis + scale (picker-band.php).

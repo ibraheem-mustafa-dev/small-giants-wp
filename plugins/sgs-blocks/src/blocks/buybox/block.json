@@ -466,8 +466,8 @@
 		},
 		"pickerShowSelectedTick": {
 			"type": "boolean",
-			"default": true,
-			"description": "Forwarded to every option picker's showSelectedTick."
+			"default": false,
+			"description": "Forwarded to every option picker's showSelectedTick. Off by default: a selected option is already carried by its border, background and text colour, its photo and its price, so the tick is the exception rather than the rule."
 		},
 		"priceFontFamily": {
 			"type": "string",

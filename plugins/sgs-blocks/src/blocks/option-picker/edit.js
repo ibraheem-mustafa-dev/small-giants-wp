@@ -178,7 +178,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			`sgs-option-picker--${ pillStyle }`,
 			`sgs-option-picker--${ pillSize }`,
 			colourPreset ? `sgs-option-picker--${ colourPreset }` : '',
-			showSelectedTick ? '' : 'sgs-option-picker--no-tick',
+			true === showSelectedTick ? '' : 'sgs-option-picker--no-tick',
 			showTermDetails ? '' : 'sgs-option-picker--no-term-details',
 			requireChoice ? 'sgs-option-picker--require-choice' : '',
 		].filter( Boolean ).join( ' ' ),
@@ -851,7 +851,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						resetAll={ () =>
 							setAttributes( {
 								pillSelectedBorderRadius: '',
-								showSelectedTick: true,
+								showSelectedTick: false,
 							} )
 						}
 					>
@@ -874,8 +874,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Show selection tick', 'sgs-blocks' ) }
-							hasValue={ () => showSelectedTick !== true }
-							onDeselect={ () => setAttributes( { showSelectedTick: true } ) }
+							hasValue={ () => showSelectedTick !== false }
+							onDeselect={ () => setAttributes( { showSelectedTick: false } ) }
 							isShownByDefault
 						>
 							<ToggleControl
@@ -884,7 +884,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									'Off = no visible checkmark on the selected pill (matches a neutral outline-only selected look).',
 									'sgs-blocks'
 								) }
-								checked={ showSelectedTick }
+								checked={ true === showSelectedTick }
 								onChange={ ( val ) =>
 									setAttributes( { showSelectedTick: val } )
 								}
