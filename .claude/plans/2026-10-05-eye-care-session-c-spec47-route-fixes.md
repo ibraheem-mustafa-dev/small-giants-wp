@@ -900,6 +900,68 @@ it is Session D's to check, not something to count as an improvement.
 | the 38 gap-typing rows are not yet re-typed (needs a calibration run per block, then Solve) | 38 | next route session |
 | 45 state-conflict groups refused, of which 7 are the named ones | 38 untriaged | Session D |
 
+#### Wave 3's remaining items, measured 2026-10-06
+
+**The deploy. eye-care-test is at `94122e326`, and it was verified two ways rather than from the log.** The host's
+`~/.sgs-deploy-marker-eye-care-test.json` reads `94122e3266de2c11be1002e3cc95df4c74ecb8e8` at 03:19:56, and 6 of 7
+spot-checked blocks are checksum-identical between the local build and the deployed one
+(`lib/deploy-hash.mjs::localBlockHash` against `::remoteBlockHash`). The seventh, `product-card`, differs only
+because the local build predates `ea72eab7b` and `23d3f5aea`, which both touched `src/blocks/product-card/`; the
+deployed side is the correct one. **The eye-care-test freeze is lifted.**
+
+**S1 is proven end to end, which the canary could never do.** Every Eye Care button on the deployed homepage reads
+`transition-duration: 0.25s` across all seven properties — `background-color, color, border-color, transform,
+translate, box-shadow, opacity` — with `transition-timing-function: ease`. That is the site's own
+`buttonPresets.default.hover-transition` reaching the button rather than the stylesheet's 0.18s fallback, and the
+property list including `translate` and `box-shadow` is `1b96cf786`'s fix holding. sandybrown sets no such preset, so
+its buttons fall to the fallback and S1 could not be closed there. ⚠️ A freshly inserted button on the **canary**
+still computes 300ms because `sgs_block_defaults` pins it there; that is site data, not framework code.
+
+**The four functional flows: 3 PASS, 1 expected FAIL, 0 ERROR**, run as one host job against eye-care-test.
+
+| Flow | Result | Detail |
+|---|---|---|
+| `bag-two-products` | PASS | bag holds both products (420, 417) |
+| `bag-second-unit` | **PASS** | 2 units of 420, second add 905 ms after the first — required to pass, since N11(b) is fixed at HEAD |
+| `lens-skip-to-bag` | **FAIL**, signal `skip-opens-extra-step` | expected until register **N38** lands: `choice-flow/block.json` has no "skip adds to bag" setting and `flow-skip.js::handleSkipClick` routes to the add-to-bag ending. A spec item, not a regression |
+| `filter-apply-clear` | PASS | panel restored: 10 groups, 10 headings |
+
+No ERROR on any flow, so no selector missed — which matters because the flows had never run against this site and
+their selectors come from source.
+
+**C3.5's paid order exists.** Order **652** was inspected before being touched (1 × Oversized Cat-Eye, £289, GBP,
+its own order key, which is a credential and is not recorded here) and set to `processing`; `is_paid()` now returns true. Its received URL is
+`/checkout/order-received/652/?key=<order key>` (read it with `wp eval` rather than storing it; the key authorises viewing the order without logging in). It matches the draft flow the confirmation walker
+follows, so it is the right fixture rather than a new order. **The confirmation walk itself is still owed** — it
+needs a quiet host and a peer session holds it.
+
+**`benchmark.mjs --noise`: caught 5 of 5. The noise half is NOT judgeable from this run, and the reason is
+measured.**
+
+Fault detection passed outright: all five planted faults were caught with their matching rows (b the floating filter
+button, c the clipped price-slider handle, d the `.00` prices, plus e and f on the lens flow). Case **a** is NOT
+SCORED by design — the draft carries the same gap, so only design review can catch it.
+
+The noise cases read **13 rows on shop and 9 on lens**, where the 2026-10-03 run read **0 on both**. That looks like
+a 22-row stability regression and it is not one: **`sandybrown` was deployed at 03:59:25, between this run's
+`shop-control` (finished 03:40:32) and its `case-noise-shop` (finished 04:25:37).** A `build-deploy.py` purges
+OPcache, the LiteSpeed page cache and the theme pattern cache on that box, and sandybrown shares the Hostinger host
+with eye-care-test, so the control and its own noise case were measured either side of a cache purge and a burst of
+deploy verification traffic. The noise rows are consistent with that rather than with walker instability: hover rows
+where the draft shows its hover end state and live shows rest (`card-gucci` border/box-shadow/transform,
+`swatch-black` transform), a `focus` box-shadow, and lens rows where the flow landed on a different product between
+runs (`"m frame £289"` against `"55 frame £289.00"`).
+
+**Owed, with the exact command:** re-run `node scripts/parity/benchmark.mjs --noise` on a quiet host and compare the
+noise counts against 0. Until then the catch rate stands at 5 of 5 and the noise figure is unproven in both
+directions. **Owner: the next route session**, since it needs ~80 minutes of uninterrupted shared host.
+
+**Still owed and why:** the confirmation walk (needs the host) and the `sgs/media` recalibration that would prove
+L7's `text`, `presence` and `link` reads on real data rather than only in fixtures (needs the host, and
+`calibrate.mjs` calls `assertQuiet`). Both were blocked by a peer session's sandybrown deploys, which is the correct
+behaviour of R-47-11 rather than a fault. **L7.1 is already proven on real data** — `sgs/hero`'s recalibration
+recorded `overriddenBy` on ten inherited settings — so the unproven part is specifically the three content reads.
+
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
 That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no
