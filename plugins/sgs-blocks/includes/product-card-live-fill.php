@@ -71,8 +71,22 @@ if ( ! function_exists( 'sgs_product_card_live_fill' ) ) {
 		}
 
 		// Colour dots: the chosen (or first colour-carrying) variation attribute.
+		// The taxonomy the dots came from travels with them in
+		// `_sgsSwatchTaxonomy` (a runtime key, never a stored attribute): it is
+		// what turns a dot into a real control rather than a decoration, because
+		// it names the axis a click selects and the `attribute_{taxonomy}` query
+		// parameter the product link carries — see
+		// includes/product-card-swatches.php.
 		if ( empty( $attributes['colourSwatches'] ) && $product->is_type( 'variable' ) ) {
-			$attributes['colourSwatches'] = sgs_product_card_live_swatches( $product, (string) ( $attributes['swatchAttribute'] ?? '' ) );
+			$sgs_swatch_taxonomy          = '';
+			$attributes['colourSwatches'] = sgs_product_card_live_swatches(
+				$product,
+				(string) ( $attributes['swatchAttribute'] ?? '' ),
+				$sgs_swatch_taxonomy
+			);
+			if ( ! empty( $attributes['colourSwatches'] ) && '' !== $sgs_swatch_taxonomy ) {
+				$attributes['_sgsSwatchTaxonomy'] = $sgs_swatch_taxonomy;
+			}
 		}
 
 		return $attributes;
@@ -87,9 +101,13 @@ if ( ! function_exists( 'sgs_product_card_live_swatches' ) ) {
 	 *
 	 * @param \WC_Product $product  A variable product.
 	 * @param string      $taxonomy Attribute taxonomy to read; '' = auto.
+	 * @param string      $resolved Receives the taxonomy the returned dots came
+	 *                              from, so the caller can name the axis a dot
+	 *                              selects without re-running the auto-pick.
 	 * @return array<int, array{key: string, label: string, colour: string}>
 	 */
-	function sgs_product_card_live_swatches( $product, string $taxonomy ): array {
+	function sgs_product_card_live_swatches( $product, string $taxonomy, &$resolved = null ): array {
+		$resolved = '';
 		$taxonomy = sanitize_key( $taxonomy );
 		foreach ( $product->get_variation_attributes() as $attr_taxonomy => $slugs ) {
 			if ( ! taxonomy_exists( $attr_taxonomy ) || ( '' !== $taxonomy && $taxonomy !== $attr_taxonomy ) ) {
@@ -112,6 +130,7 @@ if ( ! function_exists( 'sgs_product_card_live_swatches' ) ) {
 				);
 			}
 			if ( ! empty( $swatches ) ) {
+				$resolved = $attr_taxonomy;
 				return $swatches;
 			}
 		}

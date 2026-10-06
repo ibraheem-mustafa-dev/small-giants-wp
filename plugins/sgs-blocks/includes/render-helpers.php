@@ -151,6 +151,7 @@ require_once __DIR__ . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-link.php';
 require_once __DIR__ . '/helpers-stretched-link.php';
+require_once __DIR__ . '/helpers-preselect-url.php';
 require_once __DIR__ . '/helpers-cart-panel.php';
 require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';

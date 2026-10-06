@@ -328,7 +328,7 @@
 							}
 						}
 					},
-					"_note": "Decorative colour-dot row (Frame Card component): each dot's hue is DATA (colourSwatches[].colour or the variation's colour term), not an operator styling property, mirroring sgs/option-picker's swatch chip. The operator sets the dot size (swatchSize, width and height via --sgs-pc-swatch-size) and how far a dot grows when pointed at (swatchHoverGrow, a transform via --sgs-pc-swatch-hover-scale), both emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css. Rendered via sgs_product_card_swatches_markup() (product-card-builtin-render.php)."
+					"_note": "Colour-dot row (Frame Card component): each dot's hue is DATA (colourSwatches[].colour or the variation's colour term), not an operator styling property, mirroring sgs/option-picker's swatch chip. The operator sets the dot size (swatchSize, width and height via --sgs-pc-swatch-size) and how far a dot grows when pointed at (swatchHoverGrow, a transform via --sgs-pc-swatch-hover-scale), both emitted by includes/product-card-card-parts.php::sgs_product_card_parts_css. Rendered via sgs_product_card_swatches_markup() (includes/product-card-swatches.php), which emits a real <button> for any dot that knows its own attribute term and a decorative <span> for one an operator typed."
 				},
 				"attributeTag": {
 					"label": "Attribute tag",
@@ -1527,7 +1527,7 @@
 					}
 				}
 			},
-			"description": "Frame Card component: decorative colour-swatch row (mirrors sgs/option-picker's optionItems shape — key + label — with a colour value added). Operator-authored; each swatch's colour is DATA, not a styling property. Empty array = no swatches rendered (matches the packSizes convention — no separate show toggle)."
+			"description": "Frame Card component: the colour-swatch row (mirrors sgs/option-picker's optionItems shape — key + label — with a colour value added). Each swatch's colour is DATA, not a styling property. Empty array = no swatches rendered (matches the packSizes convention — no separate show toggle). Left empty on a variable product in live mode, includes/product-card-live-fill.php fills it from the swatchAttribute taxonomy's terms, and each dot then renders as a real button that swaps that card's photo and opens the product on that colour; a hand-typed swatch has no term behind it and stays decorative."
 		},
 		"swatchMaxVisible": {
 			"type": "number",

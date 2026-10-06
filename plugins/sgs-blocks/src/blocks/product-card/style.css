@@ -1565,9 +1565,75 @@
 	/* swatchSize → --sgs-pc-swatch-size (includes/product-card-card-parts.php). */
 	width: var( --sgs-pc-swatch-size, 16px );
 	height: var( --sgs-pc-swatch-size, 16px );
+	/* A dot is the same size whether it renders as a decorative <span> or as a
+	   real <button>: a button's UA box-sizing is border-box, so the span is
+	   pinned to it rather than measuring a border wider. */
+	box-sizing: border-box;
 	border-radius: 50%;
 	background: var( --sgs-pc-swatch-bg, #d8d2c8 );
 	border: 1px solid rgba( 0, 0, 0, 0.15 );
+}
+
+/*
+ * An interactive dot (includes/product-card-swatches.php emits a real
+ * <button type="button"> for any dot that knows its own attribute term).
+ * It keeps the decorative dot's exact appearance — only the UA button
+ * chrome is cleared.
+ */
+.sgs-product-card__swatch--button {
+	margin: 0;
+	padding: 0;
+	font: inherit;
+	line-height: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: pointer;
+	/*
+	 * Positioning context for the hit-area widener below. extensions.css also
+	 * gives any button inside `.sgs-has-block-link` `position: relative` plus
+	 * `z-index: 2`, which is what lifts a swatch above the stretched block-link
+	 * overlay; this declaration makes the dot work the same on a card with no
+	 * overlay.
+	 */
+	position: relative;
+}
+
+/*
+ * Pointer/touch target, not appearance: the visible dot stays at its declared
+ * size (16px, 17px on the Frame Card style) and an invisible — but
+ * still hit-testable — ::after grows the clickable area to at least
+ * 24×24px (WCAG 2.2 SC 2.5.8). Same hit-area widener the wishlist heart
+ * uses (`.sgs-product-card__wishlist::after`). max() keeps the padding at
+ * least 4px, so a dot the operator has already sized above 16px gains the same
+ * comfortable margin rather than losing it.
+ */
+.sgs-product-card__swatch--button::after {
+	content: "";
+	position: absolute;
+	inset: calc( -1 * max( 4px, ( 24px - var( --sgs-pc-swatch-size, 16px ) ) / 2 ) );
+	border-radius: 50%;
+}
+
+/*
+ * Visible focus ring. The dot's own colour is data and can be anything, so the
+ * ring is drawn from the theme's text token (a surface-contrasting value) with
+ * an offset, never from the swatch colour.
+ */
+.sgs-product-card__swatch--button:focus-visible {
+	outline: 2px solid var( --wp--preset--color--text, #1a1a1a );
+	outline-offset: 3px;
+}
+
+/*
+ * The chosen dot. A double ring (surface gap, then a contrasting line) reads on
+ * any dot colour, including white and near-black, and is not carried by colour
+ * alone — view.js stamps aria-pressed, so the state is in the accessibility
+ * tree too.
+ */
+.sgs-product-card__swatch--button[aria-pressed="true"] {
+	box-shadow:
+		0 0 0 2px var( --wp--preset--color--base, #fff ),
+		0 0 0 3px var( --wp--preset--color--text, #1a1a1a );
 }
 
 /* Colour-dot hover growth (swatchHoverGrow → --sgs-pc-swatch-hover-scale). */
@@ -1581,7 +1647,18 @@
 	}
 }
 
+/* No growth and no transition when the visitor has asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-product-card__swatch,
+	.sgs-product-card__swatch--button {
+		transition: none;
+		transform: none;
+	}
+}
+
+/* The '+N' overflow is a count, not a control: no handler, no tab stop. */
 .sgs-product-card__swatch-more {
+	cursor: default;
 	font-size: var( --sgs-pc-swatch-more-font-size, 11px );
 	color: var( --wp--preset--color--text-muted, #5e584f );
 	border: 1px solid rgba( 0, 0, 0, 0.15 );

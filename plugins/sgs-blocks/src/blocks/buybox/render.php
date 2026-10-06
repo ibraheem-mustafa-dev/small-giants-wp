@@ -112,6 +112,17 @@ if ( null === $manifest ) {
 	return;
 }
 
+/*
+ * Deep-link preselection: a product card's colour swatch appends
+ * `attribute_{taxonomy}={slug}` to the product link, so the page opens on that
+ * option instead of the manifest's own default. Applied here, before anything
+ * reads `defaultKey`/`defaultAxes`, so the seeded context, the pickers'
+ * `defaultSelected`, the SSR price and the SSR photo all agree. The URL value
+ * is accepted only when it matches one of this product's own term slugs AND
+ * resolves to a real variation — includes/helpers-preselect-url.php.
+ */
+$manifest = sgs_preselect_apply_to_manifest( $manifest );
+
 /* ── 4b. Guided layout (Spec 43 FR-43-23) — resolved early so both the wrapper class (below) and the 8b picker section can read it. ── */
 $buybox_layout = (string) ( $attributes['buyboxLayout'] ?? 'standard' );
 if ( ! in_array( $buybox_layout, array( 'standard', 'guided' ), true ) ) {

@@ -60,6 +60,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php'
 require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 
 // The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
 // is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's

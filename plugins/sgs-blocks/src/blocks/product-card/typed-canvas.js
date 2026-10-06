@@ -182,7 +182,19 @@ export function TypedRating( { attributes: attrs, styles } ) {
 	);
 }
 
-/** Colour dots capped at swatchMaxVisible, then a "+N" pill (sgs_product_card_swatches_markup). */
+/**
+ * Colour dots capped at swatchMaxVisible, then a "+N" pill — the editor-canvas
+ * mirror of includes/product-card-swatches.php::sgs_product_card_swatches_markup.
+ *
+ * The server renders a dot as a real <button> only when the dot knows its own
+ * WooCommerce attribute term, which means all three of a term slug, a label and
+ * a resolved `_sgsSwatchTaxonomy`. That taxonomy is set only by
+ * includes/product-card-live-fill.php, and only when `colourSwatches` is empty
+ * — so a swatch an operator typed here always has a synthetic key, never a
+ * taxonomy, and is decorative on the frontend too. Decorative <span> is
+ * therefore the matching mirror; a live-mode card previews through
+ * ServerSideRender and shows the real buttons.
+ */
 export function TypedSwatches( { attributes: attrs, styles } ) {
 	const items = Array.isArray( attrs.colourSwatches ) ? attrs.colourSwatches : [];
 	const max = Math.max( 1, parseInt( attrs.swatchMaxVisible, 10 ) || 4 );

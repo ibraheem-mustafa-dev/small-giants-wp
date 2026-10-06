@@ -71,6 +71,20 @@ import '../../shared/wishlist-store';
 const cardRefByCtx = new WeakMap();
 
 /**
+ * Module-level WeakMap: card ref → ctx.
+ *
+ * The reverse of cardRefByCtx, for the one path that starts from the DOM rather
+ * than from a directive: the document-level colour-swatch listener below finds
+ * the card a clicked swatch belongs to, then needs that card's own context to
+ * swap its photo. Populated by initPillBridge, so it holds an entry only for a
+ * card that actually runs the Interactivity store — a card in a branch that
+ * does not (read-only mode) still gets the link rewrite, just no live swap.
+ *
+ * @type {WeakMap<Element, Object>}
+ */
+const ctxByCardRef = new WeakMap();
+
+/**
  * Parsed buybox gallery data-island, cached per card element.
  *
  * The buybox (sgs/buybox) emits ALL its variation galleries as a JSON
@@ -739,6 +753,124 @@ function selectThumbByIndex( ctx, card, idx ) {
  */
 const prefetchedCards = new WeakSet();
 
+/**
+ * Rewrite this card's product links to carry the chosen option.
+ *
+ * Only links pointing at this card's own product are touched: the base
+ * permalink comes from the swatch row's own `data-sgs-swatch-product-url`
+ * (written server-side in includes/product-card-swatches.php) and a link
+ * qualifies only when its origin and pathname match it. That covers the
+ * stretched block-link overlay (`.sgs-block-link-overlay`, whose href IS the
+ * permalink — includes/helpers-stretched-link.php hands it over) and the
+ * card's own title and CTA links, and leaves anything else alone.
+ *
+ * sgs/buybox reads the parameter back and validates it against the product's
+ * own terms (includes/helpers-preselect-url.php), so the product page opens on
+ * the chosen option.
+ *
+ * @param {Element} card  The card root the swatch belongs to.
+ * @param {string}  param Query-parameter name (`attribute_{taxonomy}`).
+ * @param {string}  slug  Attribute term slug.
+ */
+function updateSwatchLinks( card, param, slug ) {
+	const row = card.querySelector( '.sgs-product-card__swatches' );
+	const base = row ? row.dataset.sgsSwatchProductUrl : '';
+	if ( ! param || ! slug || ! base ) {
+		return;
+	}
+
+	let baseUrl;
+	try {
+		baseUrl = new URL( base, window.location.href );
+	} catch ( e ) {
+		return;
+	}
+
+	card.querySelectorAll( 'a[href]' ).forEach( ( link ) => {
+		let url;
+		try {
+			url = new URL( link.getAttribute( 'href' ), window.location.href );
+		} catch ( e ) {
+			return;
+		}
+		if ( url.origin !== baseUrl.origin || url.pathname !== baseUrl.pathname ) {
+			return;
+		}
+		url.searchParams.set( param, slug );
+		link.setAttribute( 'href', url.toString() );
+	} );
+}
+
+/**
+ * Apply a colour-swatch press: move the pressed state, rewrite this card's
+ * product links, and swap this card's photo.
+ *
+ * Every DOM query is scoped to `card`, and the photo swap goes through that
+ * card's OWN context, so a sibling card on the same grid never moves.
+ *
+ * @param {Element} card The card root the swatch belongs to.
+ * @param {Element} btn  The pressed swatch button.
+ */
+function selectSwatch( card, btn ) {
+	const taxonomy = btn.dataset.sgsSwatchTaxonomy;
+	const slug = btn.dataset.sgsSwatchKey;
+	if ( ! taxonomy || ! slug ) {
+		return;
+	}
+
+	card.querySelectorAll( '.sgs-product-card__swatch--button' ).forEach( ( el ) => {
+		el.setAttribute( 'aria-pressed', el === btn ? 'true' : 'false' );
+	} );
+
+	// The link rewrite runs first: it needs no manifest, so it still happens on
+	// a card whose branch seeds no Interactivity context.
+	updateSwatchLinks( card, btn.dataset.sgsSwatchParam, slug );
+
+	const ctx = ctxByCardRef.get( card );
+	if ( ! ctx ) {
+		return;
+	}
+
+	// Identical path to a pick in sgs/option-picker — the photo, price, stock
+	// and thumbnail swap already live there and are not re-implemented here.
+	applyPillSelection( ctx, { typeKey: taxonomy, selectedKey: slug } );
+	applyAvailability( card, ctx, false );
+}
+
+/*
+ * Colour-swatch clicks, delegated once at the document.
+ *
+ * One listener rather than one per card, and at the document rather than on a
+ * card root, because the swatch row renders in branches that seed no
+ * Interactivity context and therefore never run a data-wp-init callback. The
+ * handler resolves the card from the button, so a press is still confined to
+ * the card it happened in.
+ *
+ * preventDefault() is what stops a press also navigating: a swatch sits above
+ * the stretched block-link overlay (a SIBLING, so the click never bubbles
+ * through it), but in a branch where the swatch row renders inside the card's
+ * own product link the default action would otherwise follow that ancestor
+ * anchor.
+ */
+document.addEventListener( 'click', ( event ) => {
+	const target = event.target;
+	if ( ! target || typeof target.closest !== 'function' ) {
+		return;
+	}
+	const btn = target.closest( '.sgs-product-card__swatch--button' );
+	if ( ! btn ) {
+		return;
+	}
+	const card =
+		btn.closest( '.wp-block-sgs-product-card' ) || btn.closest( '.product-card' );
+	if ( ! card ) {
+		return;
+	}
+	event.preventDefault();
+	event.stopPropagation();
+	selectSwatch( card, btn );
+} );
+
 store( 'sgs/product-card', {
 	callbacks: {
 		/**
@@ -760,8 +892,10 @@ store( 'sgs/product-card', {
 
 			const ctx = getContext();
 
-			// Store the ref so the 409 re-sync path in addToCart can retrieve it.
+			// Store the ref so the 409 re-sync path in addToCart can retrieve it,
+			// and the reverse so the colour-swatch listener can go DOM → ctx.
 			cardRefByCtx.set( ctx, ref );
+			ctxByCardRef.set( ref, ctx );
 
 			// Initial availability pass — no announcement on first paint.
 			applyAvailability( ref, ctx, true );

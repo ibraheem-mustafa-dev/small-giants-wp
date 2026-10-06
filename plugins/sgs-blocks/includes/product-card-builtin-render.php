@@ -28,6 +28,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// The colour-swatch row this file renders lives in its own file (both this
+// file and the block's render.php are over the PHP file-length limit).
+require_once __DIR__ . '/product-card-swatches.php';
+
 if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 
 	/**
@@ -450,73 +454,3 @@ if ( ! function_exists( 'sgs_product_card_saving_badge_markup' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
-
-	/**
-	 * Frame Card component: decorative colour-swatch row, capped at
-	 * swatchMaxVisible then collapsed into a '+N' pill. Reuses
-	 * sgs/option-picker's colour-chip technique (scoped CSS custom-property
-	 * VALUES, never inline `style=` — Spec 32). The '+N' pill has no
-	 * background fill (border + muted text only — see style.css
-	 * .sgs-product-card__swatch-more), so there is no colour-on-colour
-	 * contrast to solve here; sgs_wcag_text_colour_for_bg() is NOT called
-	 * (unlike option-picker/render.php's swatch-chip block, whose pill text
-	 * sits on top of the swatch colour itself). Each swatch's colour is DATA (colourSwatches[].colour),
-	 * not an operator styling property. Called from every render branch
-	 * (R-31-9).
-	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $card_uid   Per-instance uid (also on the wrapper) — used to
-	 *                           build unique, collision-free per-swatch scoped
-	 *                           CSS anchors across multiple cards on one page.
-	 * @return string Safe HTML, or '' when colourSwatches is empty.
-	 */
-	function sgs_product_card_swatches_markup( array $attributes, string $card_uid = '' ) {
-		$items = isset( $attributes['colourSwatches'] ) && is_array( $attributes['colourSwatches'] ) ? $attributes['colourSwatches'] : array();
-		if ( empty( $items ) ) {
-			return '';
-		}
-
-		$max_visible = isset( $attributes['swatchMaxVisible'] ) ? max( 1, absint( $attributes['swatchMaxVisible'] ) ) : 4;
-		$visible     = array_slice( $items, 0, $max_visible );
-		$hidden      = max( 0, count( $items ) - count( $visible ) );
-
-		$scoped_css = '';
-		$dots_html  = '';
-		$i          = 0;
-
-		foreach ( $visible as $item ) {
-			$colour = isset( $item['colour'] ) ? sanitize_hex_color( (string) $item['colour'] ) : '';
-			if ( '' === $colour ) {
-				continue;
-			}
-			$label   = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
-			$dot_id  = ( '' !== $card_uid ? $card_uid : 'sgs-pc' ) . '-swatch-' . (int) $i;
-			$i++;
-
-			// Colour chip technique mirrors option-picker/render.php's own swatch
-			// chip (~line 727-746): the swatch's own hue is a decorative DATA
-			// value, carried as CSS custom-property VALUES, never inline (Spec 32).
-			$scoped_css .= '#' . $dot_id . '{--sgs-pc-swatch-bg:' . esc_attr( $colour ) . ';}';
-
-			$dots_html .= '<span id="' . esc_attr( $dot_id ) . '" class="sgs-product-card__swatch"'
-				. ( '' !== $label ? ' role="img" title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"' : ' aria-hidden="true"' )
-				. '></span>';
-		}
-
-		if ( '' === $dots_html ) {
-			return '';
-		}
-
-		$more_html = '';
-		if ( $hidden > 0 ) {
-			/* translators: %d is the number of additional colour options not shown as swatches. */
-			$more_label = sprintf( __( '+%d more colours', 'sgs-blocks' ), $hidden );
-			$more_html  = '<span class="sgs-product-card__swatch-more" role="img" aria-label="' . esc_attr( $more_label ) . '">+' . (int) $hidden . '</span>';
-		}
-
-		$style_tag = '' !== $scoped_css ? '<style>' . wp_strip_all_tags( $scoped_css ) . '</style>' : '';
-
-		return $style_tag . '<div class="sgs-product-card__swatches">' . $dots_html . $more_html . '</div>';
-	}
-}
