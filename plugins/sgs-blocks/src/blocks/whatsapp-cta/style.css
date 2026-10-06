@@ -6,7 +6,6 @@
 	align-items: center;
 	gap: var(--wp--preset--spacing--10);
 	text-decoration: none;
-	font-weight: 600;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	transition-property: all;
 	transition-timing-function: ease;
@@ -57,8 +56,14 @@
 }
 
 /* ===== Label ===== */
+/* 600 lives on the label, not on .sgs-whatsapp-cta__btn. It is a button-LABEL
+ * weight, and the card variant renders no label at all — carrying it on the
+ * shared root class leaked it into the card's title and body copy, which
+ * declare no weight of their own. labelFontWeight emits a scoped
+ * `.{uid} .sgs-whatsapp-cta__label` rule, which outranks this base rule. */
 .sgs-whatsapp-cta__label {
 	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
 }
 
 /* ===== Screen reader only (for floating icon-only variant) ===== */
@@ -215,20 +220,17 @@
 	text-wrap: var(--sgs-whatsapp-cta-card-text-wrap, pretty);
 }
 
-/* Title and subline each declare their own font-weight. The root <a> is also
- * .sgs-whatsapp-cta__btn, which carries the button-label weight 600, so without
- * these the card's heading AND its body copy inherited it. The existing
- * cardTitleFontWeight / cardSublineFontWeight controls override either. */
+/* No font-weight here on purpose: the title follows the theme's own weight, and
+ * cardTitleFontWeight sets it per client. A weight chosen here would be the
+ * framework imposing one site's design on every site. */
 .sgs-whatsapp-cta__card-title {
 	font-size: var(--wp--preset--font-size--small);
-	font-weight: 600;
 	color: var(--wp--preset--color--text);
 }
 
 .sgs-whatsapp-cta__card-subline {
 	display: block;
 	font-size: var(--wp--preset--font-size--small);
-	font-weight: 400;
 	color: var(--wp--preset--color--text-muted);
 }
 

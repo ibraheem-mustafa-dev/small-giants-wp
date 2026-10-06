@@ -106,9 +106,16 @@
 
 /*
  * Hover: text shifts to `text` (not text-muted), plus the client's own hover
- * background if they set one. No text-decoration: a tab is a <button role="tab">,
- * not a link, and its selected state carries the box-shadow indicator. A client
- * who wants a hover underline draws it with border-bottom width and colour.
+ * background (tabHoverBgColour) if they set one. No text-decoration: a tab is a
+ * <button role="tab">, not a link, and the register's underline decisions (S2,
+ * S12) scope underlines to text links, keeping them off buttons.
+ *
+ * There is deliberately no hover INDICATOR colour. The indicator is a
+ * box-shadow scoped to .sgs-tabs--style-underline, so a hover member would be
+ * inert on the boxed and pills styles — a control that cannot paint on two of
+ * the three styles. If a client ever needs one, it is tabHoverIndicatorColour
+ * beside tabActiveIndicatorColour, with style-gated controls and a twin for the
+ * vertical axis plus the 767px collapse. Not built on spec: no draft asks for it.
  */
 .sgs-tabs__tab:hover {
 	color: var( --wp--preset--color--text, #1e1e1e );
