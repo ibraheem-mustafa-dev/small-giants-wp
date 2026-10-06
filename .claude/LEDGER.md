@@ -101,8 +101,8 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   claims in 63 families, `mobile-menu` unpairable so **not judged**, 34 dead `sgs/hero` settings
   (`HERO-DEAD-SETTINGS.md`: fixture-gated).
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Browser-heavy runs belong on the local
-  WSL mirrors, **UP and fast** (Playwright 200 in 3.3s); `curl localhost:8081` fails only because the proxy binds
-  IPv6 — use `curl -6`. **Never `wsl --shutdown`: SearXNG lives there.**
+  WSL mirrors, **UP and fast**; `curl localhost:8081` fails only on IPv4 — use `curl -6`.
+  **Never `wsl --shutdown`: SearXNG lives there.**
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
   (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
 - **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
