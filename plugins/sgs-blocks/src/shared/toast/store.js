@@ -51,6 +51,68 @@ import { prefersReducedMotion } from '../effects/motion-utils.js';
 /** Auto-close delay for a success toast, in milliseconds. */
 const AUTO_CLOSE_MS = 5000;
 
+/**
+ * Where the toast lives when no dialog is open, so it can be put back.
+ *
+ * @type {?HTMLElement}
+ */
+let toastHome = null;
+
+/**
+ * Move the toast into the open modal dialog, or back out again.
+ *
+ * A dialog opened with `showModal()` is painted in the browser's TOP LAYER,
+ * which sits above every z-index on the page — the toast already asks for
+ * `z-index: 100000` and still rendered behind the lens pop-up, so no CSS value
+ * can fix this. The only way for the toast to be both SEEN and USED over a
+ * modal is to be inside it: a modal dialog also makes everything outside
+ * itself inert, so a toast merely promoted into the top layer beside the
+ * dialog would be visible with a dead "View bag" button.
+ *
+ * The toast is server-rendered once at `wp_footer` and never recreated, so it
+ * is moved rather than cloned — Interactivity directives on a node injected
+ * after the runtime has booted are not picked up, and that failure is silent.
+ *
+ * Called BEFORE the message is set, so the live region is already in its final
+ * position when its text changes; moving a live region at the same moment as
+ * its content can lose the announcement.
+ */
+function hostToast() {
+	const toast = document.querySelector( '.sgs-toast' );
+	if ( ! toast ) {
+		return;
+	}
+
+	const open = [ ...document.querySelectorAll( 'dialog[open]' ) ].filter( ( d ) => {
+		// `:modal` is what distinguishes showModal() from show(); only the
+		// former takes the top layer. Older engines that do not know the
+		// selector throw, and there the open dialog is the best guess.
+		try {
+			return d.matches( ':modal' );
+		} catch {
+			return true;
+		}
+	} );
+	const dialog = open[ open.length - 1 ] || null;
+
+	if ( dialog ) {
+		if ( toast.parentElement !== dialog ) {
+			if ( ! toastHome ) {
+				toastHome = toast.parentElement;
+			}
+			dialog.appendChild( toast );
+			// `close` does not bubble, so the way back is registered on the
+			// dialog that actually holds it, once.
+			dialog.addEventListener( 'close', hostToast, { once: true } );
+		}
+		return;
+	}
+
+	if ( toastHome && toast.parentElement !== toastHome ) {
+		toastHome.appendChild( toast );
+	}
+}
+
 const { state, actions } = store( 'sgs/toast', {
 	state: {
 		/** '' | 'success' | 'error' — '' means nothing has been shown yet. */
@@ -173,6 +235,8 @@ const { state, actions } = store( 'sgs/toast', {
 				return;
 			}
 
+			hostToast();
+
 			if ( 'success' === state.variant && state.baseMessage === text ) {
 				state.repeat += 1;
 			} else {
@@ -195,6 +259,8 @@ const { state, actions } = store( 'sgs/toast', {
 			if ( ! text ) {
 				return;
 			}
+
+			hostToast();
 
 			disarm();
 			state.paused = 0;
