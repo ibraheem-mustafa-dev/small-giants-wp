@@ -38,6 +38,69 @@ export async function settleAnimations( page, { floor = 300, cap = 6000, step = 
 	}
 }
 
+// In-page: the entrances still holding their un-played start pose. An armed entrance is a finite document-timeline
+// animation that is paused (created by animation-observer.js and played once its element nears the viewport), so
+// unfinishedAnimations never counts it and an element read now sits at its start frame. Returns one descriptor per
+// armed element, in document order: { index, tag, id, cls, animation, top } with `top` the page-relative offset.
+export function armedEntrances() {
+	const out = [];
+	const seen = new Set();
+	for ( const a of document.getAnimations() ) {
+		const el = a.effect?.target;
+		if ( 'paused' !== a.playState || a.timeline !== document.timeline || ! el || seen.has( el ) || ! Number.isFinite( a.effect.getComputedTiming().endTime ) ) {
+			continue;
+		}
+		seen.add( el );
+		out.push( {
+			index: out.length,
+			tag: el.localName,
+			id: el.id || '',
+			cls: String( el.getAttribute( 'class' ) || '' ),
+			animation: el.getAttribute( 'data-sgs-animation' ) || '',
+			top: Math.round( el.getBoundingClientRect().top + window.scrollY ),
+		} );
+	}
+	return out;
+}
+
+// In-page: scrolls the `index`th armed element to the middle of the viewport. Returns false when it is gone.
+export function scrollArmedIntoView( index ) {
+	const el = [ ...new Set( document.getAnimations().filter( ( a ) => 'paused' === a.playState && a.timeline === document.timeline ).map( ( a ) => a.effect?.target ).filter( Boolean ) ) ][ index ];
+	if ( ! el ) {
+		return false;
+	}
+	const r = el.getBoundingClientRect();
+	window.scrollTo( { top: Math.max( 0, r.top + window.scrollY - window.innerHeight / 2 + r.height / 2 ), behavior: 'instant' } );
+	return true;
+}
+
+// Scrolls every armed entrance into view so its trigger fires, lets the animations settle, then puts the scroll back.
+// Returns { armed, played, unfired } where `unfired` lists the descriptors of entrances still paused after their own
+// scroll and a settle: each is a `reveal-unfired` finding (a reveal that never plays), never a settled element.
+export async function triggerArmed( page, { floor = 250, cap = 6000 } = {} ) {
+	const armed = await page.evaluate( armedEntrances );
+	if ( ! armed.length ) {
+		return { armed: 0, played: 0, unfired: [] };
+	}
+	const y = await page.evaluate( () => window.scrollY );
+	const keyOf = ( d ) => `${ d.tag }|${ d.id }|${ d.cls }|${ d.animation }|${ d.top }`;
+	const unfired = [];
+	for ( const d of armed ) {
+		const target = ( await page.evaluate( armedEntrances ) ).find( ( s ) => keyOf( s ) === keyOf( d ) );
+		if ( ! target ) {
+			continue;
+		}
+		await page.evaluate( scrollArmedIntoView, target.index );
+		await settleAnimations( page, { floor, cap } );
+		if ( ( await page.evaluate( armedEntrances ) ).some( ( s ) => keyOf( s ) === keyOf( d ) ) ) {
+			unfired.push( d );
+		}
+	}
+	await page.evaluate( ( t ) => window.scrollTo( { top: t, behavior: 'instant' } ), y );
+	await page.waitForTimeout( 60 );
+	return { armed: armed.length, played: armed.length - unfired.length, unfired };
+}
+
 // The DOM nodeIds of a finder's element and its ancestors (nearest first), or null when it resolves to nothing. The
 // remote objects it makes are released before it returns (one object group per call).
 const GROUP = 'sgs-walk';

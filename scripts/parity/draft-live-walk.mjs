@@ -42,7 +42,7 @@ import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs'
 import closeOnExit from '../lib/close-browser-on-exit.js';
 import { REF_PROPS, elementPath, traceRef, loadUnmatched, appendUnmatchedReport } from './lib/ref-trace.mjs';
 import { loadDivergences } from './lib/divergences.mjs';
-import { openDevtools, settleAnimations, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
+import { openDevtools, settleAnimations, triggerArmed, declaredValues, DECLARED_PROPS } from './lib/devtools.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium, devices } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -191,6 +191,10 @@ async function walkSide( browser, side, width ) {
 		if ( onlyStates && ! onlyStates.includes( state.name ) ) {
 			continue;
 		}
+		// An armed entrance (paused at its start pose) is invisible to that settle: scroll each into view so it plays
+		// before any resting read. One that never plays is a `reveal-unfired` finding on the state.
+		const armed = await triggerArmed( page );
+		const findings = armed.unfired.map( ( d ) => ( { kind: 'reveal-unfired', tag: d.tag, id: d.id, cls: d.cls, animation: d.animation, top: d.top } ) );
 		const snap = {};
 		for ( const p of pairs ) {
 			snap[ p.name ] = await page.evaluate( collectPair, [ p[ side ], propsFor( p ), RESOLVE, 'live' === side ? refPrefix : null, TRACE, PATH, PAINT_SRC, refPrefix ? PSEUDO_PROPS : null ] );
@@ -252,7 +256,7 @@ async function walkSide( browser, side, width ) {
 			await focusPasses( page, pairs, side, snap, RESOLVE, !! phone.isMobile );
 			await activePass( page, pairs, side, snap, RESOLVE, pressCdp, { all: !! cdp } );
 		}
-		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ) };
+		states[ state.name ] = { snap, shot, log, structure, auto, links, mainY, region: h.region, entrances: state.name === firstState ? entrances : null, ...( settled.settled ? {} : { unsettled: settled } ), ...( findings.length ? { findings } : {} ) };
 		if ( state.autoScrolled ) {
 			await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 		}

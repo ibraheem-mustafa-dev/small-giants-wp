@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { resolveFinder, hoverStyles } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
-import { openDevtools, settleAnimations, forcedHover, declaredValues, cascadeWinner } from '../../parity/lib/devtools.mjs';
+import { openDevtools, settleAnimations, triggerArmed, armedEntrances, forcedHover, declaredValues, cascadeWinner } from '../../parity/lib/devtools.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium } = await import( pathToFileURL( path.join( HERE, '../../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -94,5 +94,43 @@ test( 'MUST FAIL TO MISS: a text run reads its rows and the space between them i
 	const rows = await page.evaluate( ( src ) => new Function( `${ src }; return textRun( document.querySelector( '.hours' ), false ).rows;` )(), PAINT_SRC );
 	assert.equal( rows.count, 3, 'a day and its hours on one line are one row' );
 	assert.ok( Math.abs( rows.space - 14 ) <= 1, `space ${ rows.space } is the list's 14px gap` );
+	await page.close();
+} );
+
+// An armed entrance: created paused at its start pose (opacity 0), far below the fold. `WITH_TRIGGER` plays it once it
+// nears the viewport (as animation-observer.js does); `NO_TRIGGER` never plays it (a broken reveal).
+const ARMED = '<style>.gap { height: 2400px } .rise { opacity: 1 }</style><div class="gap"></div><p class="rise" data-sgs-animation="fade-up">Hi</p>';
+const ARM_JS = 'const el = document.querySelector( ".rise" ); const a = el.animate( [ { opacity: 0 }, { opacity: 1 } ], { duration: 400, fill: "backwards" } ); a.pause();';
+const WITH_TRIGGER = `<script>${ ARM_JS } new IntersectionObserver( ( es ) => es.forEach( ( e ) => e.isIntersecting && a.play() ) ).observe( el );</script>`;
+const NO_TRIGGER = `<script>${ ARM_JS }</script>`;
+const riseOpacity = ( page ) => page.evaluate( () => getComputedStyle( document.querySelector( '.rise' ) ).opacity );
+
+test( 'MUST FAIL TO READ AT THE START FRAME: an armed entrance is invisible to the settle and played by triggerArmed', async () => {
+	const page = await pageWith( ARMED + WITH_TRIGGER );
+	const r = await settleAnimations( page, { floor: 100 } );
+	assert.equal( r.settled, true, 'the settle alone declares the page settled' );
+	assert.equal( ( await page.evaluate( armedEntrances ) ).length, 1, 'while one entrance still sits paused' );
+	assert.equal( await riseOpacity( page ), '0', 'negative control: the resting read after the settle alone is the start frame' );
+	const t = await triggerArmed( page, { floor: 100 } );
+	assert.deepEqual( [ t.armed, t.played, t.unfired.length ], [ 1, 1, 0 ] );
+	assert.equal( await riseOpacity( page ), '1', 'the resting read is the settled value' );
+	assert.equal( await page.evaluate( () => window.scrollY ), 0, 'the scroll is put back' );
+	await page.close();
+} );
+
+test( 'MUST NOT OVER-SUPPRESS: an entrance that never fires surfaces as unfired, not as settled', async () => {
+	const page = await pageWith( ARMED + NO_TRIGGER );
+	const t = await triggerArmed( page, { floor: 100, cap: 1000 } );
+	assert.equal( t.armed, 1 );
+	assert.equal( t.played, 0 );
+	assert.equal( t.unfired.length, 1, 'the walker reports the reveal it cannot resolve' );
+	assert.equal( t.unfired[ 0 ].animation, 'fade-up' );
+	assert.equal( await riseOpacity( page ), '0', 'and the element really is still at its start frame' );
+	await page.close();
+} );
+
+test( 'a page with no armed entrance reports nothing', async () => {
+	const page = await pageWith( FADE );
+	assert.deepEqual( await triggerArmed( page, { floor: 50 } ), { armed: 0, played: 0, unfired: [] } );
 	await page.close();
 } );
