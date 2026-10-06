@@ -54,7 +54,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-06).** sandybrown carries the Tier 2 shop-journey work on top of `94122e326` (checksum-verified); eye-care-test is at `94122e326`, untouched by that session. ⚠️ **Different WooCommerce versions — sandybrown 11.1.0, eye-care-test 11.1.2** — not interchangeable for version-sensitive work despite sharing a host, and every existing "installed 11.1.0" citation about the canary is CORRECT. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
+**Now (2026-10-06).** Both sites carry the Tier 2 shop-journey work; see that paragraph below for the live SHAs by marker. ⚠️ **Different WooCommerce versions — sandybrown 11.1.0, eye-care-test 11.1.2** — not interchangeable for version-sensitive work despite sharing a host, and every existing "installed 11.1.0" citation about the canary is CORRECT. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
 No blockers.
@@ -82,7 +82,7 @@ zero-movement-on-non-canvas half is confirmed.
 `reports/2026-10-06-session-c2/`. **Of the 192 baseline F rows, 14 Google Reviews were excluded (accepted
 differences) and 178 judged: 30 real + 22 already settable or an accepted divergence + 11 wrong block (Session
 D's tree work) + 90 measuring artefacts + 25 register-decided.** The 30 real rows gave 7 candidate fixes, of
-which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test now runs `6d6906b98`**; Eye Care's 17 surfaces were
+which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test now runs `8dde5f5b7`**; Eye Care's 17 surfaces were
 verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any future sweep, and
 compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
@@ -94,8 +94,7 @@ compare on a **normalised** path, because a cosmetic path change re-keys rows wh
   `sgs_transition_vars` strips a decimal so `"0.25s"` emits 25ms for 250ms. Also a forced-hover **false green**.
   Every defect is itemised in Spec 47 §5 Residual.
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
-  (N11 a second product never reaching the bag, N25 the filter panel breaking, 18's missing toast), not
-  measurement gaps; 6 are built but undeployed.
+  (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
 - **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
   `sgs/media` recalibration, and a `benchmark.mjs --noise` re-run. Commands in the Session C plan's "Wave 3's
   remaining items".
@@ -119,7 +118,7 @@ same-href links are demoted, the overlay stays inert for geometry — also fixes
 wording, real order #1110, foreign-row negative control.
 CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
 
-The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
+The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
 **Resume from:** `plans/2026-10-06-spec47-route-cleanup.md` (the route cleanup), then the 63 register items via

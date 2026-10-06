@@ -1394,7 +1394,8 @@ plus scoped custom properties; per-block defaults from `supports.sgs.hoverDefaul
   `fit`, `fill` (takes the space the others leave) or `fixed` (with `sgsChildWidth`); `includes/child-sizing.php`
 - Block-own hover fades: `opacityHover` on `sgs/button`, `sgs/icon` (linked) and `sgs/responsive-logo` (0 = off)
 - `sgsHoverGrayscale`, `sgsHoverBorderAccent`, `sgsHoverTilt3D` **(BUILT)**, `sgsStaggerDelay`, `sgsFocusRing`
-- `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched overlay link
+- `sgsBlockLink`, `sgsBlockLinkTarget`, `sgsBlockLinkLabel` (opt-in `"blockLink"`) — a stretched link. The extension lends the surface to the block's OWN first non-inert link to that URL (marked `sgs-block-link-source`, keeping its tab stop and its name) and demotes any further link to the same place; the injected overlay is inert when such a link exists and focusable with an aria-label when none does
+- `sgsBlockLinkAuto` (opt-in `"blockLinkAutoUrl"`) — for a block that knows its own destination, replaces the panel's URL field with a single toggle; render.php hands the URL over via `includes/helpers-stretched-link.php::sgs_stretched_link_handover`
 - `sgsClickEffect`, `sgsClickRippleColour`, `sgsClickRippleDuration` — click ripple
 
 **Several blocks opt out of universal scale/shadow/image-zoom defaults** (breadcrumbs, container, countdown-timer, counter, form, form-step, all form-field-* blocks, hero, tabs, tab) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them. (Exact roster is DB-authoritative — query `/sgs-db`.)

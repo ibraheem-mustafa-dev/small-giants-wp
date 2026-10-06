@@ -1004,10 +1004,13 @@ $sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $at
  * resolved product, never ambient loop state, so each card in a grid links to
  * its own.
  *
- * True means the overlay owns the card's single tab stop for "go to this
- * product", so the title renders as plain text below. The image anchor is
- * already tabindex="-1" aria-hidden="true", adds no stop, and points at the
- * same product, so it is left alone.
+ * True means the URL reached the extension. The card suppresses nothing of its
+ * own for it: the extension finds the TITLE link (the first non-inert anchor to
+ * the product) and lends it the stretched surface, so the title keeps the card's
+ * single tab stop and gives it the product name as its accessible name. The
+ * image anchor is already tabindex="-1" aria-hidden="true", so the predicate
+ * skips it rather than lending to it — lending there would leave the card with
+ * no keyboard route at all.
  */
 $sgs_pc_stretched_link = sgs_stretched_link_handover(
 	$block,
