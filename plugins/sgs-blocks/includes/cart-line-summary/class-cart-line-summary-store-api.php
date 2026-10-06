@@ -86,8 +86,8 @@ final class Cart_Line_Summary_Store_API {
 			if ( empty( $item['variation'] ) ) {
 				continue;
 			}
-			$summary = $item['extensions']['sgs']['lineSummary'] ?? null;
-			if ( ! \is_array( $summary ) || empty( $summary ) ) {
+			$summary = self::line_summary_of( $item );
+			if ( empty( $summary ) ) {
 				continue;
 			}
 			$data['items'][ $index ]['variation'] = array();
@@ -99,5 +99,42 @@ final class Cart_Line_Summary_Store_API {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * This line's summary, whatever shape the Store API serialised it in.
+	 *
+	 * `extensions` arrives as a stdClass, not an array: WooCommerce casts it so
+	 * that a line with no extension data serialises as `{}` rather than `[]`.
+	 * Reaching into it with array syntax therefore raised
+	 * "Cannot use object of type stdClass as array" on EVERY Store API cart
+	 * request that carried a variation — which took the bag count, the bag
+	 * panel and the whole add-to-bag journey down with it. The namespace below
+	 * it can be either shape for the same reason, so both levels are
+	 * normalised rather than assumed.
+	 *
+	 * @param array $item One cart item from the response payload.
+	 * @return array<int, string> The summary lines, or an empty array.
+	 */
+	private static function line_summary_of( array $item ): array {
+		$extensions = $item['extensions'] ?? null;
+		if ( \is_object( $extensions ) ) {
+			$extensions = (array) $extensions;
+		}
+		if ( ! \is_array( $extensions ) ) {
+			return array();
+		}
+
+		$namespaced = $extensions['sgs'] ?? null;
+		if ( \is_object( $namespaced ) ) {
+			$namespaced = (array) $namespaced;
+		}
+		if ( ! \is_array( $namespaced ) ) {
+			return array();
+		}
+
+		$summary = $namespaced['lineSummary'] ?? null;
+
+		return \is_array( $summary ) ? $summary : array();
 	}
 }

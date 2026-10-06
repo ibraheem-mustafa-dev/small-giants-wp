@@ -551,6 +551,32 @@ final class Cart_Proxy {
 					$display_to_tax[ \strtolower( $display_name ) ] = $tax_slug;
 					// Also index by the raw taxonomy slug so the client can use either form.
 					$display_to_tax[ \strtolower( $tax_slug ) ] = $tax_slug;
+
+					/*
+					 * And by forms derived from the SLUG, which no setting can move.
+					 *
+					 * $display_name above comes from wc_attribute_label(), i.e.
+					 * through the `woocommerce_attribute_label` filter, so a client
+					 * that renames an attribute for shoppers ("Frame size" to
+					 * "Size") silently re-keys this map. The client meanwhile posts
+					 * the label it was rendered with, which it reads from a CACHED
+					 * product manifest — so the two sides resolve the same
+					 * attribute at different times and stop matching, and every
+					 * add-to-bag is rejected as "Unrecognised attribute"
+					 * until the manifest transient expires. Proven live on
+					 * 2026-10-06: wc_attribute_label('pa_frame-size') returned
+					 * "Size" while the cached manifest axis label was "Frame size".
+					 *
+					 * Indexing the slug's own forms ("pa_frame-size",
+					 * "frame-size", "frame size") makes the lookup independent of
+					 * any label wording, so BOTH the old and the new label resolve.
+					 */
+					$bare = \preg_replace( '/^pa_/', '', (string) $tax_slug );
+					if ( \is_string( $bare ) && '' !== $bare ) {
+						$display_to_tax[ \strtolower( $bare ) ]                             = $tax_slug;
+						$display_to_tax[ \strtolower( \str_replace( '-', ' ', $bare ) ) ]   = $tax_slug;
+						$display_to_tax[ \strtolower( \str_replace( '_', ' ', $bare ) ) ]   = $tax_slug;
+					}
 				}
 			}
 
