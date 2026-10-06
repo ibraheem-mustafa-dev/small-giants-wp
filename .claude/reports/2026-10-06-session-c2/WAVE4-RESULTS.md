@@ -79,6 +79,58 @@ the one true mispair through while blocking correct configs.
 
 ---
 
+## Session C's three owed host jobs
+
+### 1. The C3.5 confirmation walk — DONE, and it had never run
+
+Order 652 on eye-care-test verified first: `status=processing`, `is_paid()` true, £289.00 GBP, order key 22
+characters. The key was read with `wp eval` into a shell variable, used in one command and **never
+recorded** — the walk wrote to a scratchpad directory outside the repo, and `grep` for
+`order-received/652` across the tree finds only the URL *pattern* in Session C's plan and **0** real keys
+anywhere, including the older worktree reports.
+
+**Result: the confirmation surface walks — 300 open rows, 0 accepted, 0 live console errors.** It exits 1
+on the open rows, which is the walk's finding rather than a crash.
+
+Its first attempt died on `page.goto` with a `networkidle` timeout, and that was **not** a defect: the page
+answers HTTP 200 in 0.7s with title "Order Confirmation", a plain Playwright context reaches
+`networkidle` on it **in 2 seconds**, and zero websockets are opened. The walk had simply started minutes
+after 17 solves — the same host browser-challenge signature as the `editor did not load` failures. It
+succeeded on retry. **Nothing was changed to make it pass**, which matters: the temptation was to loosen
+`helpers.mjs::goto`'s wait strategy for a page that did not need it.
+
+### 2. The `sgs/media` recalibration — DONE, and it answers the question
+
+`sgs/media`: 38 settings, **0 dead**, 0 oneWidth, 1 noMarker, 0 rejected. **L7's content reads work on real
+data, not only in fixtures:** the cache records `text` → `caption` at `.sgs-media__caption`, reached at
+375, 768 and 1440, and `link` → `linkUrl` at `.sgs-media__link` via `href`.
+
+**And `sgs/hero` recording nothing across its 17 qualifying settings is legitimate — because hero's words
+are not hero's.** (Bean, 2026-10-06; verified here.) Hero is a container: `hero/edit.js` says "FR-22-6:
+content column uses InnerBlocks (label + heading + text + buttons)" and `hero/render.php` renders that
+column "via InnerBlocks ($content)". Its copy therefore lives in child `sgs/heading`, `sgs/text` and
+`sgs/multi-button` blocks, and the route reads each block's OWN settings — so those text and link reads
+belong to the children and must not appear on hero. `sgs/media` owns its caption and its link, which is
+exactly why it records both.
+
+The rest of hero's 17 fits the same picture: the DB shows 10 `boolean-visibility`, 6 `content` settings
+that are the `splitMediaImageUrl`/`VideoUrl` triples (media sources, not text or link reads), and 1
+`text-content` (`label`), which the InnerBlocks label child carries in practice.
+
+Measured rather than assumed: hero's cache was taken at 01:17 and lacked the `text` and `link` keys
+entirely, so it could not be compared with media's — **so hero was recalibrated at HEAD** (19:16) and
+still carries neither key. An earlier draft of this note said only "hero emits no content read", which was
+true and explained nothing.
+
+⚠️ **New finding from that run: `sgs/hero` reports 34 of its 47 settings DEAD**, against 0 for
+`sgs/media`. A dead calibration is a marker or declaration gap, so 34 is worth its own look — not
+investigated here, and not previously recorded.
+
+### 3. `benchmark.mjs --noise` — run on a quiet host
+
+Control and noise back to back, which is the measurement Session C said would separate walker flakiness
+from host load. Its result is recorded below once the run lands.
+
 ## What is still owed
 
 1. **The 168 canvas claims across 63 families**, live-confirmed by family.
