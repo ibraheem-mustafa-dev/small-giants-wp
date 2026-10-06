@@ -2,7 +2,7 @@
 title: "Spec 47 route cleanup: close every open point and make the measuring tool reusable"
 project: small-giants-wp
 created: 2026-10-06
-status: complete 2026-10-06 — 16 tasks built, suite 523 to 582, F 193 to 173 verified measure-only inside the revised 155-175 band. Four items owed, all in WAVE4-RESULTS.md: benchmark.mjs --noise (stopped at 4 of 10 runs), 168 canvas-settable claims across 63 families, mobile-menu unpairable so NOT JUDGED, and 34 dead sgs/hero settings (fixture-gated, HERO-DEAD-SETTINGS.md)
+status: complete 2026-10-06 — 16 tasks built, suite 523 to 587, F 193 to 173 verified measure-only inside the revised 155-175 band. Of the four owed items, TWO ARE CLOSED 2026-10-06: mobile-menu now pairs and all 17 surfaces carry handScope (7255be68d), and sgs/hero's three undetermined settings are resolved (353b9b4ed, HERO-DEAD-SETTINGS.md §9 — maxWidth is a REAL framework gap proven live, and a tier background with no base image paints nothing, a candidate live gap still to confirm on a built instance). STILL OWED: benchmark.mjs --noise (stopped at 4 of 10 runs), and 46 of the 63 canvas-settable families — the other 17 are live-confirmed and ALL 17 REFUTED (29f2e30c1, CANVAS-SETTABLE-CONFIRMATION.md), with the W-to-F reclassification deliberately held until all 63 are read so F keeps one meaning
 governs: the route-defect fixes arising from Session C2's four diagnoses
 references:
   - .claude/reports/2026-10-06-session-c2/QC-ROUTE-FIXES.md
