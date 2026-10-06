@@ -2216,6 +2216,22 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerValueFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "picker-selected-value"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerValueLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "picker-selected-value"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "priceFontFamily",
       "fields": {
         "css_property": "font-family"
@@ -3009,24 +3025,6 @@
       "fields": {
         "css_property": "height,width",
         "css_element": "icon"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "itemActionBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "itemAction"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "itemActionColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "itemAction"
       }
     },
     {
@@ -8611,7 +8609,7 @@
       "slug": "sgs/hero",
       "attr": "verticalAlignment",
       "fields": {
-        "css_property": "align-items,justify-content",
+        "css_property": "justify-content",
         "css_layer": "GRID"
       }
     },
@@ -20672,6 +20670,23 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "headerGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "headerMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "headerPadding",
       "fields": {
         "css_property": "padding",
@@ -21806,6 +21821,24 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemActionBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "itemAction"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemActionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "itemAction"
       }
     },
     {
