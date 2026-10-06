@@ -100,6 +100,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/sweep.test.mjs` | The sweep (A3): a surface's issue total equals `wholePage`'s distinct count, unmapped walker states included (class `unmapped-state`); a row two surfaces walking one config share counts once (`alsoIn`), while block-less rows of the same pair name from two configs stay two; a surface with no report is unmeasured; another surface's block is not counted. |
 | `tests/register-sweep.test.mjs` | The register sweep (A4): parsing and grouping; a still-open verdict must cite one exact sweep row (or an open walk diff) and quote its values with an element sentence; hover is no reason for not walker-measurable; a clean verdict without its element sentence, on a ref with an open row, or on a ref no pairing measured, is rejected; a site-wide item is clean only when every covered item is clean and measured; a missing or doubled verdict is rejected; the merge leaves every original cell byte-identical and a second merge rewrites the Sweep column rather than adding one. |
 | `tests/triage.test.mjs` | B1: an extension's width setting is never F (MUST FAIL); a box row following its parent's style row by the same amount is W, a consequence (MUST FAIL); a box row from an unmapped walker state is W, unmapped-state, not U (MUST FAIL); an unmapped-state row never reaches the resolver and never steals a key a Solve class holds; no fit plus resolver no-setting is F with its stylesheet rule; a calibrated setting not reaching the element never decides; discovered enums, transient, used value, T and hardcode. |
+| `tests/check-lane-collisions.mjs` | Not a test but a gate, run by the main thread around each wave of a parallel-lane plan: it holds the wave to lane to owned-file map and exits 1 on a double-owned path, an unowned newly-dirty file, or a lane editing outside its set. `--self-test` is its own negative control, planting a double-ownership and asserting it goes red; `--snapshot` records the pre-wave dirty set so a tree already dirty is not blamed on the wave. |
 | `tests/triage-manifest.test.mjs` | FR-47-8: `triage.mjs::runTriage` carries the surface manifest's `canvas` flag into the triage context (MUST FAIL) — a canvas surface's row that a block already in the tree can hold is W / canvas-settable, and the same row with no flag is F / no-setting; built on a throwaway client folder, so the headline F count is protected by an assertion and not only by a hand re-run. |
 | `tests/triage-source.test.mjs` | B1 source pass: a gap a class under `includes/` emits is cited by `file::symbol` with the setting it reads (MUST FAIL); calls traced two hops through functions, classes and required files; a word in prose is not a citation. |
 | `tests/walker-devtools.test.mjs` | A-1 in headless Chromium on local HTML: the walker settles on finished animations, forces `:hover` on every pair, reads declared sizes from the matched rules and a text run's row spacing. |
@@ -157,6 +158,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `tracksSetting(raw)` → `{ value }` or `{ error }`: measured px grid tracks as fr proportions to the smallest track, floored at 0 (`"496.562px 451.438px"` → `"minmax(0, 1.1fr) minmax(0, 1fr)"`; equal tracks → `"repeat(N, minmax(0, 1fr))"`).
 
 ### `lib/resolve.mjs` (reads block.json files)
+
+- `timeToMs(value)` → a CSS time as whole milliseconds (`0.25s` → `250`, `1s` → `1000`), else null. `formatValue` uses it so the route never hands a duration setting a decimal or a unit suffix: `sgs_transition_vars` would refuse it and silently apply the default, and before that helper was fixed it stripped it to a tenth of the value asked for.
 - `BLOCKS_DIR`: the block sources folder.
 - `GAPS`: gap reasons (`no-setting`, `ambiguous`, `shape`, `uncalibrated`).
 - `blockSchema(slug)` → the block's `block.json` attributes.
@@ -216,6 +219,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `companionWidth(styleAttr, schema)` → `{ attr, attrs }`: the width a border-style marker needs (`<x>Style` → `<x>Width`, 3px in the attribute's own shape), or null.
 - `borderPartners(attr, prop, schema)` → the style (and width) a border colour or width needs to paint.
 - `SHADOW_SHAPE`, `shadowPartners(attr, prop, schema)` → the shadow shape a hover shadow-colour marker needs before it composes anything (`helpers-shadow-layers.php::sgs_shadow_layers` returns nothing for an empty shape).
+- `MARKER_DURATION_MS` (`437`): the transition-duration marker, a whole number of milliseconds in the setting's own type, never a CSS time — `helpers-tokens.php::sgs_transition_vars` refuses anything that is not a non-negative integer.
+- `MARKER_EASING` (`linear`): the transition-easing marker, drawn from that helper's whitelist and never `ease-in-out`, which is both its fallback and several blocks' default, so a marker equal to it would read dead for the wrong reason. `ease-out` stands in when a block's own default is `linear`.
 
 ### `lib/calibrate-instances.mjs`
 - `STATE_TRIGGERS`: how each setting state is reached (`hover` real mouse, `focus` keyboard-visible focus, `scrolled` window scroll, `shrunk` its ancestor class from `STATE_CLASSES`, `open` and `current` rendered by the fixture). `triggerFor(state)` → the trigger, `null` for rest, undefined when the state has none (reported, never calibrated).
@@ -232,6 +237,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `readAll(page, url, instances)` → per width reads, plus `scrolled`, `scrollMissed`, `hoverMissed` (state instances whose element stays hidden with its panel opened). `SCROLL_Y`: the scroll for scrolled markers (read twice when the header misses the first jump).
 
 ### `lib/calibrate.mjs`
+
+Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.mjs`, and compares a transition row's TIMING through `timingSet`, imported from `scripts/parity/lib/compare.mjs` rather than redeclared, so the walker's notion of a timing value and calibration's cannot drift.
 - `buildTree(block, fixture, instances)` → the calibration tree.
 - `slotFor(row, marker, defReads, markReads, { containerQuery })` → `{ slot, slots, property, transform, reachedAt, oneWidth, containerTier?, effects }` or `{ dead }`; with `containerQuery` (the block's CSS has an `@container` rule) a tier reached at fewer page widths is `containerTier`, not `oneWidth`.
 - `discoverEffects(defReads, markReads)` → what one enum value changes: `{ prop: { slots, value } }`.
@@ -318,7 +325,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 
 ### `lib/entrance.mjs`
 
-- `entranceStart(group, node, perWidth)` → `{ writes }` (`sgsAnimationStart: 'load'`) when the block has an entrance, the group is a rest opacity, translate or transform on the block's own element, every draft value is the shown value and every live value the hidden one; else null. `solve.mjs::writeRound` tries it before the resolver.
+- `entranceStart(group, node, perWidth, rects?)` → `{ writes }` (`sgsAnimationStart: 'load'`) when the block has an entrance, the group is a rest opacity, translate or transform on the block's own element, every draft value is the shown value, every live value the hidden one, AND the element starts inside the first viewport at `scrollY 0`; else null. `solve.mjs::writeRound` and `lib/triage.mjs::resolveIssue` both try it before the resolver, and both MUST pass `rects` — it defaults to `group.rects`, which nothing assigns, so a three-argument call makes the write dead for every group including the first-screen one it exists for (`tests/entrance.test.mjs` asserts both call sites still pass it). Live is routinely hidden because the walker read an armed, paused entrance pose, which is no reason to start a below-fold block on load.
+- `groupRects(report, group)` → `{ [width]: { y, h } }`: the live element's rect at `scrollY 0` for each width the group was measured at, read from the walker report's `runs[].pairs[].live.box`. Empty when no run holds a live box.
+- `FIRST_VIEWPORT_HEIGHT`: the viewport height `entranceStart` judges "first screen" against when a rect carries no `vh`.
 
 ### `lib/pairs-page.mjs`
 
@@ -328,6 +337,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `formControls(page, prefix, side, idents?)` → live: each block's first visible control identity (name, else id, placeholder, label, a select's first option); draft (with `idents`): per block, the chain from the visible control with that identity through every ancestor holding no other control. Hidden controls (a honeypot) never count.
 - `groupBoxes(page, groups)` → per block, the union box of the draft elements at its children's partner paths.
 - `handElements(page, finders, side, prefix)` → per hand pair, its draft path or its live block ref and whether it is that block's root.
+- `handScopes(page, finders, side, …)` → per hand pair, the indices of the tagged words INSIDE its element on this side, which is what `lib/pair-scope.mjs::judgePairScope` needs to tell a mispair from a size difference.
 - `openDraft(browser, cfg, width, state?)` → the draft page opened through the hand config's navigation with every scroll reveal fired, then the walker state's draft action run (a panel surface).
 - `openLive(browser, cfg, width, state?)` → the live page loaded past the host check and opened through the hand config's live navigation (`live.open`), then the walker state's live action run.
 - `liftedExclusions(page, prefix)` → the automatic check's landmark exclusions whose live element holds one of this surface's blocks (lifted for its pairing).
@@ -463,11 +473,17 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `unmappedList(unmapped)` → property, value, node and reason (plus block and element) — the framework work for the surface, known before the first build.
 - `fillReport(r)` → `{ markdown, json }`.
 
+### `lib/pair-scope.mjs`
+
+- `judgePairScope({ draftIn, liveIn, matches, dTexts, lTexts })` → `{ ok, checked, split, why }`: twin containment. A hand pair is a mispair when a matched word inside one element has its twin OUTSIDE the other, meaning the two finders landed on different parts of the page. A size difference alone never counts, so a link wider on one side passes. A word repeating on its own side is skipped, because the matcher may have chosen another occurrence. `pairs.mjs` computes the verdict once into `qa/pairs/<surface>.json` as `handScope` and `scripts/parity/lib/lint.mjs::lintConfig` enforces it, so a mispair is refused before any browser opens. **A surface with no `handScope` has not been judged, which is not the same as passing.** The obvious box-ratio gate was ruled out on evidence: it flags 40 pairs of which at least 12 are legitimate.
+
 ### `lib/issue-classes.mjs`
 - `HANDOVER_OWNERS`: who edits content living outside the layout tree (`site-info`, `product-data`, `content-page`, `behaviour`, `woocommerce-text`). Defined here because Solve discovers a handover from a measured row while Fill carries one its skeleton declared, and a list kept in both would drift.
 - `VISUAL`: the row kinds counted as a distinct open issue: the painting kinds (`style`, `hover`, `box`) plus `CONTENT_KINDS`. Any other kind is reported, never counted.
 - `CONTENT_KINDS`: the row kinds carrying page content (`text`, `presence`).
 - `LINK_COVERAGE_PREFIXES`: the key prefixes that make a kind-`auto` row a link-coverage issue (`link-missing`, `link-extra`).
+- `normalisePath(path)` → the path with positional selectors (`:nth-of-type(n)`, `:nth-child(n)`) removed.
+- `normalisedIssueKey(row)` → `issueKey` over that normalised path. Sweep-over-sweep deltas compare on THIS, never the raw key: a cosmetic walker change that adds a `:nth-of-type(1)` re-keys rows wholesale with no verdict change (18 of `sgs/brand-strip`'s 51 rows did exactly that between two sweeps), which Gate TAIL would read as a wave of closes and opens. `issueKey` itself is deliberately unchanged, because re-keying it would re-key every existing ledger entry.
 - `CONTENT`: the class for a content row no Solve class holds (`content`), walked after `UNMAPPED`, which never takes one.
 - `isContentRow(x)` → whether a row is page content (text, presence, or link coverage).
 - `isIssue(x)` → whether a row is a distinct open issue at all: the one test every reader applies.
@@ -482,7 +498,11 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `lib/sweep.mjs`
 - `latestReport(solveDir, surface)` → the newest `solve-report.json` of a surface (the last timestamp folder holding one), or null.
 - `issueRows(report, surface, reportPath)` → `{ rows: [{ key, row }], otherRows }`: one row per distinct style, hover or box issue of the hardcode, missing, unresolved and derived classes, then of Solve's `other` rows from unmapped walker states (class `unmapped-state`, unless a Solve class holds the key) (`wholePage`'s key and own-block filter); `otherRows` counts the non-visual rows.
-- `aggregate(entries, unmeasured?, date?)` → `{ date, surfaces, unmeasured, total, byClass, rows }` from `[{ surface, reportPath, report, config? }]` in manifest order. Each surface counts its own rows; on the site a row with a ref, or a block-less row of the same hand config, counts once under the first surface, later ones in its `alsoIn`.
+- `reportStatus(solveDir, surface, sweepStart?)` → `{ file, stale }`: `file` as `latestReport`, and `stale` either null or `{ reason, report, newestRun }` — `incomplete-run` when the surface's newest run folder holds no `solve-report.json` (a Solve that failed part-way, so `file` is an OLDER run's report served as current), or `predates-sweep` when the report predates `sweepStart`. Observed live: `header` failed with a walker `TimeoutError` and its earlier measurement would have been reported as current. `sweepStart` is the epoch ms the SOLVE batch began, never the aggregation's own clock — Solve always writes before the sweep reads, so defaulting it to now would mark every surface stale; omitted, only `incomplete-run` is checked.
+- `walkerCaveats(source)` → one caveat per state `findings` entry (`reveal-unfired`) and per `unsettled`: a statement about the instrument, never an issue row, and it changes no count.
+- `readWalkerCaveats(reportPath)` → the caveats of a run, read from the `draft-cache-*.json` files beside its report, which is the only place the walker persists `states`.
+- `sweepDelta(prev, next)` → the closed and opened rows between two sweeps, counted per `normalisedIssueKey` so siblings differing only by position stay separate findings.
+- `aggregate(entries, unmeasured?, date?)` → `{ date, surfaces, unmeasured, total, byClass, rows, stale, caveated }` from `[{ surface, reportPath, report, config?, stale?, caveats? }]` in manifest order. Each surface counts its own rows; on the site a row with a ref, or a block-less row of the same hand config, counts once under the first surface, later ones in its `alsoIn`.
 
 ### `sweep.mjs`
 - `sweep(surfacesFile, date, out?)` → `{ result, file }`: reads each surface's newest report and writes the sweep file.
@@ -508,6 +528,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 ### `lib/triage.mjs`
 - `TRIAGE_CLASSES`: W, F, T, U (a box row nothing explains).
 - `issuesOf(report, surface)` → `[{ key, solveClass, rows }]`: distinct hardcode, missing, unresolved and derived issues, then the unmapped-state rows of `other` (a visual row from a walker state the surface maps to no setting state) under `solveClass` `unmapped-state`, in the sweep's class order so a key a Solve class already holds stays under it (`lib/sweep.mjs::issueRows`).
+- `emissionOf(cite, props, ctx)` → the classes and pseudo-elements a cited control actually emits to, or null when that cannot be read. Either `ctx.emissionFor(block, setting, property)`, or the PHP index `ctx.helpers`: every `sgs_*` function emitting the property whose file names the setting contributes the `.sgs-*` classes and `::` pseudos in its string literals; a function emitting to the root is skipped.
+- `reachesElement(cite, issue, ctx)` → whether that emission can match the row's element. `canvasSettable` and `resolveIssue`'s ancestor hop both credit a control only when it does. An UNKNOWN emission keeps the old credit, because refusing unknowns would turn every such claim into a false F. This is what stopped all 20 `sgs/container::bgHoverZoom*` claims being classed `W/canvas-settable` on form inputs, tab buttons and filter inputs that `container-bg-hover-zoom.php` can never paint.
 - `nameFits(prop, attr)` → whether a setting's name fits a property (size families, hover effects, background, shorthand words; never a longer property's name).
 - `settingFits(name, setting, prop, values)` → css_property or name fit; visibility toggles only for `none`, unit companions never.
 - `rosterApplies(ext, block, supports)` → whether a roster extension reaches a block.
