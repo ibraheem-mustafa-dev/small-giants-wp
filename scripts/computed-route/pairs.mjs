@@ -70,7 +70,18 @@ export async function runPairing( { browser, cfg, prefix, width, state = null, c
 		const lIn = await handScopes( live, handPairs.map( ( p ) => serial( p.live ) ), lWords.map( ( w ) => w.e ) );
 		const dTexts = dWords.map( ( w ) => w.t );
 		const lTexts = lWords.map( ( w ) => w.t );
-		const handScope = handPairs.map( ( p, i ) => ( dIn[ i ] && lIn[ i ] ? { name: p.name, ...judgePairScope( { draftIn: dIn[ i ], liveIn: lIn[ i ], matches, dTexts, lTexts } ) } : null ) ).filter( Boolean );
+		// A pair declaring `text: false` is never judged on word containment: its author has said the two sides are not
+		// expected to hold the same words, and several legitimately do not (shop's card-7 pairs the draft's made-up
+		// stars against live's "No reviews yet"). Judging those refuses a correct config before a browser opens.
+		const handScope = handPairs.map( ( p, i ) => {
+			if ( ! ( dIn[ i ] && lIn[ i ] ) ) {
+				return null;
+			}
+			if ( false === p.text ) {
+				return { name: p.name, ok: true, judged: false, why: 'not judged: the config declares text: false, so its two sides are not expected to hold the same words' };
+			}
+			return { name: p.name, ...judgePairScope( { draftIn: dIn[ i ], liveIn: lIn[ i ], matches, dTexts, lTexts } ) };
+		} ).filter( Boolean );
 		// For anchoring, a hand pair measuring any element of a block stands for that block (a field's input for the field).
 		const partnerPath = Object.fromEntries( handPairs.map( ( p, i ) => ( hLive[ i ]?.liveRef && hDraft[ i ] ? [ hLive[ i ].liveRef, hDraft[ i ] ] : null ) ).filter( Boolean ) );
 		Object.entries( results ).forEach( ( [ ref, r ] ) => r.verdict.ok && ( partnerPath[ ref ] = r.partner.path ) );

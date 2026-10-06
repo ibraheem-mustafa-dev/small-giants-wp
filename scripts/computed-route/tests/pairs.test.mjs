@@ -331,7 +331,7 @@ test( 'a state-scoped pair is written with its states and a state-suffixed name'
 
 // Twin containment (lib/pair-scope.mjs::judgePairScope): a hand pair is a mispair when a matched word inside one
 // element has its twin outside the other. Each case lists the word indices inside each pair element.
-import { judgePairScope } from '../lib/pair-scope.mjs';
+import { judgePairScope, MIN_CHECKED } from '../lib/pair-scope.mjs';
 
 // A prescription step: draft words 0-8 are the step's number then its title (the draft's step holds both); live
 // words 0-8 are the same words, the number being its own element beside the title.
@@ -367,7 +367,13 @@ test( 'NOT OVER-REFUSING: the submit button (166 wide against 335) holding the s
 } );
 
 test( 'NOT OVER-REFUSING: an icon or image pair holding no words, and a pair of words with no twin, pass', () => {
-	assert.deepEqual( scope( [], [] ), { ok: true, checked: 0, split: [], why: null } );
+	// A pair holding no words is reported as NOT JUDGED rather than as passed: there was nothing to judge, and
+	// recording that honestly is what stops an unjudged pair being read as a clean one.
+	const none = scope( [], [] );
+	assert.equal( none.ok, true );
+	assert.equal( none.judged, false );
+	assert.equal( none.checked, 0 );
+	assert.deepEqual( none.split, [] );
 	const v = judgePairScope( { draftIn: [ 0, 1 ], liveIn: [ 0 ], matches: [ [ 0, 0 ] ], dTexts: [ 'shop', 'extra' ], lTexts: [ 'shop' ] } );
 	assert.equal( v.ok, true );
 } );
@@ -377,4 +383,42 @@ test( 'NOT OVER-REFUSING: a repeated word is not judged, because its twin may be
 	const m = t.map( ( _, i ) => [ i, i ] );
 	// The first pair's draft element holds words 0-2, live's holds 3-5: every word repeats, so none is a sure twin.
 	assert.equal( judgePairScope( { draftIn: [ 0, 1, 2 ], liveIn: [ 3, 4, 5 ], matches: m, dTexts: t, lTexts: t } ).ok, true );
+} );
+
+// The gate refuses a surface's whole walk before a browser opens, so over-refusing is the expensive direction.
+// Two real over-refusals on Eye Care's 17 surfaces drove these rules: 6 of 7 refused pairs declared `text: false`
+// (shop's card-7 pairs the draft's made-up stars against live's "No reviews yet" by design), and the seventh split
+// on a single incidental word. The floor is on the EVIDENCE BASE and never on how large a share splits, because the
+// real about-step mispair this gate exists for splits only 1 of 9.
+test( 'MUST FAIL TO REFUSE: a verdict needs more than one or two matched words', () => {
+	const pair = ( n ) => ( {
+		draftIn: Array.from( { length: n }, ( _, i ) => i ),
+		liveIn: [],
+		matches: Array.from( { length: n }, ( _, i ) => [ i, i ] ),
+		dTexts: Array.from( { length: n }, ( _, i ) => `w${ i }` ),
+		lTexts: Array.from( { length: n }, ( _, i ) => `w${ i }` ),
+	} );
+	// One and two matched words are not judged, however completely they split.
+	for ( const n of [ 1, 2 ] ) {
+		const v = judgePairScope( pair( n ) );
+		assert.equal( v.ok, true, `${ n } matched word(s) must not refuse` );
+		assert.equal( v.judged, false );
+		assert.match( v.why, /too few/ );
+	}
+	// Red on revert: at the floor and above, a split still refuses, and the real mispair's 1-of-9 shape is caught.
+	const three = judgePairScope( pair( MIN_CHECKED ) );
+	assert.equal( three.ok, false, 'at MIN_CHECKED a split must still refuse' );
+	assert.equal( MIN_CHECKED, 3 );
+
+	const nine = {
+		draftIn: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ],
+		liveIn: [ 1, 2, 3, 4, 5, 6, 7, 8 ],
+		matches: Array.from( { length: 9 }, ( _, i ) => [ i, i ] ),
+		dTexts: [ '1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ],
+		lTexts: [ '1', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ],
+	};
+	const real = judgePairScope( nine );
+	assert.equal( real.ok, false, 'the about-step shape, 1 split of 9 checked, must still be refused' );
+	assert.equal( real.checked, 9 );
+	assert.equal( real.split.length, 1 );
 } );

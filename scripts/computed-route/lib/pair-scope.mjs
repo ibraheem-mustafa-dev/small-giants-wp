@@ -11,6 +11,13 @@ const countTexts = ( texts ) => texts.reduce( ( m, t ) => m.set( t, ( m.get( t )
 // pairs from auto-compare.mjs::matchWords. dTexts / lTexts: each side's word texts, by word index.
 // Returns { ok, checked, split, why }: checked is the number of sure matched words with at least one side inside its
 // pair element; split lists each of those whose twin lies outside the other element as { word, inside: 'draft' | 'live' }.
+// A verdict needs corroboration. One matched word inside a pair is not evidence that the two finders landed on
+// different parts of the page - an incidental token (a size letter, a number inside a product name) splits just as
+// easily as a real mispair, and refusing on it blocks a whole surface's walk before a browser opens. The real
+// about-step mispair this gate was built for splits 1 of 9, so the floor is on the EVIDENCE BASE, never on how large
+// a share of it splits.
+export const MIN_CHECKED = 3;
+
 export function judgePairScope( { draftIn, liveIn, matches, dTexts, lTexts } ) {
 	const inD = new Set( draftIn );
 	const inL = new Set( liveIn );
@@ -28,5 +35,8 @@ export function judgePairScope( { draftIn, liveIn, matches, dTexts, lTexts } ) {
 		a !== b && split.push( { word: dTexts[ d ], inside: a ? 'draft' : 'live' } );
 	}
 	const shown = split.slice( 0, 4 ).map( ( s ) => `"${ s.word }" (inside the ${ s.inside } element only)` ).join( ', ' );
+	if ( checked < MIN_CHECKED ) {
+		return { ok: true, judged: false, checked, split, why: `not judged: ${ checked } matched word(s) inside the pair is too few to tell a mispair from an incidental token` };
+	}
 	return { ok: ! split.length, checked, split, why: split.length ? `${ split.length } of ${ checked } matched words have their twin outside the other element: ${ shown }` : null };
 }
