@@ -159,7 +159,10 @@ export function explainRow( r, open, { ancestorsOf = () => [], walk = null } = {
 }
 
 // (e) Transient: a motion property whose draft or live sits at an entrance's start value (opacity below 1, a
-// translate), so the row likely caught an animation mid-way.
+// translate) AND whose own snapshot shows an animation in flight when it was measured. The start-value shape alone is
+// never enough: an element's resting opacity of 0.75 has the same shape and is a real difference. The evidence is the
+// walker's `running` list for that side (the element's live animations, document.getAnimations) and, when the side
+// records its keyframes, that they animate the row's property.
 const MOTION = /^(transform|translate|scale|rotate|opacity|transition|animation)/;
 const atStart = ( key, v ) => {
 	const m = /^matrix\(([^)]+)\)$/.exec( String( v ) );
@@ -168,8 +171,19 @@ const atStart = ( key, v ) => {
 	}
 	return /translate|matrix3d/.test( String( v ) ) || ( 'translate' === key && 'none' !== v && ! /^0px( 0px)?$/.test( String( v ) ) );
 };
-export function transientOf( rows ) {
-	const hits = rows.filter( ( r ) => 'style' === r.kind && MOTION.test( r.key ) && ( atStart( r.key, r.draft ) || atStart( r.key, r.live ) ) );
+const KEYFRAME_PROP = { opacity: /opacity/, transform: /transform|translate|scale|rotate/, translate: /transform|translate/, scale: /transform|scale/, rotate: /transform|rotate/ };
+const animating = ( snap, key ) => {
+	if ( ! snap || ! ( snap.running || [] ).length ) {
+		return false;
+	}
+	const frames = String( snap.keyframes ?? '' );
+	const family = KEYFRAME_PROP[ key ];
+	return ! family || ! frames || 'none' === frames || family.test( frames );
+};
+const snapshotOf = ( walk, r, side ) => ( walk?.runs || [] ).find( ( run ) => run.width === r.width && ( undefined === run.state || undefined === r.state || run.state === r.state ) && run.pairs?.[ r.pair ] )?.pairs[ r.pair ][ side ];
+export function transientOf( rows, walk ) {
+	const caught = ( r ) => [ 'draft', 'live' ].some( ( side ) => atStart( r.key, r[ side ] ) && animating( snapshotOf( walk, r, side ), r.key ) );
+	const hits = rows.filter( ( r ) => 'style' === r.kind && MOTION.test( r.key ) && caught( r ) );
 	return hits.length ? { check: 'transient', widths: hits.map( ( r ) => r.width ), values: hits.map( ( r ) => `${ r.draft }→${ r.live }` ).slice( 0, 4 ) } : null;
 }
 
@@ -267,7 +281,9 @@ export function resolveIssue( issue, ctx ) {
 		// The citation is ADDED, never substituted: the resolver's own gap (ambiguous, no-setting, unmapped-element) is
 		// what the route actually found and stays in the evidence, so a later recount of ambiguous rows still sees them.
 		// Whether a citation reclassifies the row is the caller's decision, and it turns on the canvas flag alone.
-		return { gap: out.gap, detail: out.detail, ...( hop?.cite ? { cite: hop.cite, canvasSettable: !! hop.gap } : {} ) };
+		// A citation whose control cannot paint the row's element is dropped: the row then keeps the resolver's own gap.
+		const cite = hop?.cite && citeReaches( hop.cite, issue, ctx ) ? hop.cite : null;
+		return { gap: out.gap, detail: out.detail, ...( cite ? { cite, canvasSettable: !! hop.gap } : {} ) };
 	}
 	const holds = out.writes.every( ( w ) => holdsValue( on.node.attributes?.[ w.attr ], w.value, w.merge ) );
 	return { writes: out.writes.map( ( w ) => ( { attr: w.attr, value: w.value, merge: w.merge } ) ), on: { ref: on.ref, block: on.block, path: on.path }, holds };
@@ -332,6 +348,49 @@ export function fittingSettings( issue, ctx ) {
 	return out;
 }
 
+// Where a control emits its CSS: the classes and pseudo-elements of the selectors that paint its property, or null when
+// they are unknown. Unknown is never a refusal: a setting whose emission the source does not name (a root rule, a
+// computed class) keeps the property-name match it always had, because refusing it would turn every such claim into a
+// false framework gap. Two channels, the first that answers wins: ctx.emissionFor(block, setting, property) returning
+// selector strings, then the block's PHP: every sgs_* function that emits the property and sits in a file that names
+// the setting (the controls' own docblock) contributes the `.sgs-` classes and `::` pseudo-elements in its string
+// literals, so the emission selector is read from the code that writes it, never kept in a table.
+const selectorTargets = ( selectors ) => {
+	const text = selectors.join( ' ' );
+	const classes = [ ...new Set( text.match( /\.sgs-[\w-]+/g ) || [] ) ];
+	const pseudos = [ ...new Set( text.match( /::[a-z-]+/g ) || [] ) ];
+	return classes.length || pseudos.length ? { classes, pseudos } : null;
+};
+const literalsOf = ( body ) => [ ...body.matchAll( /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"/g ) ].map( ( m ) => m[ 1 ] ?? m[ 2 ] );
+const rootEmission = ( body ) => /\$uid\s*\.\s*['"][\s{,:>]/.test( body );
+export function emissionOf( cite, props, ctx ) {
+	const named = ctx.emissionFor?.( cite.block, cite.setting, cite.property );
+	if ( Array.isArray( named ) ) {
+		return selectorTargets( named );
+	}
+	const emits = new RegExp( `(?:^|[^\\w-])(?:${ props.map( ( p ) => p.replace( /-/g, '\\-' ) ).join( '|' ) })\\s*:` );
+	const found = Object.values( ctx.helpers?.functions || {} ).filter( ( f ) => emits.test( f.text ) && ( ctx.helpers.files?.[ f.file ] || '' ).includes( cite.setting ) && ! rootEmission( f.text ) );
+	return found.length ? selectorTargets( found.flatMap( ( f ) => literalsOf( f.text ) ) ) : null;
+}
+
+// Whether the selectors a control emits to can match the row's element. The element's classes are the subject of the
+// row's path (and of its path inside the cited block when that block encloses it), or the block root's own classes for
+// a root row; a pseudo-element target matches only a row of that pseudo on the cited block itself.
+export function reachesElement( cite, issue, ctx ) {
+	const r = issue.rows[ 0 ];
+	const { short } = splitProperty( cssProp( r.key ) );
+	const em = emissionOf( cite, [ cssProp( r.key ), short ], ctx );
+	if ( ! em ) {
+		return true;
+	}
+	const own = ctx.nodeFor( r.ref )?.name || '';
+	const slug = own.replace( /^[^/]+\//, '' );
+	const subject = ( path ) => ( String( path || '' ).match( /\.sgs-[\w-]+/g ) || [] ).pop();
+	const classes = [ subject( r.path ), subject( ( r.owners || [] ).find( ( o ) => o.ref === cite.ref )?.path ), ! r.path && slug ? `.sgs-${ slug }` : null ].filter( Boolean );
+	return em.classes.some( ( c ) => classes.includes( c ) ) || ( !! r.pseudo && em.pseudos.includes( r.pseudo ) && r.ref === cite.ref );
+}
+const citeReaches = ( cite, issue, ctx ) => reachesElement( { block: cite.block, ref: cite.ref ?? null, setting: cite.setting, property: cite.property }, issue, ctx );
+
 // FR-47-8 (c). On a canvas surface the block that can hold a row's property need not be the attributed block or even
 // an ancestor: the author composes the canvas from whatever blocks suit, so any block ALREADY IN that tree which
 // declares the property can hold it. Returns the citation for the nearest such block (the row's enclosing blocks
@@ -359,7 +418,8 @@ export function canvasSettable( issue, ctx ) {
 		}
 		seen.add( b.name );
 		const fit = ( ctx.attrRows( b.name ) || [] ).find( ( x ) => null !== x.css_property && ( x.css_state || null ) === ( state || null ) &&
-			( listedProperties( x.css_property ).some( ( p ) => p === prop || p === short ) || [ prop, short ].includes( modifierOf( x.css_property ) ) ) );
+			( listedProperties( x.css_property ).some( ( p ) => p === prop || p === short ) || [ prop, short ].includes( modifierOf( x.css_property ) ) ) &&
+			reachesElement( { block: b.name, ref: b.ref ?? null, setting: x.attr_name }, issue, ctx ) );
 		if ( fit ) {
 			return { check: 'canvas-settable', ref: b.ref ?? null, block: b.name, setting: fit.attr_name, property: fit.css_property, via: 'declared', where: b.where };
 		}
@@ -400,7 +460,7 @@ export function triageIssue( issue, ctx ) {
 	if ( 'box' === r.kind ) {
 		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );
 	}
-	const transient = transientOf( issue.rows );
+	const transient = transientOf( issue.rows, ctx.walk );
 	const used = usedValueOf( issue, ctx.walk );
 	[ transient, used, conseq ].filter( Boolean ).forEach( ( e ) => evidence.push( e ) );
 	const res = resolveIssue( issue, ctx );

@@ -115,11 +115,41 @@ test( 'a fitting setting calibration measured not reaching the element never dec
 	assert.equal( v.evidence.find( ( e ) => 'attribute' === e.check ).reaches, false );
 } );
 
-test( 'a mid-animation opacity row is W, transient', () => {
+// P3d: a start-value shape is transient only when the SAME side's snapshot shows an animation in flight (the walker's
+// `running` list, and its keyframes when recorded). A resting opacity of 0.75 has the same shape and is a real difference.
+const animWalk = ( r, { draft = {}, live = {} } = {} ) => ( { runs: [ { state: r.state, width: r.width, pairs: { [ r.pair ]: {
+	draft: { styles: {}, running: [], keyframes: 'none', ...draft }, live: { trace: { ref: r.ref }, running: [], keyframes: 'none', ...live }, diffs: [ r ] } } } ] } );
+const runAnim = ( r, snaps ) => triage( reportOf( { missing: [ r ] } ), animWalk( r, snaps ), 's', ctxOf() ).verdicts[ 0 ];
+
+test( 'a mid-animation opacity row is W, transient: the side at the start value is running an animation that animates opacity', () => {
 	const r = row( { key: 'opacity', draft: '0', live: '1', path: '' } );
-	const v = run( { missing: [ r ] }, [ r ], ctxOf() ).verdicts[ 0 ];
+	const v = runAnim( r, { draft: { running: [ 'animation 500ms linear' ], keyframes: '0%{opacity:0}100%{opacity:1}' } } );
 	assert.equal( v.class, 'W' );
 	assert.equal( v.decidedBy, 'transient' );
+} );
+
+test( 'MUST FAIL: a resting opacity of 0.75 on an element running no animation is reported, never classed transient', () => {
+	const r = row( { key: 'opacity', draft: '0.75', live: '1', path: '' } );
+	const v = runAnim( r, {} );
+	assert.notEqual( v.decidedBy, 'transient' );
+	assert.ok( ! v.evidence.some( ( e ) => 'transient' === e.check ) );
+	assert.equal( v.class, 'F' );
+	assert.equal( v.decidedBy, 'no-setting' );
+} );
+
+test( 'a start-value shape on one side is not excused by an animation running on the OTHER side', () => {
+	const r = row( { key: 'opacity', draft: '0.75', live: '1', path: '' } );
+	const v = runAnim( r, { live: { running: [ 'animation 500ms linear' ], keyframes: '0%{opacity:0}100%{opacity:1}' } } );
+	assert.ok( ! v.evidence.some( ( e ) => 'transient' === e.check ) );
+	assert.equal( v.class, 'F' );
+} );
+
+test( 'an animation that animates another property does not excuse an opacity row, but a transform one is transient', () => {
+	const slide = { running: [ 'animation 500ms linear' ], keyframes: '0%{transform:translateY(18px)}100%{transform:none}' };
+	const op = row( { key: 'opacity', draft: '0.75', live: '1', path: '' } );
+	assert.ok( ! runAnim( op, { draft: slide } ).evidence.some( ( e ) => 'transient' === e.check ) );
+	const tr = row( { key: 'transform', draft: 'matrix(1, 0, 0, 1, 0, 18)', live: 'none', path: '' } );
+	assert.equal( runAnim( tr, { draft: slide } ).decidedBy, 'transient' );
 } );
 
 test( 'a width the draft never declares is W, a used value; a declared one the tree can hold is T', () => {
@@ -336,4 +366,69 @@ test( 'the negative control: two measured descendants under that ancestor refuse
 	assert.equal( v.class, 'W' );
 	assert.equal( v.decidedBy, 'enclosing' );
 	assert.equal( v.evidence.find( ( e ) => 'resolver' === e.check ).wouldWrite, undefined );
+} );
+
+// R1: a control is credited with a row only when the selector it emits to can match the row's element. The emission is
+// read from the PHP that writes it, here the real background-zoom helper.
+import fs from 'node:fs';
+import { helperIndex } from '../lib/triage-source.mjs';
+const ZOOM_PHP = new URL( '../../../plugins/sgs-blocks/includes/container-bg-hover-zoom.php', import.meta.url );
+const zoomHelpers = () => helperIndex( [ { file: 'includes/container-bg-hover-zoom.php', text: fs.readFileSync( ZOOM_PHP, 'utf8' ) } ] );
+const ZOOM_ROWS = [
+	{ attr_name: 'bgHoverZoomDuration', css_property: 'transition-duration', css_element: null, css_state: null, source: 'sgs' },
+	{ attr_name: 'bgHoverZoomEasing', css_property: 'transition-timing-function', css_element: null, css_state: null, source: 'sgs' },
+	{ attr_name: 'bgHoverZoomScale', css_property: 'transform', css_element: null, css_state: null, source: 'sgs' },
+];
+const zoomRow = ( key, path, over = {} ) => row( { key, draft: '0.35s', live: '0s', path, ref: 'cr-ref-s-1', pair: 'field',
+	owners: [ { ref: 'cr-ref-s-2', block: 'sgs-container', path, tag: 'div' } ], ...over } );
+const zoomCtx = ( over = {} ) => ctxOf( {
+	canvas: true,
+	nodeFor: ( ref ) => ( { 'cr-ref-s-1': { name: 'sgs/form-field-text', attributes: {} }, 'cr-ref-s-2': { name: 'sgs/container', attributes: {} } }[ ref ] || null ),
+	attrRows: ( block ) => ( 'sgs/container' === block ? ZOOM_ROWS : [] ),
+	canvasBlocks: () => [ { ref: 'cr-ref-s-2', name: 'sgs/container' } ],
+	helpers: zoomHelpers(),
+	ancestorHop: () => null,
+	...over,
+} );
+const runZoom = ( r, ctx = zoomCtx() ) => triage( reportOf( { unresolved: [ r ] } ), walkOf( [ r ] ), 's', ctx ).verdicts[ 0 ];
+const scaleOver = { draft: 'scale(1.05)', live: 'none' };
+
+test( 'MUST FAIL: a bgHoverZoom control is never credited with a form input, which its emission selector cannot match', () => {
+	for ( const key of [ 'transition-duration', 'transition-timing-function', 'transform' ] ) {
+		const v = runZoom( zoomRow( key, '.sgs-form-field__input', 'transform' === key ? scaleOver : {} ) );
+		assert.ok( ! v.evidence.some( ( e ) => 'canvas-settable' === e.check ), `${ key }: no citation` );
+		assert.equal( v.class, 'F', key );
+		assert.equal( v.decidedBy, 'no-setting', key );
+	}
+} );
+
+test( 'not over-suppressing: the same controls ARE credited with the background layer they paint, .sgs-container__image-bg', () => {
+	for ( const [ key, attr ] of [ [ 'transition-duration', 'bgHoverZoomDuration' ], [ 'transition-timing-function', 'bgHoverZoomEasing' ], [ 'transform', 'bgHoverZoomScale' ] ] ) {
+		const v = runZoom( zoomRow( key, '.sgs-container__image-bg', 'transform' === key ? scaleOver : {} ) );
+		assert.equal( v.class, 'W', key );
+		assert.equal( v.decidedBy, 'canvas-settable', key );
+		assert.equal( v.evidence.find( ( e ) => 'canvas-settable' === e.check ).setting, attr );
+	}
+} );
+
+test( 'not over-suppressing: a control whose emission the source does not name keeps its property-name credit', () => {
+	const v = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( { helpers: helperIndex( [] ) } ) );
+	assert.equal( v.decidedBy, 'canvas-settable' );
+} );
+
+test( 'ctx.emissionFor names the emission selectors and decides before the source does', () => {
+	const none = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( { helpers: helperIndex( [] ), emissionFor: () => [ '.uid > .sgs-container__image-bg' ] } ) );
+	assert.equal( none.class, 'F' );
+	const hit = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( { emissionFor: () => [ '.uid .sgs-form-field__input' ] } ) );
+	assert.equal( hit.decidedBy, 'canvas-settable' );
+} );
+
+test( 'the resolver hop citation is held to the same emission selector', () => {
+	const hop = () => ( { gap: 'canvas-settable', detail: 'cited', cite: { check: 'canvas-settable', ref: 'cr-ref-s-2', block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', via: 'declared' } } );
+	const bare = { attrRows: () => [], canvasBlocks: () => [], ancestorHop: hop };
+	const refused = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( bare ) );
+	assert.equal( refused.class, 'F' );
+	assert.ok( ! refused.evidence.some( ( e ) => 'canvas-settable' === e.check ) );
+	const credited = runZoom( zoomRow( 'transition-duration', '.sgs-container__image-bg' ), zoomCtx( bare ) );
+	assert.equal( credited.decidedBy, 'canvas-settable' );
 } );
