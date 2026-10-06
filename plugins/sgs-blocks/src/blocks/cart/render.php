@@ -621,6 +621,8 @@ $panel_args = array(
 	'remove_label'       => sanitize_text_field( $attributes['itemRemoveLabel'] ?? __( 'Remove', 'sgs-blocks' ) ),
 	'show_qty'           => ! isset( $attributes['itemShowQty'] ) || ! empty( $attributes['itemShowQty'] ),
 	'show_save'          => ! isset( $attributes['itemShowSaveForLater'] ) || ! empty( $attributes['itemShowSaveForLater'] ),
+	'show_add_options'   => ! empty( $attributes['itemShowAddOptions'] ),
+	'add_options_label'  => sanitize_text_field( $attributes['itemAddOptionsLabel'] ?? '' ),
 );
 
 $panel_html = $has_panel

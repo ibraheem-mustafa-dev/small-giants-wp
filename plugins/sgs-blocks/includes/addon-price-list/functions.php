@@ -16,6 +16,13 @@
  *     ] }, ...
  *   ]
  *
+ * An option may also carry an optional `short` — the same choice said in the
+ * fewest words, for the one-line cart summary (includes/cart-line-summary/).
+ * `label` stays the full, precise wording every priced surface needs (the
+ * choice pop-up, the price panel, the staff order screen); `short` is read
+ * only by sgs_addon_short_labels() and falls back to `label` when unset, so
+ * a price list that never sets one behaves exactly as it did before.
+ *
  * @package SGS\Blocks
  * @since   1.5.0
  */
@@ -141,6 +148,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_addon_resolve' ) ) {
 				'group_label' => $group['label'],
 				'key'         => $option_key,
 				'label'       => $option['label'],
+				'short'       => (string) ( $option['short'] ?? '' ),
 				'price'       => $option['price'],
 			);
 			$total  += $option['price'];
@@ -169,6 +177,34 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_addon_summary' ) ) {
 			}
 		}
 		return \implode( ' · ', $labels );
+	}
+}
+
+if ( ! function_exists( __NAMESPACE__ . '\\sgs_addon_short_labels' ) ) {
+	/**
+	 * The shortest wording for each resolved add-on line, for the one-line
+	 * cart summary (includes/cart-line-summary/).
+	 *
+	 * Returns `short` where the price list sets one, else `label`. Deliberately
+	 * a SEPARATE function from sgs_addon_summary(), not a flag on it: that
+	 * function's full labels still feed the staff order meta and the price
+	 * panel, where dropping a lens index or a precise finish name would lose
+	 * information the optician needs.
+	 *
+	 * @param array<int,array{label?:string,short?:string}> $lines Resolved lines (see sgs_addon_resolve()).
+	 * @return array<int,string> One label per line, empty-label lines dropped.
+	 */
+	function sgs_addon_short_labels( array $lines ): array {
+		$labels = array();
+		foreach ( $lines as $line ) {
+			$short = isset( $line['short'] ) ? \trim( (string) $line['short'] ) : '';
+			$label = isset( $line['label'] ) ? \trim( (string) $line['label'] ) : '';
+			$use   = '' !== $short ? $short : $label;
+			if ( '' !== $use ) {
+				$labels[] = $use;
+			}
+		}
+		return $labels;
 	}
 }
 
@@ -216,6 +252,10 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_addon_price_list_normalise' ) ) {
 				}
 				$seen_option[ $option_key ] = true;
 
+				// Optional shorter wording for the one-line cart summary; '' =
+				// use `label`, which is what every pre-`short` list stored.
+				$option_short = isset( $option['short'] ) ? \sanitize_text_field( (string) $option['short'] ) : '';
+
 				$price_raw = isset( $option['price'] ) ? $option['price'] : 0;
 				$price     = \function_exists( 'wc_format_decimal' )
 					? (float) \wc_format_decimal( $price_raw, 2 )
@@ -225,6 +265,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_addon_price_list_normalise' ) ) {
 				$options[] = array(
 					'key'   => $option_key,
 					'label' => $option_label,
+					'short' => $option_short,
 					'price' => $price,
 				);
 			}

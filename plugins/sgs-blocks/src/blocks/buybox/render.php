@@ -47,7 +47,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/buybox-guided.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-linked-flow.php';
 require_once __DIR__ . '/extras.php';
 require_once __DIR__ . '/picker-label-map.php';
-require_once __DIR__ . '/picker-band.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-picker-band.php';
 require_once __DIR__ . '/picker-variation-swatch.php';
 require_once __DIR__ . '/gallery-saving-badge.php';
 
@@ -1072,7 +1072,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_picker_show_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false;
 
 	// Axes that always show their picker (single-variant
-	// suppression bypass) and the size-band axis + scale (picker-band.php).
+	// suppression bypass) and the size-band axis + scale (includes/buybox-picker-band.php).
 	$buybox_always_show_axes = array_map( 'sanitize_key', array_filter( (array) ( $attributes['pickerAlwaysShowAxes'] ?? array() ), 'is_string' ) );
 	$buybox_band_axis        = sanitize_key( (string) ( $attributes['pickerBandAxis'] ?? '' ) );
 	$buybox_band_scale       = '' !== $buybox_band_axis ? sgs_buybox_parse_band_scale( (string) ( $attributes['pickerBandScale'] ?? '' ) ) : array();

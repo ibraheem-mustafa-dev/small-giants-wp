@@ -124,6 +124,8 @@ function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ):
  *     @type string $remove_label       Text-style remove label.
  *     @type bool   $show_qty           Show each item's quantity input.
  *     @type bool   $show_save          Show each item's Save for later action.
+ *     @type bool   $show_add_options   Show each item's "finish configuring this" link.
+ *     @type string $add_options_label  That link's label; '' hides it.
  * }
  * @return string Escaped panel-body markup.
  */
@@ -154,7 +156,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 		'<div class="sgs-cart__panel-inner">' .
 			'<div class="sgs-cart__panel-header"><h2 class="sgs-cart__panel-heading" id="%1$s-heading">%2$s%13$s</h2>%14$s</div>' .
 			'<div class="sgs-cart__panel-status" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-status></div>' .
-			'<div class="sgs-cart__panel-items" data-sgs-cart-items aria-busy="true" data-empty-message="%3$s" data-empty-cta-label="%4$s" data-shop-url="%5$s" data-remove-style="%15$s" data-remove-label="%16$s" data-show-qty="%17$s" data-show-save="%18$s"><p class="sgs-cart__panel-loading">%6$s</p></div>' .
+			'<div class="sgs-cart__panel-items" data-sgs-cart-items aria-busy="true" data-empty-message="%3$s" data-empty-cta-label="%4$s" data-shop-url="%5$s" data-remove-style="%15$s" data-remove-label="%16$s" data-show-qty="%17$s" data-show-save="%18$s" data-show-add-options="%19$s" data-add-options-label="%20$s"><p class="sgs-cart__panel-loading">%6$s</p></div>' .
 			'<div class="sgs-cart__panel-footer" data-sgs-cart-footer hidden>' .
 				'<div class="sgs-cart__panel-subtotal"><span class="sgs-cart__panel-subtotal-label">%7$s</span><span class="sgs-cart__panel-subtotal-value" data-sgs-cart-subtotal></span></div>' .
 				'%8$s' .
@@ -182,7 +184,9 @@ function sgs_cart_panel_body_html( array $args ): string {
 		'text' === ( $args['remove_style'] ?? 'icon' ) ? 'text' : 'icon',
 		esc_attr( (string) ( $args['remove_label'] ?? '' ) ),
 		! isset( $args['show_qty'] ) || ! empty( $args['show_qty'] ) ? '1' : '0',
-		! isset( $args['show_save'] ) || ! empty( $args['show_save'] ) ? '1' : '0'
+		! isset( $args['show_save'] ) || ! empty( $args['show_save'] ) ? '1' : '0',
+		! empty( $args['show_add_options'] ) ? '1' : '0',
+		esc_attr( (string) ( $args['add_options_label'] ?? '' ) )
 	);
 }
 

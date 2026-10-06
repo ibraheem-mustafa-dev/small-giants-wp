@@ -126,7 +126,7 @@ require_once SGS_BLOCKS_PATH . 'includes/helpers-slider-nav.php';
 
 // SGS Cart — dequeue wc-cart-fragments on pages using sgs/cart + inject REST config.
 require_once SGS_BLOCKS_PATH . 'includes/wc-cart-fragments.php';
-require_once SGS_BLOCKS_PATH . 'includes/cart-item-brand.php';
+require_once SGS_BLOCKS_PATH . 'includes/cart-item-extensions.php';
 
 // Configurator — dequeue the redundant WooCommerce jQuery frontend stack on
 // pages with a bound (wc-product) sgs/product-card (FR-27-H1 JS budget).

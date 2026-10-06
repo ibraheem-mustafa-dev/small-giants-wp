@@ -33,8 +33,18 @@ final class Addon_Price_List_CLI {
 	 * ## OPTIONS
 	 *
 	 * <file>
-	 * : Path to a JSON file holding an array of groups, each
-	 * `{ "key", "label", "options": [ { "key", "label", "price" }, ... ] }`.
+	 * : Path to a JSON file in either of two shapes.
+	 *
+	 * A bare LIST of groups seeds the price list only:
+	 * `[ { "key", "label", "options": [ { "key", "label", "short", "price" }, ... ] }, ... ]`
+	 *
+	 * An OBJECT seeds the price list and the cart line summary's wording:
+	 * `{ "groups": [ ...as above... ], "summary": { "leadWithAddons",
+	 * "leadWithoutAddons", "attributeLabels", "sizeBand", "prescriptionLink" } }`
+	 *
+	 * Each option's `short` is optional and falls back to its `label`.
+	 * Both shapes go through the same normalisers as the settings page, so a
+	 * seed file can never bypass the sanitisation the admin form enforces.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -57,7 +67,16 @@ final class Addon_Price_List_CLI {
 			return;
 		}
 
-		$normalised = sgs_addon_price_list_normalise( $decoded );
+		// Two accepted shapes, told apart by whether the file's top level is a
+		// bare list of groups or an object wrapping them. A list is the
+		// original shape and still seeds the price list alone.
+		$is_object   = \array_key_exists( 'groups', $decoded ) || \array_key_exists( 'summary', $decoded );
+		$raw_groups  = $is_object
+			? ( \is_array( $decoded['groups'] ?? null ) ? $decoded['groups'] : array() )
+			: $decoded;
+		$raw_summary = ( $is_object && \is_array( $decoded['summary'] ?? null ) ) ? $decoded['summary'] : null;
+
+		$normalised = sgs_addon_price_list_normalise( $raw_groups );
 
 		if ( empty( $normalised ) ) {
 			\WP_CLI::error( 'The seed file produced an empty add-on price list — check its shape against the documented format (see class-addon-price-list-cli.php).' );
@@ -65,6 +84,15 @@ final class Addon_Price_List_CLI {
 		}
 
 		\update_option( SGS_ADDON_PRICE_LIST_OPTION, $normalised, false );
+
+		if ( null !== $raw_summary ) {
+			\update_option(
+				SGS_CART_LINE_SUMMARY_OPTION,
+				sgs_cart_line_summary_wording_normalise( $raw_summary ),
+				false
+			);
+			\WP_CLI::log( 'Seeded the cart line summary wording.' );
+		}
 
 		$group_count  = \count( $normalised );
 		$option_count = 0;

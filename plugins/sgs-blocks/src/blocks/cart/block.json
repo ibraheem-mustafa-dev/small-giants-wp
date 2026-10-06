@@ -1227,6 +1227,16 @@
 			"default": true,
 			"description": "Show the Save for later action on each item row."
 		},
+		"itemShowAddOptions": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show a link on each item row inviting the shopper to finish configuring that item. It hides itself on any row that already carries priced add-on choices, and links to that item's own product page, where the options pop-up opens. Off by default: it is only useful on a shop whose products have optional priced extras."
+		},
+		"itemAddOptionsLabel": {
+			"type": "string",
+			"default": "",
+			"description": "The label for the per-item \"finish configuring this\" link, e.g. \"Add my prescription\" or \"Choose a finish\". Empty (default) hides the link, so no wording is assumed for any trade."
+		},
 		"itemRemoveStyle": {
 			"type": "string",
 			"default": "icon",

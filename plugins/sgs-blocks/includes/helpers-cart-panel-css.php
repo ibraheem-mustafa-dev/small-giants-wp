@@ -89,8 +89,12 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'itemDetailColour'       => array( '.sgs-cart__item-details', 'color' ),
 		'itemRemoveColour'       => array( '.sgs-cart__item-remove--text', 'color' ),
 		'itemRemoveBorderColour' => array( '.sgs-cart__item-remove--text', 'border-bottom-color' ),
-		'itemActionColour'       => array( '.sgs-cart__item-save-for-later', 'color' ),
-		'itemActionBorderColour' => array( '.sgs-cart__item-save-for-later', 'border-bottom-color' ),
+		// Both per-item text actions share one colour control. The second
+		// selector repeats $p because these are emitted as `$p . ' ' . $sel`
+		// (see the $paints loop below) — a bare comma would leave the second
+		// half unscoped and paint every cart on the page.
+		'itemActionColour'       => array( '.sgs-cart__item-save-for-later,' . $p . ' .sgs-cart__item-add-options', 'color' ),
+		'itemActionBorderColour' => array( '.sgs-cart__item-save-for-later,' . $p . ' .sgs-cart__item-add-options', 'border-bottom-color' ),
 		'subtotalLabelColour'    => array( '.sgs-cart__panel-subtotal', 'color' ),
 		'subtotalValueColour'    => array( '.sgs-cart__panel-subtotal-value', 'color' ),
 		'freeDeliveryTextColour' => array( '.sgs-cart__free-delivery-text', 'color' ),

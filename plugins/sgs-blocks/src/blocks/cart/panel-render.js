@@ -63,6 +63,10 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 		removeLabel: itemsEl.dataset.removeLabel || '',
 		showQty: '0' !== itemsEl.dataset.showQty,
 		showSave: '0' !== itemsEl.dataset.showSave,
+		// Opt-in, so an absent attribute means off — unlike the three above,
+		// whose absence means on.
+		showAddOptions: '1' === itemsEl.dataset.showAddOptions,
+		addOptionsLabel: itemsEl.dataset.addOptionsLabel || '',
 	};
 
 	/**

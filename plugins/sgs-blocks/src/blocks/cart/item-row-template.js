@@ -53,18 +53,30 @@ function plainText( str ) {
 }
 
 /**
- * The line's details: its variation (colour, size) and every item-data row
- * (add-ons, a flow's answers), one per line.
+ * The line's details, one row per line.
+ *
+ * `item.variation` is deliberately NOT read. The server builds one summary
+ * per line (includes/cart-line-summary/) that already states the size and
+ * colour, so spreading the variation list in here would repeat every one of
+ * them. The summary arrives as item-data rows with an EMPTY label.
+ *
+ * A row with no label prints its value bare; every row that HAS a label keeps
+ * its `Label: value` shape — the colon is dropped per row, never globally, so
+ * a flow answer on a product with no add-ons still reads "Your prescription:
+ * …".
  *
  * @param {Object} item A Store API cart item.
  * @return {string} A list's HTML, or '' when there is nothing to show.
  */
 function detailsHtml( item ) {
-	const rows = [ ...( item.variation || [] ), ...( item.item_data || [] ) ]
+	const rows = [ ...( item.item_data || [] ) ]
 		.map( ( row ) => {
 			const label = plainText( row.attribute ?? row.name ?? row.key );
 			const value = plainText( row.display ?? row.value );
-			return label && value ? `${ label }: ${ value }` : '';
+			if ( ! value ) {
+				return '';
+			}
+			return label ? `${ label }: ${ value }` : value;
 		} )
 		.filter( Boolean );
 	if ( ! rows.length ) {
@@ -90,6 +102,8 @@ function detailsHtml( item ) {
  * @param {string}  [opts.removeLabel]  The text link's label.
  * @param {boolean} [opts.showQty]      Show the quantity input.
  * @param {boolean} [opts.showSave]     Show Save for later.
+ * @param {boolean} [opts.showAddOptions] Show the per-line "add options" link.
+ * @param {string}  [opts.addOptionsLabel] That link's label; '' hides it.
  * @return {string} The row's HTML.
  */
 export function itemRowHtml( item, totals, opts = {} ) {
@@ -98,10 +112,12 @@ export function itemRowHtml( item, totals, opts = {} ) {
 		removeLabel = 'Remove',
 		showQty = true,
 		showSave = true,
+		showAddOptions = false,
+		addOptionsLabel = '',
 	} = opts;
 	const name = escapeHtml( item.name );
 	// The brand comes from the plugin's own Store API extension data
-	// (includes/cart-item-brand.php), empty when the product has none.
+	// (includes/cart-item-extensions.php), empty when the product has none.
 	const brand = escapeHtml( plainText( item.extensions?.sgs?.brand ?? '' ) );
 	const thumb = item.images?.[ 0 ]?.thumbnail || '';
 	const linePrice = formatMoney( item.totals?.line_total ?? 0, totals );
@@ -178,9 +194,25 @@ export function itemRowHtml( item, totals, opts = {} ) {
 			  escapeHtml( 'Save for later' ) +
 			  '</button>'
 			: '';
+	// A per-line invitation to finish configuring this item, shown only while
+	// there is something left to add. `hasLenses` comes from the plugin's own
+	// Store API extension (includes/cart-item-extensions.php) and is true once
+	// the line carries priced add-ons, so the link disappears for that frame
+	// the moment the shopper has chosen them — and stays for every other line
+	// in the same bag. The destination is the item's own product page, the one
+	// place the options pop-up can open. A link, not a button: it navigates.
+	const alreadyConfigured = true === item.extensions?.sgs?.hasLenses;
+	const addOptionsHref = String( item.permalink ?? '' );
+	const addOptionsHtml =
+		showAddOptions && addOptionsLabel && ! alreadyConfigured && addOptionsHref
+			? `<a class="sgs-cart__item-add-options sgs-cart__item-action" href="${ escapeHtml(
+					addOptionsHref
+			  ) }">${ escapeHtml( addOptionsLabel ) }</a>`
+			: '';
+
 	const actionsHtml =
-		saveForLaterHtml || removeTextHtml
-			? `<div class="sgs-cart__item-actions">${ saveForLaterHtml }${ removeTextHtml }</div>`
+		addOptionsHtml || saveForLaterHtml || removeTextHtml
+			? `<div class="sgs-cart__item-actions">${ addOptionsHtml }${ saveForLaterHtml }${ removeTextHtml }</div>`
 			: '';
 
 	return (

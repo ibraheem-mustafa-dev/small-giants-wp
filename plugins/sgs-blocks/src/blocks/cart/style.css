@@ -634,6 +634,30 @@
 	outline-offset: 2px;
 }
 
+/* "Finish configuring this item" — a link, not a button, because it navigates
+   to the item's own product page. Deliberately the same shape as Save for
+   later above so the two read as one row of peer actions, and the same 44px
+   target. It renders only while that line still has extras to choose. */
+:where(.sgs-cart__panel) .sgs-cart__item-add-options {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 0 8px;
+	font-size: 0.8rem;
+	text-decoration: underline;
+	color: inherit;
+	opacity: 0.85;
+}
+
+.sgs-cart__item-add-options:hover {
+	opacity: 1;
+}
+
+.sgs-cart__item-add-options:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
 :where(.sgs-cart__panel) .sgs-cart__item-remove {
 	display: inline-flex;
 	align-items: center;

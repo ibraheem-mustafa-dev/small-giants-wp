@@ -40,12 +40,25 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 		/>
 	);
 	const isTextRemove = 'text' === ( attributes.itemRemoveStyle || 'icon' );
+	const showsAddOptions = true === attributes.itemShowAddOptions;
 
 	return (
 		<PanelBody title={ __( 'Mini-cart contents', 'sgs-blocks' ) } initialOpen={ false }>
 			{ toggle( 'panelShowCount', __( 'Show the item count after the heading', 'sgs-blocks' ), __( 'For example "Bag (2)".', 'sgs-blocks' ), false ) }
 			{ toggle( 'itemShowQty', __( 'Show a quantity box on each item', 'sgs-blocks' ), undefined, true ) }
 			{ toggle( 'itemShowSaveForLater', __( 'Show "Save for later" on each item', 'sgs-blocks' ), undefined, true ) }
+			{ toggle(
+				'itemShowAddOptions',
+				__( 'Invite the shopper to finish configuring an item', 'sgs-blocks' ),
+				__( 'Shows a link on any item that still has priced extras to choose. It hides itself as soon as that item has them, and goes to the item\'s own product page.', 'sgs-blocks' ),
+				false
+			) }
+			{ showsAddOptions &&
+				text(
+					'itemAddOptionsLabel',
+					__( 'That link\'s text', 'sgs-blocks' ),
+					__( 'For example "Add my prescription" or "Choose a finish". Leave empty to hide it.', 'sgs-blocks' )
+				) }
 			<SelectControl
 				label={ __( 'Remove button', 'sgs-blocks' ) }
 				value={ attributes.itemRemoveStyle || 'icon' }

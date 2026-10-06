@@ -35,6 +35,11 @@ function CloseGlyph() {
 function SampleItem( { attrs, s } ) {
 	const removeText = 'text' === attrs.itemRemoveStyle;
 	const showSave = false !== attrs.itemShowSaveForLater;
+	// The sample item stands for a line that still has extras to choose, so
+	// the link previews whenever it is switched on and given wording. On the
+	// front end it hides itself per line once that line has them.
+	const addOptionsLabel = attrs.itemAddOptionsLabel || '';
+	const showAddOptions = true === attrs.itemShowAddOptions && '' !== addOptionsLabel;
 	return (
 		<div className={ `sgs-cart__item${ removeText ? ' sgs-cart__item--remove-text' : '' }` } style={ s.item }>
 			<span className="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true" style={ s.thumb } />
@@ -53,8 +58,13 @@ function SampleItem( { attrs, s } ) {
 						<input type="number" className="sgs-cart__item-qty-input" value={ 1 } readOnly tabIndex={ -1 } />
 					</div>
 				) }
-				{ ( showSave || removeText ) && (
+				{ ( showAddOptions || showSave || removeText ) && (
 					<div className="sgs-cart__item-actions">
+						{ showAddOptions && (
+							<span className="sgs-cart__item-add-options sgs-cart__item-action" style={ { ...s.action, ...s.save } }>
+								{ addOptionsLabel }
+							</span>
+						) }
 						{ showSave && (
 							<span className="sgs-cart__item-save-for-later sgs-cart__item-action" style={ { ...s.action, ...s.save } }>
 								{ __( 'Save for later', 'sgs-blocks' ) }
