@@ -126,10 +126,43 @@ true and explained nothing.
 `sgs/media`. A dead calibration is a marker or declaration gap, so 34 is worth its own look — not
 investigated here, and not previously recorded.
 
-### 3. `benchmark.mjs --noise` — run on a quiet host
+### 3. `benchmark.mjs --noise` — STOPPED at 4 of 10 runs, still owed
 
-Control and noise back to back, which is the measurement Session C said would separate walker flakiness
-from host load. Its result is recorded below once the run lands.
+Started 20:17 on a quiet host and **stopped deliberately at 20:54**, about an hour short, to release the
+host to the two sessions that had been holding it for nearly three hours (Bean's call). It blocks nothing.
+
+**It could not have run alongside them.** A `build-deploy.py` purges OPcache, the LiteSpeed page cache and
+the theme pattern cache and adds host load — which is precisely the variable this run exists to measure —
+and an `sgs-update` reseed rewrites the shared framework DB. So the choice was this figure or their
+progress, not both.
+
+What the partial run did produce, for whoever picks it up (10 runs total: 6 cases a–f, 2 noise injections,
+and a control per config):
+
+| Run | Duration | Result |
+|---|---|---|
+| `shop-control` | 983s | 2571 open, 314 accepted, 0 live console errors |
+| `case-a` | 565s | 1029 open, 61 accepted |
+| `case-b` | 469s | 1086 open, 41 accepted |
+| `case-c` | — | in flight when stopped |
+
+**No catch-rate or noise figure can be read from this.** Scoring (`benchmark/score.mjs`) runs at the end
+over the whole set, and the noise cases — the entire point — had not started. The standing position is
+unchanged: **catch rate 5 of 5, noise figure unproven in both directions.**
+
+⚠️ **Run it on the local WSL mirror next time, not the remote host** — but understand what that changes.
+`dev-setup.md` §"Local WordPress mirrors (WSL)" documents `http://localhost:8081` (Eye Care) and `:8082`
+(Sandybrown) as WSL copies of the two Hostinger test sites, explicitly "for browser-heavy runs Hostinger's
+edge would challenge". They were **down** throughout this session (both ports time out); start them with
+`wsl -d Ubuntu -u root -- bash -lc 'service mariadb start; service apache2 start'`, and note
+`scripts/local-wp/sync-build.sh` wants a build first.
+
+**But a local run answers a different question.** This benchmark's open question is "were the 22 noise rows
+walker flakiness or host load?", and the 0-noise baseline it must be compared against was measured
+REMOTELY. Localhost removes host load rather than measuring it, and breaks comparability with that
+baseline. So: use the mirror for the browser-heavy runs that keep getting challenged (pairing, solve,
+calibration — `calibrate.mjs` takes `--site local-eye-care`), and keep the noise benchmark remote, or run
+both and treat the local result as the discriminator rather than as the figure.
 
 ## What is still owed
 

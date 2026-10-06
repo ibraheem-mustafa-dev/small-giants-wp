@@ -93,13 +93,15 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   `build-deploy.py --target eye-care-test`, one `sgs-update` reseed, then the editor AND front-end check.
   **Held until the route cleanup MESSAGES that its sweep is done**; an idle notice is not that signal. Detail,
   including A7's cause and the by-PROPERTY attribution rule: the C2 plan's "THE OWED WORK".
-- **Route cleanup** — `plans/2026-10-06-spec47-route-cleanup.md`. **Waves 1 to 3 built and pushed 2026-10-06**:
-  both write hazards, the forced-hover false green, the icon abstraction, the pairing gate, transition markers, and
-  four added tasks (R1 to R4) closing every point Spec 47 §5 Residual still named. **Wave 4 is owed and needs the
-  host**: run `pairs.mjs` over the 17 surfaces to populate `handScope` BEFORE linting (the gate is inert until then),
-  the re-sweep compared on R2's normalised key, the 209 canvas claims by their 69 families, and Session C's three
-  owed host jobs. Runbook: `reports/2026-10-06-session-c2/WAVE4-RUNBOOK.md`. ⚠️ eye-care-test is at `578a8830b`, not
-  the `6d6906b98` the plan first recorded, so the F 193 to 155-175 band is corroboration, not proof.
+- **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
+  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 581. **F 193 → 173**, all 17 surfaces,
+  measure-only, no stale reports, no write to any client tree — inside the 155-175 band committed BEFORE the sweep
+  (`2cf9ab4c3`); the original 148-168 would have failed a correct result. `canvas-settable` 209 → 168, `bgHoverZoom` 20 → 0.
+  **Owed:** `benchmark.mjs --noise` (stopped 4/10 to free the host; 5/5 catch rate stands, noise unproven), 168 canvas
+  claims in 63 families, `mobile-menu` unpairable so **not judged**, 34 dead `sgs/hero` settings
+  (`HERO-DEAD-SETTINGS.md`: fixture-gated).
+  ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Browser-heavy runs belong on the local WSL
+  mirrors (`dev-setup.md`; DOWN — `wsl -d Ubuntu -u root -- bash -lc 'service mariadb start; service apache2 start'`).
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
   (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
 - **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an

@@ -2,7 +2,7 @@
 title: "Spec 47 route cleanup: close every open point and make the measuring tool reusable"
 project: small-giants-wp
 created: 2026-10-06
-status: runnable
+status: complete 2026-10-06 — 16 tasks built, suite 523 to 581, F 193 to 173 verified measure-only inside the revised 155-175 band; four items owed (see WAVE4-RESULTS.md)
 governs: the route-defect fixes arising from Session C2's four diagnoses
 references:
   - .claude/reports/2026-10-06-session-c2/QC-ROUTE-FIXES.md
