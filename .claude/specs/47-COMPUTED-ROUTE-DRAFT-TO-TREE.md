@@ -725,10 +725,18 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
          `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_transition_vars` does
          `preg_replace( '/[^0-9]/', '', $duration )`, so `"0.25s"` becomes `"025"` and emits
          `--sgs-transition-duration:025ms` — 25ms where 250ms was meant, silently. `lib/resolve.mjs::formatValue`
-         has **no time branch at all**. Latent today only because `transitionDuration` is declared `type: number`,
-         so the inspector can send milliseconds alone. **`formatValue` must gain a seconds-to-integer-milliseconds
-         branch BEFORE the transition marker above is enabled**, or the route writes wrong values; and
-         `sgs_transition_vars` should reject a non-integer rather than strip it.
+         has **no time branch at all**.
+         ⚠️ **This is LIVE, not latent, and an earlier note in this spec saying otherwise was wrong.** All eight
+         blocks that call `sgs_transition_vars` — `sgs/hero`, `sgs/brand-strip`, `sgs/cta-section`, `sgs/gallery`,
+         `sgs/info-box`, `sgs/post-grid`, `sgs/team-member`, `sgs/testimonial-slider` — declare
+         `transitionDuration` as **`type: "string"`, default `"300"`**, so any non-digit input is mangled:
+         `"0.25s"` emits **25ms**, `"0.3"` emits **3ms**, `"1s"` emits **1ms**. Only a pure-digit string
+         survives. (`sgs/button`, `sgs/heading` and `sgs/text` do declare `type: number`, but **they do not call
+         this helper** — that is where the earlier "latent" reading came from.) Eye Care's trees use `"250"` and
+         are unaffected, so no client is damaged today, but any client typing a decimal gets a tenth of the
+         duration they asked for. **`sgs_transition_vars` must reject a non-integer rather than strip it, and
+         `formatValue` must gain a seconds-to-integer-milliseconds branch BEFORE the transition marker above is
+         enabled.**
        - **A forced-hover row can be a FALSE GREEN.** `scripts/parity/lib/collect.mjs::centreOf` returns the centre
          of the element's **raw** rect. On `sgs/brand-strip`'s marquee track — far wider than the viewport and
          mid-translate — the live pointer lands off-screen (`hoverChrome.at.x` reads −1786 at 768, −1452 at 1440,

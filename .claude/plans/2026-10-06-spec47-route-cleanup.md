@@ -49,7 +49,7 @@ deliberate and gated, not an oversight.
 | Task | What | Files it edits | Tests it writes |
 |---|---|---|---|
 | **H1** | Narrow `entranceStart` to the first viewport so an armed pose cannot cause a `sgsAnimationStart: load` write | `scripts/computed-route/lib/entrance.mjs` | new case in `tests/entrance.test.mjs` |
-| **H2** | `formatValue` time branch (seconds → integer ms); `sgs_transition_vars` rejects a non-integer instead of stripping it | `scripts/computed-route/lib/resolve.mjs`, `plugins/sgs-blocks/includes/helpers-tokens.php` | new case in `tests/resolve.test.mjs` |
+| **H2** ⚠️ **DO FIRST — LIVE BUG** | `sgs_transition_vars` rejects a non-integer instead of stripping it; `formatValue` gains a seconds → integer-ms branch. **Not latent: all 8 blocks that call the helper declare `transitionDuration` as `type: "string"`**, so `"0.3"` emits 3ms today on `sgs/hero`, `sgs/brand-strip`, `sgs/cta-section`, `sgs/gallery`, `sgs/info-box`, `sgs/post-grid`, `sgs/team-member`, `sgs/testimonial-slider` | `plugins/sgs-blocks/includes/helpers-tokens.php`, `scripts/computed-route/lib/resolve.mjs` | new case in `tests/resolve.test.mjs` + a PHP case asserting a decimal is refused, not stripped |
 | **P2b1** | Exclude non-`summary` children of a closed `<details>` from `layoutElement` | `scripts/parity/lib/paint.mjs` | `tests/walker-refs.test.mjs` |
 | **P2b2** | Retarget the `about-step-*` live finder from `.sgs-process-steps__title` to the step; delete the stale accept entry | `sites/eye-care-ward-end/build/qa/parity/home.mjs` | config regression assert |
 | **P3b** | `armedEntrances` + `triggerArmed`: scroll armed entrances into view and settle before the resting read; emit `reveal-unfired` when one never plays | `scripts/parity/lib/devtools.mjs`, `scripts/parity/draft-live-walk.mjs` | `tests/walker-devtools.test.mjs` |
@@ -116,8 +116,48 @@ the wrong reason.
 | **W1-B** | P2b1, P2b2 | `paint.mjs`, `qa/parity/home.mjs` |
 | **W1-C** | P3b | `devtools.mjs`, `draft-live-walk.mjs` |
 
-Zero file overlap. W1-A is the highest value in the whole plan: both tasks stop the route writing a wrong
-value into a client tree.
+Zero file overlap. **W1-A is the highest value in the whole plan and H2 is its first task**: H2 is a live bug
+mangling any decimal transition duration on eight blocks today, and H1 stops the route writing an animation
+setting from a measurement artefact.
+
+### Also owned by this plan, added 2026-10-06
+
+Two pieces of work were otherwise unassigned. Both are measurement work needing the same host window, so
+they belong here rather than in a separate session:
+
+1. **The 180 unconfirmed canvas-settable claims.** Session C2 refuted 29 from source and proved a named
+   masking class (the `bgHoverZoom` 20), but **180 claims were never live-confirmed** — its planned
+   Playwright step was substituted with source analysis. After P2a and the `canvasSettable` fix land, test
+   them by **family, not by row**: the claims collapse to 68 families of (cited block, setting, row
+   property), and 2 reads per family covers all 68 in ~101 readings instead of 209. Families span surfaces,
+   so surface is the wrong axis.
+2. **Three host jobs Session C left owed** (quiet shared host each): the **C3.5 confirmation walk** — order
+   652 on eye-care-test is already `processing` and paid, so set `EYECARE_ORDER_URL` to its
+   order-received URL and read the key with `wp eval`, **never store it**; an **`sgs/media` recalibration**
+   to exercise the content reads on a block that has them, because `sgs/hero`'s run recorded nothing across
+   17 qualifying settings and nobody knows whether that is legitimate; and a **`node scripts/parity/benchmark.mjs --noise`**
+   re-run with control and noise back to back, since it caught 5 of 5 planted faults but its noise figure is
+   unproven in both directions. Commands in `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
+   §"Wave 3's remaining items".
+
+Both slot into **Wave 4**, alongside the verification sweep, since they share its host window.
+
+### Host serialisation against the other two tracks
+
+Three tracks are live and **only this one may touch the host until its verification sweep completes**:
+
+| Track | Prompt | Host |
+|---|---|---|
+| **1. This plan** | `.claude/prompts/Spec 47 Cleanup Prompt.md` | **owns the host** through Wave 4 |
+| 2. The 5 approved block fixes | `.claude/prompts/Eye Care Block Fixes Prompt.md` | may write and test code in parallel; **must hold its deploy AND its reseed** until this plan signals clear |
+| 3. The 63 register items | `.claude/prompts/63 Item Categorisation Work Prompt.md` | deploys and tests live, so it starts after this plan's sweep |
+
+**Why, and it is not just politeness.** (a) `assertQuiet` aborts this plan's walks when `tar`/`rsync` runs
+on the shared host. (b) Track 2 adds `block.json` attributes, so it needs an `sgs-update` reseed — and that
+rewrites the shared framework DB that P4's calibration reads. (c) **Decisively: this plan's prediction of
+F 193 → 148–168 is only single-variable if the live site does not change.** Track 2's fixes close ~19 rows
+of their own; deploying them mid-sweep mixes two causes and reproduces exactly the "not separable" trap
+Session C fell into with its 176 → 192 step.
 
 ### Wave 2 — the hub and the gate (2 lanes, parallel)
 
