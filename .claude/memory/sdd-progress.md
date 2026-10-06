@@ -4,3 +4,4 @@ Task 1 (F3 gate extension): complete (commit c9113b87d, reviewed inline; 2 claim
 Task 2 (F3 gate extension): complete (commit 563ae1c20, reviewed inline + own negative control; 137 advisory findings ratcheted, T4 triages)
 Task 3 (F3 gate extension): complete (commit a7af3304f, 16/16 self-test, all 5 cases proved able to fail, verified inline)
 Task 4 (F3 gate extension): complete (commit f1f4bb485, triage + baseline retriage; encoding repaired in main thread)
+Task 4 (F3 gate extension): complete (commit cdb01fba6, triage + baseline retriage; encoding repaired in main thread)
