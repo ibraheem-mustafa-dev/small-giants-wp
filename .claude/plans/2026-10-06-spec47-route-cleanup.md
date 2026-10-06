@@ -174,7 +174,7 @@ Three tracks are live and **only this one may touch the host until its verificat
 | Track | Prompt | Host |
 |---|---|---|
 | **1. This plan** | `.claude/prompts/Spec 47 Cleanup Prompt.md` | **owns the host** through Wave 4 |
-| 2. The 5 approved block fixes | `.claude/prompts/Eye Care Block Fixes Prompt.md` | may write and test code in parallel; **must hold its deploy AND its reseed** until this plan signals clear |
+| 2. The 5 approved block fixes | COMPLETE 2026-10-06 — deployed at `74b99ccff` and verified on both surfaces | no longer holds anything; its prompt file is deleted as used |
 | 3. The 63 register items | `.claude/prompts/63 Item Categorisation Work Prompt.md` | deploys and tests live, so it starts after this plan's sweep |
 
 **Why, and it is not just politeness.** (a) `assertQuiet` aborts this plan's walks when `tar`/`rsync` runs

@@ -482,8 +482,9 @@ Gitignored; never committed.
    reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at
    HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute
    carrying a `css_property` in the DB with nothing declaring it in the derived layer. The
-   F6 Reseed-Survival gate then fails them as rogue seeds that would vanish on the next
-   reseed, and it has **no baseline by design**. A local `npm run build` passes at this
+   F6 check #8 Reseed-Survival gate (`db-consistency/run.py`:111; #9 is the `fx_effects`
+   twin, which the same sequence applies to) then fails them as rogue seeds that would
+   vanish on the next reseed, and the suite has **no baseline by design** (:143). A local `npm run build` passes at this
    point while the deploy's build fails, because only the deploy builds at HEAD.
 3. **Then deploy.**
 

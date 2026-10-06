@@ -154,9 +154,28 @@ async function main() {
 					if ( hit ) { matching.push( { selector: rule.selectorText, value: v } ); }
 				}
 			};
+			// Sheet accounting. A hand-rolled styleSheets walk silently skips any sheet whose cssRules throws
+			// (cross-origin, or blocked), and a skipped sheet turns a NO-RULE verdict into a false negative
+			// rather than a finding. So skips are COUNTED and returned: a verdict is trustworthy only at
+			// skipped === 0. Recorded because auto-memory warns this walk can report zero matches on an
+			// element that demonstrably computes the value.
+			const sheets = { total: 0, read: 0, skipped: 0, skippedHrefs: [] };
 			for ( const sheet of document.styleSheets ) {
+				sheets.total += 1;
 				let rules;
-				try { rules = sheet.cssRules; } catch { continue; }
+				try {
+					rules = sheet.cssRules;
+				} catch {
+					sheets.skipped += 1;
+					sheets.skippedHrefs.push( sheet.href || '(inline)' );
+					continue;
+				}
+				if ( ! rules ) {
+					sheets.skipped += 1;
+					sheets.skippedHrefs.push( `${ sheet.href || '(inline)' } [null cssRules]` );
+					continue;
+				}
+				sheets.read += 1;
 				visit( rules );
 			}
 			let depth = -1;
@@ -168,6 +187,7 @@ async function main() {
 				rowPresent: true, refPresent: true,
 				rowTag: row.tagName, rowClasses: [ ...row.classList ].join( ' ' ),
 				citedPresent: !! cited, citedClasses: citedClasses.join( ' ' ), depthFromCited: depth, ownNames,
+				sheets,
 				matching: matching.slice( 0, 40 ),
 				matchingCount: matching.length,
 				// A matching rule owned by the cited block: its selector names one of the cited block's classes.

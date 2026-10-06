@@ -74,6 +74,14 @@ container instance sets no `padding-top` or `align-items` at all.)
 property, so the branch is inapplicable here rather than silently swallowing confirmations. It is therefore
 unexercised code: treat it as unproven until a family hits it.
 
+**And the walk is accounted for, not assumed.** A hand-rolled `document.styleSheets` walk silently skips any
+sheet whose `cssRules` throws (cross-origin or blocked), and a skipped sheet makes a `NO-RULE` verdict a false
+negative rather than a finding — the trap is on record in auto-memory as having once reported zero matches on
+an element that demonstrably computed the value. So the tool counts every sheet and returns the tally with each
+verdict. Measured: **956 of 956 sheets read, 0 skipped**, across 52-58 sheets per page, on every one of the 17
+runs. A verdict is trustworthy only at `skipped === 0`; a future run against a CDN-served or blocked sheet will
+now say so instead of refuting silently.
+
 ## Result: 17 measured, 17 refuted (82 of 168 claims)
 
 | | Families | Claims |
