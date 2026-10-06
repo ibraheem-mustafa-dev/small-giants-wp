@@ -99,13 +99,11 @@ with an image add `a.product-card__img-link` at **73%**. Nothing stretches a lin
 > `apply()` is handed `''` and no-ops, and that field is its only way to have a destination. On a live card
 > `apply()` overwrites whatever is typed, so it is inert there rather than conflicting.
 >
-> Verified in the built artifact; the live check is held because the shared host is busy (a peer's
-> `benchmark.mjs --noise` run, then that peer's deploy, which carries this commit). **Expected on re-measure:
-> near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.** Bean confirms the card is *supposed* to be
-fully clickable, so **N26 is genuinely OPEN**, and S10's "one shared stretched link" has not reached the product
-card on these surfaces even though S10's commits are live. The S10 row's own note records that `e62f45952`
-rebuilt the pattern so "a block's OWN visible link owns the surface" - on the product card that visible link is
-the 1-2% title anchor, which is why the card reads as dead almost everywhere.
+> Verified in the built artifact; live verification is still owed. **Expected on re-measure:
+> near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.**
+> Bean confirms the card is *supposed* to be fully clickable. S10's commits were live, but on the product card
+> the block's own visible link (`e62f45952`: "a block's OWN visible link owns the surface") was the 1-2% title
+> anchor, which is why the card read as dead almost everywhere; `3db77f090` makes the whole card the link.
 
 > **Correction.** An earlier draft of this report said the imageless cards had "no link at all". That was a
 > measurement error: the hit-test landed on the title row's padding, and the title link covers only 1-2% of the
