@@ -263,6 +263,12 @@ Product_Sitemap::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-product-item-list.php';
 Product_Item_List::register();
 
+// The one shared "Added to bag" toast. Opt-in: a block whose frontend can
+// produce a toast message calls Sgs_Toast::request() during its own render,
+// and only then does wp_footer emit the region and enqueue its stylesheet.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-toast.php';
+Sgs_Toast::register();
+
 // Organization + WebSite JSON-LD emitter — front page only (FR-30-9 F2).
 // SEC-9: defers to any of the 7 recognised SEO plugins when active.
 require_once SGS_BLOCKS_PATH . 'includes/class-org-website-schema.php';

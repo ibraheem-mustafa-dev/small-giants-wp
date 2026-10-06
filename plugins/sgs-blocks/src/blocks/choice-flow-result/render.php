@@ -101,6 +101,10 @@ if ( 'add-to-bag' === $result_action ) {
 	$wrapper_args['data-nonce']               = wp_create_nonce( 'wp_rest' );
 	$wrapper_args['data-endpoint']            = rest_url( 'sgs/v1/cart/add-item' );
 	$wrapper_args['data-checkout-url']        = function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '';
+
+	// Ask wp_footer for the one shared toast — where the OUTCOME of this
+	// terminal's add now reports.
+	\SGS\Blocks\Sgs_Toast::request();
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
@@ -116,9 +120,11 @@ if ( '' !== trim( wp_strip_all_tags( $body ) ) ) {
 }
 
 if ( 'add-to-bag' === $result_action ) {
-	// The button itself lives in the flow's own footer now (D3) — this is
-	// only where an error ("please choose every option above…") or the
-	// success message shows, since it's contextually part of this step.
+	// The button itself lives in the flow's own footer now (D3). This region
+	// is VALIDATION ONLY: "please choose every option above…" and "no
+	// product to add…" have to stay beside the controls they are about
+	// (WCAG 3.3.1), so a transient toast cannot carry them. The outcome of
+	// the add request itself goes to the shared toast instead.
 	echo '<div class="sgs-choice-flow-result__cart-status" role="status" aria-live="polite"></div>';
 }
 

@@ -1,0 +1,207 @@
+/* ===== SGS Toast — the one shared transient feedback surface =====
+ *
+ * Paired with includes/class-sgs-toast.php (markup) and
+ * src/shared/toast/store.js (behaviour).
+ *
+ * Variant colours, the 44px close button and the focus ring are the same
+ * tokens and sizings sgs/notice-banner uses, so the toast reads as part of
+ * the same system. Every value resolves from a theme.json preset with a
+ * literal only as the no-theme fallback.
+ *
+ * The wrapper is NEVER display:none, visibility:hidden or [hidden]: its
+ * message paragraph is a role="status" live region, and any of those three
+ * would drop it out of the accessibility tree and silence every
+ * announcement. It hides by opacity, and the two focusable controls inside
+ * carry a bound `hidden` attribute instead.
+ */
+
+.sgs-toast {
+	position: fixed;
+	z-index: 100000;
+	inset-block-end: var(--wp--preset--spacing--30, 1rem);
+	inset-inline: var(--wp--preset--spacing--30, 1rem);
+	margin-inline: auto;
+	width: fit-content;
+	max-width: min(30rem, calc(100vw - 2rem));
+
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	padding: var(--wp--preset--spacing--20, 0.75rem) var(--wp--preset--spacing--30, 1rem);
+
+	border: 1px solid transparent;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+
+	background-color: var(--wp--preset--color--surface, #faf9f6);
+	/* #1f2937 reaches 4.5:1 on both variant tints below. */
+	color: var(--wp--preset--color--text, #1f2937);
+
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Success — sgs/notice-banner's success tint and border token. */
+.sgs-toast--success {
+	background-color: var(--wp--preset--color--success-light, #ecfdf5);
+	border-color: var(--wp--preset--color--success, #2e7d4f);
+}
+
+/* Error — sgs/notice-banner's error tint and border token. Colour is never
+   the only carrier: the icon changes to circle-x alongside it. */
+.sgs-toast--error {
+	background-color: var(--wp--preset--color--error-light, #fef2f2);
+	border-color: var(--wp--preset--color--error, #dc2626);
+}
+
+.sgs-toast--visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Motion only when the store has confirmed the visitor has not asked for
+   reduced motion (state.isAnimated adds this class). */
+.sgs-toast--animated {
+	transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+/* The pre-entrance offset is scoped to the hidden state rather than written
+   as `transform: none` on --visible: both classes carry identical
+   specificity, so a plain pair would resolve by source order instead of by
+   intent. */
+.sgs-toast--animated:not(.sgs-toast--visible) {
+	transform: translateY(0.75rem);
+}
+
+/* `hidden` must win over every display rule below it. The UA's own
+   `[hidden] { display: none }` has lower specificity than a class, so the
+   icons' and controls' `display: inline-flex` would otherwise keep a hidden
+   element painted and (for the two controls) focusable. */
+.sgs-toast [hidden] {
+	display: none;
+}
+
+/* ===== Icon ===== */
+
+.sgs-toast__icon {
+	flex-shrink: 0;
+	display: inline-flex;
+	line-height: 1;
+}
+
+.sgs-toast__icon svg {
+	width: 22px;
+	height: 22px;
+	display: block;
+}
+
+.sgs-toast__icon--success {
+	color: var(--wp--preset--color--success, #2e7d4f);
+}
+
+.sgs-toast__icon--error {
+	color: var(--wp--preset--color--error, #dc2626);
+}
+
+/* ===== Message ===== */
+
+.sgs-toast__message {
+	margin: 0;
+	flex: 1 1 auto;
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	line-height: 1.4;
+}
+
+/* ===== "View bag" action =====
+ * Underlined and in the toast's own body colour, so it clears 4.5:1 in both
+ * variants without depending on an accent token's contrast against a tint.
+ */
+
+.sgs-toast__action {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding-inline: var(--wp--preset--spacing--20, 0.75rem);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: inherit;
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* Hover BRIGHTENS: a white wash lifts the tint while the dark label stays
+   put, so contrast only ever improves. */
+.sgs-toast__action:hover {
+	background-color: rgba(255, 255, 255, 0.65);
+	text-decoration-thickness: 2px;
+}
+
+.sgs-toast__action:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentcolor);
+	outline-offset: 2px;
+}
+
+/* ===== Close button ===== */
+
+.sgs-toast__close {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin-inline-end: calc(var(--wp--preset--spacing--20, 0.75rem) * -0.5);
+	background: none;
+	border: none;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: inherit;
+	cursor: pointer;
+}
+
+.sgs-toast__close:hover {
+	background-color: rgba(255, 255, 255, 0.65);
+}
+
+.sgs-toast__close:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentcolor);
+	outline-offset: 2px;
+}
+
+/* ===== Reduced motion =====
+ * The CSS half of the contract, so the preference holds even before
+ * src/shared/toast/store.js evaluates. The toast still appears and still
+ * announces — it simply arrives without the slide or the fade.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-toast,
+	.sgs-toast--animated,
+	.sgs-toast--animated:not(.sgs-toast--visible) {
+		transform: none;
+		transition: none;
+	}
+}
+
+/* ===== Narrow viewports =====
+ * Full-width bar with the message on its own line, so a long sentence never
+ * squeezes the 44px action and close targets.
+ */
+@media (max-width: 480px) {
+	.sgs-toast {
+		width: auto;
+		max-width: none;
+		flex-wrap: wrap;
+	}
+
+	.sgs-toast__message {
+		flex-basis: 100%;
+	}
+
+	.sgs-toast__action {
+		margin-inline-start: auto;
+	}
+}

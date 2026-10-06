@@ -321,57 +321,6 @@
 	height: 0;
 }
 
-/* ── Cart-status error region (dismissible, ARIA-live) ────────────────── */
-
-/* Hidden by default; data-wp-class adds the --visible modifier when
-   context.cartStatus is non-empty (truthy string). */
-.sgs-buybox .buybox__cart-status-region {
-	display: none;
-	align-items: flex-start;
-	gap: 8px;
-	padding: 12px;
-	border-radius: 6px;
-	/* 4.5:1 text on the tinted background — token-overridable. */
-	background: var(--sgs-buybox-error-bg, #fcf0f1);
-	color: var(--sgs-buybox-error-colour, #8a1f21);
-	border: 1px solid var(--sgs-buybox-error-border, #e8c4c5);
-}
-
-.sgs-buybox .buybox__cart-status-region--visible {
-	display: flex;
-}
-
-.sgs-buybox .buybox__cart-status {
-	margin: 0;
-	flex: 1 1 auto;
-	font-size: 0.95rem;
-}
-
-.sgs-buybox .buybox__dismiss-status {
-	flex-shrink: 0;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 44px;
-	min-height: 44px;
-	margin: -10px -10px -10px 0;
-	padding: 0;
-	background: transparent;
-	border: 0;
-	border-radius: 6px;
-	color: inherit;
-	cursor: pointer;
-}
-
-.sgs-buybox .buybox__dismiss-status:hover {
-	background: var(--sgs-buybox-error-border, #e8c4c5);
-}
-
-.sgs-buybox .buybox__dismiss-status:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, currentColor);
-	outline-offset: 2px;
-}
-
 /* ── Option-picker grid layout (buybox-scoped only) ───────────────────── */
 /*
  * All selectors below are prefixed with .sgs-buybox so they ONLY affect

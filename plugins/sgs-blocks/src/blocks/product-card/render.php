@@ -927,6 +927,13 @@ if ( 'buy-now' === $sgs_cta_behaviour && ! function_exists( 'wc_get_checkout_url
 	$sgs_cta_behaviour = 'add-to-basket';
 }
 
+// Ask wp_footer for the one shared toast — the add's only feedback surface
+// now that the card carries no inline status strip. A 'learn-more' card adds
+// nothing, so it never needs one.
+if ( 'learn-more' !== $sgs_cta_behaviour ) {
+	\SGS\Blocks\Sgs_Toast::request();
+}
+
 $classes[] = 'product-card--live';
 
 // Rebuild base opts with updated classes.
@@ -1279,7 +1286,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'inStock'             => (bool) $def['inStock'],
 			'imageSrc'            => $image_src,
 			'imageAlt'            => $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'],
-			'cartStatus'          => '',
 			'pending'             => false,
 			// U7: wp_rest nonce for the SGS cart proxy (X-WP-Nonce header).
 			// Guests receive a per-tick shared nonce — acceptable WC parity for
@@ -1832,12 +1838,6 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						href="<?php echo $sgs_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 					><?php echo esc_html( $sgs_cta2_text ); ?></a>
 					<?php endif; ?>
-				<p
-					class="product-card__cart-status"
-					role="status"
-					aria-live="polite"
-					data-wp-text="context.cartStatus"
-				></p>
 				<?php endif; ?>
 			</div>
 			<?php
@@ -1912,7 +1912,6 @@ $context = array(
 	'addToCartId'  => $add_to_cart_id,
 	'imageSrc'     => $sgs_resolved_img,
 	'imageAlt'     => $sgs_resolved_img_alt,
-	'cartStatus'   => '',
 
 	/*
 	 * A4 (QC): pending flag — prevents add-to-cart spam clicks.
@@ -2198,12 +2197,6 @@ echo sgs_product_card_wishlist_markup( $attributes );
 			href="<?php echo $sgs_nv_cta2_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both ternary arms esc_url'd above. ?>"
 		><?php echo esc_html( $sgs_nv_cta2_text ); ?></a>
 		<?php endif; ?>
-		<p
-			class="product-card__cart-status"
-			role="status"
-			aria-live="polite"
-			data-wp-text="context.cartStatus"
-		></p>
 	<?php endif; ?>
 </div>
 <?php

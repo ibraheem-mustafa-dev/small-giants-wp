@@ -50,6 +50,9 @@
 	display: none;
 }
 
+/* Validation only: the add's own outcome goes to the shared toast
+   (includes/class-sgs-toast.php), so the sole state this region now paints
+   is an unfinished-choices error that must stay beside its controls. */
 .sgs-choice-flow-result__cart-status[data-state="error"] {
 	color: var(--wp--preset--color--error, #b3261e);
 }

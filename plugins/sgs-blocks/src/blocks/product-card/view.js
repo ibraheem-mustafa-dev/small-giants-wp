@@ -46,7 +46,6 @@
  *   stockText          {string}   e.g. "Out of stock" (empty when in stock)
  *   imageSrc           {string}
  *   imageAlt           {string}
- *   cartStatus         {string}   user-facing cart feedback string
  *   pending            {boolean}  true while addToCart XHR is in flight
  *
  * comboKey format (MUST match server exactly):
@@ -59,6 +58,7 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 import '../../shared/wishlist-store';
+import { toastActions } from '../../shared/toast/store.js';
 
 /**
  * Module-level WeakMap: ctx → card ref.
@@ -984,8 +984,7 @@ store( 'sgs/product-card', {
 				return;
 			}
 
-			ctx.cartStatus = '';
-			ctx.pending    = true;
+			ctx.pending = true;
 
 			try {
 				// Build the variation array using WC display names + term slugs
@@ -1049,7 +1048,10 @@ store( 'sgs/product-card', {
 					} catch {
 						// Ignore parse errors — use the default message above.
 					}
-					ctx.cartStatus = msg;
+					// The toast fires ONCE, at the end of this branch: a 409
+					// that re-syncs successfully REPLACES msg below, and
+					// announcing the generic server message first would make
+					// one failed add speak twice.
 
 					// 409 = out of stock (post-load race). Re-fetch the availability
 					// manifest and re-grey the options. The WeakMap keyed by ctx gives
@@ -1099,8 +1101,13 @@ store( 'sgs/product-card', {
 										ctx.inStock = false;
 										ctx.stockText = 'Out of stock';
 									}
-									ctx.availabilityNote =
-										'That combination just sold out.';
+									// The sold-out fact replaces the generic
+									// server message. Deliberately NOT
+									// ctx.availabilityNote: that live region's
+									// canonical purpose is an option SELECTION
+									// change, and writing it here would make
+									// one failed add speak twice.
+									msg = 'That combination just sold out.';
 								}
 							}
 						} catch {
@@ -1109,10 +1116,11 @@ store( 'sgs/product-card', {
 						}
 					}
 
+					toastActions.showError( msg );
 					return;
 				}
 
-				ctx.cartStatus = 'Added to your basket.';
+				toastActions.showSuccess( 'Added to your basket.' );
 
 				// Notify the sgs/cart badge to re-fetch the authoritative count.
 				// WC fires this itself when its own blocks are present; we dispatch
@@ -1120,19 +1128,6 @@ store( 'sgs/product-card', {
 				document.dispatchEvent(
 					new CustomEvent( 'wc-blocks_added_to_cart' )
 				);
-
-				// FR-30-4: open the core Mini-Cart drawer after a successful add.
-				// The proxy add bypasses WC's client cart store, so the drawer's
-				// native auto-open never fires. A programmatic click on the
-				// mini-cart button is the version-stable path — it runs WC's own
-				// actions.openDrawer binding with no cross-store API coupling.
-				// Pages without a mini-cart (e.g. card grids on non-shop headers)
-				// skip silently and keep the cartStatus message as the feedback.
-				if ( ctx.ctaBehaviour !== 'buy-now' ) {
-					document
-						.querySelector( '.wc-block-mini-cart__button' )
-						?.click();
-				}
 
 				// FP-H buy-now: redirect to checkout immediately after a successful
 				// add. context.ctaBehaviour is seeded server-side from the block attr;
@@ -1143,8 +1138,9 @@ store( 'sgs/product-card', {
 					window.location.href = ctx.checkoutUrl;
 				}
 			} catch {
-				ctx.cartStatus =
-					'Sorry, something went wrong adding this item.';
+				toastActions.showError(
+					'Sorry, something went wrong adding this item.'
+				);
 			} finally {
 				// A4: always clear pending so the button re-enables after the request.
 				ctx.pending = false;
@@ -1186,20 +1182,6 @@ store( 'sgs/product-card', {
 					}
 				}
 			}
-		},
-
-		/**
-		 * Dismiss the cart-status message (FR-30-7 dismissible error).
-		 *
-		 * Bound via data-wp-on--click on the sgs/buybox dismiss button.
-		 * Clearing context.cartStatus empties the data-wp-text span and
-		 * (in the buybox) removes the --visible modifier via data-wp-class,
-		 * collapsing the region. Backwards-compatible: cards without a
-		 * dismiss button simply never call it.
-		 */
-		dismissCartStatus() {
-			const ctx = getContext();
-			ctx.cartStatus = '';
 		},
 	},
 } );

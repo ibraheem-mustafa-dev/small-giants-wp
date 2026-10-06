@@ -724,7 +724,7 @@
 }
 
 /*
- * ── Bound-card permalink + cart-status styles ────────────────────────────────
+ * ── Bound-card permalink styles ────────────────────────────────────────────
  *
  * All rules scoped to .product-card--live or new BEM classes.
  *
@@ -763,16 +763,6 @@
 	outline: 2px solid var( --wp--preset--color--primary, #1F7A7A );
 	outline-offset: 2px;
 	border-radius: 2px;
-}
-
-/* Visible success feedback — only shows when JS populates "Added to your basket.". */
-/* #15803d on #fff = 4.8:1 ✓ WCAG AA. */
-.product-card--live .product-card__cart-status {
-	color: #15803d;
-	font-family: 'Inter', sans-serif;
-	font-size: 13px;
-	font-weight: 600;
-	margin: 0;
 }
 
 /*
@@ -1289,7 +1279,7 @@
  * Pin the LAST action group to the card bottom. Bound markup: the cart form
  * is display:contents, so the pin lands on the button/anchor itself
  * (.product-card__add-to-cart — the first element of the action group;
- * secondary CTA + cart-status follow it down). The value ladder stays in
+ * secondary CTA follows it down). The value ladder stays in
  * normal flow above. Typed built-in cards need no rule here —
  * .sgs-product-card__cta-row already carries margin-top:auto globally.
  */

@@ -20,6 +20,7 @@
  * @package SGS\Blocks
  */
 
+import { toastActions } from '../../shared/toast/store.js';
 import { getAddonSummary } from './pricing.js';
 import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
 import { getResolvedVariation } from './variation.js';
@@ -66,6 +67,12 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 		return;
 	}
 
+	// This region is now VALIDATION ONLY. The outcome of the add request
+	// itself goes to the one shared toast; a "you haven't finished choosing"
+	// message has to stay next to the controls that are unfinished (WCAG
+	// 3.3.1), and a toast that clears itself after 5s cannot do that. It is
+	// the same in-context treatment validateTerminalFields() already gives a
+	// required field via reportValidity().
 	const statusEl = resultEl.querySelector( '.sgs-choice-flow-result__cart-status' );
 	const endpoint = resultEl.getAttribute( 'data-endpoint' );
 	const nonce = resultEl.getAttribute( 'data-nonce' );
@@ -144,34 +151,29 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 			} catch ( _e ) {
 				// Ignore parse errors — use the default message above.
 			}
-			if ( statusEl ) {
-				statusEl.dataset.state = 'error';
-				statusEl.textContent = message;
-			}
+			toastActions.showError( message );
 			return;
 		}
 
-		if ( statusEl ) {
-			statusEl.dataset.state = 'success';
-			statusEl.textContent = redirectToCheckout ? 'Added — taking you to checkout…' : 'Added to your bag.';
-		}
+		toastActions.showSuccess(
+			redirectToCheckout
+				? 'Added — taking you to checkout…'
+				: 'Added to your bag.'
+		);
 
 		// Same post-success signalling as sgs/product-card's own addToCart —
 		// so a page's mini-cart/bag badge updates regardless of which block
-		// added the item.
+		// added the item. The bag drawer is deliberately NOT opened: the
+		// toast's "View bag" is the way in.
 		document.dispatchEvent( new CustomEvent( 'wc-blocks_added_to_cart' ) );
 		window.dispatchEvent( new CustomEvent( 'sgs-cart-updated' ) );
-		document.querySelector( '.wc-block-mini-cart__button' )?.click();
 
 		if ( redirectToCheckout && checkoutUrl ) {
 			window.location.assign( checkoutUrl );
 			return; // Navigating away — no point re-enabling the button below.
 		}
 	} catch ( _e ) {
-		if ( statusEl ) {
-			statusEl.dataset.state = 'error';
-			statusEl.textContent = 'Sorry, something went wrong adding this item.';
-		}
+		toastActions.showError( 'Sorry, something went wrong adding this item.' );
 	} finally {
 		buttonEl.disabled = false;
 		buttonEl.removeAttribute( 'aria-busy' );

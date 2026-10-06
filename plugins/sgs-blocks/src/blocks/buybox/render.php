@@ -409,7 +409,6 @@ $context = array(
 	// FR-30-10 Step-10a: real gallery seed (was neutral '' / '' / [] / true before).
 	'imageSrc'            => $buybox_img_src,
 	'imageAlt'            => $buybox_img_alt,
-	'cartStatus'          => '',
 	'pending'             => false,
 	'restNonce'           => wp_create_nonce( 'wp_rest' ),
 	'availabilityNote'    => '',
@@ -880,6 +879,11 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
+<?php
+// Ask wp_footer for the one shared toast. It replaces this block's former
+// inline cart-status region, which painted a SUCCESS in error colours.
+\SGS\Blocks\Sgs_Toast::request();
+?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	data-wp-interactive="sgs/product-card"
 	data-wp-init="callbacks.initPillBridge"
@@ -1355,35 +1359,6 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 		</button>
 	</form>
 	<?php endif; ?>
-
-	<?php // ── 8e. Cart-status error region — ARIA-live with dismiss button. ?>
-	<?php
-	// Mirror the product-card cartStatus pattern (L991-996).
-	// The dismiss button is inside the region; it is visually hidden when
-	// cartStatus is empty via the CSS :empty-adjacent rule (see style.css).
-	// data-wp-text writes the error message; an empty string empties the span,
-	// collapsing the region visually (CSS) and announcing nothing to screen readers.
-	?>
-	<div
-		class="buybox__cart-status-region"
-		role="alert"
-		aria-live="assertive"
-		aria-atomic="true"
-		data-wp-class--buybox__cart-status-region--visible="context.cartStatus"
-	>
-		<p
-			class="buybox__cart-status"
-			data-wp-text="context.cartStatus"
-		></p>
-		<button
-			type="button"
-			class="buybox__dismiss-status"
-			aria-label="<?php esc_attr_e( 'Dismiss message', 'sgs-blocks' ); ?>"
-			data-wp-on--click="actions.dismissCartStatus"
-		>
-			<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-		</button>
-	</div>
 
 	<?php // ── 8f. Availability live region — polite, visually hidden (mirrors card L900-906). ?>
 	<p
