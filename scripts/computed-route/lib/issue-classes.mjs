@@ -41,6 +41,18 @@ export const CONTENT = 'content';
 // for a row with no ref, which only identifies the same element within one walker config.
 export const issueKey = ( x ) => `${ x.ref || x.pair }|${ x.path ?? '' }|${ x.kind }|${ x.key }`;
 
+// The positional selectors an emitted path can carry: `:nth-of-type(n)` and `:nth-child(n)`, whatever the argument.
+const POSITIONAL = /:nth-(?:of-type|child)\([^)]*\)/g;
+
+// A path with its positional selectors removed. Only the path component is touched.
+export const normalisePath = ( path ) => ( null == path ? '' : String( path ).replace( POSITIONAL, '' ) );
+
+// issueKey with the path normalised, for comparing one sweep against another: a walker change that adds or drops a
+// positional selector on an element's path changes issueKey without changing the finding. `ref`, `kind` and `key` are
+// untouched, and issueKey itself is unchanged, so every recorded key keeps its meaning. Two elements that differ only by
+// position share this key, so a comparison must count occurrences per key (lib/sweep.mjs::sweepDelta does).
+export const normalisedIssueKey = ( x ) => `${ x.ref || x.pair }|${ normalisePath( x.path ) }|${ x.kind }|${ x.key }`;
+
 // Who edits content that lives OUTSIDE the layout tree, so no block setting can hold it (§3.3): Site Info values,
 // product data, a page the draft links to but never shows, behaviour the walker cannot drive (FR-47-7), and
 // WooCommerce's own strings. Shared, because Solve discovers a handover from a measured row while Fill carries one

@@ -2,7 +2,11 @@
 // site, a surface with no report is listed, and another surface's block is never counted.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { issueRows, aggregate } from '../lib/sweep.mjs';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { issueRows, aggregate, sweepDelta, reportStatus, walkerCaveats, readWalkerCaveats } from '../lib/sweep.mjs';
+import { issueKey, normalisedIssueKey } from '../lib/issue-classes.mjs';
 import { wholePage } from '../lib/solve-report.mjs';
 
 const row = ( over = {} ) => ( { kind: 'style', key: 'padding-top', draft: '10px', live: '0px', ref: 'cr-ref-a-1', path: '0', block: 'sgs/hero', pair: 'hero', state: 'rest', width: 375, reason: 'no setting', ...over } );
@@ -107,4 +111,122 @@ test( 'MUST FAIL: link coverage rows are carried by key prefix within kind auto,
 	assert.equal( otherRows, 6 );
 	assert.equal( isIssue( auto( 'link-missing:/x', 'x' ) ), true );
 	assert.equal( isIssue( { kind: 'entrance', key: 'link-missing' } ), false );
+} );
+
+const agg = ( rows ) => aggregate( [ { surface: 'a', reportPath: 'r.json', report: report( { missing: rows } ) } ] );
+
+test( 'R2: a positional selector added to a path changes issueKey, not the normalised key, and the delta is zero', () => {
+	const before = row( { path: 'div > span.__set' } );
+	const after = row( { path: 'div > span.__set:nth-of-type(1)' } );
+	assert.notEqual( issueKey( before ), issueKey( after ) );
+	assert.equal( normalisedIssueKey( before ), normalisedIssueKey( after ) );
+	assert.equal( normalisedIssueKey( row( { path: 'ul > li:nth-child(3) > a:nth-of-type(2n+1)' } ) ), normalisedIssueKey( row( { path: 'ul > li > a' } ) ) );
+	assert.deepEqual( sweepDelta( agg( [ before ] ), agg( [ after ] ) ), { closed: 0, opened: 0, kept: 1 } );
+} );
+
+test( 'R2: rows on genuinely different paths stay distinct and the delta still sees them', () => {
+	const a = row( { path: 'div > span.__set' } );
+	const b = row( { path: 'div > span.__icon' } );
+	assert.notEqual( normalisedIssueKey( a ), normalisedIssueKey( b ) );
+	assert.notEqual( normalisedIssueKey( a ), normalisedIssueKey( row( { path: a.path, key: 'margin-top' } ) ) );
+	assert.notEqual( normalisedIssueKey( a ), normalisedIssueKey( row( { path: a.path, ref: 'cr-ref-a-2' } ) ) );
+	assert.deepEqual( sweepDelta( agg( [ a ] ), agg( [ b ] ) ), { closed: 1, opened: 1, kept: 0 } );
+	// Two siblings that differ only by position are two findings: losing one is a close.
+	const s1 = row( { path: 'ul > li:nth-of-type(1)' } );
+	const s2 = row( { path: 'ul > li:nth-of-type(2)' } );
+	assert.deepEqual( sweepDelta( agg( [ s1, s2 ] ), agg( [ s1 ] ) ), { closed: 1, opened: 0, kept: 1 } );
+} );
+
+test( 'R2: issueKey keeps its exact format', () => {
+	assert.equal( issueKey( { ref: 'cr-ref-a-1', path: 'x:nth-of-type(1)', kind: 'style', key: 'gap' } ), 'cr-ref-a-1|x:nth-of-type(1)|style|gap' );
+	assert.equal( issueKey( { pair: 'nav', kind: 'style', key: 'gap' } ), 'nav||style|gap' );
+} );
+
+const tmp = () => fs.mkdtempSync( path.join( os.tmpdir(), 'sweep-' ) );
+const run = ( root, surface, name, withReport = true ) => {
+	const d = path.join( root, surface, name );
+	fs.mkdirSync( d, { recursive: true } );
+	if ( withReport ) {
+		fs.writeFileSync( path.join( d, 'solve-report.json' ), '{}' );
+	}
+	return d;
+};
+
+test( 'R3: an incomplete newest run is reported stale, not served as current', () => {
+	const root = tmp();
+	run( root, 'header', '2026-10-06T01-37-03' );
+	run( root, 'header', '2026-10-06T09-48-10', false );
+	const { file, stale } = reportStatus( root, 'header' );
+	assert.ok( file.includes( '2026-10-06T01-37-03' ) );
+	assert.equal( stale.reason, 'incomplete-run' );
+	assert.equal( stale.newestRun, '2026-10-06T09-48-10' );
+	const out = aggregate( [ { surface: 'header', reportPath: file, report: report( {} ), stale } ] );
+	assert.equal( out.stale.header.reason, 'incomplete-run' );
+	assert.equal( out.total, 0 );
+} );
+
+test( 'R3: a report older than the sweep start is stale; a current one and an all-fresh sweep report nothing', () => {
+	const root = tmp();
+	const d = run( root, 'home', '2026-10-06T10-00-00' );
+	run( root, 'about', '2026-10-06T10-00-00' );
+	const old = new Date( Date.now() - 3600000 );
+	fs.utimesSync( path.join( d, 'solve-report.json' ), old, old );
+	assert.equal( reportStatus( root, 'home', Date.now() - 60000 ).stale.reason, 'predates-sweep' );
+	assert.equal( reportStatus( root, 'home' ).stale, null );
+	const start = Date.now() - 60000;
+	const statuses = [ 'about' ].map( ( s ) => ( { surface: s, ...reportStatus( root, s, start ) } ) );
+	assert.ok( statuses.every( ( s ) => null === s.stale && s.file ) );
+	const out = aggregate( statuses.map( ( s ) => ( { surface: s.surface, reportPath: s.file, report: report( {} ), stale: s.stale } ) ) );
+	assert.deepEqual( out.stale, {} );
+	assert.equal( reportStatus( root, 'missing' ).file, null );
+} );
+
+const side = ( states ) => ( { width: 375, states } );
+
+test( 'R4: a reveal-unfired finding and an unsettled state are caveats, not issues, and change no count', () => {
+	const f = { kind: 'reveal-unfired', tag: 'h1', id: '', cls: 'x', animation: 'fade', top: 10 };
+	const caveats = walkerCaveats( side( { closed: { findings: [ f ] }, scrolled: { unsettled: { settled: false } } } ) );
+	assert.deepEqual( caveats.map( ( c ) => [ c.kind, c.state, c.width ] ), [ [ 'reveal-unfired', 'closed', 375 ], [ 'unsettled', 'scrolled', 375 ] ] );
+	const rep = report( { missing: [ row() ] } );
+	const plain = aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep } ] );
+	const caveated = aggregate( [ { surface: 'a', reportPath: 'r.json', report: rep, caveats } ] );
+	assert.equal( caveated.caveated.a.length, 2 );
+	assert.equal( caveated.surfaces.a.issues, plain.surfaces.a.issues );
+	assert.equal( caveated.total, plain.total );
+	assert.deepEqual( caveated.byClass, plain.byClass );
+} );
+
+test( 'R4: a clean walker result produces no caveat and no caveated entry', () => {
+	assert.deepEqual( walkerCaveats( side( { closed: { snap: {} }, scrolled: { findings: [] } } ) ), [] );
+	assert.deepEqual( walkerCaveats( null ), [] );
+	const out = aggregate( [ { surface: 'a', reportPath: 'r.json', report: report( {} ), caveats: [] } ] );
+	assert.deepEqual( out.caveated, {} );
+} );
+
+test( 'R4: caveats are read from the draft caches beside a report', () => {
+	const root = tmp();
+	const d = run( root, 'home', '2026-10-06T10-00-00' );
+	const key = JSON.stringify( { config: 'home', width: 768 } );
+	fs.writeFileSync( path.join( d, 'draft-cache-768.json' ), JSON.stringify( { [ key ]: { states: { rest: { findings: [ { kind: 'reveal-unfired' } ] } } } } ) );
+	fs.writeFileSync( path.join( d, 'draft-cache-375.json' ), JSON.stringify( { [ key ]: { states: { rest: { snap: {} } } } } ) );
+	const got = readWalkerCaveats( path.join( d, 'solve-report.json' ) );
+	assert.equal( got.length, 1 );
+	assert.equal( got[ 0 ].width, 768 );
+	assert.deepEqual( readWalkerCaveats( path.join( run( root, 'about', 'x' ), 'solve-report.json' ) ), [] );
+} );
+
+// R3 and R4 are inert unless the sweep CLI calls them. lib/sweep.mjs can be perfect and the command still
+// print the same line it always did, because scripts/computed-route/sweep.mjs is a separate file. A unit test
+// on the library cannot see that, so the call sites are checked directly - the same gap that made H1's
+// viewport narrowing dead on arrival earlier in this plan.
+test( 'the sweep CLI calls reportStatus and readWalkerCaveats, so staleness and caveats are not dead code', async () => {
+	const fs = await import( 'node:fs' );
+	const url = await import( 'node:url' );
+	const cli = fs.readFileSync( url.fileURLToPath( new URL( '../sweep.mjs', import.meta.url ) ), 'utf8' );
+	assert.ok( cli.includes( 'reportStatus(' ), 'sweep.mjs must call reportStatus, else a stale report is served as current' );
+	assert.ok( cli.includes( 'readWalkerCaveats(' ), 'sweep.mjs must call readWalkerCaveats, else reveal-unfired reaches nobody' );
+	assert.ok( /stale/.test( cli ) && /caveat/i.test( cli ), 'sweep.mjs must print what it found; a caveat nobody sees is the state R4 was written to end' );
+	// --since must stay optional: Solve always writes before the sweep reads, so defaulting it to the
+	// aggregation's own clock would mark every surface stale.
+	assert.ok( ! /sweepStart\s*=\s*Date\.now\(\)/.test( cli ), 'the sweep start must never default to now' );
 } );
