@@ -198,8 +198,15 @@ is not presence). A setting whose `role` is `content` (84) **or `text-content` (
 records the element whose text it prints (`text: <path>`), and a link or URL setting the element it makes a link
 (`link: <path>`). **Both roles, 319 settings** (Bean, 2026-10-05): most of a register's words live in
 `text-content` (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`,
-`sgs/whatsapp-cta::cardTitle`), so reading `content` alone would leave them unreachable. Not built
-(2026-10-05): calibration records only computed-style changes, so `showDate`-type settings are in no list.
+`sgs/whatsapp-cta::cardTitle`), so reading `content` alone would leave them unreachable. **Built 2026-10-06**
+(`lib/calibrate-content.mjs`, Session C lane L7): the reads are planned by framework-database `role` and read in a
+second in-page pass, because `lib/db.mjs::attrsFor` carries `AND css_property IS NOT NULL` and so returns no content
+setting at all. The route calibrates SGS-owned blocks only (R-47-10), so the reads cover **258 text settings**
+(`text-content` 179 + `content` 79) and **14 link** (`link-href` 12 + `link-content` 2); 319 and 39 are the
+all-source totals, the remainder being `native_wp` rows on core blocks. Presence is decided from element existence
+and display alone, so a style change cannot register as presence. 28 text settings take no marker, because an
+`array` or `object` setting holds many values at once and no single marker string can locate one element: they are
+listed in `noMarker`.
 
 **Where and how it renders:**
 - Each site has one calibration page, created once with `wp-build-page.js --create page --title "CR calibration"
@@ -260,8 +267,13 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
    - A `presence` row (an element on one side only) resolves through a setting whose calibrated `presence` shows or
      hides that element, or a variant value that does; a `text` row through a `content` setting whose calibrated `text`
      path is that element (the draft's words are written; R-47-4 still holds for style values); a link-coverage row
-     (§3.6 item 4) through a setting whose calibrated `link` is that element. One resolver (R-47-3). Not built
-     (2026-10-05): Solve writes style, hover and box rows only.
+     (§3.6 item 4) through a setting whose calibrated `link` is that element. One resolver (R-47-3). **Built
+     2026-10-06** (`lib/solve-rows.mjs::resolveContent`, Session C lane L8). The walker stamps no `ref`, `path` or
+     `block` on a content row (`ref-trace.mjs::stampRefs` covers style, hover, box, tag, active and lines only), so
+     the node comes from the pair's live trace (`::contentTarget`). A presence row for an element missing from the
+     live page can therefore not be written at all: no live element means no trace and no node, which needs a `ref`
+     in the pair config and `stampRefs` extended. A `link-missing` row cannot be written either, because
+     `auto-collect.mjs` records `lk: true` for a linked word rather than its href.
    - Rows of other kinds are reported, never written.
    - A row a divergence-ledger entry covers targets the entry's decided value, not the draft's, at that width and at
      every width the entry covers (`lib/solve-rows.mjs::draftValues` reads the row's `decided`, §3.5).
@@ -285,8 +297,14 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
 - **Handover:** a text, presence or link row that no block setting could hold because the content lives outside the
   tree (a Site Info value, product data, WooCommerce or core text, a page the draft links to but never shows), and
   behaviour the walker cannot drive (FR-47-7). Each is listed in `solve-report.json` `handover` with its evidence row and
-  owner (`site-info`, `product-data`, `content-page`, `behaviour`), so a follow-up agent can act on it. A row a block
-  could reasonably hold, but has no setting for, is Missing setting (framework), not handover. Not built (2026-10-05).
+  owner, so a follow-up agent can act on it. A row a block could reasonably hold, but has no setting for, is Missing
+  setting (framework), not handover. **Built 2026-10-06** (`lib/solve-rows.mjs::handoverOf`, Session C lane L8).
+  There are **five** owners, defined once in `lib/issue-classes.mjs::HANDOVER_OWNERS` and shared with Fill:
+  `site-info`, `product-data`, `content-page`, `behaviour` and **`woocommerce-text`**, the fifth because WooCommerce's
+  own strings are edited somewhere else entirely from a content page. Solve discovers a handover from a measured
+  walker row (`{ owner, row, widths, reason }`); Fill carries one its skeleton declared before any measurement exists
+  (`{ owner, kind, node, block, slot, evidence, reason }`). Both satisfy this section's requirement of an owner and an
+  evidence row.
 
 **Output:** the updated tree, `solve-report.md` (counts per class, every write with its before and after values,
 every token snap) and `solve-report.json`.
@@ -472,8 +490,8 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `lib/normalise.mjs` | Value normalisation and token snapping from `theme-snapshot.json`, with the snap log |
 | `lib/tree.mjs` | Read, write and merge trees; ref classes (`stripRefs` for a final build); per-tier values; R-47-11 target checks |
 | `lib/ledger.mjs`, `ledger.mjs` | Ledger library (`RULES`, match, stale) and command (`accept`, `stale`) |
-| `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit (not built; Fill needs it) |
-| `solve.mjs`, `fill.mjs` | The two commands (`fill.mjs` not built) |
+| `lib/draft.mjs` | Serves a local draft folder on 127.0.0.1 at an ephemeral port, shut down at exit |
+| `solve.mjs`, `fill.mjs` | The two commands, with Fill's twelve `lib/fill-*.mjs` modules (skeleton, read, prop, resolve, spacing, values, presence, handover, page, entrance, config, report) |
 | `lib/solve-rows.mjs`, `lib/solve-report.mjs` | Solve's reading of a walker report (open rows, writable groups, draft values, regressions, classification) and its report |
 | `sweep.mjs`, `lib/sweep.mjs` | Every surface's newest Solve report as one row per distinct open issue (`qa/sweep/<date>/sweep.json`) |
 | `triage.mjs`, `lib/triage.mjs`, `lib/triage-source.mjs` | A candidate class (W, F, T, U) with evidence per open issue, including the `includes/` helpers a block's render reaches |
@@ -632,10 +650,16 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
      - Calibration: every block was re-calibrated on 2026-10-05 (94 cache files, on the local WSL mirrors). CR17's
        business-info `textBefore` element remains.
-     - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting): the
-       hours day weight closed through a dedicated label setting; calibration still records nothing for an overriding
-       child. 38 rows came out Missing setting where the evidence says Hardcode. Session C lane L7 records the
-       overriding child.
+     - Gap typing (a setting that paints a parent while a rule on a child overrides it comes out Missing setting):
+       the hours day weight closed through a dedicated label setting, and **calibration now records the overriding
+       child** (`lib/calibrate.mjs::overridingChildren`, built 2026-10-06, Session C lane L7) as
+       `settings[<attr>].overriddenBy`. It is derived from an absence rather than a new measurement: `reaches` holds
+       every descendant an inherited marker changed, so a descendant read for the property and absent from `reaches`
+       carries its own rule. Only the topmost element of each blocked subtree is named, because everything below it
+       inherits that element's rule; a descendant already at the marker's value and a pseudo-element layer are
+       excluded, since their absence proves nothing. Emitted for inherited properties only. **The 38 rows are not yet
+       re-typed:** that needs a calibration run per affected block and then a Solve run, so the mechanical bound is
+       that only a setting painting an inherited property can be re-typed at all.
      - **The divergence ledger cannot scope a decision to one element path** (found 2026-10-05, Session C C0.3).
        `lib/ledger.mjs::match` matches on node, state, pseudo, property and width, with **no path discriminator**, so
        a node holding several rows of the same property and state cannot have one of them accepted on its own. It
@@ -645,15 +669,16 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        the row it would close is already decided by register S1, so C2 closes that one by citation.
      - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
        writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
-       settings: not built. The framework database already marks the settings (`role` `boolean-visibility` 600,
+       settings: **all built 2026-10-06** (Session C lanes L7, L8 and L9). The framework database already marks the
+       settings (`role` `boolean-visibility` 600,
        `presence-boolean` 3, `content` 84, `text-content` 235; counted 2026-10-05). §3.2 scopes the text read to
        `role` `content` alone, which would miss the 235 `text-content` rows that hold most of this register's words
        (`sgs/product-card::noReviewsText`, `::brandName`, `sgs/buybox::stockInStockLabel`, `sgs/whatsapp-cta::cardTitle`):
-       §6's question is **answered: read both roles, 319 settings** (Bean, 2026-10-05), and §3.2 carries it. §3.3's `handover` owners are
-       `site-info`, `product-data`, `content-page` and `behaviour`; a fifth, `woocommerce-text`, is used by one
-       register item below and is recommended as an owner in its own right. Session C lanes L7 and L8 build all
-       of this. The sweep (`lib/sweep.mjs`) keeps style, hover and box rows only, so
-       text and presence rows reach no register check until it carries them.
+       §6's question is **answered: read both roles** (Bean, 2026-10-05), and §3.2 carries it — scoped to the
+       SGS-owned rows the route calibrates, which is **258 text** and **14 link**, the 319 and 39 being all-source
+       totals. §3.3's `handover` owners are now **five**, `woocommerce-text` included, defined once in
+       `lib/issue-classes.mjs::HANDOVER_OWNERS` and shared by Solve and Fill. The sweep (`lib/sweep.mjs`) carries
+       text and presence rows as of sitting i, so they reach the register check.
      - Residual from the measure-gap tags (Session B, 2026-10-05; the table is Appendix A of
        `plans/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
        Of the 78 register items the walker could not fully see: **8 `content-fixable`** (a setting holds the value and only
@@ -686,9 +711,20 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        with different draft values; they are named in `scripts/parity/flows/state-map-reasons.json`, and the guard that
        must refuse such a group belongs to `lib/solve-rows.mjs`.
 4. **Fill on an unbuilt surface,** compared with a hand-checked answer. All 17 Eye Care surfaces are built, so
-   Session C lane L9 proves `fill.mjs` and `lib/draft.mjs` against a built surface with its committed tree
-   withheld as the hand-checked answer. The unbuilt-surface demonstration carries forward to the first client
-   that has one.
+   **Session C lane L9 proved `fill.mjs`, `lib/draft.mjs` and twelve `lib/fill-*.mjs` modules (2026-10-06) against a
+   built surface with its committed tree withheld** as the hand-checked answer. On `about`: **217 of 319 style leaves
+   exact (68%), about 87% paint-equivalent**, 106 settings written, 38 UNMAPPED, 28 breakpoint steps logged, and
+   content 32 of 32 words and links identical. Entrance timing is exact on all seven animated nodes (500, 600, 700,
+   800, 850, 900 and 800ms, 18px distance) and found an eighth the committed tree lacks. The non-gap differences are
+   benign and named: 90 box seeds writing `0px` on unmeasured sides, 7 unit or token ties that paint identically, 13
+   explicit keys equal to Fill's own baseline, and 51 leaves where the key puts a margin on a child while Fill puts
+   one equal gap on the parent, which is §3.4 step 3 behaving as specified. **The 43 real gaps are all in the UNMAPPED
+   list**: `layout` (11, `display` is ambiguous across `sgsHideOnDesktop`/`Mobile`/`Tablet` so it is never written),
+   `variant` (20, unrecoverable until calibration's presence keys exist on real blocks) and border colour (12, no
+   `borderColour` setting is tied). Two findings: **no calibration `forms` list contains `clamp` anywhere in the
+   cache**, so every fluid size is written per tier and the clamp path is unreachable on real data; and
+   `lib/entrance.mjs` is not a sampler but Solve's `entranceStart`, so Fill has its own probe. The unbuilt-surface
+   demonstration carries forward to the first client that has one.
 5. **A second draft** from a different designer, to test generality. **Blocked: no second draft exists.** This is
    the only item in this spec Session C does not build, and no route work unblocks it.
 6. **Handover to Spec 31.** Spec 31 decides, under its own plan, whether `sc_var_responsive_bridge.py` is still needed

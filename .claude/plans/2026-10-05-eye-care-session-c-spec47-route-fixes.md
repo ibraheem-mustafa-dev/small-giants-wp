@@ -646,6 +646,103 @@ FAIL: the identity breaks and a delta cannot be explained
 TYPE: auto-gate, then a main-thread read of every diff
 ```
 
+### Gate 2 PASSED, 2026-10-06. All three Wave 2 lanes merged.
+
+Measured in the main checkout after each merge, with the identical command over all 17 surfaces, not taken from any
+lane's report.
+
+| Stage | W | F | T | U | total | ambiguous |
+|---|---|---|---|---|---|---|
+| Gate 1, as recorded | 1764 | 177 | 445 | 28 | 2414 | 43 |
+| Reproduced here before Wave 2 | 1764 | **177** | 445 | 28 | 2414 | 43 |
+| After L7 and L8 | 1764 | **177** | 445 | 28 | 2414 | 43 |
+| After C3.1's reseed | 1765 | **176** | 445 | 28 | 2414 | 43 |
+| After L9 — **Gate 2** | 1765 | **176** | 445 | 28 | 2414 | 43 |
+
+**Gate 1's figures reproduced exactly from a fresh run before any Wave 2 work**, which is the second independent
+confirmation the QC council asked for: its finding was that the headline was protected only by a hand re-run.
+
+**The whole of Wave 2 moved exactly one row**: F 177 to 176, W 1764 to 1765, which is C3.1's two routed `sgs/hero`
+rows taking effect at the reseed. Nothing else moved, and that is the correct result for three lanes that rebuilt
+read and write machinery **without regenerating a single calibration cache**. The sweep-to-triage identity holds on
+every surface at every stage, and `ambiguous` never rose above 43.
+
+**The canvas roster is now asserted explicitly, both halves.** The council's main structural finding was that
+`triage.mjs::runTriage`'s manifest read had no test, so forcing `canvas: false` left the suite green while measured
+F doubled.
+
+- **Unit half:** `tests/triage-manifest.test.mjs` (lane L8) fails if the manifest flag stops reaching the triage
+  context, built on a throwaway client folder so it is hermetic and client-name-free.
+- **Measured half:** triage was re-run against a control client that junctions the real report directory but carries
+  a manifest with all 12 `canvas` flags stripped. **F 176 to 338, W 1765 to 1603, total unchanged at 2414**, a delta
+  of exactly the **161** rows Gate 1 recorded, landing exactly on the raw 338 baseline. Per surface, every row that
+  moved is on a canvas, and **the five ordinary pages did not move at all** (about 0, contact 1, help 36, home 58,
+  lenses 0). The canvas-only guarantee is therefore re-measured, not inherited.
+
+**Gates after the final merge:** `node --test` **523 of 523** (322 at Gate 1, plus 35 L7, 35 L8 and 131 L9), run
+twice clean; `lint.mjs --surfaces` green including the R-47-1 export index, with all 28 of L9's new files and every
+export indexed by the main thread; `check-no-client-names.py` PASS; `db-consistency/run.py --check` **0 violations**;
+`enumSettings` exactly 633; `calibration.discovered` untouched at 623 entries across 94 blocks.
+
+#### The canvas hop earned its fair trial and still produced no write
+
+L8.9 fixed the omission the main thread found before dispatch: `lib/triage.mjs::resolveIssue` built a per-ancestor
+`measured` array and called the hop without `measuredSlots`, so `reachedDescendants( attr, ancestor, undefined )`
+returned `[]` and the `1 === reach.length` write guard could never be true. **The council's "the hop has never
+produced a write" was therefore a symptom of a one-line omission, not evidence the hop was redundant**, and it could
+not honestly be deleted on that basis.
+
+With the input supplied, `resolveIssue` was re-run over all 2,414 issues: the hop is called **1,583 times and returns
+0 writes**. 799 calls find nothing declaring the property, 776 cite an ancestor that declares it while calibration
+proves no reach, 8 reach exactly one descendant, 2 are the context channel. Of the 8 that passed the write guard, 5
+are **correct** refusals by the inner resolver (`background-color: none` three times, `letter-spacing: normal`, and a
+`color` differing by width) and the rest resolve to no setting. The structural reason: `writeRound`'s owners retry
+already builds the same inputs as the hop's inner `resolve`, so the hop can only add a write where the block's own
+attempt failed with a gap other than `no-setting` or `unmapped-element`.
+
+**So deleting the hop would not have changed any of the 2,414 verdicts.** Under `prove-the-cause-before-fix.md` that
+is the overlapping fix neither half of which can be removed, and the recommendation at Gate 3 is to **delete it**.
+The one cost is that 295 rows lose a `where: 'ancestor'` evidence field; `lib/triage.mjs::canvasSettable` is a
+superset and already produces every one of the 161 reclassifications.
+
+#### Decisions the main thread took on merge, each verified before taking it
+
+| Decision | Why, and the proof |
+|---|---|
+| `HANDOVER_OWNERS` moved to `lib/issue-classes.mjs` | Lanes L8 and L9 had each declared a byte-identical five-element list, and two copies drift. It now lives once in the shared vocabulary module both already imported. The two entry **shapes** stay different on purpose: Solve discovers a handover from a measured walker row, Fill carries one its skeleton declared before any measurement exists, and 3.3 requires only an owner and an evidence row |
+| `state-conflict` added to triage's blocked-gap list | L8's new guard made Solve refuse those groups while triage would still have classed them T, the two engines disagreeing again, which is what L8.7 existed to fix. Proven to move nothing here: a measure-only run breaks out of `solveLoop` **before** any write round and emits no gaps at all, and a fresh 17-surface triage returns **0** `resolver-blocked` verdicts either way |
+| L9's `evidence` field **not** renamed to L8's `row` | 37 usages across 8 files, and `evidence` matches Spec 47 3.3's own wording. Renaming at merge time would have been risk for no gain, so the divergence is recorded instead |
+
+#### Corrections to figures this plan carried
+
+- **The text and link role counts were all-source totals.** Bean's decision to read **both** halves of each role pair
+  is honoured and asserted by test, but the route calibrates SGS-owned blocks only (`lib/db.mjs::attrsFor`, R-47-10),
+  so the reads cover **258 text** settings (`text-content` 179 plus `content` 79), not 319, and **14 link**
+  (`link-href` 12 plus `link-content` 2), not 39. The remainder are `native_wp` rows on core blocks
+  (`core/button::url`, `core/image::href`). Whether core blocks should be calibrated is a deliberate R-47-10 change
+  and is **not** taken here.
+- **The `transition,*` routing precedent is 4 blocks, not 12.** `sgs/brand-strip`, `sgs/card-grid`, `sgs/info-box`
+  and `sgs/testimonial` carry the pair with `css_element` NULL; `sgs/cta-section` carries it on `btn`. Five blocks
+  and ten rows in total.
+- **`paintKey` and `slotKey` are read by nothing.** They are written into all 94 cache files, and a grep for them
+  over `scripts/` hits only `calibrate.mjs` itself. Cache invalidation therefore rests entirely on `--recalibrate`.
+  The blast radius is small, because `defaultPaint` strips every inherited property and only
+  `lib/resolve.mjs::seedSides` reads the values, so a stale default paint can mis-seed only the unmeasured sides of a
+  box setting (lane L7.5).
+- **`--stage 1 --dry-run` is not a trustworthy change preview.** It reported `new_attrs: 14`; the real run inserted
+  **0**. Only its `updated_attrs: 4` matched reality.
+- **C3.1 is not inert before the reseed, and splitting C3.1 from C3.2 blocks every session's deploys.** An override
+  the database does not match is a reseed-survival violation: `db-consistency` Check #8 fails, that suite has no
+  baseline and no accepted-violation mode, and `build-deploy.py` runs it in its fast tier. A peer session hit it
+  within minutes of C3.1 landing. **C3.1 and C3.2 run together.**
+
+#### Two load-sensitive tests, so a future session does not chase them
+
+`tree.test.mjs`'s `assertQuiet` case and `tests/fill-entrance.test.mjs`'s browser-backed case both go red while a
+deploy or reseed is running on this machine. Both were seen red here and both were proven environmental: the first
+named this session's own reseed, and then a peer's `build-deploy.py --target sandybrown`, in its own message; the
+second passed alone and in two consecutive clean full-suite runs. **A red there means the machine is busy.**
+
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
 That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no
@@ -695,7 +792,13 @@ and it needs coordinating rather than racing — the helper change and the `seed
 together, or every box write is wrong in one direction or the other.
 
 1. **C3.6 measures eye-care-test at `7f375f765`** — the code live there now. This is the count Session C exists to produce, and it is only attributable to the route while that code is unchanged.
-2. **Then deploy `a62ae6fdb`** to eye-care-test (block and theme code only; no trees, no snapshot, no ledger entries).
+2. **Then deploy HEAD** to eye-care-test (block and theme code only; no trees, no snapshot, no ledger entries).
+   ⚠️ Corrected 2026-10-06: the target is **HEAD**, not `a62ae6fdb` and not `75364c71a`. The block and theme delta
+   between what eye-care-test runs (`7f375f765`) and HEAD is **31 files across 13 blocks** — `brand-strip`,
+   `breadcrumbs`, `business-info`, `button`, `buybox`, `cart`, `heading`, `hero`, `nav-drawer`, `option-picker`,
+   `product-card`, `site-footer`, `tabs` — plus `theme/sgs-theme/theme.json` (S12's `:focus` → `:focus-visible`
+   line). That range is sitting i's register work as well as the parallel track's, so no single earlier hash
+   describes it.
 3. **Then read one Eye Care button's computed `transitionDuration`** and record it against register S1. sandybrown sets no `buttonPresets.default.hover-transition`, so its buttons fell to the stylesheet's 0.18s fallback and S1 could not be proven end to end there; eye-care-test sets 0.25s, so this deploy is what proves it. The register row already states that limit, so an unread measurement leaves no false claim — but taking it closes the last gap in that track's evidence.
 
 **Three findings from its verification, each of which would otherwise arrive as fresh work:**
