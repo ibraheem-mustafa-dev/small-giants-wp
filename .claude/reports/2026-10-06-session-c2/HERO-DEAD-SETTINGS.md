@@ -110,14 +110,37 @@ Three load-bearing claims were re-checked against the code. **Two confirmed, one
 built. So "dead" is a statement about the fixture, not a verdict on the block, and the report's framing is
 right.
 
-**CONFIRMED, and stronger than the report says — the tier background images are a SYSTEMIC pattern, not an
-undetermined loose end.** `backgroundImageTablet` and `backgroundImageMobile` are dead on **exactly 7
-blocks, both settings on every one**: `container` (14 dead), `cta-section` (15), `hero` (34),
-`multi-button` (8), `physics-canvas` (7), `site-footer` (9), `trust-bar` (20). Every one is wrapper-based.
-That is 14 dead entries from one mechanism across 7 blocks, which puts it over
-`.claude/THE-MIGRATION-METHOD.md`'s "more than 3 files getting the same change — build the detector first"
-threshold. **It should be the first of the four experiments run, not the last**, because it is the only one
-whose answer generalises beyond hero.
+**WITHDRAWN — the tier background images are NOT a systemic defect. This QC's first version said they
+were, and that was wrong** (Bean challenged it, 2026-10-06; the challenge was right).
+
+The counts are real: `backgroundImageTablet` and `backgroundImageMobile` are dead on `container` (14 dead
+overall), `cta-section` (15), `hero` (34), `multi-button` (8), `physics-canvas` (7), `site-footer` (9) and
+`trust-bar` (20). What was wrong was the inference.
+
+**The spread is the shared panel's scope, not 7 independent defects.** Both settings come from the shared
+background panel — `src/components/SurfaceTreatmentPanel.js` and
+`src/blocks/container/components/BackgroundPanel.js`, emitted through
+`includes/class-sgs-container-wrapper.php`. **Nine** blocks declare them, which is why the dead rows cluster
+on wrapper-based blocks: that is the set of blocks the helper reaches. Counting 7 blocks with one symptom
+and reading it as one defect mistook a shared declaration for a shared failure.
+
+**And they are not inherently dead: `sgs/site-header` calibrates BOTH of them successfully**, holding them
+in `settings` rather than `dead`. Whatever stops them resolving elsewhere, it is not that the setting cannot
+paint.
+
+**The obvious follow-up explanation also fails.** "A tier override needs a base image first" does not hold:
+on `hero`, `container` and `trust-bar` the base `backgroundImage` **RESOLVES** while only the two tier
+settings die. Only `cta-section` has all three dead.
+
+⚠️ **And site-header's success should not be leaned on without a check of its own.** Its tier settings
+resolve to `slot: "@controls:2"` with a `slots` list of `@controls:N` entries and `@controls > .sgs-mega-panel`
+variants — which does not read like a painted DOM element. That resolution may itself be spurious, in which
+case the honest count is zero blocks where these settings demonstrably paint.
+
+**Mechanism: UNDETERMINED.** Not systemic, not partner-gated on the base image, not over any detector
+threshold, and not the experiment to run first. The decisive experiment is now narrower: calibrate
+`sgs/site-header` and one dead block at HEAD and compare how each resolves `backgroundImageTablet`,
+establishing first whether site-header's `@controls:2` slot corresponds to a real painted element.
 
 **DISPROVEN — `maxWidth` is not defeated by `section.sgs-hero`.** The report has it that
 `section.sgs-hero { max-width: none }` outranks "the wrapper's `.uid{max-width}`". The arithmetic does not
