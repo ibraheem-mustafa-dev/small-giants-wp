@@ -109,6 +109,8 @@
 		"sgs/accordionHeaderColourOpen",
 		"sgs/accordionHeaderBackgroundOpen",
 		"sgs/accordionHeaderPadding",
+		"sgs/accordionHeaderGap",
+		"sgs/accordionHeaderMinHeight",
 		"sgs/accordionContentPadding",
 		"sgs/accordionIconSize",
 		"sgs/accordionIconRotation"

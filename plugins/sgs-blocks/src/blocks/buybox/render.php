@@ -835,6 +835,14 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	if ( '' !== $sgs_bb_picker_label_colour ) {
 		$scoped_css[] = $root_sel . ' .sgs-buybox__picker-label-text{color:' . $sgs_bb_picker_label_colour . ';}';
 	}
+	// The chosen-value element beside that label. style.css gives it a muted
+	// colour and nothing else, so without this it inherits the buybox's own font
+	// size. Own-render path only — the element does not exist on the forwarding
+	// path, so unlike pickerLabel there is no option-picker attribute to relay to.
+	$sgs_bb_picker_value_typo_css = sgs_typography_css_rule( $attributes, 'pickerValue', $root_sel . ' .sgs-buybox__picker-selected-value' );
+	if ( '' !== $sgs_bb_picker_value_typo_css ) {
+		$scoped_css[] = $sgs_bb_picker_value_typo_css;
+	}
 }
 
 // Optional hairline between the price row and an above-pickers

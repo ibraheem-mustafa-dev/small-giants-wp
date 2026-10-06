@@ -276,10 +276,11 @@
    one axis) is on — replaces sgs/option-picker's own (now sr-only) legend, so
    no double label. Font size/letter-spacing/transform/colour for
    '.sgs-buybox__picker-label-text' are emitted by render.php's own scoped
-   <style> (pickerLabel* attributes); this file only lays the row out and
-   styles the value/link, which are NOT client-configurable (no typography
-   attributes were asked for either — the muted value colour and the link's
-   look both read the theme's own tokens). */
+   <style> (pickerLabel* attributes), and the chosen value's font size and line
+   height likewise (pickerValue* attributes). This file lays the row out, gives
+   the value its muted resting colour and styles the link; the value's colour
+   and the link's whole look read the theme's own tokens and have no attribute
+   of their own. */
 .sgs-buybox .sgs-buybox__picker-label-row {
 	display: flex;
 	align-items: baseline;

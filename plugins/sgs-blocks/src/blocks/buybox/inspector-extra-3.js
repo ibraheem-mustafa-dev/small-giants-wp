@@ -119,6 +119,27 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 						},
 					] }
 				/>
+				{ /* The chosen value's own size and line height. A separate prefix
+				     from pickerLabel because this element exists only on the
+				     own-render path and forwards to nothing — see render.php's
+				     "chosen-value element" comment. */ }
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'pickerValue',
+							label: __( 'Chosen value', 'sgs-blocks' ),
+							prefix: 'pickerValue',
+							showFontFamily: false,
+							showWeight: false,
+							showStyle: false,
+							showLineHeight: true,
+							showLetterSpacing: false,
+							showTransform: false,
+						},
+					] }
+				/>
 				<ToggleControl
 					label={ __(
 						'Show the chosen value beside the label',

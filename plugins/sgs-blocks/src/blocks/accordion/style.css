@@ -32,10 +32,11 @@
 /* ─── HEADER ─── */
 
 /*
- * Padding and font-size are not fixed values here: the header reads the
- * headerPadding setting through --sgs-accordion-header-pad (falling back to
- * the per-variant base below) and inherits font-size from the accordion's own
- * typography setting, so every device follows the editor.
+ * Nothing on the header is a fixed value: it reads headerPadding through
+ * --sgs-accordion-header-pad (falling back to the per-variant base below),
+ * headerGap through --sgs-accordion-header-gap, headerMinHeight through
+ * --sgs-accordion-header-min-h, and inherits font-size and line-height from
+ * the accordion's own typography setting, so every device follows the editor.
  */
 .sgs-accordion-item {
 	--sgs-accordion-header-pad-base: 16px 20px;
@@ -50,10 +51,11 @@
 .sgs-accordion-item__header {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: var(--sgs-accordion-header-gap, 12px);
 	padding: var(--sgs-accordion-header-pad, var(--sgs-accordion-header-pad-base));
-	line-height: 1.4;
-	min-height: 44px; /* touch target */
+	/* 44px is the default, not a floor: it meets the touch target for every
+	 * client that sets nothing, and headerMinHeight can take it elsewhere. */
+	min-height: var(--sgs-accordion-header-min-h, 44px);
 	background-color: var(--wp--preset--color--surface, #ffffff);
 }
 

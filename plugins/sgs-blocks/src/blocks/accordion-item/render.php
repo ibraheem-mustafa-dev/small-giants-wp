@@ -52,6 +52,8 @@ $header_col_open          = $block->context['sgs/accordionHeaderColourOpen'] ?? 
 $header_bg_open           = $block->context['sgs/accordionHeaderBackgroundOpen'] ?? '';
 $icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
 $header_padding_raw       = $block->context['sgs/accordionHeaderPadding'] ?? array();
+$header_gap_raw           = $block->context['sgs/accordionHeaderGap'] ?? array();
+$header_min_height_raw    = $block->context['sgs/accordionHeaderMinHeight'] ?? array();
 $content_padding_raw      = $block->context['sgs/accordionContentPadding'] ?? array();
 $icon_size_raw            = $block->context['sgs/accordionIconSize'] ?? array();
 $icon_rotation            = max( 0.0, min( 360.0, (float) ( $block->context['sgs/accordionIconRotation'] ?? 0 ) ) );
@@ -170,9 +172,10 @@ if ( $header_open_decls ) {
 	$responsive_css .= $header_open_sel . '{' . implode( ';', $header_open_decls ) . '}';
 }
 
-// Slot padding and icon size/rotation — per-device custom properties on the
-// item root; style.css reads each with its own default as the var() fallback,
-// so an empty setting leaves the stylesheet's values in force.
+// Slot padding, header gap, header minimum height and icon size/rotation —
+// per-device custom properties on the item root; style.css reads each with its
+// own default as the var() fallback, so an empty setting leaves the
+// stylesheet's values in force.
 $sgs_ai_var_tiers = array(
 	'desktop' => '',
 	'tablet'  => '@media(max-width:1023px)',
@@ -196,15 +199,28 @@ $sgs_ai_box_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_
 };
 $responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad' );
 $responsive_css .= $sgs_ai_box_tiers( $content_padding_raw, '--sgs-accordion-content-pad' );
-$icon_size_tiers = sgs_responsive_normalise_object( $icon_size_raw );
-foreach ( $sgs_ai_var_tiers as $tier => $media ) {
-	$size = $icon_size_tiers[ $tier ] ?? null;
-	if ( ! is_numeric( $size ) || (float) $size <= 0 ) {
-		continue;
+$sgs_ai_px_tiers = static function ( $raw, string $var, bool $allow_zero = false ) use ( $root_sel, $sgs_ai_var_tiers ): string {
+	$tiers = sgs_responsive_normalise_object( $raw );
+	$out   = '';
+	foreach ( $sgs_ai_var_tiers as $tier => $media ) {
+		$val = $tiers[ $tier ] ?? null;
+		if ( ! is_numeric( $val ) ) {
+			continue;
+		}
+		$val = (float) $val;
+		if ( $val < 0 || ( ! $allow_zero && 0.0 === $val ) ) {
+			continue;
+		}
+		$rule = $root_sel . '{' . $var . ':' . $val . 'px;}';
+		$out .= '' === $media ? $rule : $media . '{' . $rule . '}';
 	}
-	$rule             = $root_sel . '{--sgs-accordion-icon-size:' . (float) $size . 'px;}';
-	$responsive_css .= '' === $media ? $rule : $media . '{' . $rule . '}';
-}
+	return $out;
+};
+$responsive_css .= $sgs_ai_px_tiers( $icon_size_raw, '--sgs-accordion-icon-size' );
+// Gap and minimum height accept 0: no gap between title and icon, and no
+// height floor, are both legitimate client choices. A 0px icon never is.
+$responsive_css .= $sgs_ai_px_tiers( $header_gap_raw, '--sgs-accordion-header-gap', true );
+$responsive_css .= $sgs_ai_px_tiers( $header_min_height_raw, '--sgs-accordion-header-min-h', true );
 if ( $icon_rotation > 0 ) {
 	$responsive_css .= $root_sel . '{--sgs-accordion-icon-rotate:' . $icon_rotation . 'deg;}';
 }

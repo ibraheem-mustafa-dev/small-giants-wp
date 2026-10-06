@@ -383,6 +383,45 @@ export default function Edit({ attributes, setAttributes, clientId }) {
           </ResponsiveOverride>
           <hr style={ { margin: "16px 0" } } />
           <ResponsiveOverride
+            value={ attributes.headerGap }
+            onChange={ ( obj ) => setAttributes( { headerGap: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <RangeControl
+                label={ __( "Header gap (px)", "sgs-blocks" ) }
+                help={ __( "Space between the question and the toggle icon. Empty keeps 12px.", "sgs-blocks" ) }
+                value={ typeof ownValue === "number" ? ownValue : undefined }
+                onChange={ ( val ) => setOwnValue( val ) }
+                min={ 0 }
+                max={ 64 }
+                step={ 1 }
+                allowReset
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
+              />
+            ) }
+          </ResponsiveOverride>
+          <ResponsiveOverride
+            value={ attributes.headerMinHeight }
+            onChange={ ( obj ) => setAttributes( { headerMinHeight: obj } ) }
+          >
+            { ( { ownValue, setOwnValue } ) => (
+              <RangeControl
+                label={ __( "Header minimum height (px)", "sgs-blocks" ) }
+                help={ __( "Empty keeps 44px, the recommended touch-target size.", "sgs-blocks" ) }
+                value={ typeof ownValue === "number" ? ownValue : undefined }
+                onChange={ ( val ) => setOwnValue( val ) }
+                min={ 0 }
+                max={ 120 }
+                step={ 1 }
+                allowReset
+                __nextHasNoMarginBottom
+                __next40pxDefaultSize
+              />
+            ) }
+          </ResponsiveOverride>
+          <hr style={ { margin: "16px 0" } } />
+          <ResponsiveOverride
             value={ attributes.iconSize }
             onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
           >

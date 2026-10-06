@@ -531,6 +531,25 @@
 			"default": "",
 			"description": "Text colour for each axis picker's label. Same forward-or-own-render split as pickerLabelFontSize."
 		},
+		"pickerValueFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the chosen value shown beside each axis picker's label (e.g. \"Ivory\"). Own-render path only — this element exists only when pickerShowSelectedValue or pickerLabelLinkAxis replaces sgs/option-picker's legend, so there is nothing to forward. Empty = inherited from the buybox."
+		},
+		"pickerValueFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerValueLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Line height for the chosen value element. Unitless ratio, same shape as every other TypographyControls-driven prefix."
+		},
+		"pickerValueLineHeightUnit": {
+			"type": "string",
+			"default": "",
+			"description": "Companion unit for pickerValueLineHeight. Empty = unitless (the TypographyControls convention — a unitless ratio recomputes correctly against nested text, unlike a fixed em/px line-height)."
+		},
 		"pickerShowSelectedValue": {
 			"type": "boolean",
 			"default": false,

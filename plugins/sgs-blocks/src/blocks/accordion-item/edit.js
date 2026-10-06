@@ -90,14 +90,34 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const wrapper = itemWrapperPreview( attributes, tier, colourPalette );
 	const head = headerPreview( context, colourPalette, editorOpen );
 	const iconGradientId = `${ clientId }-icon-gradient`;
-	const iconSizes = context[ 'sgs/accordionIconSize' ] || {};
-	const iconSizeTier = [ tier, 'tablet', 'desktop' ]
-		.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
-		.map( ( t ) => iconSizes[ t ] )
-		.find( ( v ) => typeof v === 'number' && v > 0 );
+	// Mirrors render.php's $sgs_ai_px_tiers closure: the narrowest tier holding a
+	// value wins and falls back outwards, which is what the emitted media queries
+	// do on the front end. allowZero matches that closure's own flag — 0 is a real
+	// choice for a gap or a height floor, never for an icon size.
+	const pxTier = ( obj, allowZero ) =>
+		[ tier, 'tablet', 'desktop' ]
+			.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
+			.map( ( t ) => ( obj || {} )[ t ] )
+			.find(
+				( v ) =>
+					typeof v === 'number' && ( allowZero ? v >= 0 : v > 0 )
+			);
+	const iconSizeTier = pxTier( context[ 'sgs/accordionIconSize' ], false );
+	const headerGapTier = pxTier( context[ 'sgs/accordionHeaderGap' ], true );
+	const headerMinHeightTier = pxTier(
+		context[ 'sgs/accordionHeaderMinHeight' ],
+		true
+	);
 	const slotVars = {
 		'--sgs-accordion-header-pad': tierBoxShorthand( context[ 'sgs/accordionHeaderPadding' ], tier ),
 		'--sgs-accordion-content-pad': tierBoxShorthand( context[ 'sgs/accordionContentPadding' ], tier ),
+		// typeof, not truthiness: a gap or height floor of 0 must still emit.
+		'--sgs-accordion-header-gap':
+			typeof headerGapTier === 'number' ? `${ headerGapTier }px` : undefined,
+		'--sgs-accordion-header-min-h':
+			typeof headerMinHeightTier === 'number'
+				? `${ headerMinHeightTier }px`
+				: undefined,
 		'--sgs-accordion-icon-size': iconSizeTier ? `${ iconSizeTier }px` : undefined,
 		'--sgs-accordion-icon-rotate': iconRotation > 0 ? `${ iconRotation }deg` : undefined,
 	};

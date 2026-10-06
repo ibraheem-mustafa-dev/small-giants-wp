@@ -105,13 +105,13 @@
 }
 
 /*
- * Hover: text shifts to `text` (not text-muted) AND underline appears.
- * The underline is a non-colour signal required by WCAG 1.4.1 (FIX #14).
- * We use text-decoration rather than box-shadow so it works on all style variants.
+ * Hover: text shifts to `text` (not text-muted), plus the client's own hover
+ * background if they set one. No text-decoration: a tab is a <button role="tab">,
+ * not a link, and its selected state carries the box-shadow indicator. A client
+ * who wants a hover underline draws it with border-bottom width and colour.
  */
 .sgs-tabs__tab:hover {
 	color: var( --wp--preset--color--text, #1e1e1e );
-	text-decoration: underline;
 	background-color: var( --sgs-tab-hover-bg, transparent );
 }
 
@@ -136,11 +136,10 @@
 	box-shadow: inset calc( -1 * var( --sgs-tab-indicator-thickness, 2px ) ) 0 0 var( --sgs-tab-indicator, transparent );
 }
 
-/* Active: primary colour, remove hover underline */
+/* Active: primary colour */
 .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs__tab--active {
 	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, #0f7e80 ) );
-	text-decoration: none;
 	background-color: var( --sgs-tab-active-bg, transparent );
 }
 

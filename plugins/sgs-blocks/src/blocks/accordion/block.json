@@ -119,7 +119,9 @@
             "css:background-image": "headerBackgroundGradient",
             "css:color-gradient": "headerColourGradient",
             "css:font-weight": "headerFontWeight",
-            "css:padding": "headerPadding"
+            "css:padding": "headerPadding",
+            "css:gap": "headerGap",
+            "css:min-height": "headerMinHeight"
           },
           "states": {
             "hover": {
@@ -138,7 +140,7 @@
               }
             }
           },
-          "_note": "headerColour/headerBackground/headerFontWeight style every accordion-item's header row via block context (providesContext) — no independent header font-size/line-height control exists, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css. headerFontWeightOpen (2026-09-25) is a genuine third state ('open', not 'hover') — it paints the `[open]` attribute selector, the non-colour WCAG 1.4.1 signal alongside the open-state colour change — and overrides the pre-existing hardcoded-default open-state font-weight rule in style.css."
+          "_note": "headerColour/headerBackground/headerFontWeight/headerGap/headerMinHeight style every accordion-item's header row via block context (providesContext). No independent header font-size or line-height control exists: both inherit from the accordion's own Typography panel, which reaches the header now that style.css holds no font-size or line-height hardcode on it, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css. headerFontWeightOpen (2026-09-25) is a genuine third state ('open', not 'hover') — it paints the `[open]` attribute selector, the non-colour WCAG 1.4.1 signal alongside the open-state colour change — and overrides the pre-existing hardcoded-default open-state font-weight rule in style.css."
         },
         "icon": {
           "label": "Toggle icon",
@@ -528,6 +530,16 @@
       "default": {},
       "description": "Item header padding as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 16px 20px (14px 16px under 600px)."
     },
+    "headerGap": {
+      "type": "object",
+      "default": {},
+      "description": "Gap between the item header's title and its toggle icon, in px, per device {desktop,tablet,mobile}. Empty = the stylesheet's 12px."
+    },
+    "headerMinHeight": {
+      "type": "object",
+      "default": {},
+      "description": "Item header minimum height in px, per device {desktop,tablet,mobile}. Empty = the stylesheet's 44px, which meets the WCAG 2.5.5 touch target. A client may set less where the context warrants it; 44px is the default, not a floor."
+    },
     "contentPadding": {
       "type": "object",
       "default": {},
@@ -569,6 +581,8 @@
     "sgs/accordionHeaderColourOpen": "headerColourOpen",
     "sgs/accordionHeaderBackgroundOpen": "headerBackgroundOpen",
     "sgs/accordionHeaderPadding": "headerPadding",
+    "sgs/accordionHeaderGap": "headerGap",
+    "sgs/accordionHeaderMinHeight": "headerMinHeight",
     "sgs/accordionContentPadding": "contentPadding",
     "sgs/accordionIconSize": "iconSize",
     "sgs/accordionIconRotation": "iconRotation"
