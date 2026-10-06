@@ -2993,7 +2993,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									pickerLabelFontSize: '',
 									pickerLabelColour: '',
 									pickerColourPreset: 'solid',
-									pickerShowSelectedTick: true,
+									pickerShowSelectedTick: false,
 									pickerPillBgColour: '',
 									pickerPillBgColourGradient: '',
 									pickerPillTextColour: '',
@@ -3060,14 +3060,14 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Show selection tick', 'sgs-blocks' ) }
-								hasValue={ () => pickerShowSelectedTick !== true }
+								hasValue={ () => pickerShowSelectedTick !== false }
 								onDeselect={ () =>
-									setAttributes( { pickerShowSelectedTick: true } )
+									setAttributes( { pickerShowSelectedTick: false } )
 								}
 							>
 								<ToggleControl
 									label={ __( 'Show selection tick', 'sgs-blocks' ) }
-									checked={ pickerShowSelectedTick }
+									checked={ true === pickerShowSelectedTick }
 									onChange={ ( v ) => setAttributes( { pickerShowSelectedTick: v } ) }
 									__nextHasNoMarginBottom
 								/>

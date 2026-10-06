@@ -89,7 +89,7 @@ $picker_label_colour_gradient   = isset( $attributes['pickerLabelColourGradient'
 // defaults 'solid' — see R5 note in style.css for why (replaces the removed
 // card-scoped --sgs-op-border hardcode).
 $picker_colour_preset            = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
-$picker_show_selected_tick       = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+$picker_show_selected_tick       = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false;
 $picker_pill_bg_colour           = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
 $picker_pill_bg_colour_gradient  = isset( $attributes['pickerPillBgColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillBgColourGradient'] ) : '';
 $picker_pill_text_colour         = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';

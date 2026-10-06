@@ -840,8 +840,8 @@
 		},
 		"pickerShowSelectedTick": {
 			"type": "boolean",
-			"default": true,
-			"description": "Forwarded to each in-card sgs/option-picker as showSelectedTick."
+			"default": false,
+			"description": "Forwarded to each in-card sgs/option-picker as showSelectedTick. Off by default, matching sgs/buybox and sgs/option-picker: a selected option is already carried by its border, background and text colour, its photo and its price."
 		},
 		"pickerPillBgColour": {
 			"type": "string",

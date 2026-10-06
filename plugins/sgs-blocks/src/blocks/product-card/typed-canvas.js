@@ -119,7 +119,7 @@ export function typedCardPreview( attrs, tier ) {
 		},
 		pickerClasses: [
 			[ 'soft', 'solid' ].includes( attrs.pickerColourPreset ) ? `sgs-option-picker--${ attrs.pickerColourPreset }` : '',
-			false === attrs.pickerShowSelectedTick ? 'sgs-option-picker--no-tick' : '',
+			true === attrs.pickerShowSelectedTick ? '' : 'sgs-option-picker--no-tick',
 		].filter( Boolean ),
 		pillText: isCssGradient( attrs.pickerPillTextColourGradient )
 			? textPaintPreview( '', attrs.pickerPillTextColourGradient )
