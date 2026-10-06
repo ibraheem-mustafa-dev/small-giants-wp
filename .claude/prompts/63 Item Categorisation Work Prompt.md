@@ -45,4 +45,4 @@ Guardrails:
 - A straight `md5sum` reports CRLF-versus-LF as a content mismatch. Normalise with `tr -d '\r'` first.
 - The shared host `141.136.39.73` is shared with sandybrown. Message peer session `small-giants-wp-41`
   before any deploy or reseed.
-- `MEMORY.md` was trimmed on 2026-10-06 and has ~1,900 bytes of headroom against its 16,384 cap, so a new lesson fits. Index lines use a short human title, not the slug repeated: `- [Short Title](the-slug.md) — hook`.
+- `MEMORY.md` was consolidated on 2026-10-06: 111 lesson files folded into 74, and the index is 10,241 bytes against its 16,384 cap, so ~6,100 bytes are free and a new lesson fits without cutting anything. Index lines use a short human title, not the slug repeated: `- [Short Title](the-slug.md) — hook`.
