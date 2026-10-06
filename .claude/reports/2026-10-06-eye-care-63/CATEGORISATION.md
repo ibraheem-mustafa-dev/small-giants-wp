@@ -78,8 +78,8 @@ each card scrolled into view first:
 
 | Card | Clickable surface |
 |---|---|
-| with an image | **73-79%** |
-| without an image | **2-5%** |
+| with an image | **73-79%** -> **99%** |
+| without an image | **2-5%** -> **99%** |
 
 Every card carries `a.product-card__title-link` around the title text, covering **1-2%** of the card. Cards
 with an image add `a.product-card__img-link` at **73%**. Nothing stretches a link across the card:
@@ -87,7 +87,7 @@ with an image add `a.product-card__img-link` at **73%**. Nothing stretches a lin
 
 **So the card WAS clickable only on the product name and the image.**
 
-> **FIXED IN CODE, 2026-10-06 (`3db77f090`) - not yet verified live.** The mechanism was never broken: the card
+> **FIXED AND VERIFIED LIVE, 2026-10-06 (`3db77f090`, deployed in `6f1963c28`).** The mechanism was never broken: the card
 > already supported a whole-surface link, but it hung on an operator toggle (`sgsBlockLinkAuto`) that was simply
 > off. Bean's ruling is that it must not be switchable off at all, so a new `supports.sgs.blockLinkAlways` flag
 > replaces `blockLinkAutoUrl` on this block: `render.php` calls `sgs_stretched_link_apply()` directly instead of
@@ -99,7 +99,23 @@ with an image add `a.product-card__img-link` at **73%**. Nothing stretches a lin
 > `apply()` is handed `''` and no-ops, and that field is its only way to have a destination. On a live card
 > `apply()` overwrites whatever is typed, so it is inert there rather than conflicting.
 >
-> Verified in the built artifact; live verification is still owed. **Expected on re-measure:
+> **Verified live on the same 81-point grid, so before and after are directly comparable.** Every card on
+> `/shop/` and `/` is now **99% clickable**, imageless ones included, and 16 overlays on the shop plus 8 on home
+> each resolve to their OWN product slug, so per-card URL resolution is correct rather than ambient loop state.
+> The residual 1% is **one point landing on `button.sgs-product-card__wishlist`** - correct, since the wishlist
+> must stay clickable in its own right rather than be swallowed by the overlay.
+>
+> **The keyboard story holds.** The overlay is inert (`tabindex="-1"`, `aria-hidden="true"`) and supplies hit
+> area only; the title keeps the single named route, with **exactly one** non-inert anchor to the product. A real
+> `Tab` walk inside a card stops on the wishlist button, the title link ("Aviator Classic"), then four swatch
+> buttons - so no nested control was lost and no duplicate tab stop was created.
+>
+> **The hover underline is gone**, read under a real mouse hover: `text-decoration-line` is `none` resting and
+> `none` hovered.
+>
+> Proven by marker AND checksum, never liveness: marker `6f1963c28` with `3db77f090` an ancestor, and the
+> deployed `product-card/style.css` md5 (LF-normalised) matches local at `3d4218db0a4ab77eade44e428d7c5aed`,
+> with `title-link:hover` absent and `blockLinkAutoUrl` gone from the deployed `block.json`. **Expected on re-measure:
 > near-100% clickable on every card, including the 12 with `photo-to-come.png`, and no underline on hover.**
 > Bean confirms the card is *supposed* to be fully clickable. S10's commits were live, but on the product card
 > the block's own visible link (`e62f45952`: "a block's OWN visible link owns the surface") was the 1-2% title

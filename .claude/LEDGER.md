@@ -106,15 +106,15 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows — ALL CLASSIFIED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy was
-  needed. **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 11 built, 20 open, 4 content
+- **The 63 walker-blind rows — ALL CLASSIFIED 2026-10-06** (`reports/2026-10-06-eye-care-63/`).
+  **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 11 built, 20 open, 4 content
   (drafted in `sites/eye-care-ward-end/content/`, 59 `[CONFIRM]`s for Fatima), 2 divergences, 12 aliases, 14 CR,
   **0 left to measure**.
-  **N26 FIXED IN CODE `3db77f090`, live verify owed** — the card was clickable only on the name (1-2%) and image
-  (73%). `blockLinkAlways` makes the whole-card link PERMANENT (Bean: not switchable off); the panel has no
-  toggle, the title's hover underline is gone, and `sgsBlockLinkAuto` is deliberately no longer a product-card
-  attribute (gone, not lost). The URL field STAYS: a typed card has no permalink. The 12 imageless cards are
-  CONTENT (4 products have real photos).
+  **N26 FIXED AND VERIFIED LIVE** (`3db77f090`, deployed `6f1963c28`): every card is now **99% clickable**,
+  imageless ones included, against 1-2% on the name and
+  73% on the image. `blockLinkAlways` makes it PERMANENT (Bean: not switchable off) and the hover underline is
+  gone; `sgsBlockLinkAuto` is deliberately no longer a product-card attribute (gone, not lost). The URL field
+  STAYS for typed cards. The 12 imageless cards are CONTENT (4 products have photos).
   **Next, ~5 min on one build:** `58` multi-button has no `sgsAnimation` · `N33B` `gallerySavingBadge: true`
   against a `false` default · `9` a brand tile duplicates its alt. `152` BUILT. **CR: none of the 14 closed by
   the cleanup; **`CR12` is the remaining ORPHAN** needing an owner (`CR6` is now owned, see below).**
