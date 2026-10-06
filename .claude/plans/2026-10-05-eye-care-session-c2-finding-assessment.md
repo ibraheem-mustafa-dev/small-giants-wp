@@ -2,7 +2,7 @@
 title: "Eye Care Session C2: assess every finding against the fix register, then fix what Bean approves"
 project: small-giants-wp
 created: 2026-10-05
-status: runnable (Session C complete 2026-10-06; its count is raw F 192)
+status: COMPLETE 2026-10-06 — every approved fix shipped, deployed and verified
 governs: the assessment and framework-fix stage after Session C
 references:
   - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
@@ -14,7 +14,7 @@ references:
 
 # Eye Care Session C2: assess every finding, then fix what Bean approves
 
-✅ **The assessment ran on 2026-10-06 and is COMPLETE. The approved block fixes are BUILT and committed (`776a93639`, `12c0a0bb6`); only the host tail — build, deploy, reseed, live check — remains, held for the route cleanup's Wave 4.**
+✅ **COMPLETE 2026-10-06. The assessment ran, every approved fix shipped, and the host tail is done: reseeded, deployed to eye-care-test and verified on both surfaces. Nothing is owed from this plan.**
 
 **What ran, with its evidence:** `.claude/reports/2026-10-06-session-c2/` — `PREDICTION.md` (committed before
 measuring), `BRIEF.md` and `lane-*.tsv` (the five fact-check lanes), `FACT-CHECK-RESULTS.md`,
@@ -48,7 +48,7 @@ sweeps.** A bare "45" or "50" is ambiguous without the sweep attached.
   comment the diagnosis rested on is **stale** and sits in the tablet padding block. The cause is unproven.
 - Edit-target shift #1 names the right target and the wrong mechanism: `sgs/accordion` only **provides
   context**; the **child** emits the custom property (`accordion-item/render.php` writes
-  `--sgs-accordion-header-pad`). `headerGap` does not exist in any form.
+  `--sgs-accordion-header-pad`). `headerGap` was built on exactly that shape in `776a93639`.
 
 **Route defects found while judging are NOT in this plan.** They are in Spec 47 §5 Residual and owned by
 `plans/2026-10-06-spec47-route-cleanup.md`, including two write hazards, a forced-hover false green, the
@@ -214,7 +214,7 @@ with a cited `file::symbol` or a tree node:
 
 | Rows filed under | The fix actually edits | Why |
 |---|---|---|
-| `sgs/accordion-item` gap, justify-content | **`sgs/accordion`** | `headerGap` goes on the parent, emitted as `--sgs-accordion-header-gap` beside the existing header-padding tiers |
+| `sgs/accordion-item` gap, justify-content | **`sgs/accordion`** | `headerGap` went on the parent, emitted as `--sgs-accordion-header-gap` beside the header-padding tiers (built, `776a93639`) |
 | `sgs/buybox` border, margin, layout on the picker | **`sgs/option-picker`** | the pill is option-picker's own element; buybox only embeds it (`buybox/block.json::supports.sgs.elements.wrapper._note`) |
 | `sgs/mega-group` padding, transition | **`sgs/mega-panel`** | `mega-group/block.json` states it carries no styling attributes by design (parent-paints-child); the duration pair sits beside `mega-panel::panelCardLift` |
 | `sgs/form-field-textarea` label gap | **`sgs/form`** | `fieldLabelGap` belongs to the Field style group on the parent |
@@ -300,6 +300,8 @@ sanity control caught it — a pre-existing control read as missing too, which i
 | `776a93639` | A1, A2, A3, A5, A6 — the five Bean approved |
 | `12c0a0bb6` | A7 symptoms 1 and 2, cause proven live |
 | `21e65249a` | The `/qc-council` revision: reverts a hardcode `12c0a0bb6` introduced |
+| `9c21b9dff` | Register S4 finished: the card text stops inheriting the button's leading too |
+| `74b99ccff` | The reseeded classifier, required before the deploy could pass gate F6 |
 
 ### What `/qc-council` changed, 2026-10-06
 
@@ -348,8 +350,9 @@ misattributing A6's deletion to an older SHA and quoting my own commit message b
 
 ### Verifying the deploy: attribute by PROPERTY, not by row count
 
-Live `eye-care-test` is at **`578a8830b`**, read from `~/.sgs-deploy-marker-eye-care-test.json` on 2026-10-06.
-HEAD is **28 commits** ahead, but only **4 touch rendering**: the three block commits above plus the route
+Live `eye-care-test` now runs **`74b99ccff`** (deploy marker, 2026-10-06 21:35), this session's own deploy.
+It was `578a8830b` when the attribution below was worked out; of the 28 commits between them only **4 touched
+rendering**: the three block commits above plus the route
 cleanup's `809d30f8d`, which changes only `helpers-tokens.php`'s duration sanitiser — a stripped `"0.25s"`
 that emitted 25ms is now refused to the 300ms default, so it moves **`transition-duration` and nothing else**.
 
@@ -358,10 +361,10 @@ That property does not overlap the `gap`, `min-height`, `line-height`, `text-dec
 and a row-count delta is corroboration only** — any transition-duration row that moves belongs to
 `809d30f8d`, not here. Do not claim a row count as evidence for these fixes without excluding that property.
 
-**Gates green at commit time**, each run individually: `audit-inline-styling.js --check`,
-`check-dead-controls.js --check`, `check-editor-render-parity.js --check`,
-`check-no-client-names.py --check`. **Not yet proven:** that each control appears in the real editor
-AND paints on the real front end. A green gate proves neither, so that check is still owed.
+**Gates green**, each run individually: `audit-inline-styling.js --check`, `check-dead-controls.js --check`,
+`check-editor-render-parity.js --check`, `check-no-client-names.py --check`, and the full 139-gate deploy.
+**Both surfaces since PROVEN live** — see the verification table below. A green gate proved neither, which
+is why the live check was done rather than inferred.
 
 ### Three things the build found this plan had wrong
 
@@ -396,7 +399,9 @@ not the svg. The two surfaces disagreed and the front end was the outlier; they 
 
 **Symptom 2, the card text too heavy.** Measured live: root `<a>` 600, title 600, subline 600, body
 root 400. `.sgs-whatsapp-cta__btn` carries the button-label weight and neither card text element
-declared one, so both inherited it. Each now declares its own, and `cardTitleFontWeight` /
+declared one, so both inherited it. First fixed by declaring a weight on each, which `21e65249a` then
+reverted as a hardcode: the weight moved onto `.sgs-whatsapp-cta__label` instead, so the card text follows
+the theme. `cardTitleFontWeight` /
 `cardSublineFontWeight` already existed to override them. The title keeps the weight it paints today,
 so only the subline moves — the part that measured wrong.
 

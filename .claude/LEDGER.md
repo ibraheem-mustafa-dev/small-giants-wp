@@ -78,14 +78,14 @@ its zero-movement-on-non-canvas half is confirmed.
 `reports/2026-10-06-session-c2/`. **Of the 192 baseline F rows, 14 Google Reviews were excluded (accepted
 differences) and 178 judged: 30 real + 22 already settable or an accepted divergence + 11 wrong block (Session
 D's tree work) + 90 measuring artefacts + 25 register-decided.** The 30 real rows gave 7 candidate fixes, of
-which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test runs `578a8830b`**, read from the
+which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test runs `74b99ccff`**, read from the
 deploy marker `~/.sgs-deploy-marker-eye-care-test.json` on 2026-10-06; Eye
 Care's 17 surfaces were verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any
 future sweep, and compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
 - **The 5 block fixes + A7 — SHIPPED, VERIFIED, CLOSED 2026-10-06** (C2 plan's "THE OWED WORK"). The F3 gate
-  now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 blocks with no
+  now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 findings with no
   typography control, in `plugins/sgs-blocks/reports/f3-e14-triage.md`.
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
   `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 587. **F 193 → 173**, all 17 surfaces,

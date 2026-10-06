@@ -1,5 +1,10 @@
 # F3 gate capability map
 
+> **Point-in-time, and the gap it describes is now CLOSED.** This maps the gate as it stood BEFORE
+> `563ae1c20`, which added the E14 element-identity check so CLASS 2 and CLASS 3 hardcodes are caught,
+> and `a7af3304f`, which pinned that behaviour with a 16-case `--self-test`. Read it for WHY the four
+> defects escaped, not as a description of today's gate.
+
 Subject: `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` ("Gate B"), baseline `plugins/sgs-blocks/scripts/hardcoded-render-defaults-baseline.json`.
 Status of this document: read-only analysis. No source file was changed. Date of analysis: 2026-10-06.
 
