@@ -130,4 +130,4 @@ Guardrails:
   `plugins/sgs-blocks/scripts/consistency/*.json`, `plugins/sgs-blocks/scripts/dbschema/seed-history.json`,
   `plugins/sgs-blocks/.phpunit.cache/*`, `reports/phase4-*.txt`,
   `.claude/reports/2026-10-04-route-data-audit/fingerprint/*.json`, or any path containing `Bean Points`.
-- `MEMORY.md` is at 16,383 of 16,384 bytes. Cut before writing any lesson.
+- `MEMORY.md` was trimmed on 2026-10-06 and has ~1,900 bytes of headroom against its 16,384 cap, so a new lesson fits. Index lines use a short human title, not the slug repeated: `- [Short Title](the-slug.md) — hook`.
