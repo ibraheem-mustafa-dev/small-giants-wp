@@ -84,29 +84,29 @@ Care's 17 surfaces were verified unaffected on three axes, so F 193 stays compar
 future sweep, and compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **The 5 approved block fixes + A7 — SHIPPED and VERIFIED 2026-10-06.** Four commits (`776a93639`,
-  `12c0a0bb6`, `21e65249a`, `9c21b9dff`), reseeded, deployed to eye-care-test (139/139 gates), **both surfaces
-  checked live at 1440 and 375**. **Owed: nothing.** Sequencing trap now in `dev-setup.md` (`445159275`):
-  reseed FIRST, then commit the regenerated classifier, THEN deploy. Evidence and the A7 cause: the C2
-  plan's "THE OWED WORK".
+- **The 5 block fixes + A7 — SHIPPED, VERIFIED, CLOSED 2026-10-06** (C2 plan's "THE OWED WORK"). The F3 gate
+  now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 blocks with no
+  typography control, in `plugins/sgs-blocks/reports/f3-e14-triage.md`.
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
-  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 582. **F 193 → 173**, all 17 surfaces,
-  measure-only, no stale reports, no write to any client tree — inside the 155-175 band committed BEFORE the sweep
-  (`2cf9ab4c3`); the original 148-168 would have failed a correct result. `canvas-settable` 209 → 168, `bgHoverZoom` 20 → 0.
-  **Owed:** `benchmark.mjs --noise` (stopped 4/10 to free the host; 5/5 catch rate stands, noise unproven), 168 canvas
-  claims in 63 families, `mobile-menu` unpairable so **not judged**, 34 dead `sgs/hero` settings
-  (`HERO-DEAD-SETTINGS.md`: fixture-gated).
-  ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Browser-heavy runs belong on the local
-  WSL mirrors, **UP and fast**; `curl localhost:8081` fails only on IPv4 — use `curl -6`.
-  **Never `wsl --shutdown`: SearXNG lives there.**
+  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 587. **F 193 → 173**, all 17 surfaces,
+  measure-only, inside the 155-175 band committed BEFORE the sweep. `bgHoverZoom` 20 → 0.
+  **`mobile-menu` pairs** (`7255be68d`) — all 17 surfaces carry `handScope`.
+  **Canvas claims: 17 of 63 families (82/168) confirmed live, ALL REFUTED** (`29f2e30c1`, `confirm-canvas.mjs`,
+  `CANVAS-SETTABLE-CONFIRMATION.md`). W→F NOT applied until all 63 are read, so F keeps one meaning. **46 families
+  need the REMOTE site** — see the ⚠️ below.
+  **`sgs/hero`'s 3 undetermined settings closed** (`353b9b4ed`, `HERO-DEAD-SETTINGS.md` §9). `maxWidth` is a REAL
+  gap, proven live. **Never remove `section.sgs-hero{max-width:none}`** (D725, 24px off-screen). A tier background
+  with no base image paints nothing — **candidate live gap**, needs a built instance.
+  **Owed:** `benchmark.mjs --noise` (stopped 4/10; 5/5 catch rate stands, noise unproven).
+  ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) are fast but carry
+  **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
+  (SearXNG).**
+
 - **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy was
   needed; every commit the built rows cite is an ancestor of live `578a8830b`. **N11 and N25 verified CLOSED
   live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 5 need client content, 14 CR, 11 to measure.
   ⚠️ **Off-register:** 12 of 16 shop cards render no image and **no link**, though 16 of 17 products have
   images. Unproven cause (report §5): the manifest transient is never purged. One delete settles it.
-- **`benchmark.mjs --noise`** — the only Session C host job still owed (stopped 4 of 10; 5 of 5 catch rate
-  stands, noise unproven). Confirmation walk and `sgs/media` recalibration DONE. Commands: Session C plan, "Wave 3's
-  remaining items".
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
