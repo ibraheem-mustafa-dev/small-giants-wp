@@ -546,6 +546,25 @@ Each is evidence for a later gate task; none was changed here.
 
 ## 8. Scope limits and CANNOT-TELL
 
+**E14 covers the INHERITANCE half of this family only, and that is deliberate.** A hardcode beats a
+control either because it sits on a descendant of the control's element (inheritance — what E14
+detects, and only for inherited properties), or because it out-specifies the control on the SAME
+element (specificity — NOT detected). CLASS 1 assumes an SGS control always wins at `(0,2,0)` over a
+`(0,1,0)` base rule. A block stylesheet that uses an element+class selector breaks that assumption.
+
+**A proven live instance of the uncovered half exists**, found independently by the Spec 47 route
+session on 2026-10-06: `sgs/hero`'s `maxWidth` paints nothing, because the shared wrapper emits the
+base value as `.uid` `(0,1,0)` while `hero/style.css`'s `section.sgs-hero{max-width:none}` is
+`(0,1,1)` and wins. It was proven by inserting each selector into the page's CSSOM: `.uid` does not
+apply, `.uid.wp-block-sgs-hero` does. `max-width` is not an inherited property, so E14 correctly
+never looks at it. Proofs and the reason the offending CSS must NOT simply be deleted (D725: removing
+it shifts the section 24px off-screen) are in `HERO-DEAD-SETTINGS.md` §9.
+
+Whoever extends this gate next should start there: the specificity half needs the control's emitted
+selector compared against the competing rule's, not just their elements, and hero is a ready-made
+positive control with a live proof already attached.
+
+
 - **Reach is per block instance.** Instances per page and pages per site are content; I cannot derive them from code. Counts that depend on a loop assume 4 items (6 for form fields) and say so. Where a count is a range from the markup ("at most 7 rows", "up to 4 units") the bound is stated.
 - **DEFENSIBLE is a reading, not a ruling.** Where I wrote "documented", the source says so (`business-hours__time` comment, `helpers-button-note.php` docblock, the `google-reviews` style header). For UI chrome (arrows, pause buttons, ribbons, the upload chip, progress bubbles) the intent is not recorded anywhere I could find: CANNOT-TELL whether the owner wants those reachable from typography controls.
 - **DEAD means "no current emitter in code".** I searched `src/`, `includes/` and `theme/` (and the `plugins/` tree for `__btn`). I did not and cannot search stored post content in a database, which could still carry a legacy class (the `notice-banner` conformance fixture carries `sgs-notice-banner__text`). CANNOT-TELL for stored content.
