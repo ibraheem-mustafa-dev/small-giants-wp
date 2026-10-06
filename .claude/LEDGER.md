@@ -54,7 +54,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-06).** sandybrown runs block code `82f54f351`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy the then-current `main` — NOT `75364c71a`, which ENDS the repairs range and so predates the Tier 1 range `65573118c..82f54f351`. Real delta `7f375f765..82f54f351`: 32 files, 13 blocks, plus `theme.json` (agreed with Session C). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
+**Now (2026-10-06).** sandybrown runs block code `ea72eab7b`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy the then-current `main` — NOT `75364c71a`, which ENDS the repairs range and so predates the Tier 1 range `65573118c..82f54f351`. Real delta `7f375f765..82f54f351`: 32 files, 13 blocks, plus `theme.json` (agreed with Session C). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
 No blockers.

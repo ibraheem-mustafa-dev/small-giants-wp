@@ -74,7 +74,7 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 		// (product-card/render.php $picker_style_attrs).
 		$sgs_pcard_picker_style_attrs = array(
 			'colourPreset'             => isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid',
-			'showSelectedTick'         => array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true,
+			'showSelectedTick'         => array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false,
 			'pillBgColour'             => isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '',
 			'pillTextColour'           => isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '',
 			'pillBorderColour'         => isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '',
