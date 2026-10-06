@@ -88,11 +88,11 @@ Care's 17 surfaces were verified unaffected on three axes, so F 193 stays compar
 future sweep, and compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **The 5 approved block fixes (A1, A2, A3, A5, A6) — BUILT 2026-10-06**, three block commits: `776a93639`,
-  `12c0a0bb6` (A7), `21e65249a` (reverts a `12c0a0bb6` hardcode). Gates green. **Owed: the host tail** — build,
-  `build-deploy.py --target eye-care-test`, one `sgs-update` reseed, then the editor AND front-end check.
-  **Held until the route cleanup MESSAGES that its sweep is done**; an idle notice is not that signal. Detail,
-  including A7's cause and the by-PROPERTY attribution rule: the C2 plan's "THE OWED WORK".
+- **The 5 approved block fixes + A7 — SHIPPED and VERIFIED 2026-10-06.** Four commits (`776a93639`,
+  `12c0a0bb6`, `21e65249a`, `9c21b9dff`), reseeded, deployed to eye-care-test (139/139 gates), **both surfaces
+  checked live at 1440 and 375**. **Owed: nothing.** Sequencing trap now in `dev-setup.md` (`445159275`):
+  reseed FIRST, then commit the regenerated classifier, THEN deploy. Evidence and the A7 cause: the C2
+  plan's "THE OWED WORK".
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
   `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 582. **F 193 → 173**, all 17 surfaces,
   measure-only, no stale reports, no write to any client tree — inside the 155-175 band committed BEFORE the sweep

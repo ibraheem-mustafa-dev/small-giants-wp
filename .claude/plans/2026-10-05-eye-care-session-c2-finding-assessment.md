@@ -261,14 +261,39 @@ source cannot answer.
 read computed styles with the winning rule's origin, not just the value; let transitions settle; account for Lenis
 and scroll variables; never reason from a screenshot alone, and never from one width.
 
-## THE OWED WORK: BUILT 2026-10-06. All five approved fixes, plus A7, are committed
+## THE OWED WORK: SHIPPED AND VERIFIED 2026-10-06. Nothing outstanding
 
-**The block code is done and on `main`. What remains is the host tail only: build, deploy to
-eye-care-test, one `sgs-update` reseed, and the live both-surfaces check.** That tail is held until
-`plans/2026-10-06-spec47-route-cleanup.md` signals its Wave 4 verification sweep clear: a mid-sweep
-deploy would mix these rows into its F 193 -> 155-175 prediction (revised UP in `2cf9ab4c3`: two route
-fixes ADD rows by design), and a reseed rewrites the shared
-framework DB its calibration reads.
+**Done. The code shipped, the host tail ran, and both surfaces were checked live.** The route cleanup
+signalled its Wave 4 sweep complete (F 193 -> 173, banked at `bfe410a71`) before anything of this work
+was deployed, so its measurement stayed single-variable as intended.
+
+**The order that actually works, learned by getting it wrong** (now in `dev-setup.md`, `445159275`):
+**reseed FIRST**, because `check-wiring-fingerprint` fails the build when a committed `block.json`
+attribute is missing from the framework DB; **then commit the regenerated `css-property-classifications.json`**,
+because `build-deploy.py` builds from an isolated worktree AT HEAD, so leaving it uncommitted makes the
+deploy's own build fail the F6 Reseed-Survival gate with all four new CSS-property attributes flagged as
+rogue seeds; **then deploy**. A local `npm run build` passes in between, which is the confusing part.
+Both gates were right.
+
+**Live verification, both surfaces, 1440 and 375 identical:**
+
+| Fix | Measured on eye-care-test |
+|---|---|
+| A7 icon | glyph computes `rgb(250,248,245)`, was `rgb(20,20,20)` |
+| A7 card text | title and subline weight 400, line-height 21px; were 600 and a crammed 1.0 |
+| A1 gap | `12px` default holds with the control unset |
+| A3 min-height | `44px` default holds with the control unset |
+| A2 leading | header line-height 24px from the block's own typography, not the deleted 1.4 |
+| A6 tabs | no `text-decoration` rule for `.sgs-tabs__tab:hover` in any loaded stylesheet |
+
+**Editor surface**, in the real runtime: all six attributes registered, both `providesContext` entries
+present, `sgs/accordion-item` carrying the matching `usesContext`, and the "Header, answer & icon" panel
+rendering HEADER GAP (PX) and HEADER MINIMUM HEIGHT (PX) with their help text beside the pre-existing
+controls. One scratch page was created for the check and trashed.
+
+*A probe trap worth remembering: those labels are CSS-uppercased, and `innerText` returns the transformed
+text, so a case-sensitive `includes('Header gap')` reports absent while `HEADER GAP (PX)` is on screen. The
+sanity control caught it — a pre-existing control read as missing too, which is what said "probe", not "bug".*
 
 | Commit | Carries |
 |---|---|
