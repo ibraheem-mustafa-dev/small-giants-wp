@@ -152,9 +152,9 @@ walk (plan §2.4 step 5).
 
 **Resume from:** plan §2.4 to close Gate 3C formally (deferred by Bean), or §4 to prepare Wave 4.
 
-### Unified email — CLOSED 2026-09-27 (`plans/archive/2026-09-26-unified-email-plan.md`, all 8 phases + rows 5b/7/8 done)
+### Open from the closed unified-email track (`plans/archive/2026-09-26-unified-email-plan.md`)
 
-Every SGS email goes through `wp_mail()` over FluentSMTP and the shared `Sgs_Mailer` (dev-setup §Site email); WooCommerce email links and headings take the site's text colour, never the brand accent. N8N workflow `AJzRBARFn8AqQlkg` stays off (backup). **Still open from it:** `sgs/mega-group`'s focus ring uses the accent colour (not that plan's work, found during it), and `sgs-client-notes` deploys via the standalone `scripts/deploy-client-notes-quick.py` — a proper third-root `build-deploy.py` integration is deferred.
+`sgs/mega-group`'s focus ring uses the accent colour (found during that plan, not its work), and `sgs-client-notes` still deploys via the standalone `scripts/deploy-client-notes-quick.py` — third-root `build-deploy.py` integration deferred.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 
