@@ -266,7 +266,8 @@ and scroll variables; never reason from a screenshot alone, and never from one w
 **The block code is done and on `main`. What remains is the host tail only: build, deploy to
 eye-care-test, one `sgs-update` reseed, and the live both-surfaces check.** That tail is held until
 `plans/2026-10-06-spec47-route-cleanup.md` signals its Wave 4 verification sweep clear: a mid-sweep
-deploy would mix these rows into its F 193 -> 148-168 prediction, and a reseed rewrites the shared
+deploy would mix these rows into its F 193 -> 155-175 prediction (revised UP in `2cf9ab4c3`: two route
+fixes ADD rows by design), and a reseed rewrites the shared
 framework DB its calibration reads.
 
 | Commit | Carries |
@@ -319,6 +320,18 @@ came into it. Acting on the rater would have broken a working default.
 ⚠️ **Two of three raters cited this session's own commits as independent prior art**, one
 misattributing A6's deletion to an older SHA and quoting my own commit message back as a
 "deliberate design decision". Recorded in auto memory under `agent-verdicts-need-a-citation-gate`.
+
+### Verifying the deploy: attribute by PROPERTY, not by row count
+
+Live `eye-care-test` is at **`578a8830b`**, read from `~/.sgs-deploy-marker-eye-care-test.json` on 2026-10-06.
+HEAD is **28 commits** ahead, but only **4 touch rendering**: the three block commits above plus the route
+cleanup's `809d30f8d`, which changes only `helpers-tokens.php`'s duration sanitiser — a stripped `"0.25s"`
+that emitted 25ms is now refused to the 300ms default, so it moves **`transition-duration` and nothing else**.
+
+That property does not overlap the `gap`, `min-height`, `line-height`, `text-decoration`, `font-size`,
+`font-weight` and svg `color` this work changes. **So the proof is a direct computed-style read per control,
+and a row-count delta is corroboration only** — any transition-duration row that moves belongs to
+`809d30f8d`, not here. Do not claim a row count as evidence for these fixes without excluding that property.
 
 **Gates green at commit time**, each run individually: `audit-inline-styling.js --check`,
 `check-dead-controls.js --check`, `check-editor-render-parity.js --check`,

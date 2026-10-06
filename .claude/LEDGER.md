@@ -82,25 +82,24 @@ zero-movement-on-non-canvas half is confirmed.
 `reports/2026-10-06-session-c2/`. **Of the 192 baseline F rows, 14 Google Reviews were excluded (accepted
 differences) and 178 judged: 30 real + 22 already settable or an accepted divergence + 11 wrong block (Session
 D's tree work) + 90 measuring artefacts + 25 register-decided.** The 30 real rows gave 7 candidate fixes, of
-which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test now runs `8dde5f5b7`**; Eye Care's 17 surfaces were
-verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any future sweep, and
-compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
+which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test runs `578a8830b`**, read from the
+deploy marker `~/.sgs-deploy-marker-eye-care-test.json` on 2026-10-06; Eye
+Care's 17 surfaces were verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any
+future sweep, and compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **The 5 approved block fixes (A1, A2, A3, A5, A6) — BUILT and committed 2026-10-06**, `776a93639`, with
-  A7 in `12c0a0bb6`. Four local gates green. **Owed: the host tail only** — build, one
-  `build-deploy.py --target eye-care-test`, one `sgs-update` reseed, then the live check that each control
-  appears in the real editor AND paints on the real front end. **Held until the route cleanup signals Wave 4
-  clear**: deploying mid-sweep mixes ~19 closed rows into its F 193 -> 148-168 prediction, and a reseed
-  rewrites the framework DB its calibration reads. A4 stays withdrawn. **A7 is settled** — cause, fix and a
-  host measuring trap (page source hides a block's scoped rules here) in the C2 plan's "THE OWED WORK".
+- **The 5 approved block fixes (A1, A2, A3, A5, A6) — BUILT 2026-10-06**, three block commits: `776a93639`,
+  `12c0a0bb6` (A7), `21e65249a` (reverts a `12c0a0bb6` hardcode). Gates green. **Owed: the host tail** — build,
+  `build-deploy.py --target eye-care-test`, one `sgs-update` reseed, then the editor AND front-end check.
+  **Held until the route cleanup MESSAGES that its sweep is done**; an idle notice is not that signal. Detail,
+  including A7's cause and the by-PROPERTY attribution rule: the C2 plan's "THE OWED WORK".
 - **Route cleanup** — `plans/2026-10-06-spec47-route-cleanup.md`. **Waves 1 to 3 built and pushed 2026-10-06**:
   both write hazards, the forced-hover false green, the icon abstraction, the pairing gate, transition markers, and
   four added tasks (R1 to R4) closing every point Spec 47 §5 Residual still named. **Wave 4 is owed and needs the
   host**: run `pairs.mjs` over the 17 surfaces to populate `handScope` BEFORE linting (the gate is inert until then),
   the re-sweep compared on R2's normalised key, the 209 canvas claims by their 69 families, and Session C's three
   owed host jobs. Runbook: `reports/2026-10-06-session-c2/WAVE4-RUNBOOK.md`. ⚠️ eye-care-test is at `578a8830b`, not
-  the `6d6906b98` the plan first recorded, so the F 193 to 148-168 band is corroboration, not proof.
+  the `6d6906b98` the plan first recorded, so the F 193 to 155-175 band is corroboration, not proof.
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
   (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
 - **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
