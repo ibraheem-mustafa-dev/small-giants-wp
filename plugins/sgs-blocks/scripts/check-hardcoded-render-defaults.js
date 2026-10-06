@@ -109,6 +109,7 @@
 
 const fs   = require( 'fs' );
 const path = require( 'path' );
+const os   = require( 'os' );
 
 const ROOT      = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -3041,13 +3042,215 @@ function selfTestE12() {
 		);
 	}
 
+	selfTestE14( assert );
+
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
+}
+
+/**
+ * Write a synthetic one-block tree (block.json, render.php, style.css) into a
+ * fresh temp directory named `x` (so the block slug is `x`) and run the real
+ * checkBlock() over it. The tree is removed afterwards.
+ */
+function runE14Fixture( attributes, renderPhp, styleCss ) {
+	const tmp      = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-e14-selftest-' ) );
+	const blockDir = path.join( tmp, 'x' );
+	try {
+		fs.mkdirSync( blockDir );
+		const attrs = {};
+		for ( const name of attributes ) {
+			attrs[ name ] = { type: 'string' };
+		}
+		fs.writeFileSync( path.join( blockDir, 'block.json' ), JSON.stringify( { name: 'sgs/x', attributes: attrs } ), 'utf8' );
+		fs.writeFileSync( path.join( blockDir, 'render.php' ), renderPhp, 'utf8' );
+		fs.writeFileSync( path.join( blockDir, 'style.css' ), styleCss, 'utf8' );
+		ELEMENT_MODEL_STATS.class1.length = 0;
+		const findings = checkBlock( blockDir );
+		return { findings, class1: ELEMENT_MODEL_STATS.class1.slice() };
+	} finally {
+		fs.rmSync( tmp, { recursive: true, force: true } );
+	}
+}
+
+/** Shared PHP head for the E14 fixtures: a per-instance class and the root selector. */
+const E14_FIXTURE_PHP_HEAD =
+	"<?php\n$uid = 'sgs-x-' . wp_unique_id();\n$root_sel = '.' . $uid . '.wp-block-sgs-x';\n$css = '';\n";
+
+/** The fixtures' root element: carries the per-instance class and the block's own class. */
+const E14_FIXTURE_ROOT_OPEN =
+	"?>\n<div <?php echo get_block_wrapper_attributes( array( 'class' => $uid . ' sgs-x' ) ); ?>>\n";
+
+// ---------------------------------------------------------------------------
+// SELF-TEST — E14 element identity (cases 6 to 10)
+//
+// Every fixture is synthetic, written to a temp directory and scanned by the
+// real checkBlock(), so the cases pin the classifier's contract (see the
+// "E14 — ELEMENT IDENTITY" header above) and not the content of any real block.
+// Each positive case has a negative twin: a detector that flags a legitimate
+// overridable default is worse than none.
+// ---------------------------------------------------------------------------
+
+function selfTestE14( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] E14 element identity\n\n' );
+	const lineHeightOnHeader = ( r ) => r.findings.filter( ( f ) => 'line-height' === f.property && '.sgs-x-item__header' === f.selector );
+
+	// CASE 6 — CLASS 2 positive: line-height is hardcoded on a sub-element while
+	// its control is emitted onto the block root. The control can never reach it.
+	{
+		const r = runE14Fixture(
+			[ 'lineHeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+			'.sgs-x-item__header {\n\tline-height: 1.4;\n}\n'
+		);
+		assert(
+			'CLASS 2: line-height hardcoded on .sgs-x-item__header while the control paints the root IS reported as CLASS-2',
+			lineHeightOnHeader( r ).map( ( f ) => f.class ),
+			[ 'CLASS-2' ]
+		);
+	}
+
+	// CASE 7 — CLASS 3 positive: a font-weight on a shared wrapper class that is
+	// an ancestor of a text sub-element with no font-weight control or declaration.
+	{
+		const r = runE14Fixture(
+			[ 'labelFontWeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$css .= sgs_typography_css_rule( $attributes, 'label', \"{$root_sel} .sgs-x__label\" );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<span class="sgs-x__label">Label</span>\n' +
+				'<div class="sgs-x__btn"><span class="sgs-x__card-title">Card</span></div>\n</div>\n',
+			'.sgs-x__btn {\n\tfont-weight: 600;\n}\n.sgs-x__card-title {\n\tfont-size: 1rem;\n}\n'
+		);
+		const hits = r.findings.filter( ( f ) => 'font-weight' === f.property && '.sgs-x__btn' === f.selector );
+		assert(
+			'CLASS 3: font-weight on the .sgs-x__btn wrapper leaking into .sgs-x__card-title IS reported as CLASS-3',
+			hits.map( ( f ) => f.class ),
+			[ 'CLASS-3' ]
+		);
+	}
+
+	// CASE 8 — CLASS 1 true negative (load-bearing): the hardcode and the control
+	// target the SAME element, control at (0,2,0) against a (0,1,0) base rule.
+	// It must not be reported, and it must be recorded as CLASS 1 so the silence
+	// is the classifier's verdict and not a model that failed to build. The attribute
+	// prefix (`heading`) deliberately does not echo the class (`__title`) and the
+	// selector is built in a variable, so the legacy name heuristics (E1/E11) exempt
+	// the declaration and the verdict is E14's alone.
+	{
+		const r = runE14Fixture(
+			[ 'headingLineHeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$heading_sel = '.' . $uid . ' .sgs-x__title';\n" +
+				"$css .= sgs_typography_css_rule( $attributes, 'heading', $heading_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<h3 class="sgs-x__title">Title</h3>\n</div>\n',
+			'.sgs-x__title {\n\tline-height: 1.4;\n}\n'
+		);
+		assert(
+			'CLASS 1: line-height on the SAME element as its (0,2,0) control is NOT reported',
+			r.findings.filter( ( f ) => 'line-height' === f.property ).length,
+			0
+		);
+		assert(
+			'CLASS 1: that silence is a CLASS 1 verdict (the classifier saw the declaration and the control)',
+			r.class1.map( ( c ) => `${ c.selector } ${ c.property }` ),
+			[ '.sgs-x__title line-height' ]
+		);
+	}
+
+	// CASE 9 — non-inherited true negative: gap and padding hardcoded on a
+	// sub-element while a control for each paints the root. A non-inherited
+	// property cannot leak or be inherited, so neither may be CLASS 2 / CLASS 3.
+	// The shipped helpers only emit inherited properties, so a gap and a padding
+	// control are registered on the typography helper for this case alone (and
+	// removed in `finally`), which makes the INHERITED_PROPS scoping the only
+	// thing standing between those declarations and a CLASS-2 report. A line-height
+	// declaration in the same fixture proves the model is live.
+	{
+		const helper = CONTROL_HELPERS.sgs_typography_css_rule;
+		const added  = [
+			{ base: 'Gap', prop: 'gap', variants: [ '' ] },
+			{ base: 'Padding', prop: 'padding', variants: [ '' ] },
+		];
+		helper.suffixes.push( ...added );
+		let r;
+		try {
+			r = runE14Fixture(
+				[ 'lineHeight', 'gap', 'padding' ],
+				E14_FIXTURE_PHP_HEAD +
+					"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+					E14_FIXTURE_ROOT_OPEN +
+					'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+				'.sgs-x-item__header {\n\tline-height: 1.4;\n\tgap: 8px;\n\tpadding: 4px;\n}\n'
+			);
+		} finally {
+			for ( const a of added ) {
+				helper.suffixes.splice( helper.suffixes.indexOf( a ), 1 );
+			}
+		}
+		assert(
+			'scoping: line-height in the same fixture is still CLASS-2 (the model is live, so the silence below is meaningful)',
+			lineHeightOnHeader( r ).map( ( f ) => f.class ),
+			[ 'CLASS-2' ]
+		);
+		assert(
+			'scoping: gap and padding on the sub-element are NOT reported as CLASS-2 or CLASS-3',
+			r.findings.filter( ( f ) => ( 'gap' === f.property || 'padding' === f.property ) && ( 'CLASS-2' === f.class || 'CLASS-3' === f.class ) ).length,
+			0
+		);
+	}
+
+	// CASE 10 — ratchet: past a ceiling the exit code is 1, at or under it 0.
+	// Drives the same evaluateE14Ratchet() / checkExitCode() main() uses, with
+	// synthetic ceilings, so the real E14_OPEN_BACKLOG is never touched.
+	{
+		const ceilings = { 'CLASS-2': 2, 'CLASS-3': 1 };
+		const make     = ( cls, n ) => Array.from( { length: n }, () => ( { class: cls } ) );
+		const run      = ( findings ) => {
+			const { over } = evaluateE14Ratchet( findings, ceilings );
+			return checkExitCode( true, 0, over, findings.length, false );
+		};
+		assert( 'ratchet: one over the CLASS-2 ceiling exits 1', run( make( 'CLASS-2', 3 ) ), 1 );
+		assert( 'ratchet: exactly at the ceiling exits 0', run( [ ...make( 'CLASS-2', 2 ), ...make( 'CLASS-3', 1 ) ] ), 0 );
+		assert( 'ratchet: under the ceiling exits 0', run( make( 'CLASS-2', 1 ) ), 0 );
+		assert( 'ratchet: a category with no ceiling entry is not counted', run( make( 'CLASS-9', 5 ) ), 0 );
+		assert( 'ratchet: without --check the exit code is 0 even over the ceiling', checkExitCode( false, 0, [ 'CLASS-2' ], 3, false ), 0 );
+	}
 }
 
 // ---------------------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------------------
+
+/**
+ * The E14 ratchet: per-category counts of net-new E14 findings and which
+ * categories exceed their ceiling. Pure, so --self-test can drive it with
+ * synthetic findings and ceilings without touching E14_OPEN_BACKLOG.
+ *
+ * @param {Object[]} e14New   Net-new findings that carry an E14 class.
+ * @param {Object}   ceilings Category to ceiling (E14_OPEN_BACKLOG in a real run).
+ * @return {{counts: Object, over: string[]}}
+ */
+function evaluateE14Ratchet( e14New, ceilings ) {
+	const counts = {};
+	for ( const cls of Object.keys( ceilings ) ) {
+		counts[ cls ] = e14New.filter( ( f ) => f.class === cls ).length;
+	}
+	const over = Object.keys( ceilings ).filter( ( cls ) => counts[ cls ] > ceilings[ cls ] );
+	return { counts, over };
+}
+
+/**
+ * The --check exit code. Legacy findings and an exceeded E14 ceiling are
+ * blocking; E14 findings within their ceilings block only when E14_BLOCKS_BUILD.
+ */
+function checkExitCode( check, legacyNewCount, e14Over, e14NewCount, blocksBuild ) {
+	return check && ( legacyNewCount || e14Over.length || ( blocksBuild && e14NewCount ) ) ? 1 : 0;
+}
 
 /** E14 class of a finding: legacy findings carry none. */
 const findingClass = ( f ) => f.class || 'LEGACY';
@@ -3206,11 +3409,7 @@ function main() {
 	// CLASS-3, CANNOT-RESOLVE) are ADVISORY with a per-category ratchet.
 	const legacyNew = netNew.filter( ( f ) => ! f.class );
 	const e14New    = netNew.filter( ( f ) => f.class );
-	const e14Counts = {};
-	for ( const cls of Object.keys( E14_OPEN_BACKLOG ) ) {
-		e14Counts[ cls ] = e14New.filter( ( f ) => f.class === cls ).length;
-	}
-	const e14Over = Object.keys( E14_OPEN_BACKLOG ).filter( ( cls ) => e14Counts[ cls ] > E14_OPEN_BACKLOG[ cls ] );
+	const { counts: e14Counts, over: e14Over } = evaluateE14Ratchet( e14New, E14_OPEN_BACKLOG );
 
 	if ( e14New.length ) {
 		process.stdout.write(
@@ -3257,8 +3456,9 @@ function main() {
 		);
 	}
 
-	if ( check && ( legacyNew.length || e14Over.length || ( E14_BLOCKS_BUILD && e14New.length ) ) ) {
-		process.exit( 1 );
+	const exitCode = checkExitCode( check, legacyNew.length, e14Over, e14New.length, E14_BLOCKS_BUILD );
+	if ( exitCode ) {
+		process.exit( exitCode );
 	}
 }
 
