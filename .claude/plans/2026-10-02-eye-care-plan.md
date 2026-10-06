@@ -198,7 +198,7 @@ Each section: what is built (checked), what is open, and a Review heading that t
 - **Built:**
   - Three bands: the head row, a scrolling item list, and a footer with the subtotal, the free-delivery line and
     bar, Checkout, then a note.
-  - Item rows: square image; the brand (Store API `items[].extensions.sgs.brand`, `includes/cart-item-brand.php`)
+  - Item rows: square image; the brand (Store API `items[].extensions.sgs.brand`, `includes/cart-item-extensions.php`)
     with the line price; the name; the details; Remove as a text link.
   - Every value is a setting: 168 `sgs/cart` attributes in all.
   - The panel keeps its scope class when the nav store moves the `<dialog>` to `<body>`.

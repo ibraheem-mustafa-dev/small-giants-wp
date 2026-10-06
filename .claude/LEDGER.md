@@ -54,7 +54,7 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-06).** sandybrown runs block code `ea72eab7b`; eye-care-test still runs `7f375f765`, held so Session C's gap count stays attributable to the route. Session C's sitting ii must measure at `7f375f765` FIRST, then deploy the then-current `main` — NOT `75364c71a`, which ENDS the repairs range and so predates the Tier 1 range `65573118c..82f54f351`. Real delta `7f375f765..82f54f351`: 32 files, 13 blocks, plus `theme.json` (agreed with Session C). Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not by a liveness check.
+**Now (2026-10-06).** sandybrown carries the Tier 2 shop-journey work on top of `94122e326` (checksum-verified); eye-care-test is at `94122e326`, untouched by that session. ⚠️ **Different WooCommerce versions — sandybrown 11.1.0, eye-care-test 11.1.2** — not interchangeable for version-sensitive work despite sharing a host, and every existing "installed 11.1.0" citation about the canary is CORRECT. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
 No blockers.
@@ -101,15 +101,18 @@ collision check (`reports/2026-10-05-session-b/check-queue-collisions.mjs`) carr
 roster's policy is deliberate (reasons per family in the plan's "R1 decided"). The three `!important` spacing rows
 are diagnosed from the source as two causes, so both go on the C2 list rather than waiting.
 
-**Register repairs and backlog Tier 1 — both CLOSED, built and verified on sandybrown, pushed** (twelve proven
-repairs, then N11(a), 52, 75/82/158, 91, 68, N17b; each register row carries its hash and what was measured).
-CR6 unbuilt: needs `scripts/computed-route/lib/resolve.mjs`, Session C's. QC (`reports/2026-10-06-qc-eye-care-tier1/`)
-added PRE-EXISTING Q1 (no quantity ceiling when stock tracking is off) and Q2 (tab contrast 2.24:1) to the
-backlog; both need `/qc-council`. **Open: the eye-care-test deploy (HEAD) and the one reseed — Session C's Wave 3.**
+**Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified on sandybrown, pushed.**
+Tier 2's five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10
+(`80b9deaa4`), S9 (`2b4122c77`), plus `sgs/product-card`'s gallery strip made opt-in (`b68db67c9`+`06b22220f`) — a
+Tier 1 regression a stale page cache had hidden.
+`brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the 375/768/1440 readings with
+their negative controls, what was NOT measured, and every open item — two S10 `/qc` defects, a
+`Product_Manifest::build()` divergence blocking 59's photo swap, and the 20+23 surfaces needing eye-care-test.
+CR6 unbuilt: needs `scripts/computed-route/lib/resolve.mjs`, Session C's. Canary QA fixtures are listed in the register's S9 and 18 rows.
 
 The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
-**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompts** for Sessions C and C2: `.claude/prompts/` (single-use; C's handoff updates C2's).
+**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan). **Paste-ready prompt** for Session C2: `.claude/prompts/session-c2-finding-assessment.md` (single-use).
 **Resume from:**
 **Session C sitting ii** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, resume at "Wave 2"): three
 lanes (L7, L8 with its new L8.7 and L8.8, L9), Gate 2, then Wave 3's host jobs C3.1 to C3.8. Session C2 runs on
@@ -122,9 +125,6 @@ hours, the mini-cart's items and the seven wrapper composites (`plans/archive/20
 asked: the composites' editor canvases and the cart panel show spacing only in the editor (lines draw on the page).
 The container roster script (`scripts/sync-container-wrapping-blocks.py`) reports the roster and KINDs and writes
 the DB only; container capabilities are opt-in per block at panel level.
-
-**Names in code.** `python scripts/check-no-client-names.py --check` (gated, fast tier) keeps client and reference-site names
-out of code and file names; docs, tests, fixtures, QA captures and dated reports may carry them.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.

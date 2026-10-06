@@ -207,6 +207,21 @@ targets native typography to the block's primary text element. Border controls s
 `plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard"; the colour/border helper
 registries: `.claude/rules/colour-emission.md` and `.claude/rules/block-editor-controls.md`.
 
+### 6.4 Page-level singletons and shared frontend stores
+
+A behaviour that belongs to the PAGE rather than to one block (the add-to-bag toast,
+`includes/class-sgs-toast.php`) is a server-rendered singleton emitted on `wp_footer`, not a block:
+Interactivity directives on nodes injected later never hydrate, so the region must exist in the HTML.
+A rendering block opts in by calling the class's own request method, so a page with no participating
+block pays nothing. Precedents: `class-sgs-floating-ui-renderer.php` and `class-product-item-list.php`.
+
+Shared frontend behaviour lives in `src/shared/<name>/store.js` registering one Interactivity
+namespace, imported by relative path from each consuming `viewScriptModule`. **No `webpack.config.js`
+entry and no `wp_register_script_module()` call are needed** — @wordpress/scripts bundles a copy per
+block and the runtime dedupes by namespace, merging repeat registrations
+(`src/shared/nav-interactivity/store.js`'s docblock is the reference). The corollary binds: ALL state
+must live in the store's `state`, because module-scope variables are per-bundle and would desynchronise.
+
 ## 7. Per-client theming
 
 `theme/sgs-theme/styles/` is deliberately empty — the framework does not use WordPress style variations.
@@ -243,6 +258,7 @@ curated capability roster.
 | Cloning pipeline → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
 | Cloning pipeline → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
 | Blocks plugin → email | Every email goes through `wp_mail()` (SGS code via `Sgs_Mailer`, shop alerts as `WC_Email` subclasses) over the site's SMTP mailbox via FluentSMTP; N8N receives optional automation events only |
+| Blocks plugin → WooCommerce cart lines | ONE server-built line summary (`includes/cart-line-summary/`) feeds all four surfaces from two taps: the `woocommerce_get_item_data` rows (bag drawer, cart page, checkout) and the order-item meta that `woocommerce_display_item_meta` renders (emails, order-received, My Account). Client wording arrives through a seeded option, never hardcoded. A Store API response rewrite must hook BOTH `rest_request_after_callbacks` and `woocommerce_hydration_request_after_callbacks` — the latter builds the first-paint payload, so hooking one flashes raw rows |
 | Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
 | Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
 | Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp. `--target indus-test` and `--target eye-care-test` deploy to those test sites. It builds and deploys from an isolated `git worktree add HEAD` by default, so a concurrent session's build or uncommitted dirty files cannot collide with the deploy |

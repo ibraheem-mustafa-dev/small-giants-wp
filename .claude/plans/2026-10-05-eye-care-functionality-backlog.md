@@ -2,7 +2,7 @@
 title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
 project: small-giants-wp
 created: 2026-10-05
-status: Tier 1 built except CR6 (2026-10-05, 65573118c + c06f71ea6); Tier 2-4 not started
+status: Tier 1 built except CR6; Tier 2 shop-journey group built (2026-10-06, see the group marker below); the rest of Tier 2 and Tiers 3-4 not started
 governs: what to build next, after the register-proven repairs track closed
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
@@ -188,6 +188,17 @@ first time they set one side of a box.
 Each is already decided in the register. Grouped so one sitting can close a theme.
 
 ### The shop and bag journey
+
+> **The five recommended items are BUILT and deployed to the canary (2026-10-06):** 18 (`c8c2c4162`, closing 93),
+> 20+23 (`e4735072d` + `e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`) and S9 (`2b4122c77`). Each register
+> row carries its hash, the readings taken at 375/768/1440 with their negative controls, and what was explicitly
+> NOT measured. **Still open in this group:** two S10 defects found by the `/qc` pass (the wishlist heart is
+> unclickable under the overlay, and a `learn-more` card has two tab stops to the same product), an unexplained
+> `Product_Manifest` divergence blocking the photo-swap half of 59, and everything in 20+23 that needs
+> eye-care-test rather than the canary (the client wording, a real order email, the admin screen, the per-line
+> prescription link). **S8, 17, 65B and 64 below are untouched.** Two register rows were also wrong to call their
+> work new: S10's stretched link already existed as the `blockLink` extension and S9's brand-logo lookup already
+> existed in `brand-strip`, so both became reuse plus adaptation.
 
 | Ref | The feature | Notes |
 |---|---|---|
