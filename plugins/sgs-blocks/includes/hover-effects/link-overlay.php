@@ -36,7 +36,7 @@ function block_link_href_matches( string $attrs, string $block_link ): bool {
 	$candidates = array( $block_link, esc_url( $block_link ) );
 	foreach ( $candidates as $candidate ) {
 		$candidate = trim( html_entity_decode( (string) $candidate, ENT_QUOTES ) );
-		if ( '' !== $candidate && untrailingslashit( $href ) === untrailingslashit( $candidate ) ) {
+		if ( '' !== $candidate && \untrailingslashit( $href ) === \untrailingslashit( $candidate ) ) {
 			return true;
 		}
 	}
@@ -63,17 +63,17 @@ function block_link_anchor_is_inert( string $attrs ): bool {
 /**
  * Add a class to an anchor's attribute string, merging with any existing one.
  *
- * @param string $attrs The anchor's attribute string.
- * @param string $class The class to add.
+ * @param string $attrs      The anchor's attribute string.
+ * @param string $class_name The class to add.
  * @return string The attribute string with the class present.
  */
-function block_link_add_class( string $attrs, string $class ): string {
+function block_link_add_class( string $attrs, string $class_name ): string {
 	if ( preg_match( '/\bclass\s*=\s*(["\'])(.*?)\1/i', $attrs, $class_match ) ) {
-		$merged = trim( $class_match[2] . ' ' . $class );
+		$merged = trim( $class_match[2] . ' ' . $class_name );
 		return str_replace( $class_match[0], 'class="' . esc_attr( $merged ) . '"', $attrs );
 	}
 
-	return rtrim( $attrs ) . ' class="' . esc_attr( $class ) . '"';
+	return rtrim( $attrs ) . ' class="' . esc_attr( $class_name ) . '"';
 }
 
 /**
