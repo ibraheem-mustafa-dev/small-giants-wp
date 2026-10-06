@@ -302,12 +302,38 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_for_cart_item' 
 		$wording     = sgs_cart_line_summary_wording();
 		$has_addons  = sgs_cart_line_summary_has_addons( $cart_item );
 		$addon_lines = $has_addons ? (array) $cart_item[ Addon_Price_List_Cart::LINES_KEY ] : array();
+		$attributes  = sgs_cart_line_summary_attributes( $cart_item );
+
+		/*
+		 * The "without add-ons" lead names something the shopper DECLINED, so
+		 * it only belongs on a line where there was something to decline.
+		 *
+		 * The add-on price list is site-wide and carries no product scoping, so
+		 * "this product could have taken add-ons" is not a fact the data model
+		 * holds. What it does hold is whether the shopper configured anything
+		 * at all: a line with variation attributes came from a product that
+		 * asked them questions, and a line with none did not. Without that
+		 * test, a client whose lead reads "Frame only" printed it on a lens
+		 * cloth and a spectacle case too — every line, whatever it was.
+		 *
+		 * A line with add-ons keeps its lead either way, so a SIMPLE product
+		 * that genuinely takes add-ons (an engraved gift box, say) is
+		 * unaffected. A simple line with neither ends up with no summary at
+		 * all, which is correct: there is nothing to say, and the renderer
+		 * then leaves WooCommerce's own rows exactly as they were.
+		 */
+		$lead = '';
+		if ( $has_addons ) {
+			$lead = $wording['leadWithAddons'];
+		} elseif ( ! empty( $attributes ) ) {
+			$lead = $wording['leadWithoutAddons'];
+		}
 
 		return sgs_cart_line_summary_lines(
 			array(
-				'lead'       => $has_addons ? $wording['leadWithAddons'] : $wording['leadWithoutAddons'],
+				'lead'       => $lead,
 				'addons'     => $has_addons ? sgs_addon_short_labels( $addon_lines ) : array(),
-				'attributes' => sgs_cart_line_summary_attributes( $cart_item ),
+				'attributes' => $attributes,
 			)
 		);
 	}
