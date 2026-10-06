@@ -61,12 +61,26 @@ test( 'MUST FAIL TO MATCH: grid-template-columns:count keeps its stored string a
 	}
 } );
 
-// R-47-10 and the 633-setting discovery pool: a setting with no css_property and an enum works through calibration
-// discovery (lib/resolve.mjs::resolveDiscovered). Routing one would delete that path, so the pool size is asserted,
-// and `candidates` structurally cannot return a css_property NULL row (attrsFor excludes them).
-test( 'the enum discovery pool is 633 settings, and no candidate is ever a css_property NULL row', () => {
+// R-47-10 and the enum discovery pool: a setting with no css_property and an enum works through calibration
+// discovery (lib/resolve.mjs::resolveDiscovered). ROUTING one would delete that path, which is the hazard this
+// guards, and `candidates` structurally cannot return a css_property NULL row (attrsFor excludes them).
+//
+// This asserted the pool size EXACTLY at 633 and that broke on a legitimate reseed: 2026-10-07 it read 635 after
+// peer sessions added attributes and changed `sgs/cart::countPopAnimation` from a boolean to a string enum, which
+// JOINED it to the pool. An exact count conflates the two directions — a DECREASE means a discovery-pool setting
+// was routed (the real defect), while an INCREASE is ordinary schema growth and happens on every reseed. So the
+// floor is asserted instead, plus named members that must stay unrouted, which tests the hazard rather than the
+// number. Never re-pin this to an exact count: the DB is the source of truth and a cached count in a test rots
+// exactly like a cached count in a doc.
+test( 'the enum discovery pool never shrinks and no candidate is ever a css_property NULL row', () => {
 	const blocks = db.prepare( 'SELECT slug FROM blocks' ).all().map( ( r ) => r.slug );
-	assert.equal( blocks.reduce( ( n, b ) => n + enumSettings( db, b ).length, 0 ), 633 );
+	const pool = blocks.reduce( ( n, b ) => n + enumSettings( db, b ).length, 0 );
+	assert.ok( pool >= 633, `the discovery pool is ${ pool }, below the 633 floor R-47-10 was written at: a setting that used to reach calibration discovery has been given a css_property, which deletes that path` );
+	// Named members, so routing one is caught even if an unrelated addition keeps the total above the floor.
+	for ( const [ block, attr ] of [ [ 'sgs/cart', 'displayMode' ], [ 'sgs/cart', 'triggerStyle' ], [ 'sgs/cart', 'itemRemoveStyle' ] ] ) {
+		assert.ok( enumSettings( db, block ).some( ( r ) => r.attr_name === attr ),
+			`${ block }::${ attr } must stay in the discovery pool (css_property NULL with an enum)` );
+	}
 	for ( const b of [ 'sgs/container', 'sgs/mega-group', 'sgs/card-grid', 'sgs/accordion' ] ) {
 		for ( const prop of [ 'padding', 'display', 'animation-duration', 'flex-grow' ] ) {
 			assert.ok( candidates( db, b, prop ).every( ( r ) => null !== r.css_property ) );

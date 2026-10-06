@@ -1,5 +1,5 @@
 // Register <-> sweep (A4): gives every fix-register item exactly one sweep status.
-// registerItems reads the register's tables into items { ids, section, cells, covers, line, header }. groupItems puts them in the
+// registerItems reads the register's tables into items { ids, section, cells, covers, aliasOf, line, header }. groupItems puts them in the
 // eight A4 groups by section name (a section in no group is returned in `ungrouped`, never dropped). checkStatuses judges
 // the agents' verdicts [{ id, status, evidence }] against the sweep file: one verdict per item, one of five statuses, and a
 // clean claim must cite a report the sweep holds and a ref no sweep row touches (a site-wide item is clean only when every
@@ -63,6 +63,7 @@ export function registerItems( markdown ) {
 	let section = '';
 	let header = -1;
 	let coversAt = -1;
+	let fixAt = -1;
 	lines.forEach( ( line, i ) => {
 		const h = line.match( /^## (.+?)\s*$/ );
 		if ( h ) {
@@ -75,6 +76,7 @@ export function registerItems( markdown ) {
 		if ( -1 === header ) {
 			header = i;
 			coversAt = splitCells( line ).findIndex( ( c ) => 'Covers' === c );
+			fixAt = splitCells( line ).findIndex( ( c ) => 'Fix' === c );
 			return;
 		}
 		const ids = [ ...registerIds( line ) ];
@@ -83,7 +85,14 @@ export function registerItems( markdown ) {
 		}
 		const cells = splitCells( line );
 		const covers = -1 === coversAt || ! cells[ coversAt ] ? [] : ( cells[ coversAt ].split( /[;(]/ )[ 0 ].match( ID_TOKEN ) || [] );
-		items.push( { ids, section, cells, covers, line: i, header } );
+		// A row whose FIX is nothing but a pointer at another row is that row's alias, not independent work: counting
+		// it separately double-counts one finding. Only the site-wide tables have a `Covers` column, so three rows
+		// carried their pointer solely in the Fix cell and were modelled nowhere (`3` -> 17, `61` -> 59, `N8` -> N2B).
+		// The match is deliberately NARROW: the WHOLE cell must be the pointer. A Fix cell that merely mentions
+		// another row inside prose is real work of its own, and row 61's own evidence cell ("see 59 for the
+		// measurement") is exactly the text a looser pattern would wrongly read as an alias.
+		const alias = -1 === fixAt || ! cells[ fixAt ] ? null : cells[ fixAt ].match( /^(?:see|same as)\s+(\**)([A-Z]{0,3}\d+[A-Za-z]{0,2})\**$/i );
+		items.push( { ids, section, cells, covers: covers.length ? covers : ( alias ? [ alias[ 2 ] ] : [] ), aliasOf: alias ? alias[ 2 ] : null, line: i, header } );
 	} );
 	return items;
 }
