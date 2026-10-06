@@ -91,7 +91,7 @@ $pill_border_colour  = (string) ( $attributes['pillBorderColour'] ?? '' );
 $pill_border_width_box = is_array( $attributes['pillBorderWidth'] ?? null ) ? $attributes['pillBorderWidth'] : array();
 $pill_border_style_raw = sanitize_key( (string) ( $attributes['pillBorderStyle'] ?? '' ) );
 $pill_border_radius  = (string) ( $attributes['pillBorderRadius'] ?? '' );
-$count_pop_animation = ! empty( $attributes['countPopAnimation'] );
+$count_pop_animation = in_array( $attributes['countPopAnimation'] ?? 'off', array( 'change', 'load-and-change' ), true ) ? $attributes['countPopAnimation'] : 'off';
 
 // FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
@@ -448,6 +448,17 @@ if ( 'pill' === $trigger_style ) {
 if ( $has_panel && '' !== $free_delivery_fill_colour ) {
 	$scoped_css[] = '.' . $uid . '.sgs-cart__panel .sgs-cart__free-delivery-fill{background-color:' . sgs_colour_value( $free_delivery_fill_colour ) . ';}';
 }
+if ( $has_panel ) {
+	$sgs_cart_fd_easings  = array(
+		'smooth'      => 'cubic-bezier(.2,.7,.2,1)',
+		'ease'        => 'ease',
+		'ease-in-out' => 'ease-in-out',
+		'linear'      => 'linear',
+	);
+	$sgs_cart_fd_easing   = $sgs_cart_fd_easings[ $attributes['freeDeliveryFillEasing'] ?? 'smooth' ] ?? $sgs_cart_fd_easings['smooth'];
+	$sgs_cart_fd_duration = is_numeric( $attributes['freeDeliveryFillDuration'] ?? null ) ? max( 0.0, min( 3.0, (float) $attributes['freeDeliveryFillDuration'] ) ) : 0.6;
+	$scoped_css[]         = '.' . $uid . '.sgs-cart__panel{--sgs-cart-free-delivery-duration:' . $sgs_cart_fd_duration . 's;--sgs-cart-free-delivery-easing:' . $sgs_cart_fd_easing . ';}';
+}
 if ( $has_panel && '' !== $free_delivery_track_colour ) {
 	$scoped_css[] = '.' . $uid . '.sgs-cart__panel{--sgs-cart-free-delivery-track:' . sgs_colour_value( $free_delivery_track_colour ) . ';}';
 }
@@ -506,7 +517,7 @@ $wrapper_data_attributes = array(
 	'data-hide-when-empty'  => $hide_when_empty ? '1' : '0',
 	'data-display-mode'     => esc_attr( $effective_mode ),
 	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
-	'data-count-pop'        => $count_pop_animation ? '1' : '0',
+	'data-count-pop'        => $count_pop_animation,
 );
 if ( $has_panel ) {
 	$wrapper_data_attributes['data-free-delivery-threshold']       = ( null !== $free_delivery_threshold ) ? (string) $free_delivery_threshold : '';

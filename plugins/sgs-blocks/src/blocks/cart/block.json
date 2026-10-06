@@ -778,9 +778,10 @@
 			"description": "CSS length (e.g. \"999px\" or \"50%\"). Empty uses style.css's own border-radius:999px default (fully rounded)."
 		},
 		"countPopAnimation": {
-			"type": "boolean",
-			"default": false,
-			"description": "Wave B — whether the live item count plays a short scale animation when it increases. Always off under prefers-reduced-motion regardless of this setting."
+			"type": "string",
+			"default": "off",
+			"enum": ["off", "change", "load-and-change"],
+			"description": "When the live item count plays its grow-and-fade pop: 'off', 'change' (when an item is added) or 'load-and-change' (also once when the page loads, even at 0). Never plays under prefers-reduced-motion."
 		},
 		"freeDeliveryThresholdOverride": {
 			"type": "string",
@@ -1252,6 +1253,17 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Hide the free-delivery message and bar while the bag is empty (placement above-items; the footer placement is already hidden when empty)."
+		},
+		"freeDeliveryFillDuration": {
+			"type": "number",
+			"default": 0.6,
+			"description": "Seconds the free-delivery bar takes to fill to its new level (0 to 3)."
+		},
+		"freeDeliveryFillEasing": {
+			"type": "string",
+			"default": "smooth",
+			"enum": ["smooth", "ease", "ease-in-out", "linear"],
+			"description": "How the free-delivery bar's fill speeds up and slows down: 'smooth' is a quick start and a gentle finish."
 		},
 		"freeDeliveryPlacement": {
 			"type": "string",

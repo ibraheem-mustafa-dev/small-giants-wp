@@ -61,7 +61,7 @@ function updateCartWidgets( cart ) {
 	document.querySelectorAll( '.sgs-cart' ).forEach( ( widget ) => {
 		const showZero = widget.dataset.showZero === 'true';
 		const hideWhenEmpty = widget.dataset.hideWhenEmpty === '1';
-		const countPopEnabled = widget.dataset.countPop === '1';
+		const countPopMode = widget.dataset.countPop || 'off';
 		const trigger = widget.querySelector( '[data-sgs-cart-trigger]' );
 		const badge = widget.querySelector( '[data-sgs-cart-count]' );
 
@@ -69,9 +69,9 @@ function updateCartWidgets( cart ) {
 			return;
 		}
 
-		// Wave B, U-1 — "count pop": see count-pop.js for the reduced-motion
-		// + per-instance-toggle + increase-only gating.
-		maybeAnimateCountPop( badge, count, countPopEnabled );
+		// "Count pop": see count-pop.js for the per-instance mode and
+		// reduced-motion gating.
+		maybeAnimateCountPop( badge, count, countPopMode );
 
 		badge.textContent = String( count );
 

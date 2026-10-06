@@ -100,6 +100,30 @@ export default function PanelContentControls( { attributes, setAttributes, hasPa
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			<RangeControl
+				label={ __( 'Free-delivery bar fill time (seconds)', 'sgs-blocks' ) }
+				help={ __( 'How long the bar takes to grow to its new level.', 'sgs-blocks' ) }
+				value={ attributes.freeDeliveryFillDuration ?? 0.6 }
+				min={ 0 }
+				max={ 3 }
+				step={ 0.1 }
+				onChange={ ( val ) => setAttributes( { freeDeliveryFillDuration: val ?? 0.6 } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<SelectControl
+				label={ __( 'Free-delivery bar fill style', 'sgs-blocks' ) }
+				value={ attributes.freeDeliveryFillEasing || 'smooth' }
+				options={ [
+					{ label: __( 'Smooth (quick start, gentle finish)', 'sgs-blocks' ), value: 'smooth' },
+					{ label: __( 'Gentle', 'sgs-blocks' ), value: 'ease' },
+					{ label: __( 'Slow at both ends', 'sgs-blocks' ), value: 'ease-in-out' },
+					{ label: __( 'Steady', 'sgs-blocks' ), value: 'linear' },
+				] }
+				onChange={ ( val ) => setAttributes( { freeDeliveryFillEasing: val } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
 			{ toggle( 'freeDeliveryHideWhenEmpty', __( 'Hide the free-delivery bar while the cart is empty', 'sgs-blocks' ), undefined, false ) }
 		</PanelBody>
 	);

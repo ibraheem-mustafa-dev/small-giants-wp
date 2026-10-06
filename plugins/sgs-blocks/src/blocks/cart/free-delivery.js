@@ -64,6 +64,55 @@ export function initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery ) {
 }
 
 /**
+ * Set the fill's level. The first level is held at 0% until the bar is
+ * actually on screen (it starts hidden, and may sit in a closed drawer), then
+ * released on a following frame so the width transition runs from empty
+ * instead of the fill appearing at its final width. Later levels apply
+ * straight away and animate from the previous one.
+ *
+ * @param {HTMLElement} el  The free-delivery element.
+ * @param {number}      pct Target percentage, 0 to 100.
+ */
+function setFillLevel( el, pct ) {
+	el.sgsFillTarget = pct;
+	if ( el.sgsFillReleased ) {
+		el.style.setProperty( '--sgs-cart-free-delivery-pct', `${ pct }%` );
+		return;
+	}
+	if ( el.sgsFillPending ) {
+		return;
+	}
+	el.sgsFillPending = true;
+	el.style.setProperty( '--sgs-cart-free-delivery-pct', '0%' );
+
+	const release = () => {
+		el.sgsFillReleased = true;
+		window.requestAnimationFrame( () => {
+			el.style.setProperty(
+				'--sgs-cart-free-delivery-pct',
+				`${ el.sgsFillTarget }%`
+			);
+		} );
+	};
+
+	if ( 'function' !== typeof window.IntersectionObserver ) {
+		// Force a layout at 0% first so the next frame's change transitions.
+		// eslint-disable-next-line no-unused-expressions
+		el.offsetWidth;
+		release();
+		return;
+	}
+
+	const observer = new window.IntersectionObserver( ( entries ) => {
+		if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
+			observer.disconnect();
+			release();
+		}
+	} );
+	observer.observe( el );
+}
+
+/**
  * Recompute and render the free-delivery progress bar against a freshly
  * fetched cart. A no-op when the element wasn't created (no threshold).
  *
@@ -96,7 +145,7 @@ export function updateFreeDeliveryProgress( el, cart, freeDelivery ) {
 	const pct = Math.max( 0, Math.min( 100, ( subtotal / threshold ) * 100 ) );
 
 	el.hidden = false;
-	el.style.setProperty( '--sgs-cart-free-delivery-pct', `${ pct }%` );
+	setFillLevel( el, pct );
 	el.classList.toggle( 'sgs-cart__free-delivery--complete', remaining <= 0 );
 
 	const track = el.querySelector( '[data-sgs-cart-free-delivery-track]' );

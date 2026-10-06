@@ -1,10 +1,11 @@
 /**
  * SGS Cart — "count pop" animation trigger (Wave B, U-1).
  *
- * A short scale animation on the live item count when it INCREASES (an item
- * was added), never on initial hydration and never under reduced motion or
- * the per-instance "Animate count on change" toggle. Split out of view.js to
- * keep it under the project's 250-line JS budget.
+ * A short grow-and-fade pop on the live item count. The per-instance mode
+ * (`countPopAnimation`) is 'off', 'change' (only when the count increases,
+ * never on the first render) or 'load-and-change' (also once on the first
+ * render, at any count including 0). Never plays under reduced motion. Split
+ * out of view.js to keep it under the project's 250-line JS budget.
  *
  * @package
  */
@@ -24,24 +25,23 @@ function prefersReducedMotion() {
 }
 
 /**
- * Play the pop animation on `badge` when `count` has increased since the
- * last call for this element, and update its stored previous count either
- * way. A no-op on the very first call (no previous count to compare against
- * yet — SSR hydration is not an "add").
+ * Play the pop animation on `badge` according to `mode`, and update its
+ * stored previous count either way. The first call for an element has no
+ * previous count: it pops only in 'load-and-change' mode. Later calls pop
+ * only when the count has increased since the last call.
  *
- * @param {HTMLElement} badge   The `[data-sgs-cart-count]` element.
- * @param {number}      count   The new, current item count.
- * @param {boolean}     enabled Whether the operator has the animation switched on.
+ * @param {HTMLElement} badge The `[data-sgs-cart-count]` element.
+ * @param {number}      count The new, current item count.
+ * @param {string}      mode  'off', 'change' or 'load-and-change'.
  */
-export function maybeAnimateCountPop( badge, count, enabled ) {
+export function maybeAnimateCountPop( badge, count, mode ) {
 	const previousCount = Number( badge.dataset.sgsPrevCount );
+	const isFirstCall = ! Number.isFinite( previousCount );
+	const shouldPop = isFirstCall
+		? 'load-and-change' === mode
+		: 'off' !== mode && count > previousCount;
 
-	if (
-		enabled &&
-		Number.isFinite( previousCount ) &&
-		count > previousCount &&
-		! prefersReducedMotion()
-	) {
+	if ( shouldPop && ! prefersReducedMotion() ) {
 		badge.classList.remove( 'sgs-cart__badge--pop' );
 		// Force reflow so re-adding the class restarts the animation on
 		// consecutive adds.

@@ -187,28 +187,30 @@
 	justify-content: center;
 }
 
-/* Wave B, U-1 — "count pop": a short scale animation on the live count when
-   an item is added (view.js toggles this class; never on initial hydration).
-   Disabled outright under prefers-reduced-motion in the existing block below,
-   and per-instance via the "Animate count on change" toggle (countPopAnimation
-   attribute — view.js reads `data-count-pop` and skips adding the class at
-   all when it's off, so this rule is inert rather than merely invisible). */
+/* "Count pop": the live count grows from 60% with a fade, overshoots to 115%
+   and settles at 100% over 0.5s. count-pop.js toggles this class according to
+   the countPopAnimation mode (off / change / load-and-change) read from
+   `data-count-pop`; in 'off' it never adds the class, so this rule is inert.
+   Skipped under prefers-reduced-motion. */
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-cart__badge--pop {
-		animation: sgs-cart-count-pop 0.35s ease;
+		animation: sgs-cart-count-pop 0.5s ease;
 	}
 }
 
 @keyframes sgs-cart-count-pop {
 	0% {
-		transform: scale(1);
+		opacity: 0;
+		transform: scale(0.6);
 	}
 
-	40% {
-		transform: scale(1.35);
+	60% {
+		opacity: 1;
+		transform: scale(1.15);
 	}
 
 	100% {
+		opacity: 1;
 		transform: scale(1);
 	}
 }
@@ -740,7 +742,9 @@
 	width: var(--sgs-cart-free-delivery-pct, 0%);
 	background-color: var(--wp--preset--color--primary, #111);
 	border-radius: inherit;
-	transition: width 0.3s ease;
+	transition-property: width;
+	transition-duration: var(--sgs-cart-free-delivery-duration, 0.6s);
+	transition-timing-function: var(--sgs-cart-free-delivery-easing, cubic-bezier(.2, .7, .2, 1));
 }
 
 :where(.sgs-cart__panel) .sgs-cart__free-delivery--complete .sgs-cart__free-delivery-text {

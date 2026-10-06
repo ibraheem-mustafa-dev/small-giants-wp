@@ -226,7 +226,7 @@ tree = [
                 # off RRP" tag on the photo; the draft's gallery split (725 : 536, measured) and 60px gap.
                 pickerAlwaysShowAxes=["pa_frame-size"], pickerBandAxis="pa_frame-size", pickerBandScale="S:52,M:57,L",
                 pickerLabelLinkAxis="pa_frame-size", pickerLabelLinkText="Which size am I?", pickerLabelLinkUrl="#size-guide",
-                gallerySavingBadge=True, galleryColumnRatio=1.353, galleryColumnGap="60px", extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
+                galleryColumnRatio=1.353, galleryColumnGap="60px", extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
                 btxt("brand", fontFamily="heading", fontWeight="500", fontSize={"desktop": 20}, fontSizeUnit="px",
                      letterSpacing={"desktop": 0.3}, letterSpacingUnit="em", textTransform="uppercase"),
                 B("sgs/heading", dict(level="h1", content="", fontFamily="heading", fontWeight="500",

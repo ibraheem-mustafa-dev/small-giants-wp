@@ -441,7 +441,7 @@
                   "triggerStyle": "pill",
                   "pillLabel": "Bag",
                   "displayMode": "drawer",
-                  "countPopAnimation": true,
+                  "countPopAnimation": "load-and-change",
                   "pillBorderColour": "primary",
                   "pillBorderStyle": "solid",
                   "pillBorderWidth": {

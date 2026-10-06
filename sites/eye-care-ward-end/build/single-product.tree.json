@@ -133,7 +133,6 @@
               "pickerLabelLinkAxis": "pa_frame-size",
               "pickerLabelLinkText": "Which size am I?",
               "pickerLabelLinkUrl": "#size-guide",
-              "gallerySavingBadge": true,
               "galleryColumnRatio": 1.353,
               "galleryColumnGap": "60px",
               "extrasBeforeCount": 3,

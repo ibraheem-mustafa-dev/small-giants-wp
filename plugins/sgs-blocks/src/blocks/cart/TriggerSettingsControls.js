@@ -20,7 +20,7 @@ import { IconPicker } from '../../components';
  * @param {string}   root0.triggerStyle       'icon' (icon+badge) or 'pill' (word+count).
  * @param {string}   root0.pillLabel          The pill trigger's editable word (e.g. "Cart"/"Bag").
  * @param {string}   root0.pillCountStyle     'plain' (count as text) or 'bubble' (round filled chip).
- * @param {boolean}  root0.countPopAnimation  Whether the count plays a scale animation on increase.
+ * @param {string}   root0.countPopAnimation  When the count pops: 'off', 'change' or 'load-and-change'.
  * @param {Function} root0.setAttributes      The block's attribute setter.
  */
 export default function TriggerSettingsControls( {
@@ -83,17 +83,21 @@ export default function TriggerSettingsControls( {
 				{ /* Pill border colour + radius moved to the Styles tab's "Pill
 				   border" panel (edit.js) — Spec 35 §14 / C1: border colour is
 				   excluded from SgsColourPanel; radius sits with it as the pair. */ }
-				<ToggleControl
-					label={ __( 'Animate count on change', 'sgs-blocks' ) }
+				<SelectControl
+					label={ __( 'Count animation', 'sgs-blocks' ) }
 					help={ __(
-						'A short scale animation on the count when an item is added. Always off when the visitor has requested reduced motion.',
+						'The count grows in with a soft fade. Never plays when the visitor has asked their device for less motion.',
 						'sgs-blocks'
 					) }
-					checked={ !! countPopAnimation }
-					onChange={ ( val ) =>
-						setAttributes( { countPopAnimation: val } )
-					}
+					value={ countPopAnimation || 'off' }
+					options={ [
+						{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
+						{ label: __( 'When an item is added', 'sgs-blocks' ), value: 'change' },
+						{ label: __( 'When the page loads and when an item is added', 'sgs-blocks' ), value: 'load-and-change' },
+					] }
+					onChange={ ( val ) => setAttributes( { countPopAnimation: val } ) }
 					__nextHasNoMarginBottom
+					__next40pxDefaultSize
 				/>
 			</PanelBody>
 

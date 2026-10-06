@@ -1064,14 +1064,35 @@ else :
 					<?php endif; ?>
 
 					<?php if ( $gr_show_card_logo ) : ?>
-						<img
-							src="<?php echo esc_url( $gr_google_logo_url ); ?>"
-							alt=""
-							class="sgs-google-reviews__card-logo"
-							width="17"
-							height="17"
-							aria-hidden="true"
-						/>
+						<?php
+						$gr_card_logo_url = '' !== $review_url ? $review_url : $gr_see_all_url;
+						if ( '' !== $gr_card_logo_url ) {
+							?>
+							<a href="<?php echo esc_url( $gr_card_logo_url ); ?>" class="sgs-google-reviews__card-logo-link" target="_blank" rel="noopener noreferrer">
+								<img
+									src="<?php echo esc_url( $gr_google_logo_url ); ?>"
+									alt=""
+									class="sgs-google-reviews__card-logo"
+									width="17"
+									height="17"
+									aria-hidden="true"
+								/>
+								<span class="sgs-sr-only"><?php echo esc_html__( 'View on Google', 'sgs-blocks' ); ?></span>
+							</a>
+							<?php
+						} else {
+							?>
+							<img
+								src="<?php echo esc_url( $gr_google_logo_url ); ?>"
+								alt=""
+								class="sgs-google-reviews__card-logo"
+								width="17"
+								height="17"
+								aria-hidden="true"
+							/>
+							<?php
+						}
+						?>
 					<?php endif; ?>
 				</div>
 

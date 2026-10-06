@@ -119,7 +119,9 @@
 		dialog.className = originalAside.className;
 
 		// Wrap the existing children in a scrollable region, then move them in,
-		// so a persistent sheet-footer can sit outside the scroll area.
+		// so persistent sheet-header and sheet-footer can sit outside the scroll area.
+		// This keeps the filter drawer's top bar pinned while the list scrolls,
+		// mirroring the behaviour of the bottom action bar (sheet-footer).
 		const scrollWrap = document.createElement( 'div' );
 		scrollWrap.className = 'sgs-shop-filters__scroll';
 		/* The site runs Lenis smooth scrolling (<html class="lenis">), which
@@ -135,6 +137,15 @@
 			scrollWrap.appendChild( originalAside.firstChild );
 		}
 		dialog.appendChild( scrollWrap );
+
+		// Extract the header (which was inserted as the aside's first child by
+		// ensureParts) and move it outside the scroll region so it stays pinned
+		// at the top, exactly as the sheet-footer stays pinned at the bottom.
+		const header = scrollWrap.querySelector( '.sgs-shop-filters__header' );
+		if ( header ) {
+			scrollWrap.removeChild( header );
+			dialog.insertBefore( header, scrollWrap );
+		}
 
 		/* Filter groups collapse into <details> accordions (sgs-shop-filters-accordion.js):
 		 * the panel is taller than the viewport, and collapsed groups are what give
