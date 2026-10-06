@@ -1521,7 +1521,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			</div><?php // end .product-card__media (image only — the aspect-ratio/overflow:hidden box must NOT wrap the thumbnails or they get clipped). ?>
 
 			<?php // A4: thumbnail strip — only render when showGalleryThumbs is true and gallery has 2+ images. ?>
-			<?php if ( $attributes['showGalleryThumbs'] && count( $def['gallery'] ) >= 2 ) : ?>
+			<?php if ( ! empty( $attributes['showGalleryThumbs'] ) && count( $def['gallery'] ) >= 2 ) : ?>
 			<div
 				class="product-card__thumbs"
 				role="list"
