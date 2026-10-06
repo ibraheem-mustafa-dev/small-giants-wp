@@ -49,16 +49,7 @@ export default {
 	live: { url: LIVE },
 	states: [
 		{ name: 'opening', fullPage: true },
-		// The site-wide size-guide modal, opened from the footer's "Size guide" link as a shopper does (live's modal sits in
-		// the footer template part, the draft's is a role=dialog layer outside its <footer>). Block pairing runs this
-		// state with `--state modal-open`; `pairRoot` below points the word collection at the modal on each side.
-		{
-			name: 'modal-open',
-			draft: ( h ) => h.clickText( '^size guide$', { tag: 'a', within: 'footer', wait: 900 } ),
-			live: ( h ) => h.clickText( '^size guide$', { tag: 'a', within: 'footer.sgs-site-footer', wait: 900 } ),
-		},
 	],
-	pairRoot: { 'modal-open': { draft: 'div[role="dialog"][aria-label="Size guide"]', live: '.sgs-modal__dialog' } },
 	pairs: [
 		// The footer itself: box, ground, hairline above it, and an inventory of every painted text and glyph.
 		{ name: 'footer-root', draft: 'footer', live: 'footer.sgs-site-footer', inventory: true, structure: false, box: [ 'h' ],

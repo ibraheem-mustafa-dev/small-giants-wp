@@ -743,6 +743,56 @@ deploy or reseed is running on this machine. Both were seen red here and both we
 named this session's own reseed, and then a peer's `build-deploy.py --target sandybrown`, in its own message; the
 second passed alone and in two consecutive clean full-suite runs. **A red there means the machine is busy.**
 
+#### Wave 3 findings, 2026-10-06
+
+**C3.4: no `transition,*` row calibrates anywhere in the library, so C3.1's routing buys calibration nothing.**
+`sgs/hero` was recalibrated on the local mirror after C3.1 (local and mirror build hashes matched at
+`b234ef74fee1843483a6b3437f3ed41b`, verified before the run). Both routed settings came back **`noMarker`**, with no
+calibrated slot. The cause is `lib/calibrate-markers.mjs::markersFor`, which dispatches on
+`row.css_property.split(',')[0]` — `transition` — and has no branch for it: not colour, keyword, enum, box, length or
+count, so it falls through to `return []`. **Checked against every precedent block before concluding: `sgs/brand-strip`,
+`sgs/card-grid`, `sgs/info-box`, `sgs/testimonial` and `sgs/cta-section` all carry the same pair in `noMarker` with no
+slot.** So this is a pre-existing library-wide gap that C3.1's routing joined consistently, not something C3.1 caused.
+The one row that moved F → W at the reseed moved on **database** evidence through `lib/db.mjs::candidates`, not on a
+calibrated slot.
+
+C3.4's done-condition as written ("`settings[<attr>].slots` contains the cited selector") therefore **cannot be met**
+until `markersFor` gains a transition branch. That is route code rather than block code, but it belonged to no lane
+this session. **Owner: the next route session.** A marker would need to set a duration and an easing and read
+`transition-duration` / `transition-timing-function` off the root, which is a new marker shape rather than a tweak.
+
+**L7.1 is proven on live data, not only in tests.** The same hero run produced `overriddenBy` on ten inherited
+settings — `textColour`, `textColourHover`, `fontSize`, `fontWeight`, `fontStyle`, `lineHeight`, `letterSpacing`,
+`textTransform`, `fontFamily`, `textWrap` — which is exactly the inherited-only scope L7 built it for.
+
+**C3.6: footer had been unwalkable since sitting i, and no gate could have caught it.**
+`sites/<client>/build/qa/parity/footer.mjs` declared a second walker state `modal-open` (added by lane L4 at
+`d605bb5ba`) and `pairs.mjs --state modal-open` was never run for it, so `footer.full.mjs` carries **zero** pairs
+scoped to that state. `scripts/parity/lib/lint.mjs::lintConfig` refuses any config whose declared state after the
+first has no pair scoped to it — its own comment explains why: "a state after the first changes something; a pair
+scoped to it must look at what changed". All four widths failed their config lint and the walker wrote no report, so
+`solve.mjs` threw.
+
+It was incomplete in a second way: `surfaces.json`'s state map for footer is `["opening"]` only, so `modal-open` was
+never mapped to a setting state either. Any row measured in it would have been an unmapped-state row — reported,
+never written. **It could not have produced a usable row this session under any circumstances.**
+
+**Why no gate caught it, which is the more important half.** The 2026-10-05 baseline sweep ran at `1ea514ae8`, which
+is **before** `d605bb5ba`, so footer walked cleanly then. Gate 1 re-ran **triage** over the already-committed Solve
+reports and never re-walked a surface, so a lane could break a surface's walkability while every gate stayed green.
+**A gate's scope is not the defect's scope**: Gate 1 measured classification, and walkability is a different
+property. C3.6 is the first thing to exercise it.
+
+**Fixed by removing the incomplete state, not by completing it**, and the reason is comparability: completing it
+would *add* modal coverage, changing footer's issue count for reasons unrelated to the route repairs and confounding
+C3.8's delta against the baseline. After the removal footer declares `opening` only with 39 pairs and
+`lintConfig` passes, which is exactly the coverage the baseline measured.
+
+**Deferred, with its owner:** footer's size-guide modal coverage needs the `modal-open` state re-declared **together
+with** a pair scoped to it (`pairs.mjs --state modal-open`, which the state's own comment anticipated) **and** an
+entry in `surfaces.json`'s footer `states` map. All three are needed or the surface breaks again. **Owner: Session D**,
+with the surface work, since it adds measurement coverage rather than repairing the route.
+
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
 That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no
