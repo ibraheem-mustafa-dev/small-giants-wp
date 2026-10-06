@@ -8,7 +8,8 @@ committed, deployed, reseeded or touched a host.
 
 ## Headline
 
-**178 rows reduce to 9 candidate framework fixes, 4 tree edits, and 1 unproven row.**
+**178 rows reduce to 7 new candidate framework fixes, 2 register items already decided and still to
+build (39-43 and 34/35), 4 tree edits, and 1 unproven row.**
 
 | Lane | Rows | real | already settable | wrong block | artefact | decided | Distinct fixes |
 |---|---|---|---|---|---|---|---|
@@ -31,7 +32,7 @@ node. That is the single largest category and it needs no framework work at all.
 | 2 | `sgs/accordion` | Header `line-height: 1.4` is hardcoded, so the block's own `lineHeight` cannot reach the title | 2 | `accordion/style.css::.sgs-accordion-item__header` `line-height: 1.4`. DB holds `sgs/accordion / lineHeight / line-height / wrapper`, which paints the root only |
 | 3 | `sgs/accordion` | `headerMinHeight`. Header hardcodes `min-height: 44px` | 3 | `accordion/style.css::.sgs-accordion-item__header` `min-height: 44px; /* touch target */`. Precedent `sgs/tabs / tabMinHeight / min-height / tab` |
 | 4 | `sgs/card-grid` | `noImageLabelLineHeight` and its `Unit` | 2 | `card-grid/block.json` holds 8 `noImageLabel*` attributes and **no** `noImageLabelLineHeight`, while `card-grid/render.php` already calls `sgs_typography_css_rule( $attributes, 'noImageLabel', … )`, which reads it. **The render path already consumes it** |
-| 5 | `sgs/business-info` | No link-level padding control; the link hardcodes its hit-area padding and the cancelling negative margin | 8 | `business-info/style.css::.sgs-business-info__link` `padding: 0.5em 0.6em`, `margin: -0.5em -0.6em`, `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`. Of 82 DB attributes only `linkMinHeight` (min-height), plus wrapper-level `padding` and `margin` |
+| 5 | `sgs/business-info` | **Already decided — register 34/35.** The link must become one 21px line: remove the hardcoded hit-area padding and its cancelling negative margin. **Not a new control** | 8 | `business-info/style.css::.sgs-business-info__link` `padding: 0.5em 0.6em`, `margin: -0.5em -0.6em`, `margin-block: calc((1lh - max(44px, 1lh + 1em)) / 2)`. Register 34/35: "Phone link: no minimum height, no padding, so it is one 21px line" |
 | 6 | `sgs/social-icons` | Brand mode overwrites the box colours per item; hover scale hardcoded | 17 | **Already decided — register 39-43.** The register's fix is a glyph-only brand variant with a white box and a light border, not per-property patching. Still to build |
 | 7 | `sgs/buybox` | Selected-value text has no typography control; it inherits 16px where the draft is 13px | 2 | `buybox/style.css::.sgs-buybox .sgs-buybox__picker-selected-value` sets `color` only. `pickerLabelFontSize` reaches the label span, not this element |
 | 8 | `sgs/tabs` | Tab hover underline hardcoded with no setting | 4 | `tabs/style.css::.sgs-tabs__tab:hover` `text-decoration: underline`. No decoration or hover-text-colour attribute on `sgs/tabs` |
@@ -68,20 +69,32 @@ the parent only *provides context* and the **child** emits the custom property:
 `accordion-item/render.php` writes `--sgs-accordion-header-pad` and `accordion/style.css` reads it. So
 the fix touches both blocks, with the control on the parent. `headerGap` does not exist yet in any form.
 
-## A cross-cutting concern on fixes 3 and 5
+## The 44px touch-target question, and why it only applies to fix 3
 
-Both touch a hardcoded **44px touch-target floor**, annotated as such in the source:
+Fixes 3 and 5 both touch a hardcoded **44px touch-target floor**, annotated as such in the source:
 `business-info/style.css` calls its padding a "Hit-area-extension technique: this padding plus
 min-width/min-height guarantee a >=44px hit", and `accordion/style.css` marks `min-height: 44px` as
-`/* touch target */`.
+`/* touch target */`. WCAG 2.1 AA 44px targets are a project non-negotiable.
 
-WCAG 2.1 AA 44px targets are a project non-negotiable, so making these client-settable would let a
-client drop below 44px and silently break accessibility. Either the control enforces a 44px floor, or
-the hardcode stays. Lane A reached the same conclusion independently, rating both its min-height and
-line-height fixes low value because the floor never binds in any sampled state.
+**Fix 5 is already settled, and in the opposite direction to a new control.** Register 34/35 reads:
+"Phone hover; phone link 44px tall (draft 21px) … Phone link: **no minimum height, no padding, so it is
+one 21px line. The 44px touch-target rule is met by the line spacing around it; check after.**" Status
+`proven`, sweep `still open`.
 
-Register 34/35 also already decided "no minimum height, no padding" for the business-info link, so fix 5
-may be `decided` rather than `real`. That is Bean's call, not more research.
+So Bean has already decided this one, already accounted for the touch target through line spacing, and
+already asked for a post-check. The work is to **remove** the hardcoded padding, the cancelling negative
+margin and the `margin-block` calc that assumes a 44px floor — not to add a `linkPadding` control. The
+`linkMinHeight` control already exists and the tree should set it to 0. Lane C verdicted these 8 rows
+`real` while also citing 34/35, which is an internal contradiction in its report; the register wins, and
+the rows are **`decided`**.
+
+**That leaves fix 3 as the only genuine 44px question.** Making `min-height: 44px` client-settable on the
+accordion header would let a client drop below 44px with nothing to stop them. Either the control
+enforces a 44px floor, or the hardcode stays. Lane A independently rated it low value anyway, because
+the floor never binds in any sampled state — the header's height is driven by padding plus the icon box.
+
+**Net effect on the count: 8 new candidate fixes, not 9**, plus two register items already decided and
+still to build (39-43 and 34/35).
 
 ## The canvas-settable claims met in passing
 
