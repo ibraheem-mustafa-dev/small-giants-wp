@@ -1,7 +1,7 @@
 # F3 gate: E14 triage and baseline retriage
 
 Subject: `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` (Gate B), baseline `plugins/sgs-blocks/scripts/hardcoded-render-defaults-baseline.json`.
-Status: analysis only. The one file changed besides this report is the baseline (section 2.3). No block `.php`, `.css` or `block.json` and no gate script was edited. Date: 2026-10-06.
+Status: the analysis stands; its highest-reach recommendations shipped 2026-10-06 in `6f1963c28` (see section 6). Originally: The one file changed besides this report is the baseline (section 2.3). No block `.php`, `.css` or `block.json` and no gate script was edited. Date: 2026-10-06.
 
 ## 0. Method, and what the numbers rest on
 
@@ -520,10 +520,24 @@ Two scales, kept apart.
 
 `E14_OPEN_BACKLOG` is `CLASS-2: 68`, `CLASS-3: 5`, `CANNOT-RESOLVE: 64`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
+**Shipped 2026-10-06 (`6f1963c28`): the ceilings now stand at CLASS-2 56, CLASS-3 3,
+CANNOT-RESOLVE 64**, measured by `--check` and lowered in the commit that earned them. What landed:
+the 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field`
+typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with
+their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`.
+Every literal on an element that now owns a control sits inside `:where()` (Fix option 3), which
+also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control
+could beat, and the ladder row weights, which blocked the ladder's own font-weight control.
+
+CANNOT-RESOLVE did not fall, and the composition changed: unifying the ladder markup put it outside
+`readBlockPhpFiles`'s block-directory walk (cause B below), which cost 4 rows, and buybox's first
+`line-height` control made one pre-existing literal visible. Both were absorbed by de-specifying
+those literals, so the number held at 64 rather than being raised.
+
 | Step | Where | CLASS-2 | CLASS-3 | CANNOT-RESOLVE |
 |---|---|---|---|---|
-| Now | | 68 | 5 | 64 |
-| Delete the 10 DEAD declarations (`cta-section` `__btn` x3 and `__btn-icon`, `notice-banner` `__text` x2, `google-reviews` `__error` and `__powered-by`, `testimonial-slider` `__empty` x2). Nothing renders them, so the rendered page cannot change. | 3.2 | 58 | 5 | 64 |
+| Before this work | | 68 | 5 | 64 |
+| **Now (shipped)** | | **56** | **3** | **64** |
 | Move the 3 EDITOR-only declarations (`business-info` `__placeholder` x2, `table-of-contents` `__empty`) into each block's `editor.css`, which the gate excludes by design. | 3.2 | 55 | 5 | 64 |
 | Fix the 26 FIX declarations (22 CLASS-2, 4 CLASS-3) | 3.1 | 33 | 1 | 64 |
 | Gate: drop editor-only classes (cause A, 5) and let an own control win (2) | 4.1 | 33 | 1 | 57 |

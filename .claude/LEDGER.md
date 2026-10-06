@@ -85,8 +85,26 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
 
 **Owed, each with its owner:**
 - **The 5 block fixes + A7 — SHIPPED, VERIFIED, CLOSED 2026-10-06** (C2 plan's "THE OWED WORK"). The F3 gate
-  now catches that hardcode class, advisory and ratcheted. **Next:** 26 fixes by reach + 52 findings with no
-  typography control, in `plugins/sgs-blocks/reports/f3-e14-triage.md`.
+  now catches that hardcode class, advisory and ratcheted.
+- **F3/E14 highest-reach gaps — SHIPPED, VERIFIED, CLOSED 2026-10-06** (`6f1963c28`, live on eye-care-test).
+  `sgs/form` gained `label` and `field` typography surfaces; `sgs/product-card` and `sgs/buybox` gained
+  `valueLadder` and `valueLadderSaving`, with their byte-identical markup unified into
+  `includes/helpers-value-ladder.php::sgs_value_ladder_markup`. 10 dead declarations deleted.
+  **Ceilings ratcheted on measurement: CLASS-2 68 → 56, CLASS-3 5 → 3**; CANNOT-RESOLVE stays 64.
+  **Next:** the remaining 14 of the 26 FIX rows by reach, and the 52 no-control findings, in
+  `plugins/sgs-blocks/reports/f3-e14-triage.md` §3.1 and §5. Highest reach left: `sgs/process-steps`
+  `__step` text-align (12/instance), `sgs/product-faq` `__question` (3 decls), `sgs/countdown-timer`
+  number/label/expired, `sgs/form`'s tile icon/label, review term and consent text.
+  ⚠️ Four costs of installing a surface, each hit this session and worth budgeting for next time:
+  the helper call must build its selector INLINE (a variable registers no E11 governance and the crude
+  BEM heuristic then flags unrelated siblings as BLOCKING legacy findings); the literal on the
+  now-controlled element goes inside `:where()`; a full surface on a block that already has a root
+  prefix needs `css_element` overrides or F6 checks #1/#8 fail; and moving markup into `includes/`
+  blinds `readBlockPhpFiles` and drops `block_render_repeaters` rows. Detail in auto memory,
+  `installing-a-typography-surface-trips-four-gates`.
+  ⚠️ `scripts/add-control.js` CANNOT scaffold this — it predates the 2026-09-07 full-surface rule
+  (legacy flat shapes, 5 members missing, and it emits the banned hover trio). Hand-write the
+  `sgs/trust-bar` triple instead.
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
   `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 589. **F 193 → 173**, measure-only,
   inside the 155-175 band committed BEFORE the sweep. All four owed items closed or named.
