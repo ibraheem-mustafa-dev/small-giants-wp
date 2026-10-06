@@ -189,9 +189,16 @@ both and treat the local result as the discriminator rather than as the figure.
    is not the same as passing. Not a regression from this session: the error predates it (`d605bb5ba`) and
    W2-E's only change to that file was 19 added lines. The drawer's pair root is absent at a recheck width on
    the current live site where it was present on 2026-10-05.
-3. **Session C's three owed host jobs** — the C3.5 confirmation walk, an `sgs/media` recalibration, and
-   `benchmark.mjs --noise` with control and noise back to back.
-4. The four items left open in Spec 47 §5 Residual (`solve.mjs::writeRound`'s unchecked `canvasSettable`,
+3. **`benchmark.mjs --noise`, control and noise back to back** — the only one of Session C's three host jobs
+   still owed. The confirmation walk and the `sgs/media` recalibration are both DONE (§§1 and 2 above).
+   Stopped at 4 of 10 runs, so the catch rate of 5 of 5 stands and the noise figure is unproven in both
+   directions. **Keep it remote**: its baseline was measured remotely and its question is host load.
+4. **The 34 dead `sgs/hero` calibration settings** — cause established and NOT a defect ("dead" means only
+   that no marker moved a computed style on the fixture the harness built, and 23 of 34 are
+   split-variant-gated), but **three remain undetermined**: `backgroundImageTablet`,
+   `backgroundImageMobile` and `maxWidth`. Diagnosis, the two wrong answers already corrected, and four
+   live experiments: `HERO-DEAD-SETTINGS.md`.
+5. The four items left open in Spec 47 §5 Residual (`solve.mjs::writeRound`'s unchecked `canvasSettable`,
    emission read by string search, `chrome-compare.mjs::hoverEffects` ignoring `loops`, and a live-side
    `reveal-unfired` never being persisted).
 

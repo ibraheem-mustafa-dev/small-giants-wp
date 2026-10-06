@@ -716,7 +716,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        twin-containment pairing gate, the transition markers, `canvasSettable`'s emission selector, the
        re-keying of rows by a cosmetic path change, a stale report served as current, and the walker's own
        caveats reaching no reader. Commits `809d30f8d`, `1963180ac`, `d72c88afe`, `54c1a53f3`, `aa4c3b15a`,
-       `9970eb804`, `6a61f3678`, `4cc06dd12`. Route suite 523 to 580, all green.
+       `9970eb804`, `6a61f3678`, `4cc06dd12`. Route suite 523 to 582, all green.
        - **Still open from that work, and each needs its own session:**
          - **`solve.mjs::writeRound` sets `canvasSettable` from its hop citation with no emission check**, so
            Solve's own report still flags gaps `lib/triage.mjs` no longer trusts. Applying

@@ -94,7 +94,7 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   **Held until the route cleanup MESSAGES that its sweep is done**; an idle notice is not that signal. Detail,
   including A7's cause and the by-PROPERTY attribution rule: the C2 plan's "THE OWED WORK".
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
-  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 581. **F 193 → 173**, all 17 surfaces,
+  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 582. **F 193 → 173**, all 17 surfaces,
   measure-only, no stale reports, no write to any client tree — inside the 155-175 band committed BEFORE the sweep
   (`2cf9ab4c3`); the original 148-168 would have failed a correct result. `canvas-settable` 209 → 168, `bgHoverZoom` 20 → 0.
   **Owed:** `benchmark.mjs --noise` (stopped 4/10 to free the host; 5/5 catch rate stands, noise unproven), 168 canvas
@@ -105,8 +105,8 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   **Never `wsl --shutdown`: SearXNG lives there.**
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
   (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
-- **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
-  `sgs/media` recalibration, and a `benchmark.mjs --noise` re-run. Commands in the Session C plan's "Wave 3's
+- **`benchmark.mjs --noise`** — the only Session C host job still owed (stopped 4 of 10; 5 of 5 catch rate
+  stands, noise unproven). Confirmation walk and `sgs/media` recalibration DONE. Commands: Session C plan, "Wave 3's
   remaining items".
 
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no

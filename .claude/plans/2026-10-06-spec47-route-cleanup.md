@@ -2,7 +2,7 @@
 title: "Spec 47 route cleanup: close every open point and make the measuring tool reusable"
 project: small-giants-wp
 created: 2026-10-06
-status: complete 2026-10-06 — 16 tasks built, suite 523 to 581, F 193 to 173 verified measure-only inside the revised 155-175 band; four items owed (see WAVE4-RESULTS.md)
+status: complete 2026-10-06 — 16 tasks built, suite 523 to 582, F 193 to 173 verified measure-only inside the revised 155-175 band. Four items owed, all in WAVE4-RESULTS.md: benchmark.mjs --noise (stopped at 4 of 10 runs), 168 canvas-settable claims across 63 families, mobile-menu unpairable so NOT JUDGED, and 34 dead sgs/hero settings (fixture-gated, HERO-DEAD-SETTINGS.md)
 governs: the route-defect fixes arising from Session C2's four diagnoses
 references:
   - .claude/reports/2026-10-06-session-c2/QC-ROUTE-FIXES.md
@@ -142,10 +142,21 @@ they belong here rather than in a separate session:
 1. **The 180 unconfirmed canvas-settable claims.** Session C2 refuted 29 from source and proved a named
    masking class (the `bgHoverZoom` 20), but **180 claims were never live-confirmed** — its planned
    Playwright step was substituted with source analysis. After P2a and the `canvasSettable` fix land, test
-   them by **family, not by row**: the claims collapse to 68 families of (cited block, setting, row
-   property), and 2 reads per family covers all 68 in ~101 readings instead of 209. Families span surfaces,
-   so surface is the wrong axis.
-2. **Three host jobs Session C left owed** (quiet shared host each): the **C3.5 confirmation walk** — order
+   them by **family, not by row**: the claims collapse into families of (cited block, setting, row
+   property), and 2 reads per family is far fewer readings than one per claim. Families span surfaces, so
+   surface is the wrong axis.
+
+   ⚠️ **The 180 / 68 / 209 figures above are the PRE-SWEEP prediction. The measured outcome is different**,
+   because R1 closed part of it: **168 claims across 63 families** remain, down from 209 across 69, with
+   claims citing `bgHoverZoom*` at **0** (was 20). Work from `WAVE4-RESULTS.md`, and regenerate the family
+   table — `WAVE4-CANVAS-FAMILIES.md` holds the pre-R1 69/209 grouping.
+2. **Session C's three host jobs — TWO ARE NOW DONE (2026-10-06), only `benchmark.mjs --noise` is owed.**
+   The **C3.5 confirmation walk** RAN (300 open rows, 0 live console errors) and the **`sgs/media`
+   recalibration** RAN (38 settings, 0 dead; it proved L7's content reads on real data, and `sgs/hero`
+   records none because it is a container whose copy lives in child blocks). `benchmark.mjs --noise` was
+   stopped at 4 of 10 runs to release the host, so the catch rate of 5 of 5 stands and the noise figure is
+   still unproven in both directions. Detail in `WAVE4-RESULTS.md` §"Session C's three owed host jobs".
+   The original description follows, for the commands: the **C3.5 confirmation walk** — order
    652 on eye-care-test is already `processing` and paid, so set `EYECARE_ORDER_URL` to its
    order-received URL and read the key with `wp eval`, **never store it**; an **`sgs/media` recalibration**
    to exercise the content reads on a block that has them, because `sgs/hero`'s run recorded nothing across
