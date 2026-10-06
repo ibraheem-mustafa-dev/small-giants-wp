@@ -1,7 +1,35 @@
 # The canvas-settable claims, live-confirmed by family
 
-Status: **17 of 63 families measured, all 17 refuted. 46 families are host-gated** and cannot be read on the
-local mirror at all (see "Why the local mirror only covers 17").
+Status: **ALL 63 families measured on one SHA (2026-10-07, remote, after peer d8's deploy `6f1963c28`).
+59 of 63 refuted; 4 are not-refuted-but-not-proven. `ABSENT` is ZERO — every family resolved.**
+The W-to-F reclassification is the one remaining step and needs NO host.
+
+| Verdict | Families | Claims |
+|---|---|---|
+| `REFUTED` — rules govern the row, none is the cited block's | 22 | 71 |
+| `NO-RULE` — nothing anywhere declares that property for that element | 37 | 93 |
+| `CONFIRMED` — a matching rule is scoped by the cited block's own class | 4 | 4 |
+| `ABSENT` | **0** | 0 |
+
+**3,907 stylesheets read, 0 skipped**, so no verdict rests on a sheet that could not be parsed.
+
+⚠️ **The 4 CONFIRMED are "not refuted", NOT "proven".** One is sound: `sgs/trust-bar::columns →
+grid-template-columns`, whose matching rule is `.sgs-container-13c453e4 > .sgs-container__inner` — the cited
+trust-bar's own instance uid, because trust-bar renders through `SGS_Container_Wrapper`. The other three (all on
+`shop`, at depths 11 and 13: `contentBandMargin → margin-bottom`, `gridItemBorderRadius → border-radius`,
+`minHeight → min-height`) matched because the winning rule is scoped by `.sgs-shop-filters`, a class the cited
+container carries. That proves the cited block's class **scopes** the rule; it does **not** prove the cited
+**setting** drives it. Separating the two needs the emission selector — the same `ctx.emissionFor` gap named
+below. Treat these 4 as unresolved rather than as counter-examples.
+
+**A control fell out of re-reading all 63 rather than only the 46.** The 17 families readable before d8's deploy
+kept **identical verdicts** on both SHAs; only the 46 previously-`ABSENT` changed, and every one changed from
+`ABSENT` to a real verdict. So the measurement is stable across that deploy for everything readable on both,
+and the split-baseline risk that prompted the re-read was real in principle but empirically nil. This is why
+all 63 were re-read on one SHA instead of appending the 46 to the earlier 17.
+
+**The prediction this report made was FALSIFIED, and that is recorded rather than quietly dropped.** It
+predicted all 63 would refute. Four did not. The root cause below still holds for the 59.
 
 Tool: `scripts/computed-route/confirm-canvas.mjs` (read-only; writes no tree, setting, page or stylesheet).
 

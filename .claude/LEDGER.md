@@ -113,10 +113,11 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   view-swap fade (accepted at `shop.mjs`:286), the trust-bar marquee, and a shadow read at t≈0.999 (same colour;
   alpha/blur/spread each an identical 0.0950% short). C's 13-and-9 superseded.
   **`mobile-menu` pairs** (`7255be68d`): all 17 surfaces carry `handScope`.
-  **Canvas: 17 of 63 families (82/168) confirmed live, ALL REFUTED** (`29f2e30c1`, `confirm-canvas.mjs`,
-  `CANVAS-SETTABLE-CONFIRMATION.md`). Cause MEASURED: `reachesElement` **fails open** — `emissionOf` null 17 of
-  17, so each row read W untested (`reachabilityVerified` records which; no row moved). W→F held until all 63 are
-  read. **46 families need the REMOTE site** — see the ⚠️.
+  **Canvas: ALL 63 families confirmed live on one SHA** (`confirm-canvas.mjs`,
+  `CANVAS-SETTABLE-CONFIRMATION.md`): **59 refuted, 4 not-refuted-but-not-proven**, 0 absent, 3,907 sheets read
+  and 0 skipped. Cause MEASURED: `reachesElement` **fails open** — `emissionOf` null for every refuted one, so
+  each row read W untested (`reachabilityVerified` records which; no row moved).
+  **OWED: the W→F reclassification, over all 63 at once so F keeps one meaning. Needs NO host.**
   **`sgs/hero`'s 3 undetermined closed** (`353b9b4ed`, `HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap,
   proven live — **never remove `section.sgs-hero{max-width:none}`** (D725, 24px off-screen); and a tier background
   with no base image paints nothing, a **candidate live gap** needing a built instance.
