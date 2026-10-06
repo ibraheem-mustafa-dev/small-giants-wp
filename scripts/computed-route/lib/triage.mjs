@@ -8,7 +8,7 @@
 import { splitProperty, resolve, resolveViaAncestor } from './resolve.mjs';
 import { listedProperties, modifierOf } from './db.mjs';
 import { draftValues, plainLength, cssProp, settingState, openRows, writableGroups } from './solve-rows.mjs';
-import { entranceStart } from './entrance.mjs';
+import { entranceStart, groupRects } from './entrance.mjs';
 import { referenceOf } from './references.mjs';
 import { sourcePass } from './triage-source.mjs';
 import { USED_VALUES } from '../solve.mjs';
@@ -225,7 +225,7 @@ export function resolveIssue( issue, ctx ) {
 		if ( cal && ! known.map( lp ).includes( lp( onPath ) ) ) {
 			return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
 		}
-		return ( on === node && entranceStart( g, node, perWidth ) ) || resolver( { block: on.name, slot: onPath, anyIndex, tag, prop, state, perWidth, fontPx, current: on.attributes || {}, siblings }, cal );
+		return ( on === node && entranceStart( g, node, perWidth, groupRects( walk, g ) ) ) || resolver( { block: on.name, slot: onPath, anyIndex, tag, prop, state, perWidth, fontPx, current: on.attributes || {}, siblings }, cal );
 	};
 	let out = attempt( node, r.path, false );
 	let on = { ref: r.ref, block: node.name, path: r.path, node };

@@ -20,6 +20,7 @@ const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 // mobile max-width 767px).
 export const WIDER_TIERS = { desktop: [], tablet: [ 'desktop' ], mobile: [ 'tablet', 'desktop' ] };
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
+const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-duration', 'animation-delay' ];
 
 let schemaIndex = null;
 // block.json attributes for a block slug, read from the plugin's block sources (not its scripts, R-47-1).
@@ -106,6 +107,15 @@ const sameMeasured = ( prop, a, b ) => {
 	return la && lb ? la.unit === lb.unit && Math.abs( la.n - lb.n ) <= 0.5 : String( a ) === String( b );
 };
 
+// One CSS time ("0.25s", "250ms", "1s") as a whole number of milliseconds, or null when it is not one non-negative time.
+export function timeToMs( raw ) {
+	const m = String( raw ?? '' ).trim().match( /^(\d*\.?\d+)(ms|s)$/i );
+	if ( ! m ) {
+		return null;
+	}
+	return Math.round( parseFloat( m[ 1 ] ) * ( 's' === m[ 2 ].toLowerCase() ? 1000 : 1 ) );
+}
+
 // One measured value in the setting's form. Returns { value } or { error }.
 function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where } ) {
 	if ( COLOUR_PROPS.includes( prop ) ) {
@@ -134,6 +144,14 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		// An image setting holds { url }: a measured url(...) maps to it; a gradient or several layers cannot.
 		const m = String( raw ).match( /^url\(["']?([^"')]+)["']?\)$/ );
 		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
+	}
+	if ( TIME_PROPS.includes( prop ) ) {
+		// A time setting holds whole milliseconds: seconds convert (0.25s is 250), never a decimal or a unit suffix.
+		const ms = timeToMs( raw );
+		if ( null === ms ) {
+			return { error: `${ raw } is not one non-negative time` };
+		}
+		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( ms ) : ms };
 	}
 	const px = toPx( raw, fontPx );
 	if ( null === px ) {

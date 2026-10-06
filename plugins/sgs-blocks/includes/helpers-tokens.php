@@ -1463,9 +1463,18 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
 function sgs_transition_vars( array $attributes ): array {
 	$styles = array();
 
+	// A duration is a non-negative whole number of milliseconds (an int, an integral float or a string of digits).
+	// Anything else ("0.25s", "0.3", "1s", "-5") is refused and the default applies; stripping it to its digits would
+	// emit a different, smaller duration than the one entered.
 	$duration    = $attributes['transitionDuration'] ?? '';
-	$duration_ms = preg_replace( '/[^0-9]/', '', $duration );
-	$duration_ms = '' !== $duration_ms ? $duration_ms : '300';
+	$duration_ms = '300';
+	if ( is_int( $duration ) && $duration >= 0 ) {
+		$duration_ms = (string) $duration;
+	} elseif ( is_float( $duration ) && $duration >= 0 && floor( $duration ) === $duration && $duration < PHP_INT_MAX ) {
+		$duration_ms = (string) (int) $duration;
+	} elseif ( is_string( $duration ) && 1 === preg_match( '/^[0-9]+$/', $duration ) ) {
+		$duration_ms = $duration;
+	}
 	$styles[]    = '--sgs-transition-duration:' . $duration_ms . 'ms';
 
 	$easing          = $attributes['transitionEasing'] ?? '';

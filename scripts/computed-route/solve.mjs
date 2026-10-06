@@ -16,7 +16,7 @@ import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDi
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
-import { entranceStart } from './lib/entrance.mjs';
+import { entranceStart, groupRects } from './lib/entrance.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -166,7 +166,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			if ( cal && ! knownPaths( cal ).map( loose ).includes( loose( onPath ) ) ) {
 				return { gap: 'unmapped-element', detail: `${ on.name } path "${ onPath }" is not a calibrated element` };
 			}
-			return ( on === node && entranceStart( g, node, perWidth ) ) || resolve( { block: on.name, slot: onPath, anyIndex, tag, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: on.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
+			return ( on === node && entranceStart( g, node, perWidth, groupRects( report, g ) ) ) || resolve( { block: on.name, slot: onPath, anyIndex, tag, prop: cssProp( g.prop ), state: g.state, perWidth, fontPx, current: on.attributes || {}, siblings }, { db, snapshot, calibration: cal, log } );
 		};
 		let r = attempt( node, g.path, false );
 		let target = { node, ref: g.ref, path: g.path };

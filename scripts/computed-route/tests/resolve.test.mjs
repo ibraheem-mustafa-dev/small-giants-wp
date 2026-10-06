@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
-import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf } from '../lib/resolve.mjs';
+import { resolve, resolveDiscovered, resolveViaAncestor, blockContext, splitProperty, tiersOf, timeToMs } from '../lib/resolve.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 
 const db = openDb();
@@ -291,4 +291,30 @@ test( 'nothing in the chain declaring the property returns null, so the caller k
 	const row = { block: 'sgs/mega-group', slot: '', prop: 'mask-composite', state: null, perWidth: { 1440: 'add' } };
 	assert.equal( resolveViaAncestor( row, { db, snapshot, canvas: true, ancestors: [ MEGA_PANEL ], measuredSlots: [ MEGA_PANEL.path ] } ), null );
 	assert.equal( resolveViaAncestor( MEGA_GROUP, { db, snapshot, canvas: true, ancestors: [] } ), null );
+} );
+
+// A time setting holds whole milliseconds (sgs/hero declares transitionDuration as a string, default "300").
+const timeWrite = ( raw ) => resolve( { block: 'sgs/hero', slot: '', prop: 'transition-duration', perWidth: { 1440: raw, 375: raw } },
+	{ db, snapshot, calibration: cal( { transitionDuration: { slot: '', property: 'transition-duration' } } ) } );
+
+test( 'transition-duration: seconds become integer milliseconds (0.25s is 250, 1s is 1000), never a decimal or a unit', () => {
+	assert.equal( timeToMs( '0.25s' ), 250 );
+	assert.equal( timeToMs( '1s' ), 1000 );
+	assert.equal( timeToMs( '0.3s' ), 300 );
+	assert.equal( timeToMs( '0.0005s' ), 1 );
+	const w = timeWrite( '0.25s' );
+	assert.deepEqual( w.writes?.map( ( x ) => x.value ), [ '250' ], JSON.stringify( w ) );
+	assert.equal( timeWrite( '1s' ).writes?.[ 0 ]?.value, '1000' );
+} );
+
+test( 'transition-duration: not over-suppressing, milliseconds and a real zero survive; a non-time is refused', () => {
+	assert.equal( timeToMs( '250ms' ), 250 );
+	assert.equal( timeToMs( '0s' ), 0 );
+	assert.equal( timeToMs( '0ms' ), 0 );
+	assert.equal( timeWrite( '250ms' ).writes?.[ 0 ]?.value, '250' );
+	assert.equal( timeWrite( '0s' ).writes?.[ 0 ]?.value, '0' );
+	assert.equal( timeToMs( '-1s' ), null );
+	assert.equal( timeToMs( '0.2s, 0.3s' ), null );
+	assert.equal( timeToMs( 'ease' ), null );
+	assert.equal( timeWrite( 'ease' ).writes, undefined );
 } );
