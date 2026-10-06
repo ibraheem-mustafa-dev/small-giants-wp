@@ -192,11 +192,13 @@ Each is already decided in the register. Grouped so one sitting can close a them
 > **The five recommended items are BUILT and deployed to the canary (2026-10-06):** 18 (`c8c2c4162`, closing 93),
 > 20+23 (`e4735072d` + `e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`) and S9 (`2b4122c77`). Each register
 > row carries its hash, the readings taken at 375/768/1440 with their negative controls, and what was explicitly
-> NOT measured. **Still open in this group:** two S10 defects found by the `/qc` pass (the wishlist heart is
-> unclickable under the overlay, and a `learn-more` card has two tab stops to the same product), an unexplained
-> `Product_Manifest` divergence blocking the photo-swap half of 59, and everything in 20+23 that needs
-> eye-care-test rather than the canary (the client wording, a real order email, the admin screen, the per-line
-> prescription link). **S8, 17, 65B and 64 below are untouched.** Two register rows were also wrong to call their
+> NOT measured. **Nothing in this group is open any more (2026-10-06):** both S10 defects are fixed (`6cb273a18`
+> for the heart and the swatches, which the same cause hid; `e62f45952` for the tab stop, where Bean approved
+> rebuilding the stretched-link pattern so the block's own visible link owns the surface), the
+> `Product_Manifest` "divergence" turned out to be two different 48-variation products with near-identical names
+> and the photo swap is verified on a realistic fixture, and 20+23 is verified on eye-care-test with the client's
+> wording, a real order and a foreign-row negative control. **S8, 17, 65B and 64 below are untouched** and are
+> what remains of Tier 2. Two register rows were also wrong to call their
 > work new: S10's stretched link already existed as the `blockLink` extension and S9's brand-logo lookup already
 > existed in `brand-strip`, so both became reuse plus adaptation.
 

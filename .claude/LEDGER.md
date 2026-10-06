@@ -103,13 +103,20 @@ compare on a **normalised** path, because a cosmetic path change re-keys rows wh
 **Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
 `transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
 
-**Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified on sandybrown, pushed.**
-Tier 2's five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10
-(`80b9deaa4`), S9 (`2b4122c77`), plus `sgs/product-card`'s gallery strip made opt-in (`b68db67c9`+`06b22220f`) — a
-Tier 1 regression a stale page cache had hidden.
-`brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the 375/768/1440 readings with
-their negative controls, what was NOT measured, and every open item — two S10 `/qc` defects, a
-`Product_Manifest::build()` divergence blocking 59's photo swap, and the 20+23 surfaces needing eye-care-test.
+**Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
+five: 18 (`c8c2c4162`, closing 93), 20+23 (`e4735072d`+`e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`),
+S9 (`2b4122c77`). `brandUseLogo` ships `true` (a cross-client default). Each row carries its hash, the
+375/768/1440 readings with their negative controls, and what was NOT measured.
+**All four open items CLOSED 2026-10-06** (proofs in the register rows). Both sites live at `8dde5f5b7` by marker
+(sandybrown's reads `20c503516`: doc-only commits later, same plugin code). (a) **No `Product_Manifest` divergence
+ever existed** — the readings were different products (950 vs 897, both 48 variations, near-identical names),
+masking 950's context exceeding render.php's 24,576-byte cap; **Bean's call: not fixed**, 950 is a test item.
+(b) **Heart and swatches clickable** (`6cb273a18`): the trapping ancestor was `container/style.css`'s
+`:where(.sgs-container) > *{z-index:1}`. (c) **Duplicate tab stop gone by rebuilding the pattern** (`e62f45952`,
+Bean approved after `/research-buddies`): the block's own visible link owns the stretched surface, further
+same-href links are demoted, the overlay stays inert for geometry — also fixes `container`, `info-box`,
+`notice-banner`, `team-member`, where it was live for any client. (d) **20+23 verified on eye-care-test**: client
+wording, real order #1110, foreign-row negative control.
 CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the helper change and `seedSides` must land together (Spec 47 §5 Residual owns it). Canary QA fixtures are listed in the register's S9 and 18 rows.
 
 The wiring gate blocks new gaps only (201 baselined); Session 0's P0-3 to P0-10 are parked in the sweep plan.
@@ -145,7 +152,7 @@ walk (plan §2.4 step 5).
 
 ### Unified email — CLOSED 2026-09-27 (`plans/archive/2026-09-26-unified-email-plan.md`, all 8 phases + rows 5b/7/8 done)
 
-Every SGS email goes through `wp_mail()` over FluentSMTP (`provision-site-mail.py`, dev-setup §Site email), shared `Sgs_Mailer`: shop alerts, form/choice-flow, client-notes (created/resolved/reply) as WooCommerce/native emails. `sgs-client-notes` is deployed and active on sandybrown via `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` (a minimal standalone script; a proper third-root `build-deploy.py` integration is a deferred follow-up). WooCommerce email links/headings take the site's text colour, never the brand accent (`Sgs_Woocommerce_Email_Contrast` filter, framework-wide, no per-site step; live-proven capturing a real order email, 0 accent occurrences). Script-built `sgs/form` blocks (`wp-build-page.js`) get a stable auto `formId`. sandybrown sends as `admin@smallgiantsstudio.co.uk`; its test-site redirect is confirmed ON (`provision-site-mail.py --check`), so every email lands at Bean's Gmail — Bean to check that inbox (not spam) for this session's test sends. N8N workflow `AJzRBARFn8AqQlkg` stays off (backup). `main` at `ea682cb21`+; sandybrown deployed, homepage HTTP 200 after this session's brief unrelated outage (`cf51f2a0b`). Not mine, found, still open: `sgs/mega-group` focus ring uses the accent colour.
+Every SGS email goes through `wp_mail()` over FluentSMTP and the shared `Sgs_Mailer` (dev-setup §Site email); WooCommerce email links and headings take the site's text colour, never the brand accent. N8N workflow `AJzRBARFn8AqQlkg` stays off (backup). **Still open from it:** `sgs/mega-group`'s focus ring uses the accent colour (not that plan's work, found during it), and `sgs-client-notes` deploys via the standalone `scripts/deploy-client-notes-quick.py` — a proper third-root `build-deploy.py` integration is deferred.
 
 ### Front E — Spec 45 classless FIELD resolution (open)
 
