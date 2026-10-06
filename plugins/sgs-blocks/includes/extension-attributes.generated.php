@@ -107,6 +107,7 @@ return array(
 	'sgsAnimationStart' => array( 'type' => 'string' ),
 	'sgsAnimationTrigger' => array( 'type' => 'string' ),
 	'sgsBlockLink' => array( 'type' => 'string' ),
+	'sgsBlockLinkAuto' => array( 'type' => 'boolean' ),
 	'sgsBlockLinkLabel' => array( 'type' => 'string' ),
 	'sgsBlockLinkTarget' => array( 'type' => 'boolean' ),
 	'sgsChildSizing' => array( 'type' => 'object' ),

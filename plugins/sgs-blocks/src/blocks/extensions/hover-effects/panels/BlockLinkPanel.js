@@ -7,7 +7,7 @@
  *
  * @package SGS\Blocks
  */
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { LinkPopoverField } from '../../../../components';
 
@@ -16,12 +16,24 @@ import { LinkPopoverField } from '../../../../components';
  * @param {string}   props.sgsBlockLink
  * @param {boolean}  props.sgsBlockLinkTarget
  * @param {string}   props.sgsBlockLinkLabel
+ * @param {boolean}  props.sgsBlockLinkAuto    Whole-block link using the
+ *                                             block's own destination.
+ * @param {boolean}  props.hasAutoUrl          The block declares
+ *                                             supports.sgs.blockLinkAutoUrl,
+ *                                             so it resolves its own URL at
+ *                                             render time.
+ * @param {string}   props.autoUrlHelp         Plain-English description of
+ *                                             where this block's own
+ *                                             destination goes.
  * @param {Function} props.setAttributes
  */
 export default function BlockLinkPanel( {
 	sgsBlockLink,
 	sgsBlockLinkTarget,
 	sgsBlockLinkLabel,
+	sgsBlockLinkAuto = false,
+	hasAutoUrl = false,
+	autoUrlHelp = '',
 	setAttributes,
 } ) {
 	return (
@@ -29,6 +41,29 @@ export default function BlockLinkPanel( {
 			title={ __( 'Block Link', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			{ /* A block that resolves its own destination at render time
+			   (supports.sgs.blockLinkAutoUrl — a product card knows its
+			   product's permalink, a logo knows the site home) offers this
+			   toggle INSTEAD of asking the operator to type a URL. The two
+			   are never both live: while the toggle is on the URL field is
+			   hidden, so one capability keeps exactly one control. The URL
+			   itself is handed to the same overlay mechanism from the
+			   block's render.php, through
+			   includes/helpers-stretched-link.php::sgs_stretched_link_handover. */ }
+			{ hasAutoUrl && (
+				<ToggleControl
+					label={ __( 'Make the whole block one link', 'sgs-blocks' ) }
+					help={
+						autoUrlHelp ||
+						__( 'The whole block becomes clickable, using the destination this block already has. Buttons inside it keep working.', 'sgs-blocks' )
+					}
+					checked={ !! sgsBlockLinkAuto }
+					onChange={ ( val ) => setAttributes( { sgsBlockLinkAuto: !! val } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ ! ( hasAutoUrl && sgsBlockLinkAuto ) && (
+			<>
 			{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
 			   Bean-approved popover 2026-08-13) — replaces the raw
 			   TextControl (type url) this panel used to render.
@@ -37,8 +72,8 @@ export default function BlockLinkPanel( {
 			   `blockLink` was still denylist/universal (attached to
 			   every block unless opted out). D551 (2026-08-10) flipped
 			   it to opt-in via `supports.sgs.enabledExtensions`;
-			   MEASURED current reach is **3 blocks** (scan of every
-			   block.json's `enabledExtensions`, 2026-08-19) — this fix
+			   MEASURED current reach is **6 blocks** (scan of every
+			   block.json's `enabledExtensions`, 2026-10-06) — this fix
 			   was the highest-leverage single fix in the LINK rollout
 			   at the time it shipped, not a description of today's
 			   reach. `showRel` stays off + `enableInternalResolution`
@@ -80,6 +115,8 @@ export default function BlockLinkPanel( {
 					/>
 				) }
 			/>
+			</>
+			) }
 		</PanelBody>
 	);
 }

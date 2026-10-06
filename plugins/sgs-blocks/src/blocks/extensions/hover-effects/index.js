@@ -40,7 +40,7 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import { useShadowPresetOptions } from '../../../components/shadow-control/useShadowPresets';
-import { isExtensionHidden, isExtensionEnabled } from '../hide-extensions';
+import { isExtensionHidden, isExtensionEnabled, isExtensionFlagged } from '../hide-extensions';
 import { resolveHoverExcludedControls } from './resolve';
 import { addHoverAttributes } from './attributes';
 import HoverPanel from './panels/HoverPanel';
@@ -76,6 +76,13 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		// 2026-07-18).
 		const hideHover = ! isExtensionEnabled( name, 'hover' );
 		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
+		// A block that resolves its own link destination at render time
+		// (supports.sgs.blockLinkAutoUrl) gets the panel's toggle instead of
+		// its URL field — one control for the one capability. Its optional
+		// `blockLinkAutoHelp` string says, in the operator's words, where
+		// that destination goes.
+		const hasAutoUrl = isExtensionFlagged( name, 'blockLinkAutoUrl' );
+		const autoUrlHelp = String( type?.supports?.sgs?.blockLinkAutoHelp || '' );
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
 		// Gate A cleanup (D808 follow-up): suppress ONLY the two toggles a
@@ -125,6 +132,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsBlockLink,
 			sgsBlockLinkTarget,
 			sgsBlockLinkLabel,
+			sgsBlockLinkAuto,
 			sgsClickEffect,
 			sgsClickRippleColour,
 			sgsClickRippleDuration,
@@ -223,6 +231,9 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							sgsBlockLink={ sgsBlockLink }
 							sgsBlockLinkTarget={ sgsBlockLinkTarget }
 							sgsBlockLinkLabel={ sgsBlockLinkLabel }
+							sgsBlockLinkAuto={ sgsBlockLinkAuto }
+							hasAutoUrl={ hasAutoUrl }
+							autoUrlHelp={ autoUrlHelp }
 							setAttributes={ setAttributes }
 						/>
 					) }

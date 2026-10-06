@@ -73,6 +73,13 @@
  *                                     {url,opensInNewTab,rel} object attr
  *                                     into a safe href/target/rel string)
  *
+ *   helpers-stretched-link.php      — sgs_stretched_link_active,
+ *                                     sgs_stretched_link_apply,
+ *                                     sgs_stretched_link_handover (hands a
+ *                                     render-time URL to the `blockLink`
+ *                                     extension, for a block that resolves
+ *                                     its own destination)
+ *
  *   helpers-list-markers.php        — sgs_list_marker_types,
  *                                     sgs_list_marker_sanitise_type,
  *                                     sgs_list_marker_element_tag,
@@ -143,6 +150,7 @@ require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-link.php';
+require_once __DIR__ . '/helpers-stretched-link.php';
 require_once __DIR__ . '/helpers-cart-panel.php';
 require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';

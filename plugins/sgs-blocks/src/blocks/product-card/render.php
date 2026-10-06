@@ -985,6 +985,34 @@ if ( null === $data ) {
 $attributes = sgs_product_card_live_fill( $attributes, $product_id, $source_mode );
 
 $sgs_resolved_title = sgs_product_card_resolve_element( $attributes, 'name', $attributes['productName'] ?? '', $data['title'] );
+
+/*
+ * S10 shared stretched link: the WHOLE card links to the product it is
+ * showing, through the `blockLink` extension's overlay anchor. The card
+ * resolves its own permalink, so the operator gets a toggle rather than a URL
+ * field (block.json::supports.sgs.blockLinkAutoUrl); the handover goes to the
+ * block INSTANCE, not this file's local $attributes copy, for the reason
+ * includes/helpers-stretched-link.php documents. $product_id is the card's own
+ * resolved product, never ambient loop state, so each card in a grid links to
+ * its own.
+ *
+ * True means the overlay owns the card's single tab stop for "go to this
+ * product", so the title renders as plain text below. The image anchor is
+ * already tabindex="-1" aria-hidden="true", adds no stop, and points at the
+ * same product, so it is left alone.
+ */
+$sgs_pc_stretched_link = sgs_stretched_link_handover(
+	$block,
+	$attributes,
+	$product_id > 0 ? (string) get_permalink( $product_id ) : '',
+	'' !== $sgs_resolved_title
+		/* translators: %s is the product name. */
+		? sprintf( __( 'View %s', 'sgs-blocks' ), $sgs_resolved_title )
+		: ''
+);
+// The title keeps the tab stop whenever the overlay does not take it.
+$sgs_pc_title_link = ! $sgs_pc_stretched_link;
+
 $sgs_resolved_desc  = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )
 	? ''
 	: sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
@@ -1537,7 +1565,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				?>
 				<div class="sgs-product-card__title-row">
 					<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
-						<?php if ( '' !== $card_permalink ) : ?>
+						<?php if ( '' !== $card_permalink && $sgs_pc_title_link ) : ?>
 							<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 						<?php else : ?>
 							<?php echo esc_html( $sgs_resolved_title ); ?>
@@ -1968,7 +1996,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 	<?php // FP-H: heading tag from headingLevel (allowlisted string — injection-safe); title via override helper. D649: class carries the styling — see the sibling site above. ?>
 	<div class="sgs-product-card__title-row">
 		<<?php echo $sgs_bound_htag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- allowlisted 'h2'|'h3'|'h4'|'p'. ?> class="sgs-product-card__title">
-		<?php if ( '' !== $card_permalink ) : ?>
+		<?php if ( '' !== $card_permalink && $sgs_pc_title_link ) : ?>
 			<a class="product-card__title-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>"><?php echo esc_html( $sgs_resolved_title ); ?></a>
 		<?php else : ?>
 			<?php echo esc_html( $sgs_resolved_title ); ?>

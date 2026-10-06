@@ -9,7 +9,7 @@
  * @package SGS\Blocks
  */
 import { getBlockType } from '@wordpress/blocks';
-import { isExtensionHidden, isExtensionEnabled } from '../hide-extensions';
+import { isExtensionHidden, isExtensionEnabled, isExtensionFlagged } from '../hide-extensions';
 import { resolveBlockDefaults } from './resolve';
 
 /**
@@ -115,6 +115,17 @@ export function addHoverAttributes( settings ) {
 		}
 		: {};
 
+	// Whole-block link for a block that resolves its OWN destination at
+	// render time (supports.sgs.blockLinkAutoUrl). The block hands the URL to
+	// the same overlay mechanism from its render.php via
+	// includes/helpers-stretched-link.php::sgs_stretched_link_handover, so the
+	// operator gets a toggle instead of a URL field — see BlockLinkPanel.
+	const linkAutoAttributes = isExtensionFlagged( settings, 'blockLinkAutoUrl' )
+		? {
+			sgsBlockLinkAuto:     { type: 'boolean', default: false },
+		}
+		: {};
+
 	const clickAttributes = isExtensionHidden( settings, 'clickEffects' )
 		? {}
 		: {
@@ -130,6 +141,7 @@ export function addHoverAttributes( settings ) {
 			...settings.attributes,
 			...hoverAttributes,
 			...linkAttributes,
+			...linkAutoAttributes,
 			...clickAttributes,
 		},
 	};

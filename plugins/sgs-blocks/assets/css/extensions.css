@@ -466,10 +466,28 @@
 	outline-offset: 2px;
 }
 
-/* Real interactive descendants stay clickable ABOVE the overlay. */
+/*
+ * Real interactive descendants stay clickable ABOVE the overlay.
+ *
+ * Two rules, not one, because the two declarations need opposite strengths.
+ * `z-index` keeps full specificity: every real control wants to be above the
+ * overlay, always. `position: relative` is emitted at ZERO specificity
+ * (`:where()` contributes nothing, and the `:not()` sits INSIDE it so it
+ * contributes nothing either — only the `a` branch needs that exclusion, the
+ * overlay is never a <button>), because it exists solely to give a
+ * STATICALLY positioned control a stacking position. A control that already
+ * positions itself must keep its own value: sgs/product-card's wishlist
+ * heart is `position: absolute; top: 10px; right: 10px` at (0,1,0), which a
+ * combined rule at (0,2,1) overrode — dropping the heart out of the image's
+ * top-right corner into normal flow. Its own `z-index: 2` matches what this
+ * rule asks for anyway.
+ */
 .sgs-has-block-link :is(a, button):not(.sgs-block-link-overlay) {
-	position: relative;
 	z-index: 2;
+}
+
+:where(.sgs-has-block-link) :where(a:not(.sgs-block-link-overlay), button) {
+	position: relative;
 }
 
 /* ===== Focus Ring Extension ===== */

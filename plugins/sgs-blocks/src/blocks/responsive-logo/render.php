@@ -237,6 +237,25 @@ $link_aria_label = sprintf(
 	get_bloginfo( 'name' )
 );
 
+// --- S10 shared stretched link: the WHOLE logo block becomes the home link,
+// not just the logo image. The mechanism is the `blockLink` extension's
+// overlay anchor (includes/hover-effects/link-overlay.php); this block just
+// hands it the destination it already knows, so the operator gets a toggle
+// instead of a URL field. `linkToHome` stays the master switch: with it off
+// the logo is not a link at all, whatever the toggle says.
+//
+// The handover returning true means the overlay now owns the block's single
+// tab stop, so the inner <a class="sgs-responsive-logo__link"> is NOT printed
+// — two anchors to the same destination would be two keyboard stops for one
+// action. The overlay carries the same accessible name.
+$stretched_home_link = $link_to_home && sgs_stretched_link_handover(
+	$block,
+	$attributes,
+	home_url( '/' ),
+	$link_aria_label
+);
+$print_inner_link    = $link_to_home && ! $stretched_home_link;
+
 // ── Animation modifier class ──────────────────────────────────────────────────
 
 $animation_modifier = '';
@@ -366,8 +385,16 @@ if ( '' !== $bg_hover_decl ) {
 // that rule is touch-guarded at build time (scripts/hover-guard postbuild
 // transform), so no guard is needed here — this is a plain value, not a
 // :hover rule of its own. ---
-if ( $hover_opacity > 0 ) {
+if ( $hover_opacity > 0 && $print_inner_link ) {
 	$scoped_css[] = "{$sel} .sgs-responsive-logo__link{--sgs-logo-hover-opacity:" . number_format( $hover_opacity, 2 ) . ';}';
+} elseif ( $hover_opacity > 0 && $stretched_home_link ) {
+	// Stretched-link mode has no inner &__link element for the compiled
+	// stylesheet's rule to match, so the fade moves to the block ROOT — the
+	// element that is now the link. Built through the shared touch-safe
+	// emitter (helpers-hover-state.php), which is where every :hover rule in
+	// render.php comes from; :focus-within is the right focus partner because
+	// the focusable element is the overlay INSIDE the root, not the root.
+	$scoped_css[] = sgs_hover_state_rules( $sel, 'opacity:' . number_format( $hover_opacity, 2 ), ':focus-within' );
 }
 
 // --- Colour treatment — forces the IMAGE (not the wrapper background above)
@@ -598,7 +625,7 @@ $lottie_pause_html = '';
 
 ob_start();
 
-if ( $link_to_home ) {
+if ( $print_inner_link ) {
 	printf(
 		'<a class="sgs-responsive-logo__link" href="%s" rel="home" aria-label="%s">',
 		esc_url( home_url( '/' ) ),
@@ -761,7 +788,7 @@ if ( '' !== $dark_logo_url ) {
 	);
 }
 
-if ( $link_to_home ) {
+if ( $print_inner_link ) {
 	echo '</a>';
 }
 

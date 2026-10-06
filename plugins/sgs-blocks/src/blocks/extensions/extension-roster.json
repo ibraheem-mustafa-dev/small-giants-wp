@@ -77,6 +77,22 @@
 			}
 		},
 		{
+			"id": "blockLinkAuto",
+			"file": "hover-effects/attributes.js",
+			"rule": {
+				"mode": "flag",
+				"flag": "blockLinkAutoUrl"
+			},
+			"_comment": "The blockLink extension's URL field asks an operator to TYPE the destination. A block that already knows its own destination at render time (a product card links to the product it renders; a logo links to the site home) declares supports.sgs.blockLinkAutoUrl, which replaces that URL field with this single toggle and lets the block hand the URL over from render.php via includes/helpers-stretched-link.php::sgs_stretched_link_handover. One control per capability: the URL field and this toggle are never both live.",
+			"attributes": {
+				"sgsBlockLinkAuto": {
+					"type": "boolean",
+					"default": false,
+					"role": "behaviour"
+				}
+			}
+		},
+		{
 			"id": "clickEffects",
 			"file": "hover-effects/attributes.js",
 			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": "clickEffects" },
