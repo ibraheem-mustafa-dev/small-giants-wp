@@ -128,6 +128,35 @@ credited a setting that stops two levels above the row.
 The same shape explains the rest: a container-level setting cited for a property that a child block's own
 stylesheet owns on a deep descendant.
 
+## Root cause: the reachability gate failed open for every one of them
+
+17 of 17 refuted is not 17 coincidences. It is one mechanism, and it is measured rather than inferred.
+
+`lib/triage.mjs::reachesElement` **fails open**. When `emissionOf` cannot determine the cited setting's
+emission it returns `true` (:383-385), so the citation is accepted and the row is classed W with no evidence
+that the setting reaches the element at all. `emissionOf` has two channels:
+
+1. `ctx.emissionFor( block, setting, property )` — **read at :367 and supplied by no caller anywhere**, so this
+   channel is always dead.
+2. a string search over a PHP helper index, which **excludes every `render.php`**. Spec 47 §5 Residual already
+   lists "emission read by string search" as an open defect; this gives it live evidence.
+
+**Measured.** Reproducing `emissionOf` with the exact helper index `triage.mjs` builds — 847 functions over 434
+files, so not an empty-index artefact — it returned `null` for **17 of 17** of the refuted citations. **Zero
+were genuinely assessed.** R-47-12 requires that "the citation is tested on the live site before the row is
+called resolved"; for these rows that test never ran. The gate asserted reachability instead of testing it,
+which is precisely why every one of them read W.
+
+This also makes a falsifiable prediction for the 46 host-gated families: they should behave the same way. If a
+remote read refutes them too, and `emissionOf` is null for them too, it is the same defect and not 63 of them.
+
+**The fail-open itself is deliberate and stays.** `tests/triage.test.mjs` already asserts that a control whose
+emission the source does not name keeps its property-name credit, because refusing unknowns would manufacture
+false F rows — and that is the same guard that correctly stopped all 20 `bgHoverZoom` claims. What was wrong is
+that an untested claim and a tested one were indistinguishable in the evidence. So `reachabilityVerified()` is
+now stamped on every citation and **no classification changes**: this separates evidence from assertion without
+reclassifying a single row. The real repair is to populate `ctx.emissionFor`.
+
 ## What this does NOT yet license
 
 **The reclassification is not applied.** These 82 claims are currently W on the strength of a citation the live
