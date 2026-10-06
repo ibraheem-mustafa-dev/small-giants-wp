@@ -29,11 +29,16 @@ export function layoutComparable( prop, d, l ) {
 // the first flex or grid container with two or more rendered children, found from the element down a chain of single
 // rendered children (a block wrapper, flex or not, holding one inner band that lays out the items), else the element.
 // A gap or alignment between fewer than two items paints nothing. The same rule on both sides, so a draft row element
-// and a live wrapper-plus-inner band compare the same layout.
+// and a live wrapper-plus-inner band compare the same layout. A closed <details> that renders its <summary> plus
+// collapsed content counts only its <summary>: a visitor sees one child, and a draft that drops the answer when closed
+// presents the same single child. An open <details>, or one with no rendered <summary>, counts every rendered child.
 export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 	const lays = ( e ) => /(^|-)(flex|grid)$/.test( styleOf( e ).display );
 	for ( let a = el; ; ) {
-		const kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
+		let kids = [ ...a.children ].filter( ( k ) => k.getClientRects().length && 'none' !== styleOf( k ).display );
+		if ( 'DETAILS' === a.tagName && ! a.open && kids.length >= 2 && kids.some( ( k ) => 'SUMMARY' === k.tagName ) ) {
+			kids = kids.filter( ( k ) => 'SUMMARY' === k.tagName );
+		}
 		if ( kids.length >= 2 ) {
 			return lays( a ) ? a : el;
 		}

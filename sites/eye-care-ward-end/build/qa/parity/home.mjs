@@ -269,13 +269,11 @@ export default {
 			[ '2', "Tell me what they're for, how thin, what finish" ],
 			[ '3', 'Send your prescription now, or later — no rush' ],
 		].map( ( [ n, title ], i ) => ( {
-			// Fixed 2026-09-28: live's whole `.step` row carries the number-badge's own font (24px/700,
-			// a `display:grid` layout for the circle), not the title's; the draft's row IS the title's
-			// font (its text is a bare text node in the <li>, so the <li> itself is the right comparison).
-			// Scope live to the title paragraph specifically.
+			// The draft's step is the <li> holding its number and text; live's is the same step element
+			// (`.sgs-process-steps__step`), so both sides measure the whole step.
 			name: `about-step-${ n }`, box: [ 'h' ],
 			draft: { js: `(r) => { const n = [...r.querySelectorAll('span,div')].find((e) => e.children.length === 0 && e.textContent.trim() === '${ n }'); return n && n.parentElement; }` },
-			live: `.sgs-process-steps__step:nth-of-type(${ i + 1 }) .sgs-process-steps__title`,
+			live: `.sgs-process-steps__step:nth-of-type(${ i + 1 })`,
 		} ) ),
 		{ name: 'about-button', draft: { text: '^how lenses work here$', tag: 'a,button' }, live: { text: '^how lenses work here$', tag: 'a,button' }, hover: true },
 
@@ -353,10 +351,6 @@ export default {
 		// 2026-09-28): the grid's own colour, as the (auto) rule above for its words.
 		{ pair: 'bestsellers-grid', kind: 'box', key: 'y-from-bestsellers-heading', reason: 'The cards sit 81px below the heading on both sides at 1440/768/375 (measured 2026-09-29); the draft\'s grid box starts 26px above its first card, live\'s grid box starts at the card' },
 		{ pair: 'bestsellers-grid', kind: 'style', key: 'color', reason: 'Accepted (Bean, confirmed 2026-09-28): secondary text uses the darker text-muted #5E584F where the draft uses lighter greys', when: ( d ) => 'rgb(94, 88, 79)' === d.live },
-		// The prescription steps: the draft's step element holds its own number (serif, accent), so its
-		// text starts with the digit and its own font is the number's; live's number is its own element.
-		// The numbers themselves are compared by the automatic check and match (15.5px, 500, serif, accent).
-		...[ 'about-step-1', 'about-step-2', 'about-step-3' ].map( ( pair ) => ( { pair, reason: 'The draft\'s step element contains its number; live renders the number as its own element, matched separately by the automatic check', when: ( d ) => ( 'text' === d.kind && d.draft.replace( /^\d+\s*/, '' ) === d.live ) || [ 'font-family', 'font-weight', 'color' ].includes( d.key ) } ) ),
 		// A tile ground that is transparent on both sides ("none" is no ground; alpha 0 is none too).
 		{ pair: 'shapetile-wayfarer', key: 'painted-ground', reason: 'Transparent on both sides (alpha 0 vs no ground)', when: ( d ) => /,\s*0\)$/.test( d.draft ) && 'none' === d.live },
 		// The two "see all" text links are held to the 44px touch target (Bean 2026-09-27), their

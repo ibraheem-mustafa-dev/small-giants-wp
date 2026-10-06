@@ -255,3 +255,47 @@ test( 'MUST FAIL: a single-line control held at its min-height paints no differe
 	assert.deepEqual( keys( snap( 'textarea', 120, '12px' ), snap( 'textarea', 120, '0px' ) ), [ 'padding-bottom', 'padding-top' ] );
 	assert.deepEqual( keys( snap( 'input', 52, '0px' ), snap( 'input', 70, '12px' ) ), [ 'h', 'padding-bottom', 'padding-top' ] );
 } );
+
+// A closed <details> renders its <summary> plus collapsed content (live) where the draft drops the answer, so the descent
+// stopped at the wrapper on one side and went on to the button on the other (gen-help-17).
+const dbox = ( tag, display, kids = [], open = false ) => ( { tagName: tag, display, open, children: kids, getClientRects: () => [ 1 ] } );
+
+test( 'MUST FAIL TO DESCEND: a closed <details> counts only its <summary>, so layout descends to the summary band', () => {
+	const band = dbox( 'DIV', 'flex', [ dbox( 'SPAN', 'block' ), dbox( 'SPAN', 'block' ) ] );
+	const summary = dbox( 'SUMMARY', 'block', [ band ] );
+	const details = dbox( 'DETAILS', 'block', [ summary, dbox( 'DIV', 'block' ) ] );
+	assert.equal( layoutElement( details, styleOf ), band );
+} );
+
+test( 'positive control: an open <details>, or a closed one with no rendered <summary>, keeps counting every child', () => {
+	const open = dbox( 'DETAILS', 'flex', [ dbox( 'SUMMARY', 'block', [ dbox( 'DIV', 'flex', [ dbox( 'I', 'block' ), dbox( 'I', 'block' ) ] ) ] ), dbox( 'DIV', 'block' ) ], true );
+	assert.equal( layoutElement( open, styleOf ), open );
+	const noSummary = dbox( 'DETAILS', 'flex', [ dbox( 'DIV', 'block' ), dbox( 'DIV', 'block' ) ] );
+	assert.equal( layoutElement( noSummary, styleOf ), noSummary );
+	const onlyContent = dbox( 'DETAILS', 'block', [ dbox( 'DIV', 'flex', [ dbox( 'I', 'block' ), dbox( 'I', 'block' ) ] ) ] );
+	assert.equal( layoutElement( onlyContent, styleOf ), onlyContent.children[ 0 ] );
+} );
+
+// The Home config's about-step pairs measure the step element on both sides, and its one accept spread (the three
+// about-step entries) is gone without taking any neighbour. Deleting one suppression must not quietly delete its
+// neighbours, so named survivors carry that proof rather than a total, which any legitimate later entry would break.
+test( 'MUST FAIL TO MISPAIR: the about-step live finder is the step element, not its title', async () => {
+	const home = ( await import( '../../../sites/eye-care-ward-end/build/qa/parity/home.mjs' ) ).default;
+	const steps = home.pairs.filter( ( p ) => /^about-step-\d$/.test( p.name ) );
+	assert.equal( steps.length, 3 );
+	steps.forEach( ( p, i ) => {
+		assert.equal( p.live, `.sgs-process-steps__step:nth-of-type(${ i + 1 })` );
+		assert.ok( ! /title/.test( p.live ) );
+	} );
+} );
+
+test( 'positive control: the about-step accept entries are gone and every other accept entry remains', async () => {
+	const home = ( await import( '../../../sites/eye-care-ward-end/build/qa/parity/home.mjs' ) ).default;
+	assert.equal( home.accept.filter( ( a ) => /^about-step-\d$/.test( a.pair ) ).length, 0 );
+	assert.ok( home.accept.length > 90, `the accept list kept its neighbours, holding ${ home.accept.length }` );
+	const has = ( pair, key ) => home.accept.some( ( a ) => a.pair === pair && a.key === key );
+	assert.ok( has( 'bestsellers-grid', 'color' ) );
+	assert.ok( has( 'shapetile-wayfarer', 'painted-ground' ) );
+	assert.ok( has( 'about-button', 'line-height' ) );
+	assert.ok( has( 'about-photo', 'transition' ) );
+} );
