@@ -12,7 +12,6 @@
 	/* The site-wide button hover timing (buttonPresets.default.hover-transition). */
 	transition-duration: var(--wp--custom--button-presets--default--hover-transition, 0.3s);
 	cursor: pointer;
-	line-height: 1;
 }
 
 /* Button reset at zero specificity, so the card variant's :where() outline below still paints. */
@@ -56,14 +55,19 @@
 }
 
 /* ===== Label ===== */
-/* 600 lives on the label, not on .sgs-whatsapp-cta__btn. It is a button-LABEL
- * weight, and the card variant renders no label at all — carrying it on the
- * shared root class leaked it into the card's title and body copy, which
- * declare no weight of their own. labelFontWeight emits a scoped
- * `.{uid} .sgs-whatsapp-cta__label` rule, which outranks this base rule. */
+/* The button-LABEL typography lives here, not on .sgs-whatsapp-cta__btn. Both
+ * the weight and the single-line `line-height: 1` are label values: the card
+ * variant renders no label at all, so carrying them on the shared root class
+ * leaked them into the card's title and its wrapping subline, which declare
+ * neither — giving body copy a button's weight and a crammed 1.0 leading
+ * (register S4). The root stays a flex container, so its own line-height never
+ * laid out these flex items; each child uses its own. labelFontWeight and
+ * labelLineHeight emit scoped `.{uid} .sgs-whatsapp-cta__label` rules, which
+ * outrank this base rule. */
 .sgs-whatsapp-cta__label {
 	font-size: var(--wp--preset--font-size--small);
 	font-weight: 600;
+	line-height: 1;
 }
 
 /* ===== Screen reader only (for floating icon-only variant) ===== */

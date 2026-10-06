@@ -570,23 +570,37 @@ step-4 list like any other finding**, each carrying its cause and its precedent.
 still applies, because `SGS_Container_Wrapper` reaches other clients: proving a change is safe is a different
 question from knowing its cause.
 
-## One defect that is not a finding
+## The "defect that is not a finding" was REFUTED (2026-10-06)
 
-`sgs/social-icons` declares `iconBorderColour` and `iconBorderColourHover` on its item with no item border width or
-border style: a colour control that can never paint. It sits next to the border rows but it is a defect in its own
-right, so it is fixed in the same pass as whatever border row Bean approves. **Decide the width default
-deliberately**: `1px` changes every existing outlined icon on every client, and the framework is pre-production, so
-choose on merit and record the choice in the commit.
+This section claimed `sgs/social-icons`'s `iconBorderColour` / `iconBorderColourHover` were "a colour control that
+can never paint" for want of a border width. **Not true, and no width default is owed.**
+`social-icons/render.php` feeds both into `--sgs-social-border` / `--sgs-social-border-hover`
+(`sgs_custom_property_gradient_decls`), and `social-icons/style.css` consumes them in
+`border: 1px solid var(--sgs-social-border)` on `.sgs-social-icons--outlined .sgs-social-icons__item` and on the
+`--boxed` twin, with `border-color: var(--sgs-social-border-hover)` for each hover. The width and style are
+already there.
+
+What is true is narrower and is not a defect: the colour paints on the **outlined** and **boxed** styles and not
+on **filled** or the plain default, which carry no border. That is a style-conditional control, the same shape as
+`sgs/tabs`'s indicator members, and it is correct. Nothing to build.
 
 ## One cheap win just outside the findings
 
 `theme/sgs-theme/assets/css/core-blocks-critical.css` declares
 `h1, h2, h3, h4, h5, h6, .wp-block-heading { text-wrap: balance }` with no `:where()`, framework-wide for every
-client, with nothing allowing a block to override it. **The comment directly above that rule records that a
-framework-wide heading `letter-spacing: -0.01em` default was removed for exactly this reason** — it "tightened
-EVERY client's headings and made clones drift from their reference sites". The same argument applies. Removing it,
-or wrapping it in `:where()`, is one line, and one finding (`core/query-title` text-wrap) depends on it. Put it on
-Bean's step-4 list as a one-line item.
+client. **The comment directly above that rule records that a framework-wide heading `letter-spacing: -0.01em`
+default was removed for exactly this reason** — it "tightened EVERY client's headings and made clones drift from
+their reference sites" — and then declares a framework-wide heading default immediately below it.
+
+**Correction (2026-10-06): "nothing allowing a block to override it" is wrong.** 19 blocks declare a `textWrap`
+attribute, `sgs/heading` among them, and each emits a scoped `.{uid}` rule that beats `h1…h6` (0,0,1) and
+`.wp-block-heading` (0,1,0) comfortably. So every SGS heading can already override it.
+
+**Where it genuinely bites is CORE blocks**, which have no SGS control: `core/heading`, `core/post-title` and
+`core/query-title` match the rule through `h1…h6` / `.wp-block-heading` with no opt-out at all, and the one
+finding that depends on this is a `core/query-title` text-wrap row. Wrapping the rule in `:where()` drops it to
+zero specificity, keeping `balance` as the default while letting global styles, a client stylesheet or any block
+override it. One line. Still owed a decision from Bean.
 
 ## Gates
 
