@@ -490,6 +490,28 @@
 	position: relative;
 }
 
+/*
+ * A direct child must not create a STACKING CONTEXT, or the z-index above
+ * cannot reach past it.
+ *
+ * sgs/container gives every child `position: relative; z-index: 1`
+ * (`container/style.css`), and every sgs/product-card render branch returns
+ * through SGS_Container_Wrapper, so `.product-card__media` is such a child.
+ * That scoped the wishlist heart's `z-index: 2` INSIDE the photo box, while
+ * the overlay — a LATER sibling at the same z-index 1 — won on source order
+ * and took the clicks. The same trap hid the colour swatches, which sit in
+ * `.product-card-body`, another child at z-index 1.
+ *
+ * `z-index: auto` removes the context but keeps each child's `position`, which
+ * the heart still needs as its containing block. The overlay is excluded
+ * because it needs its own z-index. container/style.css asks for an explicit
+ * z-index on one of the two siblings rather than re-specifying that rule; this
+ * is that, applied on the overlay's side so no other container child changes.
+ */
+.sgs-has-block-link > *:not(.sgs-block-link-overlay) {
+	z-index: auto;
+}
+
 /* ===== Focus Ring Extension ===== */
 
 /*
