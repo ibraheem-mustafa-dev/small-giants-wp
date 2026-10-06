@@ -133,7 +133,16 @@ export function typedCardPreview( attrs, tier ) {
 	};
 }
 
-/** Brand wordmark and saving badge over the image (sgs_product_card_brand_markup, _saving_badge_markup). */
+/**
+ * Brand wordmark and saving badge over the image (sgs_product_card_brand_markup,
+ * _saving_badge_markup).
+ *
+ * This canvas is typed mode only, and a brand LOGO is live product data: it is
+ * resolved per render by includes/product-card-live-fill.php, so a typed card
+ * has no logo to draw and always shows the typed brand name. `brandUseLogo`
+ * therefore has nothing to mirror here by design - it is not a desynced
+ * attribute.
+ */
 export function TypedMediaOverlays( { attributes: attrs, styles } ) {
 	const brand = attrs.showBrandOverlay ? String( attrs.brandName || '' ).trim() : '';
 	const saving = attrs.showSavingBadge ? String( attrs.savingLabel || '' ).trim() : '';

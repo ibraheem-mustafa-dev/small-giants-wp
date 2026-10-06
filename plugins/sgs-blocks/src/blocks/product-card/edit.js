@@ -693,6 +693,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		reviewCount,
 		ratingColour,
 		showBrandOverlay,
+		brandUseLogo,
 		brandName,
 		brandColour,
 		showSavingBadge,
@@ -1981,15 +1982,36 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						__nextHasNoMarginBottom
 					/>
 					{ showBrandOverlay && (
-						<TextControl
-							label={ __( 'Brand name', 'sgs-blocks' ) }
-							value={ brandName || '' }
-							onChange={ ( v ) =>
-								setAttributes( { brandName: v } )
-							}
-							__next40pxDefaultSize
-							__nextHasNoMarginBottom
-						/>
+						<>
+							<ToggleControl
+								label={ __(
+									'Use the brand logo',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'Shows the brand’s logo when the brand has one, and the brand name as text when it does not. Screen readers always read the brand name. Switch off to always show the name.',
+									'sgs-blocks'
+								) }
+								checked={ brandUseLogo !== false }
+								onChange={ ( v ) =>
+									setAttributes( { brandUseLogo: v } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Brand name', 'sgs-blocks' ) }
+								help={ __(
+									'Left empty, a live product fills this from its brand.',
+									'sgs-blocks'
+								) }
+								value={ brandName || '' }
+								onChange={ ( v ) =>
+									setAttributes( { brandName: v } )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+						</>
 					) }
 
 					<ToggleControl

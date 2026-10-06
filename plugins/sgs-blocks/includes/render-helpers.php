@@ -110,6 +110,20 @@
  *                                     wp-icon glyph's `stroke="currentColor"`
  *                                     presentation attribute)
  *
+ *   helpers-brand-logo.php          — sgs_brand_logo_taxonomy,
+ *                                     sgs_brand_logo_taxonomy_available,
+ *                                     sgs_brand_logo_media,
+ *                                     sgs_brand_logo_term_for_product,
+ *                                     sgs_brand_logo_for_product,
+ *                                     sgs_brand_logo_img_markup (the ONE brand
+ *                                     lookup: a brand term's `thumbnail_id`
+ *                                     logo, printed with the BRAND NAME as its
+ *                                     text alternative, falling back to the
+ *                                     name when a brand has no logo. Shared by
+ *                                     brand-strip, the product card's overlay,
+ *                                     the product-page `brand_logo` binding and
+ *                                     the bag drawer's cart lines.)
+ *
  *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
  *                                     sgs_reviews_inline_data (written reviews
  *                                     shaped like the Places API's, so
@@ -160,6 +174,7 @@ require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-info-toggle.php';
 require_once __DIR__ . '/helpers-brand-glyphs.php';
+require_once __DIR__ . '/helpers-brand-logo.php';
 require_once __DIR__ . '/helpers-button-note.php';
 require_once __DIR__ . '/helpers-empty-tab.php';
 require_once __DIR__ . '/helpers-reviews-inline.php';

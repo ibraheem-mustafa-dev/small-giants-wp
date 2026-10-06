@@ -1481,6 +1481,24 @@
 	letter-spacing: 0.12em;
 }
 
+/* The logo form of the brand overlay. The text-only rules above (uppercase,
+   letter-spacing, ellipsis) describe a wordmark and do nothing for an image,
+   so the logo variant only needs its own box and a bounded height. The
+   intrinsic width/height attributes on the <img> hold its aspect ratio, so
+   `width: auto` against a fixed height scales any logo shape correctly. */
+.sgs-product-card__brand--logo {
+	display: flex;
+	align-items: center;
+}
+
+.sgs-product-card__brand-logo {
+	display: block;
+	width: auto;
+	height: var( --sgs-product-card-brand-logo-height, 18px );
+	max-width: 100%;
+	object-fit: contain;
+}
+
 .sgs-product-card__saving-badge {
 	position: absolute;
 	z-index: 1;

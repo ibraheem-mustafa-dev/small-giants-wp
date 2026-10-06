@@ -18,12 +18,12 @@
  * render.php stays silent, since a missing taxonomy on the LIVE site is not
  * an error to show visitors.
  *
- * Term thumbnail: WooCommerce core stores a brand's image the same way it
- * stores a product-CATEGORY image — as an attachment ID in the term meta
- * key `thumbnail_id` (see WC_Admin_Taxonomies's category/brand thumbnail
- * meta box, both taxonomies share the identical mechanism). When a brand
- * has no thumbnail, the returned entry's `media` is null and render.php's
- * own Display setting decides whether to fall back to text.
+ * Term thumbnail: the lookup is the framework's shared one,
+ * `includes/helpers-brand-logo.php::sgs_brand_logo_media`, so this block, the
+ * product card's brand overlay, the product-page brand binding and the bag
+ * drawer's cart lines all read a brand's logo through one implementation.
+ * When a brand has no thumbnail, the returned entry's `media` is null and
+ * render.php's own Display setting decides whether to fall back to text.
  *
  * @package SGS\Blocks
  */
@@ -39,39 +39,6 @@ if ( ! function_exists( 'sgs_brand_strip_product_brands_available' ) ) {
 	 */
 	function sgs_brand_strip_product_brands_available() {
 		return taxonomy_exists( 'product_brand' );
-	}
-}
-
-if ( ! function_exists( 'sgs_brand_strip_product_brand_media' ) ) {
-	/**
-	 * Resolve a brand term's thumbnail (WooCommerce core `thumbnail_id` term
-	 * meta) into the unified media-slot shape `logos[]` items already use.
-	 *
-	 * @param int $term_id Brand term ID.
-	 * @return array|null Media shape, or null when the term has no usable image.
-	 */
-	function sgs_brand_strip_product_brand_media( $term_id ) {
-		$thumbnail_id = absint( get_term_meta( $term_id, 'thumbnail_id', true ) );
-		if ( ! $thumbnail_id ) {
-			return null;
-		}
-
-		$url = wp_get_attachment_image_url( $thumbnail_id, 'medium' );
-		if ( ! $url ) {
-			return null;
-		}
-
-		$meta = wp_get_attachment_metadata( $thumbnail_id );
-
-		return array(
-			'url'    => $url,
-			'type'   => 'image',
-			'id'     => $thumbnail_id,
-			'alt'    => (string) get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ),
-			'mime'   => (string) get_post_mime_type( $thumbnail_id ),
-			'width'  => isset( $meta['width'] ) ? absint( $meta['width'] ) : 0,
-			'height' => isset( $meta['height'] ) ? absint( $meta['height'] ) : 0,
-		);
 	}
 }
 
@@ -153,7 +120,7 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 			}
 
 			$logos[] = array(
-				'media'      => sgs_brand_strip_product_brand_media( $term->term_id ),
+				'media'      => sgs_brand_logo_media( $term->term_id ),
 				'alt'        => '',
 				'decorative' => false,
 				'name'       => $term->name,

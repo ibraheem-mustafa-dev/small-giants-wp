@@ -403,9 +403,20 @@ if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
 if ( ! function_exists( 'sgs_product_card_brand_markup' ) ) {
 
 	/**
-	 * Frame Card component: brand wordmark overlaid on the product image.
+	 * Frame Card component: the brand overlaid on the product image — the
+	 * brand's LOGO when it has one, else its name as text.
+	 *
 	 * Called from every render branch's media area (R-31-9) — one control
 	 * governs the element everywhere it can appear.
+	 *
+	 * The logo replaces the name rather than joining it, so the `<img>`'s
+	 * text alternative is the brand name and the brand is announced exactly
+	 * once. `sgs_brand_logo_img_markup()` returns '' unless it has both a URL
+	 * and a name, so an empty accessible name cannot reach the page: the name
+	 * fallback takes over instead.
+	 *
+	 * `_sgsBrandLogo` is filled by includes/product-card-live-fill.php for a
+	 * live product. Typed mode never has one and always prints the name.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Safe HTML, or '' when showBrandOverlay is off / brandName is empty.
@@ -418,6 +429,29 @@ if ( ! function_exists( 'sgs_product_card_brand_markup' ) ) {
 		if ( '' === $brand_name ) {
 			return '';
 		}
+
+		// The operator can force the name even where a logo exists — a logo
+		// too detailed to read at this size is a design call, not a data one.
+		$use_logo = ! isset( $attributes['brandUseLogo'] ) || (bool) $attributes['brandUseLogo'];
+		$logo     = isset( $attributes['_sgsBrandLogo'] ) && is_array( $attributes['_sgsBrandLogo'] )
+			? $attributes['_sgsBrandLogo']
+			: array();
+
+		if ( $use_logo && ! empty( $logo ) ) {
+			$img = sgs_brand_logo_img_markup(
+				array(
+					'url'    => (string) ( $logo['url'] ?? '' ),
+					'name'   => '' !== trim( (string) ( $logo['name'] ?? '' ) ) ? (string) $logo['name'] : $brand_name,
+					'width'  => absint( $logo['width'] ?? 0 ),
+					'height' => absint( $logo['height'] ?? 0 ),
+				),
+				'sgs-product-card__brand-logo'
+			);
+			if ( '' !== $img ) {
+				return '<span class="sgs-product-card__brand sgs-product-card__brand--logo">' . $img . '</span>';
+			}
+		}
+
 		return '<span class="sgs-product-card__brand">' . esc_html( $brand_name ) . '</span>';
 	}
 }

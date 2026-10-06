@@ -22,6 +22,7 @@
 			"scalarStylingLift": true,
 			"enabledExtensions": [ "hover", "blockLink" ],
 			"blockLinkAutoUrl": true,
+		"_comment_imageControls": "Deliberate imageControls OPT-OUT. This card renders several <img> elements (product photo, gallery thumbs, colour-swatch photos and the brand logo), but none of them is an operator-chosen image: every one is resolved from the WooCommerce product or its brand term at render time. The generic image panel's controls (media picker, alt text, sizing) would therefore either do nothing or let an operator override a value that must track the product. Each image instead has its own purpose-built controls - the media area settings for the photo, showGalleryThumbs for the thumbs, and brandUseLogo for the brand logo, whose alt text is fixed to the brand name for accessibility and is intentionally not operator-editable.",
 			"blockLinkAutoHelp": "The whole card links to the product it is showing. The wishlist heart, the colour swatches and the Add to basket button all keep working, and the product title stops being a separate link so the card has one keyboard stop, not two.",
 			"_comment_blockLink": "S10 shared stretched link. The card never asks for a typed URL: render.php resolves the product permalink and hands it to the blockLink extension through includes/helpers-stretched-link.php::sgs_stretched_link_handover, so blockLinkAutoUrl replaces the Block Link panel's URL field with a single toggle (sgsBlockLinkAuto). The overlay anchor the extension injects is then the card's only tab stop meaning 'go to this product', and render.php suppresses the title link while the toggle is on. A card in typed mode has no product permalink, so the toggle paints nothing there.",
 			"hoverDefaults": {
@@ -293,7 +294,7 @@
 					"attrMap": {
 						"css:padding": "brandPadding"
 					},
-					"_note": "Brand wordmark overlaid top-left on the product image (Frame Card component). brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
+					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
 				},
 				"savingBadge": {
 					"label": "Saving badge",
@@ -1428,6 +1429,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Frame Card component: overlay a brand wordmark on the top-left corner of the product image. Requires a non-empty brandName and a rendered image (typed mode) / real image (bound modes)."
+		},
+		"brandUseLogo": {
+			"type": "boolean",
+			"default": true,
+			"description": "Print the brand's LOGO on the product image when the brand has one, falling back to the brand name as text. The logo's text alternative is the brand name (never the attachment's own alt text, which is often empty), and the logo replaces the name rather than joining it, so the brand is announced once. Resolved by includes/helpers-brand-logo.php via the shared `sgs_product_card_brand_taxonomy` filter; rendered by sgs_product_card_brand_markup(). Switch off to force the typed/resolved name even where a logo exists — a logo too detailed to read at overlay size is a design call."
 		},
 		"brandName": {
 			"type": "string",

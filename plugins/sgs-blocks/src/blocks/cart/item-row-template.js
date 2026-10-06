@@ -119,6 +119,23 @@ export function itemRowHtml( item, totals, opts = {} ) {
 	// The brand comes from the plugin's own Store API extension data
 	// (includes/cart-item-extensions.php), empty when the product has none.
 	const brand = escapeHtml( plainText( item.extensions?.sgs?.brand ?? '' ) );
+	// The brand's logo, from the same extension; `url` is empty when the brand
+	// has no logo, which is the name-only fallback below. The logo stands in
+	// for the brand name, so its `alt` IS the brand name - never the
+	// attachment's own alt text, which is frequently empty. With no brand name
+	// to label it, no logo is drawn at all, so the accessible name can never
+	// come out empty.
+	const brandLogo = item.extensions?.sgs?.brandLogo ?? {};
+	const brandLogoUrl = brand ? escapeHtml( String( brandLogo.url ?? '' ) ) : '';
+	const brandLogoSize =
+		Number( brandLogo.width ) > 0 && Number( brandLogo.height ) > 0
+			? ` width="${ Number( brandLogo.width ) }" height="${ Number(
+					brandLogo.height
+			  ) }"`
+			: '';
+	const brandHtml = brandLogoUrl
+		? `<span class="sgs-cart__item-brand sgs-cart__item-brand--logo"><img class="sgs-cart__item-brand-logo" src="${ brandLogoUrl }" alt="${ brand }"${ brandLogoSize } loading="lazy" decoding="async" /></span>`
+		: `<span class="sgs-cart__item-brand">${ brand }</span>`;
 	const thumb = item.images?.[ 0 ]?.thumbnail || '';
 	const linePrice = formatMoney( item.totals?.line_total ?? 0, totals );
 	const key = escapeHtml( item.key );
@@ -151,7 +168,7 @@ export function itemRowHtml( item, totals, opts = {} ) {
 	const topHtml =
 		'<div class="sgs-cart__item-top">' +
 		( brand
-			? `<span class="sgs-cart__item-brand">${ brand }</span>`
+			? brandHtml
 			: `<span class="sgs-cart__item-name">${ name }</span>` ) +
 		priceHtml +
 		'</div>' +

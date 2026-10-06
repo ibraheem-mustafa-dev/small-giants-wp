@@ -5,7 +5,9 @@
  * product attribute and allowed product meta.
  *
  * Keys use dot notation, like the `sgs/site-info` source:
- *   brand                     first term of the product_brand taxonomy
+ *   brand                     the product's first brand term's NAME
+ *   brand_logo_url            that brand's logo URL ('' when it has none)
+ *   brand_url                 that brand's archive URL
  *   sku                       the product's SKU
  *   attribute.<taxonomy>      the product's terms for that attribute (e.g. attribute.pa_material)
  *   meta.<meta_key>           a scalar product meta value (e.g. meta._sgs_frame_eye)
@@ -18,6 +20,10 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// The brand fields read through the framework's shared brand lookup, so a
+// binding, a product card and a bag line all resolve a brand the same way.
+require_once __DIR__ . '/helpers-brand-logo.php';
 
 if ( ! function_exists( 'sgs_product_field_meta_allowed' ) ) {
 	/**
@@ -47,9 +53,23 @@ if ( ! function_exists( 'sgs_product_field_value' ) ) {
 
 		switch ( $prefix ) {
 			case 'brand':
-				$taxonomy = (string) apply_filters( 'sgs_product_card_brand_taxonomy', 'product_brand' );
-				$terms    = taxonomy_exists( $taxonomy ) ? get_the_terms( $product->get_id(), $taxonomy ) : false;
-				return is_array( $terms ) && ! empty( $terms ) ? (string) $terms[0]->name : '';
+				$term = sgs_brand_logo_term_for_product( $product->get_id() );
+				return null !== $term ? (string) $term->name : '';
+
+			// The brand's LOGO URL, for an image block to bind its `url` to.
+			// A binding source returns a string, so it cannot return an
+			// `<img>`: this hands the tree a URL and the tree draws the
+			// element. Bind that image's `alt` to the `brand` field above, so
+			// its text alternative is the brand NAME. Empty when the brand has
+			// no logo — the tree then shows the `brand` text instead.
+			case 'brand_logo_url':
+				$brand = sgs_brand_logo_for_product( $product->get_id() );
+				return $brand['url'];
+
+			// The brand archive URL, for the link D8 puts around the logo.
+			case 'brand_url':
+				$brand = sgs_brand_logo_for_product( $product->get_id() );
+				return $brand['link'];
 
 			case 'sku':
 				return (string) $product->get_sku();
@@ -78,7 +98,9 @@ if ( ! function_exists( 'sgs_product_field_list' ) ) {
 	function sgs_product_field_list(): array {
 		$fields = array(
 			'title'             => array( 'label' => __( 'Product name', 'sgs-blocks' ) ),
-			'brand'             => array( 'label' => __( 'Brand', 'sgs-blocks' ) ),
+			'brand'             => array( 'label' => __( 'Brand name', 'sgs-blocks' ) ),
+			'brand_logo_url'    => array( 'label' => __( 'Brand logo URL', 'sgs-blocks' ) ),
+			'brand_url'         => array( 'label' => __( 'Brand page URL', 'sgs-blocks' ) ),
 			'sku'               => array( 'label' => __( 'SKU', 'sgs-blocks' ) ),
 			'short_description' => array( 'label' => __( 'Short description', 'sgs-blocks' ) ),
 			'stock_status'      => array( 'label' => __( 'Stock status', 'sgs-blocks' ) ),

@@ -538,6 +538,25 @@
 	opacity: 0.8;
 }
 
+/* The logo form of a bag line's brand. The text rules above describe a
+   wordmark, so the logo variant drops them and takes a bounded height; the
+   <img>'s intrinsic width/height attributes keep its aspect ratio. */
+:where(.sgs-cart__panel) .sgs-cart__item-brand--logo {
+	display: flex;
+	align-items: center;
+	letter-spacing: normal;
+	text-transform: none;
+	opacity: 1;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__item-brand-logo {
+	display: block;
+	width: auto;
+	height: var( --sgs-cart-item-brand-logo-height, 16px );
+	max-width: 100%;
+	object-fit: contain;
+}
+
 :where(.sgs-cart__panel) .sgs-cart__item-name {
 	font-size: 0.9rem;
 	font-weight: 600;

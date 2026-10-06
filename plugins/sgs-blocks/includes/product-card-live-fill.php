@@ -10,7 +10,8 @@
  * value the operator set still wins; an empty one is filled from the product.
  *
  * Keys starting with an underscore are render-time only (never block
- * attributes): _sgsLiveProductId, _sgsLiveTitle and _sgsRrpDisplay.
+ * attributes): _sgsLiveProductId, _sgsLiveTitle, _sgsRrpDisplay and
+ * _sgsBrandLogo.
  *
  * @package SGS\Blocks
  */
@@ -18,6 +19,10 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/product-rrp.php';
+// Required HERE, not only via render-helpers.php: this file is reached through
+// render.php, but a caller that loads it directly must still resolve the brand
+// lookup rather than silently filling no logo.
+require_once __DIR__ . '/helpers-brand-logo.php';
 
 if ( ! function_exists( 'sgs_product_card_live_fill' ) ) {
 	/**
@@ -40,12 +45,32 @@ if ( ! function_exists( 'sgs_product_card_live_fill' ) ) {
 		}
 		$attributes['_sgsLiveTitle'] = $product->get_name();
 
-		// Brand: the product's first term in WooCommerce's brand taxonomy.
-		$brand_taxonomy = (string) apply_filters( 'sgs_product_card_brand_taxonomy', 'product_brand' );
-		if ( ! empty( $attributes['showBrandOverlay'] ) && '' === trim( (string) ( $attributes['brandName'] ?? '' ) ) && taxonomy_exists( $brand_taxonomy ) ) {
-			$brands = get_the_terms( $product_id, $brand_taxonomy );
-			if ( is_array( $brands ) && ! empty( $brands ) ) {
-				$attributes['brandName'] = $brands[0]->name;
+		// Brand: the product's first term in WooCommerce's brand taxonomy, and
+		// that brand's logo when it has one. Both come from the shared lookup
+		// (includes/helpers-brand-logo.php), which honours the
+		// `sgs_product_card_brand_taxonomy` filter.
+		//
+		// `_sgsBrandLogo` is a render-time key, not a stored attribute: it is
+		// live product data, so it is resolved per render exactly as
+		// `_sgsLiveTitle` and `_sgsRrpDisplay` are. A typed-mode card never
+		// reaches here and so has no logo — it prints its typed brand name.
+		if ( ! empty( $attributes['showBrandOverlay'] ) ) {
+			$brand = sgs_brand_logo_for_product( $product_id );
+
+			if ( '' === trim( (string) ( $attributes['brandName'] ?? '' ) ) && '' !== $brand['name'] ) {
+				$attributes['brandName'] = $brand['name'];
+			}
+
+			// The logo stands in for the brand NAME, so its text alternative
+			// is the name the card would otherwise have printed — never the
+			// attachment's own alt text, which is frequently empty.
+			if ( '' !== $brand['url'] ) {
+				$attributes['_sgsBrandLogo'] = array(
+					'url'    => $brand['url'],
+					'name'   => '' !== $brand['name'] ? $brand['name'] : (string) ( $attributes['brandName'] ?? '' ),
+					'width'  => $brand['width'],
+					'height' => $brand['height'],
+				);
 			}
 		}
 
