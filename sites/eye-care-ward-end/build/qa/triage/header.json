@@ -1,7 +1,7 @@
 {
  "surface": "header",
- "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T01-37-03/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T01-37-03/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T10-12-58/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T10-12-58/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 39,
@@ -3197,7 +3197,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -13,
+     "delta": -14,
      "widths": [
       375
      ]

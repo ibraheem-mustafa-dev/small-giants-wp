@@ -1,7 +1,7 @@
 {
  "surface": "shop",
- "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T01-49-28/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T01-49-28/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T09-59-36/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T09-59-36/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 60,
@@ -4433,7 +4433,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       375,
@@ -4502,7 +4502,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 42,
+     "delta": 163,
      "widths": [
       375,
       375,
@@ -4523,6 +4523,7 @@
       768,
       768,
       768,
+      768,
       1440,
       1440,
       1440,
@@ -4533,6 +4534,8 @@
       1440,
       1440,
       1440,
+      1440,
+      1920,
       1920,
       1920,
       1920,
@@ -4574,7 +4577,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
-     "delta": 42,
+     "delta": 163,
      "widths": [
       375,
       375,
@@ -4595,6 +4598,7 @@
       768,
       768,
       768,
+      768,
       1440,
       1440,
       1440,
@@ -4605,6 +4609,8 @@
       1440,
       1440,
       1440,
+      1440,
+      1920,
       1920,
       1920,
       1920,
@@ -4748,6 +4754,7 @@
    "property": "y-after-active-pill",
    "widths": [
     375,
+    768,
     1440,
     1920
    ],
@@ -4764,9 +4771,10 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": -13,
+     "delta": -12,
      "widths": [
       375,
+      768,
       1440,
       1920
      ]
@@ -4800,7 +4808,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": 20,
+     "delta": 19,
      "widths": [
       375,
       768,
@@ -4874,7 +4882,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -48,
+     "delta": -47,
      "widths": [
       375,
       768,
@@ -4885,13 +4893,13 @@
    ]
   },
   {
-   "key": "cr-ref-shop-2|.sgs-container__inner > .sgs-shop-chosen > .sgs-shop-chosen__clear|box|y-after-swatch-black",
-   "ref": "cr-ref-shop-2",
-   "pair": "clear-all",
-   "path": ".sgs-container__inner > .sgs-shop-chosen > .sgs-shop-chosen__clear",
-   "block": "sgs/container",
+   "key": "cr-ref-shop-25|fieldset > div > button:nth-of-type(1)|box|y-after-clear-all",
+   "ref": "cr-ref-shop-25",
+   "pair": "swatch-black",
+   "path": "fieldset > div > button:nth-of-type(1)",
+   "block": "woocommerce/product-filter-chips",
    "kind": "box",
-   "property": "y-after-swatch-black",
+   "property": "y-after-clear-all",
    "widths": [
     768
    ],
@@ -4905,10 +4913,10 @@
      "parent": "cr-ref-shop-2|.sgs-container__inner > .sgs-shop-chosen > .sgs-shop-chosen__clear|style|margin-top",
      "ref": "cr-ref-shop-2",
      "key": "margin-top",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 768,
-     "delta": -12,
+     "delta": 12,
      "widths": [
       768
      ]

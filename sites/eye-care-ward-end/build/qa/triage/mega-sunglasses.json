@@ -1,15 +1,48 @@
 {
  "surface": "mega-sunglasses",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-06T01-39-34/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-06T01-39-34/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-06T09-50-37/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-06T09-50-37/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 30,
+  "W": 32,
   "F": 1,
   "T": 12,
   "U": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-mega-sunglasses-3||style|transition-duration",
+   "ref": "cr-ref-mega-sunglasses-3",
+   "pair": "shop-heading-style",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
   {
    "key": "cr-ref-mega-sunglasses-3||style|width",
    "ref": "cr-ref-mega-sunglasses-3",
@@ -121,6 +154,39 @@
      "values": [
       "subheading"
      ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-sunglasses-19||style|transition-duration",
+   "ref": "cr-ref-mega-sunglasses-19",
+   "pair": "shop-heading-shopby",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -1394,7 +1460,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": -0.5129999999999768,
+     "delta": -0.5160000000000196,
      "widths": [
       1440,
       1920

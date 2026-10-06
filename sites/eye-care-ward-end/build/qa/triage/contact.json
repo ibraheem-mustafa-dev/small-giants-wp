@@ -1,15 +1,50 @@
 {
  "surface": "contact",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T01-29-33/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T01-29-33/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T09-41-03/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T09-41-03/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 24,
+  "W": 25,
   "F": 17,
   "T": 12,
-  "U": 15
+  "U": 16
  },
  "verdicts": [
+  {
+   "key": "cr-ref-contact-3||style|transition-duration",
+   "ref": "cr-ref-contact-3",
+   "pair": "heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
   {
    "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link::after|style|content",
    "ref": "cr-ref-contact-9",
@@ -94,6 +129,41 @@
      }
     ]
    }
+  },
+  {
+   "key": "cr-ref-contact-21||style|transition-duration",
+   "ref": "cr-ref-contact-21",
+   "pair": "form-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
   },
   {
    "key": "cr-ref-contact-22||style|margin-bottom",
@@ -4194,6 +4264,26 @@
    "evidence": []
   },
   {
+   "key": "cr-ref-contact-20||box|y-from-detail-grid",
+   "ref": "cr-ref-contact-20",
+   "pair": "form-card",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-from-detail-grid",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
+  },
+  {
    "key": "cr-ref-contact-1||box|h",
    "ref": "cr-ref-contact-1",
    "pair": "gen-contact-1",
@@ -4461,13 +4551,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|margin-top",
      "ref": "cr-ref-contact-9",
-     "key": "display",
+     "key": "margin-top",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -12,
+     "delta": -11,
      "widths": [
       375,
       375,
@@ -4605,13 +4695,13 @@
    ]
   },
   {
-   "key": "cr-ref-contact-14||box|y-after-social-instagram-label",
+   "key": "cr-ref-contact-14||box|y-after-gen-contact-24",
    "ref": "cr-ref-contact-14",
    "pair": "detail-clinic-label",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-social-instagram-label",
+   "property": "y-after-gen-contact-24",
    "widths": [
     1440,
     1920
@@ -4701,7 +4791,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": 28,
+     "delta": 29,
      "widths": [
       1440,
       1440,
@@ -4710,37 +4800,6 @@
       1920,
       1920
      ]
-    }
-   ]
-  },
-  {
-   "key": "form-card||presence|element",
-   "ref": null,
-   "pair": "form-card",
-   "path": null,
-   "block": null,
-   "kind": "presence",
-   "property": "element",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "content",
-   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
-   "class": "W",
-   "decidedBy": "content",
-   "evidence": [
-    {
-     "check": "content",
-     "kinds": [
-      "presence"
-     ],
-     "keys": [
-      "element"
-     ],
-     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },

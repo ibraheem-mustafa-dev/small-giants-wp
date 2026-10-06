@@ -1,7 +1,7 @@
 {
  "surface": "size-guide",
- "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T01-45-53/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T01-45-53/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T09-56-32/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T09-56-32/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 54,
@@ -2823,7 +2823,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
-     "delta": 22,
+     "delta": 21,
      "widths": [
       375
      ]
@@ -3166,7 +3166,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -85,
+     "delta": -86,
      "widths": [
       375,
       768
@@ -3410,7 +3410,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -122,
+     "delta": -121,
      "widths": [
       768
      ]
@@ -3442,7 +3442,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -122,
+     "delta": -121,
      "widths": [
       1440,
       1920
@@ -3475,7 +3475,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -114,
+     "delta": -113,
      "widths": [
       1440,
       1920

@@ -1,15 +1,85 @@
 {
  "surface": "lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T01-27-07/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T01-27-07/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T09-38-54/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T09-38-54/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 42,
+  "W": 45,
   "F": 0,
   "T": 23,
   "U": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-lenses-2||style|transition-duration",
+   "ref": "cr-ref-lenses-2",
+   "pair": "title",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-23||style|transition-duration",
+   "ref": "cr-ref-lenses-23",
+   "pair": "benefits-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
   {
    "key": "cr-ref-lenses-24|.sgs-icon-list__item:nth-of-type(1)|style|transition-duration",
    "ref": "cr-ref-lenses-24",
@@ -40,6 +110,41 @@
      "setting": "itemMotionDuration",
      "css_property": "transition-duration",
      "css_element": "item-dimmed",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-26||style|transition-duration",
+   "ref": "cr-ref-lenses-26",
+   "pair": "steps-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
      "css_state": null,
      "source": "sgs"
     }
@@ -1610,13 +1715,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lenses-0||style|padding-top",
-     "ref": "cr-ref-lenses-0",
+     "parent": "cr-ref-lenses-27||style|padding-top",
+     "ref": "cr-ref-lenses-27",
      "key": "padding-top",
-     "relation": "self",
-     "match": "layout-row",
+     "relation": "descendant",
+     "match": "same-delta",
      "width": 375,
-     "delta": -22,
+     "delta": -23,
      "widths": [
       375,
       768,
@@ -2244,7 +2349,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": 17,
+     "delta": 16,
      "widths": [
       768
      ]

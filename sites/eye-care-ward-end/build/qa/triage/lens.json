@@ -1,7 +1,7 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T01-46-53/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T01-46-53/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T09-57-25/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T09-57-25/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 41,
@@ -3823,7 +3823,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 768,
-     "delta": -16,
+     "delta": -17,
      "widths": [
       768,
       768,

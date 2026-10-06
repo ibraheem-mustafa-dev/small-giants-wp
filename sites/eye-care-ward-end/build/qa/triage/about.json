@@ -1,15 +1,50 @@
 {
  "surface": "about",
- "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T01-26-23/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T01-26-23/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T09-38-18/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T09-38-18/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 1,
+  "W": 6,
   "F": 0,
   "T": 0,
   "U": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-about-3||style|transition-duration",
+   "ref": "cr-ref-about-3",
+   "pair": "name",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
   {
    "key": "cr-ref-about-10||style|transition-duration",
    "ref": "cr-ref-about-10",
@@ -40,6 +75,146 @@
      "setting": "transitionDuration",
      "css_property": "transition-duration",
      "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-about-13||style|transition-duration",
+   "ref": "cr-ref-about-13",
+   "pair": "card-bsc-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-about-16||style|transition-duration",
+   "ref": "cr-ref-about-16",
+   "pair": "card-mcoptom-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-about-19||style|transition-duration",
+   "ref": "cr-ref-about-19",
+   "pair": "card-diptp-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-about-22||style|transition-duration",
+   "ref": "cr-ref-about-22",
+   "pair": "card-paediatric-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
      "css_state": null,
      "source": "sgs"
     }

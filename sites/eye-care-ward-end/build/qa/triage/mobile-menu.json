@@ -1,10 +1,10 @@
 {
  "surface": "mobile-menu",
- "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T01-38-24/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T01-38-24/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T09-49-29/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T09-49-29/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 46,
+  "W": 55,
   "F": 4,
   "T": 5,
   "U": 0
@@ -2941,6 +2941,192 @@
    ]
   },
   {
+   "key": "cr-ref-mobile-menu-2||box|h",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 240,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-2||box|text-inset-y",
+   "ref": "cr-ref-mobile-menu-2",
+   "pair": "drawer-link-sunglasses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "text-inset-y",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 120,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||box|y-after-drawer-link-sunglasses",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "y-after-drawer-link-sunglasses",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 480,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||box|h",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 240,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-4||box|text-inset-y",
+   "ref": "cr-ref-mobile-menu-4",
+   "pair": "drawer-link-lenses",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "text-inset-y",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 120,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|y-after-drawer-link-lenses",
+   "ref": "cr-ref-mobile-menu-9",
+   "pair": "drawer-link-about",
+   "path": ".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link",
+   "block": "sgs/icon-list",
+   "kind": "box",
+   "property": "y-after-drawer-link-lenses",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -479,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|box|w",
    "ref": "cr-ref-mobile-menu-9",
    "pair": "drawer-link-about",
@@ -3024,9 +3210,9 @@
      "ref": "cr-ref-mobile-menu-0",
      "key": "padding-top",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 21,
+     "delta": 22,
      "widths": [
       375
      ]
@@ -3113,13 +3299,106 @@
    "evidence": [
     {
      "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-right",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-right",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -23,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||box|h",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
      "parent": "cr-ref-mobile-menu-0||style|padding-top",
      "ref": "cr-ref-mobile-menu-0",
      "key": "padding-top",
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 41,
+     "delta": 58,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-11||box|text-inset-y",
+   "ref": "cr-ref-mobile-menu-11",
+   "pair": "drawer-phone",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "text-inset-y",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 29,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mobile-menu-15||box|y-after-drawer-phone",
+   "ref": "cr-ref-mobile-menu-15",
+   "pair": "drawer-whatsapp",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "y-after-drawer-phone",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-mobile-menu-0||style|padding-top",
+     "ref": "cr-ref-mobile-menu-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 58,
      "widths": [
       375
      ]

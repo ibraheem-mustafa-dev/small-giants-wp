@@ -1,10 +1,10 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T01-59-22/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T01-59-22/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T09-36-52/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T09-36-52/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 141,
+  "W": 142,
   "F": 20,
   "T": 15,
   "U": 0
@@ -365,6 +365,41 @@
      "values": [
       "fill"
      ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-3||style|transition-duration",
+   "ref": "cr-ref-footer-3",
+   "pair": "brand-wordmark",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -12274,7 +12309,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 68,
+     "delta": 187,
      "widths": [
       375,
       768,
@@ -12311,7 +12346,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 44,
+     "delta": 43,
      "widths": [
       375,
       768,
@@ -12849,7 +12884,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 16,
+     "delta": 15,
      "widths": [
       375
      ]
@@ -13055,7 +13090,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 16,
+     "delta": 17,
      "widths": [
       375
      ]
@@ -13327,7 +13362,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -11,
+     "delta": -12,
      "widths": [
       375
      ]
@@ -13472,7 +13507,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 11,
+     "delta": 12,
      "widths": [
       375,
       768,
@@ -13978,7 +14013,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -20,
+     "delta": -21,
      "widths": [
       768,
       1440,

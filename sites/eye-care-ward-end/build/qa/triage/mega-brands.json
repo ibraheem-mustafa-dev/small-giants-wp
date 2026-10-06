@@ -1,10 +1,10 @@
 {
  "surface": "mega-brands",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T01-41-03/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T01-41-03/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T09-52-00/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T09-52-00/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 192,
+  "W": 193,
   "F": 8,
   "T": 75,
   "U": 0
@@ -81,6 +81,39 @@
       "h5",
       "h6"
      ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-3||style|transition-duration",
+   "ref": "cr-ref-mega-brands-3",
+   "pair": "brands-heading-top",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -291,6 +324,39 @@
       "h5",
       "h6"
      ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-mega-brands-6||style|transition-duration",
+   "ref": "cr-ref-mega-brands-6",
+   "pair": "brands-heading-all",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -1122,39 +1188,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-8||style|transition-duration",
-   "ref": "cr-ref-mega-brands-8",
-   "pair": "brands-top-first",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
     }
    ]
   },
@@ -7386,7 +7419,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7576,7 +7610,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7766,7 +7801,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7956,7 +7992,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8146,7 +8183,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8336,7 +8374,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8526,7 +8565,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8716,7 +8756,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8906,7 +8947,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9096,7 +9138,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9286,7 +9329,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9476,7 +9520,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9666,7 +9711,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9856,7 +9902,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10046,7 +10093,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10236,7 +10284,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10426,7 +10475,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10616,7 +10666,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10806,7 +10857,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10996,7 +11048,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11186,7 +11239,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11376,7 +11430,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11566,7 +11621,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11756,7 +11812,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11946,7 +12003,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15294,7 +15352,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15484,7 +15543,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15674,7 +15734,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15864,7 +15925,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -16054,7 +16116,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -16244,7 +16307,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -16324,7 +16388,8 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -16688,7 +16753,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 47,
+     "delta": 45,
      "widths": [
       1440,
       1920
@@ -16952,7 +17017,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 7,
+     "delta": 8,
      "widths": [
       1440,
       1920
@@ -17249,7 +17314,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 1440,
-     "delta": 148,
+     "delta": 149,
      "widths": [
       1440,
       1920
@@ -17276,13 +17341,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
+     "parent": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
+     "ref": "cr-ref-mega-brands-5",
      "key": "line-height",
-     "relation": "ancestor",
+     "relation": "self",
      "match": "same-delta",
      "width": 1440,
-     "delta": -5,
+     "delta": -4,
      "widths": [
       1440,
       1920
@@ -17348,7 +17413,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 56,
+     "delta": 55,
      "widths": [
       1440,
       1920
@@ -17414,7 +17479,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 58,
+     "delta": 57,
      "widths": [
       1440,
       1920
@@ -17447,7 +17512,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 10,
+     "delta": 9,
      "widths": [
       1440,
       1920
@@ -17478,9 +17543,9 @@
      "ref": "cr-ref-header-4",
      "key": "line-height",
      "relation": "ancestor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 1440,
-     "delta": -7,
+     "delta": -5,
      "widths": [
       1440,
       1920
@@ -17903,13 +17968,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
+     "parent": "cr-ref-mega-brands-47||box|y-after-gen-mega-brands-42",
+     "ref": "cr-ref-mega-brands-47",
+     "key": "y-after-gen-mega-brands-42",
+     "relation": "anchor",
+     "match": "same-delta",
      "width": 1440,
-     "delta": 10,
+     "delta": 9,
      "widths": [
       1440,
       1920

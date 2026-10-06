@@ -1,7 +1,7 @@
 {
  "surface": "help",
- "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T01-27-52/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T01-27-52/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T09-39-33/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T09-39-33/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 80,
@@ -10,6 +10,76 @@
   "U": 0
  },
  "verdicts": [
+  {
+   "key": "cr-ref-help-2||style|transition-duration",
+   "ref": "cr-ref-help-2",
+   "pair": "title",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-help-14||style|transition-duration",
+   "ref": "cr-ref-help-14",
+   "pair": "questions-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/heading paints \"\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
   {
    "key": "cr-ref-help-15|a:nth-of-type(1)|style|display",
    "ref": "cr-ref-help-15",
@@ -627,7 +697,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 2.1999999999999993,
+     "delta": 2.8000000000000007,
      "widths": [
       375,
       375,
@@ -4837,7 +4907,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": 2.1999999999999993,
+     "delta": 2.8000000000000007,
      "widths": [
       375,
       768,
@@ -6928,7 +6998,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
+     "delta": -47,
      "widths": [
       375,
       375,
@@ -6967,13 +7037,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "display",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -7012,13 +7082,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "display",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -7,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -7063,7 +7133,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -46,
+     "delta": -47,
      "widths": [
       375,
       375,
@@ -7175,13 +7245,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|column-gap",
+     "parent": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
      "ref": "cr-ref-help-17",
-     "key": "column-gap",
+     "key": "line-height",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -9,
+     "delta": -10,
      "widths": [
       375,
       375,
@@ -7222,7 +7292,7 @@
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": -13,
+     "delta": -12,
      "widths": [
       375,
       768,
@@ -7278,7 +7348,10 @@
    "kind": "box",
    "property": "y-after-gen-help-17",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -7296,7 +7369,13 @@
      "delta": -6,
      "widths": [
       375,
-      375
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
      ]
     }
    ]
@@ -7328,7 +7407,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       375,
@@ -7369,7 +7448,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       375,
@@ -7449,13 +7528,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|column-gap",
-     "ref": "cr-ref-help-15",
-     "key": "column-gap",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-help-0||style|padding-top",
+     "ref": "cr-ref-help-0",
+     "key": "padding-top",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": -19,
+     "delta": -15,
      "widths": [
       375,
       375,
@@ -7675,7 +7754,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -39,
+     "delta": -40,
      "widths": [
       375,
       375,
@@ -7756,7 +7835,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -3,
+     "delta": -4,
      "widths": [
       375,
       375,
@@ -7828,7 +7907,10 @@
    "kind": "box",
    "property": "y-after-contact-link-top",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -7837,17 +7919,26 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
+     "parent": "cr-ref-help-15|a:nth-of-type(1)|style|display",
      "ref": "cr-ref-help-15",
-     "key": "width",
+     "key": "display",
      "relation": "anchor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 7,
+     "delta": 8,
      "widths": [
       375,
       375,
-      375
+      375,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920
      ]
     }
    ]
@@ -7873,13 +7964,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-0||style|padding-top",
-     "ref": "cr-ref-help-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
+     "parent": "cr-ref-help-16||style|column-gap",
+     "ref": "cr-ref-help-16",
+     "key": "column-gap",
+     "relation": "self",
+     "match": "same-delta",
      "width": 375,
-     "delta": 16,
+     "delta": 21,
      "widths": [
       375,
       375,
@@ -7969,7 +8060,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 37,
+     "delta": 41,
      "widths": [
       375,
       768,
@@ -8051,7 +8142,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 31,
+     "delta": 36,
      "widths": [
       375,
       768,
@@ -8088,7 +8179,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       768,
@@ -8236,7 +8327,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       768,
@@ -8273,7 +8364,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -7,
+     "delta": -6,
      "widths": [
       375,
       768,
@@ -8304,13 +8395,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
-     "ref": "cr-ref-help-19",
-     "key": "line-height",
-     "relation": "anchor",
-     "match": "layout-row",
+     "parent": "cr-ref-help-0||style|padding-top",
+     "ref": "cr-ref-help-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "same-delta",
      "width": 375,
-     "delta": 23,
+     "delta": 27,
      "widths": [
       375,
       768,
@@ -8354,51 +8445,13 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|box|y-after-gen-help-16",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-gen-help-16",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-17|.sgs-accordion-item__header|style|padding-top",
-     "ref": "cr-ref-help-17",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 768,
-     "delta": -4,
-     "widths": [
-      768,
-      768,
-      1440,
-      1440,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header|box|y-after-gen-help-16",
+   "key": "cr-ref-help-19|.sgs-accordion-item__header|box|y-after-gen-help-17",
    "ref": "cr-ref-help-19",
    "pair": "faq-question-2",
    "path": ".sgs-accordion-item__header",
    "block": "sgs/accordion-item",
    "kind": "box",
-   "property": "y-after-gen-help-16",
+   "property": "y-after-gen-help-17",
    "widths": [
     768,
     1440,
@@ -8411,13 +8464,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-top",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__content|style|padding-bottom",
      "ref": "cr-ref-help-19",
-     "key": "padding-top",
+     "key": "padding-bottom",
      "relation": "self",
      "match": "same-delta",
      "width": 768,
-     "delta": 5,
+     "delta": 6,
      "widths": [
       768,
       1440,
@@ -8446,48 +8499,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__title|style|line-height",
+     "parent": "cr-ref-help-19|.sgs-accordion-item__header|style|padding-top",
      "ref": "cr-ref-help-19",
-     "key": "line-height",
+     "key": "padding-top",
      "relation": "anchor",
      "match": "same-delta",
      "width": 768,
-     "delta": -3,
-     "widths": [
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17||box|y-after-contact-link-top",
-   "ref": "cr-ref-help-17",
-   "pair": "gen-help-17",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "box",
-   "property": "y-after-contact-link-top",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-help-15||style|width",
-     "ref": "cr-ref-help-15",
-     "key": "width",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 768,
-     "delta": 7,
+     "delta": -4,
      "widths": [
       768,
       1440,

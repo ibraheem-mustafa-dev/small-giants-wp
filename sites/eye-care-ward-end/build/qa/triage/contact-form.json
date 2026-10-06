@@ -1,10 +1,10 @@
 {
  "surface": "contact-form",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T01-57-43/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T01-57-43/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T10-06-57/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T10-06-57/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 50,
+  "W": 49,
   "F": 1,
   "T": 45,
   "U": 0
@@ -4743,13 +4743,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "padding-top",
+     "key": "margin-top",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -8,
+     "delta": -10,
      "widths": [
       375,
       375,
@@ -4821,13 +4821,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "margin-top",
+     "key": "padding-top",
      "relation": "anchor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 10,
+     "delta": 8,
      "widths": [
       375,
       375,
@@ -4941,13 +4941,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-right",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|display",
      "ref": "cr-ref-contact-form-2",
-     "key": "padding-right",
+     "key": "display",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 25,
+     "delta": 24,
      "widths": [
       375
      ]
@@ -4975,13 +4975,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|box|y-after-gen-contact-form-0",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-right",
      "ref": "cr-ref-contact-form-2",
-     "key": "y-after-gen-contact-form-0",
+     "key": "padding-right",
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": 24,
+     "delta": 25,
      "widths": [
       375,
       768,
@@ -5025,37 +5025,6 @@
       1440,
       1920
      ]
-    }
-   ]
-  },
-  {
-   "key": "form-card||presence|element",
-   "ref": null,
-   "pair": "form-card",
-   "path": null,
-   "block": null,
-   "kind": "presence",
-   "property": "element",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "content",
-   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
-   "class": "W",
-   "decidedBy": "content",
-   "evidence": [
-    {
-     "check": "content",
-     "kinds": [
-      "presence"
-     ],
-     "keys": [
-      "element"
-     ],
-     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },
