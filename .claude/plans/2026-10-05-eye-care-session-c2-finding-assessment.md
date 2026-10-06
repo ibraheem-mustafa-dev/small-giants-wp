@@ -21,14 +21,25 @@ measuring), `BRIEF.md` and `lane-*.tsv` (the five fact-check lanes), `FACT-CHECK
 `STEP3-RESWEEP.md` (the re-sweep and its addendum), `BEAN-LIST.md` (Bean's answers) and
 `QC-ROUTE-FIXES.md` (the QC of the four route-defect proposals).
 
-**Result: raw F 193 at block code `94122e326`, and 178 judged rows reduce to 5 approved block fixes.**
-Of 178: 90 measuring artefacts, 25 decided by the register, 22 already settable or an accepted divergence,
-11 wrong block (Session D's tree work), 14 Google Reviews accepted differences. Every `real` verdict was
-re-checked in the main thread and 17% of the rest spot-checked.
+**Result: raw F 193 at block code `94122e326`, and the judged rows reduce to 5 approved block fixes.**
 
-**The two numbers in this plan's original text that were wrong, now corrected throughout:** the
-canvas-settable rows are **193** (209 on the later sweep), not 161; and the content rows are **50**
-(38 presence, 12 text), not 45.
+The arithmetic, stated so it sums: **of the 192 F rows on the baseline sweep, 14 `sgs/google-reviews` rows
+were excluded** (the parallel track's, and all accepted differences), leaving **178 judged across five
+lanes**. Those 178 are **30 `real` + 22 already settable or an accepted divergence + 11 wrong block
+(Session D's tree work) + 90 measuring artefacts + 25 register-decided = 178.** The **30 real rows yield 7
+candidate fixes**, of which Bean approved **5** (A4 withdrawn, A7 downgraded to an investigation). Every
+`real` verdict was re-checked in the main thread and 17% of the rest spot-checked.
+
+**Two figures the original text got wrong. Both are sweep-dependent, so always name the sweep:**
+
+| | baseline sweep (raw F 192, `7f375f765`) | re-sweep (raw F 193, `94122e326`) |
+|---|---|---|
+| `W/canvas-settable` | **193** (the text said 161) | **209** |
+| `W/content` | **50** — 38 presence, 12 text (the text said 45) | **45** — 33 presence, 12 text |
+
+So 161 was wrong on both sweeps. The content figure of 45 was wrong for the baseline the brief described
+and happens to be right for the re-sweep: **5 presence rows left the content class between the two
+sweeps.** A bare "45" or "50" is ambiguous without the sweep attached.
 
 **Two documented causes were REFUTED and must not be built on:**
 - The footer `margin-top` "inline WP-native base margin" cause is false.
@@ -46,7 +57,7 @@ stale-report failure mode and the `canvasSettable` masking.
 **The number this session consumes is raw F = 192**, in `sites/eye-care-ward-end/build/qa/triage/*.json` (17 files, rewritten 2026-10-06). It is a **raw machine classification** and is **not** comparable to Session B's audited 163: Session B audited 338 raw rows down to 163, so an audited equivalent of 192 is this session's own judgement to produce. Per surface: lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4, mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, and 0 on about, lenses, header and size-guide. There are also **29 U rows** that nothing explains.
 
 **Four things to absorb before judging any row.**
-1. **161 rows moved from F to `W/canvas-settable`**, each citing a block and attribute that could hold the value. That citation is a **claim to test live, never a closure**, and task 2 tests it. The canvas roster is 12 of the 17 surfaces, and it is load-bearing: stripping its flags takes F back to 338, so a wrong roster would mask genuine page gaps.
+1. **193 rows carry `W/canvas-settable` on the baseline sweep, 209 on the re-sweep** (the figure of 161 in the original brief was wrong on both),, each citing a block and attribute that could hold the value. That citation is a **claim to test live, never a closure**, and task 2 tests it. The canvas roster is 12 of the 17 surfaces, and it is load-bearing: stripping its flags takes F to 345 (measured; the 338 first recorded was the Gate 2 figure carried forward), so a wrong roster would mask genuine page gaps.
 2. **The count was measured at block code `7f375f765`, which is NOT current.** eye-care-test now runs `94122e326`. Every register row fixed between those commits still reads open in this triage — including 87's breadcrumb weight (`9776e7d86`) and 15's drawer column (`31aa51090`). **Those are fixed in code; do not re-investigate them as regressions.** Re-sweeping at current code is the honest way to clear them.
 3. **45 content rows** (13 text, 32 presence) are classed `W/content` and are not framework gaps.
 4. **Session C's own Gate 3 council corrected 12 of its claims.** In particular the 338 → 192 headline is NOT a clean before/after: only **338 → 176** is a single-variable result (the route code on identical reports). The step to 192 mixes new walker code, new live block code and newly walked states and is not separable. Treat 192 as the current measured state, not as a measure of the route's improvement.
@@ -163,7 +174,7 @@ colour-tile rows the register-proven repairs track closed. **Those are fixed in 
 findings.** A fresh measure-only sweep at current code is the honest way to clear them, and it is cheap —
 `solve.mjs --rounds 0` per surface, then `sweep.mjs`.
 
-**The C table did shrink, and here is by how much.** Session C's canvas-awareness rule (FR-47-8) moved **161 rows**
+**The C table did shrink, and here is by how much** (figures as Session C recorded them; the canvas total is 193 on the baseline sweep, not 161 — see the corrections at the top of this plan). Session C's canvas-awareness rule (FR-47-8) moved **161 rows**
 from F to **W** / `canvas-settable`, and the roster covers 12 of the 17 surfaces. Per surface it took footer 76 to 21,
 product 42 to 5, mega-lenses 24 to 4, header 15 to 0, contact-form 10 to 0, mega-brands 14 to 8, mobile-menu 12 to 4,
 shop 7 to 2, lens 38 to 34 and mega-sunglasses 2 to 1, with **zero change on any non-canvas page**. Every one of those

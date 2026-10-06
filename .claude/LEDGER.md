@@ -60,12 +60,12 @@ truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, d
 No blockers.
 
 **Spec 47 (v0.15): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
-compares a built page with the draft and writes block settings; `--rounds 0` measures only. The walker
-(`scripts/parity/`) reads what DevTools shows. Every surface is paired. **About is at 100%.** Always read per-surface
-counts from `qa/triage/*.json`, never a cached figure. **Session C built everything except stage 5 (a second draft,
-none exists)** — including Fill (`fill.mjs`, `lib/draft.mjs`, twelve `lib/fill-*.mjs`). Ten known route defects with
-owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time (dev-setup.md); local WSL mirrors at
-localhost:8081/8082 if Hostinger shows a captcha (`scripts/local-wp/README.md`).
+compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
+read per-surface counts from `qa/triage/*.json`, never a cached figure. **Everything except stage 5 (a second draft)
+is built.** Route defects with owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time
+(dev-setup.md); local WSL mirrors at localhost:8081/8082 if Hostinger shows a captcha (`scripts/local-wp/README.md`).
+⚠️ **`solve.mjs --rounds 0` is NOT read-only against the live site**: `solve.mjs::build` runs `wp-build-page.js` for
+real, so every surface's page is rebuilt from its tree file. It writes no solver setting; it does rewrite the page.
 
 **Sessions A and B (2026-10-05, complete, measure and read only).** Session B audited 338 raw-F rows down to 163;
 that **audited 163 is never comparable to any raw triage count**. Detail: `plans/2026-10-04-eye-care-sweep-audit-fix.md`;
@@ -79,9 +79,10 @@ zero-movement-on-non-canvas half is confirmed.
 
 **Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). Raw
 **F 193 at block code `94122e326`**, verified by deploy-marker checksum; all evidence in
-`reports/2026-10-06-session-c2/`. **178 judged rows reduce to 5 approved block fixes**: 90 measuring artefacts,
-25 register-decided, 22 already settable or an accepted divergence, 11 wrong block (Session D's tree work), 14
-Google Reviews accepted differences. ⚠️ **eye-care-test now runs `6d6906b98`**; Eye Care's 17 surfaces were
+`reports/2026-10-06-session-c2/`. **Of the 192 baseline F rows, 14 Google Reviews were excluded (accepted
+differences) and 178 judged: 30 real + 22 already settable or an accepted divergence + 11 wrong block (Session
+D's tree work) + 90 measuring artefacts + 25 register-decided.** The 30 real rows gave 7 candidate fixes, of
+which **Bean approved 5** (A4 withdrawn, A7 an investigation). ⚠️ **eye-care-test now runs `6d6906b98`**; Eye Care's 17 surfaces were
 verified unaffected on three axes, so F 193 stays comparable — but record the SHA on any future sweep, and
 compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
