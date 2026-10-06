@@ -708,92 +708,32 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
          `draft-live-walk.mjs --lint` over every surface's `walkerFull`** — no browser, no host.
        - **The 338 to 176 decomposition is machine-local.** `.gitignore` ignores `sites/*/build/qa/solve/`, so it
          re-derives only while the 2026-10-05 report folders survive on disk.
-     - **Route defects found by Session C2 (2026-10-06), each diagnosed read-only with a fix proposal.** All are
-       owned by `plans/2026-10-06-spec47-route-cleanup.md`, which carries the file-ownership map and wave order.
-       The two write hazards come first: both make the route write a wrong value into a client tree.
-       - **WRITE HAZARD: `sgsAnimationStart: load` is written from a measurement artefact.**
-         `lib/entrance.mjs::entranceStart` returns
-         `{ writes: [ { attr: 'sgsAnimationStart', value: 'load', merge: 'replace' } ] }` whenever the draft is at
-         rest and live looks hidden. But live is routinely hidden because the walker read an **armed, paused
-         entrance pose**: `scripts/parity/lib/devtools.mjs::unfinishedAnimations` filters on
-         `( 'running' === a.playState || a.pending ) && … Number.isFinite( endTime )`, so a paused pose **and** an
-         infinite animation are both invisible to the settle, and the page is declared settled while an element
-         sits at the start frame `animation-observer.js::keyframes` builds (`opacity: 0`, `translate: 0 26px`).
-         **Fix: fire only when the element's rect at `scrollY 0` is inside the first viewport**, the first-screen
-         case it was written for.
-       - **WRITE HAZARD: a 10x wrong transition duration, latent until transitions become writable.**
-         `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_transition_vars` does
-         `preg_replace( '/[^0-9]/', '', $duration )`, so `"0.25s"` becomes `"025"` and emits
-         `--sgs-transition-duration:025ms` — 25ms where 250ms was meant, silently. `lib/resolve.mjs::formatValue`
-         has **no time branch at all**.
-         ⚠️ **This is LIVE, not latent, and an earlier note in this spec saying otherwise was wrong.** All eight
-         blocks that call `sgs_transition_vars` — `sgs/hero`, `sgs/brand-strip`, `sgs/cta-section`, `sgs/gallery`,
-         `sgs/info-box`, `sgs/post-grid`, `sgs/team-member`, `sgs/testimonial-slider` — declare
-         `transitionDuration` as **`type: "string"`, default `"300"`**, so any non-digit input is mangled:
-         `"0.25s"` emits **25ms**, `"0.3"` emits **3ms**, `"1s"` emits **1ms**. Only a pure-digit string
-         survives. (`sgs/button`, `sgs/heading` and `sgs/text` do declare `type: number`, but **they do not call
-         this helper** — that is where the earlier "latent" reading came from.) Eye Care's trees use `"250"` and
-         are unaffected, so no client is damaged today, but any client typing a decimal gets a tenth of the
-         duration they asked for. **`sgs_transition_vars` must reject a non-integer rather than strip it, and
-         `formatValue` must gain a seconds-to-integer-milliseconds branch BEFORE the transition marker above is
-         enabled.**
-       - **A forced-hover row can be a FALSE GREEN.** `scripts/parity/lib/collect.mjs::centreOf` returns the centre
-         of the element's **raw** rect. On `sgs/brand-strip`'s marquee track — far wider than the viewport and
-         mid-translate — the live pointer lands off-screen (`hoverChrome.at.x` reads −1786 at 768, −1452 at 1440,
-         −1228 at 1920), so `mouseenter` never fires and the JS pause class is never added. **At 768 both sides'
-         pointers are off-screen, so neither pauses and the row matches by accident.** A test passing for the wrong
-         reason is worse than one failing. **Fix: clamp the hover point to the rect∩viewport intersection, verify
-         with `document.elementFromPoint`, and return `unreached: true` rather than reading "no change" as a pass.**
-       - **A failed surface silently serves a stale measurement as a current one.** When `solve.mjs` fails it
-         leaves a directory holding draft caches and a `round-1` folder but **no `solve-report.json`**. Because
-         `lib/sweep.mjs::latestReport` globs `*/solve-report.json`, the incomplete directory is skipped and the
-         **previous** run is used, with nothing going red in either sweep or triage. Observed live: `header` failed
-         with a walker `TimeoutError` during Session C2's sweep and its 01:37 measurement would have been reported
-         as current had the runner not logged the failure. **Fix: `sweep.mjs` reports any surface whose newest
-         report predates the sweep's own start**, or `solve.mjs` writes a failure marker `latestReport` refuses.
-       - **A cosmetic path change re-keys rows wholesale, which breaks Gate TAIL.** Row identity is
-         `key = ref|path|kind|property`. Between two Session C2 sweeps `sgs/brand-strip` kept **exactly 51 rows**
-         while **18 changed key**, because the walker's emitted path gained a `:nth-of-type(1)` on `__set` — with
-         **no verdict change on any of them**. Gate TAIL's "at most 1 new row per 10 closed" cap would read that as
-         a wave of closes and opens and pass or fail for the wrong reason. **Fix: compare on a path with positional
-         selectors normalised, not the raw key.** This applies to the route-cleanup plan's own verification sweep,
-         since two of its fixes change emitted paths.
-       - **`canvasSettable` masks genuine gaps for a named class of claim.** `lib/triage.mjs::canvasSettable`
-         matches a row to a candidate control on `css_property` equality and treats a control whose DB
-         `css_element` is NULL as able to reach any descendant. **All 20 claims citing
-         `sgs/container::bgHoverZoomDuration`, `::bgHoverZoomEasing` or `::bgHoverZoomScale` sit on a form input, a
-         social icon item, a tab button, a buybox gallery div or a filter input — never on the background layer
-         those controls paint.** `includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` emits only
-         to `.<uid> > .sgs-container__image-bg` or `.<uid>::before`, and sets `transition-property: transform`
-         alongside, so it can never hold an arbitrary descendant's transition. Those 20 rows are classed
-         `W/canvas-settable` when they are genuinely F. **Fix: respect the emission selector, not the property name
-         alone.** 18 of the 20 fall under the existing transition exclusion, so the mechanism matters more than
-         these rows — it would mask non-transition gaps on the next client.
-       - **Three walker reader-scope defects, only one of which is a mispair.** (a) `about-step-*` in
-         `sites/eye-care-ward-end/build/qa/parity/home.mjs` targets live
-         `.sgs-process-steps__step:nth-of-type(i) .sgs-process-steps__title` — the title, not the step — and the
-         config's own `accept` note describes the mispair it created. A genuine hand-config error. (b) `gen-help-17`
-         is correctly paired: `scripts/parity/lib/paint.mjs::layoutElement` descends through single rendered
-         children, and the draft drops its answer when closed so it descends to the button while live's closed
-         `<details>` keeps two rendered children and stays put. (c) `gen-product-4` is correctly paired:
-         `collect.mjs` reads `el.querySelector('svg')`, the first SVG anywhere inside, so on a container it reads a
-         different icon on each side. **None of the three caused a write** (0 `T` rows across all of them), so no
-         client data was affected. A **twin-containment gate** (`judgePairScope`: a matched word inside one element
-         whose twin lies outside the other) catches class (a) and future hand-pair errors; hand pairs are never
-         judged today, while generated pairs are. **The obvious box-ratio gate is unsafe and was ruled out on
-         evidence**: it flags 40 pairs of which at least 12 are legitimate (a phone link 91 against 109 wide, a
-         submit button 166 against 335).
-       - **The walker has no icon abstraction, so a draft glyph against a live SVG produces phantom text rows.**
-         `collect.mjs` reads text properties from `paint.mjs::textCarrier` and guards them with
-         `if ( src && ! /^icon-/.test( p ) )`; `compare.mjs::sameValue` returns false when either side is
-         `undefined`; and `compare.mjs::partIrrelevant` rescues **only** `icon-*` keys missing on one side, never
-         text keys. So a draft `+` glyph yields 8 text keys, the live SVG yields none, and every one becomes a row —
-         11 on the help accordion. **The framework already models an icon as a source plus one px size**
-         (`sgs/icon/block.json`: `iconSource` enum `['lucide','wp-icon','dashicon','emoji','custom']`, `iconSvg`,
-         `emojiChar`, one `iconSize`), so an emoji icon is text and a lucide icon is an SVG by design. **Fix: an
-         `iconKind` per side plus a normalised `icon-colour`, suppressing text properties when the kinds differ and
-         one is a glyph.** Scope checked: `footer` `social-whatsapp` and `lens` `gen-lens-0` are svg-against-svg and
-         are **not** covered.
+     - **Route defects found by Session C2 (2026-10-06): ALL CLOSED 2026-10-06** by
+       `plans/2026-10-06-spec47-route-cleanup.md`, which carries the file-ownership map, the wave order and the
+       per-fix briefs under `reports/2026-10-06-session-c2/briefs/`. Both write hazards (`entranceStart` writing
+       `sgsAnimationStart` from an armed pose, and `sgs_transition_vars` stripping a decimal so `"0.3"` emitted
+       3ms), the forced-hover false green, the three reader-scope defects, the missing icon abstraction, the
+       twin-containment pairing gate, the transition markers, `canvasSettable`'s emission selector, the
+       re-keying of rows by a cosmetic path change, a stale report served as current, and the walker's own
+       caveats reaching no reader. Commits `809d30f8d`, `1963180ac`, `d72c88afe`, `54c1a53f3`, `aa4c3b15a`,
+       `9970eb804`, `6a61f3678`, `4cc06dd12`. Route suite 523 to 580, all green.
+       - **Still open from that work, and each needs its own session:**
+         - **`solve.mjs::writeRound` sets `canvasSettable` from its hop citation with no emission check**, so
+           Solve's own report still flags gaps `lib/triage.mjs` no longer trusts. Applying
+           `triage.mjs::reachesElement` there would be INERT — `solve.mjs` builds no PHP helper index, so every
+           emission reads unknown and keeps its credit. **The durable fix is storing the emission selector in the
+           DB (`css_element` is NULL for every `bgHoverZoom*` row today)**, which touches `block.json` and the
+           seeder. Triage is the classifier of record meanwhile.
+         - **Emission is read by string search of PHP literals**, so a control emitting through a class method
+           rather than an `sgs_*` function reads as unknown and keeps its credit.
+         - **`scripts/parity/lib/chrome-compare.mjs::hoverEffects` does not apply P3c's `loops`.** Not fixed
+           because the cause is unproven: it produces descriptive labels from rest-and-hover snapshots rather
+           than property rows, and the marquee that motivated `loops` is page content, not header chrome. What
+           would prove it: a chrome surface carrying an infinite animation whose effect set differs between two
+           runs with no code change.
+         - **A live-side walker finding is never persisted.** `lib/sweep.mjs::readWalkerCaveats` reads
+           `draft-cache-*.json`, the only place the walker saves `states`, so `reveal-unfired` on the LIVE side
+           reaches no reader. Surfacing it needs the walker to save live states.
      - **The divergence ledger cannot scope a decision to one element path** (found 2026-10-05, Session C C0.3).
        `lib/ledger.mjs::match` matches on node, state, pseudo, property and width, with **no path discriminator**, so
        a node holding several rows of the same property and state cannot have one of them accepted on its own. It
