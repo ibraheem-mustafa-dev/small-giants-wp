@@ -67,15 +67,11 @@ is built.** Route defects with owners are in §5 Residual. Run host tools with `
 ⚠️ **`solve.mjs --rounds 0` is NOT read-only against the live site**: `solve.mjs::build` runs `wp-build-page.js` for
 real, so every surface's page is rebuilt from its tree file. It writes no solver setting; it does rewrite the page.
 
-**Sessions A and B (2026-10-05, complete, measure and read only).** Session B audited 338 raw-F rows down to 163;
-that **audited 163 is never comparable to any raw triage count**. Detail: `plans/2026-10-04-eye-care-sweep-audit-fix.md`;
-per-surface in `plans/2026-10-04-spec47-full-coverage.md`.
-
-**Session C — COMPLETE at `b0492a5af`** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`). No block code
-touched; 523 route tests green. Route result raw F 338 to 176 on identical reports. ⚠️ **RAW figures are never
-comparable to Sessions A and B's audited 163.** Gate 3 corrected 12 of its own claims; its stripped-control figure
-of 338 is **refuted — C2 measured 345 on those reports and 346 on fresh ones**, though the
-zero-movement-on-non-canvas half is confirmed.
+**Sessions A, B and C — COMPLETE** (`plans/2026-10-04-eye-care-sweep-audit-fix.md`,
+`plans/2026-10-04-spec47-full-coverage.md`, `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`;
+C at `b0492a5af`, no block code touched, raw F 338 to 176). ⚠️ **B's audited 163 is never comparable to any
+RAW triage count.** Gate 3's stripped-control figure of 338 is **refuted** — C2 measured 345 then 346 — though
+its zero-movement-on-non-canvas half is confirmed.
 
 **Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). Raw
 **F 193 at block code `94122e326`**, verified by deploy-marker checksum; all evidence in
@@ -103,8 +99,11 @@ future sweep, and compare on a **normalised** path, because a cosmetic path chan
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Browser-heavy runs belong on the local
   WSL mirrors, **UP and fast**; `curl localhost:8081` fails only on IPv4 — use `curl -6`.
   **Never `wsl --shutdown`: SearXNG lives there.**
-- **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
-  (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
+- **The 63 walker-blind rows — CATEGORISED 2026-10-06** (`reports/2026-10-06-eye-care-63/`). No deploy was
+  needed; every commit the built rows cite is an ancestor of live `578a8830b`. **N11 and N25 verified CLOSED
+  live, not unbuilt**; 18 verified by a new flow. 10 built, 9 open, 5 need client content, 14 CR, 11 to measure.
+  ⚠️ **Off-register:** 12 of 16 shop cards render no image and **no link**, though 16 of 17 products have
+  images. Unproven cause (report §5): the manifest transient is never purged. One delete settles it.
 - **`benchmark.mjs --noise`** — the only Session C host job still owed (stopped 4 of 10; 5 of 5 catch rate
   stands, noise unproven). Confirmation walk and `sgs/media` recalibration DONE. Commands: Session C plan, "Wave 3's
   remaining items".
@@ -129,8 +128,8 @@ CR6 unbuilt: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so t
 The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
-**Resume from:** `plans/2026-10-06-spec47-route-cleanup.md` (the route cleanup), then the 63 register items via
-`/phase-planner`. Per-surface Solve work is Session D.
+**Resume from:** the 63's §5 — prove or kill the manifest-cache cause behind the 12 imageless, unclickable
+shop cards, then the quick wins 36 and S8. Per-surface Solve work is Session D.
 
 **Separators** (live on both sites): the shared
 lines-between-items setting covers the container, both nav blocks, icon-list, brand-strip, pricing-table features, business-info
