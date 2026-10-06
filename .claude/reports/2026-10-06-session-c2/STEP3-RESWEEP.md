@@ -140,3 +140,50 @@ items already decided and still to build (39-43, 34/35), 4 tree edits, and 1 unp
 
 Three items are added to the list as route debts rather than framework gaps: the Gate TAIL re-keying
 trap, the stale-report failure mode, and the corrected control figure.
+
+---
+
+## Addendum: eye-care-test has moved off this baseline
+
+**2026-10-06, 13:50:50.** A peer session deployed to eye-care-test, which now runs block code
+**`6d6906b981be93336dbebd822e1e96b30e47c612`**, verified from the marker. **The F 193 above is recorded
+against `94122e326` and must not be quoted against current HEAD.**
+
+Two commits landed: `e62f45952` (the block-link rebuild, the substantive one) and `6d6906b98` (a gate fix
+on top).
+
+### Is the F 193 still comparable on a future re-sweep? Yes — verified on three axes
+
+`e62f45952` changes rendered markup on six blocks: the whole-card stretched link no longer injects a
+focusable empty anchor, the block's own visible link keeps its tab stop and is given the stretched
+surface, and any further link to the same destination is demoted to `tabindex="-1" aria-hidden="true"`.
+
+The peer's assurance was that no Eye Care tree enables the toggle. That is true but **narrower than the
+commit**, so all three checks were run:
+
+1. **No tree enables it.** `grep` for `sgsBlockLinkAuto` across all 17 `*.tree.json` returns nothing, and
+   so does a grep for any `sgsBlockLink*` key.
+2. **No default flipped.** The commit touches `product-card/block.json` and
+   `responsive-logo/block.json` by two lines each, and **both are `_comment_blockLink` text only**. No
+   attribute default changed. This was the real risk: "no tree enables it" would not protect against a
+   default flipping from false to true.
+3. **The second change in the same commit does not reach Eye Care.** `buybox/render.php` gained a
+   forwarding of `band_axis` and `band_scale` so a guided tile shows the same letter as the standard tile
+   and the bag line — the peer's rows 20+23 work, not block-link. Eye Care's product tree **does** set
+   `pickerBandAxis: "pa_frame-size"` and `pickerBandScale: "S:52,M:57,L"`, so this had to be checked
+   rather than assumed. It is safe because `buyboxLayout` is an enum of `['standard','guided']` with
+   default `'standard'`, and **the Eye Care product tree never sets it**. The forwarding only affects the
+   guided path, so the standard path Eye Care runs is unchanged — it already printed the letter.
+
+**Conclusion:** Eye Care's 17 surfaces are unaffected by `e62f45952`, so a re-sweep at `6d6906b98` is
+comparable to the F 193 recorded here. Record the SHA on any future sweep regardless.
+
+### Two deploy lessons from the peer, worth carrying
+
+- **`build-deploy.py` builds from an isolated worktree at HEAD**, so an uncommitted change **cannot
+  ship** — and the deploy still prints `[DONE]` with every gate green. The peer lost a cycle to a fix
+  that was never on the server. This is the same shape as this session's own stale-report finding:
+  a green signal over a subject that is not the one you think.
+- **A straight `md5sum` comparison reports CRLF-versus-LF as a content mismatch.** Git normalises on
+  commit and the deploy ships from a worktree at HEAD, so the server holds LF while a Windows working
+  copy holds CRLF. Normalise with `tr -d '\r'` before comparing, or two identical files read as different.
