@@ -99,7 +99,7 @@ const pathKey = ( d, t ) => {
 	if ( 'style' === d.kind && LAYOUT_CARRIED.includes( d.key ) && null != t.layoutPath ) {
 		return 'layoutPath';
 	}
-	if ( 'style' === d.kind && /^icon-(width|height)$/.test( d.key ) && null != t.iconPath ) {
+	if ( 'style' === d.kind && /^icon-(width|height|colour)$/.test( d.key ) && null != t.iconPath ) {
 		return 'iconPath';
 	}
 	return 'path';

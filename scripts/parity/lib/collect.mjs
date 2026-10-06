@@ -134,23 +134,46 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		styles[ 'line-height' ] = `${ Math.round( probe.getBoundingClientRect().height * 100 ) / 100 }px`;
 		probe.remove();
 	}
-	// An icon: the first painted shape of the pair's svg (or the svg the pair is) gives its colour; the svg's box its size.
+	// An icon: the svg the pair is, or the one painted svg it contains (a container holding several reads no icon at all:
+	// the first in document order would be a different icon on each side). The first painted shape of that svg gives its
+	// colour; the svg's box its size. `iconKind` says what paints the icon (svg, glyph, dashicon, or null for no icon) and
+	// `icon-colour` is the one colour of it whatever the kind: an svg's fill (else stroke), a glyph's text colour.
 	let iconEl = null;
+	let iconKind = null;
 	if ( ! run && props.includes( 'icon-fill' ) ) {
-		const svg = 'svg' === el.tagName.toLowerCase() ? el : el.querySelector( 'svg' );
+		const paintedSvg = ( s ) => s.getClientRects().length > 0 && s.getBoundingClientRect().width > 0 && s.getBoundingClientRect().height > 0
+			&& 'none' !== getComputedStyle( s ).display && 'visible' === getComputedStyle( s ).visibility;
+		const inner = [ ...el.querySelectorAll( 'svg' ) ].filter( ( s ) => paintedSvg( s ) && ! s.parentElement.closest( 'svg' ) );
+		const svg = 'svg' === el.tagName.toLowerCase() ? el : ( 1 === inner.length ? inner[ 0 ] : null );
 		const shape = svg && [ ...svg.querySelectorAll( 'path, circle, rect, ellipse, line, polyline, polygon, use, text' ) ]
 			.find( ( s ) => s.getClientRects().length && 'none' !== getComputedStyle( s ).display );
 		if ( shape ) {
 			const ss = getComputedStyle( shape );
 			styles[ 'icon-fill' ] = 'none' === ss.fill ? 'none' : srgb( ss.fill );
 			styles[ 'icon-stroke' ] = 'none' === ss.stroke ? 'none' : srgb( ss.stroke );
+			styles[ 'icon-colour' ] = 'none' !== ss.fill ? srgb( ss.fill ) : ( 'none' !== ss.stroke ? srgb( ss.stroke ) : 'none' );
 			const sb = svg.getBoundingClientRect();
 			styles[ 'icon-width' ] = `${ Math.round( sb.width * 100 ) / 100 }px`;
 			styles[ 'icon-height' ] = `${ Math.round( sb.height * 100 ) / 100 }px`;
 			iconEl = svg;
+			iconKind = 'svg';
+		} else if ( ! svg ) {
+			// A font icon: one non-alphanumeric grapheme (an emoji, a plus sign) in an icon context, so a stand-alone bullet
+			// separator stays text; or a dashicon, whose glyph is a ::before and leaves no text.
+			const word = ( el.textContent || '' ).trim();
+			const graphemes = word ? [ ...new Intl.Segmenter( undefined, { granularity: 'grapheme' } ).segment( word ) ].length : 0;
+			const iconContext = !! el.closest( '[class*="__icon"], [class*="sgs-icon"], button, summary' ) || !! el.querySelector( '[class*="__icon"], [class*="sgs-icon"]' );
+			if ( 1 === graphemes && ! /[\p{L}\p{N}]/u.test( word ) && iconContext ) {
+				iconKind = 'glyph';
+				styles[ 'icon-colour' ] = srgb( ( ccs || cs ).color );
+			} else if ( ! word && ( el.matches( '.dashicons, [class*="dashicons-"]' ) || el.querySelector( '.dashicons, [class*="dashicons-"]' ) ) ) {
+				iconKind = 'dashicon';
+				styles[ 'icon-colour' ] = srgb( cs.color );
+			}
 		}
 	}
-	// Keyframes compared by content, so a namespaced name (sgs-x-pop) matches the draft's (pop).
+	// Keyframes compared by content, so a namespaced name (sgs-x-pop) matches the draft's (pop); a name with no readable
+	// rules reads as `unresolved` whatever its name (the name is an identity, not a painted output).
 	const keyframes = ( name ) => {
 		if ( ! name || name === 'none' ) {
 			return 'none';
@@ -167,7 +190,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 				return [ ...kf.cssRules ].map( ( k ) => `${ k.keyText }{${ k.style.cssText.replace( /\s+/g, '' ).split( ';' ).filter( Boolean ).sort().join( ';' ) }}` ).join( '' );
 			}
 		}
-		return `unresolved:${ name }`;
+		return 'unresolved';
 	};
 	// The element's painting pseudo layers: { '::before': { prop: value } }, absent where content is none.
 	const pseudo = {};
@@ -177,6 +200,12 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			pseudo[ ps ] = Object.fromEntries( pseudoProps.map( ( p ) => [ p, /color$/.test( p ) ? srgb( pcs.getPropertyValue( p ).trim() ) : pcs.getPropertyValue( p ).trim() ] ) );
 		}
 	}
+	// Properties an infinite animation drives on this element (a marquee's transform): they have no resting value, so the
+	// comparison leaves them out (compare.mjs::comparePair). Only the properties the animation's keyframes name.
+	const loops = [ ...new Set( el.getAnimations().filter( ( a ) => Infinity === a.effect?.getTiming?.().iterations )
+		.flatMap( ( a ) => a.effect.getKeyframes().flatMap( ( k ) => Object.keys( k ) ) )
+		.filter( ( k ) => ! [ 'offset', 'easing', 'composite', 'computedOffset' ].includes( k ) )
+		.map( ( k ) => ( 'cssFloat' === k ? 'float' : k.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) ) ) ) ].sort();
 	let trace;
 	if ( refPrefix ) {
 		// eslint-disable-next-line no-new-func
@@ -190,6 +219,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		// A text run's rows (paint.mjs::textRun): compared as the spacing between them.
 		...( run?.rows ? { rows: run.rows } : {} ),
 		styles,
+		iconKind,
+		loops,
 		pseudo,
 		layoutDisplay: lcs.display,
 		tag: el.tagName.toLowerCase(),
@@ -228,6 +259,40 @@ export function centreOf( [ finder, resolveSrc ] ) {
 	el.scrollIntoView( { block: 'center', inline: 'nearest', behavior: 'instant' } );
 	const r = el.getBoundingClientRect();
 	return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+}
+
+// Where a real pointer must go to hover a pair's element, in viewport coordinates, scrolled into view first: the centre of
+// the element's rect intersected with the viewport (a marquee track far wider than the screen has its raw centre off it, and
+// a pointer there never fires mouseenter), checked with elementFromPoint to land on the element or something inside it.
+// A few points of the visible part are tried when the centre is covered. Returns null when the element is missing,
+// { unreached: true } when it exists but no visible point of it can take a pointer (never read that as a hover that
+// changed nothing), else { x, y, clamped } (clamped: the point is not the raw rect's centre).
+export function hoverPointOf( [ finder, resolveSrc ] ) {
+	// eslint-disable-next-line no-new-func
+	const resolve = new Function( `return (${ resolveSrc });` )();
+	const el = resolve( finder );
+	if ( ! el ) {
+		return null;
+	}
+	el.scrollIntoView( { block: 'center', inline: 'nearest', behavior: 'instant' } );
+	const r = el.getBoundingClientRect();
+	const left = Math.max( r.left, 0 );
+	const right = Math.min( r.right, document.documentElement.clientWidth );
+	const top = Math.max( r.top, 0 );
+	const bottom = Math.min( r.bottom, document.documentElement.clientHeight );
+	if ( right <= left || bottom <= top ) {
+		return { unreached: true };
+	}
+	const raw = { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+	for ( const [ fx, fy ] of [ [ 0.5, 0.5 ], [ 0.25, 0.5 ], [ 0.75, 0.5 ], [ 0.5, 0.25 ], [ 0.5, 0.75 ], [ 0.25, 0.25 ], [ 0.75, 0.25 ], [ 0.25, 0.75 ], [ 0.75, 0.75 ] ] ) {
+		const x = left + ( right - left ) * fx;
+		const y = top + ( bottom - top ) * fy;
+		const hit = document.elementFromPoint( x, y );
+		if ( hit && ( hit === el || el.contains( hit ) ) ) {
+			return { x, y, clamped: x !== raw.x || y !== raw.y };
+		}
+	}
+	return { unreached: true };
 }
 
 // Hover-relevant styles of a pair's element (read at rest and at the hover end state). Text colour and the underline

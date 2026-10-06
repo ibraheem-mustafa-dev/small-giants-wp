@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { READ_PROPS } from '../lib/calibrate.mjs';
-import { comparePair } from '../../parity/lib/compare.mjs';
+import { comparePair, timingSet } from '../../parity/lib/compare.mjs';
 import { stampRefs } from '../../parity/lib/ref-trace.mjs';
 import { writableGroups, draftValues } from '../lib/solve-rows.mjs';
 
@@ -151,4 +151,36 @@ test( 'MUST FAIL TO COMPARE TECHNIQUES: animation timings compare only where bot
 	const side = ( dur, keyframes ) => snap( { 'animation-duration': dur }, { keyframes } );
 	assert.deepEqual( comparePair( { text: false, motion: false }, side( '0.5s', kf ), side( '0s', 'none' ), tol ), [] );
 	assert.deepEqual( keys( comparePair( { text: false, motion: false }, side( '0.5s', kf ), side( '0.8s', kf ), tol ) ), [ 'animation-duration' ], 'both keyframed: a different duration is a row' );
+} );
+
+// Spec 47 W2-D (P3c, P1): loops, and an icon that is a glyph on one side and an svg on the other, at the comparison.
+test( 'MUST FAIL TO EXCLUDE: a property an infinite animation drives yields no style or hover row; a property beside it still does', () => {
+	const d = snap( { transform: 'matrix(1, 0, 0, 1, -12, 0)', 'background-color': 'rgb(1, 1, 1)' }, { loops: [ 'transform' ], hover: { transform: 'none', 'background-color': 'rgb(1, 1, 1)' } } );
+	const l = snap( { transform: 'matrix(1, 0, 0, 1, -90, 0)', 'background-color': 'rgb(9, 9, 9)' }, { loops: [ 'transform' ], hover: { transform: 'matrix(1, 0, 0, 1, -3, 0)', 'background-color': 'rgb(5, 5, 5)' } } );
+	const rows = comparePair( { text: false }, d, l, tol );
+	assert.deepEqual( rows.map( ( x ) => `${ x.kind }:${ x.key }` ).sort(), [ 'hover:background-color', 'style:background-color' ] );
+} );
+
+test( 'NOT OVER-SUPPRESSING: a finite animation\'s final transform compares; loops on one side excludes the property on both', () => {
+	const mk = ( t, loops ) => snap( { transform: t }, { loops } );
+	assert.deepEqual( keys( comparePair( { text: false }, mk( 'matrix(1, 0, 0, 1, -12, 0)', [] ), mk( 'matrix(1, 0, 0, 1, -90, 0)', [] ), tol ) ), [ 'transform' ] );
+	assert.deepEqual( keys( comparePair( { text: false }, mk( 'matrix(1, 0, 0, 1, -12, 0)', [ 'transform' ] ), mk( 'none', [] ), tol ) ), [], 'a looping side has no resting value to compare' );
+	assert.deepEqual( keys( comparePair( { text: false }, mk( 'matrix(1, 0, 0, 1, -12, 0)', [ 'opacity' ] ), mk( 'matrix(1, 0, 0, 1, -90, 0)', [ 'opacity' ] ), tol ) ), [ 'transform' ], 'loops is scoped to what the animation drives' );
+} );
+
+test( 'a mixed glyph and svg pair: text keys and the text row drop, icon-colour compares; the same colour is no row; kinds equal compare as before', () => {
+	const text = { 'font-size': '20px', color: 'rgb(0, 0, 200)', 'font-weight': '700' };
+	const glyph = ( c ) => snap( { ...text, 'icon-colour': c }, { iconKind: 'glyph', text: '+' } );
+	const svg = ( c ) => snap( { 'icon-fill': c, 'icon-stroke': 'none', 'icon-colour': c }, { iconKind: 'svg', text: '' } );
+	assert.deepEqual( keys( comparePair( {}, glyph( 'rgb(0, 0, 200)' ), svg( 'rgb(200, 0, 0)' ), tol ) ), [ 'icon-colour' ] );
+	assert.deepEqual( comparePair( {}, glyph( 'rgb(0, 0, 200)' ), svg( 'rgb(0, 0, 200)' ), tol ), [] );
+	const twoGlyphs = comparePair( {}, glyph( 'rgb(0, 0, 200)' ), snap( { ...text, 'font-size': '30px', 'icon-colour': 'rgb(0, 0, 200)' }, { iconKind: 'glyph', text: '+' } ), tol );
+	assert.deepEqual( keys( twoGlyphs ), [ 'font-size' ] );
+	const noKind = comparePair( {}, snap( text, { text: '•' } ), snap( { 'icon-fill': 'rgb(0, 0, 0)' }, { iconKind: 'svg', text: '' } ), tol );
+	assert.ok( keys( noKind ).includes( 'font-size' ) && keys( noKind ).includes( 'text' ), 'a pair with no glyph kind keeps its text rows' );
+} );
+
+test( 'timingSet is exported and reduces a list to its distinct values', () => {
+	assert.equal( timingSet( '0.25s, 0.25s' ), '0.25s' );
+	assert.equal( timingSet( 'ease, cubic-bezier(0.1, 0.2, 0.3, 0.4), ease' ), 'cubic-bezier(0.1, 0.2, 0.3, 0.4), ease' );
 } );

@@ -45,18 +45,19 @@ export async function collectChrome( page, side, pairs, snap, RESOLVE, timeline 
 // the end state, reduced to the effects a visitor sees. `reach` re-runs the state's action when
 // the pair is gone (a previous hover closed the panel it lives in); a pair still unreachable is
 // reported, never skipped. `hoverAt: [fx, fy]` points at that fraction of the box instead of its
-// centre (a label that follows the pointer only moves off-centre).
+// centre (a label that follows the pointer only moves off-centre); a point clamped to the visible part keeps that point.
 export async function hoverChrome( page, p, side, RESOLVE, centreOf, reach, wait, box ) {
 	let at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
 	if ( ! at && reach ) {
 		await reach();
 		at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
 	}
-	if ( ! at ) {
+	// `centreOf` here is collect.mjs::hoverPointOf: null for a missing element, { unreached: true } for one no pointer can reach.
+	if ( ! at || at.unreached ) {
 		return { unreached: true };
 	}
 	const rest = await page.evaluate( hoverDetail, [ p[ side ], RESOLVE ] );
-	if ( p.hoverAt && box ) {
+	if ( p.hoverAt && box && ! at.clamped ) {
 		at = { x: at.x + box.w * ( p.hoverAt[ 0 ] - 0.5 ), y: at.y + box.h * ( p.hoverAt[ 1 ] - 0.5 ) };
 	}
 	await page.mouse.move( at.x, at.y );

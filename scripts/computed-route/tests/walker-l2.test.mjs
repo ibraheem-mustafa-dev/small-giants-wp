@@ -16,7 +16,7 @@ const PLAYWRIGHT = [ '../../../plugins/sgs-blocks/node_modules/playwright/index.
 	.map( ( p ) => path.join( HERE, p ) ).find( ( p ) => fs.existsSync( p ) );
 const { chromium } = await import( pathToFileURL( PLAYWRIGHT ).href );
 
-const { DEFAULT_PROPS, ACTIVE_PROPS, FOCUS_PROPS, resolveFinder, collectPair } = await lib( 'collect.mjs' );
+const { DEFAULT_PROPS, ACTIVE_PROPS, FOCUS_PROPS, resolveFinder, collectPair, centreOf, hoverPointOf } = await lib( 'collect.mjs' );
 const { PAINT_SRC, lineRows } = await lib( 'paint.mjs' );
 const { comparePair, compareLines } = await lib( 'compare.mjs' );
 const { compareAuto } = await lib( 'auto-compare.mjs' );
@@ -408,4 +408,145 @@ test( 'paint.mjs keeps groupBox, textRun, textCarrier and PAINT_SRC working for 
 	assert.equal( out.box.w, 200 );
 	assert.equal( out.rows.count, 2 );
 	await page.close();
+} );
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Spec 47 W2-D: the hover point (P3a), icon reads (P2b3, P1) and loops (P3c), in a real browser on local HTML.
+
+// A track far wider than the viewport, mid-translate: its raw centre is off-screen to the left. `overflow: clip` keeps the
+// wrapper from scrolling, as a marquee's does.
+const MARQUEE = `<style>.w { position: relative; overflow: clip; height: 80px } .t { position: absolute; left: -3000px; width: 4000px; height: 60px; background: rgb(10, 10, 10) } .t.paused { opacity: 0.5 }</style>
+	<div class="w"><div class="t" id="t">track</div></div><script>const t = document.getElementById( 't' ); t.addEventListener( 'mouseenter', () => t.classList.add( 'paused' ) );</script>`;
+const HOVER_ARGS = { state: {}, h: {}, RESOLVE, full: false, phone: false, cdp: null };
+
+test( 'MUST FAIL TO CLAMP: a track whose raw centre is off-screen gets a hover point inside the viewport that lands on it', async () => {
+	const page = await pageWith( MARQUEE, 900 );
+	const raw = await page.evaluate( centreOf, [ '#t', RESOLVE ] );
+	assert.ok( raw.x < 0, `the raw centre ${ raw.x } is off-screen: the aim that never fires mouseenter` );
+	const at = await page.evaluate( hoverPointOf, [ '#t', RESOLVE ] );
+	assert.ok( at.x >= 0 && at.x <= 900 && at.y >= 0 && at.y <= 700, JSON.stringify( at ) );
+	assert.equal( at.clamped, true );
+	assert.equal( await page.evaluate( ( [ x, y ] ) => document.elementFromPoint( x, y )?.id, [ at.x, at.y ] ), 't' );
+	await page.close();
+} );
+
+test( 'MUST FAIL TO HOVER: the hover pass pauses a track that was off-screen, and a hover that changes nothing is not unreached', async () => {
+	const page = await pageWith( MARQUEE + '<a id="plain" href="#" style="display:block;width:100px;height:40px">x</a>', 900 );
+	const snap = { track: { box: { w: 4000, h: 60 } }, plain: { box: { w: 100, h: 40 } } };
+	const pairs = [ { name: 'track', hover: true, draft: '#t', live: '#t', hoverWait: 50 }, { name: 'plain', hover: true, draft: '#plain', live: '#plain', hoverWait: 50 } ];
+	await sp.hoverPass( page, pairs, 'draft', snap, HOVER_ARGS );
+	assert.equal( snap.track.hover.opacity, '0.5', 'the pointer reached the track: mouseenter fired and the pause class applied' );
+	assert.ok( ! snap.track.hoverUnreached );
+	assert.equal( snap.plain.hover.opacity, '1', 'hovered and unchanged' );
+	assert.ok( ! snap.plain.hoverUnreached, 'a reached hover that changed nothing carries no unreached mark' );
+	await page.close();
+} );
+
+test( 'NOT OVER-SUPPRESSING: an on-screen element gets exactly its raw centre; a covered or off-screen one is unreached, a distinct outcome', async () => {
+	const page = await pageWith( '<style>.f { position: fixed; inset: 0 } .w { overflow: clip; position: relative; height: 50px }</style><div id="ok" style="width:200px;height:100px">a</div><div class="w"><div id="far" style="position:absolute;left:5000px;width:50px;height:50px">b</div></div>', 900 );
+	const raw = await page.evaluate( centreOf, [ '#ok', RESOLVE ] );
+	const at = await page.evaluate( hoverPointOf, [ '#ok', RESOLVE ] );
+	assert.deepEqual( [ at.x, at.y, at.clamped ], [ raw.x, raw.y, false ], 'no drift from the clamp' );
+	assert.deepEqual( await page.evaluate( hoverPointOf, [ '#far', RESOLVE ] ), { unreached: true }, 'wholly outside the viewport' );
+	assert.equal( await page.evaluate( hoverPointOf, [ '#nothing', RESOLVE ] ), null, 'a missing element stays null, not unreached' );
+	await page.evaluate( () => document.body.insertAdjacentHTML( 'beforeend', '<div class="f"></div>' ) );
+	assert.deepEqual( await page.evaluate( hoverPointOf, [ '#ok', RESOLVE ] ), { unreached: true }, 'covered at every point' );
+	const snap = { ok: { box: { w: 200, h: 100 } } };
+	await sp.hoverPass( page, [ { name: 'ok', hover: true, draft: '#ok', live: '#ok', hoverWait: 20 } ], 'draft', snap, HOVER_ARGS );
+	assert.equal( snap.ok.hoverUnreached, true );
+	assert.equal( snap.ok.hover, undefined, 'no hover read to mistake for unchanged' );
+	const base = { box: { w: 1, h: 1 }, text: '', styles: {}, motion: { animation: 'none', transition: 'none' }, keyframes: 'none' };
+	const rows = comparePair( { text: false }, { ...base, hoverUnreached: true }, { ...base, hover: { opacity: '1' } }, TOL );
+	assert.deepEqual( rows.map( ( r ) => [ r.kind, r.key, r.draft, r.live ] ), [ [ 'hover', 'reached', 'unreached', 'hovered' ] ] );
+	assert.deepEqual( comparePair( { text: false }, { ...base, hover: { opacity: '1' } }, { ...base, hover: { opacity: '1' } }, TOL ), [] );
+	await page.close();
+} );
+
+const SVG = ( extra = '', size = 24 ) => `<svg ${ extra } width="${ size }" height="${ size }" viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="rgb(200, 0, 0)" stroke="none"/></svg>`;
+const iconKeys = ( s ) => Object.keys( s.styles ).filter( ( k ) => /^icon-/.test( k ) ).sort();
+const FULL_ICON = [ 'icon-colour', 'icon-fill', 'icon-height', 'icon-stroke', 'icon-width' ];
+
+test( 'MUST FAIL TO SCOPE: a container holding two svgs reads no icon at all', async () => {
+	const page = await pageWith( `<div id="c">${ SVG() }${ SVG() }</div>` );
+	const s = await snapOf( page, '#c' );
+	assert.deepEqual( iconKeys( s ), [] );
+	assert.equal( s.iconKind, null );
+	await page.close();
+} );
+
+test( 'NOT OVER-SUPPRESSING: an svg itself, a container of one painted svg, and one with a hidden or empty second svg all read the full icon', async () => {
+	const page = await pageWith( `<div id="a">${ SVG( 'id="s"' ) }</div><div id="b">${ SVG() }${ SVG( 'style="display:none"' ) }${ SVG( 'style="visibility:hidden"' ) }<svg width="0" height="0"><path d="M0 0h1v1z"/></svg></div>` );
+	assert.deepEqual( iconKeys( await snapOf( page, '#s' ) ), FULL_ICON, 'the svg itself' );
+	const one = await snapOf( page, '#a' );
+	assert.deepEqual( iconKeys( one ), FULL_ICON, 'one painted svg inside a container' );
+	assert.equal( one.iconKind, 'svg' );
+	assert.equal( one.styles[ 'icon-colour' ], 'rgb(200, 0, 0)' );
+	assert.deepEqual( iconKeys( await snapOf( page, '#b' ) ), FULL_ICON, 'hidden and zero-size svgs do not count' );
+	await page.close();
+} );
+
+const ICON_CSS = '<style>.sgs-accordion__icon { font: 700 20px/1 serif; color: rgb(0, 0, 200) } .sep { font-size: 30px }</style>';
+const GLYPH_PAGE = ( font ) => pageWith( `${ ICON_CSS }<details><summary><span class="sgs-accordion__icon" id="i" style="${ font }">+</span></summary></details><p>Open <span class="sep" id="sep">•</span> Close</p>` );
+const SVG_PAGE = () => pageWith( `${ ICON_CSS }<details><summary><span class="sgs-accordion__icon" id="i">${ SVG() }</span></summary></details><p>Open <span class="sep" id="sep">•</span> Close</p>` );
+
+test( 'MUST FAIL TO ABSTRACT: a glyph against an svg gives one icon-colour row and no text rows, no icon-size', async () => {
+	const draft = await GLYPH_PAGE( '' );
+	const live = await SVG_PAGE();
+	const d = await snapOf( draft, '#i' );
+	const l = await snapOf( live, '#i' );
+	assert.equal( d.iconKind, 'glyph' );
+	assert.equal( l.iconKind, 'svg' );
+	const rows = comparePair( {}, d, l, TOL );
+	const textual = rows.filter( ( r ) => 'text' === r.kind || /^(font-|line-height|letter-spacing|text-|color$)/.test( r.key ) );
+	assert.deepEqual( textual, [], JSON.stringify( rows ) );
+	assert.deepEqual( rows.filter( ( r ) => /^icon-/.test( r.key ) ).map( ( r ) => [ r.key, r.draft, r.live ] ), [ [ 'icon-colour', 'rgb(0, 0, 200)', 'rgb(200, 0, 0)' ] ] );
+	assert.ok( ! rows.some( ( r ) => 'icon-size' === r.key ) );
+	await draft.close();
+	await live.close();
+} );
+
+test( 'NOT OVER-SUPPRESSING: svg-vs-svg keeps every row (a real 40 against 44 touch target), a bare bullet keeps its text comparison, glyph-vs-glyph keeps text rows', async () => {
+	const a = await pageWith( `<button id="b" style="display:block;padding:0;border:0">${ SVG( '', 40 ) }</button>` );
+	const b = await pageWith( `<button id="b" style="display:block;padding:0;border:0">${ SVG( '', 44 ) }</button>` );
+	const rows = comparePair( {}, await snapOf( a, '#b' ), await snapOf( b, '#b' ), TOL );
+	const got = rows.map( ( r ) => `${ r.kind }:${ r.key }` ).sort();
+	for ( const k of [ 'box:w', 'box:h', 'style:icon-width', 'style:icon-height' ] ) {
+		assert.ok( got.includes( k ), `${ k } survives: ${ got }` );
+	}
+	assert.ok( ! got.includes( 'style:icon-colour' ), 'icon-colour is the mixed pair\'s row only' );
+	const glyph = await GLYPH_PAGE( '' );
+	const glyphBig = await GLYPH_PAGE( 'font-size: 32px' );
+	assert.ok( comparePair( {}, await snapOf( glyph, '#i' ), await snapOf( glyphBig, '#i' ), TOL ).some( ( r ) => 'font-size' === r.key ), 'two glyphs compare as text' );
+	const sepSnap = await snapOf( glyph, '#sep' );
+	assert.equal( sepSnap.iconKind, null, 'a stand-alone bullet is not an icon' );
+	const sepBig = await pageWith( `${ ICON_CSS }<p>Open <span class="sep" id="sep" style="font-size:40px">•</span> Close</p>` );
+	assert.ok( comparePair( {}, sepSnap, await snapOf( sepBig, '#sep' ), TOL ).some( ( r ) => 'font-size' === r.key ), 'bullet text compared' );
+	const svgPage = await SVG_PAGE();
+	const vsSvg = comparePair( {}, sepSnap, await snapOf( svgPage, '#i' ), TOL );
+	assert.ok( vsSvg.some( ( r ) => 'font-size' === r.key ), 'a bullet against an svg is not a glyph pair: text rows stay' );
+	for ( const p of [ a, b, glyph, glyphBig, sepBig, svgPage ] ) {
+		await p.close();
+	}
+} );
+
+const SLIDE = '<style>@keyframes slide { from { transform: translateX(0) } to { transform: translateX(-50%) } } @keyframes fin { to { opacity: 0.4 } } .m { animation: slide 2s linear infinite; background-color: rgb(1, 2, 3) } .f { animation: fin 0.1s both }</style>';
+
+test( 'MUST FAIL TO RECORD: loops lists the properties an infinite animation drives, and only those', async () => {
+	const page = await pageWith( `${ SLIDE }<div class="m" id="m">x</div><div class="f" id="f">y</div><div id="none">z</div>` );
+	assert.deepEqual( ( await snapOf( page, '#m' ) ).loops, [ 'transform' ], 'the background beside it is not a loop' );
+	assert.deepEqual( ( await snapOf( page, '#f' ) ).loops, [], 'a finite animation is not a loop' );
+	assert.deepEqual( ( await snapOf( page, '#none' ) ).loops, [] );
+	await page.close();
+} );
+
+test( 'an animation name with no readable rules reads as unresolved whatever it is called; unresolved against none still differs', async () => {
+	const a = await pageWith( '<div id="x" style="animation: foo 1s">x</div>' );
+	const b = await pageWith( '<div id="x" style="animation: bar 1s">x</div>' );
+	const c = await pageWith( '<div id="x">x</div>' );
+	const [ sa, sb, sc ] = [ await snapOf( a, '#x' ), await snapOf( b, '#x' ), await snapOf( c, '#x' ) ];
+	assert.equal( sa.keyframes, sb.keyframes );
+	assert.notEqual( sa.keyframes, sc.keyframes );
+	for ( const p of [ a, b, c ] ) {
+		await p.close();
+	}
 } );

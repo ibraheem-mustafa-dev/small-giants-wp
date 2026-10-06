@@ -43,7 +43,7 @@ const allCovers = ( a, b ) => {
 // A motion timing longhand lists one value per transition or animation: compared as the set of distinct values, so
 // "0.25s, 0.25s" (two properties, one timing) matches "0.25s" (all).
 const TIMING = /^(transition|animation)-(duration|delay|timing-function)$/;
-const timingSet = ( v ) => [ ...new Set( v.split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() ) ) ].sort().join( ', ' );
+export const timingSet = ( v ) => [ ...new Set( v.split( /,(?![^(]*\))/ ).map( ( x ) => x.trim() ) ) ].sort().join( ', ' );
 
 export function sameValue( prop, a, b, pxTol ) {
 	if ( a === b ) {
@@ -161,6 +161,14 @@ function controlPaddingIrrelevant( p, d, l ) {
 	return floored( d ) && floored( l );
 }
 
+// Text properties (and the text row) of a pair whose icon is a font glyph on one side and an svg or dashicon on the other:
+// the glyph paints as text and the svg does not, so the text keys exist on one side only. The icon's colour is compared
+// as `icon-colour`, one concept for a glyph's text colour and an svg's fill or stroke.
+const GLYPH_TEXT = new Set( [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset' ] );
+const iconMixed = ( d, l ) => !! d.iconKind && !! l.iconKind && d.iconKind !== l.iconKind && ( 'glyph' === d.iconKind || 'glyph' === l.iconKind );
+// The properties of a pair that no stable value compares: those an infinite animation drives on either side.
+const loopSet = ( d, l ) => new Set( [ ...( d.loops || [] ), ...( l.loops || [] ) ] );
+
 const SAME = { 'text-align': [ [ 'start', 'left' ] ] };
 // On a flex container (CSS Box Alignment): justify-content normal lays out as flex-start, align-items normal as stretch.
 const FLEX_SAME = { 'justify-content': [ [ 'normal', 'flex-start', 'start' ] ], 'align-items': [ [ 'normal', 'stretch' ] ] };
@@ -199,7 +207,9 @@ export function comparePair( pair, d, l, tol ) {
 		add( 'tag', 'tag', `<${ d.tag }> (${ tagClass( d.tag ) })`, `<${ l.tag }> (${ tagClass( l.tag ) })` );
 		return diffs;
 	}
-	if ( pair.text !== false && ! sameWords( d.text, l.text ) ) {
+	const mixed = iconMixed( d, l );
+	const loops = loopSet( d, l );
+	if ( pair.text !== false && ! mixed && ! sameWords( d.text, l.text ) ) {
 		add( 'text', 'text', d.text, l.text );
 	}
 	for ( const k of pair.box || [ 'w', 'h' ] ) {
@@ -208,6 +218,10 @@ export function comparePair( pair, d, l, tol ) {
 		}
 	}
 	for ( const p of new Set( [ ...Object.keys( d.styles ), ...Object.keys( l.styles ) ] ) ) {
+		// icon-colour is its own row only across a glyph and an svg; elsewhere icon-fill and icon-stroke carry the icon's colour.
+		if ( 'icon-colour' === p ? ! mixed : ( loops.has( p ) || ( mixed && ( GLYPH_TEXT.has( p ) || /^icon-(fill|stroke)$/.test( p ) ) ) ) ) {
+			continue;
+		}
 		if ( borderColourIrrelevant( p, d.styles, l.styles ) || partIrrelevant( p, d.styles, l.styles ) || timingIrrelevant( p, d, l ) || equivalent( p, d.styles[ p ], l.styles[ p ], [ d, l ].every( ( x ) => /(^|-)flex$/.test( x.layoutDisplay || '' ) ) ) || ! layoutComparable( p, d, l ) || controlPaddingIrrelevant( p, d, l ) ) {
 			continue;
 		}
@@ -256,7 +270,7 @@ export function comparePair( pair, d, l, tol ) {
 		if ( d[ field ] && l[ field ] ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
 			for ( const p of Object.keys( d[ field ] ) ) {
-				if ( borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
+				if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
 				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {
@@ -264,6 +278,11 @@ export function comparePair( pair, d, l, tol ) {
 				}
 			}
 		}
+	}
+	// A hover no pointer could reach (a pass that did not move the pointer onto the element) is a row, so that it is never
+	// read as a hover that changed nothing; the full check reports its own (chrome-walk.mjs::compareChrome).
+	if ( d.hoverUnreached || l.hoverUnreached ) {
+		add( 'hover', 'reached', d.hoverUnreached ? 'unreached' : 'hovered', l.hoverUnreached ? 'unreached' : 'hovered' );
 	}
 	diffs.push( ...compareFocus( d.focus, l.focus, sameValue, tol.px ), ...compareLines( d.lines, l.lines ) );
 	return diffs;

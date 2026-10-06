@@ -1,6 +1,6 @@
 // The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep
 // before a full-page shot, hover end states and keyboard focus rings.
-import { HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, centreOf, hoverStyles } from './collect.mjs';
+import { HOVER_PROPS, ACTIVE_PROPS, FOCUS_PROPS, collectRunning, centreOf, hoverPointOf, hoverStyles } from './collect.mjs';
 import { PAINT_SRC } from './paint.mjs';
 import { hoverChrome } from './chrome-walk.mjs';
 import { forcedHover, forcedPseudo } from './devtools.mjs';
@@ -34,7 +34,7 @@ export async function revealSweep( page, y ) {
 	await page.waitForTimeout( 1200 );
 }
 
-// Hover end states of the `hover: true` pairs, under a real pointer. With a DevTools session (ref-traced walks) every
+// Hover end states of the `hover: true` pairs, under a real pointer aimed at the visible part of the element (collect.mjs::hoverPointOf). With a DevTools session (ref-traced walks) every
 // other pair's hover end state is read too, with :hover forced on it and its ancestors (devtools.mjs::forcedHover).
 // A phone has no hover (Bean 2026-09-28), so phones skip it.
 export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone, cdp = null } ) {
@@ -51,13 +51,15 @@ export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, f
 				h.log = [];
 				await state[ side ]( h );
 			} : null;
-			snap[ p.name ].hoverChrome = await hoverChrome( page, p, side, RESOLVE, centreOf, reach, p.hoverWait ?? 800, snap[ p.name ].box );
+			snap[ p.name ].hoverChrome = await hoverChrome( page, p, side, RESOLVE, hoverPointOf, reach, p.hoverWait ?? 800, snap[ p.name ].box );
 			if ( snap[ p.name ].hoverChrome.unreached ) {
 				continue;
 			}
 		} else {
-			const at = await page.evaluate( centreOf, [ p[ side ], RESOLVE ] );
-			if ( ! at ) {
+			const at = await page.evaluate( hoverPointOf, [ p[ side ], RESOLVE ] );
+			if ( ! at || at.unreached ) {
+				// An element no pointer can reach is reported (compare.mjs::comparePair), never read as a hover that changed nothing.
+				snap[ p.name ].hoverUnreached = true;
 				continue;
 			}
 			await page.mouse.move( at.x, at.y );
