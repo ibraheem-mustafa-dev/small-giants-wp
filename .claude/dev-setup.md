@@ -470,6 +470,27 @@ Gitignored; never committed.
 
 > **LiteSpeed:** LiteSpeed Cache is active on sandybrown (check any other target with `wp plugin list --status=active | grep -i litespeed`). `build-deploy.py` purges three cache layers after a deploy — OPcache (compiled PHP) through an HTTPS probe, because the CLI pool has its own OPcache, the LiteSpeed page cache (rendered HTML) through wp-cli, and the theme pattern cache (a pattern file added by a deploy registers only after it clears); clearing one does nothing for the others. For a manual purge after a CSS/render change run `wp litespeed-purge all`, reset OPcache (snippet below), and clear the Hostinger CDN (`hosting_clearWebsiteCacheV1`). Since 2026-09-27 sandybrown's bot challenge answers the deploy's HTTPS probes with a 403 "Just a moment" page, so the OPcache purge and the post-deploy GET report ERROR while the files are live: verify by checksum over SSH and run `wp litespeed-purge all` by hand; a CSS-only change needs no OPcache reset. The same edge (response header `Server: hcdn`) answers headless browsers and curl with that 403 for 45+ minutes after a burst of traffic, on every site of the account; a headed browser passes. Run the route's host tools with `SGS_HEADED=1` then (Solve, `scripts/computed-route/pairs.mjs`, `calibrate.mjs`, `scripts/wp-build-page.js`, `sites/eye-care-ward-end/build/qa/independent-check.mjs`); they hide scrollbars, as the walker does, so the layout width matches the viewport.
 
+### Adding a block attribute? Reseed FIRST, then commit the classifier, then deploy
+
+**Order matters, and getting it wrong costs a full build-and-deploy cycle** (proved
+2026-10-06 adding six attributes to `sgs/accordion` and `sgs/buybox`).
+
+1. **Reseed before building.** `check-wiring-fingerprint` fails the build when an
+   attribute is declared in a committed `block.json` but absent from the framework DB.
+   Run `/sgs-update` first; the gate's own message says so.
+2. **Commit the regenerated `css-property-classifications.json` before deploying.** The
+   reseed regenerates it, and `build-deploy.py` builds from an isolated worktree **at
+   HEAD** — so an uncommitted classifier means the deploy's build sees each new attribute
+   carrying a `css_property` in the DB with nothing declaring it in the derived layer. The
+   F6 Reseed-Survival gate then fails them as rogue seeds that would vanish on the next
+   reseed, and it has **no baseline by design**. A local `npm run build` passes at this
+   point while the deploy's build fails, because only the deploy builds at HEAD.
+3. **Then deploy.**
+
+Both gates are correct; the sequence is the thing to remember. The same at-HEAD isolation
+is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every
+gate green.
+
 ### Full deployment (ALL targets) — always via `build-deploy.py`
 
 > **⛔ Use the script. Never hand-roll a tar/scp deploy.**
