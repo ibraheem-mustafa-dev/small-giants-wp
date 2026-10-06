@@ -94,10 +94,13 @@ compare on a **normalised** path, because a cosmetic path change re-keys rows wh
   clear**: deploying mid-sweep mixes ~19 closed rows into its F 193 -> 148-168 prediction, and a reseed
   rewrites the framework DB its calibration reads. A4 stays withdrawn. **A7 is settled** — cause, fix and a
   host measuring trap (page source hides a block's scoped rules here) in the C2 plan's "THE OWED WORK".
-- **Route cleanup, 4 waves off a file-ownership map** — `plans/2026-10-06-spec47-route-cleanup.md`. Carries two
-  **WRITE HAZARDS**: `lib/entrance.mjs::entranceStart` writes `sgsAnimationStart` from a measurement artefact, and
-  `sgs_transition_vars` strips a decimal so `"0.25s"` emits 25ms for 250ms. Also a forced-hover **false green**.
-  Every defect is itemised in Spec 47 §5 Residual.
+- **Route cleanup** — `plans/2026-10-06-spec47-route-cleanup.md`. **Waves 1 to 3 built and pushed 2026-10-06**:
+  both write hazards, the forced-hover false green, the icon abstraction, the pairing gate, transition markers, and
+  four added tasks (R1 to R4) closing every point Spec 47 §5 Residual still named. **Wave 4 is owed and needs the
+  host**: run `pairs.mjs` over the 17 surfaces to populate `handScope` BEFORE linting (the gate is inert until then),
+  the re-sweep compared on R2's normalised key, the 209 canvas claims by their 69 families, and Session C's three
+  owed host jobs. Runbook: `reports/2026-10-06-session-c2/WAVE4-RUNBOOK.md`. ⚠️ eye-care-test is at `578a8830b`, not
+  the `6d6906b98` the plan first recorded, so the F 193 to 148-168 band is corroboration, not proof.
 - **The 63 register items the walker cannot see** — next session, via `/phase-planner`. Mostly **unbuilt work**
   (N11 a second product never reaching the bag, N25 the filter panel breaking), not measurement gaps.
 - **Three host jobs** (quiet shared host): the C3.5 confirmation walk (order 652 is `processing` and paid), an
