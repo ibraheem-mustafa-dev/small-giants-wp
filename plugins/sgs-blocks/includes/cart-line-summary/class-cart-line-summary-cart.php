@@ -201,10 +201,21 @@ final class Cart_Line_Summary_Cart {
 	 * string the row will print.
 	 *
 	 * @param array $values Cart item values.
-	 * @return array<int, string> Display keys, de-duplicated, never empty strings.
+	 * @return array<int, string> Display keys AND raw meta keys, de-duplicated,
+	 *                             never empty strings. May legitimately be empty.
 	 */
 	private static function subsumed_display_keys( array $values ): array {
 		$keys = self::variation_row_labels( $values );
+
+		// The variation attribute NAMES as WooCommerce stores them on the line
+		// (`pa_frame-size`, or a custom attribute's own name). Frozen beside the
+		// labels because a label can be re-worded later and a raw key cannot.
+		$variation = isset( $values['variation'] ) && \is_array( $values['variation'] )
+			? $values['variation']
+			: array();
+		foreach ( \array_keys( $variation ) as $name ) {
+			$keys[] = \str_replace( 'attribute_', '', \urldecode( (string) $name ) );
+		}
 
 		if ( sgs_cart_line_summary_has_addons( $values ) ) {
 			// The add-on list's single "Options" row...
@@ -316,7 +327,16 @@ final class Cart_Line_Summary_Cart {
 		}
 
 		$ours = $item->get_meta( SGS_CART_LINE_SUMMARY_KEYS_META, true );
-		if ( ! \is_array( $ours ) || empty( $ours ) ) {
+
+		// An ABSENT list (not an array) means the line was purchased before this
+		// meta existed: keep the old whole-block replacement, because a past
+		// order's email must not change shape. An EMPTY list is different and
+		// must not be conflated with it — it means this line's summary subsumes
+		// NOTHING (a simple product with no variation, no add-ons and no flow
+		// answers still gets a lead-only summary), so every row on it is a
+		// foreign row and all of them survive. Treating the two alike left the
+		// original defect in place for every simple product.
+		if ( ! \is_array( $ours ) ) {
 			return array();
 		}
 		$ours = \array_map( static fn( $key ) => \trim( (string) $key ), $ours );
@@ -324,7 +344,19 @@ final class Cart_Line_Summary_Cart {
 		$rows = array();
 		foreach ( (array) $item->get_formatted_meta_data() as $meta ) {
 			$display_key = \trim( \wp_strip_all_tags( (string) ( $meta->display_key ?? '' ) ) );
-			if ( '' === $display_key || \in_array( $display_key, $ours, true ) ) {
+			// Match on the RAW key as well as the shopper-facing one. A variation
+			// row's display key is `wc_attribute_label()`, i.e. through this
+			// feature's own `::attribute_label` filter, so a client who later
+			// renames an axis ("Size" to "Frame size") changes the rendered key
+			// while the frozen one stays as it was — and the old variation row
+			// would reappear beside the frozen summary on a re-sent email. The
+			// raw key (`pa_frame-size`) never moves when wording does, and it is
+			// also a far stronger discriminator against a third-party row that
+			// happens to share a label.
+			$raw_key = \trim( (string) ( $meta->key ?? '' ) );
+			if ( '' === $display_key
+				|| \in_array( $display_key, $ours, true )
+				|| ( '' !== $raw_key && \in_array( $raw_key, $ours, true ) ) ) {
 				continue;
 			}
 			$rows[] = array(
