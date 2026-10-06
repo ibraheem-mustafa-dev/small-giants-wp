@@ -1,12 +1,12 @@
 {
  "surface": "mega-help",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-05T10-29-19/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-05T10-29-19/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-06T01-44-32/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-06T01-44-32/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 25,
+  "W": 22,
   "F": 3,
-  "T": 31,
+  "T": 29,
   "U": 0
  },
  "verdicts": [
@@ -611,8 +611,6 @@
      "delta": null,
      "widths": [
       1440,
-      1440,
-      1920,
       1920
      ]
     },
@@ -3983,128 +3981,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-help-20||style|display",
-   "ref": "cr-ref-mega-help-20",
-   "pair": "gen-mega-help-20",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "display",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-ambiguous",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "ambiguous",
-     "detail": "sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet all paint display on \"\""
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-20||style|padding-top",
-   "ref": "cr-ref-mega-help-20",
-   "pair": "gen-mega-help-20",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-20",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-20||style|padding-bottom",
-   "ref": "cr-ref-mega-help-20",
-   "pair": "gen-mega-help-20",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-mega-help-20",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "custom"
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-help-21|.sgs-button__label|hover|color",
    "ref": "cr-ref-mega-help-21",
    "pair": "gen-mega-help-21",
@@ -4578,11 +4454,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-help-20||style|padding-top",
-     "ref": "cr-ref-mega-help-20",
+     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
+     "ref": "cr-ref-header-12",
      "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 1440,
      "delta": 7,
      "widths": [
@@ -4684,72 +4560,6 @@
      "match": "same-delta",
      "width": 1440,
      "delta": -104,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-20||box|y-after-gen-mega-help-13",
-   "ref": "cr-ref-mega-help-20",
-   "pair": "gen-mega-help-20",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "y-after-gen-mega-help-13",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-mega-help-20||style|padding-top",
-     "ref": "cr-ref-mega-help-20",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -7,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-help-20||box|h",
-   "ref": "cr-ref-mega-help-20",
-   "pair": "gen-mega-help-20",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-12|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-top",
-     "ref": "cr-ref-header-12",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": 15,
      "widths": [
       1440,
       1920

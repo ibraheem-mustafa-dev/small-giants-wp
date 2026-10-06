@@ -1,823 +1,15 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-05T10-31-29/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-05T10-31-29/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T01-46-53/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T01-46-53/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 50,
-  "F": 38,
+  "W": 41,
+  "F": 28,
   "T": 0,
   "U": 0
  },
  "verdicts": [
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|column-gap",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for column-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "column-gap:10px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|row-gap",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for row-gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "row-gap:5px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
-      "declaration": "row-gap:6px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|align-items",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for align-items"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__option-button",
-      "declaration": "align-items:flex-start"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:baseline"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-button",
-      "declaration": "align-items:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|gap",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-card",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for gap"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button",
-      "declaration": "gap:16px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label|style|width",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-title",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow-question",
-     "setting": "introWidth",
-     "css_property": "max-width",
-     "css_element": "intro",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-price|style|width",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-price",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-price",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow-question",
-     "setting": "introWidth",
-     "css_property": "max-width",
-     "css_element": "intro",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-top",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-top"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginTop"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginTop",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
-       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
-       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-right",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-right"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginRight",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginRight",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginRight"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginRight",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "gin_right ) { $base_band_decls[] = 'margin-right:' . $band_margin_right; } if ( '' !==",
-       "blet ) { $tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet; } if ( ''",
-       "bile ) { $mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile; } if ( ''"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-bottom",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-bottom"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-media",
-      "declaration": "margin-bottom:0"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow-question__option-media",
-      "declaration": "margin-bottom:12px"
-     },
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "in_bottom ) { $base_band_decls[] = 'margin-bottom:' . $band_margin_bottom; } if ( '' !=",
-       "blet ) { $tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet; } if ( '",
-       "bile ) { $mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile; } if ( '"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-left",
-   "ref": "cr-ref-lens-2",
-   "pair": "option-band",
-   "path": ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media",
-   "block": "sgs/choice-flow-question",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow-question has no setting for margin-left"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow-question/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     },
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginLeft"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginLeft",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow-question/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media",
-      "declaration": "margin:-16px -18px 11px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "form-step",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "rgin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; } // (band backg",
-       "blet ) { $tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet; } if ( $tabl",
-       "bile ) { $mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile; } if ( $mobi"
-      ]
-     }
-    ]
-   }
-  },
   {
    "key": "cr-ref-lens-0|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-close|style|min-height",
    "ref": "cr-ref-lens-0",
@@ -950,105 +142,6 @@
    ]
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count|style|margin-bottom",
-   "ref": "cr-ref-lens-0",
-   "pair": "step-count",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "margin-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for margin-bottom"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "marginBottom",
-       "margin"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count|style|width",
-   "ref": "cr-ref-lens-0",
-   "pair": "step-count",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__header > .sgs-choice-flow__step-indicator > .sgs-choice-flow__step-count",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-total > .sgs-choice-flow__summary-summary-total-value|style|width",
    "ref": "cr-ref-lens-0",
    "pair": "stage-total",
@@ -1099,8 +192,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1116,6 +209,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-115",
+     "block": "sgs/modal",
+     "setting": "borderWidth",
+     "property": "border-width",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1636,8 +737,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1653,6 +754,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-lens-1",
+     "block": "sgs/form-step",
+     "setting": "borderRadius",
+     "property": "border-radius",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -1729,13 +839,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/choice-flow has no setting for box-shadow"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-115",
+     "block": "sgs/modal",
+     "setting": "dialogShadow",
+     "property": "box-shadow",
+     "via": "declared"
     }
    ],
    "source": {
@@ -2956,14 +2074,107 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/choice-flow-question path \".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-badge\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-lens-7",
+     "block": "sgs/form-step",
+     "setting": "textColour",
+     "property": "color",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "choice-flow-question/render.php",
+      "mentions": [],
+      "absent": [
+       "color"
+      ]
+     },
+     {
+      "file": "form-step/render.php",
+      "mentions": [
+       "color"
+      ],
+      "absent": []
+     },
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "color"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [
+       "color"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "choice-flow-question/style.css",
+      "selector": ".sgs-choice-flow-question__option-badge",
+      "declaration": "color:var( --wp--preset--color--accent-text, #fff )"
+     },
+     {
+      "file": "choice-flow-question/style.css",
+      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-badge",
+      "declaration": "color:var( --wp--preset--color--text-inverse, #fff )"
+     },
+     {
+      "file": "choice-flow-question/style.css",
+      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options:not( :has( .sgs-choice-flow-question__option-media ) ) .sgs-choice-flow-question__option-badge",
+      "declaration": "color:var( --wp--preset--color--accent-text, #92400E )"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "choice-flow-question",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $colour_text ) { $base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';'; } if",
+       "lour_text_hover ) { $hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';'; }"
+      ]
+     },
+     {
+      "block": "form-step",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "value ); return '' === $colour ? '' : 'color:' . $colour; } $gradient = sgs_css_gradient_value(",
+       "ackground-clip:text;background-clip:text;color:transparent'; }"
+      ]
+     },
+     {
+      "block": "form-step",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "{' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour ) . ';}}'; }"
+      ]
+     },
+     {
+      "block": "form-step",
+      "cite": "includes/shape-dividers.php::sgs_shape_divider_decls",
+      "mentions": [],
+      "declares": [
+       "( '' !== $safe_colour ) { $decls .= ';color:' . $safe_colour; } return $decls; }"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-lens-8|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|column-gap",
@@ -3546,14 +2757,58 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/choice-flow path \".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-lens-2",
+     "block": "sgs/choice-flow-question",
+     "setting": "questionFontWeight",
+     "property": "font-weight",
+     "via": "declared",
+     "where": "sibling"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "choice-flow/style.css",
+      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-brand",
+      "declaration": "font-weight:500"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|line-height",
@@ -3738,6 +2993,516 @@
    ]
   },
   {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|font-size",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375
+     ],
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|font-size"
+    },
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|font-weight",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-lens-2",
+     "block": "sgs/choice-flow-question",
+     "setting": "questionFontWeight",
+     "property": "font-weight",
+     "via": "declared",
+     "where": "sibling"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-step/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form-step",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|line-height",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375
+     ],
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|line-height"
+    },
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|letter-spacing",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|text-transform",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|color",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "backgroundColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "backgroundColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "textColourGradient",
+     "css_property": "background-image,color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form-step",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-14||style|column-gap",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": "",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "column-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-step has no setting for column-gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-step/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "columnGap"
+      ]
+     },
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "columnGap",
+       "gap"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "columnGap",
+       "gap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form-step",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-lens-14||style|row-gap",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": "",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-step has no setting for row-gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-step/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": [
+       "rowGap"
+      ]
+     },
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "rowGap",
+       "gap"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "rowGap",
+       "gap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form-step",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-lens-14||style|gap",
+   "ref": "cr-ref-lens-14",
+   "pair": "rx-typed",
+   "path": "",
+   "block": "sgs/form-step",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-step has no setting for gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-step/render.php",
+      "mentions": [
+       "gap"
+      ],
+      "absent": []
+     },
+     {
+      "file": "choice-flow/render.php",
+      "mentions": [],
+      "absent": [
+       "gap"
+      ]
+     },
+     {
+      "file": "modal/render.php",
+      "mentions": [],
+      "absent": [
+       "gap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form-step",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-total > .sgs-choice-flow__summary-total-value|style|width",
    "ref": "cr-ref-lens-0",
    "pair": "stage-total",
@@ -3792,8 +3557,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -3809,6 +3574,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-115",
+     "block": "sgs/modal",
+     "setting": "borderWidth",
+     "property": "border-width",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4044,13 +3817,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lens-2|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-media|style|margin-top",
-     "ref": "cr-ref-lens-2",
-     "key": "margin-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-close|style|min-height",
+     "ref": "cr-ref-lens-0",
+     "key": "min-height",
+     "relation": "self",
+     "match": "layout-row",
      "width": 768,
-     "delta": -17,
+     "delta": -16,
      "widths": [
       768,
       768,
@@ -4072,7 +3845,7 @@
     1440
    ],
    "solveClass": "derived",
-   "solveReason": "unmapped-state q4-upload",
+   "solveReason": null,
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -4089,9 +3862,9 @@
       768,
       768,
       768,
-      1440,
       768,
-      768
+      768,
+      1440
      ]
     }
    ]
@@ -4210,7 +3983,7 @@
     1920
    ],
    "solveClass": "derived",
-   "solveReason": "unmapped-state q4-upload",
+   "solveReason": null,
    "class": "W",
    "decidedBy": "consequence",
    "evidence": [
@@ -4225,571 +3998,12 @@
      "delta": -6,
      "widths": [
       1440,
+      1440,
+      1440,
       1920,
-      1440,
-      1440,
       1920,
       1920
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|border-bottom-color",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|justify-content",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "justify-content",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|min-height",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "min-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|border-left-color",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|border-right-color",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|style|margin-top",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|font-size",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    },
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375
-     ],
-     "parent": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|font-size"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|font-weight",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "font-weight",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|line-height",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    },
-    {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375
-     ],
-     "parent": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|line-height"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|letter-spacing",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "letter-spacing",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|text-transform",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "text-transform",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|color",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": ".sgs-form-field:nth-of-type(1) > .sgs-form-field__label",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14||style|column-gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14||style|row-gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-14||style|gap",
-   "ref": "cr-ref-lens-14",
-   "pair": "rx-typed",
-   "path": "",
-   "block": "sgs/form-step",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-12|.sgs-form-field__file-zone > .sgs-form-field__file-label|hover|border-top-color",
-   "ref": "cr-ref-lens-12",
-   "pair": "rx-upload",
-   "path": ".sgs-form-field__file-zone > .sgs-form-field__file-label",
-   "block": "sgs/form-field-file",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
-   "class": "W",
-   "decidedBy": "unmapped-state",
-   "evidence": [
-    {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
     }
    ]
   },
@@ -4805,23 +4019,24 @@
     1440,
     1920
    ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-upload",
+   "solveClass": "derived",
+   "solveReason": null,
    "class": "W",
-   "decidedBy": "unmapped-state",
+   "decidedBy": "consequence",
    "evidence": [
     {
-     "check": "unmapped-state",
-     "states": [
-      "q4-upload"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
+     "check": "consequence",
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|column-gap",
+     "ref": "cr-ref-lens-0",
+     "key": "column-gap",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 6,
+     "widths": [
+      1440,
+      1920
+     ]
     }
    ]
   },
@@ -4837,23 +4052,24 @@
     1440,
     1920
    ],
-   "solveClass": "unmapped-state",
-   "solveReason": "unmapped-state q4-type",
+   "solveClass": "derived",
+   "solveReason": null,
    "class": "W",
-   "decidedBy": "unmapped-state",
+   "decidedBy": "consequence",
    "evidence": [
     {
-     "check": "unmapped-state",
-     "states": [
-      "q4-type"
-     ],
-     "mappedStates": [
-      "q1-use",
-      "q2-thickness",
-      "q3-finish",
-      "q4-prescription"
-     ],
-     "detail": "the surface maps no setting state to this walker state (FR-47-7 not built)"
+     "check": "consequence",
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__nav-back|style|column-gap",
+     "ref": "cr-ref-lens-0",
+     "key": "column-gap",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 6,
+     "widths": [
+      1440,
+      1920
+     ]
     }
    ]
   }

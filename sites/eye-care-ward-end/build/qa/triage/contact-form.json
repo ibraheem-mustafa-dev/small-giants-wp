@@ -1,12 +1,12 @@
 {
  "surface": "contact-form",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-05T10-40-59/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T01-57-43/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T01-57-43/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 24,
-  "F": 10,
-  "T": 24,
+  "W": 50,
+  "F": 1,
+  "T": 45,
   "U": 0
  },
  "verdicts": [
@@ -26,13 +26,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-text paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
    ],
    "source": {
@@ -320,13 +328,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-text has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -390,13 +406,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-email paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
    ],
    "source": {
@@ -684,13 +708,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-email has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -754,13 +786,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-phone paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1048,13 +1088,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-phone has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1118,13 +1166,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-select paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1412,13 +1468,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-select has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1646,13 +1710,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1716,13 +1788,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for margin-top"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1828,7 +1908,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1844,8 +1924,42 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form/render.php",
+      "mentions": [
+       "lineHeight"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form__button",
+      "declaration": "line-height:1.5"
+     }
+    ],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|transition-duration",
@@ -1864,14 +1978,59 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/form path \".sgs-form__inner > .sgs-form__actions > .sgs-form__button\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "transitionDuration"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
+      "mentions": [],
+      "declares": [
+       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|width",
@@ -1918,6 +2077,1724 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-top-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-top-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-bottom-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-bottom-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-radius",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-radius",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderRadius"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderRadius",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|box-shadow",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "box-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-text has no setting for box-shadow"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "shadow",
+     "property": "box-shadow",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-text/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:focus-visible",
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "box-shadow:0 0 0 3px rgba(220, 38, 38, 0.15)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input[aria-invalid=\"true\"], .sgs-form-field select[aria-invalid=\"true\"], .sgs-form-field textarea[aria-invalid=\"true\"]",
+      "declaration": "box-shadow:0 0 0 1px var(--sgs-error-border, #dc2626)"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+      "mentions": [],
+      "declares": [
+       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+      "mentions": [],
+      "declares": [
+       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-left-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-left-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-right-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|outline-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "outline-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-text has no setting for outline-color"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-text/render.php",
+      "mentions": [],
+      "absent": [
+       "outlineColor"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "outlineColor"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "outlineColor"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-color",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "border-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|background-image",
+   "ref": "cr-ref-contact-form-1",
+   "pair": "field-name",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-text",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-text has no setting for background-image"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundGradient",
+     "property": "background-image",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-text/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E\")"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-valid:not(:placeholder-shown):not(:focus)",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E\")"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|background-image",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-email has no setting for background-image"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundGradient",
+     "property": "background-image",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-email/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E\")"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-valid:not(:placeholder-shown):not(:focus)",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E\")"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|border-top-color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "border-top-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|border-bottom-color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "border-bottom-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|box-shadow",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "box-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-email has no setting for box-shadow"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "shadow",
+     "property": "box-shadow",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-email/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:focus-visible",
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "box-shadow:0 0 0 3px rgba(220, 38, 38, 0.15)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input[aria-invalid=\"true\"], .sgs-form-field select[aria-invalid=\"true\"], .sgs-form-field textarea[aria-invalid=\"true\"]",
+      "declaration": "box-shadow:0 0 0 1px var(--sgs-error-border, #dc2626)"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+      "mentions": [],
+      "declares": [
+       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+      "mentions": [],
+      "declares": [
+       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|border-left-color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "border-left-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|border-right-color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|style|border-color",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "style",
+   "property": "border-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|background-image",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-select has no setting for background-image"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundGradient",
+     "property": "background-image",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-select/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E\")"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-valid:not(:placeholder-shown):not(:focus)",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E\")"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|border-top-color",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "border-top-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|border-bottom-color",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "border-bottom-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|box-shadow",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "box-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-select has no setting for box-shadow"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "shadow",
+     "property": "box-shadow",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-select/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:focus-visible",
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "box-shadow:0 0 0 3px rgba(220, 38, 38, 0.15)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input[aria-invalid=\"true\"], .sgs-form-field select[aria-invalid=\"true\"], .sgs-form-field textarea[aria-invalid=\"true\"]",
+      "declaration": "box-shadow:0 0 0 1px var(--sgs-error-border, #dc2626)"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+      "mentions": [],
+      "declares": [
+       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+      "mentions": [],
+      "declares": [
+       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|border-left-color",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "border-left-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|border-right-color",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-4|.sgs-form-field__input|style|border-color",
+   "ref": "cr-ref-contact-form-4",
+   "pair": "field-topic",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-select",
+   "kind": "style",
+   "property": "border-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|background-image",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "background-image",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for background-image"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "prevColourBackgroundGradient",
+     "property": "background-image",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-textarea/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "backgroundImage"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E\")"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-valid:not(:placeholder-shown):not(:focus)",
+      "declaration": "background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E\")"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
+      "mentions": [],
+      "declares": [
+       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
+      "mentions": [],
+      "declares": [
+       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
+       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
+       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|border-top-color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "border-top-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|border-bottom-color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "border-bottom-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|box-shadow",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "box-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/form-field-textarea has no setting for box-shadow"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "shadow",
+     "property": "box-shadow",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "form-field-textarea/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "form/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "boxShadow"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:focus-visible",
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input:user-invalid",
+      "declaration": "box-shadow:0 0 0 3px rgba(220, 38, 38, 0.15)"
+     },
+     {
+      "file": "form/style.css",
+      "selector": ".sgs-form-field__input[aria-invalid=\"true\"], .sgs-form-field select[aria-invalid=\"true\"], .sgs-form-field textarea[aria-invalid=\"true\"]",
+      "declaration": "box-shadow:0 0 0 1px var(--sgs-error-border, #dc2626)"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "form",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
+      "mentions": [],
+      "declares": [
+       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
+      ]
+     },
+     {
+      "block": "form",
+      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
+      "mentions": [],
+      "declares": [
+       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|border-left-color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "border-left-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|border-right-color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|style|border-color",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "style",
+   "property": "border-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fieldBorderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-form-0",
+      "block": "sgs/form",
+      "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
+     },
+     "holds": false
+    },
+    {
+     "check": "enclosing",
+     "ref": "cr-ref-contact-form-0",
+     "block": "sgs/form",
+     "setting": "fieldBorderColour",
+     "via": "slot",
+     "path": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input"
     }
    ]
   },
@@ -1989,7 +3866,19 @@
      "delta": null,
      "widths": [
       768,
+      768,
+      768,
+      768,
+      768,
       1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
       1920
      ]
     },
@@ -2068,7 +3957,13 @@
      "delta": null,
      "widths": [
       768,
+      768,
+      768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     },
@@ -2147,7 +4042,13 @@
      "delta": null,
      "widths": [
       768,
+      768,
+      768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     },
@@ -2226,7 +4127,13 @@
      "delta": null,
      "widths": [
       768,
+      768,
+      768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     },
@@ -2624,8 +4531,24 @@
      "delta": -5,
      "widths": [
       375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2657,6 +4580,8 @@
      "width": 375,
      "delta": -22,
      "widths": [
+      375,
+      375,
       375
      ]
     }
@@ -2692,8 +4617,16 @@
      "delta": -5,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2729,8 +4662,16 @@
      "delta": -5,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2766,8 +4707,16 @@
      "delta": -6,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2794,17 +4743,25 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "margin-top",
+     "key": "padding-top",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -10,
+     "delta": -8,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2836,6 +4793,8 @@
      "width": 375,
      "delta": 169,
      "widths": [
+      375,
+      375,
       375
      ]
     }
@@ -2862,17 +4821,25 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "padding-top",
+     "key": "margin-top",
      "relation": "anchor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 8,
+     "delta": 10,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
       768,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2904,6 +4871,8 @@
      "width": 375,
      "delta": 84,
      "widths": [
+      375,
+      375,
       375
      ]
     }
@@ -2939,10 +4908,278 @@
      "delta": 83,
      "widths": [
       375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-2|.sgs-form-field__input|box|y-after-gen-contact-form-0",
+   "ref": "cr-ref-contact-form-2",
+   "pair": "field-email",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-email",
+   "kind": "box",
+   "property": "y-after-gen-contact-form-0",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-right",
+     "ref": "cr-ref-contact-form-2",
+     "key": "padding-right",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 25,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-3|.sgs-form-field__input|box|y-after-field-email",
+   "ref": "cr-ref-contact-form-3",
+   "pair": "field-phone",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-phone",
+   "kind": "box",
+   "property": "y-after-field-email",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|box|y-after-gen-contact-form-0",
+     "ref": "cr-ref-contact-form-2",
+     "key": "y-after-gen-contact-form-0",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 24,
+     "widths": [
+      375,
       768,
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-form-5|.sgs-form-field__input|box|y-after-field-topic",
+   "ref": "cr-ref-contact-form-5",
+   "pair": "field-message",
+   "path": ".sgs-form-field__input",
+   "block": "sgs/form-field-textarea",
+   "kind": "box",
+   "property": "y-after-field-topic",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-form-4|.sgs-form-field__input|style|display",
+     "ref": "cr-ref-contact-form-4",
+     "key": "display",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 23,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "form-card||presence|element",
+   "ref": null,
+   "pair": "form-card",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-name||presence|element",
+   "ref": null,
+   "pair": "error-name",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-email||presence|element",
+   "ref": null,
+   "pair": "error-email",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-topic||presence|element",
+   "ref": null,
+   "pair": "error-topic",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-message||presence|element",
+   "ref": null,
+   "pair": "error-message",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

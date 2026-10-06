@@ -1,11 +1,11 @@
 {
  "surface": "mobile-menu",
- "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-05T10-23-32/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-05T10-23-32/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T01-38-24/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T01-38-24/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 31,
-  "F": 12,
+  "W": 46,
+  "F": 4,
   "T": 5,
   "U": 0
  },
@@ -254,8 +254,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -301,6 +301,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -380,8 +389,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -427,6 +436,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -506,8 +524,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -553,6 +571,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -632,8 +659,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -679,6 +706,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -829,8 +865,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -846,6 +882,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -1086,8 +1131,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1133,6 +1178,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -1243,8 +1297,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1260,6 +1314,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "fontStyle",
+     "property": "font-style",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -1715,8 +1778,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1732,6 +1795,15 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "shadow",
+     "property": "box-shadow",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -2450,14 +2522,102 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-8",
+     "block": "sgs/container",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-item-effects.php::sgs_label_roll_css",
+      "mentions": [],
+      "declares": [
+       "pe_sel . $trigger_sel; $css = $r . '{display:inline-grid;overflow:clip;vertical-align:top;}';"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "edia (forced-colors:active){' . $sel . '{display:none}}'; $data = ''; foreach ( (array) ( $args"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "ext' ), true ); return $icon_sel . '{display:' . ( $show_icon ? 'flex' : 'none' ) . ';}' .",
+       "' : 'none' ) . ';}' . $text_sel . '{display:' . ( $show_text ? 'flex' : 'none' ) . ';}'; };"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|width",
@@ -2501,14 +2661,102 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-8",
+     "block": "sgs/container",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "icon-list/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "nav-drawer/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-item-effects.php::sgs_label_roll_css",
+      "mentions": [],
+      "declares": [
+       "pe_sel . $trigger_sel; $css = $r . '{display:inline-grid;overflow:clip;vertical-align:top;}';"
+      ]
+     },
+     {
+      "block": "icon-list",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "edia (forced-colors:active){' . $sel . '{display:none}}'; $data = ''; foreach ( (array) ( $args"
+      ]
+     },
+     {
+      "block": "nav-drawer",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "ext' ), true ); return $icon_sel . '{display:' . ( $show_icon ? 'flex' : 'none' ) . ';}' .",
+       "' : 'none' ) . ';}' . $text_sel . '{display:' . ( $show_text ? 'flex' : 'none' ) . ';}'; };"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mobile-menu-9|.sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text > .sgs-icon-list__item-link|style|width",
@@ -2776,9 +3024,9 @@
      "ref": "cr-ref-mobile-menu-0",
      "key": "padding-top",
      "relation": "ancestor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 22,
+     "delta": 21,
      "widths": [
       375
      ]
@@ -2875,6 +3123,213 @@
      "widths": [
       375
      ]
+    }
+   ]
+  },
+  {
+   "key": "drawer-close||text|text",
+   "ref": null,
+   "pair": "drawer-close",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    375
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "drawer-link-sunglasses||presence|element",
+   "ref": null,
+   "pair": "drawer-link-sunglasses",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "drawer-link-lenses||presence|element",
+   "ref": null,
+   "pair": "drawer-link-lenses",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "drawer-link-about||presence|element",
+   "ref": null,
+   "pair": "drawer-link-about",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "drawer-link-contact||presence|element",
+   "ref": null,
+   "pair": "drawer-link-contact",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "drawer-phone||presence|element",
+   "ref": null,
+   "pair": "drawer-phone",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "menu-button||presence|element",
+   "ref": null,
+   "pair": "menu-button",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

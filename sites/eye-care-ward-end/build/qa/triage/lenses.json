@@ -1,10 +1,10 @@
 {
  "surface": "lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-05T10-12-17/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T01-27-07/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T01-27-07/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 35,
+  "W": 42,
   "F": 0,
   "T": 23,
   "U": 0
@@ -40,41 +40,6 @@
      "setting": "itemMotionDuration",
      "css_property": "transition-duration",
      "css_element": "item-dimmed",
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lenses-28||style|transition-duration",
-   "ref": "cr-ref-lenses-28",
-   "pair": "choose-a-frame",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "style",
-   "property": "transition-duration",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
      "css_state": null,
      "source": "sgs"
     }
@@ -858,77 +823,6 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-22||style|opacity",
-   "ref": "cr-ref-lenses-22",
-   "pair": "gen-lenses-22",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768
-     ],
-     "values": [
-      "0→1",
-      "0→1"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lenses-22|.sgs-container__inner|style|column-gap",
    "ref": "cr-ref-lenses-22",
    "pair": "gen-lenses-22",
@@ -1015,67 +909,6 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-22||style|transform",
-   "ref": "cr-ref-lenses-22",
-   "pair": "gen-lenses-22",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "transform",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768
-     ],
-     "values": [
-      "matrix(1, 0, 0, 1, 0, 26)→none",
-      "matrix(1, 0, 0, 1, 0, 26)→none"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
-     "css_property": "transform",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverLift",
-     "css_property": "transform",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverLift",
-     "css_property": "transform",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lenses-22|.sgs-container__inner|style|gap",
    "ref": "cr-ref-lenses-22",
    "pair": "gen-lenses-22",
@@ -1115,77 +948,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lenses-25||style|opacity",
-   "ref": "cr-ref-lenses-25",
-   "pair": "gen-lenses-25",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768
-     ],
-     "values": [
-      "0→1",
-      "0→1"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper"
     }
    ]
   },
@@ -1272,67 +1034,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lenses-25||style|transform",
-   "ref": "cr-ref-lenses-25",
-   "pair": "gen-lenses-25",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "transform",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768
-     ],
-     "values": [
-      "matrix(1, 0, 0, 1, 0, 26)→none",
-      "matrix(1, 0, 0, 1, 0, 26)→none"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
-     "css_property": "transform",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverLift",
-     "css_property": "transform",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverLift",
-     "css_property": "transform",
-     "css_element": "wrapper"
     }
    ]
   },
@@ -1815,133 +1516,6 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-28||hover|transform",
-   "ref": "cr-ref-lenses-28",
-   "pair": "choose-a-frame",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "transform",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "none cannot be held"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lenses-28||hover|hover-effects",
-   "ref": "cr-ref-lenses-28",
-   "pair": "choose-a-frame",
-   "path": "",
-   "block": "sgs/button",
-   "kind": "hover",
-   "property": "hover-effects",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for hover-effects (hover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowHover",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": "face",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "shadowLiftOnHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "scaleHoverTarget",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "opacityHover",
-     "css_property": "opacity",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "liftHover",
-     "css_property": "translate",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lenses-1||box|y-after-gen-lenses-0",
    "ref": "cr-ref-lenses-1",
    "pair": "eyebrow",
@@ -2036,13 +1610,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lenses-27||style|padding-top",
-     "ref": "cr-ref-lenses-27",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
      "key": "padding-top",
-     "relation": "descendant",
-     "match": "same-delta",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": -23,
+     "delta": -22,
      "widths": [
       375,
       768,
@@ -2406,6 +1980,39 @@
    ]
   },
   {
+   "key": "cr-ref-lenses-25||box|y-after-benefits-item-1",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-benefits-item-1",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 26,
+     "widths": [
+      375,
+      768
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-lenses-25||box|h",
    "ref": "cr-ref-lenses-25",
    "pair": "gen-lenses-25",
@@ -2443,13 +2050,13 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-27||box|y-after-gen-lenses-25",
+   "key": "cr-ref-lenses-27||box|y-after-steps-heading",
    "ref": "cr-ref-lenses-27",
    "pair": "gen-lenses-27",
    "path": "",
    "block": "sgs/process-steps",
    "kind": "box",
-   "property": "y-after-gen-lenses-25",
+   "property": "y-after-steps-heading",
    "widths": [
     375,
     768
@@ -2461,13 +2068,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lenses-25|.sgs-container__inner|style|column-gap",
-     "ref": "cr-ref-lenses-25",
-     "key": "column-gap",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
+     "key": "padding-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 16,
+     "delta": 42,
      "widths": [
       375,
       768
@@ -2637,7 +2244,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": 16,
+     "delta": 17,
      "widths": [
       768
      ]
@@ -2804,6 +2411,409 @@
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "intro||text|text",
+   "ref": null,
+   "pair": "intro",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "lens-grid||presence|element",
+   "ref": null,
+   "pair": "lens-grid",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-single-vision||presence|element",
+   "ref": null,
+   "pair": "card-single-vision",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-single-vision-title||presence|element",
+   "ref": null,
+   "pair": "card-single-vision-title",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-single-vision-price||presence|element",
+   "ref": null,
+   "pair": "card-single-vision-price",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-single-vision-desc||presence|element",
+   "ref": null,
+   "pair": "card-single-vision-desc",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-varifocal||presence|element",
+   "ref": null,
+   "pair": "card-varifocal",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-polarised||presence|element",
+   "ref": null,
+   "pair": "card-polarised",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "card-thinner-lenses||presence|element",
+   "ref": null,
+   "pair": "card-thinner-lenses",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "steps-list||presence|element",
+   "ref": null,
+   "pair": "steps-list",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "step-1||presence|element",
+   "ref": null,
+   "pair": "step-1",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "grid-reveal||presence|element",
+   "ref": null,
+   "pair": "grid-reveal",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "steps-reveal||presence|element",
+   "ref": null,
+   "pair": "steps-reveal",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

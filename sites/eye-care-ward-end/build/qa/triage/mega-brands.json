@@ -1,11 +1,11 @@
 {
  "surface": "mega-brands",
- "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-05T10-26-00/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T01-41-03/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T01-41-03/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 188,
-  "F": 14,
+  "W": 192,
+  "F": 8,
   "T": 75,
   "U": 0
  },
@@ -1276,13 +1276,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/button has no setting for flex-direction"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-7",
+     "block": "sgs/container",
+     "setting": "flexDirection",
+     "property": "flex-direction",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1455,81 +1463,6 @@
       "link",
       "custom"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|width",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "brands-top-count",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "contentWidth",
-     "css_property": "max-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "glyphSize",
-     "css_property": "font-size,height,width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/card-grid",
-     "setting": "sgsMaxWidth",
-     "css_property": "max-width",
-     "css_element": "image",
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "imageControls",
-     "setting": "sgsMaxWidth",
-     "css_property": "max-width",
-     "css_element": "image"
     }
    ]
   },
@@ -4022,8 +3955,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4039,6 +3972,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-4",
+     "block": "sgs/container",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4249,8 +4190,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4316,6 +4257,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-4",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColour",
+     "property": "background-color",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4504,7 +4453,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4520,8 +4469,74 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "fontFamily",
+     "property": "font-family",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "fontFamily"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
+       "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-size",
@@ -4538,7 +4553,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4554,8 +4569,106 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": []
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+      "mentions": [],
+      "declares": [
+       "all{display:inline-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;te"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+      "mentions": [],
+      "declares": [
+       "all{display:inline-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;te"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|font-weight",
@@ -4572,7 +4685,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4588,8 +4701,131 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "fontWeight",
+     "property": "font-weight",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+      "mentions": [],
+      "declares": [
+       "m_root . '__sublink[aria-current=\"page\"]{font-weight:' . $item_weight_current . ';}'; } $css .= s",
+       "sgs_hover_state_rules( $link_hover_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' )",
+       "{ $sgs_nm_ancestor_current_decls[] = 'font-weight:' . $item_weight_current; } $sgs_nm_ancestor_"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::includes/nav-menu-item-border-featured-css.php",
+      "mentions": [],
+      "declares": [
+       "esc_attr( $featured_fg ) : '' ) . ';font-weight:' . esc_attr( (string) $featured_weight ) .",
+       "ed_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}",
+       "= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover )"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+      "mentions": [],
+      "declares": [
+       "color:var(--sgs-nm-featured-bg);' . 'font-weight:var(--sgs-nm-featured-weight, 600);' . 'bor",
+       "* The bar's own `[aria-current=\"page\"]{font-weight:600}` pair is emitted by * `nav-menu-css.php",
+       "ine-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-of"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+      "mentions": [],
+      "declares": [
+       "color:var(--sgs-nm-featured-bg);' . 'font-weight:var(--sgs-nm-featured-weight, 600);' . 'bor",
+       "* The bar's own `[aria-current=\"page\"]{font-weight:600}` pair is emitted by * `nav-menu-css.php",
+       "ine-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-of"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_featured_css",
+      "mentions": [],
+      "declares": [
+       "esc_attr( $featured_fg ) : '' ) . ';font-weight:' . esc_attr( (string) $featured_weight ) .",
+       "ed_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}",
+       "= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover )"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
@@ -4606,7 +4842,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4622,8 +4858,64 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|letter-spacing",
@@ -4640,7 +4932,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4656,8 +4948,64 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "letterSpacing",
+     "property": "letter-spacing",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mega-brands-4|.sgs-container__inner > .sgs-container > .sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|text-transform",
@@ -4674,7 +5022,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4690,8 +5038,73 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "textTransform",
+     "property": "text-transform",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-4||style|text-align",
@@ -5180,7 +5593,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -5196,8 +5609,131 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "fontWeight",
+     "property": "font-weight",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "fontWeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-css.php::sgs_nav_shared_item_state_css",
+      "mentions": [],
+      "declares": [
+       "m_root . '__sublink[aria-current=\"page\"]{font-weight:' . $item_weight_current . ';}'; } $css .= s",
+       "sgs_hover_state_rules( $link_hover_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' )",
+       "{ $sgs_nm_ancestor_current_decls[] = 'font-weight:' . $item_weight_current; } $sgs_nm_ancestor_"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::includes/nav-menu-item-border-featured-css.php",
+      "mentions": [],
+      "declares": [
+       "esc_attr( $featured_fg ) : '' ) . ';font-weight:' . esc_attr( (string) $featured_weight ) .",
+       "ed_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}",
+       "= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover )"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+      "mentions": [],
+      "declares": [
+       "color:var(--sgs-nm-featured-bg);' . 'font-weight:var(--sgs-nm-featured-weight, 600);' . 'bor",
+       "* The bar's own `[aria-current=\"page\"]{font-weight:600}` pair is emitted by * `nav-menu-css.php",
+       "ine-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-of"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+      "mentions": [],
+      "declares": [
+       "color:var(--sgs-nm-featured-bg);' . 'font-weight:var(--sgs-nm-featured-weight, 600);' . 'bor",
+       "* The bar's own `[aria-current=\"page\"]{font-weight:600}` pair is emitted by * `nav-menu-css.php",
+       "ine-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-of"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_featured_css",
+      "mentions": [],
+      "declares": [
+       "esc_attr( $featured_fg ) : '' ) . ';font-weight:' . esc_attr( (string) $featured_weight ) .",
+       "ed_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}",
+       "= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover )"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-7|.sgs-container__inner > .sgs-button:nth-of-type(1) > .sgs-button__label|style|line-height",
@@ -5214,7 +5750,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -5230,8 +5766,64 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-2",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-mega-brands-7||style|width",
@@ -6794,8 +7386,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -6985,8 +7576,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7176,8 +7766,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7367,8 +7956,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7558,8 +8146,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7749,8 +8336,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7940,8 +8526,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8131,8 +8716,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8322,8 +8906,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8513,8 +9096,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8704,8 +9286,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -8895,8 +9476,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9086,8 +9666,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9277,8 +9856,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9468,8 +10046,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9659,8 +10236,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -9850,8 +10426,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10041,8 +10616,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10232,8 +10806,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10423,8 +10996,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10614,8 +11186,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10805,8 +11376,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -10996,8 +11566,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11187,8 +11756,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11378,8 +11946,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -11575,14 +12142,204 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-ambiguous",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "ambiguous",
      "detail": "sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet all paint display on \"\""
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-7",
+     "block": "sgs/container",
+     "setting": "sgsHideOnDesktop",
+     "property": "display",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "button/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "mega-group/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     },
+     {
+      "file": "mega-panel/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     },
+     {
+      "file": "nav-bar-menu/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     },
+     {
+      "file": "site-header-row/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [
+       "display"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "button/style.css",
+      "selector": ".sgs-button",
+      "declaration": "display:inline-flex"
+     },
+     {
+      "file": "mega-group/style.css",
+      "selector": ".sgs-mega-group",
+      "declaration": "display:flex"
+     },
+     {
+      "file": "nav-bar-menu/style.css",
+      "selector": ".sgs-nav-bar-menu",
+      "declaration": "display:flex"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "button",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css",
+      "mentions": [],
+      "declares": [
+       "' . $uid_sel . ' .' . $bem_root . '__bar{display:none;}' . $uid_sel . ' .' . $bem_root . '__toggle-w",
+       "_sel . ' .' . $bem_root . '__toggle-wrap{display:flex;}}'; $css .= '@media (min-width:' . $collaps",
+       "_sel . ' .' . $bem_root . '__toggle-wrap{display:none;}}'; // 4g. Mega-menu disclosure — caret"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/helpers-item-effects.php::sgs_label_roll_css",
+      "mentions": [],
+      "declares": [
+       "pe_sel . $trigger_sel; $css = $r . '{display:inline-grid;overflow:clip;vertical-align:top;}';"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css",
+      "mentions": [],
+      "declares": [
+       "ext' ), true ); return $icon_sel . '{display:' . ( $show_icon ? 'flex' : 'none' ) . ';}' .",
+       "' : 'none' ) . ';}' . $text_sel . '{display:' . ( $show_text ? 'flex' : 'none' ) . ';}'; };"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-detach-chip.php::sgs_nav_detach_chip_css",
+      "mentions": [],
+      "declares": [
+       "us'] ?? '9999px' ); $css = $wrap . '{display:none;position:fixed;top:calc(var(--wp-admin--admin-",
+       "ct_media_css( $on, $wrap . '.is-detached{display:block;}', '(max-width:' . ( max( 1, $collapse_point"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/helpers-scrim.php::sgs_scrim_render",
+      "mentions": [],
+      "declares": [
+       "edia (forced-colors:active){' . $sel . '{display:none}}'; $data = ''; foreach ( (array) ( $args"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::includes/nav-menu-submenu-link-css.php",
+      "mentions": [],
+      "declares": [
+       "id_sel . ' .' . $bem_root . '__subtoggle{display:inline-flex;align-items:center;justify-content:cent",
+       "l . ' .' . $bem_root . '__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}'; $css .=",
+       "sel . ' .' . $bem_root . '__mega-viewall{display:inline-block;margin-top:16px;font-size:14px;font-we"
+      ]
+     },
+     {
+      "block": "nav-bar-menu",
+      "cite": "includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css",
+      "mentions": [],
+      "declares": [
+       "id_sel . ' .' . $bem_root . '__subtoggle{display:inline-flex;align-items:center;justify-content:cent",
+       "l . ' .' . $bem_root . '__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}'; $css .=",
+       "sel . ' .' . $bem_root . '__mega-viewall{display:inline-block;margin-top:16px;font-size:14px;font-we"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
+      "mentions": [],
+      "declares": [
+       "el, $raw, array( 'start' => 'display:flex;flex-direction:column;justify-content:flex-sta",
+       "-content:flex-start;', 'center' => 'display:flex;flex-direction:column;justify-content:center;'",
+       "tify-content:center;', 'end' => 'display:flex;flex-direction:column;justify-content:flex-end"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/sgs-header-pass-through.php::sgs_header_collapse_visibility_css",
+      "mentions": [],
+      "declares": [
+       "x){' . $root_sel . ' .sgs-hide-collapsed{display:none !important;}}' . '@media (min-width:' . $po",
+       "x){' . $root_sel . ' .sgs-only-collapsed{display:none !important;}}'; }"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-mega-brands-41||style|text-align",
@@ -13284,13 +14041,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/button has no setting for object-fit"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-7",
+     "block": "sgs/container",
+     "setting": "backgroundSize",
+     "property": "background-size,object-fit",
+     "via": "declared"
     }
    ],
    "source": {
@@ -13374,13 +14139,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/button has no setting for aspect-ratio"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mega-brands-7",
+     "block": "sgs/container",
+     "setting": "boxAspectRatio",
+     "property": "aspect-ratio",
+     "via": "declared"
     }
    ],
    "source": {
@@ -13832,13 +14605,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/button has no setting for backdrop-filter"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-header-4",
+     "block": "sgs/nav-bar-menu",
+     "setting": "scrimBlur",
+     "property": "backdrop-filter",
+     "via": "declared"
     }
    ],
    "source": {
@@ -14513,8 +15294,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -14704,8 +15484,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -14895,8 +15674,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15086,8 +15864,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15277,8 +16054,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15468,8 +16244,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15549,8 +16324,7 @@
    "kind": "hover",
    "property": "border-top-color",
    "widths": [
-    1440,
-    1920
+    1440
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -15914,7 +16688,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 45,
+     "delta": 47,
      "widths": [
       1440,
       1920
@@ -16154,72 +16928,6 @@
    ]
   },
   {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|box|y-after-brands-top-first",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "brands-top-count",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "box",
-   "property": "y-after-brands-top-first",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -357,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|box|text-inset-x",
-   "ref": "cr-ref-mega-brands-5",
-   "pair": "brands-top-count",
-   "path": ".sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle",
-   "block": "sgs/card-grid",
-   "kind": "box",
-   "property": "text-inset-x",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": 83,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-mega-brands-47||box|y-after-gen-mega-brands-42",
    "ref": "cr-ref-mega-brands-47",
    "pair": "brands-list-last",
@@ -16244,7 +16952,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 8,
+     "delta": 7,
      "widths": [
       1440,
       1920
@@ -16541,7 +17249,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 1440,
-     "delta": 149,
+     "delta": 148,
      "widths": [
       1440,
       1920
@@ -16568,13 +17276,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-brands-5|.sgs-card-grid__item:nth-of-type(1) > .sgs-card-grid__body > .sgs-card-grid__subtitle|style|line-height",
-     "ref": "cr-ref-mega-brands-5",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
      "key": "line-height",
-     "relation": "self",
+     "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": -4,
+     "delta": -5,
      "widths": [
       1440,
       1920
@@ -16640,7 +17348,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 55,
+     "delta": 56,
      "widths": [
       1440,
       1920
@@ -16706,7 +17414,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 57,
+     "delta": 58,
      "widths": [
       1440,
       1920
@@ -16739,7 +17447,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 9,
+     "delta": 10,
      "widths": [
       1440,
       1920
@@ -16770,9 +17478,9 @@
      "ref": "cr-ref-header-4",
      "key": "line-height",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 1440,
-     "delta": -5,
+     "delta": -7,
      "widths": [
       1440,
       1920
@@ -17195,17 +17903,46 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-mega-brands-47||box|y-after-gen-mega-brands-42",
-     "ref": "cr-ref-mega-brands-47",
-     "key": "y-after-gen-mega-brands-42",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-header-4",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 1440,
-     "delta": 9,
+     "delta": 10,
      "widths": [
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "brands-top-first||text|text",
+   "ref": null,
+   "pair": "brands-top-first",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

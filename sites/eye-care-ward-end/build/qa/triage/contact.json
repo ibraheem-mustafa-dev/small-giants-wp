@@ -1,13 +1,13 @@
 {
  "surface": "contact",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-05T10-14-26/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T01-29-33/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T01-29-33/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 6,
-  "F": 1,
-  "T": 4,
-  "U": 16
+  "W": 24,
+  "F": 17,
+  "T": 12,
+  "U": 15
  },
  "verdicts": [
   {
@@ -134,6 +134,2441 @@
      "reaches": true
     }
    ]
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no display setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "displayType",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|padding-top",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "padding-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-top setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "paddingTop"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "padding",
+       "paddingTop"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "padding:0.5em 0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "padding:8px 18px"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
+       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
+       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
+       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|padding-right",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "padding-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-right setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "paddingRight"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "padding",
+       "paddingRight"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "padding:0.5em 0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "padding:8px 18px"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
+       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
+       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
+       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|padding-bottom",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "padding-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-bottom setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "paddingBottom"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "padding",
+       "paddingBottom"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "padding:0.5em 0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "padding:8px 18px"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
+       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
+       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
+       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|padding-left",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "padding-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no padding-left setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "padding",
+     "css_property": "padding",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "padding"
+      ],
+      "absent": [
+       "paddingLeft"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "padding",
+       "paddingLeft"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "padding:0.5em 0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "padding:8px 18px"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
+       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
+       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
+       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "padding"
+      ],
+      "declares": [
+       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
+       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
+       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|margin-top",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "margin-top",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no margin-top setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginTop"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "margin",
+       "marginTop"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "margin:-0.5em -0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "margin:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "margin"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
+       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "margin"
+      ],
+      "declares": [
+       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
+       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
+       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|margin-right",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "margin-right",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no margin-right setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginRight"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "margin",
+       "marginRight"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "margin:-0.5em -0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "margin:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "margin"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
+       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "margin"
+      ],
+      "declares": [
+       "gin_right ) { $base_band_decls[] = 'margin-right:' . $band_margin_right; } if ( '' !==",
+       "blet ) { $tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet; } if ( ''",
+       "bile ) { $mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile; } if ( ''"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|margin-bottom",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "margin-bottom",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no margin-bottom setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginBottom"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "margin",
+       "marginBottom"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "margin:-0.5em -0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "margin:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "margin"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
+       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "margin"
+      ],
+      "declares": [
+       "in_bottom ) { $base_band_decls[] = 'margin-bottom:' . $band_margin_bottom; } if ( '' !=",
+       "blet ) { $tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet; } if ( '",
+       "bile ) { $mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile; } if ( '"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|margin-left",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "margin-left",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no margin-left setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "margin",
+     "css_property": "margin",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-7",
+     "block": "sgs/container",
+     "setting": "margin",
+     "property": "margin",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "margin"
+      ],
+      "absent": [
+       "marginLeft"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "margin",
+       "marginLeft"
+      ]
+     }
+    ],
+    "rules": [
+     {
+      "file": "business-info/style.css",
+      "selector": ".sgs-business-info__link",
+      "declaration": "margin:-0.5em -0.6em"
+     },
+     {
+      "file": "business-info/style.css",
+      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+      "declaration": "margin:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
+      "mentions": [
+       "margin"
+      ],
+      "declares": []
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
+      "mentions": [],
+      "declares": [
+       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
+       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
+      ]
+     },
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [
+       "margin"
+      ],
+      "declares": [
+       "rgin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; } // (band backg",
+       "blet ) { $tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet; } if ( $tabl",
+       "bile ) { $mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile; } if ( $mobi"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|width",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "used-value",
+   "evidence": [
+    {
+     "check": "used-value",
+     "property": "width",
+     "declared": {}
+    },
+    {
+     "check": "resolver",
+     "gap": "used-value",
+     "detail": "width is the box's used size, not a declared value"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconSize",
+     "css_property": "width",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|font-family",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "font-family",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fontFamily"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "fontFamily",
+     "css_property": "font-family",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|font-size",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fontSize"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "fontSize",
+     "css_property": "font-size",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|font-weight",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fontWeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "fontWeight",
+     "css_property": "font-weight",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelFontWeight",
+     "css_property": "font-weight",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|font-style",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "font-style",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "fontStyle"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "fontStyle",
+     "css_property": "font-style",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|line-height",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "lineHeight"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "lineHeight",
+     "css_property": "line-height",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|letter-spacing",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "normal cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "letterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|text-transform",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textTransform"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textTransform",
+     "css_property": "text-transform",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textColour"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColour",
+     "css_property": "color",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColour",
+     "css_property": "color",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourGradient",
+     "css_property": "stroke",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourGradient",
+     "css_property": "background-image",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourGradient",
+     "css_property": "background-image",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourHover",
+     "css_property": "color",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourHoverGradient",
+     "css_property": "stroke",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "text",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "text",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "attributionHoverColour",
+     "css_property": "background-image",
+     "css_element": "link",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "attributionHoverColourFallback",
+     "css_property": "color",
+     "css_element": "link",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourHover",
+     "css_property": "color",
+     "css_element": "label",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "label",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-top-width",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-top-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-top-width setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderWidth)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "property": "border-color,border-style,border-width",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderTopWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderTopWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-top-style",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-top-style",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-top-style setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderStyle)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderStyle",
+     "css_property": "border-style",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "property": "border-color,border-style,border-width",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "borderStyle"
+      ],
+      "absent": [
+       "borderTopStyle"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "borderStyle"
+      ],
+      "absent": [
+       "borderTopStyle"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "border_has_width ) { $base_decls[] = 'border-style:' . $border_style . ';'; } if ( null !== $"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "'none' !== $style ) { return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $s"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-top-color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-top-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-top-color setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderColour)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColour",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHover",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-bottom-width",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-bottom-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-bottom-width setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderWidth)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "property": "border-color,border-style,border-width",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderBottomWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderBottomWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-bottom-color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-bottom-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-bottom-color setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderColour)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColour",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHover",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-left-width",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-left-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-left-width setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderWidth)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "property": "border-color,border-style,border-width",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderLeftWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderLeftWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-right-width",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-right-width",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-right-width setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderWidth)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderWidth",
+     "css_property": "border-width",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "gridItemBorder",
+     "property": "border-color,border-style,border-width",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderRightWidth"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "borderWidth"
+      ],
+      "absent": [
+       "borderRightWidth"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-border-style.php::sgs_border_box_decls",
+      "mentions": [],
+      "declares": [
+       "return array( 'border-style:' . $style, 'border-width:' . implode( ' ', $sides ) ); } return arr"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|aspect-ratio",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "aspect-ratio",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/business-info has no setting for aspect-ratio"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "boxAspectRatio",
+     "property": "aspect-ratio",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "aspectRatio"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-left-color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-left-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-left-color setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderColour)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColour",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHover",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|border-right-color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "border-right-color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no border-right-color setting on sgs/business-info paints \".sgs-business-info\" (candidates: borderColour)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColour",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHover",
+     "css_property": "border-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "borderColourHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|text-shadow",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "text-shadow",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/business-info has no setting for text-shadow"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [],
+      "absent": [
+       "textShadow"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "textShadow"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|style|painted-ground",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "style",
+   "property": "painted-ground",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/business-info has no setting for background-color"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-24",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayColour",
+     "property": "background-color",
+     "via": "declared"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "business-info/render.php",
+      "mentions": [
+       "backgroundColor"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "backgroundColor"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "business-info",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "; if ( '' !== $bg ) { $decls[] = 'background-color:' . $bg; } } // Display model — fu"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-contact-12|.sgs-business-info > .sgs-business-info__link > .sgs-business-info__label|hover|color",
@@ -1465,6 +3900,233 @@
    ]
   },
   {
+   "key": "cr-ref-contact-5||hover|transform",
+   "ref": "cr-ref-contact-5",
+   "pair": "whatsapp-cta",
+   "path": "",
+   "block": "sgs/whatsapp-cta",
+   "kind": "hover",
+   "property": "transform",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "shape",
+     "detail": "matrix(1, 0, 0, 1, 0, -2) cannot be held"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/whatsapp-cta",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-25|.sgs-business-info|hover|color",
+   "ref": "cr-ref-contact-25",
+   "pair": "map",
+   "path": ".sgs-business-info",
+   "block": "sgs/business-info",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "T",
+   "decidedBy": "resolver-writes",
+   "evidence": [
+    {
+     "check": "resolver",
+     "wouldWrite": [
+      "textColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-contact-25",
+      "block": "sgs/business-info",
+      "path": ".sgs-business-info"
+     },
+     "holds": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColour",
+     "css_property": "color",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColour",
+     "css_property": "color",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourGradient",
+     "css_property": "stroke",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourGradient",
+     "css_property": "background-image",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourGradient",
+     "css_property": "background-image",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourHover",
+     "css_property": "color",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "iconColourHoverGradient",
+     "css_property": "stroke",
+     "css_element": "icon",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "text",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "textColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "text",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "attributionHoverColour",
+     "css_property": "background-image",
+     "css_element": "link",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "attributionHoverColourFallback",
+     "css_property": "color",
+     "css_element": "link",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourHover",
+     "css_property": "color",
+     "css_element": "label",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "labelColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "label",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/business-info",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
    "key": "cr-ref-contact-13||box|h",
    "ref": "cr-ref-contact-13",
    "pair": "detail-clinic-value",
@@ -1486,6 +4148,8 @@
      "check": "consequence",
      "partial": true,
      "widths": [
+      375,
+      375,
       375
      ],
      "parent": "cr-ref-contact-15||box|h"
@@ -1530,26 +4194,6 @@
    "evidence": []
   },
   {
-   "key": "cr-ref-contact-20||box|y-from-detail-grid",
-   "ref": "cr-ref-contact-20",
-   "pair": "form-card",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-from-detail-grid",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
    "key": "cr-ref-contact-1||box|h",
    "ref": "cr-ref-contact-1",
    "pair": "gen-contact-1",
@@ -1572,6 +4216,7 @@
      "check": "consequence",
      "partial": true,
      "widths": [
+      375,
       375
      ],
      "parent": "cr-ref-contact-22||style|margin-bottom"
@@ -1602,6 +4247,10 @@
      "partial": true,
      "widths": [
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ],
      "parent": "cr-ref-contact-1||box|h"
@@ -1707,7 +4356,13 @@
      "partial": true,
      "widths": [
       375,
+      375,
+      375,
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ],
      "parent": "cr-ref-contact-18||box|y-after-detail-hours-value"
@@ -1730,16 +4385,233 @@
    "solveReason": null,
    "class": "U",
    "decidedBy": "box-unexplained",
-   "evidence": []
+   "evidence": [
+    {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      375,
+      768,
+      768
+     ],
+     "parent": "cr-ref-contact-25|.sgs-business-info|style|font-size"
+    }
+   ]
   },
   {
-   "key": "cr-ref-contact-14||box|y-after-gen-contact-24",
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|box|w",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "box",
+   "property": "w",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+     "ref": "cr-ref-contact-9",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 18,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|box|y-from-detail-phone-label",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "box",
+   "property": "y-from-detail-phone-label",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+     "ref": "cr-ref-contact-9",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -12,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|box|text-inset-x",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "box",
+   "property": "text-inset-x",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|padding-right",
+     "ref": "cr-ref-contact-9",
+     "key": "padding-right",
+     "relation": "self",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 9,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|box|text-inset-y",
+   "ref": "cr-ref-contact-9",
+   "pair": "detail-phone-value",
+   "path": ".sgs-business-info > .sgs-business-info__link",
+   "block": "sgs/business-info",
+   "kind": "box",
+   "property": "text-inset-y",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+     "ref": "cr-ref-contact-9",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 12,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-9||box|y-after-detail-phone-value",
+   "ref": "cr-ref-contact-9",
+   "pair": "gen-contact-9",
+   "path": "",
+   "block": "sgs/business-info",
+   "kind": "box",
+   "property": "y-after-detail-phone-value",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-contact-9|.sgs-business-info > .sgs-business-info__link|style|display",
+     "ref": "cr-ref-contact-9",
+     "key": "display",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 12,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-contact-14||box|y-after-social-instagram-label",
    "ref": "cr-ref-contact-14",
    "pair": "detail-clinic-label",
    "path": "",
    "block": "sgs/text",
    "kind": "box",
-   "property": "y-after-gen-contact-24",
+   "property": "y-after-social-instagram-label",
    "widths": [
     1440,
     1920
@@ -1829,11 +4701,170 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1440,
-     "delta": 29,
+     "delta": 28,
      "widths": [
       1440,
+      1440,
+      1440,
+      1920,
+      1920,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "form-card||presence|element",
+   "ref": null,
+   "pair": "form-card",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-name||presence|element",
+   "ref": null,
+   "pair": "error-name",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-email||presence|element",
+   "ref": null,
+   "pair": "error-email",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-topic||presence|element",
+   "ref": null,
+   "pair": "error-topic",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
+    }
+   ]
+  },
+  {
+   "key": "error-message||presence|element",
+   "ref": null,
+   "pair": "error-message",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

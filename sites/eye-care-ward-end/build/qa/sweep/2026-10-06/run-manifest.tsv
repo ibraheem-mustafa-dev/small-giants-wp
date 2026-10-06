@@ -1,0 +1,22 @@
+head	ea72eab7b
+live-block-code	7f375f765
+started	2026-10-06T02:25:59+01:00
+footer	sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T01-59-22/	78s	(re-run after removing footer.mjs's unpaired modal-open state; first attempt aborted on the walker config lint)
+about	sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T01-26-23/	44s
+lenses	sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T01-27-07/	45s
+help	sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T01-27-52/	100s
+contact	sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T01-29-33/	89s
+home	sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T01-31-02/	361s
+header	sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T01-37-03/	81s
+mobile-menu	sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-06T01-38-24/	70s
+mega-sunglasses	sites/eye-care-ward-end/build/qa/solve/mega-sunglasses/2026-10-06T01-39-34/	89s
+mega-brands	sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-06T01-41-03/	117s
+mega-lenses	sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-06T01-43-01/	92s
+mega-help	sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-06T01-44-32/	81s
+size-guide	sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T01-45-53/	60s
+lens	sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T01-46-53/	155s
+shop	sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T01-49-28/	313s
+product	sites/eye-care-ward-end/build/qa/solve/product/2026-10-06T01-54-41/	181s
+contact-form	sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T01-57-43/	77s
+finished	2026-10-06T02:58:59+01:00
+aborts	0	(footer's first attempt aborted and was re-run clean; all 17 surfaces measured at 7f375f765)

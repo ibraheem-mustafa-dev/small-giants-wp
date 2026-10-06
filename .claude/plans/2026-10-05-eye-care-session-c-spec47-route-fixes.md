@@ -793,6 +793,113 @@ with** a pair scoped to it (`pairs.mjs --state modal-open`, which the state's ow
 entry in `surfaces.json`'s footer `states` map. All three are needed or the surface breaks again. **Owner: Session D**,
 with the surface work, since it adds measurement coverage rather than repairing the route.
 
+### C3.8 — the new framework-gap count. 2026-10-06. This is Session C's output.
+
+Measured at block code **`7f375f765`**, which is what eye-care-test ran at the time of the sweep, **before** HEAD was
+deployed there. All 17 surfaces, no abort, `sweep.mjs` and `triage.mjs` with the same commands and flags as the
+2026-10-05 baseline. Sweep: `sites/eye-care-ward-end/build/qa/sweep/2026-10-06/sweep.json`, with
+`run-manifest.tsv` beside it recording the per-surface timings and the live block code. **Triage output, which is
+what Session C2 consumes: `sites/eye-care-ward-end/build/qa/triage/*.json`** (17 files, rewritten by this run).
+
+**Headline, raw against raw: F 338 → 192.** A 43% reduction in candidate framework gaps.
+
+| Class | Baseline raw (2026-10-05) | Gate 2 (same reports, repaired route) | **C3.7 (fresh reports, repaired route)** |
+|---|---|---|---|
+| W | 1,562 | 1,765 | **1,242** |
+| **F** | **338** | **176** | **192** |
+| T | 445 | 445 | **378** |
+| U | 28 | 28 | **29** |
+| **total** | **2,373** | **2,414** | **1,841** |
+
+`byClass` on the sweep: unresolved 1,618 → 1,396, derived 432 → 395, **unmapped-state 323 → 0**, content 41 → 45.
+
+**The site-wide sweep total is 1,836, not 1,841, and the five are accounted for.** `lib/sweep.mjs::aggregate` keys a
+row with no `ref` as `<config>|<issue>`, and **`contact` and `contact-form` declare the same hand walker config**
+(`qa/parity/contact.mjs`). Content rows carry no `ref` at all, so five ref-less `presence` rows measured on both
+surfaces — `form-card`, `error-name`, `error-email`, `error-topic`, `error-message` — collapse into one site-wide row
+each, carrying `alsoIn: ["contact-form"]`. The baseline had zero such rows because content rows only entered the
+sweep in sitting i. **The identity the gate requires holds exactly: every surface's triage count equals its sweep
+count, on all 17, 1,841 on both sides.**
+
+#### What moved, and why — two independent mechanisms, in opposite directions
+
+The movement decomposes cleanly, because Gate 2 triaged the **identical** reports with the repaired route:
+
+| Step | F | What it isolates |
+|---|---|---|
+| Baseline | 338 | old reports, old code |
+| → Gate 2 | **176** (−162) | **the route code alone.** Sitting i's canvas rule (161 rows) plus C3.1's hero routing (1 row) |
+| → C3.7 | **192** (+16) | **fresh measurement, same code.** Surfaces walked in states that had never been walked |
+
+**The +16 is rows gaining a class for the first time, not 16 new defects**, and it is per surface:
+
+| Surface | F, Gate 2 → C3.7 | Why |
+|---|---|---|
+| contact | 1 → **17** (+16) | C0.7 mapped `field-focused` and `form-submitted-empty`. Both were always *defined*, but `walkStates` was `["opening"]`, so neither was ever walked. Walking them **adds** rows, which sitting i predicted in writing |
+| product | 5 → **17** (+12) | product held 109 of the 323 unmapped-state rows; mapped, they became judgeable and 12 came out F |
+| shop | 2 → 4 (+2) | held 163 of the 323 |
+| contact-form | 0 → 1 (+1) | its two form states walked for the first time, as contact's |
+| home | 57 → **49** (−8) | held 33 of the 323; judgeable, and most resolved |
+| lens | 34 → **28** (−6) | held 18 of the 323 |
+| footer | 21 → 20 (−1) | re-run on the repaired config |
+
+Every other surface's F is unchanged.
+
+#### The total fell 2,414 → 1,841, and it is resolution rather than lost coverage
+
+A 573-row drop with nothing deployed demands proof it is not the walker going blind. Checked with the route's own
+reader (`lib/solve-rows.mjs::openRows` plus `lib/issue-classes.mjs::isIssue`) on the two surfaces that fell hardest:
+
+| Surface | distinct pairs | open rows | issues |
+|---|---|---|---|
+| mega-sunglasses | **37 → 37** | 467 → 165 | 421 → 115 |
+| product | 44 → **42** | 6,420 → 4,142 | 5,991 → 3,772 |
+
+**The same pairs are measured and far fewer differences come back**, so the drop is genuine resolution. Total rows
+measured across all 17 surfaces fell only **6.7%** (3,940 → 3,677) while issues fell 24%. The probable cause is lane
+L4's per-width draft layout fix: the walker had been comparing the wrong draft layout at some widths and reporting
+phantom differences. That is a measuring repair, which is what this session exists to do — the route was reporting
+false gaps.
+
+**Not claimed, and named instead: product lost 2 distinct pairs** (44 → 42). That is a small real coverage delta and
+it is Session D's to check, not something to count as an improvement.
+
+#### What this count is NOT
+
+- **It is a raw machine classification, comparable to 338 and never to Session B's audited 163.** An audited
+  equivalent needs Session C2's judgement and this session cannot produce one.
+- **It measures code that predates 13 blocks' worth of register fixes.** The sweep ran at `7f375f765` deliberately,
+  so every register row fixed between that commit and HEAD still reads as open here — including 87's breadcrumb
+  weight (`9776e7d86`) and 15's drawer column (`31aa51090`). **Those are fixed in code and will clear on the next
+  sweep; they are not regressions.** Measuring before the deploy is what keeps this count attributable to the route
+  rather than to a fortnight of block work.
+- **The canvas roster is load-bearing data, re-measured here.** Triaging against a manifest with all 12 `canvas`
+  flags stripped gives **F 338** against this run's 192, with zero movement on any non-canvas surface. A wrong roster
+  would mask genuine page gaps.
+
+#### Still open, row by row, as Session C2's input
+
+| Item | Count | Owner |
+|---|---|---|
+| F rows to assess | **192** | Session C2, from `qa/triage/*.json` |
+| of which `lens` | 28 | C2 — the flow surface, highest single F |
+| of which `help` | 36 | C2 — unchanged by the route, so genuinely its own |
+| of which `home` | 49 | C2 |
+| of which `footer` | 20 | C2 |
+| of which `contact` + `contact-form` | 18 | C2, newly judgeable |
+| of which `product` + `shop` | 21 | C2, newly judgeable |
+| of which the four mega menus + mobile-menu | 20 | C2 |
+| U rows, nothing explains them | 29 | C2 |
+| `transition,*` calibrates nowhere in the library (`markersFor` has no branch) | 5 blocks, 10 rows | next route session |
+| footer's size-guide modal coverage (state + scoped pair + `surfaces.json` state map, all three) | 1 surface | Session D |
+| product's 2 lost pairs | 2 | Session D |
+| 20 presence rows unwritable (no live element → no trace → no node) | 20 | next route session |
+| `link-missing` rows unwritable (`auto-collect.mjs` stores `lk: true`, not the href) | — | next route session |
+| `resolveContent` belongs in `resolve.mjs` under R-47-3's one-resolver rule | — | next route session |
+| triage's CONTENT verdict ignores Solve's `contentClass` | 45 content rows | next route session |
+| the 38 gap-typing rows are not yet re-typed (needs a calibration run per block, then Solve) | 38 | next route session |
+| 45 state-conflict groups refused, of which 7 are the named ones | 38 untriaged | Session D |
+
 ## Inherited from the parallel repairs track (closed 2026-10-05 at `a62ae6fdb`)
 
 That track finished and pushed before this session's Wave 3. It made **no eye-care-test deploy and no

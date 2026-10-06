@@ -1,12 +1,12 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-05T10-21-03/round-1/report.json",
- "date": "2026-10-05",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T01-59-22/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T01-59-22/round-1/report.json",
+ "date": "2026-10-06",
  "counts": {
-  "W": 109,
-  "F": 76,
-  "T": 16,
+  "W": 141,
+  "F": 20,
+  "T": 15,
   "U": 0
  },
  "verdicts": [
@@ -384,13 +384,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for align-items"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "alignItems",
+     "property": "align-items",
+     "via": "declared"
     }
    ],
    "source": {
@@ -469,13 +477,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for flex-wrap"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "flexWrap",
+     "property": "flex-wrap",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1066,8 +1082,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1083,6 +1099,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1225,8 +1249,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1242,6 +1266,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1384,8 +1416,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1401,6 +1433,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1543,8 +1583,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1560,6 +1600,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -2172,13 +2220,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -2249,8 +2305,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -2266,6 +2322,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "contentWidth",
+     "property": "width",
+     "via": "declared"
     }
    ],
    "source": {
@@ -2328,6 +2392,14 @@
       "mentions": [],
       "declares": [
        "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+      ]
+     },
+     {
+      "block": "site-footer",
+      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
+      "mentions": [],
+      "declares": [
+       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
       ]
      }
     ]
@@ -2965,8 +3037,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -2982,6 +3054,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -3124,8 +3204,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -3141,6 +3221,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -3283,8 +3371,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -3300,6 +3388,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -3442,8 +3538,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -3459,6 +3555,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4071,13 +4175,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4148,8 +4260,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4165,6 +4277,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "contentWidth",
+     "property": "width",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4227,6 +4347,14 @@
       "mentions": [],
       "declares": [
        "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+      ]
+     },
+     {
+      "block": "site-footer",
+      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
+      "mentions": [],
+      "declares": [
+       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
       ]
      }
     ]
@@ -4780,8 +4908,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4797,6 +4925,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -4939,8 +5075,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -4956,6 +5092,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -5098,8 +5242,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -5115,6 +5259,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -5257,8 +5409,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -5274,6 +5426,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "gridItemPadding",
+     "property": "padding",
+     "via": "declared"
     }
    ],
    "source": {
@@ -5886,13 +6046,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomDuration",
+     "property": "transition-duration",
+     "via": "declared"
     }
    ],
    "source": {
@@ -5963,8 +6131,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -5980,6 +6148,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "contentWidth",
+     "property": "width",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6042,6 +6218,14 @@
       "mentions": [],
       "declares": [
        "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+      ]
+     },
+     {
+      "block": "site-footer",
+      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
+      "mentions": [],
+      "declares": [
+       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
       ]
      }
     ]
@@ -6245,13 +6429,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6324,13 +6516,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6377,13 +6577,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6456,13 +6664,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6509,13 +6725,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6588,207 +6812,50 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "core/list-item has no setting for line-height"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-13||style|font-size",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "core/list-item has no setting for font-size"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": []
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "fontSize"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "fontSize"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-13||style|line-height",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "core/list-item has no setting for line-height"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-footer-13||style|color",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
    "class": "W",
-   "decidedBy": "extension",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "core/list-item has no setting for color"
+     "detail": "core/list-item has no setting for line-height"
     },
     {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "lineHeight"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-footer-17|a|style|font-size",
@@ -6806,13 +6873,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6885,13 +6960,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -6938,13 +7021,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7017,13 +7108,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7070,13 +7169,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7149,13 +7256,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7202,13 +7317,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "fontSize",
+     "property": "font-size",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7281,13 +7404,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "lineHeight",
+     "property": "line-height",
+     "via": "declared"
     }
    ],
    "source": {
@@ -7360,618 +7491,6 @@
      "reaches": true
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|padding-top",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-top setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "padding:0.5em 0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "padding:8px 18px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
-       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
-       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
-       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|padding-right",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "padding:0.5em 0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "padding:8px 18px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
-       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
-       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
-       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|padding-bottom",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-bottom setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "padding:0.5em 0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "padding:8px 18px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
-       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|padding-left",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "padding:0.5em 0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "padding:8px 18px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "e;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}' . $lis",
-       ":absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
-       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
-       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|column-gap",
@@ -8058,502 +7577,6 @@
      "reaches": true
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "margin-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-top setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginTop"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginTop"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginTop"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "margin:-0.5em -0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "margin:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "margin"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
-       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "margin"
-      ],
-      "declares": [
-       "argin_top ) { $base_band_decls[] = 'margin-top:' . $band_margin_top; } if ( '' !== $ban",
-       "blet ) { $tablet_margin_decls[] = 'margin-top:' . $margin_top_tablet; } if ( '' !==",
-       "bile ) { $mobile_margin_decls[] = 'margin-top:' . $margin_top_mobile; } if ( '' !=="
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-right",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "margin-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-right setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginRight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginRight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginRight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginRight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "margin:-0.5em -0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "margin:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "margin"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
-       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "margin"
-      ],
-      "declares": [
-       "gin_right ) { $base_band_decls[] = 'margin-right:' . $band_margin_right; } if ( '' !==",
-       "blet ) { $tablet_margin_decls[] = 'margin-right:' . $margin_right_tablet; } if ( ''",
-       "bile ) { $mobile_margin_decls[] = 'margin-right:' . $margin_right_mobile; } if ( ''"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-bottom",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "margin-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-bottom setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginBottom"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginBottom"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "margin:-0.5em -0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "margin:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "margin"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
-       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "margin"
-      ],
-      "declares": [
-       "in_bottom ) { $base_band_decls[] = 'margin-bottom:' . $band_margin_bottom; } if ( '' !=",
-       "blet ) { $tablet_margin_decls[] = 'margin-bottom:' . $margin_bottom_tablet; } if ( '",
-       "bile ) { $mobile_margin_decls[] = 'margin-bottom:' . $margin_bottom_mobile; } if ( '"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-left",
-   "ref": "cr-ref-footer-24",
-   "pair": "link-phone",
-   "path": ".sgs-business-info > .sgs-business-info__link",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "margin-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no margin-left setting on sgs/business-info paints \".sgs-business-info > .sgs-business-info__link\" (candidates: margin)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "margin"
-      ],
-      "absent": [
-       "marginLeft"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginLeft"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginLeft"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "margin",
-       "marginLeft"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-info__link",
-      "declaration": "margin:-0.5em -0.6em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
-      "declaration": "margin:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "margin"
-      ],
-      "declares": []
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
-      "mentions": [],
-      "declares": [
-       "n:absolute;top:0;left:0;width:0;height:0;margin:0;padding:0;list-style:none;pointer-events:none;}'",
-       "{position:absolute;box-sizing:border-box;margin:0;padding:0;}' . $lines . '}'; }"
-      ]
-     },
-     {
-      "block": "business-info",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "e{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};bac"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "margin"
-      ],
-      "declares": [
-       "rgin_left ) { $base_band_decls[] = 'margin-left:' . $band_margin_left; } // (band backg",
-       "blet ) { $tablet_margin_decls[] = 'margin-left:' . $margin_left_tablet; } if ( $tabl",
-       "bile ) { $mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile; } if ( $mobi"
-      ]
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|width",
@@ -8681,363 +7704,6 @@
      "reaches": true
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-26|.sgs-business-info > .sgs-business-hours__row > .sgs-business-hours__day|style|font-weight",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": ".sgs-business-info > .sgs-business-hours__row > .sgs-business-hours__day",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "font-weight",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "labelFontWeight"
-     ],
-     "on": {
-      "ref": "cr-ref-footer-26",
-      "block": "sgs/business-info",
-      "path": ".sgs-business-info > .sgs-business-hours__row > .sgs-business-hours__day"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "fontWeight",
-     "css_property": "font-weight",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "labelFontWeight",
-     "css_property": "font-weight",
-     "css_element": "label",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-26|.sgs-business-info > .sgs-business-hours__row|style|column-gap",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": ".sgs-business-info > .sgs-business-hours__row",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no column-gap setting on sgs/business-info paints \".sgs-business-info > .sgs-business-hours__row\" (candidates: iconGap)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "iconGap",
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap",
-       "columnGap"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap",
-       "columnGap"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconGap",
-       "columnGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours__row",
-      "declaration": "gap:1em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
-      "declaration": "gap:0.35em"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-26|.sgs-business-info > .sgs-business-hours__row|style|row-gap",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": ".sgs-business-info > .sgs-business-hours__row",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no row-gap setting on sgs/business-info paints \".sgs-business-info > .sgs-business-hours__row\" (candidates: iconGap)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "iconGap",
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap",
-       "rowGap"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap",
-       "rowGap"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconGap",
-       "rowGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours__row",
-      "declaration": "gap:1em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
-      "declaration": "gap:0.35em"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-26|.sgs-business-info > .sgs-business-hours__row|style|gap",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": ".sgs-business-info > .sgs-business-hours__row",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no gap setting on sgs/business-info paints \".sgs-business-info > .sgs-business-hours__row\" (candidates: iconGap)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [
-       "iconGap",
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "iconGap"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconGap",
-       "gap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours__row",
-      "declaration": "gap:1em"
-     },
-     {
-      "file": "business-info/style.css",
-      "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
-      "declaration": "gap:0.35em"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-footer-27|.sgs-container__inner|style|column-gap",
@@ -9304,59 +7970,6 @@
      "reaches": true
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-28||style|flex-grow",
-   "ref": "cr-ref-footer-28",
-   "pair": "bottom-copyright",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "flex-grow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/business-info has no setting for flex-grow"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "business-info/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "flexGrow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
   },
   {
    "key": "cr-ref-footer-30|a|style|color",
@@ -10453,13 +9066,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "boxShadowHover",
+     "property": "box-shadow",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -10537,13 +9159,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "property": "transform",
+     "via": "declared"
     }
    ],
    "source": {
@@ -10990,13 +9620,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "boxShadowHover",
+     "property": "box-shadow",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -11074,13 +9713,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "property": "transform",
+     "via": "declared"
     }
    ],
    "source": {
@@ -11520,13 +10167,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "boxShadowHover",
+     "property": "box-shadow",
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -11604,13 +10260,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-2",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "property": "transform",
+     "via": "declared"
     }
    ],
    "source": {
@@ -12538,46 +11202,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-28||style|width",
-   "ref": "cr-ref-footer-28",
-   "pair": "bottom-copyright",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/business-info",
-     "setting": "iconSize",
-     "css_property": "width",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-24||hover|border-top-color",
    "ref": "cr-ref-footer-24",
    "pair": "gen-footer-24",
@@ -12766,13 +11390,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list has no setting for border-top-color (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-7",
+     "block": "sgs/container",
+     "setting": "borderColourHover",
+     "property": "border-color",
+     "via": "declared"
     }
    ],
    "source": {
@@ -12883,13 +11515,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list has no setting for border-top-color (hover)"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-footer-14",
+     "block": "sgs/container",
+     "setting": "borderColourHover",
+     "property": "border-color",
+     "via": "declared"
     }
    ],
    "source": {
@@ -12997,9 +11637,10 @@
     "render": [
      {
       "file": "site-footer/render.php",
-      "mentions": [],
+      "mentions": [
+       "margin"
+      ],
       "absent": [
-       "margin",
        "marginTop"
       ]
      }
@@ -13633,7 +12274,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 41,
+     "delta": 68,
      "widths": [
       375,
       768,
@@ -13670,7 +12311,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 43,
+     "delta": 44,
      "widths": [
       375,
       768,
@@ -13909,11 +12550,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-     "ref": "cr-ref-footer-24",
-     "key": "margin-top",
-     "relation": "descendant",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": -11,
      "widths": [
@@ -14208,7 +12849,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 15,
+     "delta": 16,
      "widths": [
       375
      ]
@@ -14376,76 +13017,6 @@
      "check": "consequence",
      "parent": "cr-ref-footer-12|a|style|font-size",
      "ref": "cr-ref-footer-12",
-     "key": "font-size",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 3,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-13||box|y-after-link-prescription-lenses",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "box",
-   "property": "y-after-link-prescription-lenses",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-12||box|y-after-link-all-brands",
-     "ref": "cr-ref-footer-12",
-     "key": "y-after-link-all-brands",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -7,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-13||box|h",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-13||style|font-size",
-     "ref": "cr-ref-footer-13",
      "key": "font-size",
      "relation": "self",
      "match": "same-delta",
@@ -14750,13 +13321,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-     "ref": "cr-ref-footer-24",
-     "key": "margin-top",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": -12,
+     "delta": -11,
      "widths": [
       375
      ]
@@ -14858,9 +13429,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|padding-top",
+     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|column-gap",
      "ref": "cr-ref-footer-24",
-     "key": "padding-top",
+     "key": "column-gap",
      "relation": "self",
      "match": "same-delta",
      "width": 375,
@@ -14895,13 +13466,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-     "ref": "cr-ref-footer-24",
-     "key": "margin-top",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 12,
+     "delta": 11,
      "widths": [
       375,
       768,
@@ -14939,111 +13510,6 @@
      "match": "layout-row",
      "width": 375,
      "delta": -20,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-26||box|y-after-address",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "y-after-address",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -20,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-26||box|h",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 9,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-26||box|text-inset-y",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "text-inset-y",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 5,
      "widths": [
       375,
       768,
@@ -15173,11 +13639,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-     "ref": "cr-ref-footer-24",
-     "key": "margin-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 12,
      "widths": [
@@ -15279,11 +13745,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-0||box|y-in-main",
+     "parent": "cr-ref-footer-0||style|max-width",
      "ref": "cr-ref-footer-0",
-     "key": "y-in-main",
+     "key": "max-width",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 768,
      "delta": -9,
      "widths": [
@@ -15512,108 +13978,11 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -21,
+     "delta": -20,
      "widths": [
       768,
       1440,
       1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-26||box|y-after-link-contact",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "y-after-link-contact",
-   "widths": [
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 768,
-     "delta": -15,
-     "widths": [
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-28||box|w",
-   "ref": "cr-ref-footer-28",
-   "pair": "bottom-copyright",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-28||style|width",
-     "ref": "cr-ref-footer-28",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 768,
-     "delta": -168,
-     "widths": [
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-28||box|h",
-   "ref": "cr-ref-footer-28",
-   "pair": "bottom-copyright",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 768,
-     "delta": 18,
-     "widths": [
-      768
      ]
     }
    ]
@@ -15637,13 +14006,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-24|.sgs-business-info > .sgs-business-info__link|style|margin-top",
-     "ref": "cr-ref-footer-24",
+     "parent": "cr-ref-footer-0||style|margin-top",
+     "ref": "cr-ref-footer-0",
      "key": "margin-top",
-     "relation": "anchor",
-     "match": "same-delta",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 1440,
-     "delta": 11,
+     "delta": 12,
      "widths": [
       1440,
       1920
@@ -15718,68 +14087,64 @@
    ]
   },
   {
-   "key": "cr-ref-footer-13||box|y-after-address",
-   "ref": "cr-ref-footer-13",
-   "pair": "text-glasses-soon",
-   "path": "",
-   "block": "core/list-item",
-   "kind": "box",
-   "property": "y-after-address",
+   "key": "footer-root||text|text",
+   "ref": null,
+   "pair": "footer-root",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
    "widths": [
+    375,
+    768,
     1440,
     1920
    ],
-   "solveClass": "derived",
-   "solveReason": null,
+   "solveClass": "content",
+   "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "content",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|margin-top",
-     "ref": "cr-ref-footer-0",
-     "key": "margin-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -5,
-     "widths": [
-      1440,
-      1920
-     ]
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },
   {
-   "key": "cr-ref-footer-26||box|y-after-social-whatsapp-icon",
-   "ref": "cr-ref-footer-26",
-   "pair": "hours",
-   "path": "",
-   "block": "sgs/business-info",
-   "kind": "box",
-   "property": "y-after-social-whatsapp-icon",
+   "key": "address||text|text",
+   "ref": null,
+   "pair": "address",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
    "widths": [
+    375,
+    768,
     1440,
     1920
    ],
-   "solveClass": "derived",
-   "solveReason": null,
+   "solveClass": "content",
+   "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "content",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|margin-top",
-     "ref": "cr-ref-footer-0",
-     "key": "margin-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -22,
-     "widths": [
-      1440,
-      1920
-     ]
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }
