@@ -1640,7 +1640,7 @@
  */
 .sgs-product-card__swatch--button[aria-pressed="true"] {
 	box-shadow:
-		0 0 0 2px var( --wp--preset--color--base, #fff ),
+		0 0 0 2px var( --wp--preset--color--surface, #fff ),
 		0 0 0 3px var( --wp--preset--color--text, #1a1a1a );
 }
 
