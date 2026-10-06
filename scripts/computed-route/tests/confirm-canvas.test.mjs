@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { familiesFrom } from '../confirm-canvas.mjs';
+import { reachabilityVerified, reachesElement } from '../lib/triage.mjs';
 
 const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cc-fam-' ) );
 const write = ( surface, rows ) => fs.writeFileSync( path.join( dir, `${ surface }.json` ), JSON.stringify( { rows } ) );
@@ -52,4 +53,36 @@ test( 'MUST FAIL: the two citation mechanisms stay distinguishable', () => {
 	assert.deepEqual( fams.find( ( f ) => 'gridItemPadding' === f.setting ).where, [ 'sibling' ] );
 	assert.deepEqual( fams.find( ( f ) => 'contentBandPadding' === f.setting ).where, [ 'ancestor' ] );
 	assert.deepEqual( fams.find( ( f ) => 'contentWidth' === f.setting ).where, [ 'resolver-cite' ] );
+} );
+
+// --- The reachability gate says whether it actually tested the citation ---------------------------------
+// lib/triage.mjs::reachesElement FAILS OPEN: when emissionOf cannot determine the cited setting's emission it
+// returns true, so the citation is accepted untested and the row reads W (explained, not a framework gap).
+// Measured 2026-10-06: emissionOf returned null for 17 of 17 citations a live read then refuted, so the gate was
+// asserting reachability rather than testing it. R-47-12 requires the citation be tested before the row is
+// called resolved, so the evidence must now say which citations were actually assessed.
+const issueFor = ( key ) => ( { key, rows: [ { key, ref: 'r1', path: '.sgs-social-icons__item', owners: [] } ] } );
+
+test( 'MUST FAIL: a citation the gate could not assess is marked unverified, and one it could is not', () => {
+	const cite = { block: 'sgs/container', ref: 'c1', setting: 'gridItemPadding', property: 'padding' };
+	// No emissionFor and no helpers: exactly what every real caller supplies, so emissionOf cannot resolve.
+	assert.equal( reachabilityVerified( cite, issueFor( 'a|.x|style|padding-top' ), {} ), false,
+		'with no emission channel the citation is NOT verified' );
+	// Red on revert: returning true unconditionally fails this, because an unassessed claim would read assessed.
+	// Not over-suppressing: a citation the named channel CAN resolve must come back verified, so this does not
+	// mark every citation unverified and make the flag meaningless.
+	const named = { emissionFor: () => [ '.sgs-container__inner > *' ] };
+	assert.equal( reachabilityVerified( cite, issueFor( 'a|.x|style|padding-top' ), named ), true,
+		'a citation with a named emission IS verified' );
+	// And the gate itself still accepts a reachable one, so adding the flag changed no classification.
+	assert.equal( reachesElement( cite, issueFor( 'a|.x|style|padding-top' ), {} ), true,
+		'the fail-open branch is unchanged: no row is reclassified by this' );
+} );
+
+test( 'MUST FAIL: a named emission that cannot match the row is still refused', () => {
+	const cite = { block: 'sgs/container', ref: 'c1', setting: 'gridItemPadding', property: 'padding' };
+	// The emission targets the container's own inner wrapper; the row is a social-icons item three levels down.
+	const ctx = { emissionFor: () => [ '.sgs-container__inner' ], nodeFor: () => ( { name: 'sgs/social-icons' } ) };
+	assert.equal( reachesElement( cite, issueFor( 'a|.sgs-social-icons__item|style|padding-top' ), ctx ), false,
+		'an emission naming no class of the row must NOT be credited as reaching it' );
 } );

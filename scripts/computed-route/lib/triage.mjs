@@ -381,6 +381,13 @@ export function reachesElement( cite, issue, ctx ) {
 	const { short } = splitProperty( cssProp( r.key ) );
 	const em = emissionOf( cite, [ cssProp( r.key ), short ], ctx );
 	if ( ! em ) {
+		// FAILS OPEN, deliberately and visibly. The citation is accepted so the row is not called a framework gap
+		// on an unassessed claim, but it has NOT been tested, and R-47-12 requires that the citation be tested
+		// before the row is called resolved. Measured 2026-10-06: emissionOf returned null for 17 of 17 citations
+		// a live read then refuted, so the gate was asserting reachability rather than testing it, which is why
+		// every one of those rows read W. The caller records this through `reachabilityVerified` below, so the
+		// evidence says which citations were tested; the real repair is to supply ctx.emissionFor, which every
+		// caller currently leaves undefined. See CANVAS-SETTABLE-CONFIRMATION.md.
 		return true;
 	}
 	const own = ctx.nodeFor( r.ref )?.name || '';
@@ -390,6 +397,14 @@ export function reachesElement( cite, issue, ctx ) {
 	return em.classes.some( ( c ) => classes.includes( c ) ) || ( !! r.pseudo && em.pseudos.includes( r.pseudo ) && r.ref === cite.ref );
 }
 const citeReaches = ( cite, issue, ctx ) => reachesElement( { block: cite.block, ref: cite.ref ?? null, setting: cite.setting, property: cite.property }, issue, ctx );
+
+// Whether reachesElement actually TESTED this citation or fell through its fail-open branch. A citation that was
+// never assessed is not evidence, and recording it as though it were is how an untested claim reads as a verdict.
+export function reachabilityVerified( cite, issue, ctx ) {
+	const r = issue.rows[ 0 ];
+	const { short } = splitProperty( cssProp( r.key ) );
+	return !! emissionOf( { block: cite.block, ref: cite.ref ?? null, setting: cite.setting, property: cite.property }, [ cssProp( r.key ), short ], ctx );
+}
 
 // FR-47-8 (c). On a canvas surface the block that can hold a row's property need not be the attributed block or even
 // an ancestor: the author composes the canvas from whatever blocks suit, so any block ALREADY IN that tree which
@@ -499,7 +514,9 @@ export function triageIssue( issue, ctx ) {
 	// missing setting there is a real gap, and reclassifying it would mask one and corrupt Session C2's worklist.
 	const settable = res.cite || canvasSettable( issue, ctx );
 	if ( settable ) {
-		evidence.push( settable );
+		// Say whether the reachability gate tested this citation or fell through its fail-open branch, so a claim
+		// that was never assessed cannot read as one that was.
+		evidence.push( { ...settable, reachabilityVerified: reachabilityVerified( settable, issue, ctx ) } );
 	}
 	if ( settable && ctx.canvas ) {
 		return verdict( 'W', 'canvas-settable', withSource() );
