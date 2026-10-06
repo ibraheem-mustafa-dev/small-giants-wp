@@ -69,6 +69,22 @@ immune because `CartController::load_cart()` calls `get_cart()` BEFORE adding.
 - **Commit gate:** do not commit unless the bag holds both products after two sequential adds, AND a
   third add of a product at the global cap still returns 429 (proving the other rate limit survives).
 
+> **MEASURED 2026-10-06 on eye-care-test, and it did NOT reproduce — but this does NOT close the row.**
+> Two sequential adds through the PROXY itself (`POST /wp-json/sgs/v1/cart/add-item`, both returning 200) as a
+> GUEST in a fresh browser context, using two NON-stock-managed variations (420 of parent 136, then 417 of
+> parent 132) - which is the condition this row says should expose the bug, since its own negative control
+> notes a stock-managed B would be immune. The bag held BOTH lines: `["EA4033", "Chelsea"]`.
+> **Why that is not a close:** this row's mechanism was verified against the installed **WooCommerce 11.1.0 on
+> the canary**, and eye-care-test runs **11.1.2** (confirmed by `wp plugin get woocommerce` on both today).
+> The two differ by a patch and are not interchangeable for version-sensitive work, so a non-reproduction on
+> 11.1.2 is evidence about 11.1.2 only - it neither proves the mechanism wrong on 11.1.0 nor that the defect
+> is gone. **To settle it:** run the same two-proxy-add baseline on sandybrown (11.1.0). If it reproduces
+> there and not here, the row becomes version-scoped and the fix is still worth shipping for any client on
+> 11.1.0 or earlier; if it reproduces on neither, re-derive the mechanism before building anything.
+> Two earlier attempts of mine were VACUOUS and are recorded so they are not repeated: the first used a
+> simple product as B, which adds through WooCommerce's own classic form and never touches the proxy; the
+> second produced no cart POST at all. Only an add that POSTs to `/sgs/v1/cart/add-item` tests this row.
+
 ### 52 — VALIDATED mechanism, TWO causes, and a cause-agnostic fix
 
 The register names one cause; the code holds two, and both are live:
