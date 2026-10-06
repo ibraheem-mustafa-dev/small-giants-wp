@@ -210,8 +210,15 @@ All gated on earlier waves; files disjoint.
 2. **Route lint**: `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`.
 3. **Client names**: `python scripts/check-no-client-names.py --check`.
 4. **Config lint across all 17** (the gate Spec 47 §5 says existed but never ran):
-   `node scripts/parity/draft-live-walk.mjs <each config> --lint` — and now also exercising P2a's
-   `handScope`.
+   `node scripts/parity/draft-live-walk.mjs <each config> --lint`.
+
+   ⚠️ **P2a's gate is inert until a pairing run populates `handScope`, and that needs a browser.**
+   `judgePairScope` is computed once by `pairs.mjs` and written into `qa/pairs/<surface>.json`; every later
+   walk lints from that file and exits 1 before a browser opens. **None of the 17 existing Eye Care pairing
+   reports carries `handScope`**, so none is refused today and the "6 refused" figure cannot be checked
+   without that run. So Wave 4 must **run `pairs.mjs` for the 17 surfaces first**, then lint. A surface is
+   only judged once `pairs.mjs` has run for it since its pairs last changed — treat a missing `handScope` as
+   "not yet judged", never as "passed".
 5. **`/qc-council`** on the whole change set, per Bean. Two or more fix shapes landed, which is exactly
    its trigger.
 6. **A verification re-sweep** (see the prediction below), host permitting and after messaging the peer.

@@ -119,9 +119,14 @@ const NEVER_STAGE = [
 	// unowned edit on every post-wave run — a false red, which is worse than no gate because it trains the
 	// reader to wave the gate through.
 	/^\.claude\/reports\/2026-10-06-session-c2\/lane-snapshot\.json$/,
-	// Lane report files. Each agent writes its own full report here rather than returning it, so these are
-	// expected output, not a lane straying outside its code set.
-	/^\.claude\/reports\/2026-10-06-session-c2\/lane-reports\//,
+	// Everything under .claude/ is plan, spec, brief or report prose. No lane owns a path there - lanes own code
+	// and tests - and the main thread edits these docs continuously as waves land, so judging them as unowned
+	// code edits only teaches the reader to wave the gate through.
+	/^\.claude\//,
+	// The gate itself. The main thread maintains it as the partition changes, and it is not a lane's code. It is
+	// not unguarded by being ignored here: --self-test runs on every invocation and is what proves it still goes
+	// red on a planted collision.
+	/^scripts\/computed-route\/tests\/check-lane-collisions\.mjs$/,
 ];
 
 // Where the pre-wave dirty set is recorded. A tree that was already dirty before a wave started is not
@@ -254,12 +259,14 @@ function selfTest() {
 		ignored( 'scripts/parity/lib/collect.mjs' ) ? 1 : 0,
 		0
 	);
-	// 6. The gate must not report its own snapshot as an unowned edit.
-	expect(
-		"the gate's own snapshot is ignored",
-		ignored( '.claude/reports/2026-10-06-session-c2/lane-snapshot.json' ) ? 0 : 1,
-		0
-	);
+	// 6. The gate must not report its own snapshot, a lane report or a plan edit as an unowned code edit.
+	for ( const doc of [
+		'.claude/reports/2026-10-06-session-c2/lane-snapshot.json',
+		'.claude/reports/2026-10-06-session-c2/lane-reports/W1-A.md',
+		'.claude/plans/2026-10-06-spec47-route-cleanup.md',
+	] ) {
+		expect( `${ doc } is ignored as prose, not judged as code`, ignored( doc ) ? 0 : 1, 0 );
+	}
 
 	console.log( failures ? `\nSELF-TEST FAILED: ${ failures } check(s)` : '\nSELF-TEST PASSED: the gate goes red when it should and green when it should.' );
 	process.exit( failures ? 1 : 0 );
