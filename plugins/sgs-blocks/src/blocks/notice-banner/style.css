@@ -75,7 +75,8 @@
  * unmodified block adds zero new CSS. :where() (specificity 0,0,0) keeps
  * this a DEFAULT the operator's scoped iconSize rule always outranks —
  * check-hardcoded-render-defaults.js's sanctioned "own this via specificity"
- * pattern (Fix option 3), matching :where(.sgs-notice-banner__text) below. */
+ * pattern (Fix option 3): a default that costs no specificity, so the
+ * operator's scoped rule wins without a competing !important. */
 :where(.sgs-notice-banner__icon svg) {
 	width: 20px;
 	height: 20px;
@@ -105,39 +106,6 @@
 	border-style: solid;
 	border-color: rgba(0, 0, 0, 0.08);
 	box-shadow: none;
-}
-
-/* ===== Text ===== */
-.sgs-notice-banner__text {
-	margin: 0;
-	font-size: var(--wp--preset--font-size--small);
-	line-height: 1.5;
-	flex: 1;
-}
-
-/* Spec 32: no block emits an inline `style` property declaration any more,
- * so a `:not([style*=…])` guard always matches and the fallback is
- * unconditional. This value is PAINTED (not what the element inherits), so
- * it is kept — but de-specified via :where() (0,0,0) so the operator's own
- * scoped `.{uid}` rule always wins. */
-:where(.sgs-notice-banner__text) {
-	color: var(--wp--preset--color--text, #1E1E1E);
-}
-
-/* Bold within text */
-.sgs-notice-banner__text strong {
-	font-weight: 700;
-}
-
-/* Links within text */
-.sgs-notice-banner__text a {
-	color: inherit;
-	text-decoration: none;
-	opacity: 0.85;
-}
-
-.sgs-notice-banner__text a:hover {
-	text-decoration: none;
 }
 
 /* ===== Full-width strip mode ===== */

@@ -2284,6 +2284,196 @@
       }
     },
     {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderSavingWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "valueLadderWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
       "slug": "sgs/card-grid",
       "attr": "alignContent",
       "fields": {
@@ -5068,16 +5258,14 @@
       "slug": "sgs/cta-section",
       "attr": "transitionDuration",
       "fields": {
-        "css_property": "transition,transition-duration",
-        "css_element": "btn"
+        "css_property": "transition,transition-duration"
       }
     },
     {
       "slug": "sgs/cta-section",
       "attr": "transitionEasing",
       "fields": {
-        "css_property": "transition,transition-timing-function",
-        "css_element": "btn"
+        "css_property": "transition,transition-timing-function"
       }
     },
     {
@@ -5471,6 +5659,50 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldFontFamily",
+      "fields": {
+        "css_property": "font-family"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFontStyle",
+      "fields": {
+        "css_property": "font-style"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldPlaceholderColour",
       "fields": {
         "css_property": "color",
@@ -5480,11 +5712,53 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldTextAlign",
+      "fields": {
+        "css_property": "text-align"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldTextColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextColumns",
+      "fields": {
+        "css_property": "column-count"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextTransform",
+      "fields": {
+        "css_property": "text-transform"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldTextWrap",
+      "fields": {
+        "css_property": "text-wrap"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
       }
     },
     {
@@ -5615,6 +5889,101 @@
         "css_property": "justify-items",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
       }
     },
     {
@@ -14803,6 +15172,196 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "valueLadderFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderSavingWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "valueLadder"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "valueLadderWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "wishlistBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -22585,14 +23144,6 @@
       "attr": "fieldBorderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "field-input"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "fieldFontSize",
-      "fields": {
-        "css_property": "font-size",
         "css_element": "field-input"
       }
     },

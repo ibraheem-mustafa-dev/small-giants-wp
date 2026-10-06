@@ -178,6 +178,48 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
+				title={ __( 'Value ladder typography', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				{ /* The ladder wrapper's settings cascade to the pack and per-unit text; the
+				     saving text is sized absolutely by style.css, so it has its own prefix. */ }
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'valueLadder',
+							label: __( 'Value ladder', 'sgs-blocks' ),
+							prefix: 'valueLadder',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'valueLadderSaving',
+							label: __( 'Value ladder saving', 'sgs-blocks' ),
+							prefix: 'valueLadderSaving',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+					] }
+				/>
+			</PanelBody>
+
+			<PanelBody
 				title={ __( 'Add to cart button', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>

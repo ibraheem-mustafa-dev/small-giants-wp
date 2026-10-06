@@ -35,6 +35,12 @@ const SAMPLE = {
 	saving: { amount: '£10.00', percentage: '25%' },
 	colours: [ __( 'Black', 'sgs-blocks' ), __( 'Tortoiseshell', 'sgs-blocks' ) ],
 	sizes: [ __( 'Small', 'sgs-blocks' ), __( 'Medium', 'sgs-blocks' ), __( 'Large', 'sgs-blocks' ) ],
+	// Per-unit price ladder: pack size, per-unit price, saving against the £3.00 single.
+	ladder: [
+		{ pack: '1', perUnit: '£3.00', saving: '' },
+		{ pack: '3', perUnit: '£2.70', saving: __( 'save 10%', 'sgs-blocks' ) },
+		{ pack: '6', perUnit: '£2.40', saving: __( 'save 20%', 'sgs-blocks' ) },
+	],
 };
 
 /**
@@ -123,6 +129,39 @@ function SampleOptionGroup( { label, options, pillStyle, showTick, labelStyle, v
 }
 
 /**
+ * The sample comparative value ladder, in render.php's markup: the wrapper and the
+ * saving text take their own typography settings, as sgs_typography_css_rule() applies them.
+ *
+ * @param {Object} props
+ * @param {Object} props.attributes Block attributes.
+ * @param {string} props.tier       Previewed tier.
+ * @return {JSX.Element} The ladder list.
+ */
+function SampleValueLadder( { attributes, tier } ) {
+	const savingStyle = typographyPreviewStyle( attributes, 'valueLadderSaving', tier );
+	const badgeText = attributes.decoyEnabled ? __( 'Most popular', 'sgs-blocks' ) : __( 'Best value', 'sgs-blocks' );
+	const lastIndex = SAMPLE.ladder.length - 1;
+	return (
+		<ul
+			className="buybox__value-ladder"
+			aria-label={ __( 'Price per unit by pack size', 'sgs-blocks' ) }
+			style={ typographyPreviewStyle( attributes, 'valueLadder', tier ) }
+		>
+			{ SAMPLE.ladder.map( ( row, index ) => (
+				<li key={ row.pack } className="value-ladder__row" aria-current={ 0 === index ? 'true' : undefined }>
+					<span className="value-ladder__pack">{ row.pack }</span>
+					<span className="value-ladder__per-unit">{ row.perUnit }</span>
+					{ row.saving && <span className="value-ladder__saving" style={ savingStyle }>{ row.saving }</span> }
+					{ index === lastIndex && (
+						<span className="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge">{ badgeText }</span>
+					) }
+				</li>
+			) ) }
+		</ul>
+	);
+}
+
+/**
  * The sample configurator's two columns.
  *
  * @param {Object} props
@@ -191,6 +230,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 					<span className="buybox__rrp-price"><s>{ SAMPLE.rrp }</s></span>{ ' ' }
 					<span className="buybox__rrp-pill" style={ rrpPillStyle }>{ savingText }</span>
 				</p>
+				{ false !== attributes.showLadder && <SampleValueLadder attributes={ attributes } tier={ tier } /> }
 				{ ! stockAbove && stockLine }
 				{ isGuided ? (
 					<div className="sgs-buybox-guided" style={ meterColour ? { '--sgs-buybox-guided-meter-colour': meterColour } : undefined }>

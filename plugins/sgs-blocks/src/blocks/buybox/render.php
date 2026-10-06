@@ -845,6 +845,16 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	}
 }
 
+// Value-ladder typography — the wrapper ('valueLadder') and the per-row saving
+// text ('valueLadderSaving'), which style.css sizes absolutely so the wrapper
+// setting cannot reach it. Emitted whether or not the ladder renders: the rules
+// match nothing when it is hidden.
+$sgs_bb_ladder_typo_css  = sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' );
+$sgs_bb_ladder_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', $root_sel . ' .value-ladder__saving' );
+if ( '' !== $sgs_bb_ladder_typo_css ) {
+	$scoped_css[] = $sgs_bb_ladder_typo_css;
+}
+
 // Optional hairline between the price row and an above-pickers
 // stock line (render.php §8a/§8c below decide WHERE the stock line renders;
 // this only decides whether the rule paints). 'border' is this theme's own
@@ -1029,42 +1039,12 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 
 	<?php // ── 8a-ii. Comparative value-ladder (FR-30-8, SSR-only — no data-wp-* on ladder nodes). ?>
 	<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $buybox_ladder_hidden ) : ?>
-	<ul
-		class="buybox__value-ladder"
-		aria-label="<?php esc_attr_e( 'Price per unit by pack size', 'sgs-blocks' ); ?>"
-	>
-		<?php foreach ( $buybox_ladder as $buybox_ladder_row ) : ?>
-			<?php
-			// PD-12: aria-current on the row matching the default-selected combo's unitDivisor.
-			// (int)round() on both sides mirrors the data-pack write + view.js comparison.
-			$buybox_row_pack     = (int) round( $buybox_ladder_row['pack'] );
-			$buybox_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
-			$buybox_is_default   = ( $buybox_row_pack === $buybox_default_pack );
-			?>
-		<li
-			class="value-ladder__row"
-			data-pack="<?php echo esc_attr( (string) $buybox_row_pack ); ?>"
-			<?php echo $buybox_is_default ? 'aria-current="true"' : ''; ?>
-		>
-			<span class="value-ladder__pack"><?php echo esc_html( $buybox_ladder_row['row_label'] ); ?></span>
-			<span class="value-ladder__per-unit"><?php echo esc_html( $buybox_ladder_row['per_unit_display'] ); ?></span>
-			<?php if ( '' !== $buybox_ladder_row['saving_display'] && ! $buybox_ladder_row['suppressed'] ) : ?>
-			<span class="value-ladder__saving"><?php echo esc_html( $buybox_ladder_row['saving_display'] ); ?></span>
-			<?php endif; ?>
-			<?php if ( $buybox_ladder_row['is_target'] ) : ?>
-				<?php
-				// PD-10: no data-wp-* on this span — directives wipe SSR text on hydration.
-				// Legal: 'Best value' only on the non-decoy target (genuinely cheapest per-unit);
-				// 'Most popular' on the decoy target (not cheapest, so not a superlative claim).
-				$buybox_badge_text = $buybox_decoy_enabled
-					? __( 'Most popular', 'sgs-blocks' )
-					: __( 'Best value', 'sgs-blocks' );
-				?>
-			<span class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"><?php echo esc_html( $buybox_badge_text ); ?></span>
-			<?php endif; ?>
-		</li>
-		<?php endforeach; ?>
-	</ul>
+	<?php
+	// PD-12: aria-current marks the row matching the default-selected combo's unitDivisor.
+	$buybox_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_value_ladder_markup() escapes every dynamic value.
+	echo sgs_value_ladder_markup( 'buybox__value-ladder', $buybox_ladder, $buybox_default_pack, $buybox_decoy_enabled );
+	?>
 	<?php endif; ?>
 
 	<?php

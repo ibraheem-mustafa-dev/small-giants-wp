@@ -928,7 +928,21 @@
 	padding: 6px 0 0;
 	border-top: 1px solid rgba(0, 0, 0, 0.08);
 	background: rgba(0, 0, 0, 0.025);
+}
+
+/* The ladder's own typography defaults, de-specified to (0,0,0) so the
+   `valueLadder` and `valueLadderSaving` TypographyControls surfaces always
+   outrank them — the sanctioned "own this via specificity" pattern
+   (check-hardcoded-render-defaults.js Fix option 3). A direct declaration
+   still beats an inherited value at any specificity, so these paint whenever
+   the control is unset. */
+:where(.product-card__value-ladder) {
 	font-size: 0.92em;
+}
+
+:where(.value-ladder__saving) {
+	font-weight: 600;
+	font-size: 13px;
 }
 
 /*
@@ -965,15 +979,25 @@
 
 /* Pack label — left-anchored, medium weight. */
 .value-ladder__pack {
-	font-weight: 600;
 	flex: 1 1 auto;
 	white-space: nowrap;
+}
+/* The row text's own weights, de-specified to (0,0,0) so the ladder's
+   `valueLadder` font-weight control reaches them. At their original
+   specificity these two declarations blocked it: a direct declaration on a
+   descendant beats an inherited value whatever the ancestor's specificity,
+   so the control could never change the pack or per-unit text. */
+:where(.value-ladder__pack) {
+	font-weight: 600;
 }
 
 /* Per-unit price — right-aligned on wide viewports. */
 .value-ladder__per-unit {
-	font-weight: 700;
 	white-space: nowrap;
+}
+
+:where(.value-ladder__per-unit) {
+	font-weight: 700;
 }
 
 /*
@@ -990,8 +1014,6 @@
 	 * Emphasis comes from weight, not a low-contrast hue (not colour-only either).
 	 */
 	color: var( --wp--preset--color--text, #1a1a1a );
-	font-weight: 600;
-	font-size: 13px;
 	white-space: nowrap;
 }
 

@@ -152,31 +152,6 @@
 	justify-content: center;
 }
 
-.sgs-cta-section__btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--40);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	font-weight: 600;
-	font-size: var(--wp--preset--font-size--medium);
-	text-decoration: none;
-	text-align: center;
-	min-width: 160px;
-	min-height: 44px;
-	line-height: 1.4;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: background-color, color, border-color, box-shadow, transform;
-	cursor: pointer;
-}
-
-.sgs-cta-section__btn-icon {
-	display: inline-block;
-	font-size: 1.2em;
-}
-
 /* ===== Button variants — block-level (#199) ===== */
 
 /* solid (default) */
@@ -340,18 +315,6 @@
 	--sgs-btn-fs: var(--wp--preset--font-size--x-large, 1.25rem);
 }
 
-/* Apply size custom properties to the button */
-.sgs-cta-section__btn[class*="--size-"] {
-	padding: var(--sgs-btn-py) var(--sgs-btn-px);
-	font-size: var(--sgs-btn-fs);
-}
-
-/* Focus */
-.sgs-cta-section__btn:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
-	outline-offset: 3px;
-}
-
 /* ===== Custom Hover States (editor-configurable) =====
  * Background/text/border hover colours are now emitted by render.php via
  * sgs_emit_state_colour_css() as a per-instance `.{uid}.sgs-cta-section:hover,
@@ -415,10 +378,6 @@
 		justify-content: center;
 		width: 100%;
 	}
-
-	.sgs-cta-section__btn {
-		width: 100%;
-	}
 }
 
 /* ===== Reduced Motion ===== */
@@ -426,14 +385,6 @@
 @media (prefers-reduced-motion: reduce) {
 	.sgs-cta-section {
 		transition: none;
-	}
-
-	.sgs-cta-section__btn {
-		transition: none;
-	}
-
-	.sgs-cta-section__btn:hover {
-		transform: none;
 	}
 
 	/* Kill residual resting zoom transform on the background layer — matches

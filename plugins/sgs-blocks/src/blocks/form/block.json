@@ -198,7 +198,8 @@
 						"css:border-radius": "fieldBorderRadius",
 						"css:padding": "fieldPadding",
 						"css:min-height": "fieldMinHeight",
-						"css:font-size": "fieldFontSize"
+						"css:font-size": "fieldFontSize",
+						"css:line-height": "fieldLineHeight"
 					}
 				},
 				"field-placeholder": {
@@ -220,6 +221,15 @@
 					"attrMap": {
 						"css:min-height": "fieldTextareaMinHeight"
 					}
+				},
+				"field-label": {
+					"label": "Field label",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags."
 				},
 				"submit-actions": {
 					"label": "Submit button row",
@@ -433,6 +443,198 @@
 			"type": "object",
 			"default": {},
 			"description": "Font size of every field control, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's small preset size."
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"labelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"labelTextColumns": {
+			"type": "number"
+		},
+		"labelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"fieldFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fieldFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"fieldTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"fieldTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"fieldLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"fieldLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fieldLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"fieldLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fieldTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"fieldTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"fieldTextColumns": {
+			"type": "number"
+		},
+		"fieldWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		},
 		"submitAlign": {
 			"type": "string",

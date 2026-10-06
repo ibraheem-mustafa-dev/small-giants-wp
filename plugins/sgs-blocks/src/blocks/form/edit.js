@@ -131,7 +131,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		fieldPadding,
 		fieldMinHeight,
 		fieldTextareaMinHeight,
-		fieldFontSize,
 		progressBarColour,
 		progressBarColourGradient,
 		progressBarColourHover,
@@ -344,7 +343,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const fieldTierDecls = ( tier ) =>
 		[
 			fieldBox( fieldTier( fieldPadding, tier ) ) && `padding:${ fieldBox( fieldTier( fieldPadding, tier ) ) };`,
-			fieldPx( fieldTier( fieldFontSize, tier ) ) && `font-size:${ fieldPx( fieldTier( fieldFontSize, tier ) ) };`,
 			fieldCorners( fieldTier( fieldBorderRadius, tier ) ) &&
 				`border-radius:${ fieldCorners( fieldTier( fieldBorderRadius, tier ) ) };`,
 		]
@@ -395,6 +393,29 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
+
+	// Label and field typography on the canvas. Both elements are rendered by the
+	// child field blocks, so (like the field style group above) the declarations
+	// ride a formPreviewScope-scoped <style> rule at the same (0,2,0) specificity
+	// render.php's scoped rule has. typographyPreviewStyle() is the twin of
+	// sgs_typography_css_rule() for each prefix.
+	const typographyDecls = ( style ) =>
+		Object.entries( style )
+			.map( ( [ prop, value ] ) => [
+				prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ),
+				String( value ).replace( /[{}<>;]/g, '' ),
+			] )
+			.filter( ( [ , value ] ) => '' !== value )
+			.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
+			.join( '' );
+	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
+	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
+	const typographyPreviewCss = [
+		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
+		fieldTypographyDecls && `${ fieldSel }{${ fieldTypographyDecls }}`,
+	]
+		.filter( Boolean )
+		.join( '' );
 
 	const blockProps = useBlockProps( {
 		style: {
@@ -975,29 +996,52 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveOverride
-						label={ __( 'Field text size', 'sgs-blocks' ) }
-						value={ fieldFontSize }
-						onChange={ ( obj ) => setAttributes( { fieldFontSize: obj } ) }
-					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<SgsLengthControl
-								presets={ false }
-								label={ __( 'Field text size', 'sgs-blocks' ) }
-								hideLabelFromVision
-								help={ __( 'Empty keeps the theme default size.', 'sgs-blocks' ) }
-								value={ ownValue ?? '' }
-								placeholder={ inherited ? effectiveValue : '' }
-								onChange={ ( val ) => setOwnValue( val || undefined ) }
-							/>
-						) }
-					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Label and field typography', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* Both surfaces are painted by the child field blocks: label is
+					   `.sgs-form-field__label` (a <label>, or a <legend> on checkbox, radio and
+					   tiles), field is `.sgs-form-field__input` (input, select, textarea).
+					   render.php emits both through sgs_typography_css_rule(). */ }
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						targets={ [
+							{
+								key: 'label',
+								label: __( 'Label', 'sgs-blocks' ),
+								prefix: 'label',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'field',
+								label: __( 'Field', 'sgs-blocks' ),
+								prefix: 'field',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 				<PanelBody
@@ -1115,6 +1159,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
 				{ fieldPreviewCss && <style>{ fieldPreviewCss }</style> }
+				{ typographyPreviewCss && <style>{ typographyPreviewCss }</style> }
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 				<div { ...innerBlocksProps } />

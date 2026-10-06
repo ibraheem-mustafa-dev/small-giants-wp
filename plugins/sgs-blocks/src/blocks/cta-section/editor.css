@@ -10,8 +10,3 @@
 .sgs-cta-section:hover {
 	outline-color: var(--wp--preset--color--primary, #0F7E80);
 }
-
-/* Preview buttons as non-interactive in editor */
-.sgs-cta-section__btn {
-	pointer-events: none;
-}

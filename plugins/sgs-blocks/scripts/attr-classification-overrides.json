@@ -6604,8 +6604,125 @@
 			"attr": "transitionDuration",
 			"fields": {
 				"css_property": "transition,transition-duration",
-				"_why": "2026-10-06 (Spec 47 C3.1, R1). The same rule and the same element as sgs/hero::transitionEasing \u2014 hero/style.css::.sgs-hero declares transition-duration: var(--sgs-transition-duration, 300ms), emitted by includes/helpers-tokens.php::sgs_transition_vars() from hero/render.php. css_element omitted (the root). Routed as a PAIR with transitionEasing so neither twin resolves while the other gaps. enum_values is NULL."
+				"_why": "2026-10-06 (Spec 47 C3.1, R1). The same rule and the same element as sgs/hero::transitionEasing — hero/style.css::.sgs-hero declares transition-duration: var(--sgs-transition-duration, 300ms), emitted by includes/helpers-tokens.php::sgs_transition_vars() from hero/render.php. css_element omitted (the root). Routed as a PAIR with transitionEasing so neither twin resolves while the other gaps. enum_values is NULL."
 			}
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldTextColumns",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldFontFamily",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldLetterSpacing",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldTextAlign",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldTextDecoration",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldTextTransform",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldTextWrap",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldWritingMode",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "labelWritingMode",
+			"fields": {
+				"derived_selector": ".sgs-form-field__label",
+				"css_element": "field-label"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "valueLadderWritingMode",
+			"fields": {
+				"derived_selector": ".buybox__value-ladder",
+				"css_element": "valueLadder"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "valueLadderSavingWritingMode",
+			"fields": {
+				"derived_selector": ".value-ladder__saving",
+				"css_element": "valueLadderSaving"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "valueLadderWritingMode",
+			"fields": {
+				"derived_selector": ".product-card__value-ladder",
+				"css_element": "valueLadder"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "valueLadderSavingWritingMode",
+			"fields": {
+				"derived_selector": ".value-ladder__saving",
+				"css_element": "valueLadderSaving"
+			},
+			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
 		}
 	]
 }

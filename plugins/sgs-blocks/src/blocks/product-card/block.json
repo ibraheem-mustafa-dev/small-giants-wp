@@ -358,6 +358,24 @@
 					"prefix": "noImageLabel",
 					"_note": "The text in the no-photo box (noImageLabel, e.g. 'Photo to come') shown on a product whose image is empty, WooCommerce's placeholder or the site's chosen placeholder image (includes/product-card-no-photo.php). Colour resolves by the default {prefix}Colour convention (noImageLabelColour)."
 				},
+				"valueLadder": {
+					"label": "Value ladder",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadder",
+					"_note": "The comparative per-pack price ladder wrapper (.product-card__value-ladder); its font settings cascade to the pack and per-unit text. No colour attribute exists for this element - an honest gap. Emitted by render.php sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' )."
+				},
+				"valueLadderSaving": {
+					"label": "Value ladder saving",
+					"order": 21,
+					"clusters": [
+						"text"
+					],
+					"prefix": "valueLadderSaving",
+					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
+				},
 				"priceRow": {
 					"label": "Price row",
 					"order": 19,
@@ -816,6 +834,202 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Show the comparative per-pack price ladder. The grid block sets this false on its cards by default - browsing context shows just price + per-item note."
+		},
+		"valueLadderFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"valueLadderTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderTextColumns": {
+			"type": "number"
+		},
+		"valueLadderWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueLadderSavingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"valueLadderSavingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueLadderSavingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLadderSavingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLadderSavingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLadderSavingTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueLadderSavingTextColumns": {
+			"type": "number"
+		},
+		"valueLadderSavingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		},
 		"pickerLabelFontSize": {
 			"type": "string",

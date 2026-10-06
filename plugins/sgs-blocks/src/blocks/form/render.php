@@ -483,11 +483,6 @@ $sgs_field_tier_specs = array(
 				'box'          => true,
 				'unit_default' => 'px',
 			),
-			array(
-				'value'        => $attributes['fieldFontSize'] ?? null,
-				'css'          => 'font-size',
-				'unit_default' => 'px',
-			),
 		),
 	),
 	array(
@@ -522,6 +517,21 @@ foreach ( $sgs_field_tier_specs as $sgs_field_spec ) {
 		$sgs_field_css .= sgs_emit_responsive_css( $sgs_field_spec[0], $sgs_field_props );
 	}
 }
+
+// Field-control and field-label typography (fieldFontSize and the rest of the
+// field* set, labelFontSize and the rest of the label* set) through the shared
+// helper, so font-size for the control is emitted here and nowhere else. Both
+// classes are rendered by the child field blocks; the label class is a <label>
+// on most fields and a <legend> on checkbox, radio and tiles, so the selector
+// names the class only.
+// Each selector is built INLINE rather than from a pre-assigned variable:
+// check-hardcoded-render-defaults.js::collectHelperGovernance reads the string
+// literals inside the call's own argument region to learn which element a
+// prefix governs, and a call carrying only the prefix literal registers no
+// governance at all — the gate then falls back to an attr-name heuristic that
+// flags every selector sharing a BEM token. Matches product-card's call shape.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'field', '.' . $sgs_form_uid . ' .sgs-form-field__input' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'label', '.' . $sgs_form_uid . ' .sgs-form-field__label' );
 
 // Submit button row alignment (the stylesheet's own value is flex-end). Narrow
 // containers still stack the button full width (style.css @container rule).

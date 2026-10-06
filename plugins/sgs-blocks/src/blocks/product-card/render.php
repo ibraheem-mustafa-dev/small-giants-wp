@@ -245,6 +245,9 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_ca
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
+// Value ladder (bound mode): the wrapper, and the per-row saving text that style.css sizes absolutely.
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', '.' . $sgs_card_uid . ' .value-ladder__saving' );
 // The no-photo label (includes/product-card-no-photo.php) and the space above the price row.
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label' );
 $sgs_no_image_label_colour = sgs_colour_value( $attributes['noImageLabelColour'] ?? '' );
@@ -1703,54 +1706,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php // ── Step 4: Comparative value ladder (SSR-only, no data-wp-* — KJC-B). ?>
 				<?php // showLadder gate: grid/browsing contexts set false — just price + per-item note (the note above is NOT the ladder). ?>
 				<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $context['valueLadderHidden'] ) : ?>
-				<ul
-					class="product-card__value-ladder"
-					aria-label="<?php esc_attr_e( 'Price per unit by pack size', 'sgs-blocks' ); ?>"
-				>
-					<?php foreach ( $context['valueLadder'] as $ladder_row ) : ?>
-						<?php
-						// PD-12: aria-current on the row matching the DEFAULT-SELECTED combo's
-						// unitDivisor — NOT the is_target row. $def is the default combo resolved
-						// above. (int)round() both sides mirrors the data-pack write (PD-11).
-						$ladder_row_pack     = (int) round( $ladder_row['pack'] );
-						$ladder_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
-						$ladder_is_default   = ( $ladder_row_pack === $ladder_default_pack );
-						?>
-					<li
-						class="value-ladder__row"
-						data-pack="<?php echo esc_attr( (string) $ladder_row_pack ); ?>"
-						<?php echo $ladder_is_default ? 'aria-current="true"' : ''; ?>
-					>
-						<span class="value-ladder__pack"><?php echo esc_html( $ladder_row['row_label'] ); ?></span>
-						<span class="value-ladder__per-unit"><?php echo esc_html( $ladder_row['per_unit_display'] ); ?></span>
-						<?php if ( '' !== $ladder_row['saving_display'] && ! $ladder_row['suppressed'] ) : ?>
-						<span class="value-ladder__saving"><?php echo esc_html( $ladder_row['saving_display'] ); ?></span>
-						<?php endif; ?>
-						<?php if ( $ladder_row['is_target'] ) : ?>
-							<?php
-							// PD-10 (CRITICAL): copy ONLY the class + auto-contrast inline style
-							// from the B3 badge (render.php ~lines 602–608).
-							// Do NOT copy data-wp-bind--hidden / data-wp-text — those directives
-							// would wipe the static "Best value" text on hydration
-							// (memory: wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters).
-							// This span carries NO data-wp-* at all.
-							//
-							// #5 LEGAL: "Best value" is an unqualified superlative (CAP Code / DMCC),
-							// read as a per-unit comparative claim — valid ONLY on the genuinely
-							// cheapest per-unit row (the non-decoy target = largest non-suppressed
-							// pack). When decoy targets the 2nd-largest pack (NOT cheapest per-unit),
-							// use the non-superlative "Most popular".
-							$badge_text = $decoy_enabled
-								? __( 'Most popular', 'sgs-blocks' )
-								: __( 'Best value', 'sgs-blocks' );
-							?>
-						<span
-							class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"
-						><?php echo esc_html( $badge_text ); ?></span>
-						<?php endif; ?>
-					</li>
-					<?php endforeach; ?>
-				</ul>
+				<?php
+				// PD-12: aria-current marks the row matching the DEFAULT-SELECTED combo's
+				// unitDivisor, NOT the is_target row. $def is the default combo resolved above.
+				$ladder_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_value_ladder_markup() escapes every dynamic value.
+				echo sgs_value_ladder_markup( 'product-card__value-ladder', $context['valueLadder'], $ladder_default_pack, $decoy_enabled );
+				?>
 				<?php endif; ?>
 
 				<?php // ── 2d. Stock slot — hidden when in stock (default). ?>

@@ -56,6 +56,9 @@ BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 MEGA_PANEL_STYLE = BLOCKS_DIR / "mega-panel" / "style.css"
 SITE_HEADER_RENDER = BLOCKS_DIR / "site-header" / "render.php"
 PRODUCT_CARD_RENDER = BLOCKS_DIR / "product-card" / "render.php"
+# The value-ladder markup (check C) is shared by sgs/product-card and
+# sgs/buybox and lives in the helper, so one check covers both blocks.
+VALUE_LADDER_HELPER = PLUGIN_ROOT / "includes" / "helpers-value-ladder.php"
 TESTIMONIAL_SLIDER_RENDER = BLOCKS_DIR / "testimonial-slider" / "render.php"
 
 TRANSITION_PROPERTY_ALLOWLIST = frozenset({"transform", "opacity", "none"})
@@ -167,18 +170,18 @@ def check_site_header_important(php_text: str | None = None) -> list[str]:
 # ---------------------------------------------------------------------------
 
 # Anchors on the SPAN's own class attribute, not the bare CSS-class-name string —
-# 'product-card__best-value-badge' alone also appears earlier in the file inside a
-# CSS selector string ($sgs_card_typo_css), and matching that occurrence first would
-# silently inspect the wrong element. This literal is unique to the span markup.
+# 'product-card__best-value-badge' alone also appears in each block's style.css and
+# in buybox's own scoped rules, so matching the bare class name could inspect the
+# wrong thing. This literal is unique to the span markup the helper emits.
 _PC_BADGE_MARKER = 'class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge"'
 _PC_FORBIDDEN_DIRECTIVES = ("data-wp-bind--hidden", "data-wp-text")
 
 
 def check_product_card_badge(php_text: str | None = None) -> list[str]:
     if php_text is None:
-        if not PRODUCT_CARD_RENDER.exists():
-            return [f"C. product-card — ANCHOR NOT FOUND — {PRODUCT_CARD_RENDER} does not exist"]
-        php_text = PRODUCT_CARD_RENDER.read_text(encoding="utf-8")
+        if not VALUE_LADDER_HELPER.exists():
+            return [f"C. value-ladder badge — ANCHOR NOT FOUND — {VALUE_LADDER_HELPER} does not exist"]
+        php_text = VALUE_LADDER_HELPER.read_text(encoding="utf-8")
 
     marker_idx = php_text.find(_PC_BADGE_MARKER)
     if marker_idx == -1:
@@ -318,7 +321,7 @@ def _self_test_b() -> bool:
 
 
 def _self_test_c() -> bool:
-    original = PRODUCT_CARD_RENDER.read_text(encoding="utf-8")
+    original = VALUE_LADDER_HELPER.read_text(encoding="utf-8")
     if check_product_card_badge(original):
         print("[single-instance-invariants C --self-test] FAIL — clean tree already flags.")
         return False

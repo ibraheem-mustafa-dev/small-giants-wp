@@ -4,7 +4,8 @@
  *
  * Provides sgs_saving_display() and sgs_value_ladder() — computing per-pack
  * saving labels and building sorted comparative value-ladder row arrays for
- * the product configurator (Spec 28 P1).
+ * the product configurator (Spec 28 P1) — and sgs_value_ladder_markup(), the
+ * one renderer both sgs/product-card and sgs/buybox print those rows through.
  *
  * Requires helpers-configurator-pricing.php for sgs_configurator_format_minor().
  *
@@ -282,4 +283,66 @@ function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode
 	unset( $row );
 
 	return $rows;
+}
+
+/**
+ * Markup for the comparative value ladder: one <ul> of pack rows (Spec 28 P1).
+ *
+ * The single renderer for sgs/product-card and sgs/buybox. The caller decides
+ * WHETHER a ladder shows (its showLadder attribute and its own hidden flag) and
+ * passes the wrapper class that block's stylesheet and typography rules target
+ * ('product-card__value-ladder' | 'buybox__value-ladder'). The row, pack,
+ * per-unit, saving and badge class names are the same for both blocks.
+ *
+ * Per row:
+ *  - data-pack carries the pack size; aria-current="true" marks the row whose
+ *    pack equals $default_pack (the default-selected combo's unitDivisor).
+ *  - The saving span renders only for a non-suppressed row with a saving label.
+ *  - The badge span renders only on the target row: "Best value" is a superlative
+ *    claim valid only on the genuinely cheapest per-unit row, so when the decoy
+ *    targets the 2nd-largest pack the non-superlative "Most popular" is used.
+ *    The badge carries no data-wp-* directive — a directive bound to a JS getter
+ *    would wipe the server-rendered text on hydration.
+ *
+ * Every dynamic value is escaped here; the returned string is safe to echo.
+ *
+ * @param string $wrapper_class  Class attribute value for the <ul>.
+ * @param array  $rows           Rows from sgs_value_ladder().
+ * @param int    $default_pack   Pack size of the default-selected combo, or 0 when unknown.
+ * @param bool   $decoy_enabled  True when the badge targets the 2nd-largest qualifying row.
+ * @return string The <ul> markup, or '' when there are no rows.
+ */
+function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled ): string {
+	if ( empty( $rows ) ) {
+		return '';
+	}
+
+	$badge_text = $decoy_enabled
+		? __( 'Most popular', 'sgs-blocks' )
+		: __( 'Best value', 'sgs-blocks' );
+
+	$html = '<ul class="' . esc_attr( $wrapper_class ) . '" aria-label="' . esc_attr__( 'Price per unit by pack size', 'sgs-blocks' ) . '">';
+
+	foreach ( $rows as $row ) {
+		// (int) round() on both sides mirrors the data-pack write and view.js's comparison.
+		$row_pack   = (int) round( $row['pack'] );
+		$is_default = ( $row_pack === $default_pack );
+
+		$html .= '<li class="value-ladder__row" data-pack="' . esc_attr( (string) $row_pack ) . '"'
+			. ( $is_default ? ' aria-current="true"' : '' ) . '>';
+		$html .= '<span class="value-ladder__pack">' . esc_html( $row['row_label'] ) . '</span>';
+		$html .= '<span class="value-ladder__per-unit">' . esc_html( $row['per_unit_display'] ) . '</span>';
+
+		if ( '' !== $row['saving_display'] && ! $row['suppressed'] ) {
+			$html .= '<span class="value-ladder__saving">' . esc_html( $row['saving_display'] ) . '</span>';
+		}
+
+		if ( $row['is_target'] ) {
+			$html .= '<span class="wp-block-sgs-label is-style-pill-wrap product-card__best-value-badge">' . esc_html( $badge_text ) . '</span>';
+		}
+
+		$html .= '</li>';
+	}
+
+	return $html . '</ul>';
 }

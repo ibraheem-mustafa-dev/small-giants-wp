@@ -529,11 +529,20 @@ const HELPER_SELECTOR_SUFFIXES = {
 		extraTokens: [ 'sgs-button' ],
 	},
 	sgs_typography_css_rule: {
+		// All 22 suffixes the helper reads, matching
+		// check-dead-controls.js::PREFIXED_HELPER_SUFFIXES exactly as the
+		// docblock above requires. A suffix missing from this list is NOT
+		// governed, so E11's element-ownership path is skipped for that attr
+		// and it falls through to the E1 attr-name/BEM heuristic, which flags
+		// every selector merely sharing a BEM token — e.g. a `label` prefix
+		// governing `.sgs-form-field__label` would flag an unrelated
+		// `.sgs-form-field__file-label` as well.
 		suffixes: [
 			'FontSize', 'FontSizeUnit', 'FontSizeTablet', 'FontSizeMobile',
-			'FontWeight', 'FontStyle', 'TextTransform', 'TextDecoration',
+			'FontFamily', 'FontWeight', 'FontStyle', 'TextTransform', 'TextDecoration',
 			'LineHeight', 'LineHeightUnit', 'LineHeightTablet', 'LineHeightMobile',
 			'LetterSpacing', 'LetterSpacingUnit', 'LetterSpacingTablet', 'LetterSpacingMobile',
+			'TextAlign', 'TextWrap', 'TextIndent', 'TextColumns', 'WritingMode',
 		],
 		extraTokens: [],
 	},
@@ -1563,9 +1572,27 @@ const VOID_TAGS = new Set( [ 'img', 'br', 'hr', 'input', 'meta', 'link', 'source
 // to be LOWERED as the findings are triaged and fixed, never raised to absorb
 // new debt. Legacy (non-E14) findings are unaffected and remain blocking.
 const E14_BLOCKS_BUILD = false;
+// LOWERED 2026-10-06, CLASS-2 68 -> 56 and CLASS-3 5 -> 3, measured not
+// predicted: `node scripts/check-hardcoded-render-defaults.js --check` reports
+// `CLASS-2 56/68, CLASS-3 3/5` after this session's work. CLASS-2 drops by the
+// 10 DEAD declarations deleted (nothing rendered them) plus the form label and
+// field-input literals, which now sit inside :where() so the new `label` and
+// `field` TypographyControls surfaces outrank them. CLASS-3 drops by the two
+// value ladders, which gained `valueLadder` surfaces in the same pass.
+//
+// CANNOT-RESOLVE stays at 64, which is where it measures, but the composition
+// moved: unifying the two ladders' markup into
+// includes/helpers-value-ladder.php::sgs_value_ladder_markup put it outside
+// readBlockPhpFiles()'s walk (the block directory only), so the gate can no
+// longer place the ladder rows. Those four rows were de-specified into
+// :where() instead, which is the real fix — at their old specificity they
+// blocked the ladder's own font-weight control from ever reaching the pack and
+// per-unit text. Teaching the gate to follow a block's `require` into
+// includes/ is the standing capability gap (reports/f3-e14-triage.md §4.1
+// cause B, 31 findings).
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        68,
-	'CLASS-3':        5,
+	'CLASS-2':        56,
+	'CLASS-3':        3,
 	'CANNOT-RESOLVE': 64,
 };
 

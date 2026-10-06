@@ -68,14 +68,6 @@
 	width: 100%;
 }
 
-.sgs-google-reviews__error {
-	padding: 1rem;
-	background-color: rgba( 255, 0, 0, 0.1 );
-	border-left: 4px solid var( --sgs-reviews-error, #d00 );
-	color: var( --sgs-reviews-error, #d00 );
-	font-weight: 600;
-}
-
 /* ─── Aggregate Rating Header ────────────────────────────────────────────── */
 
 /* `space-between` (the draft's own rule): the buttons sit at the end of the row beside the rating group, and when
@@ -619,23 +611,6 @@ a.sgs-google-reviews__author:hover {
 /* A link on its own line, told apart by its colour and position: the underline returns on hover and focus. */
 :where( .sgs-google-reviews__review-link:hover, .sgs-google-reviews__review-link:focus-visible ) {
 	text-decoration: underline;
-}
-
-/* ─── Powered-by footer line ─────────────────────────────────────────────── */
-
-.sgs-google-reviews__powered-by {
-	display: flex;
-	align-items: center;
-	gap: 0.375rem;
-	margin-top: 0.75rem;
-	font-size: 0.75rem;
-	color: var( --sgs-gr-ink-muted );
-}
-
-.sgs-google-reviews__powered-by img {
-	width: 40px;
-	height: auto;
-	opacity: 0.6;
 }
 
 /* ─── Badge Variant ──────────────────────────────────────────────────────── */
