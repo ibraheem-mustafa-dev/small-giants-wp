@@ -14,7 +14,7 @@ references:
 
 # Eye Care Session C2: assess every finding, then fix what Bean approves
 
-✅ **The assessment ran on 2026-10-06 and is COMPLETE. Only the approved block fixes below are still owed.**
+✅ **The assessment ran on 2026-10-06 and is COMPLETE. The approved block fixes are BUILT and committed (`776a93639`, `12c0a0bb6`); only the host tail — build, deploy, reseed, live check — remains, held for the route cleanup's Wave 4.**
 
 **What ran, with its evidence:** `.claude/reports/2026-10-06-session-c2/` — `PREDICTION.md` (committed before
 measuring), `BRIEF.md` and `lane-*.tsv` (the five fact-check lanes), `FACT-CHECK-RESULTS.md`,
@@ -261,11 +261,77 @@ source cannot answer.
 read computed styles with the winning rule's origin, not just the value; let transitions settle; account for Lenis
 and scroll variables; never reason from a screenshot alone, and never from one width.
 
-## THE OWED WORK: the five block fixes Bean approved (2026-10-06)
+## THE OWED WORK: BUILT 2026-10-06. All five approved fixes, plus A7, are committed
 
-**This is the only part of this plan still outstanding.** It is not covered by
-`plans/2026-10-06-spec47-route-cleanup.md` (route only) or by the 63-item session (register items), so it
-lives here until built. Full reasoning per item in `.claude/reports/2026-10-06-session-c2/BEAN-LIST.md`.
+**The block code is done and on `main`. What remains is the host tail only: build, deploy to
+eye-care-test, one `sgs-update` reseed, and the live both-surfaces check.** That tail is held until
+`plans/2026-10-06-spec47-route-cleanup.md` signals its Wave 4 verification sweep clear: a mid-sweep
+deploy would mix these rows into its F 193 -> 148-168 prediction, and a reseed rewrites the shared
+framework DB its calibration reads.
+
+| Commit | Carries |
+|---|---|
+| `776a93639` | A1, A2, A3, A5, A6 — the five Bean approved |
+| `12c0a0bb6` | A7 symptoms 1 and 2, cause proven live |
+
+**Gates green at commit time**, each run individually: `audit-inline-styling.js --check`,
+`check-dead-controls.js --check`, `check-editor-render-parity.js --check`,
+`check-no-client-names.py --check`. **Not yet proven:** that each control appears in the real editor
+AND paints on the real front end. A green gate proves neither, so that check is still owed.
+
+### Three things the build found this plan had wrong
+
+1. **A1 and A3 could not follow `sgs/tabs::tabMinHeight`.** That attribute is a flat string emitted as
+   an inline custom-property *value* on the block's own wrapper. The accordion header lives in the
+   CHILD block, so the value has to travel parent -> `providesContext` -> child `usesContext` -> a
+   scoped custom property on the item root. The real precedent is `headerPadding` and `iconSize`;
+   `tabMinHeight` survives only as the precedent for the `var( --x, 44px )` fallback idiom. Both new
+   attributes took `object`/`{}` per-device tiers, matching the siblings in their own inspector panel.
+2. **The A1/A3 file list here was short by three files.** It also needed `accordion-item/block.json`
+   (`usesContext`), `accordion/edit.js` (the control) and `accordion-item/edit.js` (the canvas mirror).
+3. **`accordion-item/render.php`'s inline `iconSize` tier loop became a shared `$sgs_ai_px_tiers`
+   closure** used by all three scalar properties. Gap and minimum height pass `allow_zero`: no gap and
+   no height floor are both real client choices. A 0px icon is not, so `iconSize` keeps its `>0` guard.
+
+### A7, resolved: two real causes and one non-defect
+
+**Symptom 1, the glyph rendering `rgb(20,20,20)` on the green badge.** Proven, not inferred. The
+winning rule, read off the live product page with every stylesheet walked:
+`.sgs-wac-46cc31f2.wp-block-sgs-whatsapp-cta .sgs-whatsapp-cta__icon { color: var(--wp--preset--color--text, currentColor) }`.
+It is this block's own scoped rule from `whatsapp-cta/render.php`'s icon-follows-label emission,
+firing with no authoring at all because `block.json::labelColour` defaults to `"text"`, which the
+client palette resolves to `#141414`. It declares `color` directly on the `<svg>`, so the badge's
+`text-inverse` — which paints the parent span correctly — can never reach the glyph: an inherited
+value loses to a direct declaration at any specificity. Never a specificity problem. Fixed by skipping
+the emission for the `card` variant only, verified per variant (card emits neither the flat nor the
+hover rule; the other three still emit exactly as before). No new control — the badge default was
+already right, so a colour control would have been dead on arrival.
+
+The editor canvas was already correct: `preview-style.js` applies `labelColour` to the root element,
+not the svg. The two surfaces disagreed and the front end was the outlier; they now agree.
+
+**Symptom 2, the card text too heavy.** Measured live: root `<a>` 600, title 600, subline 600, body
+root 400. `.sgs-whatsapp-cta__btn` carries the button-label weight and neither card text element
+declared one, so both inherited it. Each now declares its own, and `cardTitleFontWeight` /
+`cardSublineFontWeight` already existed to override them. The title keeps the weight it paints today,
+so only the subline moves — the part that measured wrong.
+
+**Symptom 3, the hover underline: NOT a defect, and nothing was changed.** No `:hover`
+text-decoration rule reaches this block from anywhere in `plugins/` or `theme/`. The only underline
+sources are WP core's global styles on `:focus` and `:focus-visible`, plus a `prefers-contrast: more`
+rule — correct, intentional accessibility behaviour. This is Spec 47's known forced-hover false
+green, owned by the route cleanup. Patching it would have removed a genuine focus affordance.
+
+**A measuring trap worth carrying forward.** That winning rule is absent from the served HTML: the
+host's CSS optimiser extracts per-instance inline `<style>` into a combined stylesheet
+(`sgs-1551-*.css`). Zero scoped `.sgs-*-uid` rules appear in 377KB of HTML for *every* SGS block on
+that page, with `x-hcdn-cache-status: BYPASS` ruling out staleness and the deployed `render.php`
+confirmed present and printing on the server. **Any check that reads page source to decide whether a
+block emitted a scoped rule reports a false negative on this host.** A stylesheet walk or a
+computed-style read finds it; a grep does not. Recorded in auto memory under
+`live-probe-measurement-traps`.
+
+Full reasoning per item in `.claude/reports/2026-10-06-session-c2/BEAN-LIST.md`.
 
 | Ref | Fix | Files | Rows |
 |---|---|---|---|

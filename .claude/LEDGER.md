@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-10-05
+last_updated: 2026-10-06
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -87,8 +87,13 @@ verified unaffected on three axes, so F 193 stays comparable — but record the 
 compare on a **normalised** path, because a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **The 5 approved block fixes (A1, A2, A3, A5, A6)** — the C2 plan's "THE OWED WORK" section. A4 withdrawn
-  ("Photo to come" is a draft placeholder). A7 needs one live origin reading before any fix.
+- **The 5 approved block fixes (A1, A2, A3, A5, A6) — BUILT and committed 2026-10-06**, `776a93639`, with
+  A7 in `12c0a0bb6`. Four local gates green. **Owed: the host tail only** — build, one
+  `build-deploy.py --target eye-care-test`, one `sgs-update` reseed, then the live check that each control
+  appears in the real editor AND paints on the real front end. **Held until the route cleanup signals Wave 4
+  clear**: deploying mid-sweep mixes ~19 closed rows into its F 193 -> 148-168 prediction, and a reseed
+  rewrites the framework DB its calibration reads. A4 stays withdrawn. **A7 is settled** — cause, fix and a
+  host measuring trap (page source hides a block's scoped rules here) in the C2 plan's "THE OWED WORK".
 - **Route cleanup, 4 waves off a file-ownership map** — `plans/2026-10-06-spec47-route-cleanup.md`. Carries two
   **WRITE HAZARDS**: `lib/entrance.mjs::entranceStart` writes `sgsAnimationStart` from a measurement artefact, and
   `sgs_transition_vars` strips a decimal so `"0.25s"` emits 25ms for 250ms. Also a forced-hover **false green**.
