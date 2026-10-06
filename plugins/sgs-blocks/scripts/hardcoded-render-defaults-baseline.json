@@ -3,22 +3,13 @@
   "baselineSeededAt": "2026-06-09T21:27:06.524Z",
   "accepted": [
     {
-      "block": "sgs/mega-menu",
-      "file": "src\\blocks\\mega-menu\\style.css",
-      "property": "max-width",
-      "value": "min(900px, calc(100vw - 2rem))",
-      "attr": "panelWidth, panelMaxWidth",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)",
-      "disposition": "accepted-debt"
-    },
-    {
       "block": "sgs/brand-strip",
       "file": "src\\blocks\\brand-strip\\style.css",
       "property": "line-height",
       "value": "1.3",
       "attr": "nameLineHeight",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (button/style.css's header comment contained literal {}, desyncing the parser's brace-depth tracking for the whole file). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: not a defect. `brand-strip/style.css::.sgs-brand-strip__name` declares `line-height: 1.3` at (0,1,0) as the no-customisation baseline. `brand-strip/render.php` emits the real control on the SAME element with `sgs_typography_css_rule( $attributes, 'name', \"{$root_sel} .sgs-brand-strip__name\" )`, where `$root_sel = '.' . $uid . '.wp-block-sgs-brand-strip'`, so it lands at (0,3,0) and wins. E14 (`classifyInheritedHardcode`) classifies the declaration CLASS 1 (same element, not a finding). The legacy E11 branch of `scanCssDeclarations` reports it only because `selectorReferencesGovernedToken` compares class names and ignores specificity. Retire this entry when E11 is made specificity-aware.",
+      "disposition": "by-design"
     },
     {
       "block": "sgs/button",
@@ -26,8 +17,8 @@
       "property": "line-height",
       "value": "1.2",
       "attr": "lineHeight",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: not a defect. `button/style.css::.sgs-button` declares `line-height: 1.2` at (0,1,0) as the no-customisation baseline. `button/render.php` emits the real control on the SAME element with `sgs_typography_css_rule( $attributes, '', \".{$uid}.sgs-button\" )`, where `$uid = 'sgs-btn-' . substr( md5( ... ), 0, 8 )` is a class, so it lands at (0,2,0) and wins. E14 (`classifyInheritedHardcode`) classifies the declaration CLASS 1 (same element, not a finding). The legacy E11 branch of `scanCssDeclarations` reports it only because `selectorReferencesGovernedToken` compares class names and ignores specificity. Retire this entry when E11 is made specificity-aware.",
+      "disposition": "by-design"
     },
     {
       "block": "sgs/mega-panel",
@@ -35,7 +26,7 @@
       "property": "padding",
       "value": "17px",
       "attr": "panelPadding",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "reason": "2026-10-06 triage: real gap, and the attribute named here is the wrong one. The rule is `mega-panel/style.css::.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group { padding: 17px }`, the group card (child block `sgs/mega-group`), not the panel that `panelPadding` governs (`$panel_padding_obj` in `mega-panel/render.php`). Neither `mega-panel/block.json` (only `drawerCardPadding`, for the drawer) nor `mega-group/block.json` (`url`, `opensInNewTab`, `rel`) declares a card padding attribute, so the card padding has no inspector control. `mega-panel/render.php` repeats the literal in `$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;...}'`, which the gate cannot see. Fix: add a card padding control and read it in both places.",
       "disposition": "accepted-debt"
     },
     {
@@ -44,7 +35,7 @@
       "property": "border-radius",
       "value": "15px",
       "attr": "borderRadius",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "reason": "2026-10-06 triage: real gap, and the attribute named here is the wrong one. The rule is `mega-panel/style.css::.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group { border-radius: 15px }`, the group card (child block `sgs/mega-group`). `borderRadius` governs the panel root (`$border_radius` in `mega-panel/render.php`); the only card radius control is `drawerCardRadius`, for the drawer. The cards-style group card has no radius control. `mega-panel/render.php` repeats the literal in `$css .= $style_crd . $rel_group . '{padding:17px;border-radius:15px;...}'`, which the gate cannot see. Fix: add a card radius control and read it in both places.",
       "disposition": "accepted-debt"
     },
     {
@@ -53,8 +44,8 @@
       "property": "border-radius",
       "value": "16px",
       "attr": "pickerPillBorderRadius, pickerPillSelectedBorderRadius, tagBorderRadius",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: not a defect. `product-card/style.css::.product-card` (the block root, `$classes = array( 'product-card' )`) declares `border-radius: 16px` at (0,1,0) as the no-customisation baseline. `borderRadius` is emitted on the SAME element by `wp_style_engine_get_styles( $sgs_pc_style_engine_args, array( 'selector' => $sgs_pc_root_sel ) )` with `$sgs_pc_root_sel = '.' . $sgs_card_uid . '.wp-block-sgs-product-card'` at (0,2,0), which wins. The attributes listed in `attr` (`pickerPillBorderRadius`, `pickerPillSelectedBorderRadius`, `tagBorderRadius`) are name-suffix collisions on other elements; `borderRadius` is the governing one.",
+      "disposition": "by-design"
     },
     {
       "block": "sgs/card-grid",
@@ -98,8 +89,8 @@
       "property": "padding",
       "value": "14px 24px",
       "attr": "padding",
-      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms button/style.css last changed by an unrelated earlier commit). Surfaced by the F5/build gate for the first time this run, not introduced here. Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: not a defect. `button/style.css::.sgs-button` declares `padding: 14px 24px` at (0,1,0) as the no-customisation baseline. When the author sets `padding`, `button/render.php` emits it on the SAME element with `wp_style_engine_get_styles( $base_style_engine_args, array( 'selector' => \".{$uid}.sgs-button\" ) )` at (0,2,0), which wins. Padding is not an inherited property, so E14 does not audit it; this verdict comes from reading both selectors.",
+      "disposition": "by-design"
     },
     {
       "block": "sgs/form",
@@ -107,7 +98,7 @@
       "property": "padding",
       "value": "1rem",
       "attr": "padding",
-      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms form/style.css was never touched by this branch). Fix tracked separately.",
+      "reason": "2026-10-06 triage: real gap, and the attributes named here govern other elements. The rule is `form/style.css::.sgs-form-tile { padding: 1rem }`, the tile label emitted by `form-field-tiles/render.php` (`<label class=\"sgs-form-tile\" ...>`). `padding` governs the form root, `submitPadding` the submit button and `fieldPadding` the inputs (`$sgs_field_sel` in `form/render.php`); no attribute pads the tile (`form-field-tiles/block.json` declares only `gap` and `borderRadius` in this area). Padding is not inherited, so there is no leak. Fix: add a tile padding control.",
       "disposition": "accepted-debt"
     },
     {
@@ -116,8 +107,8 @@
       "property": "margin-bottom",
       "value": "8px",
       "attr": "margin",
-      "reason": "2026-09-06 — pre-existing on main; this session's heading/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: not a defect. `heading/style.css::.wp-block-sgs-heading` declares `margin-bottom: 8px` at (0,1,0) as the no-customisation baseline (the file header says so). `heading/render.php` emits the real control on the SAME element: `$root_sel = '.' . $uid . '.wp-block-sgs-heading'` with `$uid = 'sgs-hdg-' . substr( md5( ... ), 0, 8 )`, carrying `margin` from `$base_margin_obj` at (0,2,0), which wins.",
+      "disposition": "by-design"
     },
     {
       "block": "sgs/option-picker",
@@ -125,8 +116,8 @@
       "property": "margin",
       "value": "-1px",
       "attr": "margin",
-      "reason": "2026-09-06 — pre-existing on main; this session's option-picker/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: detector collision, not a real gap. `option-picker/style.css::.sgs-sr-only { margin: -1px }` is the standard visually-hidden recipe (`position: absolute; width: 1px; height: 1px; ... margin: -1px`), used on `<legend id=\"%s\" class=\"sgs-sr-only\">` in `option-picker/render.php`. `isLiteralConstant` exempts `1px` on width and height but has no `-1px` margin case, so the recipe is checked against the block's `margin`. No attribute should own it.",
+      "disposition": "detector-limitation"
     },
     {
       "block": "sgs/product-faq",
@@ -134,7 +125,7 @@
       "property": "margin-top",
       "value": "8px",
       "attr": "margin",
-      "reason": "2026-09-06 — pre-existing on main; this session's product-faq/edit.js change was scoped to a stale style-read cleanup only (git diff confirms style.css untouched). Fix tracked separately.",
+      "reason": "2026-10-06 triage: real gap, and the attribute named here governs a different element. The rule is `product-faq/style.css::.sgs-product-faq-item + .sgs-product-faq-item { margin-top: 8px }`, the spacing between items (child block `sgs/product-faq-item`). `margin` governs the product-faq root. Neither `product-faq/block.json` nor `product-faq-item/block.json` declares an item gap or margin attribute, so the item spacing has no inspector control. Fix: add an item gap control to `sgs/product-faq`.",
       "disposition": "accepted-debt"
     },
     {
@@ -143,8 +134,8 @@
       "property": "margin",
       "value": "-1px",
       "attr": "margin",
-      "reason": "2026-09-06 — pre-existing on main; sgs/whatsapp-cta was never touched by this session's colour-conformance work (git diff confirms zero changes to this block). Fix tracked separately.",
-      "disposition": "accepted-debt"
+      "reason": "2026-10-06 triage: detector collision, not a real gap. `whatsapp-cta/style.css::.sgs-sr-only { margin: -1px }` is the standard visually-hidden recipe, used on `<span class=\"sgs-sr-only\">` in `whatsapp-cta/render.php`. `isLiteralConstant` has no `-1px` margin case, so the recipe is checked against the block's `margin`. No attribute should own it.",
+      "disposition": "detector-limitation"
     },
     {
       "block": "sgs/nav-drawer",

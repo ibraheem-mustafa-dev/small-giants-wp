@@ -2,3 +2,5 @@ Task 1 (wiring-fingerprint gate plan): complete (commits 8e9660a18..32823002e, r
 Task 2 (wiring-fingerprint gate plan): complete (commits 7cd04abc1..8d81a084f, reviews clean after 3 fix rounds; final whole-branch review findings fixed in badd9d093)
 Task 1 (F3 gate extension): complete (commit c9113b87d, reviewed inline; 2 claims marked contested/unverified)
 Task 2 (F3 gate extension): complete (commit 563ae1c20, reviewed inline + own negative control; 137 advisory findings ratcheted, T4 triages)
+Task 3 (F3 gate extension): complete (commit a7af3304f, 16/16 self-test, all 5 cases proved able to fail, verified inline)
+Task 4 (F3 gate extension): complete (commit f1f4bb485, triage + baseline retriage; encoding repaired in main thread)
