@@ -109,6 +109,9 @@ const NEVER_STAGE = [
 	// unowned edit on every post-wave run — a false red, which is worse than no gate because it trains the
 	// reader to wave the gate through.
 	/^\.claude\/reports\/2026-10-06-session-c2\/lane-snapshot\.json$/,
+	// Lane report files. Each agent writes its own full report here rather than returning it, so these are
+	// expected output, not a lane straying outside its code set.
+	/^\.claude\/reports\/2026-10-06-session-c2\/lane-reports\//,
 ];
 
 // Where the pre-wave dirty set is recorded. A tree that was already dirty before a wave started is not
