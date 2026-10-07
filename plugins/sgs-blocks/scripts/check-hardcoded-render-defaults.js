@@ -2318,6 +2318,7 @@ function buildMarkupModel( files, rootClasses ) {
 				parent:   stack.length ? stack[ stack.length - 1 ] : -1,
 				fileIdx,
 				pos:      m.index,
+				tagEnd:   m.index + m[ 0 ].length, // the open tag's own attributes lie between pos and here
 				closePos: Infinity, // set where the matching close tag sits; a void or self-closed tag ends where it starts
 			} );
 			if ( ! VOID_TAGS.has( tag ) && '/' !== m[ 4 ] ) {
@@ -4392,9 +4393,9 @@ function selfTestMarkupSplice( assert ) {
 	assert( 'class tokens: plain classes are unchanged', classValueTokens( 'a  b-c' ), [ 'a', 'b-c' ] );
 	const label =
 		"<?php\nfunction sgs_x_label() {\n\t$o = '<span class=\"sgs-x__orn' . ( empty( $GLOBALS['sgs_x_swap'] ) ? '' : ' sgs-x__orn--swap' ) . '\" aria-hidden=\"true\">*</span>';\n\treturn $o . '<span class=\"sgs-x__txt\">T</span>';\n}\n";
-	const control = "$css .= sgs_typography_css_rule( $attributes, 'item', \"{$root_sel} .sgs-x__link\" );\n";
 	const css     = '.sgs-x__orn {\n\tline-height: 1;\n}\n';
-	const verdict = ( render, inc ) => {
+	const verdict = ( render, inc, controlSel = '.sgs-x__link' ) => {
+		const control = `$css .= sgs_typography_css_rule( $attributes, 'item', "{$root_sel} ${ controlSel }" );\n`;
 		const r = runE14Fixture( [ 'itemLineHeight' ], E14_FIXTURE_PHP_HEAD + control + E14_FIXTURE_ROOT_OPEN + render + '</div>\n', css, { 'inc.php': inc } );
 		return r.findings.filter( ( f ) => 'line-height' === f.property && '.sgs-x__orn' === f.selector ).map( ( f ) => f.class );
 	};
@@ -4442,6 +4443,104 @@ function selfTestMarkupSplice( assert ) {
 		'splice: a tag opened in an earlier statement is not the element a later call lands in (negative control: no CLASS-2)',
 		verdict( "<?php $a = '<p class=\"sgs-x__link\">'; $b = sgs_x_label(); $c = '</p>'; ?>\n", label ),
 		[]
+	);
+
+	// Each case below is a wrong parent the first version gave (qc-council, 2026-10-07).
+	const outer = "function sgs_x_outer() {\n\treturn '<a class=\"sgs-x__link\">' . sgs_x_label() . '</a>';\n}\n";
+	assert(
+		'splice: a copy made for a second landing element keeps its inner function\'s elements under the copied parent, whichever function is defined first',
+		verdict(
+			"<?php echo sprintf( '<p class=\"sgs-x__p1\">%s</p>', sgs_x_outer() ); echo sprintf( '<p class=\"sgs-x__p2\">%s</p>', sgs_x_outer() ); ?>\n",
+			label + outer,
+			'.sgs-x__p2'
+		),
+		[ 'CLASS-2' ]
+	);
+	const splice = ( ...srcs ) => {
+		const files     = srcs.map( ( src, i ) => ( { file: `f${ i }.php`, src } ) );
+		const instances = buildMarkupModel( files, new Set() );
+		spliceFragments( instances, files, { collectPhpFunctionParams, collectPhpCallSites, splitTopLevel, matchBracket, skipQuoted } );
+		return instances;
+	};
+	const terminates = ( instances ) => instances.every( ( inst, i ) => {
+		let steps = 0;
+		for ( let p = i; p >= 0; p = instances[ p ].parent ) {
+			if ( ++steps > instances.length ) {
+				return false;
+			}
+		}
+		return true;
+	} );
+	assert(
+		'splice: two functions that return each other\'s markup never make a parent cycle',
+		terminates( splice( "<?php\nfunction sgs_x_a() { return '<span class=\"a\">' . sgs_x_b() . '</span>'; }\nfunction sgs_x_b() { return '<em class=\"b\">' . sgs_x_a() . '</em>'; }\n" ) ),
+		true
+	);
+	assert(
+		'splice: an element opened in inline HTML before `?>` is not the element a later assignment lands in',
+		verdict(
+			'<?php echo sgs_x_page(); ?>\n',
+			label + "function sgs_x_page() {\n\tob_start(); ?><div class=\"sgs-x__link\"><?php $y = sgs_x_label(); ?></div><?php\n\treturn '<b class=\"sgs-x__b\">' . $y . '</b>' . ob_get_clean();\n}\n"
+		),
+		[]
+	);
+	assert(
+		'splice: a call inside an attribute value is not a child element',
+		[
+			verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\" aria-label=\"%1$s\">x</a>', sgs_x_label() ); ?>\n", label ),
+			verdict( "<?php echo '<a class=\"sgs-x__link\" title=\"' . sgs_x_label() . '\">x</a>'; ?>\n", label ),
+		],
+		[ [], [] ]
+	);
+	assert(
+		'splice: a variable read after the variable is reassigned does not carry the call',
+		verdict(
+			'<?php echo sgs_x_two(); ?>\n',
+			label + "function sgs_x_two() {\n\t$x = sgs_x_label();\n\t$out = '<p class=\"sgs-x__p\">' . $x . '</p>';\n\t$x = esc_html( 't' );\n\treturn $out . '<b class=\"sgs-x__link\">' . $x . '</b>';\n}\n"
+		),
+		[]
+	);
+	assert(
+		'splice: a comparison read of the variable does not carry the call',
+		verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', sgs_x_cmp() ); ?>\n",
+			label + "function sgs_x_cmp() {\n\t$x = sgs_x_label();\n\treturn ( '' !== $x ) ? 'a' : 'b';\n}\n"
+		),
+		[]
+	);
+	assert(
+		'splice: a pass-through the block defines twice (ambiguous) leaves the call unplaced',
+		verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', sgs_x_d( sgs_x_label() ) ); ?>\n",
+			label + "if ( ! function_exists( 'sgs_x_d' ) ) { function sgs_x_d( $v ) { return 'a'; } }\n",
+		).concat( verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', sgs_x_d( sgs_x_label() ) ); ?>\n",
+			label + "function sgs_x_d( $v ) { return 'a'; }\nfunction sgs_x_d( $v ) { return 'b'; }\n"
+		) ),
+		[]
+	);
+	assert(
+		'splice: an escaper around the call is transparent, an unknown WordPress function is not',
+		[
+			verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', esc_html( sgs_x_label() ) ); ?>\n", label ),
+			verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', wp_strip_all_tags( sgs_x_label() ) ); ?>\n", label ),
+		],
+		[ [ 'CLASS-2' ], [] ]
+	);
+	assert(
+		'splice: a call inside a closure passed to array_map is not read as part of the statement around it (array_map is not a pass-through)',
+		verdict(
+			"<?php echo sprintf( '<ul class=\"sgs-x__link\">%s</ul>', sgs_x_list( array( 1 ) ) ); ?>\n",
+			label + "function sgs_x_list( $items ) {\n\treturn implode( '', array_map( function ( $i ) {\n\t\t$y = sgs_x_label();\n\t\treturn '<li class=\"sgs-x__li\">' . $y . '</li>';\n\t}, $items ) );\n}\n"
+		),
+		[]
+	);
+	const bigIcons = "<?php\nfunction sgs_x_icons() { return '" + '<i class="ic"></i>'.repeat( 450 ) + "'; }\n";
+	const bigBase  = splice( bigIcons ).length;
+	assert(
+		'splice: a function with many elements is placed under its first landing element only, not copied per element',
+		splice( bigIcons + "echo sprintf( '<p class=\"p1\">%s</p>', sgs_x_icons() ); echo sprintf( '<p class=\"p2\">%s</p>', sgs_x_icons() );\n" ).length - bigBase,
+		2
 	);
 }
 

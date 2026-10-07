@@ -31,6 +31,11 @@
 
 const MAX_HOPS   = 6;
 const SPRINTF_FN = new Set( [ 'sprintf', 'printf' ] );
+// Functions the block does not define that hand their argument's markup through
+// unchanged, so the call lands where their own result lands. Any other unknown
+// function may drop or rewrite it, which leaves the call unplaced.
+const TRANSPARENT_CALLS = new Set( [ 'esc_html', 'esc_attr', 'esc_textarea', 'wp_kses_post', 'wp_kses', 'trim', 'ltrim', 'rtrim', 'strval', 'implode', 'join', 'return', 'echo', 'print' ] );
+const MAX_COPY_MEMBERS = 400;
 const PLACEHOLDER_RE = /%%|%(?:(\d+)\$)?[-+0-9.' ]*[a-zA-Z]/g;
 
 /** `src` with the inside of every quoted string blanked (same length), so brackets and `;` in a string are inert. */
@@ -119,8 +124,10 @@ function spliceFragments( instances, files, deps ) {
 				depth++;
 			} else if ( ')]'.includes( ch ) ) {
 				depth = Math.max( 0, depth - 1 );
-			} else if ( 0 === depth && ';{}'.includes( ch ) ) {
-				start = i + 1;
+			} else if ( ( 0 === depth && ';{}'.includes( ch ) ) || ( '>' === ch && '?' === src[ i - 1 ] ) ) {
+				start = i + 1; // `?>` ends a statement too: the HTML after it is a new run of markup
+			} else if ( '<' === ch && '?' === src[ i + 1 ] ) {
+				start = i + ( src.startsWith( '<?php', i ) ? 5 : ( src.startsWith( '<?=', i ) ? 3 : 2 ) ); // code starts here, after the HTML
 			}
 		}
 		return start;
@@ -142,11 +149,17 @@ function spliceFragments( instances, files, deps ) {
 		return limit;
 	};
 
-	/** Innermost element of the file open at `pos` whose open tag lies at or after `minPos`. */
+	/**
+	 * Innermost element of the file open at `pos` whose open tag lies at or after `minPos`.
+	 * A position inside an element's own open tag (an attribute value) is no element's child.
+	 */
 	const containing = ( fileIdx, pos, minPos, limit ) => {
 		let best = -1;
 		for ( const i of perFile[ fileIdx ] ) {
 			const inst = instances[ i ];
+			if ( inst.pos < pos && pos < inst.tagEnd ) {
+				return [];
+			}
 			if ( inst.pos >= pos || inst.pos < minPos ) {
 				continue;
 			}
@@ -201,15 +214,26 @@ function spliceFragments( instances, files, deps ) {
 		return usesOf( callee.fileIdx, param.name, callee.bodyStart + 1, callee.bodyEnd, depth, seen );
 	};
 
-	/** Where every later read of `$name` lands (assignments TO the name are not reads). */
+	/**
+	 * Where every later read of `$name` lands: up to the next plain reassignment
+	 * (`$name = …` holds a different value from there), skipping assignments TO the name
+	 * (`.=` appends to the same value, so it stays) and comparisons (`'' !== $name`).
+	 */
 	const usesOf = ( fileIdx, name, from, to, depth, seen ) => {
-		const out = [];
-		const re  = new RegExp( '\\$' + name + '\\b(?!\\s*\\.?=(?![=>]))', 'g' );
-		const src = masked[ fileIdx ].slice( 0, to );
+		const out    = [];
+		const whole  = masked[ fileIdx ];
+		const reset  = new RegExp( '\\$' + name + '\\s*=(?![=>])', 'g' );
+		reset.lastIndex = from;
+		const rm     = reset.exec( whole );
+		const src    = whole.slice( 0, rm && rm.index < to ? rm.index : to );
+		const re     = new RegExp( '\\$' + name + '\\b(?!\\s*\\.?=(?![=>]))', 'g' );
 		re.lastIndex = from;
 		let m;
 		while ( ( m = re.exec( src ) ) !== null ) {
-			out.push( ...resolveRef( fileIdx, m.index, depth + 1, seen ) );
+			const isComparison = /(?:===?|!==?|<>)\s*$/.test( src.slice( Math.max( 0, m.index - 6 ), m.index ) ) || /^\$\w+\s*(?:===?|!==?|<>)/.test( src.slice( m.index, m.index + name.length + 6 ) );
+			if ( ! isComparison ) {
+				out.push( ...resolveRef( fileIdx, m.index, depth + 1, seen ) );
+			}
 		}
 		return out;
 	};
@@ -221,20 +245,23 @@ function spliceFragments( instances, files, deps ) {
 			return [];
 		}
 		seen.add( key );
-		const fn    = fnAt( fileIdx, pos );
-		const from  = fn ? fn.bodyStart + 1 : 0;
-		const limit = fn ? fn.bodyEnd : masked[ fileIdx ].length;
+		const fn        = fnAt( fileIdx, pos );
+		const from      = fn ? fn.bodyStart + 1 : 0;
+		const limit     = fn ? fn.bodyEnd : masked[ fileIdx ].length;
+		const stmtStart = statementStart( fileIdx, from, pos );
 		for ( const call of enclosingCalls( fileIdx, from, pos ) ) {
 			if ( SPRINTF_FN.has( call.name ) ) {
 				return viaSprintf( fileIdx, call, pos, limit );
 			}
-			const callee = byName.get( call.name );
-			if ( callee ) {
-				return viaParameter( fileIdx, call, pos, callee, depth, seen );
+			if ( byName.has( call.name ) ) {
+				const callee = byName.get( call.name );
+				return callee ? viaParameter( fileIdx, call, pos, callee, depth, seen ) : []; // null: defined twice
+			}
+			if ( ! TRANSPARENT_CALLS.has( call.name ) ) {
+				return []; // a function the block does not define may do anything with its argument
 			}
 		}
-		const stmtStart = statementStart( fileIdx, from, pos );
-		const inside    = containing( fileIdx, pos, stmtStart, limit );
+		const inside = containing( fileIdx, pos, stmtStart, limit );
 		if ( inside.length ) {
 			return inside;
 		}
@@ -284,21 +311,32 @@ function spliceFragments( instances, files, deps ) {
 		}
 	}
 
-	// A function with one landing element is placed in place; each further
-	// landing element gets its own copy of the function's elements.
+	// A function with one landing element is placed in place; each further landing
+	// element gets its own copy of the function's elements, unless the function holds
+	// more than MAX_COPY_MEMBERS (an icon set): that one stays under its first element.
+	// A landing element that sits under the function's own elements (two functions
+	// returning each other's markup) would make a parent cycle, so it is skipped.
+	const placed = [];
 	for ( const { roots, parents } of placements ) {
-		for ( const r of roots ) {
-			instances[ r ].parent = parents[ 0 ];
+		const usable = parents.filter( ( p ) => ! underRoot( p, roots ) );
+		if ( ! usable.length ) {
+			continue;
 		}
+		for ( const r of roots ) {
+			instances[ r ].parent = usable[ 0 ];
+		}
+		placed.push( { roots, parents: usable } );
 	}
-	for ( const { roots, parents } of placements ) {
+	for ( const { roots, parents } of placed ) {
 		const members = instances.map( ( inst, i ) => i ).filter( ( i ) => underRoot( i, roots ) );
+		if ( members.length > MAX_COPY_MEMBERS ) {
+			continue;
+		}
 		for ( const parent of parents.slice( 1 ) ) {
-			const copy = new Map();
+			const copy = new Map( members.map( ( i, k ) => [ i, instances.length + k ] ) );
 			for ( const i of members ) {
 				const inst = instances[ i ];
-				copy.set( i, instances.length );
-				instances.push( { ...inst, classes: new Set( inst.classes ), parent: roots.includes( i ) ? parent : copy.get( inst.parent ) } );
+				instances.push( { ...inst, classes: new Set( inst.classes ), parent: roots.includes( i ) ? parent : ( copy.get( inst.parent ) ?? inst.parent ) } );
 			}
 		}
 	}
