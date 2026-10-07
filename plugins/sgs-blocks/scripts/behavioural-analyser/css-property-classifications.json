@@ -3157,6 +3157,20 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryFillDuration",
+      "fields": {
+        "css_property": "transition-duration"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryFillEasing",
+      "fields": {
+        "css_property": "transition-timing-function"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "freeDeliveryTextColour",
       "fields": {
         "css_property": "color",
@@ -4025,13 +4039,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -4490,6 +4497,102 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "expiredFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "expiredWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "expired"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family"
@@ -4529,6 +4632,102 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "labelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "labelWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing"
@@ -4547,6 +4746,102 @@
       "attr": "numberColour",
       "fields": {
         "css_property": "color",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "numberWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "number"
       }
     },
@@ -4861,13 +5156,6 @@
       "attr": "backgroundMedia",
       "fields": {
         "css_property": "background-image"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -8390,13 +8678,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color",
@@ -11038,13 +11319,6 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -12832,13 +13106,6 @@
     },
     {
       "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -14076,6 +14343,198 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "descriptionFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "descriptionWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "iconWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -14129,6 +14588,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "numberFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "numberFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -14146,9 +14613,65 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "numberLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "numberLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "number"
       }
     },
@@ -15500,6 +16023,102 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "questionFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "questionWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "question"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align"
@@ -16094,14 +16713,6 @@
     },
     {
       "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -16121,14 +16732,6 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -16182,13 +16785,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -16697,13 +17293,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -19799,13 +20388,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -28775,6 +29357,22 @@
         "css_property": "background-image",
         "css_element": "content",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {

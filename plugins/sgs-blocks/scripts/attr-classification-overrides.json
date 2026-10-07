@@ -6723,6 +6723,70 @@
 				"css_element": "valueLadderSaving"
 			},
 			"_why": "2026-10-06: the full TypographyControls surface landed on this element, and the derived classifier leaves css_element NULL for this property, so the attr collided with the block's root-prefix twin on (property, layer, element, state, tier) and db-consistency checks #1/#8 flagged it as an AmbiguousLayerAttrError at clone time. The two attrs genuinely paint DIFFERENT elements, so the element is named here rather than one of them being removed."
+		},
+		{
+			"slug": "sgs/container",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/cta-section",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/hero",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/multi-button",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/physics-canvas",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/site-footer",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/site-header",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/trust-bar",
+			"attr": "backgroundOverlayBlendMode",
+			"fields": {
+				"css_property": "mix-blend-mode"
+			},
+			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
 		}
 	]
 }
