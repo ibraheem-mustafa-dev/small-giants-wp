@@ -355,6 +355,10 @@ $css              .= $sh_scroll_fade['css'];
 //
 // Built by hand rather than through wp_style_engine_get_styles() for exactly
 // that reason — the style engine has no way to emit `!important`.
+$sh_scrolled_colours = array(
+	'css'      => '',
+	'explicit' => false,
+);
 if ( $sh_solid_first ) {
 	// Inverted pair: solid at rest (emitted above), see-through once scrolled.
 	// A tier the fade above has claimed (direction mode, genuinely
@@ -370,39 +374,11 @@ if ( $sh_solid_first ) {
 		'off'
 	);
 } else {
-	$sh_scrolled_decls = '';
-
-	$sh_scrolled_bg     = isset( $attributes['backgroundColourScrolled'] )
-		? sgs_colour_value( (string) $attributes['backgroundColourScrolled'] )
-		: '';
-	$sh_scrolled_decls .= 'background:' . ( '' !== $sh_scrolled_bg
-		? $sh_scrolled_bg
-		: 'var(--wp--preset--color--surface,#ffffff)' ) . ' !important;';
-
-	// A gradient paints via background-image, so it LAYERS over the colour
-	// above rather than replacing it — the colour stays as the fallback for a
-	// browser that cannot render the gradient value.
-	if ( isset( $attributes['backgroundColourScrolledGradient'] ) && '' !== $attributes['backgroundColourScrolledGradient'] ) {
-		$sh_scrolled_gradient = sgs_css_gradient_value( (string) $attributes['backgroundColourScrolledGradient'] );
-		if ( '' !== $sh_scrolled_gradient ) {
-			$sh_scrolled_decls .= 'background-image:' . $sh_scrolled_gradient . ' !important;';
-		}
-	}
-
-	if ( isset( $attributes['textColourScrolled'] ) && '' !== $attributes['textColourScrolled'] ) {
-		$sh_scrolled_text = sgs_colour_value( (string) $attributes['textColourScrolled'] );
-		if ( '' !== $sh_scrolled_text ) {
-			$sh_scrolled_decls .= 'color:' . $sh_scrolled_text . ' !important;';
-		}
-	}
-
-	$css .= sgs_emit_tier_rules(
-		$root_sel . '.is-header-scrolled',
-		$sh_transparent_effective,
-		$sh_scrolled_decls,
-		'',
-		'off'
-	);
+	// Built by sgs_header_scrolled_colour_css(): the full set (with the surface
+	// fallback) on Transparent-on tiers, only the colours the client set on
+	// the rest. 'explicit' also switches the scroll script on, below.
+	$sh_scrolled_colours = sgs_header_scrolled_colour_css( $root_sel, $attributes, $sh_transparent_effective );
+	$css                .= $sh_scrolled_colours['css'];
 }
 
 // SHADOW ONCE SCROLLED — the elevation a pinned header takes when the page has
@@ -660,6 +636,9 @@ $sh_scroll_behaviour_on   = ! empty( sgs_resolve_on_tiers( $sh_transparent, 'on'
 	// header that is neither transparent, shrinking nor hiding (a plain or merely
 	// sticky one). Without this the class is never added and the shadow never shows.
 	|| $sh_shadow_scrolled_on
+	// A scrolled background, gradient or text colour is inert unless view.js
+	// toggles `.is-header-scrolled`, whether or not Transparent is on.
+	|| $sh_scrolled_colours['explicit']
 	// A tone fill (sectionInk's `tone-fill` mode) reads `.is-header-scrolled` too
 	// (sgs-header-ink-css.php's dark_scrolled/light_scrolled selectors), so a
 	// header using section ink alone still needs the class toggled.

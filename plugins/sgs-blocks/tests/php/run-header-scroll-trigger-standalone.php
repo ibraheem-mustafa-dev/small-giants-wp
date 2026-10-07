@@ -169,6 +169,52 @@ ok(
 	'NEGATIVE CONTROL: the tablet media block, where Transparent is off, gets no fade rule at all'
 );
 
+// ─────────────────────────────────────────────────────────────────────────
+// 5. Scrolled colours (register row CR2): backgroundColourScrolled,
+// backgroundColourScrolledGradient and textColourScrolled must paint on a tier
+// where Transparent is OFF, and switch the scroll script on; the surface
+// fallback stays a Transparent-on-only behaviour.
+// ─────────────────────────────────────────────────────────────────────────
+$scrolled_sel = $root_sel . '.is-header-scrolled';
+$surface_fb   = 'var(--wp--preset--color--surface,#ffffff)';
+
+// Transparent ON + scrolled background set: unchanged from before the fix.
+$on_bg = sgs_header_scrolled_colour_css( $root_sel, array( 'backgroundColourScrolled' => '#112233' ), $all_on );
+ok( $scrolled_sel . '{background:#112233 !important;}' === $on_bg['css'], 'Transparent on + scrolled bg: one rule, the set colour, !important' );
+ok( true === $on_bg['explicit'], 'Transparent on + scrolled bg: explicit flag raised' );
+
+// Transparent ON + nothing set: the surface fallback is kept, exactly as before.
+$on_none = sgs_header_scrolled_colour_css( $root_sel, array(), $all_on );
+ok( $scrolled_sel . '{background:' . $surface_fb . ' !important;}' === $on_none['css'], 'Transparent on + nothing set: the surface fallback rule, as before' );
+ok( false === $on_none['explicit'], 'Transparent on + nothing set: explicit flag stays down (the transparent switch already covers it)' );
+
+// Transparent OFF + bg and text set: the rule now exists, with ONLY those two.
+$off_set = sgs_header_scrolled_colour_css(
+	$root_sel,
+	array(
+		'backgroundColourScrolled' => '#112233',
+		'textColourScrolled'       => '#ffffff',
+	),
+	$all_off
+);
+ok( $scrolled_sel . '{background:#112233 !important;color:#ffffff !important;}' === $off_set['css'], 'Transparent off + scrolled bg and text: rule carries exactly those two declarations' );
+ok( true === $off_set['explicit'], 'Transparent off + scrolled colours: explicit flag raised (scroll script switches on)' );
+
+// Transparent OFF + gradient only: background-image alone, no surface fallback.
+$off_grad = sgs_header_scrolled_colour_css( $root_sel, array( 'backgroundColourScrolledGradient' => 'linear-gradient(90deg,#000,#fff)' ), $all_off );
+ok( false !== strpos( $off_grad['css'], 'background-image:linear-gradient(' ) && false === strpos( $off_grad['css'], 'surface' ), 'Transparent off + gradient only: gradient emitted, no surface fallback' );
+
+// Transparent OFF + nothing set: byte-identical to before (no CSS, no flag).
+$off_none = sgs_header_scrolled_colour_css( $root_sel, array(), $all_off );
+ok( '' === $off_none['css'], 'NEGATIVE CONTROL: Transparent off + nothing set emits no CSS' );
+ok( false === $off_none['explicit'], 'NEGATIVE CONTROL: nothing set leaves the scroll script off' );
+
+// Mixed tiers: the tablet tier (Transparent off) gets the explicit-only rule in
+// its own media block while desktop/mobile keep the full set.
+$mixed_set = sgs_header_scrolled_colour_css( $root_sel, array( 'textColourScrolled' => '#ffffff' ), $mixed_tiers );
+ok( 0 === strpos( $mixed_set['css'], $scrolled_sel . '{background:' . $surface_fb . ' !important;color:#ffffff !important;}' ), 'mixed tiers: the Transparent-on desktop rule keeps the surface fallback' );
+ok( false !== strpos( $mixed_set['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $scrolled_sel . '{color:#ffffff !important;}}' ), 'mixed tiers: the Transparent-off tablet rule has the text colour and no surface fallback' );
+
 echo "\n" . $pass . '/' . ( $pass + $fail ) . " passed\n";
 if ( $fail > 0 ) {
 	echo $fail . " FAILED\n";

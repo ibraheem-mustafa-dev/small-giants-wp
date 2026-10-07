@@ -41,6 +41,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-responsive.php';
 
 // PHP allow-list mirroring block.json's `scrolledTrigger` enum.
 if ( ! defined( 'SGS_HEADER_SCROLLED_TRIGGER_VALUES' ) ) {
@@ -166,6 +167,79 @@ if ( ! function_exists( 'sgs_header_scroll_fade_css' ) ) {
 			'css'              => $css,
 			'toggle_effective' => $toggle_effective,
 			'any_fade'         => $any_fade,
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_header_scrolled_colour_css' ) ) {
+	/**
+	 * The `.is-header-scrolled` colour rules for a transparent-first (or plain)
+	 * header: `backgroundColourScrolled`, `backgroundColourScrolledGradient` and
+	 * `textColourScrolled`.
+	 *
+	 * Two declaration sets, one per tier state:
+	 *   - Transparent ON: the scrolled background, falling back to the theme
+	 *     surface token when none is set (the resting fill is `transparent`, so
+	 *     something must paint once scrolled), plus gradient and text colour.
+	 *   - Transparent OFF: ONLY the colours the client set. The header already
+	 *     paints its own resting fill, so no surface fallback is ever written.
+	 * With nothing set and Transparent off everywhere, no CSS is emitted.
+	 *
+	 * Every declaration carries `!important`: the resting transparent rule is
+	 * emitted with it, and an `!important` declaration beats any non-`!important`
+	 * one whatever the specificity.
+	 *
+	 * `explicit` is true when the client set at least one scrolled colour. The
+	 * caller uses it to switch the scroll script on (data-sgs-header-scroll-behaviours),
+	 * because the colours are inert unless view.js toggles `.is-header-scrolled`.
+	 *
+	 * @param string $root_sel              The header's uid-scoped selector.
+	 * @param array  $attributes            Block attributes.
+	 * @param array  $transparent_effective Per-tier 'on'/'off' Transparent state.
+	 * @return array{css:string, explicit:bool}
+	 */
+	function sgs_header_scrolled_colour_css( string $root_sel, array $attributes, array $transparent_effective ): array {
+		$explicit_decls = '';
+
+		$bg_value = isset( $attributes['backgroundColourScrolled'] ) && is_string( $attributes['backgroundColourScrolled'] )
+			? sgs_colour_value( $attributes['backgroundColourScrolled'] )
+			: '';
+		if ( '' !== $bg_value ) {
+			$explicit_decls .= 'background:' . $bg_value . ' !important;';
+		}
+
+		// A gradient paints via background-image, so it LAYERS over the colour
+		// above rather than replacing it — the colour stays as the fallback for a
+		// browser that cannot render the gradient value.
+		if ( isset( $attributes['backgroundColourScrolledGradient'] ) && '' !== $attributes['backgroundColourScrolledGradient'] ) {
+			$gradient = sgs_css_gradient_value( (string) $attributes['backgroundColourScrolledGradient'] );
+			if ( '' !== $gradient ) {
+				$explicit_decls .= 'background-image:' . $gradient . ' !important;';
+			}
+		}
+
+		if ( isset( $attributes['textColourScrolled'] ) && '' !== $attributes['textColourScrolled'] ) {
+			$text = sgs_colour_value( (string) $attributes['textColourScrolled'] );
+			if ( '' !== $text ) {
+				$explicit_decls .= 'color:' . $text . ' !important;';
+			}
+		}
+
+		// Transparent ON keeps the surface fallback when no scrolled background
+		// is set; the background declaration leads, as it always has.
+		$transparent_decls = ( '' !== $bg_value
+			? ''
+			: 'background:var(--wp--preset--color--surface,#ffffff) !important;' ) . $explicit_decls;
+
+		return array(
+			'css'      => sgs_emit_tier_rules_map(
+				$root_sel . '.is-header-scrolled',
+				$transparent_effective,
+				array( 'on' => $transparent_decls ),
+				$explicit_decls,
+				'off'
+			),
+			'explicit' => '' !== $explicit_decls,
 		);
 	}
 }
