@@ -8,7 +8,7 @@ gap (the framework has no setting that could close it) and **W** means explained
 cleanup is COMPLETE. This prompt is the whole of the route's remaining work, which Bean has assigned to one
 owner — not a single task.
 
-Branch `main`, HEAD `edd8b54fe`, pushed, 0 ahead / 0 behind. Route suite **592 of 592** green on a quiet host,
+Branch `main`, pushed and in sync (run `git log -1` for the hash rather than trusting one written here, because peer sessions commit to this worktree too). Route suite **592 of 592** green on a quiet host,
 route lint and `check-no-client-names.py` exit 0, handoff preflight 4 of 4.
 
 READ FIRST
@@ -83,31 +83,44 @@ work.
 
 ---
 
-TASK 3 — CR6, the box zero-fill: A MIGRATION, NOT A FOCUSED FIX (scope decision for Bean first)
+TASK 3 — CR6, the box zero-fill. A MIGRATION, and the approach is AGREED. **Run `/strategic-plan` first.**
 
-**Read this before estimating it.** The LEDGER once framed CR6 as "awkward rather than large". It is both, and
-the measurement replaces that framing:
+**What the defect does to a client:** setting one side of a padding or margin — say a top padding — silently
+forces the other three sides to **zero**, wiping the block's own defaults. The About WhatsApp button lost its
+24px sides this way when only the top was set.
 
-- The defect is `plugins/sgs-blocks/includes/helpers-box.php::sgs_box_object_shorthand`, which builds a
-  four-value CSS **shorthand** and fills any unset side with `'0'` (its lines 184-187). A shorthand inherently
-  sets all four sides, so setting one side really does zero the other three. `sgs_corner_object_shorthand` has
-  the same shape for corners.
-- `lib/resolve.mjs::seedSides` is the route's **workaround** for it — its own comment says "an unset side there
-  prints 0, CR6". It back-fills the other three sides from calibration paint. **Fix the PHP and `seedSides`
-  becomes actively harmful**, freezing values the client never chose, which is why they must land together.
-- **Scope, measured: 178 call sites across 56 files** under `src/` and `includes/` (342 counting `build/`), and
-  **no per-side helper exists.** The fix changes the helper's contract from "return a shorthand string" to "emit
-  only the sides that are set", so every caller moves. CLAUDE.md requires the detector first and
-  `.claude/THE-MIGRATION-METHOD.md` before the fourth such edit.
+**Why it is a migration and not a focused fix (measured 2026-10-07; do NOT re-estimate it as small):**
+- The defect is **one helper's CONTRACT**, not scattered code.
+  `plugins/sgs-blocks/includes/helpers-box.php::sgs_box_object_shorthand` returns a four-value CSS **shorthand**,
+  and a shorthand inherently sets all four sides, which is what forces its `'0'` fill (its lines 184-187).
+  `sgs_corner_object_shorthand` has the identical defect for border-radius corners.
+- **178 call sites across 56 files — and every one already calls that helper**, so nothing needs "standardising
+  onto a helper"; the library is already there. **156 (88%) are a plain assignment**, and **112 are the same four
+  variable names** (`$padding_tab_val`, `$padding_mob_val`, `$margin_tab_val`, `$margin_mob_val`) repeated as an
+  identical four-line block across ~30 blocks, consumed by ONE three-line idiom
+  (`if ( null !== $x ) { … $decls[] = "padding:{$x}"; }`) that appears 112 times. 11 hits are comments naming the
+  helper. **Roughly 10 are genuinely bespoke.**
+- `lib/resolve.mjs::seedSides` is the route's **workaround** for CR6 — its own comment says "an unset side there
+  prints 0, CR6". Fixing the PHP makes `seedSides` actively harmful, freezing sides the client never chose, so
+  **the two must land in the same change**.
 
-**Put the options to Bean before starting; do not re-estimate it as small:**
-1. **Full migration** — detector, then convert in batches. Removes a defect that silently zeroes three sides of
-   any box a client half-sets.
-2. **Park it**, with this scope recorded so nobody re-estimates it from the old framing.
-3. **Narrow it** — add a per-side helper and convert only the blocks where CR6 actually bites, leaving the rest
-   on the shorthand. Cheaper, but leaves two paths in one helper.
+**The agreed approach (Bean, 2026-10-07) — follow it rather than inventing one:**
+1. Add a per-side helper (e.g. `sgs_box_object_declarations()`) that emits longhands for **only the sides set**.
+   New function, so nothing breaks while converting.
+2. **Build the detector FIRST** per `.claude/THE-MIGRATION-METHOD.md` — it flags any surviving shorthand use for
+   padding/margin, so "all converted" is proven rather than asserted. Read that file before the fourth edit.
+3. **Script the 112 boilerplate sites.** Deterministic: one known four-line assignment plus one known three-line
+   consume idiom.
+4. **Batch the ~45 same-shape-different-name assignments to Haiku subagents** (`/delegate` picks the model),
+   grouped by block, each batch verified by the detector.
+5. Keep the **~10 bespoke sites and the `seedSides` deletion in the main thread.**
 
----
+**Negative controls, both halves:** a PHP test proving that setting one side now emits ONLY that side (red
+against the old shorthand), AND one proving that setting all four still emits all four, so the fix does not
+over-suppress. Plus the detector going red on a planted un-converted call site.
+
+DONE when the detector reports zero remaining shorthand uses for padding/margin, `seedSides` is gone, and both
+halves of the control pass. ~90 min with the scripting, more if the bespoke sites fight.
 
 TASK 4 — still to prove: CR1 with CR9, then CR2, CR4, CR5 (~30 min to triage)
 
@@ -123,12 +136,29 @@ CR14 (`e383cdef6`): Solve cannot write a setting on an element no walker pair me
 elements a hand-written walker config names — About and Contact are done, **Lenses and the rest still need
 re-pairing.**
 
-NOT YOURS — do not pick up without Bean
+NOT YOURS — CR12 is PARKED
 
-**CR12, the dark-mode toggle.** Bean's read is post-launch, so record it as **parked-pending-Bean, not open**.
-Correct the record while you are there: dark mode **IS implemented** —
-`theme/sgs-theme/assets/css/dark-mode.css` (4.4 KB) and `theme/sgs-theme/assets/js/dark-mode.js` (5.1 KB) both
-exist. CR12 is not an unbuilt feature; it is that the toggle renders nothing for current clients.
+**CR12, the dark-mode toggle. PARKED pending Bean as of 2026-10-07. Do not pick it up without him.**
+
+It is neither a rendering bug nor an unbuilt feature, and the record has been corrected: dark mode IS
+implemented (`theme/sgs-theme/assets/css/dark-mode.css` 4.4 KB and `assets/js/dark-mode.js` 5.1 KB both exist),
+`theme-toggle/render.php` correctly returns early when `settings.custom.dark` is empty, and
+`plugins/sgs-blocks/scripts/derive-dark-palette.py` (783 lines) is already wired into
+`push-theme-snapshot.py::prepare_deploy_snapshot`. It reads a top-level `_sgsDark` key that **no client snapshot
+carries**, so nothing is ever derived.
+
+**Eye Care cannot be switched on as it stands** — tried 2026-10-07 and reverted. With `_sgsDark: {enabled:true}`
+the deriver HARD-REFUSES: `DarkPaletteContrastError`, because `primary` #141414 is near-black, dark mode must
+lift it to #7d7d7d to be visible on a dark surface, and `primary-text`/`text-inverse` #FAF8F5 on that is
+**3.88:1** against the 4.5:1 required. No `palette` or `roles` override passes both constraints — a darker text
+fails the surfaces, a lighter primary fails the text, a darker primary fails the surface. **Left enabled it
+would fail every Eye Care deploy**, so nothing was committed. The three ways forward are design calls and sit on
+the register row.
+
+⚠️ Two things recorded so they are not rediscovered: the deriver's `accent-text` on `accent` 1.82:1 warning is
+**NOT a live defect** — it pairs text to fill BY SLUG NAME, and zero of the 16 uses of `accent-text` sit on an
+`accent` ground. And the snapshot says regenerate via `extract.py`, which has **no knowledge of `_sgsDark`**, so
+a hand-added key may be wiped on regeneration; confirm that before relying on any option.
 
 ---
 
@@ -194,7 +224,7 @@ GUARDRAILS
 - **A generated artefact a gate reads can live only in the working tree.** `handScope` was absent at HEAD for 16
   of 17 surfaces while every local signal said the gate covered all 17. Run
   `git status --porcelain -- <the artefact>` before claiming a gate covers anything.
-- `.claude/LEDGER.md` has **65 bytes** against its 24,576 cap. Cut a finished item before adding, and run
+- `.claude/LEDGER.md` has **~283 bytes** against its 24,576 cap. Cut a finished item before adding, and run
   `python .claude/hooks/handoff-preflight.py --check` BEFORE pushing, not after.
 - Serialise host work and message peers first. Peers `small-giants-wp-e6` and `small-giants-wp-d8` are closed;
   `small-giants-wp-23` owns the client-visible register rows and was completing a deploy. A reseed rewrites the

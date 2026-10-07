@@ -623,14 +623,32 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - **CR6 — setting one side of a padding or margin box zeroes the other three. PROVEN, UNBUILT, owned here.**
-       Recorded 2026-10-06 because `LEDGER.md` named this section as its owner while this section did not mention
-       it, so nothing actually owned it. The fix is awkward rather than large: `lib/resolve.mjs::seedSides` models
-       the zero-fill that CR6 removes, so the helper change and `seedSides` **must land together** or the route
-       re-introduces the behaviour it just removed. Of the 14 route/calibration (CR) rows in the Eye Care register
-       (`plans/2026-10-02-eye-care-fix-register.md`, grouped in
-       `reports/2026-10-06-session-c2/BEAN-LIST.md`), this is the only one marked proven-and-unbuilt; the rest are
-       either route-fixed awaiting a re-calibration host window, or still to prove.
+     - **CR6 — setting one side of a padding or margin box zeroes the other three. PROVEN, and a MIGRATION.**
+       Owned here. **Scope measured 2026-10-07, replacing the earlier "awkward rather than large" framing.** The
+       defect is one helper's CONTRACT: `plugins/sgs-blocks/includes/helpers-box.php::sgs_box_object_shorthand`
+       returns a four-value CSS shorthand, and a shorthand inherently sets all four sides, which is what forces
+       its `'0'` fill for unset sides (its lines 184-187). `sgs_corner_object_shorthand` has the same defect for
+       border-radius corners. `lib/resolve.mjs::seedSides` is the route's WORKAROUND for it — its own comment
+       says "an unset side there prints 0, CR6" — so fixing the PHP makes `seedSides` actively harmful, freezing
+       values the client never chose, and **the two must land together**.
+       **178 call sites across 56 files**, and all of them already call the one helper, so nothing is scattered.
+       **156 (88%) are a plain assignment**, and **112 are the same four variable names** (`$padding_tab_val`,
+       `$padding_mob_val`, `$margin_tab_val`, `$margin_mob_val`) repeated as an identical four-line block across
+       ~30 blocks, consumed by a single three-line idiom that appears 112 times. 11 hits are comments naming the
+       helper; roughly 10 are genuinely bespoke.
+       **Agreed approach (Bean, 2026-10-07):** add a per-side helper that emits only the sides actually set, build
+       the detector FIRST per `.claude/THE-MIGRATION-METHOD.md`, script the 112 boilerplate conversions, batch the
+       ~45 same-shape-different-name assignments to Haiku subagents, and keep the ~10 bespoke sites and the
+       `seedSides` deletion in the main thread. **Needs `/strategic-plan` before any edit.**
+     - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
+       rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
+       `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
+       `push-theme-snapshot.py::prepare_deploy_snapshot`. It reads a top-level `_sgsDark` key that no client
+       snapshot carries, so nothing is ever derived. **Eye Care cannot be enabled as it stands:** the deriver
+       hard-refuses with `DarkPaletteContrastError` because `primary` #141414 is near-black, dark mode must lift
+       it to #7d7d7d to be visible on a dark surface, and `primary-text`/`text-inverse` #FAF8F5 on that is 3.88:1
+       against the 4.5:1 required; no `palette` or `roles` override passes both constraints. Left enabled it
+       would fail every Eye Care deploy. The three ways forward are design calls, recorded on the register row.
      - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
        (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17

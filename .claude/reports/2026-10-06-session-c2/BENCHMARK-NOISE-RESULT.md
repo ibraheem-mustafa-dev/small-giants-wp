@@ -3,6 +3,11 @@
 Status: **COMPLETE.** Run `2026-10-06T20-42-21`, all 10 runs back to back on a quiet remote host
 (`.claude/reports/2026-10-06-session-c2/benchmark-noise/`, `summary.md` + `summary.json`).
 
+⚠️ **The raw run output is LOCAL ONLY and is not in git** — 101 MB of per-case screenshots and contact
+sheets, now covered by `.gitignore` (`.claude/reports/**/benchmark-noise/`). A fresh clone will not have it, so
+every figure this report relies on is quoted here rather than left as a path to follow. Re-running the
+benchmark regenerates it.
+
 ```
 cd plugins/sgs-blocks
 NODE_EXTRA_CA_CERTS=<certifi cacert.pem> node ../../scripts/parity/benchmark.mjs --noise --out <dir>

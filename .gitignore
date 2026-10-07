@@ -184,6 +184,10 @@ plugins/sgs-blocks/now.tmp.json
 # Parity walker and catch-rate benchmark output (screenshots, reports)
 scripts/parity/benchmark/out/
 scripts/parity/benchmark/*.log
+# The same output when a run passes a custom --out under .claude/reports/ (a 2026-10-06 --noise run put
+# 101 MB of screenshots there, outside the default-path rule above). The analysis that matters is committed
+# beside it as BENCHMARK-NOISE-RESULT.md; the raw run is reproducible and never belongs in git.
+.claude/reports/**/benchmark-noise/
 sites/*/build/qa/parity/out/
 sites/*/build/qa/parity/out-*/
 sites/*/build/qa/solve/
