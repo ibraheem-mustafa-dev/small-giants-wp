@@ -1457,12 +1457,14 @@ def _helper_contracts() -> "dict[str, object]":
             _HELPER_CONTRACT_DB_PROPS, INCLUDES_DIR.parent, _iter_rule_blocks
         )
         this = sys.modules[__name__]
-        composers = helper_maps.derive_value_composers(index, this, vocab)
+        families = helper_maps.derive_family_composers(index)
+        composers = helper_maps.derive_value_composers(index, this, vocab, families)
         _HELPER_CONTRACTS.update(
             index=index,
             vocab=vocab,
             composers=composers,
-            prefix_helpers=helper_maps.derive_prefix_helpers(index, this, vocab, composers),
+            families=families,
+            prefix_helpers=helper_maps.derive_prefix_helpers(index, this, vocab, composers, families),
         )
     return _HELPER_CONTRACTS
 
@@ -1821,8 +1823,17 @@ def _attrs_from_value_composer_calls(
     signature (e.g. the 2-arg hover-only call at class-sgs-container-wrapper.php:2545)
     simply yields evidence for the arguments actually present.
     """
+    import helper_maps
+
     props: dict[str, set[str]] = defaultdict(set)
-    composers = _helper_contracts()["composers"]
+    contracts = _helper_contracts()
+    # A family composer takes its property from the call's literal argument
+    # (`sgs_box_object_longhands( $tiers['tablet'], 'padding' )`).
+    for attr, family_props in helper_maps.family_call_props(
+        php_src, contracts.get("families") or {}, contracts["vocab"], var_attr, resolve_arg or _resolve_call_arg_to_attr
+    ).items():
+        props[attr].update(family_props)
+    composers = contracts["composers"]
     if not composers:
         return props
     call_re = re.compile(r"\b(" + "|".join(re.escape(h) for h in sorted(composers)) + r")\s*\(")
@@ -2872,7 +2883,7 @@ def extract_css_property_and_layer() -> dict:
             attr_bem_elements |= helper_elements.get(attr, set())
             # The selector a composer's result (or a paint-table row) lands on;
             # supplementary pass only (the primary pass uses it in the net below).
-            if only is not None:
+            if only is not None or attr in ev.get("family_routed", ()):
                 attr_bem_elements |= ev["extra_elements"].get(attr, set())
             # Cause A (2026-08-27) — same unanimous-or-unassigned merge.
             attr_bem_elements |= state_colour_elements.get(attr, set())
@@ -2968,6 +2979,24 @@ def extract_css_property_and_layer() -> dict:
                     unresolved_reasons[(slug, _attr)] = (
                         f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
                         "with another attribute and no css_element tells them apart"
+                    )
+        # A family-composer route (CR6 P2-f) with no element must not land on a slot another shape already routes
+        # without an element (sgs/icon `padding` against `backgroundPadding`): refuse it, never the established route.
+        _family_new = {a for a in ev.get("family_routed", ()) if a in block_attr_names and (slug, a) in resolved and (slug, a) not in resolved_bem_element}
+        if only is None and _family_new:
+            _slot_of = lambda a: (tuple(sorted(resolved[(slug, a)])), resolved_state.get((slug, a)), resolved_tier.get((slug, a)))  # noqa: E731
+            _held = {
+                _slot_of(a) for a in block_attr_names - _family_new
+                if (slug, a) in resolved and (slug, a) not in resolved_bem_element
+            }
+            for _attr in _family_new:
+                if _slot_of(_attr) in _held:
+                    _slot = _slot_of(_attr)
+                    for _store in (resolved, resolved_state, resolved_bem_element, resolved_tier):
+                        _store.pop((slug, _attr), None)
+                    unresolved_reasons[(slug, _attr)] = (
+                        f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
+                        "with an attribute another shape routes, and no css_element tells them apart"
                     )
 
 

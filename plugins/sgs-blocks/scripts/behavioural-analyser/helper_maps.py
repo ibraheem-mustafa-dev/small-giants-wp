@@ -161,6 +161,37 @@ def _selector_params(fn: PhpFunction, body: str) -> set[str]:
     return found
 
 
+def family_call_props(
+    src: str,
+    families: "dict[str, tuple[int, int]]",
+    vocab: "frozenset[str]",
+    var_attr: dict[str, str],
+    resolve_arg: Callable[[str, dict[str, str]], "str | None"],
+) -> dict[str, set[str]]:
+    """attr -> {property} for every call to a family composer whose property argument is a string literal naming
+    a CSS property (`sgs_box_object_longhands( $tiers['tablet'], 'padding' )` routes the box's attribute to
+    padding). A property passed as a variable is not resolved."""
+    out: dict[str, set[str]] = {}
+    if not families:
+        return out
+    call_re = re.compile(r"\b(" + "|".join(re.escape(c) for c in sorted(families)) + r")\s*\(")
+    for m in call_re.finditer(src):
+        close = matching_close(src, m.end() - 1, "(", ")")
+        if close < 0:
+            continue
+        args = split_top_level_args(src[m.end() : close])
+        vi, fi = families[m.group(1)]
+        if max(vi, fi) >= len(args):
+            continue
+        lit = re.fullmatch(r"'([a-z][a-z-]*)'", args[fi].strip())
+        if not lit or lit.group(1) not in vocab:
+            continue
+        attr = resolve_arg(args[vi], var_attr)
+        if attr:
+            out.setdefault(attr, set()).add(lit.group(1))
+    return out
+
+
 def _composer_calls(
     src: str,
     composers: dict[str, dict[int, set[str]]],
@@ -265,6 +296,7 @@ def _scan(
     vocab: "frozenset[str]",
     composers: "dict[str, dict[int, set[str]]]",
     gates: bool = False,
+    families: "dict[str, tuple[int, int]] | None" = None,
 ) -> dict[str, set[str]]:
     """attr -> props in one rewritten helper body. Props an attribute reaches through
     its own declarations win; props inherited through another helper's argument are
@@ -280,11 +312,61 @@ def _scan(
     for attr, props in _composer_calls(src, composers, var_attr, es._resolve_call_arg_to_attr).items():
         if not direct.get(attr):
             found.setdefault(attr, set()).update(props)
+    for attr, props in family_call_props(src, families or {}, vocab, var_attr, es._resolve_call_arg_to_attr).items():
+        if not direct.get(attr):
+            found.setdefault(attr, set()).update(props)
     return {a: p - _SLOT_AMBIGUOUS_SHORTHANDS for a, p in found.items() if p - _SLOT_AMBIGUOUS_SHORTHANDS}
 
 
+# A declaration whose property NAME is built from a parameter: `$family . '-' . $side . ':' . $value`.
+_FAMILY_DECL_RE = r"\$%s\s*\.\s*'-'\s*\.\s*\$\w+\s*\.\s*':'"
+
+
+def derive_family_composers(index: dict[str, PhpFunction]) -> "dict[str, tuple[int, int]]":
+    """{helper: (value arg index, property arg index)} for every top-level function without an attributes
+    parameter that builds its declarations' property names from one parameter (the property family, e.g.
+    `sgs_box_object_longhand_list( $box, 'padding' )` writing `padding-top:…`), its one other parameter
+    being the value; plus, to a fixed point, every function forwarding two of its own parameters to such a
+    helper in those positions (`sgs_box_object_longhands`). The property itself is only known at a call site,
+    from a literal argument (`family_call_props`)."""
+    found: dict[str, tuple[int, int]] = {}
+    for name, fn in index.items():
+        if fn.owner_class or len(fn.params) != 2 or attrs_param_index(fn) is not None:
+            continue
+        body = pp.expand_double_quoted(fn.body)
+        for fi, p in enumerate(fn.params):
+            if re.search(_FAMILY_DECL_RE % re.escape(p), body):
+                found[name] = (1 - fi, fi)
+                break
+    for _ in range(_MAX_ROUNDS):
+        changed = False
+        for name, fn in index.items():
+            if name in found or fn.owner_class or attrs_param_index(fn) is not None:
+                continue
+            for other, (vi, fi) in list(found.items()):
+                for m in re.finditer(r"\b" + re.escape(other) + r"\s*\(", fn.body):
+                    close = matching_close(fn.body, m.end() - 1, "(", ")")
+                    if close < 0:
+                        continue
+                    args = [a.strip() for a in split_top_level_args(fn.body[m.end() : close])]
+                    if max(vi, fi) >= len(args):
+                        continue
+                    pv = re.fullmatch(r"\$(\w+)", args[vi])
+                    pf = re.fullmatch(r"\$(\w+)", args[fi])
+                    if pv and pf and pv.group(1) in fn.params and pf.group(1) in fn.params:
+                        found[name] = (fn.params.index(pv.group(1)), fn.params.index(pf.group(1)))
+                        changed = True
+                        break
+                if name in found:
+                    break
+        if not changed:
+            break
+    return found
+
+
 def derive_value_composers(
-    index: dict[str, PhpFunction], es: ModuleType, vocab: "frozenset[str]"
+    index: dict[str, PhpFunction], es: ModuleType, vocab: "frozenset[str]",
+    families: "dict[str, tuple[int, int]] | None" = None,
 ) -> dict[str, dict[int, set[str]]]:
     """{helper: {arg index: {css property}}} for every top-level function without an
     attributes parameter whose arguments reach a CSS declaration."""
@@ -303,7 +385,7 @@ def derive_value_composers(
     for _ in range(_MAX_ROUNDS):
         changed = False
         for name, (fn, body) in prepared.items():
-            found = _scan(es, body, vocab, derived)
+            found = _scan(es, body, vocab, derived, families=families)
             result: dict[int, set[str]] = {}
             for attr, props in found.items():
                 m = re.fullmatch(_ARG_SENTINEL + r"(\d+)", attr)
@@ -354,6 +436,7 @@ def derive_prefix_helpers(
     es: ModuleType,
     vocab: "frozenset[str]",
     composers: dict[str, dict[int, set[str]]],
+    families: "dict[str, tuple[int, int]] | None" = None,
 ) -> dict[str, PrefixHelper]:
     """Contracts of every top-level function taking an attributes array and a prefix."""
     helpers: dict[str, PrefixHelper] = {}
@@ -370,7 +453,7 @@ def derive_prefix_helpers(
     for _ in range(_MAX_ROUNDS):
         changed = False
         for name, body in bodies.items():
-            found = _scan(es, body, vocab, composers, gates=True)
+            found = _scan(es, body, vocab, composers, gates=True, families=families)
             # Nested prefix helpers called with `'<sentinel>Sub'` (or the bare prefix,
             # already rewritten to the sentinel by the suffix substitution when the
             # helper passes `$prefix . 'Sub'`).

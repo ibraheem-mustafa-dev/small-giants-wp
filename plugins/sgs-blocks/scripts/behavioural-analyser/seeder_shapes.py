@@ -54,7 +54,11 @@ def composer_result_elements(
     out: dict[str, set[str]] = {}
     if not results:
         return out
-    for stmt in es._split_php_statements(php_src):
+    # Double-quoted rules ("{$sel}{{$decls};}") read as concatenation, so a selector held in a variable
+    # (`$sel_pill = "{$root_sel} .sgs-option-picker__pill"`) resolves through the selector map.
+    expanded = pp.expand_double_quoted(php_src)
+    selector_elements, _states = es._build_php_selector_var_map(expanded, block_short_slug)
+    for stmt in es._split_php_statements(expanded):
         for var, attrs in results.items():
             for ref in re.finditer(r"\$" + re.escape(var) + r"\b(?!\s*=(?![=>]))", stmt):
                 before = stmt[: ref.start()]
@@ -64,6 +68,9 @@ def composer_result_elements(
                     continue
                 selector = literal[: literal.rfind("{")]
                 element = es._derive_bem_element_with_fallback(selector, block_short_slug)
+                if not element:
+                    held = re.search(r"\$(\w+)\s*\.\s*'\{'\s*\.\s*$", before)
+                    element = selector_elements.get(held.group(1)) if held else None
                 if element:
                     for attr in attrs:
                         out.setdefault(attr, set()).add(element)
@@ -205,9 +212,13 @@ def gather_php_evidence(
     )
     for attr, props in config_map_props.items():
         raw[attr] = raw.get(attr, set()) | props
-    extra_elements = composer_result_elements(
-        es, php_src, es._helper_contracts()["composers"], var_attr, block_short_slug
-    )
+    # A family composer's result lands on a selector the same way; only its value argument names the attribute.
+    contracts = es._helper_contracts()
+    result_composers = {
+        **contracts["composers"],
+        **{name: {vi: set()} for name, (vi, _fi) in (contracts.get("families") or {}).items()},
+    }
+    extra_elements = composer_result_elements(es, php_src, result_composers, var_attr, block_short_slug)
     if extended:
         # Responsive spec arrays handed to sgs_emit_responsive_css():
         # `array( 'value' => $attributes['x'], 'css' => 'padding', 'box' => true )`.
@@ -229,6 +240,13 @@ def gather_php_evidence(
         "state_colour_elements": state_colour_elements,
         "state_colour_states": state_colour_states,
         "value_composer_props": value_composer_props,
+        # Attributes a family composer routes (their property is the call's literal argument).
+        "family_routed": set(
+            helper_maps.family_call_props(
+                php_src, es._helper_contracts().get("families") or {}, props_vocab, var_attr,
+                loose_arg_attr if extended else es._resolve_call_arg_to_attr,
+            )
+        ),
         "config_map_props": config_map_props,
         "config_map_elements": config_map_elements,
         "config_map_states": config_map_states,

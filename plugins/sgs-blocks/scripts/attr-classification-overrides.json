@@ -6805,57 +6805,6 @@
 				"css_property": "mix-blend-mode"
 			},
 			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "contentPadding",
-			"fields": {
-				"css_property": "padding",
-				"css_element": "content",
-				"css_layer": "GRID_AREA",
-				"derived_selector": ".sgs-hero__content"
-			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
-		},
-		{
-			"slug": "sgs/hero",
-			"attr": "mediaPadding",
-			"fields": {
-				"css_property": "padding",
-				"css_element": "media",
-				"css_layer": "GRID_AREA",
-				"derived_selector": ".sgs-hero__media"
-			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
-		},
-		{
-			"slug": "sgs/language-switch",
-			"attr": "panelPadding",
-			"fields": {
-				"css_property": "padding",
-				"css_element": "panel",
-				"derived_selector": ".sgs-language-switch__panel"
-			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
-		},
-		{
-			"slug": "sgs/option-picker",
-			"attr": "pillPadding",
-			"fields": {
-				"css_property": "padding",
-				"css_element": "pill",
-				"derived_selector": ".sgs-option-picker__pill"
-			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
-		},
-		{
-			"slug": "sgs/icon",
-			"attr": "margin",
-			"fields": {
-				"css_property": "margin",
-				"derived_selector": null
-			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'margin' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"margin:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		}
 	]
 }

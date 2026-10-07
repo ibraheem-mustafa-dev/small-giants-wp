@@ -155,6 +155,23 @@ def test_d1_value_helper_arguments_route():
     assert props["fillGradient"] == {"background-image"}
 
 
+def test_d1_family_helper_takes_its_property_from_the_call_literal():
+    """sgs_box_object_longhands( $box, 'padding' ) builds `padding-top:…` from its string argument (CR6 P2-f):
+    the box's attribute routes to the literal property; a property passed as a variable is never guessed."""
+    families = es._helper_contracts()["families"]
+    assert families["sgs_box_object_longhand_list"] == (0, 1)
+    assert families["sgs_box_object_longhands"] == (0, 1)
+    php = (
+        "$p = sgs_box_object_longhands( $attributes['panelPadding'], 'padding' );\n"
+        "$m = sgs_box_object_longhands( $attributes['margin'], 'margin' );\n"
+        "$x = sgs_box_object_longhands( $attributes['otherBox'], $family );\n"
+    )
+    props = es._attrs_from_value_composer_calls(php, {})
+    assert props["panelPadding"] == {"padding"}
+    assert props["margin"] == {"margin"}
+    assert "otherBox" not in props
+
+
 # ── statement splitting: a selector variable after a closing brace ────────────
 
 def test_selector_variable_after_a_closing_brace_is_traced():
