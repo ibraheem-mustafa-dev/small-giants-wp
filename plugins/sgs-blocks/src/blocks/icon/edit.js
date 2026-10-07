@@ -200,6 +200,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<BlockControls group="block">
 				<LogicalAlignToolbar
+					label={ __( 'Icon alignment', 'sgs-blocks' ) }
 					value={ iconAlign }
 					onChange={ ( val ) =>
 						setAttributes( { iconAlign: val } )

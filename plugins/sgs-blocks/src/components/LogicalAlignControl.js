@@ -83,6 +83,7 @@ export default function LogicalAlignControl( {
  * @param {Object}   props
  * @param {string}   props.value          Current value.
  * @param {Function} props.onChange       Receives the next value.
+ * @param {string}   [props.label]        Accessible name of the toolbar button.
  * @param {string}   [props.defaultValue] Shown when `value` is empty.
  * @param {boolean}  [props.withStretch]  Offer a Stretch option.
  * @return {JSX.Element} The toolbar control.
@@ -90,6 +91,7 @@ export default function LogicalAlignControl( {
 export function LogicalAlignToolbar( {
 	value,
 	onChange,
+	label = __( 'Alignment', 'sgs-blocks' ),
 	defaultValue = 'start',
 	withStretch = false,
 } ) {
@@ -103,6 +105,7 @@ export function LogicalAlignToolbar( {
 	}
 	return (
 		<AlignmentControl
+			label={ label }
 			alignmentControls={ controls }
 			value={ value || defaultValue }
 			onChange={ ( next ) => onChange( next || defaultValue ) }

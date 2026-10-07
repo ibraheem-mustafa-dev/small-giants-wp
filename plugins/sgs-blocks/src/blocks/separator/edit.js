@@ -180,8 +180,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		Object.assign( rootPreviewStyle, {
 			...( marginLonghands.marginTop ? { marginTop: marginLonghands.marginTop } : {} ),
 			...( marginLonghands.marginBottom ? { marginBottom: marginLonghands.marginBottom } : {} ),
-			marginLeft: marginProps.marginLeft,
-			marginRight: marginProps.marginRight,
+			marginInlineStart: marginProps.marginInlineStart,
+			marginInlineEnd: marginProps.marginInlineEnd,
 		} );
 	}
 
