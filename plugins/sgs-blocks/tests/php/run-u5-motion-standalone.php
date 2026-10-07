@@ -203,7 +203,10 @@ ok( ! has( read_old( 'includes/nav-menu-markup.php' ), 'sgs-nav-bar-menu__panel-
 
 $nbm_render = read_file( 'src/blocks/nav-bar-menu/render.php' );
 ok( has( $nbm_render, "array( 'fade', 'fade-lift', 'slide-down', 'grow' )" ), 'the renderer allows the five panel shapes' );
-ok( has( $nbm_render, "'enter_ms' => \$sgs_nm_panel_in," ), 'the bar scrim fades with the panels' );
+ok(
+	has( $nbm_render, "'enter_ms' => \$sgs_nm_scrim_fade > 0 ? \$sgs_nm_scrim_fade : \$sgs_nm_panel_in," ),
+	'the bar scrim fades with the panels unless a scrim fade duration is set'
+);
 
 $nbm_css = read_file( 'src/blocks/nav-bar-menu/style.css' );
 foreach ( array( 'transition-behavior: allow-discrete;', 'pointer-events: none;', 'visibility: hidden;', '@starting-style {' ) as $needle ) {
