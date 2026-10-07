@@ -57,15 +57,18 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 ## Session D: what it owns
 
 - **Ranking rule.** Walker gaps holding the most open rows across surfaces go first, then each surface to 100% with
-  Solve under the existing done line (below, per surface).
+  Solve under the existing done line (below, per surface). **Bean, 2026-10-07: Solve writes first, surface by surface**,
+  fixing a walker gap when it blocks the surface in hand. Why: the largest walker class, `used-value` width (132 rows on 15
+  surfaces), is mostly double counting (82 have an open box `w` row on the same node already triaged a consequence), so
+  relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
+  Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
-  - 100, 101, 102 and 104.
+  - 102's step titles (line height 1.5, 16px from the number): in the Lenses tree (`0070c8d4a`), owed one rebuild. 100, 101
+    and 104 are closed (register Sweep column).
   - 131: S3's tree half, the black hover colour in the trees.
   - The drawer link fade: 14 rows open, the rise is not sampled.
   - 87's tree half: `single-product.tree.json` still has `showCurrentCrumb` false.
   - The Eye Care card title weight: `cardTitleFontWeight` per site (from Session C2).
-  - CR6 phase 2 item P2-e: 162 committed Eye Care tier boxes hold an explicit zero
-    (`plans/2026-10-07-cr6-box-longhand-migration.md`).
 - **Coverage still owed:**
   - Register rows 150, 152 and 155 need `surfaces.json` entries for checkout, bag and confirmation: each has a
     walker config but no tree and no target yet.
@@ -73,11 +76,6 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     three together.
   - Product's 2 lost pairs.
 - **Carried from Session C (found open by the 2026-10-07 completion check; each needs a decision or a proof):**
-  - [x] `sgs/product-card`'s editor TypeError ("Me is not a function" in `edit()`): the same defect as "Re is not a
-    function" in `plugins/sgs-blocks/reports/2026-10-07-f3-e14-live-verification.md` (the letter is the minifier's name).
-    Cause proven there: `product-card/edit.js::Edit` destructured the attribute `attributeTagText`, shadowing the imported
-    function of that name; fixed in `cd004d31a`, an ancestor of the deployed `d358e1026`. Re-read 2026-10-07: the shop
-    archive template (one product-card) opens in the eye-care-test Site Editor with no product-card error.
   - [x] The calibration rows with `css_state` NULL (`DB_STATE_MISSING_HOVER`, `STATE_FOCUS_UNROUTED`), judged 2026-10-07
     against the framework DB (`block_attributes` rows with a CSS property, no state, and Hover/Focus/Active/Current in the
     name: 29). 14 are right as they are (`bgHoverZoomDuration`/`Easing`: a transition is declared on the resting element).
@@ -94,11 +92,6 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: the 106,
     to be diagnosed per mechanism, largest groups first (by property: background-image 19, grid-template-columns 10, text-indent
     9; by block: nav-bar-menu 10, nav-drawer-menu 9, hero 7, cta-section 6), plus the `oneWidth` probe list (23 today).
-  - [x] `sgs/hero`'s dead count: the "34 of 47" premise is stale. Recalibrated 2026-10-07 it is 15 dead of 66 settings: 7
-    UNEXPLAINED (backgroundImageMobile, backgroundImageTablet, bgSvgOpacity, bgZoomStart, gridTemplateColumns, maxWidth,
-    textIndent; maxWidth and gridTemplateColumns are already the backlog's hero rows), 5 FIXTURE_LACKS_ELEMENT (the media and
-    overlay-hover settings: a fixture gap, not a dead setting), 1 each HOVER_POINTER_MISSES_ELEMENT, NEEDS_OVERLAY_COMPANION,
-    NEEDS_LAYOUT_MODE. Its 7 unexplained travel with the 106 above.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
@@ -166,7 +159,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses (Session D; 71 distinct issues open on the 2026-10-07 sweep): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+- [ ] **Lenses (Session D; 26 distinct issues open on the page rebuilt from the tree on 2026-10-07, 67 that morning): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
   `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
