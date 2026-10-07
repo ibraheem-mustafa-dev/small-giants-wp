@@ -1,5 +1,5 @@
 """Acceptance measurements for the wiring-fingerprint gate (Task 2 of
-.claude/plans/2026-10-04-wiring-fingerprint-gate.md), measured against the QC
+.claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md), measured against the QC
 council's labelled evidence and the calibration cache. The oracles live outside
 the shipped tree (`.claude/reports/2026-10-04-route-data-audit/council/`, the
 gitignored `scripts/computed-route/cache/`); each measurement reports `None`

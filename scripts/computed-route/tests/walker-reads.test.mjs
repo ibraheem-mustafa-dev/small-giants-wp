@@ -1,4 +1,4 @@
-// A-1 (plan 2026-10-04-eye-care-sweep-audit-fix.md): the walker reads what DevTools shows. Unit level: motion timings
+// A-1 (plan archive/2026-10-04-eye-care-sweep-audit-fix.md): the walker reads what DevTools shows. Unit level: motion timings
 // and ::before/::after layers become rows Solve can write, declared sizes replace used ones, and a text run's rows are
 // compared by their spacing. The in-browser reads (settle, forced hover, matched rules) are walker-devtools.test.mjs.
 import test from 'node:test';

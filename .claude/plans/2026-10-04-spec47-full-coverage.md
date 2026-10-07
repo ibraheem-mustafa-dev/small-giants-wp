@@ -66,6 +66,12 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   - The Eye Care card title weight: `cardTitleFontWeight` per site (from Session C2).
   - CR6 phase 2 item P2-e: 162 committed Eye Care tier boxes hold an explicit zero
     (`plans/2026-10-07-cr6-box-longhand-migration.md`).
+- **Coverage still owed:**
+  - Register rows 150, 152 and 155 need `surfaces.json` entries for checkout, bag and confirmation: each has a
+    walker config but no tree and no target yet.
+  - The footer's size-guide modal: the `modal-open` state, its scoped pair and the `surfaces.json` state map, all
+    three together.
+  - Product's 2 lost pairs.
 
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,

@@ -1,5 +1,5 @@
 """Acceptance check on the real repository (Task 2 of
-.claude/plans/2026-10-04-wiring-fingerprint-gate.md), run on demand, never by the
+.claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md), run on demand, never by the
 default `pytest` run: its answers move with the framework's code (a Session 0 fix
 removes a known bug; a new block shifts a rater's share), so it is a measurement,
 not a regression test.

@@ -29,7 +29,9 @@ draft/target and re-run).
   `_sgs_frame_temple` and `_sgs_frame_height` (lens height) (mm), the product's *default* size
   (see above), with the same keys also written per-variation with that variation's own size.
   Lens height comes only from `sizes-jpopticians.json` (jpopticians' "Depth"); a frame the
-  site doesn't carry has no `_sgs_frame_height`, never an estimate. See "Meta keys" below for
+  site doesn't carry has no `_sgs_frame_height`, never an estimate. `data.json`'s own `eye`/`bridge`/`temple`
+  are the draft's placeholders and apply only to a frame `sizes-jpopticians.json` marks `not_found` (or found
+  with no sizes). See "Meta keys" below for
   why these existed as product-level meta in the first place.
 - **Store country** GB, selling to GB only. **UK shipping zone**: "Tracked UK delivery" £3.95, "Free UK delivery" over £75, "Collect in Birmingham" (each method's own instance settings; see `sgs_seed_zone_method_settings()`).
 

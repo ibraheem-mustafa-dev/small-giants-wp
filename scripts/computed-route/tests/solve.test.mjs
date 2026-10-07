@@ -327,7 +327,7 @@ test( 'positive control: rounds 1 calls the write round once, then walks what it
 	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
 } );
 
-// B4 (plan 2026-10-04-eye-care-sweep-audit-fix.md): a ledgered row's target is Bean's decided value. Before, a drifted
+// B4 (plan archive/2026-10-04-eye-care-sweep-audit-fix.md): a ledgered row's target is Bean's decided value. Before, a drifted
 // row kept the raw draft as Solve's target (draftValues read the draft snapshot), so the next Solve wrote the draft over
 // the decision.
 import { judgeDivergence } from '../../parity/lib/divergences.mjs';

@@ -197,7 +197,7 @@ drawings above the measurement table (register N36S). Built in its own session, 
 block's files and its insertion into `sites/eye-care-ward-end/build/single-product.tree.json`. The measurement data
 and the four-row table it sits above are live.
 
-## Carried from the archived Eye Care plans (2026-10-07)
+## Open items with no other home
 
 Open items with no other home. Each names its evidence; the register stays the source of truth for fixes.
 

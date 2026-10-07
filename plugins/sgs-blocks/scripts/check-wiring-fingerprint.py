@@ -17,7 +17,7 @@ council's labelled rows:
 The implementation lives in scripts/wiring-fingerprint/ (one module per job);
 the baseline is scripts/wiring-fingerprint-baseline.json. Design: the route data
 audit's wiring fingerprints (2026-10-04) and the plan
-.claude/plans/2026-10-04-wiring-fingerprint-gate.md (Task 2).
+.claude/plans/archive/2026-10-04-wiring-fingerprint-gate.md (Task 2).
 """
 import sys
 from pathlib import Path

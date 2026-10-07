@@ -62,7 +62,7 @@ test( 'a rule accept for every width keeps its property', () => {
 	assert.equal( match( [ e ], { ...row, ref: 'cr-ref-contact-9', property: 'padding-left', width: 1440 } ), null );
 } );
 
-// A5 (plan 2026-10-04-eye-care-sweep-audit-fix.md): the independent check matched entries on e.ref, which no entry
+// A5 (plan archive/2026-10-04-eye-care-sweep-audit-fix.md): the independent check matched entries on e.ref, which no entry
 // carries (entries store node), so it accepted nothing. It now matches through judgeIndependent.
 import { judgeIndependent, holdsValue } from '../lib/ledger.mjs';
 const ientry = ( over ) => ( { id: 'D-9', scope: 'a', node: 'cr-ref-a-2', state: 'opening', property: 'padding-top', expected: { rule: 'touch-target' }, reason: 'tap area', decided: '2026-10-04 Bean', ...over } );
