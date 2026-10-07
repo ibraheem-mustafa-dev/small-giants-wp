@@ -1,0 +1,69 @@
+{
+ "site": "eye-care-test",
+ "base": "https://darkcyan-grouse-898606.hostingersite.com",
+ "mode": "fixture",
+ "widths": [
+  375,
+  768,
+  1440
+ ],
+ "only": [
+  "ED-product-card",
+  "ED-form",
+  "ED-table-of-contents"
+ ],
+ "counts": {
+  "PASS": 3
+ },
+ "stylesheets": {
+  "total": 69,
+  "scanned": 69,
+  "skipped": [],
+  "sgsCss": [
+   "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/sgs-css/sgs-1637-0fc8a71f5b6d9492cb375ea91a95f2f0.css",
+   "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/sgs-css/sgs-1638-4b9e46eded1ded9bc53c7ae7e626d1fd.css",
+   "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/sgs-css/sgs-1639-3e0e0b8e13e1a548c6d71755981ba6d1.css"
+  ]
+ },
+ "rows": [
+  {
+   "id": "ED-form",
+   "block": "sgs/form",
+   "element": "",
+   "property": "",
+   "viewport": 1440,
+   "setValue": "targets: Tile icon, Tile label, Consent text, Review term, Submit button, Step buttons",
+   "readValue": "missing: none",
+   "clearedValue": "control panel: Animation",
+   "shamValue": "sham label absent",
+   "verdict": "PASS",
+   "evidence": "Styles tab; matched case-insensitively on accessible names; block sgs/form selected via wp.data"
+  },
+  {
+   "id": "ED-table-of-contents",
+   "block": "sgs/table-of-contents",
+   "element": "",
+   "property": "",
+   "viewport": 1440,
+   "setValue": "targets: /(^|\\| )title( \\||$)/i",
+   "readValue": "missing: none",
+   "clearedValue": "control panel: Colour",
+   "shamValue": "sham label absent",
+   "verdict": "PASS",
+   "evidence": "Styles tab; matched case-insensitively on accessible names; block sgs/table-of-contents selected via wp.data"
+  },
+  {
+   "id": "ED-product-card",
+   "block": "sgs/product-card",
+   "element": "",
+   "property": "",
+   "viewport": 1440,
+   "setValue": "targets: /(^|[^a-z])from([^a-z]|$)/i",
+   "readValue": "missing: none",
+   "clearedValue": "control panel: Animation",
+   "shamValue": "sham label absent",
+   "verdict": "PASS",
+   "evidence": "Styles tab; matched case-insensitively on accessible names; block sgs/product-card selected via wp.data"
+  }
+ ]
+}
