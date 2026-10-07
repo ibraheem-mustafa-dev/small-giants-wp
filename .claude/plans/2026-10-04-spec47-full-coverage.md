@@ -63,8 +63,6 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
   Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
-  - 102's step titles (line height 1.5, 16px from the number): in the Lenses tree (`0070c8d4a`), owed one rebuild. 100, 101
-    and 104 are closed (register Sweep column).
   - 131: S3's tree half, the black hover colour in the trees.
   - The drawer link fade: 14 rows open, the rise is not sampled.
   - 87's tree half: `single-product.tree.json` still has `showCurrentCrumb` false.
@@ -98,15 +96,14 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     `sgsChildSizing:{desktop:fill}` emits the `sgs-child-sizing` scope classes), the editor registration
     (`extensions/child-sizing.js` adds the attributes to every block opting in), the comparison
     (`lib/calibrate.mjs::discoverEffects` found flex-grow and flex-basis on container, text and seven others) and a panel
-    rule overriding the flex (none). Recalibrated on local-eye-care 2026-10-07: **worse** (0 settings, the three
-    hide-on settings dead, child-sizing "effects" on `.sgs-nav-bar-menu__bar > …__item:nth-of-type(4) > …__link`): the
-    measured root held a nav-bar-menu, where the 2026-10-05 run's root held the group's own children
-    (`.sgs-container`). `lib/calibrate.mjs::buildTree` puts the instance class on the mega-group and wraps it in the
-    fixture's `parents` (sgs/mega-panel), so the root should be the group: why `.cr-ref-cal-<n>` resolved to an element
-    holding a nav-bar-menu is unproven (the mega panel rendering its groups elsewhere, or a stray instance class on the
-    mirror's header, are the suspects; read the calibration page's DOM in a browser before the page is emptied). The
-    2026-10-05 cache was restored (the bad one would steer Solve into nav-bar-menu writes); the bad file is kept in the
-    session scratchpad only.
+    rule overriding the flex (none). **Cause found 2026-10-07:** the recalibration on
+    local-eye-care measured a nav-bar-menu root because another session's sgs/nav-bar-menu calibration ran on the same
+    mirror at the same time; both build onto the site's one calibration page with the same `cr-ref-cal-<n>` classes
+    (overlap confirmed by that session). Guard built (`5bebb2b6d`): `lib/calibration-lock.mjs`, a per-site lock that makes
+    a second calibration refuse to start. The contaminated cache was replaced by the 2026-10-05 one. **Next:** re-run
+    `calibrate.mjs --site local-eye-care --blocks sgs/mega-group --recalibrate` alone and confirm `discovered.sgsChildSizing`
+    records `flex-grow` on the root; the 2026-10-05 run may itself have been crossed (its discovery is empty), which the
+    clean run will show.
 
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
@@ -179,17 +176,17 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   unconfirmed `h@375 780→684` reading of the page container's own height (the sum of everything in it, a weak signal for
   one padding write) and then cycled one suspect per round through round 9; round 10's rebuild failed ("editor did not
   load", the host's bot challenge after nine builds). The page container then took S6's decided value by hand, the same
-  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Verified by a rebuild of the committed tree and a
-  measure-only walk (`qa/solve/lenses/2026-10-07T20-35-24/`): **26 distinct issues, 0 hardcode, 0 missing setting.** Open:
-  `transition-duration` on cr-ref-lenses-2, -23, -24, -26 (draft 0s, live 0.15 to 0.25s: the site-wide walker gap, 51 rows on
-  13 surfaces); the steps (cr-ref-lenses-27) are 69px shorter than the draft at 375 and 44px at 768, which the column and
-  page heights above them follow; the steps' `align-items` at 375. **Both causes fixed 2026-10-07 (`0070c8d4a`), not yet
-  measured live:** (a) walker gap 2, `compare.mjs::timingIrrelevant` skips transition timings where both sides' states were
-  read and neither element changes in hover, focus or pressed (phones mark `noHover`, `state-passes.mjs::hoverPass`); the
-  51 rows should fall on each surface's next walk; (b) the steps' titles sat at line-height 1 (draft 1.5) and 8px from their
-  numbers (draft 16px), read on both sites at 375 and 1440; the tree takes `titleLineHeight` 1.5 and `numberGap` 16px. The
-  walker never measured the step titles (it pairs the block and its number only). Next: one rebuild-and-measure on Lenses,
-  then the done line.
+  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Then, each measured on a rebuild of the committed tree
+  (`qa/solve/lenses/2026-10-07T21-*`): 26 issues; 20 once walker gap 2 (`compare.mjs::timingIrrelevant`, transition timings on
+  an element that changes in no state) and the steps' titles (`titleLineHeight` 1.5, `numberGap` 16px, the walker never
+  pairs the titles) went live (`0070c8d4a`); 16 once the button took the draft's 28px top margin back (the 2026-10-03 run
+  had zeroed it while the stack gap still sat on top); 9 once the hand config's live finders followed the cards' and
+  steps' current markup and read the grid and steps column on their container section, the walker stopped reading a
+  `display:none` pseudo layer, and straight and curly quotes compared as one character (`5bebb2b6d`). The 9 paint nothing
+  and are ledgered D-72 to D-81 (the draft's scroll reveal never fires below 1440; the steps' flex-grow, gap shorthand and
+  `align-items`). **Next, the done line:** a rebuild measuring 0 unexplained, `independent-check.mjs --surface lenses` 0
+  beyond the ledger, and a planted-fault control (Solve's last write run had 3 wrong writes of 17, two of them the guard's
+  unconfirmed padding verdict).
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
