@@ -140,7 +140,9 @@ final class Product_Bindings {
 		if ( \in_array( $link, array( 'phone', 'email', 'whatsapp' ), true ) && \function_exists( 'sgs_resolve_link_source' ) ) {
 			$resolved = sgs_resolve_link_source( $link, '' );
 			if ( '' !== $resolved['url'] ) {
-				return '<a href="' . \esc_url( $resolved['url'] ) . '">' . \esc_html( $text ) . '</a>';
+				// The class paints it as a button from the site's own button tokens
+				// (assets/css/extensions.css::a.sgs-field-fallback).
+				return '<a class="sgs-field-fallback" href="' . \esc_url( $resolved['url'] ) . '">' . \esc_html( $text ) . '</a>';
 			}
 		}
 		return \esc_html( $text );

@@ -759,3 +759,82 @@
 	opacity: var( --sgs-ed-overlay-opacity, 1 );
 	mix-blend-mode: var( --sgs-ed-overlay-blend, normal );
 }
+
+/* ===== Product field fallback link =====
+ *
+ * `Product_Bindings::empty_value()` (includes/class-product-bindings.php)
+ * returns `<a class="sgs-field-fallback">` when a product has no value for a
+ * bound field and the binding sets `fallback` + `fallback_link` ("Ask us").
+ * It is a button, not prose: the anchor fills its whole cell so the cell is the
+ * tap target, and it is painted from the SAME per-client tokens as sgs/button's
+ * primary preset (`--wp--custom--button-presets--primary--*`, theme-snapshot
+ * `buttonPresets.primary`), with the same theme-token fallbacks, so a client
+ * restyles it in the Site Editor's button preset and nowhere else. A real value
+ * is never wrapped in it and stays plain text.
+ *
+ * Hover BRIGHTENS the resting fill and border by mixing them toward white,
+ * whatever the client's preset hover colours are (a preset's own hover colour
+ * may darken, which this link never does). It deliberately does not take the
+ * preset's hover lift: a lift would slide the target off a pointer resting on
+ * its lower edge and flicker the hover state.
+ *
+ * `a.` raises specificity above the theme's `:root :where(a)` link rules
+ * (underline, link colour, link focus colour). Hover gets both layers of the
+ * touch-safe guard (see "Padding indent" above); `:focus-visible` stays outside
+ * them because it is keyboard-reachable.
+ */
+a.sgs-field-fallback,
+a.sgs-field-fallback:visited {
+	--sgs-ff-bg: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	--sgs-ff-border: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	--sgs-ff-color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding: 0 var(--wp--preset--spacing--20, 0.5rem);
+	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid var(--sgs-ff-border);
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 10px);
+	background-color: var(--sgs-ff-bg);
+	color: var(--sgs-ff-color);
+	font-family: var(--wp--preset--font-family--body, inherit);
+	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: normal;
+	line-height: 1.2;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.18s) ease;
+}
+
+a.sgs-field-fallback:focus {
+	color: var(--sgs-ff-color);
+	text-decoration: none;
+}
+
+a.sgs-field-fallback:focus-visible {
+	background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
+	border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);
+	outline: 3px solid var(--sgs-focus-color, currentColor);
+	outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:where(:root:not(.sgs-touch-input)) a.sgs-field-fallback:hover {
+		background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
+		border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);
+		color: var(--sgs-ff-color);
+		text-decoration: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	a.sgs-field-fallback {
+		transition: none;
+	}
+}
