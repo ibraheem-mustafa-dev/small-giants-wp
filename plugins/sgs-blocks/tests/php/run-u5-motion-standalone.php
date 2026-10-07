@@ -190,7 +190,7 @@ $ndm_css = read_file( 'src/blocks/nav-drawer-menu/style.css' );
 ok( has( $ndm_css, ".sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item:nth-child(20) {\n\t--sgs-i: 19;" ), 'items are indexed as direct children of the drawer list (nested lists never restart the count)' );
 ok( has( $ndm_css, ':nth-last-child(1) {' ) && has( $ndm_css, 'sgs-nav-drawer--stagger-close.is-closing' ), 'reverse order on close' );
 ok( has( $ndm_css, '@supports (transition-delay: calc(sibling-index() * 1ms))' ), 'native sibling-index() through a valid @supports test' );
-ok( has( $ndm_css, 'var(--sgs-nd-last-i, 0)' ) && has( $ndm_css, ':not(.wp-block-sgs-nav-drawer-menu)' ), 'a logo or button beside the menu arrives with the last item' );
+ok( has( $nd_css, 'var(--sgs-nd-last-i, 0)' ) && has( $nd_css, ':not(.wp-block-sgs-nav-drawer-menu)' ) && has( $nd_css, '--sgs-nd-last-i: 20;' ), 'a logo or button beside the menu arrives with the last item' );
 ok( ! has( read_old( 'src/blocks/nav-drawer-menu/style.css' ), '--sgs-nd-stagger-step' ), 'negative control: the pre-U-5 drawer menu has no stagger' );
 
 // ══════════════════════════════════════════════════════════════════════════
