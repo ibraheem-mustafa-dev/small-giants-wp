@@ -107,6 +107,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 - **The walker-blind rows** are all closed and verified live on eye-care-test, N36S included.
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
+- **Box alignment is logical (2026-10-07, `8671c0e64`, icon fix `78fe6a4b0`):** icon, media, separator, nav-drawer and tabs store `start|center|end` (`stretch` kept on drawer and tabs) through `LogicalAlignControl`; gate `scripts/migrate-box-alignment.py` (`npm run check:box-alignment`). Live on sandybrown and eye-care-test (`430545e06`, without the icon CSS fix) with the stored starter drawers migrated on all three sites; measured at 375/768/1440 in LTR and RTL on sandybrown. **Owed:** deploy to indus-test and redeploy eye-care-test for the icon fix (held until peer 2b's Solve run ends); the editor-canvas and inspector pass for the five blocks (batched).
 - **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2: P2-d and P2-f done; P2-a (corner radius) is
   next, then P2-b, P2-c, P2-e (`plans/2026-10-07-cr6-box-longhand-migration.md` Phase 2).
 - **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
