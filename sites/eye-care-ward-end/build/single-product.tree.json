@@ -1628,6 +1628,7 @@
                                   "labelGap": {
                                     "desktop": "3px"
                                   },
+                                  "extensionStyle": "dashed",
                                   "valueFontSize": {
                                     "desktop": 17,
                                     "tablet": 15,
@@ -1812,6 +1813,7 @@
                                   "labelGap": {
                                     "desktop": "3px"
                                   },
+                                  "extensionStyle": "dashed",
                                   "valueFontSize": {
                                     "desktop": 17,
                                     "tablet": 15,

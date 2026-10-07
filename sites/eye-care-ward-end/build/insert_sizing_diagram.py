@@ -36,6 +36,8 @@ VIEWS = (('front', 'Front', ('bridge', 'eye', 'height')), ('side', 'Side', ('tem
 DIAGRAM_STYLE = dict(
     labelMode={'desktop': 'onDrawing', 'mobile': 'numbered'},
     labelGap={'desktop': '3px'},
+    # The draft's guide lines are dashed (stroke-dasharray 4 4 at a 1px stroke).
+    extensionStyle='dashed',
     valueFontSize={'desktop': 17, 'tablet': 15, 'mobile': 15}, valueFontSizeUnit='px', valueLineHeight={'desktop': 1.1},
     valueLineHeightUnit='',
     captionFontSize={'desktop': 11.5, 'tablet': 10, 'mobile': 11}, captionFontSizeUnit='px',
