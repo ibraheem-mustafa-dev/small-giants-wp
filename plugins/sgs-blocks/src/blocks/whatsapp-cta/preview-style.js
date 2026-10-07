@@ -7,7 +7,7 @@
  *
  * @package SGS\Blocks
  */
-import { isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
+import { isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 
 /**
  * Root-element preview style (contract §B3: the button element IS the block
@@ -59,7 +59,7 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 			: {} ),
 	};
 
-	Object.assign( rootStyle, borderRadiusPreview( borderRadius ) );
+	Object.assign( rootStyle, borderRadiusLonghands( borderRadius ) );
 	// Card variant's border preview — CSS already gives the card a default
 	// 1px solid border; only overridden values need setting here.
 	// cardBorderWidth is BASE ONLY (no desktop tier — Spec 35 §14, no

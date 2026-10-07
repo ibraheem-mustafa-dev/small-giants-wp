@@ -311,8 +311,8 @@ $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -322,7 +322,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
+	$tablet_box_decls[] = "{$radius_tab_val}";
 }
 if ( $tablet_box_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
@@ -336,7 +336,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
+	$mobile_box_decls[] = "{$radius_mob_val}";
 }
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';

@@ -7,8 +7,15 @@
       "label": "Case A",
       "phoneNumber": "447000000001",
       "padding": {
-        "desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
-        "tablet": { "top": "40px" }
+        "desktop": {
+          "top": "24px",
+          "right": "24px",
+          "bottom": "24px",
+          "left": "24px"
+        },
+        "tablet": {
+          "top": "40px"
+        }
       }
     }
   },
@@ -21,7 +28,9 @@
       "phoneNumber": "447000000002",
       "padding": {
         "desktop": {},
-        "tablet": { "top": "40px" }
+        "tablet": {
+          "top": "40px"
+        }
       }
     }
   },
@@ -34,8 +43,54 @@
       "phoneNumber": "447000000003",
       "padding": {
         "desktop": {},
-        "tablet": { "left": "30px" },
-        "mobile": { "top": "50px" }
+        "tablet": {
+          "left": "30px"
+        },
+        "mobile": {
+          "top": "50px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-r0",
+      "variant": "inline",
+      "label": "Radius control",
+      "phoneNumber": "447000000004"
+    }
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-d",
+      "variant": "inline",
+      "label": "Case D",
+      "phoneNumber": "447000000005",
+      "borderRadius": {
+        "desktop": {},
+        "tablet": {
+          "topLeft": "20px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-e",
+      "variant": "inline",
+      "label": "Case E",
+      "phoneNumber": "447000000006",
+      "borderRadius": {
+        "desktop": {},
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
       }
     }
   }

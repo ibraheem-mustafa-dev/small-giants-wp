@@ -48,8 +48,6 @@
   "src/blocks/text/render.php::$radius_mob_val",
   "src/blocks/text/render.php::$radius_tab_val",
   "src/blocks/timeline/render.php::$radius_mob_val",
-  "src/blocks/timeline/render.php::$radius_tab_val",
-  "src/blocks/whatsapp-cta/render.php::$radius_mob_val",
-  "src/blocks/whatsapp-cta/render.php::$radius_tab_val"
+  "src/blocks/timeline/render.php::$radius_tab_val"
  ]
 }

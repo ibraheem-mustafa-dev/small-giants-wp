@@ -11,7 +11,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { SgsLengthControl, TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, borderRadiusPreview } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, borderRadiusLonghands } from '../../utils';
 import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
 import { FloatingPanel } from './floating-panel';
 import { buildRootStyle, buildRootClassName, floatingHideLabelPreviewCss } from './preview-style';
@@ -81,11 +81,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			iconGap: attributes.iconGap,
 			minHeight: attributes.minHeight,
 			}, colourVar, resolveTextColourPreviewStyle ),
-			// Set sides only, as render.php prints them (sgs_box_object_longhands): an unset side
-			// keeps the stylesheet's value in the canvas too, never a 0.
+			// Set sides and corners only, as render.php prints them (sgs_box_object_longhands,
+			// sgs_corner_object_longhands): an unset one keeps the stylesheet's value in the canvas too, never a 0.
 			...tierBoxLonghands( padding, previewTier, 'padding' ),
 			...tierBoxLonghands( margin, previewTier, 'margin' ),
-			...borderRadiusPreview( borderRadius, previewTier, { wholeTier: true } ),
+			...borderRadiusLonghands( borderRadius, previewTier ),
 		},
 	} );
 
