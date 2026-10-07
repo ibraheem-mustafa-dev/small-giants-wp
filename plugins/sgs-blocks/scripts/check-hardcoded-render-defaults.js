@@ -1575,21 +1575,24 @@ const E14_BLOCKS_BUILD = false;
 // The ceilings are the counts `--check` MEASURES on a clean HEAD, lowered in the
 // same commit that removes findings. What remains (plugins/sgs-blocks/reports/
 // f3-e14-triage.md §6 holds the full accounting):
-// - CLASS-2 35: findings the triage rates DEFENSIBLE (UI chrome, documented
-//   intent, and the cta-section headline pair, held by the theme's global
-//   heading styles and owned by its own sgs/heading controls) or DEAD (no
-//   current markup emits the class).
+// - CLASS-2 31: findings the triage rates DEFENSIBLE (UI chrome, documented
+//   intent, and the cta-section headline's size, weight and line-height, held
+//   by the theme's global heading styles and owned by its own sgs/heading
+//   controls, which the gate cannot see).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 55: elements with no typography control at all (the
+// - CANNOT-RESOLVE 54: elements with no typography control at all (the
 //   CLASS 4 shape the gate cannot yet name), elements built from sprintf
 //   templates or class maps it cannot parse, and the CANNOT-TELL rows.
+// A var() value counts as a literal on the E14 path unless the block writes one
+// of the custom properties it reads (isUnwrittenVarValue,
+// collectWrittenCustomProps).
 // Shared PHP is read one hop from a block's require (readBlockPhpFiles): not
 // transitively, because includes/render-helpers.php requires the whole helper
 // tree and almost every block requires it.
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        35,
+	'CLASS-2':        31,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 55,
+	'CANNOT-RESOLVE': 54,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
@@ -2499,7 +2502,69 @@ function classifyInheritedHardcode( cand, model, declLog ) {
  * @param {Set|null}  e9Props    E9: properties the legacy attr-name path leaves to
  *                               the E14 classifier (blocks with selectors.typography).
  */
-function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper, model, e9Props ) {
+/**
+ * Custom properties the block WRITES from a control: an assignment (`--x:` or
+ * `'--x' =>`) or a whole quoted `'--x'` string (a property map entry handed to
+ * an emitter) in the block's own PHP and JS, or in any PHP its files reach by
+ * `require`. Unlike the element model (readBlockPhpFiles, one hop), the writer
+ * set follows requires transitively: a writer is often a helper several hops
+ * down (nav-drawer-menu's render.php reaches the file that writes
+ * --sgs-ndm-orn-size three hops out), and a write cannot pollute the element
+ * model. A `'var(--x)'` string is a read, and a stylesheet is never searched:
+ * a property defined only in CSS is a default, not a control channel.
+ */
+function collectWrittenCustomProps( blockDir ) {
+	const written = new Set();
+	const files   = readBlockPhpFiles( blockDir );
+	const seen    = new Set( files.map( ( f ) => path.resolve( f.file ) ) );
+	for ( let i = 0; i < files.length; i++ ) {
+		for ( const m of files[ i ].src.matchAll( /(?<![\w$>:])require(?:_once)?\b\s*([^;]+);/g ) ) {
+			const target = resolveRequirePath( m[ 1 ], files[ i ].file );
+			if ( ! target || seen.has( target ) ) {
+				continue;
+			}
+			seen.add( target );
+			try {
+				files.push( { file: target, src: maskPhpComments( fs.readFileSync( target, 'utf8' ) ) } );
+			} catch ( err ) {
+				// Missing or unreadable target: skip it, the gate never fails on a require.
+			}
+		}
+	}
+	const sources = files.map( ( f ) => f.src );
+	const walkJs  = ( dir ) => {
+		for ( const e of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+			const p = path.join( dir, e.name );
+			if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
+				walkJs( p );
+			} else if ( e.isFile() && /\.js$/i.test( e.name ) ) {
+				sources.push( fs.readFileSync( p, 'utf8' ) );
+			}
+		}
+	};
+	walkJs( blockDir );
+	for ( const s of sources ) {
+		for ( const m of s.matchAll( /(--[A-Za-z0-9_-]+)\s*['"]?\s*(?::|=>)/g ) ) {
+			written.add( m[ 1 ] );
+		}
+		for ( const m of s.matchAll( /['"](--[A-Za-z0-9_-]+)['"]/g ) ) {
+			written.add( m[ 1 ] );
+		}
+	}
+	return written;
+}
+
+/**
+ * E14 var() admission: a var() value holds an element exactly as a literal does
+ * unless the block writes one of the custom properties it reads. A preset token
+ * (`--wp--preset--*`) is never written by a block, so it always counts.
+ */
+function isUnwrittenVarValue( value, writtenProps ) {
+	const props = [ ...value.matchAll( /var\(\s*(--[A-Za-z0-9_-]+)/g ) ].map( ( m ) => m[ 1 ] );
+	return props.length > 0 && ! props.some( ( p ) => writtenProps.has( p ) );
+}
+
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper, model, e9Props, writtenProps = new Set() ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
 	// E14: every default-state declaration of an inherited property (any value),
@@ -2653,6 +2718,9 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 		const rawValue = captureFullValue( lines, i, colonPos );
 
 		if ( ! isLiteralConstant( rawValue, property ) ) {
+			if ( modelEligible && CSS_VAR_RE.test( rawValue ) && isUnwrittenVarValue( rawValue, writtenProps ) ) {
+				candidates.push( { line: lineNum, property, value: rawValue, selector: currentSelector } );
+			}
 			continue;
 		}
 
@@ -2987,7 +3055,8 @@ function checkBlock( blockDir ) {
 			helperGov,
 			usesWrapper,
 			elementModel,
-			e9Props
+			e9Props,
+			elementModel ? collectWrittenCustomProps( blockDir ) : new Set()
 		);
 		for ( const f of cssFindings ) {
 			const owningAttrs = f.attrs.join( ', ' );
@@ -3508,6 +3577,39 @@ function selfTestE14( assert ) {
 			[ 'CLASS-2' ]
 		);
 	}
+
+	// var() admission: a preset token on a sub-element holds it against the
+	// root's control exactly as a literal does.
+	const fontSizeOnHeader = ( r ) => r.findings.filter( ( f ) => 'font-size' === f.property && '.sgs-x-item__header' === f.selector );
+	const varFixture = ( php, css ) => runE14Fixture(
+		[ 'fontSize' ],
+		E14_FIXTURE_PHP_HEAD +
+			"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" + php +
+			E14_FIXTURE_ROOT_OPEN +
+			'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+		css
+	);
+	assert(
+		'var() admission: a preset token on a sub-element IS reported as CLASS-2',
+		fontSizeOnHeader( varFixture( '', '.sgs-x-item__header {\n\tfont-size: var(--wp--preset--font-size--small, 0.875rem);\n}\n' ) ).map( ( f ) => f.class ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'var() admission: a custom property the block writes from a control is NOT reported',
+		fontSizeOnHeader( varFixture(
+			"$css .= $root_sel . '{--sgs-x-header-size:' . esc_attr( $attributes['fontSize'] ) . '}';\n",
+			'.sgs-x-item__header {\n\tfont-size: var(--sgs-x-header-size, 0.875rem);\n}\n'
+		) ).length,
+		0
+	);
+	assert(
+		'var() admission: a custom property defined only in the stylesheet IS reported (a default is not a writer)',
+		fontSizeOnHeader( varFixture(
+			'',
+			'.sgs-x {\n\t--sgs-x-header-size: 0.875rem;\n}\n.sgs-x-item__header {\n\tfont-size: var(--sgs-x-header-size, 0.875rem);\n}\n'
+		) ).map( ( f ) => f.class ),
+		[ 'CLASS-2' ]
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -3530,7 +3632,9 @@ function selfTestRequireHop( assert ) {
 		fs.mkdirSync( inc );
 		fs.mkdirSync( blockDir, { recursive: true } );
 		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
-		fs.writeFileSync( path.join( inc, 'c.php' ), '<?php ?>\n<aside class="sgs-hop-c"></aside>\n', 'utf8' );
+		fs.writeFileSync( path.join( inc, 'c.php' ), "<?php $css = '--sgs-hop-deep:' . $v; $hover = 'var(--sgs-hop-read)'; ?>\n<aside class=\"sgs-hop-c\"></aside>\n", 'utf8' );
+		fs.writeFileSync( path.join( blockDir, 'edit.js' ), "const s = { '--sgs-hop-js': size };\n", 'utf8' );
+		fs.writeFileSync( path.join( blockDir, 'style.css' ), '.sgs-hop-own { --sgs-hop-css: 1rem; }\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'paren.php' ), '<?php ?>\n<nav class="sgs-hop-paren"></nav>\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'plain.php' ), '<?php ?>\n<p class="sgs-hop-plain"></p>\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'commented.php' ), '<?php ?>\n<footer class="sgs-hop-commented"></footer>\n', 'utf8' );
@@ -3565,6 +3669,11 @@ function selfTestRequireHop( assert ) {
 		assert( 'require forms: a require inside a // or /* */ comment is not followed', classes.has( 'sgs-hop-commented' ), false );
 		assert( 'require forms: a non-.php target is not read', classes.has( 'sgs-hop-txt' ), false );
 		assert( 'require forms: a missing target is skipped and a repeated require is read once', names, [ 'b.php', 'paren.php', 'plain.php', 'render.php' ] );
+		const written = collectWrittenCustomProps( blockDir );
+		assert( 'writer set: a property written two hops out (C) IS written (the writer set is transitive)', written.has( '--sgs-hop-deep' ), true );
+		assert( 'writer set: a property written in the block\'s edit.js IS written', written.has( '--sgs-hop-js' ), true );
+		assert( 'writer set: a var(--x) string is a read, not a write', written.has( '--sgs-hop-read' ), false );
+		assert( 'writer set: a property defined only in the stylesheet is NOT written', written.has( '--sgs-hop-css' ), false );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
