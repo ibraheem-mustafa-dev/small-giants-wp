@@ -2346,10 +2346,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				     "Card" panel; price content lives in the Settings tab's
 				     "Price" panel (bound mode) — this panel is appearance only. ── */ }
 				{ /* Both modes: render.php emits every target's rule before the
-				     typed/bound split. Bound mode leaves out 'brand', which has
-				     its own "Brand overlay typography" panel there; typed mode
-				     leaves out 'priceFromLabel', because only a bound card renders
-				     the "From" label. */ }
+				     typed/bound split, so this one switcher serves both. Typed
+				     mode leaves out 'priceFromLabel', because only a bound card
+				     renders the "From" label. */ }
 				{ (
 					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 						<TypographyControls
@@ -2451,9 +2450,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									key: 'brand',
 									label: __( 'Brand overlay', 'sgs-blocks' ),
 									prefix: 'brand',
-									showWeight: false,
+									showFontFamily: true,
 									showStyle: false,
 									showLineHeight: false,
+									showLetterSpacing: true,
 								},
 								{
 									key: 'noImageLabel',
@@ -2501,7 +2501,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showLineHeight: false,
 									showLetterSpacing: true,
 								},
-							].filter( ( target ) => target && ( isBuiltIn || 'brand' !== target.key ) && ( isBound || 'priceFromLabel' !== target.key ) ) }
+							].filter( ( target ) => target && ( isBound || 'priceFromLabel' !== target.key ) ) }
 						/>
 						{ isTrial && (
 							<>
@@ -2544,27 +2544,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								/>
 							</>
 						) }
-					</PanelBody>
-				) }
-				{ /* Brand overlay typography (bound mode) — the typed-mode
-				     equivalent lives inside the Typography panel below
-				     (isBuiltIn). render.php emits the brand rule from the
-				     shared, pre-branch-split section, so bound mode needs its
-				     own mount. */ }
-				{ isBound && (
-					<PanelBody
-						title={ __( 'Brand overlay typography', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="brand"
-							showFontFamily
-							showStyle={ false }
-							showLineHeight={ false }
-							showLetterSpacing
-						/>
 					</PanelBody>
 				) }
 
