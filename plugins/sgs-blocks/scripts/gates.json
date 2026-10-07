@@ -1399,5 +1399,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 154
+  },
+  {
+    "id": "check-import-shadowing",
+    "cmd": "node scripts/check-import-shadowing.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 155
+  },
+  {
+    "id": "check-import-shadowing-selftest",
+    "cmd": "node scripts/check-import-shadowing.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 156
   }
 ]

@@ -551,8 +551,7 @@ The 36 DEFENSIBLE findings (35 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 **Still open on this track, outside the gate gaps of section 7** (each resumable cold):
 
-- **`sgs/form` `fieldFontWeight` / `fieldFontStyle` have `css_element` NULL in the framework DB** (from `6f1963c28`). The cloning resolver's suffix lookup for a ROOT `fontWeight` / `fontStyle` can therefore land on the `field*` attribute. Not an `AmbiguousLayerAttrError`, so no gate fails. Prove it first (clone a form whose draft sets a root weight and read which attribute is written), then name the element in `scripts/attr-classification-overrides.json` (`css_element: "field-input"`, the `sgs/form::fieldTextAlign` shape) and reseed Stage 1 from a clean worktree.
-- **`sgs/product-card` has three `TypographyControls` mounts** (the shared Typography panel, the bound-only "Brand overlay typography" panel, and the CTA). The one-panel rule says one switcher per block; fold them when the block is next opened for typography.
+- **The 38 `var()` rows of section 7 gap 1** (Bean, 2026-10-07: fix them all, then admit `var()` with no new counter). Resume from the table in section 7: product-card 14 first (12 of its properties have no writer, so each either gets a control that writes it or becomes a plain literal in the right place), then form 9, choice-flow 6, and the small blocks.
 - **`sgs/product-card::valueLadder*::L3`** (24 baselined wiring-fingerprint gaps) need a bound-mode canvas mirror. **Parked by Bean (2026-10-07).** The `#block-{clientId}` scoped `typographyPreviewCss` rule that cleared `priceFromLabel*` (`02e259b33`) is the mechanism that would clear these too.
 - **Offer, not started:** a gate for "an import name also destructured from `attributes`" (the shadowing that crashed every product-card editor until `cd004d31a`). The detector exists only as a one-off script; as a gate it needs a negative control on that commit's parent.
 
@@ -560,7 +559,55 @@ The 36 DEFENSIBLE findings (35 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 Each is evidence for a later gate task and is still open. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
 
-1. **`var()`-valued declarations are invisible to E14.** `isLiteralConstant` rejects them, but a `var(--wp--preset--font-size--x-large)` on a descendant blocks an ancestor control exactly as a literal does. Measured with a scratch copy of the gate that admits `var(` values for inherited properties: +48 findings (27 CLASS-2, 21 CANNOT-RESOLVE) in 11 blocks (`form` 15, `choice-flow` 12, `cta-section` 5, `product-card` 4, `countdown-timer` 3, `option-picker` 3, `google-reviews` 2, and one each in `notice-banner`, `process-steps`, `table-of-contents`, `team-member`). Example: `countdown-timer/style.css::.sgs-countdown__number { font-size: var(--wp--preset--font-size--xx-large, 3rem) }` made the root `fontSize` control do nothing on the numbers, and the gate said nothing. Direct evidence from closing the countdown-timer rows (`75a583e23`): `__number`, `__label` and `__expired` each also declared `font-size: var(--wp--preset--font-size--...)`, which blocked the root control exactly as a literal does while the gate reported nothing for it. Those were de-specified into `:where()` alongside the literals, so the control now reaches them, but the gate still cannot see that class of defect.
+1. **`var()`-valued declarations are invisible to E14.** `isLiteralConstant` rejects any value containing `var(--`, but a `var(--wp--preset--font-size--small)` on a descendant blocks an ancestor control exactly as a literal does, and so does a block's own `var(--sgs-x, 14px)` when nothing writes `--sgs-x`. Direct evidence: closing the countdown-timer rows (`75a583e23`) needed `__number`, `__label` and `__expired`'s `var()` font sizes de-specified alongside their literals, while the gate reported nothing for them.
+
+   **Admission rule (designed 2026-10-07, not built).** A `var()` value counts as a literal on the E14 path (`modelEligible`, never the legacy path) unless the block's own PHP or JS writes that custom property, because a written property is the control's channel. A preset token (`--wp--preset--*`) is never written by a block, so it always counts. Measured with a scratch copy of the gate (`isLiteralConstant` bypassed for `modelEligible` values matching `CSS_VAR_RE`, legacy owners left untouched), diffed against `--survey --verbose` from the real gate on `95b21c01f`: +45 findings, of which 7 use a property some block file writes (`--sgs-gr-blue` x2, `--sgs-ndm-orn-size`, `--sgs-ndm-trail-size`, `--sgs-pc-badge-fg`, `--sgs-card-title-colour`, `--sgs-whatsapp-cta-card-text-wrap`) and fall out under the rule. 12 of product-card's own properties have no writer anywhere in `src/` or `includes/`, so they are literals that only look like hooks.
+
+   **The 38 the rule admits (13 CLASS-2, 25 CANNOT-RESOLVE).** Bean's decision (2026-10-07): fix all 38 first, then admit `var()` into the existing categories at zero ceiling cost; no separate counter. Each row gets the same treatment as the literal rows of section 3: its own control, or its default moved up to the ancestor whose control should reach it, never a bare `:where()` wrap where the control is on an ancestor. Rows on headings must be measured live first (the theme's global heading styles hold `h1`-`h6`; see the `cta-section` headline, already DEFENSIBLE as a literal).
+
+   | Block | Class | Selector | Declaration |
+   |---|---|---|---|
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__progress-badge` | `color: var(--wp--preset--color--primary-dark, #0F4C4C)` |
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__stepper-circle` | `color: var(--wp--preset--color--text-muted, #606D80)` |
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle, .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle` | `color: var(--wp--preset--color--primary, #1F7A7A)` |
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-label, .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-label` | `color: var(--wp--preset--color--primary, #1F7A7A)` |
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__stepper-label` | `color: var(--wp--preset--color--text-muted, #606D80)` |
+   | `sgs/choice-flow` | CANNOT-RESOLVE | `.sgs-choice-flow__summary-note` | `color: var(--wp--preset--color--text-muted, #6b7280)` |
+   | `sgs/cta-section` | CLASS-2 | `.sgs-cta-section__headline` | `font-size: var(--wp--preset--font-size--x-large)` |
+   | `sgs/cta-section` | CLASS-2 | `.sgs-cta-section__ribbon` | `font-size: var(--wp--preset--font-size--x-small, 0.75rem)` |
+   | `sgs/cta-section` | CLASS-2 | `.sgs-cta-section__stats` | `font-size: var(--wp--preset--font-size--small)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-field__error` | `font-size: var(--wp--preset--font-size--x-small, 0.8125rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-field__error-message` | `font-size: var(--wp--preset--font-size--x-small, 0.8125rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-field__file-hint` | `font-size: var(--wp--preset--font-size--x-small, 0.8125rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-field__help` | `font-size: var(--wp--preset--font-size--x-small, 0.8125rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-file__preview` | `font-size: var(--wp--preset--font-size--small, 0.9375rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-file__progress` | `font-size: var(--wp--preset--font-size--small, 0.9375rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-review__detail` | `font-size: var(--wp--preset--font-size--small, 0.9375rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form-review__heading` | `font-size: var(--wp--preset--font-size--medium, 1.125rem)` |
+   | `sgs/form` | CLASS-2 | `.sgs-form__progress-step-label` | `font-size: var(--wp--preset--font-size--x-small, 0.75rem)` |
+   | `sgs/google-reviews` | CANNOT-RESOLVE | `.sgs-google-reviews__badge-text span` | `color: var( --sgs-gr-ink-muted )` |
+   | `sgs/google-reviews` | CANNOT-RESOLVE | `.sgs-google-reviews__date` | `color: var( --sgs-gr-ink-muted )` |
+   | `sgs/google-reviews` | CANNOT-RESOLVE | `.sgs-google-reviews__meta` | `color: var( --sgs-gr-ink-muted )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-button` | `font-weight: var(--sgs-product-card-btn-font-weight, 600)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-button` | `line-height: var(--sgs-product-card-btn-line-height, 1.4)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__description` | `font-size: var(--sgs-product-card-desc-font-size, 14px)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__price` | `font-family: var( --wp--preset--font-family--display )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__price` | `font-size: var( --sgs-card-price-font-size, 28px )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__price` | `font-weight: var( --sgs-card-price-font-weight, 700 )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__price-note` | `font-size: var(--sgs-product-card-price-note-font-size, 13px)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__tag` | `font-size: var(--sgs-product-card-tag-font-size, 11px)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__title` | `font-size: var( --sgs-card-title-font-size, 20px )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card .sgs-product-card__title` | `font-weight: var( --sgs-card-title-font-weight, 500 )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card h3` | `color: var(--wp--preset--color--text, #3a2e26)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.product-card h3` | `font-size: var(--sgs-card-title-font-size, 20px)` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.sgs-product-card__swatch-more` | `font-size: var( --sgs-pc-swatch-more-font-size, 11px )` |
+   | `sgs/product-card` | CANNOT-RESOLVE | `.value-ladder__saving` | `color: var( --wp--preset--color--text, #1a1a1a )` |
+   | `sgs/table-of-contents` | CANNOT-RESOLVE | `.sgs-toc` | `font-size: var(--wp--preset--font-size--small, 0.875rem)` |
+   | `sgs/team-member` | CANNOT-RESOLVE | `.sgs-team-member__overlay-bio` | `font-size: var(--wp--preset--font-size--small, 0.875rem)` |
+   | `sgs/team-member` | CLASS-2 | `.sgs-team-member__social-link` | `font-size: var(--wp--preset--font-size--small, 0.75rem)` |
+
+   Per block: product-card 14, form 9, choice-flow 6, cta-section 3, google-reviews 3, team-member 2, table-of-contents 1. When all 38 are gone, the admission lands as one change to `isLiteralConstant`'s E14 call with a self-test pair (a preset token that must fire, a written `--sgs-*` property that must not), and the ceilings do not move.
+
 2. **Own-control verdicts: fixed for a single-member selector, open for a selector list.** `classifyInheritedHardcode` now checks a resolved control on the declaring element first (`87eb25957`). `media`'s caption rule is still CANNOT-RESOLVE because its selector list also holds a bare `figcaption` that the gate cannot place (gap 4); the verdict needs every member resolved.
 3. **One unplaceable control poisons the whole property.** Cause D: 20 findings are CANNOT-RESOLVE because one control for the property targets an element built from a variable or sprintf template, even where that control is on an unrelated element.
 4. **sprintf placeholders drop elements.** `'<span class="sgs-option-picker__pill%s">'` loses the class token and `'<%1$s class="sgs-media__caption">'` is not parsed as a tag. The former hid the pill from the element model; its findings are gone (`4a4d442fd`), but any future declaration on a sprintf-glued class hits the same gap. Dynamic tags (`<<?php echo esc_attr( $heading_level ); ?> class="sgs-process-steps__title">`) are not parsed either, which is why the process-steps note lists three leak targets and not the title.

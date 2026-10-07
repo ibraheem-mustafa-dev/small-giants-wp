@@ -831,8 +831,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 223 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 1024 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 225 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 1028 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -975,13 +975,16 @@ Each entry's purpose is quoted from the script's own header.
 | 126 | `check-extension-roster.js` | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds sgs-update-v2.py::_seed_extension_attr_rows, so… |
 | 127 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
 | 128 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
-| 129 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 130 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 131 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 132 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 133 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 129 | `check-focus-ring-token.py` | : every keyboard focus ring is drawn from the focus-ring token. |
+| 130 | `migrate-box-longhands.py` | CR6: move padding and margin boxes off the shorthand that zero-fills unset sides. |
+| 131 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level import in the same file. The destructured attribute value then… |
+| 132 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 133 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 134 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 135 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 136 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
 
-**133 gating scripts.** Regenerate this whole section with:
+**136 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -989,7 +992,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (133 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 134 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (136 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 137 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1178,7 +1181,7 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: 1
 
 **`plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js`** (build)
-- Reads: `BASELINE_FILE`, `blockJsonPath`
+- Reads: `BASELINE_FILE`, `blockJsonPath`, `target`
 - Writes: `BASELINE_FILE`
 - Non-zero exit sites found: exit(1)
 
@@ -1193,6 +1196,11 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites found: exit(0)
+
+**`plugins/sgs-blocks/scripts/check-import-shadowing.js`** (build)
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-inert-controls.py`** (build)
 - Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `BLOCKS_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'; `INCLUDES_DIR` = REPO / 'plugins' / 'sgs-blocks' / 'includes'; `COMPONENTS_JS` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'inspector-scan' / 'core' / 'components.js'
@@ -1557,6 +1565,14 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `bjPath`, `editPath`, `phpPath`
 - Non-zero exit sites found: exit(0)
 
+**`plugins/sgs-blocks/scripts/migrate-box-longhands.py`** (build)
+- Path constants: `PLUGIN` = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); `CENSUS` = os.path.join(REPO, 'reports', 'migrations', 'box-longhands-census.json')
+- Reads: `BASELINE`
+- Writes: `BASELINE`, `CENSUS`, `tmp`
+- DB tables (sgs-framework.db): plugins
+- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--only`, `--self-test`, `--survey`, `--write-baseline`
+- Non-zero exit sites found: SystemExit(non-zero on failure)
+
 **`plugins/sgs-blocks/scripts/migrate-length-sanitiser.py`** (build)
 - Path constants: `ROOT` = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1764,6 +1780,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`scripts/check-focus-ring-token.py`** (build)
+- Path constants: `REPO` = Path(__file__).resolve().parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--check`, `--self-test`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`scripts/check-no-client-names.py`** (build)
 - Path constants: `REPO` = Path(__file__).resolve().parent.parent
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -1797,7 +1820,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 866 scripts
+#### `plugins/sgs-blocks/scripts/` — 869 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2241,6 +2264,7 @@ for the verb you happen to have in mind.
 | `migrate-border-shape-b.js` | manifest+npm | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
 | `migrate-box-control-presets.py` | manifest+script-call | - roll the C16 spacing-preset dropdown out from its |
 | `migrate-box-control-wiring.py` | manifest | Codemod: swap the flat-sibling <ResponsiveBoxControl> wiring for the |
+| `migrate-box-longhands.py` | manifest+npm+script-call | CR6: move padding and margin boxes off the shorthand that zero-fills unset sides. |
 | `migrate-colour-picker-to-panel.py` | manifest | - migrate raw <DesignTokenPicker> colour mounts in a |
 | `migrate-container-flexwrap-and-stack-candidates.py` | manifest | census + safe single-apply for TWO |
 | `migrate-content-collection-to-card-grid.php` | — | Migrate `sgs/content-collection` blocks to `sgs/card-grid` (source = cpt-collection). |
@@ -2486,6 +2510,8 @@ for the verb you happen to have in mind.
 | `qa/capture-ncui-remainder.js` | manifest | Visual capture for the 9 native-colour-ui blocks NOT covered by reports/visual-diff/native-colour-ui-2026-08-22.md. |
 | `qa/capture-ncui-templateparts.js` | manifest | The final 2 native-colour-ui blocks, verified IN THEIR REAL CONTEXT. |
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
+| `qa/check-box-longhands-blocks-live.mjs` | — | CR6 U8 live check across migrated blocks: a padding box that sets three sides on desktop and only the top on tablet keeps the desktop sides at tablet… |
+| `qa/check-box-longhands-live.mjs` | — | CR6 live check: padding set on one side of one tier changes only that side, on the front end AND in the editor canvas, at 1440 / 768 / 375 (plan… |
 | `qa/check-colour-editor-roundtrip.js` | manifest+script-call | QA Gate C — the EDITOR half. |
 | `qa/check-colour-gradient-roundtrip.js` | manifest | Text-colour gradient round-trip probe — does the FRONTEND actually paint a `background-clip:text` gradient when a `{attr}Gradient` sibling is set… |
 | `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
@@ -2668,16 +2694,17 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 113 scripts
+#### `scripts/` — 114 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
 | `apply-block-attrs-batch.js` | — | One-off companion to wp-update-block-attrs.js for the wholesale-food client's homepage attribute-mirror task (2026-07-16). Handles the case… |
 | `brand-palette-sampler.py` | — |  |
+| `check-focus-ring-token.py` | manifest | : every keyboard focus ring is drawn from the focus-ring token. |
 | `check-no-client-names.py` | manifest+script-call | : keep client names and reference-site names out of the framework. |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
 | `computed-route/calibrate.mjs` | — | Block calibration command (FR-47-2). |
-| `computed-route/confirm-canvas.mjs` | — | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
+| `computed-route/confirm-canvas.mjs` | script-call | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
 | `computed-route/fill.mjs` | manifest+script-call+skill+test-import | Fill (FR-47-4): from a skeleton tree (which blocks, nested how, with the draft's words, each node naming the draft element it copies) to a tree… |
 | `computed-route/ledger.mjs` | script-call+skill+test-import | Divergence ledger command (FR-47-5). |
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2): one library-wide folder, one file per block, whichever site measured it. A block calibrated on one site is never… |
