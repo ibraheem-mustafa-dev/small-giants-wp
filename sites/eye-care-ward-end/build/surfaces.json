@@ -62,12 +62,24 @@
     "states": {
       "opening": null,
       "faq-closed": null,
-      "faq-item2-open": "open"
+      "faq-item2-open": "open",
+      "faq-item3-open": "open",
+      "faq-item4-open": "open",
+      "faq-item5-open": "open",
+      "faq-item6-open": "open",
+      "faq-item7-open": "open",
+      "faq-item8-open": "open"
     },
     "walkStates": [
       "opening",
       "faq-closed",
-      "faq-item2-open"
+      "faq-item2-open",
+      "faq-item3-open",
+      "faq-item4-open",
+      "faq-item5-open",
+      "faq-item6-open",
+      "faq-item7-open",
+      "faq-item8-open"
     ]
   },
   "contact": {

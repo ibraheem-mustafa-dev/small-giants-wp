@@ -1,6 +1,16 @@
 {
  "surface": "help",
- "when": "2026-10-06T16:18:51.287Z",
+ "when": "2026-10-07T15:44:24.053Z",
+ "states": [
+  "opening",
+  "faq-item2-open",
+  "faq-item3-open",
+  "faq-item4-open",
+  "faq-item5-open",
+  "faq-item6-open",
+  "faq-item7-open",
+  "faq-item8-open"
+ ],
  "width": 1440,
  "recheck": [
   375,
@@ -9,7 +19,7 @@
  ],
  "lifted": [],
  "blocks": 41,
- "kept": 14,
+ "kept": 112,
  "coveredByHand": [
   "cr-ref-help-1",
   "cr-ref-help-2",
@@ -45,86 +55,95 @@
   {
    "name": "eyebrow",
    "ok": true,
-   "checked": 1,
+   "judged": false,
+   "checked": 8,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "title",
    "ok": true,
-   "checked": 2,
+   "judged": false,
+   "checked": 16,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "info-uk-heading",
    "ok": true,
-   "checked": 1,
+   "judged": false,
+   "checked": 14,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "info-uk-text",
    "ok": true,
-   "checked": 15,
+   "checked": 121,
    "split": [],
    "why": null
   },
   {
    "name": "info-collect-heading",
    "ok": true,
-   "checked": 1,
+   "judged": false,
+   "checked": 8,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "info-collect-text",
    "ok": true,
-   "checked": 12,
+   "checked": 89,
    "split": [],
    "why": null
   },
   {
    "name": "info-returns-heading",
    "ok": true,
+   "judged": false,
    "checked": 0,
    "split": [],
-   "why": null
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "info-returns-text",
    "ok": true,
-   "checked": 15,
+   "checked": 129,
    "split": [],
    "why": null
   },
   {
    "name": "questions-heading",
    "ok": true,
+   "judged": false,
    "checked": 0,
    "split": [],
-   "why": null
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "size-guide-link",
    "ok": true,
-   "checked": 1,
+   "judged": false,
+   "checked": 8,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "contact-link-top",
    "ok": true,
+   "judged": false,
    "checked": 0,
    "split": [],
-   "why": null
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "faq-question-1",
    "ok": true,
-   "checked": 2,
+   "judged": false,
+   "checked": 16,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "faq-answer-1",
@@ -136,49 +155,60 @@
   {
    "name": "faq-icon-1",
    "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
    "checked": 0,
-   "split": [],
-   "why": null
+   "split": []
   },
   {
    "name": "faq-question-2",
    "ok": true,
-   "checked": 4,
+   "checked": 31,
    "split": [],
    "why": null
   },
   {
    "name": "faq-icon-2",
    "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
    "checked": 0,
-   "split": [],
-   "why": null
+   "split": []
   },
   {
    "name": "still-heading",
    "ok": true,
-   "checked": 3,
+   "checked": 23,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "phone-text",
    "ok": true,
-   "checked": 10,
+   "checked": 75,
    "split": [],
    "why": null
   },
   {
    "name": "contact-button",
    "ok": true,
+   "judged": false,
    "checked": 0,
    "split": [],
-   "why": null
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "call-button",
    "ok": true,
+   "judged": false,
    "checked": 0,
+   "split": [],
+   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
+  },
+  {
+   "name": "faq-answer-2",
+   "ok": true,
+   "checked": 20,
    "split": [],
    "why": null
   }
@@ -188,76 +218,14 @@
  },
  "left": [
   {
-   "ref": "cr-ref-help-19",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 319px on the draft against 996px live",
-   "words": 8,
-   "matched": 8,
-   "first": "how",
-   "last": "street?"
-  },
-  {
-   "ref": "cr-ref-help-21",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 319px on the draft against 996px live",
-   "words": 7,
-   "matched": 7,
-   "first": "can",
-   "last": "sunglasses?"
-  },
-  {
-   "ref": "cr-ref-help-23",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 302px on the draft against 996px live",
-   "words": 8,
-   "matched": 8,
-   "first": "what",
-   "last": "order?"
-  },
-  {
-   "ref": "cr-ref-help-25",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(5) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 282px on the draft against 996px live",
-   "words": 6,
-   "matched": 6,
-   "first": "how",
-   "last": "take?"
-  },
-  {
-   "ref": "cr-ref-help-27",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 271px on the draft against 996px live",
-   "words": 8,
-   "matched": 8,
-   "first": "how",
-   "last": "choose?"
-  },
-  {
-   "ref": "cr-ref-help-29",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 275px on the draft against 996px live",
-   "words": 5,
-   "matched": 5,
-   "first": "can",
-   "last": "sunglasses?"
-  },
-  {
-   "ref": "cr-ref-help-31",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 258px on the draft against 996px live",
-   "words": 7,
-   "matched": 7,
-   "first": "can",
-   "last": "fitted?"
-  },
-  {
    "ref": "cr-ref-help-39",
    "draft": null,
    "why": "no draft element holds its words",
    "words": 2,
    "matched": 2,
    "first": "contact",
-   "last": "me"
+   "last": "me",
+   "state": "faq-item8-open"
   },
   {
    "ref": "cr-ref-help-40",
@@ -266,35 +234,8 @@
    "words": 1,
    "matched": 1,
    "first": "call",
-   "last": "call"
-  },
-  {
-   "ref": "cr-ref-help-20",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-22",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-24",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-26",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-28",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-30",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
-  },
-  {
-   "ref": "cr-ref-help-32",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "last": "call",
+   "state": "faq-item8-open"
   }
  ],
  "keptPairs": [
@@ -305,7 +246,8 @@
    "words": 202,
    "matched": 202,
    "first": "help",
-   "last": "call"
+   "last": "call",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-4",
@@ -314,7 +256,8 @@
    "words": 25,
    "matched": 25,
    "first": "uk",
-   "last": "make."
+   "last": "make.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-3",
@@ -323,7 +266,8 @@
    "words": 77,
    "matched": 77,
    "first": "uk",
-   "last": "wrong."
+   "last": "wrong.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-7",
@@ -332,7 +276,8 @@
    "words": 22,
    "matched": 22,
    "first": "collect",
-   "last": "wait."
+   "last": "wait.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-10",
@@ -341,7 +286,8 @@
    "words": 30,
    "matched": 30,
    "first": "returns",
-   "last": "wrong."
+   "last": "wrong.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-13",
@@ -350,7 +296,8 @@
    "words": 5,
    "matched": 5,
    "first": "questions",
-   "last": "me"
+   "last": "me",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-15",
@@ -359,7 +306,8 @@
    "words": 4,
    "matched": 4,
    "first": "size",
-   "last": "me"
+   "last": "me",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-17",
@@ -368,7 +316,8 @@
    "words": 39,
    "matched": 39,
    "first": "are",
-   "last": "careful."
+   "last": "careful.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-16",
@@ -377,7 +326,8 @@
    "words": 88,
    "matched": 88,
    "first": "are",
-   "last": "fitted?"
+   "last": "fitted?",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-18",
@@ -386,7 +336,8 @@
    "words": 35,
    "matched": 35,
    "first": "yes.",
-   "last": "careful."
+   "last": "careful.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-34",
@@ -395,7 +346,8 @@
    "words": 22,
    "matched": 22,
    "first": "still",
-   "last": "you."
+   "last": "you.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-33",
@@ -404,7 +356,8 @@
    "words": 25,
    "matched": 25,
    "first": "still",
-   "last": "call"
+   "last": "call",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-36",
@@ -413,7 +366,8 @@
    "words": 19,
    "matched": 19,
    "first": "call",
-   "last": "you."
+   "last": "you.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-help-38",
@@ -428,7 +382,1030 @@
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
     ]
-   }
+   },
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 209,
+   "matched": 209,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 95,
+   "matched": 95,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(2)",
+   "why": null,
+   "words": 50,
+   "matched": 50,
+   "first": "how",
+   "last": "markup.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(2) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 42,
+   "matched": 42,
+   "first": "i'm",
+   "last": "markup.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item2-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 209,
+   "matched": 209,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 95,
+   "matched": 95,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(3)",
+   "why": null,
+   "words": 49,
+   "matched": 49,
+   "first": "can",
+   "last": "made.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-22",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(3) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 42,
+   "matched": 42,
+   "first": "yes,",
+   "last": "made.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item3-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 207,
+   "matched": 207,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 93,
+   "matched": 93,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(4)",
+   "why": null,
+   "words": 48,
+   "matched": 48,
+   "first": "what",
+   "last": "person.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(4) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 40,
+   "matched": 40,
+   "first": "a",
+   "last": "person.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item4-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 186,
+   "matched": 186,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 72,
+   "matched": 72,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-25",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(5)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "how",
+   "last": "day.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(5) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "seven",
+   "last": "day.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item5-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 206,
+   "matched": 206,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 92,
+   "matched": 92,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-27",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(6)",
+   "why": null,
+   "words": 47,
+   "matched": 47,
+   "first": "how",
+   "last": "it.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-28",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(6) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 39,
+   "matched": 39,
+   "first": "look",
+   "last": "it.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item6-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 203,
+   "matched": 203,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 89,
+   "matched": 89,
+   "first": "are",
+   "last": "fitted?",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-29",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(7)",
+   "why": null,
+   "words": 41,
+   "matched": 41,
+   "first": "can",
+   "last": "full.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-30",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(7) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 36,
+   "matched": 36,
+   "first": "frames",
+   "last": "full.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item7-open"
+  },
+  {
+   "ref": "cr-ref-help-0",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 196,
+   "matched": 196,
+   "first": "help",
+   "last": "call",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "uk",
+   "last": "make.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 77,
+   "matched": 77,
+   "first": "uk",
+   "last": "wrong.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "collect",
+   "last": "wait.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(3) > div:nth-child(3)",
+   "why": null,
+   "words": 30,
+   "matched": 30,
+   "first": "returns",
+   "last": "wrong.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "questions",
+   "last": "me",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(4) > div:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "size",
+   "last": "me",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5)",
+   "why": null,
+   "words": 82,
+   "matched": 82,
+   "first": "are",
+   "last": "charge.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-31",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(8)",
+   "why": null,
+   "words": 36,
+   "matched": 36,
+   "first": "can",
+   "last": "charge.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-32",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(5) > div:nth-child(8) > p:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 29,
+   "matched": 29,
+   "first": "yes,",
+   "last": "charge.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1)",
+   "why": null,
+   "words": 22,
+   "matched": 22,
+   "first": "still",
+   "last": "you.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6)",
+   "why": null,
+   "words": 25,
+   "matched": 25,
+   "first": "still",
+   "last": "call",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(1) > p:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "call",
+   "last": "you.",
+   "scope": "faq-item8-open"
+  },
+  {
+   "ref": "cr-ref-help-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > button:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(6) > div:nth-child(2) > a:nth-child(2)"
+    ]
+   },
+   "scope": "faq-item8-open"
   }
  ]
 }

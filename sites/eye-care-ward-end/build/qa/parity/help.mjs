@@ -14,6 +14,14 @@ const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/help/?cb={cb}';
 
 const Q1 = 'Are these frames genuine?';
 const Q2 = 'How are you cheaper than the high street?';
+const LATER_QS = [
+	'Can I put prescription lenses in sunglasses?',
+	'What do I need for a prescription order?',
+	'How long do prescription lenses take?',
+	'How do I know which size to choose?',
+	'Can I return prescription sunglasses?',
+	'Can I collect and have them fitted?',
+];
 // Word multiset of a text, for accepted-difference matchers (as shop.mjs/lens.mjs/product.mjs).
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );
 
@@ -94,6 +102,14 @@ const config = {
 			draft: ( h ) => h.click( { js: dBtn( Q2 ) }, { wait: 700 } ),
 			live: ( h ) => h.click( { js: lBtn( Q2 ) }, { wait: 700 } ),
 		},
+		// Items 3-8, one state each: both accordions are single-open (proven 2026-10-07, clicking every question in
+		// turn leaves exactly one open on both sides), so no real click reaches "every answer open". These states are
+		// what lets pairs.mjs pair each answer block, which paints its words only while open (CR14).
+		...LATER_QS.map( ( q, i ) => ( {
+			name: `faq-item${ i + 3 }-open`,
+			draft: ( h ) => h.click( { js: dBtn( q ) }, { wait: 700 } ),
+			live: ( h ) => h.click( { js: lBtn( q ) }, { wait: 700 } ),
+		} ) ),
 		// The page's only other interactive control: "Size guide" opens a modal. Live's link becomes
 		// a site-wide pop-up after the next deploy (anchor #size-guide, the modal moves to the
 		// footer so it opens from any page) — the click is by visible text on both sides, so the
