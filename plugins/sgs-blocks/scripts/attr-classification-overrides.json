@@ -6645,6 +6645,24 @@
 		},
 		{
 			"slug": "sgs/form",
+			"attr": "fieldFontWeight",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-07: the derived classifier leaves css_element NULL for this attr, and the converter's root-domain guard (db_lookup.py::_root_domain_element_clause) counts NULL as root, so attr_for_property('sgs/form', 'font-weight') raised AmbiguousCssPropAttrError (fontWeight, fieldFontWeight) and a cloned form's root weight could not be written. The attr paints the field inputs (render.php::sgs_typography_css_rule( $attributes, 'field', ... .sgs-form-field__input ))."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "fieldFontStyle",
+			"fields": {
+				"derived_selector": ".sgs-form-field__input",
+				"css_element": "field-input"
+			},
+			"_why": "2026-10-07: as fieldFontWeight; attr_for_property('sgs/form', 'font-style') raised AmbiguousCssPropAttrError (fontStyle, fieldFontStyle) because css_element was NULL. The attr paints the field inputs, not the form root."
+		},
+		{
+			"slug": "sgs/form",
 			"attr": "fieldTextDecoration",
 			"fields": {
 				"derived_selector": ".sgs-form-field__input",
