@@ -26,6 +26,13 @@ const LONGHAND_KEYS = {
 };
 
 /**
+ * The React style keys a radius preview can set (the four corner longhands). A
+ * block that copies or strips a shared preview's radius names these, never
+ * `borderRadius`, which no shared preview sets.
+ */
+export const RADIUS_STYLE_KEYS = Object.values( LONGHAND_KEYS );
+
+/**
  * borderRadiusLonghands — the editor-canvas twin of the front end's per-corner
  * longhand output: only the corners the client set are returned, so an unset
  * corner keeps the stylesheet's own radius instead of being painted `0`.

@@ -5,7 +5,7 @@
  * @package SGS\Blocks
  */
 
-import { containerWrapperPreview, isCssGradient, tierLengthPreview } from '../../utils';
+import { containerWrapperPreview, isCssGradient, tierLengthPreview, RADIUS_STYLE_KEYS } from '../../utils';
 import { resolveColourToken } from '../../components';
 
 /**
@@ -59,7 +59,7 @@ export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
 export function multiButtonWrapperPreview( attributes, tier, palette ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette ).style;
 	const style = {};
-	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', 'borderRadius', 'maxWidth' ].forEach( ( key ) => {
+	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS, 'maxWidth' ].forEach( ( key ) => {
 		if ( undefined !== wrapper[ key ] ) {
 			style[ key ] = wrapper[ key ];
 		}

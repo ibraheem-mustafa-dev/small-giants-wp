@@ -7,7 +7,7 @@
  * @package SGS\Blocks
  */
 
-import { containerWrapperPreview, resolveResponsiveTier, resolveTier } from '../../utils';
+import { containerWrapperPreview, resolveResponsiveTier, resolveTier, RADIUS_STYLE_KEYS } from '../../utils';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
 const ROWS_ALIGN = {
@@ -26,7 +26,7 @@ const ROWS_ALIGN = {
 export function siteHeaderWrapperPreview( attributes, tier, palette ) {
 	const wrapper = containerWrapperPreview( attributes, tier, palette ).style;
 	const style = {};
-	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', 'borderRadius', 'maxWidth' ].forEach( ( key ) => {
+	[ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS, 'maxWidth' ].forEach( ( key ) => {
 		if ( undefined !== wrapper[ key ] ) {
 			style[ key ] = wrapper[ key ];
 		}

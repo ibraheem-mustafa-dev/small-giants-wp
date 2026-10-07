@@ -21,12 +21,10 @@
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
- * BOX-GROUP: base padding/margin/border-radius/border-width/border-color/
- * border-style = WP-native style.spacing / style.border objects (emitted
- * scoped, base only — no tiers, matches the pre-existing no-tier contract for
- * this block's border). Tablet/Mobile tiers exist for padding/margin only
- * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, scoped
- * at 1023px/767px breakpoints).
+ * BOX-GROUP: padding, margin and the border (the block's own borderWidth/
+ * borderStyle/borderColour/borderRadius attributes) are emitted scoped;
+ * padding, margin and radius are tier objects printed per @media tier with
+ * only the sides or corners each tier sets.
  *
  * maxWidth (kept-scalar width family, base only — no tiers, matches the
  * pre-existing attr) is reproduced scoped on the root: max-width +

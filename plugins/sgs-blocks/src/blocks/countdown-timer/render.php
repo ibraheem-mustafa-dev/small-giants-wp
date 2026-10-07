@@ -14,13 +14,10 @@
  * (FR-32-4, D345 — inline `style="--x:y"` on the frontend is forbidden). No
  * `style` key is ever passed to get_block_wrapper_attributes().
  *
- * BOX-GROUP (contract §B): base padding/margin/border-radius/border-width/
- * border-style/border-colour are all WP-native `style.spacing.*` /
- * `style.border.*` objects (already object-shaped) — emitted scoped via the
- * style engine (mirrors sgs/media's whole-border-group pattern). Tiers
- * (Tablet/Mobile) are SGS custom object attrs (paddingTablet/paddingMobile/
- * marginTablet/marginMobile/borderRadiusTablet/borderRadiusMobile), each
- * routed through the same style-engine call per @media tier.
+ * BOX-GROUP (contract §B): padding, margin and the border (the block's own
+ * borderWidth/borderStyle/borderColour/borderRadius attributes) are emitted
+ * scoped; padding, margin and radius are tier objects, each tier printed in
+ * its own @media rule with only the sides or corners it sets.
  *
  * The wrapper `<div class="sgs-countdown">` is a genuine composite root
  * (multiple digit-unit children), not a single-semantic-element block, so it

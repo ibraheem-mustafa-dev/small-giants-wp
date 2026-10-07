@@ -22,11 +22,12 @@ import {
 	usePreviewTier,
 	BandWrap,
 	wrapperPreview,
+	RADIUS_STYLE_KEYS,
 } from '../../utils';
 
 // Wrapper declarations that belong to the field root (the border and radius), not to
 // the tile grid element the shared wrapper lays out.
-const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', 'borderRadius' ];
+const ROOT_BORDER_KEYS = [ 'borderWidth', 'borderStyle', 'borderColor', 'borderImage', ...RADIUS_STYLE_KEYS ];
 
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },

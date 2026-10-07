@@ -102,8 +102,10 @@ if ( null !== $sgs_radius_tiers['desktop'] ) {
 	} elseif ( is_array( $sgs_container_radius_raw ) ) {
 		$sgs_container_radius_clean = array();
 		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_container_corner ) {
-			if ( ! empty( $sgs_container_radius_raw[ $sgs_container_corner ] ) ) {
-				$sgs_container_radius_clean[ $sgs_container_corner ] = sgs_css_length_value( $sgs_container_radius_raw[ $sgs_container_corner ] );
+			// An explicit '0' is a set corner (empty() would drop it).
+			$corner_value = isset( $sgs_container_radius_raw[ $sgs_container_corner ] ) ? sgs_css_length_value( $sgs_container_radius_raw[ $sgs_container_corner ] ) : '';
+			if ( '' !== $corner_value ) {
+				$sgs_container_radius_clean[ $sgs_container_corner ] = $corner_value;
 			}
 		}
 		if ( ! empty( $sgs_container_radius_clean ) ) {

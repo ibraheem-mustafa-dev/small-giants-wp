@@ -12,12 +12,11 @@ import {
 	backgroundPaintPreview,
 	containerWrapperPreview,
 	tierBoxLonghands,
-	tierBoxShorthand,
 	typographyPreviewStyle,
 	tierLengthPreview,
 	tierValueOf,
-	BOX_CORNER_KEYS,
-	
+	borderRadiusLonghands,
+	RADIUS_STYLE_KEYS,
 } from '../../utils';
 import {
 	css as boxShapeCss,
@@ -124,7 +123,7 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 
 	// Section: the shared wrapper's gap, max-width, radius and layout, then hero's own rules.
 	const root = {};
-	[ 'gap', 'maxWidth', 'borderRadius', 'display', 'gridTemplateColumns', 'gridTemplateRows', 'gridAutoRows',
+	[ 'gap', 'maxWidth', ...RADIUS_STYLE_KEYS, 'display', 'gridTemplateColumns', 'gridTemplateRows', 'gridAutoRows',
 		'alignItems', 'justifyItems', 'alignContent', 'flexDirection', 'flexWrap', 'justifyContent' ].forEach( ( key ) => {
 		if ( undefined !== wrapper.style[ key ] ) {
 			root[ key ] = wrapper.style[ key ];
@@ -195,14 +194,12 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		const height = tierValueOf( attributes.splitMediaHeight, tier );
 		image.height = isUnset( height ) ? '100%' : `${ Math.abs( parseInt( height, 10 ) ) || 0 }${ attributes.splitMediaHeightUnit || 'px' }`;
 		Object.assign( image, tierBoxLonghands( attributes.splitMediaPadding, tier, 'padding' ) );
-		const radius = tierBoxShorthand( {
+		// Only the corners set at this tier or a wider one, as render.php prints them (sgs_corner_object_longhands).
+		Object.assign( image, borderRadiusLonghands( {
 			desktop: attributes.splitMediaBorderRadius,
 			tablet: attributes.splitMediaBorderRadiusTablet,
 			mobile: attributes.splitMediaBorderRadiusMobile,
-		}, tier, BOX_CORNER_KEYS, true );
-		if ( radius ) {
-			image.borderRadius = radius;
-		}
+		}, tier ) );
 		// Sizing mode, ratio and shape through the box-shape atom's own twins, as render.php does.
 		const mode = resolveSizingMode( attributes.splitMediaMediaSizing, attributes.splitMediaObjectFit, attributes, 'splitMedia', 'sgs/hero' );
 		const ratio = normaliseRatio( attributes.splitMediaAspectRatio );
