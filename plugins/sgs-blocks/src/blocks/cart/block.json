@@ -777,12 +777,7 @@
 			"default": "",
 			"description": "CSS length (e.g. \"999px\" or \"50%\"). Empty uses style.css's own border-radius:999px default (fully rounded)."
 		},
-		"countPopAnimation": {
-			"type": "string",
-			"default": "off",
-			"enum": ["off", "change", "load-and-change"],
-			"description": "When the live item count plays its grow-and-fade pop: 'off', 'change' (when an item is added) or 'load-and-change' (also once when the page loads, even at 0). Never plays under prefers-reduced-motion."
-		},
+		"countPopAnimation": {"type": ["boolean", "string"], "default": "off", "description": "When the live item count plays its grow-and-fade pop: 'off', 'change' (when an item is added) or 'load-and-change' (also once when the page loads, even at 0). Never plays under prefers-reduced-motion. Also accepts the legacy boolean this setting used before it had three modes: true reads as 'load-and-change' and false as 'off', so content saved against the old schema is never stranded. render.php::$count_pop_animation normalises it."},
 		"freeDeliveryThresholdOverride": {
 			"type": "string",
 			"default": "",

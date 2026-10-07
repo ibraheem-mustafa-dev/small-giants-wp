@@ -89,7 +89,7 @@ export default function TriggerSettingsControls( {
 						'The count grows in with a soft fade. Never plays when the visitor has asked their device for less motion.',
 						'sgs-blocks'
 					) }
-					value={ countPopAnimation || 'off' }
+					value={ 'boolean' === typeof countPopAnimation ? ( countPopAnimation ? 'load-and-change' : 'off' ) : ( countPopAnimation || 'off' ) }
 					options={ [
 						{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
 						{ label: __( 'When an item is added', 'sgs-blocks' ), value: 'change' },

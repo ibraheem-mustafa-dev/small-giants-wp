@@ -91,7 +91,13 @@ $pill_border_colour  = (string) ( $attributes['pillBorderColour'] ?? '' );
 $pill_border_width_box = is_array( $attributes['pillBorderWidth'] ?? null ) ? $attributes['pillBorderWidth'] : array();
 $pill_border_style_raw = sanitize_key( (string) ( $attributes['pillBorderStyle'] ?? '' ) );
 $pill_border_radius  = (string) ( $attributes['pillBorderRadius'] ?? '' );
-$count_pop_animation = in_array( $attributes['countPopAnimation'] ?? 'off', array( 'change', 'load-and-change' ), true ) ? $attributes['countPopAnimation'] : 'off';
+$sgs_count_pop_raw = $attributes['countPopAnimation'] ?? 'off';
+// The legacy boolean (before this setting had three modes) still reads correctly:
+// true was 'pop on change', and the draft also pops on load, so it maps to the full mode.
+if ( is_bool( $sgs_count_pop_raw ) ) {
+	$sgs_count_pop_raw = $sgs_count_pop_raw ? 'load-and-change' : 'off';
+}
+$count_pop_animation = in_array( $sgs_count_pop_raw, array( 'change', 'load-and-change' ), true ) ? $sgs_count_pop_raw : 'off';
 
 // FR-36-19 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
