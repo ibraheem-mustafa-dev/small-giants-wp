@@ -585,7 +585,7 @@ The 29 DEFENSIBLE findings (28 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 ## 7. Capability gaps in the gate that this triage exposed
 
-Gaps 1, 9, 10(b), 12 and 13 are built; the others are open, each evidence for a later gate task. Shared `includes/` PHP is read one hop from a block's `require`, and files named for the block at any depth, by `readBlockPhpFiles` (section 4.1), so it is not on this list.
+Gaps 1, 4 (tag names), 9, 10(b), 12 and 13 are built; the others are open, each evidence for a later gate task. Shared `includes/` PHP is read one hop from a block's `require`, and files named for the block at any depth, by `readBlockPhpFiles` (section 4.1), so it is not on this list.
 
 1. **`var()`-valued declarations: built (2026-10-07).** The record below is how it was designed and measured.
 
