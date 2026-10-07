@@ -2537,8 +2537,9 @@ function collectWrittenCustomProps( blockDir ) {
 			const p = path.join( dir, e.name );
 			if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
 				walkJs( p );
-			} else if ( e.isFile() && /\.js$/i.test( e.name ) ) {
-				sources.push( fs.readFileSync( p, 'utf8' ) );
+			} else if ( e.isFile() && /\.js$/i.test( e.name ) && ! /\.test\.js$/i.test( e.name ) ) {
+				// JS comments share PHP's `//` and `/* */` forms.
+				sources.push( maskPhpComments( fs.readFileSync( p, 'utf8' ) ) );
 			}
 		}
 	};
@@ -2547,7 +2548,9 @@ function collectWrittenCustomProps( blockDir ) {
 		for ( const m of s.matchAll( /(--[A-Za-z0-9_-]+)\s*['"]?\s*(?::|=>)/g ) ) {
 			written.add( m[ 1 ] );
 		}
-		for ( const m of s.matchAll( /['"](--[A-Za-z0-9_-]+)['"]/g ) ) {
+		// A quoted name handed to a reader (getPropertyValue / removeProperty)
+		// is a read, not a write.
+		for ( const m of s.matchAll( /(?<!(?:getPropertyValue|removeProperty)\(\s*)['"](--[A-Za-z0-9_-]+)['"]/g ) ) {
 			written.add( m[ 1 ] );
 		}
 	}
@@ -2628,10 +2631,11 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 			// Text before a `}` is never selector text; only what follows the last
 			// `}` on the line can start the next selector.
 			pendingSelector = line.slice( line.lastIndexOf( '}' ) + 1 ).trim();
-		} else if ( line.includes( ';' ) ) {
-			// A `;` ends a declaration, including the closing line of a value
-			// split over several lines (`linear-gradient(` … `);`), whose
-			// continuation lines would otherwise read as selector text.
+		} else if ( line.replace( /"[^"]*"|'[^']*'/g, '' ).includes( ';' ) ) {
+			// A `;` outside quotes ends a declaration or statement, including the
+			// closing line of a value split over several lines (`linear-gradient(`
+			// … `);`) and an `@import …;`, whose text would otherwise read as
+			// selector text. A `;` inside an attribute selector's quotes does not.
 			pendingSelector = '';
 		} else if ( ! /^\s*[\w-]+\s*:/.test( line ) ) {
 			// No braces → could be a continuation of a multi-line selector.
@@ -3578,6 +3582,45 @@ function selfTestE14( assert ) {
 		);
 	}
 
+	// Selector capture, each reset pinned on its own: a value closed by `)` and
+	// a `}` with no `;` (only the `}` reset clears it), an `@import …;` with no
+	// brace (only the `;` reset clears it), and a `;` inside an attribute
+	// selector's quotes on a continuation line (must NOT clear the earlier members).
+	{
+		const headerRule = '.sgs-x-item__header {\n\tline-height: 1.4;\n}\n';
+		const bySelector = ( css ) => lineHeightOnHeader( runE14Fixture(
+			[ 'lineHeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+			css
+		) ).map( ( f ) => f.class );
+		assert(
+			'selector capture: a value closed by `)` then `}` (no `;`) does not leak into the next selector',
+			bySelector( '.sgs-x-item {\n\tbackground-image: linear-gradient(\n\t\tred,\n\t\tblue\n\t)\n}\n' + headerRule ),
+			[ 'CLASS-2' ]
+		);
+		assert(
+			'selector capture: an @import statement does not leak into the next selector',
+			bySelector( '@import url("a.css");\n' + headerRule ),
+			[ 'CLASS-2' ]
+		);
+		const listed = runE14Fixture(
+			[ 'lineHeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+			'.sgs-x-item__header,\n.sgs-x-item__a[data-x="a;b"],\n.sgs-x-item__zz {\n\tline-height: 1.4;\n}\n'
+		);
+		assert(
+			'selector capture: a `;` inside an attribute selector\'s quotes keeps the earlier members of the list',
+			listed.findings.some( ( f ) => 'line-height' === f.property && f.selector.includes( '.sgs-x-item__header' ) ),
+			true
+		);
+	}
+
 	// var() admission: a preset token on a sub-element holds it against the
 	// root's control exactly as a literal does.
 	const fontSizeOnHeader = ( r ) => r.findings.filter( ( f ) => 'font-size' === f.property && '.sgs-x-item__header' === f.selector );
@@ -3632,8 +3675,20 @@ function selfTestRequireHop( assert ) {
 		fs.mkdirSync( inc );
 		fs.mkdirSync( blockDir, { recursive: true } );
 		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
-		fs.writeFileSync( path.join( inc, 'c.php' ), "<?php $css = '--sgs-hop-deep:' . $v; $hover = 'var(--sgs-hop-read)'; ?>\n<aside class=\"sgs-hop-c\"></aside>\n", 'utf8' );
-		fs.writeFileSync( path.join( blockDir, 'edit.js' ), "const s = { '--sgs-hop-js': size };\n", 'utf8' );
+		fs.writeFileSync(
+			path.join( inc, 'c.php' ),
+			"<?php $css = '--sgs-hop-deep:' . $v; $hover = 'var(--sgs-hop-read)';\n" +
+				"$map = array( 'css' => '--sgs-hop-map' );\n" +
+				"// --sgs-hop-phpcomment: 1;\n?>\n<aside class=\"sgs-hop-c\"></aside>\n",
+			'utf8'
+		);
+		fs.writeFileSync(
+			path.join( blockDir, 'edit.js' ),
+			"const s = { '--sgs-hop-js': size };\n// --sgs-hop-jscomment: 1\n/* '--sgs-hop-jsblock' */\n" +
+				"const v = el.style.getPropertyValue( '--sgs-hop-jsread' );\n",
+			'utf8'
+		);
+		fs.writeFileSync( path.join( blockDir, 'edit.test.js' ), "const t = { '--sgs-hop-test': 1 };\n", 'utf8' );
 		fs.writeFileSync( path.join( blockDir, 'style.css' ), '.sgs-hop-own { --sgs-hop-css: 1rem; }\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'paren.php' ), '<?php ?>\n<nav class="sgs-hop-paren"></nav>\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'plain.php' ), '<?php ?>\n<p class="sgs-hop-plain"></p>\n', 'utf8' );
@@ -3674,6 +3729,11 @@ function selfTestRequireHop( assert ) {
 		assert( 'writer set: a property written in the block\'s edit.js IS written', written.has( '--sgs-hop-js' ), true );
 		assert( 'writer set: a var(--x) string is a read, not a write', written.has( '--sgs-hop-read' ), false );
 		assert( 'writer set: a property defined only in the stylesheet is NOT written', written.has( '--sgs-hop-css' ), false );
+		assert( 'writer set: a quoted \'--x\' map entry (a name handed to an emitter) IS written', written.has( '--sgs-hop-map' ), true );
+		assert( 'writer set: a property in a comment of a required PHP file is NOT written', written.has( '--sgs-hop-phpcomment' ), false );
+		assert( 'writer set: a property in a JS // or /* */ comment is NOT written', [ written.has( '--sgs-hop-jscomment' ), written.has( '--sgs-hop-jsblock' ) ], [ false, false ] );
+		assert( 'writer set: a name passed to getPropertyValue is a read, NOT a write', written.has( '--sgs-hop-jsread' ), false );
+		assert( 'writer set: a *.test.js file is not a writer', written.has( '--sgs-hop-test' ), false );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
