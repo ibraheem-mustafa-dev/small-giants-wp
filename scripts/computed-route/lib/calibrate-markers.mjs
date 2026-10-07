@@ -17,7 +17,7 @@ const MARKER_EASING_ALT = 'ease-out';
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
 // Minimum sizes a render floors at the 44px touch target.
 const FLOORED = /^min-(height|width)$/;
-// A setting whose render clamps its value to the 44px touch target (the detached burger chip's size), so its markers sit above it.
+// A setting whose render clamps its value to the 44px touch target (the detached burger chip's size), so its markers sit above it, and it reads bare px numbers (is_numeric rejects "137px").
 const FLOORED_ATTR = /^triggerDetachSize$/;
 const WIDTH_TIER = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const BOX = { desktop: [ 11, 13, 17, 19 ], tablet: [ 21, 23, 25, 27 ], mobile: [ 3, 5, 7, 9 ] };
@@ -190,7 +190,7 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 	const withUnit = ( attrs ) => ( unitAttr ? { ...attrs, [ unitAttr ]: unitVal } : attrs );
 	// A number when the setting is numeric; a string ("37" beside a unit setting, else "37px") when it is a string.
 	const lengthIn = ( n ) => {
-		if ( t.includes( 'number' ) || t.includes( 'integer' ) || ( unitAttr && ! t.includes( 'string' ) ) ) {
+		if ( t.includes( 'number' ) || t.includes( 'integer' ) || FLOORED_ATTR.test( row.attr_name ) || ( unitAttr && ! t.includes( 'string' ) ) ) {
 			return n;
 		}
 		return unitAttr ? String( n ) : `${ n }px`;
