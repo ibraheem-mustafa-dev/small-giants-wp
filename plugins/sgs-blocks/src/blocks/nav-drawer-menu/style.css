@@ -528,6 +528,11 @@
 	position: static;
 }
 
+/* A static item keeps the stacking its z-index gave it while it was positioned. */
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item {
+	isolation: isolate;
+}
+
 .sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion-row {
 	display: grid;
 }
@@ -536,7 +541,7 @@
 	grid-area: 1 / 1;
 }
 
-.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion {
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion:not(:has(> .sgs-nav-drawer-menu__accordion-summary--row)) {
 	align-self: start;
 	justify-self: end;
 }
