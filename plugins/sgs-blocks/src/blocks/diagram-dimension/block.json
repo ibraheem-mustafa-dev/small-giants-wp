@@ -1,0 +1,162 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/diagram-dimension",
+	"version": "1.0.0",
+	"title": "Diagram Measurement",
+	"category": "sgs-content",
+	"description": "One labelled measurement on a Measured Diagram: a dimension or leader line drawn over the drawing, and a caption plus a value that can be typed or bound to product, post or site data.",
+	"keywords": [
+		"dimension",
+		"measurement",
+		"label",
+		"leader"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "leftright",
+	"parent": [
+		"sgs/measured-diagram"
+	],
+	"usesContext": [
+		"sgs/measuredDiagramWidth",
+		"sgs/measuredDiagramHeight",
+		"sgs/measuredDiagramTickLength",
+		"postId",
+		"postType"
+	],
+	"supports": {
+		"anchor": false,
+		"html": false,
+		"reusable": false,
+		"sgs": {
+			"hideExtensions": [
+				"parallax",
+				"clickEffects",
+				"animation",
+				"fx"
+			],
+			"_comment_hideExtensions": "A measurement is one line and one label inside a diagram; motion, parallax or click effects on a single measurement would pull it off the point it measures.",
+			"elements": {
+				"label": {
+					"label": "Label position",
+					"order": 1,
+					"clusters": [
+						"position"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:left": "labelX",
+						"css:top": "labelY"
+					},
+					"contentAttrs": [
+						"caption",
+						"value"
+					],
+					"_note": "labelX/labelY are {desktop,tablet,mobile} tier objects in % of the drawing box, emitted as left/top on the label. The label's colours, typography and caption-to-value gap are set once for the whole diagram on sgs/measured-diagram. The line geometry (startX/startY/endX/endY, extReach/extReachEnd/extOvershoot) is drawing content with no CSS property: it becomes SVG path data."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-diagram-dimension"
+	},
+	"attributes": {
+		"caption": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"value": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"kind": {
+			"type": "string",
+			"enum": [
+				"dimension",
+				"leader"
+			],
+			"default": "dimension"
+		},
+		"endStyle": {
+			"type": "string",
+			"enum": [
+				"tick",
+				"arrow",
+				"dot",
+				"none"
+			],
+			"default": "tick"
+		},
+		"orientation": {
+			"type": "string",
+			"enum": [
+				"horizontal",
+				"vertical",
+				"free"
+			],
+			"default": "horizontal"
+		},
+		"startX": {
+			"type": "number",
+			"default": 20
+		},
+		"startY": {
+			"type": "number",
+			"default": 50
+		},
+		"endX": {
+			"type": "number",
+			"default": 80
+		},
+		"endY": {
+			"type": "number",
+			"default": 50
+		},
+		"extReach": {
+			"type": "number",
+			"default": 0
+		},
+		"extReachEnd": {
+			"type": "number"
+		},
+		"extOvershoot": {
+			"type": "number",
+			"default": 0
+		},
+		"labelX": {
+			"type": "object",
+			"default": {}
+		},
+		"labelY": {
+			"type": "object",
+			"default": {}
+		},
+		"labelAlign": {
+			"type": "string",
+			"enum": [
+				"start",
+				"center",
+				"end"
+			],
+			"default": "center"
+		},
+		"labelOrder": {
+			"type": "string",
+			"enum": [
+				"captionFirst",
+				"valueFirst"
+			],
+			"default": "captionFirst"
+		},
+		"hideWhenEmpty": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

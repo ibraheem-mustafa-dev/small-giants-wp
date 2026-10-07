@@ -494,6 +494,22 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Measured diagram (2026-10-07, plan 2026-10-07-measured-diagram-block §B):
+    # the parent paints its own figure and drawing and holds one child per
+    # measurement; the child paints its own line and label and holds nothing.
+    # Neither renders through the container wrapper.
+    {
+        "block_slug": "sgs/measured-diagram",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": '["sgs/diagram-dimension"]',
+    },
+    {
+        "block_slug": "sgs/diagram-dimension",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

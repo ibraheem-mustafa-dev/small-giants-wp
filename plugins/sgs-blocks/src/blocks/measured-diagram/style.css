@@ -1,0 +1,65 @@
+/**
+ * sgs/measured-diagram — frame, drawing and label list.
+ *
+ * The figure is the positioning box for every child's line overlay and
+ * on-drawing label. The frame takes the drawing's own aspect ratio
+ * (`--sgs-measured-diagram-ratio`, set per instance from the intrinsic atom),
+ * so the drawing is never cropped and a label placed at a % stays on the
+ * point it measures at every width.
+ *
+ * Label mode: the per-instance tier rule switches the
+ * `--sgs-measured-diagram-*` mode properties (label position, marker and
+ * number display, list spacing); with none set, labels sit on the drawing.
+ * The line, extension and label paint lives in sgs/diagram-dimension's
+ * stylesheet, which reads this block's preset tokens.
+ */
+
+.sgs-measured-diagram {
+	position: relative;
+	box-sizing: border-box;
+	counter-reset: sgs-measured-diagram;
+}
+
+:where(.sgs-measured-diagram) {
+	width: 100%;
+	max-width: 100%;
+	margin-block: 0;
+	margin-inline: auto;
+}
+
+.sgs-measured-diagram__frame {
+	position: relative;
+	width: 100%;
+	aspect-ratio: var(--sgs-measured-diagram-ratio, 16 / 9);
+}
+
+/* (0,2,0) so the whole drawing always shows: it outranks the shared
+ * `.sgs-media-el` sizing rule (0,1,0) whatever the stylesheet order. */
+.sgs-measured-diagram__frame > .sgs-measured-diagram__drawing {
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: contain;
+}
+
+/* The gradient <defs> holder: present in the document so `url(#id)` resolves,
+ * never painted and never taking space. Not display:none — a gradient inside a
+ * display:none SVG does not paint in every browser. */
+.sgs-measured-diagram__defs {
+	position: absolute;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+}
+
+.sgs-measured-diagram__labels {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: var(--wp--preset--spacing--30);
+	row-gap: var(--wp--preset--spacing--10);
+	margin: 0;
+	margin-block-start: calc(var(--sgs-measured-diagram-numbered, 0) * var(--wp--preset--spacing--30));
+	padding: 0;
+	list-style: none;
+}

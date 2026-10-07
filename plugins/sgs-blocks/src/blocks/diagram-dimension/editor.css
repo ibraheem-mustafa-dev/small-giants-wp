@@ -1,0 +1,49 @@
+/**
+ * sgs/diagram-dimension — editor canvas only: drag handles and placeholders.
+ */
+
+/* The canvas makes every block wrapper position:relative; a measurement's
+ * overlay and label must position against the diagram's figure instead. */
+.sgs-measured-diagram .block-editor-block-list__block.sgs-diagram-dimension {
+	position: static;
+}
+
+.sgs-diagram-dimension__handle {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	border: 2px solid var(--wp-admin-theme-color, #3858e9);
+	border-radius: 50%;
+	background: #fff;
+	transform: translate(-50%, -50%);
+	cursor: grab;
+	pointer-events: auto;
+	touch-action: none;
+	z-index: 2;
+}
+
+/* 44px hit area around the 16px dot. */
+.sgs-diagram-dimension__handle::before {
+	content: "";
+	position: absolute;
+	inset: -14px;
+}
+
+.sgs-diagram-dimension__handle--label {
+	border-radius: 2px;
+}
+
+.sgs-diagram-dimension__handle:focus-visible {
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+	outline-offset: 2px;
+}
+
+.sgs-diagram-dimension__handle:active {
+	cursor: grabbing;
+}
+
+.sgs-diagram-dimension .is-placeholder {
+	opacity: 0.55;
+	font-style: italic;
+}

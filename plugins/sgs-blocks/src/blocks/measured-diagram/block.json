@@ -1,0 +1,462 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/measured-diagram",
+	"version": "1.0.0",
+	"title": "Measured Diagram",
+	"category": "sgs-content",
+	"description": "A drawing with labelled measurement lines (dimensions and leaders) on top. Each measurement is its own block, so its value can be typed or bound to product, post or site data and follow the picked size.",
+	"keywords": [
+		"diagram",
+		"dimension",
+		"measurement",
+		"size guide",
+		"sizing",
+		"technical drawing",
+		"annotation"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-expand",
+	"allowedBlocks": [
+		"sgs/diagram-dimension"
+	],
+	"providesContext": {
+		"sgs/measuredDiagramWidth": "drawingImageWidth",
+		"sgs/measuredDiagramHeight": "drawingImageHeight",
+		"sgs/measuredDiagramTickLength": "tickLength"
+	},
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"align": false,
+		"sgs": {
+			"imageControls": false,
+			"_comment_imageControls": "The drawing is a measured technical drawing with labels placed at fixed % positions over it. Cropping, object-position, zoom or a forced aspect ratio would move the drawing under those labels, so the frame always shows the whole drawing at its own aspect ratio (from the intrinsic atom) and no image-treatment controls are offered.",
+			"hideExtensions": [
+				"parallax",
+				"clickEffects"
+			],
+			"mediaElements": [
+				{
+					"prefix": "drawing",
+					"context": "element",
+					"atoms": [
+						"intrinsic",
+						"meaning"
+					]
+				}
+			],
+			"_comment_mediaElements": "Prefix `drawing`, two atoms: `intrinsic` writes drawingImageWidth/drawingImageHeight from the chosen file (they become the frame's aspect ratio and the line SVGs' viewBox, passed to the children through providesContext); `meaning` gives drawingImageAlt and the drawingImageDecorative toggle. The picked file itself is drawingImageId/drawingImageUrl, declared here with the source atom's own types (integer/string) because the source atom would also inject video, SVG and Lottie slots a drawing never uses.",
+			"colourExemptions": {
+				"line": {
+					"rule": "states",
+					"reason": "Nothing in a measured diagram is interactive: the drawing, lines and labels are static, no :hover or :focus rule targets them, so a hover or current state would be a control that changes nothing."
+				},
+				"extension": {
+					"rule": "states",
+					"reason": "Nothing in a measured diagram is interactive: the drawing, lines and labels are static, no :hover or :focus rule targets them, so a hover or current state would be a control that changes nothing."
+				},
+				"value": {
+					"rule": "states",
+					"reason": "Nothing in a measured diagram is interactive: the drawing, lines and labels are static, no :hover or :focus rule targets them, so a hover or current state would be a control that changes nothing."
+				},
+				"caption": {
+					"rule": "states",
+					"reason": "Nothing in a measured diagram is interactive: the drawing, lines and labels are static, no :hover or :focus rule targets them, so a hover or current state would be a control that changes nothing."
+				}
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Drawing",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:max-width": "maxWidth"
+					},
+					"contentAttrs": [
+						"drawingImageUrl",
+						"drawingImageId",
+						"drawingImageAlt",
+						"drawingImageDecorative"
+					]
+				},
+				"line": {
+					"label": "Line",
+					"order": 2,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:stroke": "lineColour",
+						"css:stroke-gradient": "lineColourGradient",
+						"css:stroke-width": "lineWidth"
+					},
+					"_note": "prefix \"\" with an explicit attrMap: css:stroke-gradient is not a cluster member (same scope boundary as sgs/before-after's handle element), so prefix scanning would report the gradient as an orphan. tickLength is geometry (SVG path data), not CSS."
+				},
+				"extension": {
+					"label": "Extension lines",
+					"order": 3,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:stroke": "extensionColour",
+						"css:stroke-gradient": "extensionColourGradient",
+						"css:stroke-width": "extensionWidth",
+						"css:stroke-dasharray": "extensionStyle"
+					},
+					"_note": "prefix \"\" with an explicit attrMap: css:stroke-gradient and css:stroke-dasharray (extensionStyle drives the dash rhythm) are not cluster members."
+				},
+				"label": {
+					"label": "Label",
+					"order": 4,
+					"clusters": [],
+					"prefix": "",
+					"attrMap": {
+						"css:gap": "labelGap"
+					},
+					"_note": "Each child's own label position (labelX/labelY, css:left/css:top) is declared on sgs/diagram-dimension's manifest; the gap between a label's caption and value is set once here for every label in the diagram."
+				},
+				"value": {
+					"label": "Value",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:font-size": "valueFontSize",
+						"css:font-weight": "valueFontWeight",
+						"css:line-height": "valueLineHeight",
+						"css:letter-spacing": "valueLetterSpacing",
+						"css:font-style": "valueFontStyle",
+						"css:text-transform": "valueTextTransform",
+						"css:text-decoration": "valueTextDecoration",
+						"css:color": "valueColour",
+						"css:color-gradient": "valueColourGradient",
+						"css:text-align": "valueTextAlign",
+						"css:font-family": "valueFontFamily",
+						"css:text-wrap": "valueTextWrap",
+						"css:column-count": "valueTextColumns",
+						"css:writing-mode": "valueWritingMode"
+					},
+					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan."
+				},
+				"caption": {
+					"label": "Caption",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:font-size": "captionFontSize",
+						"css:font-weight": "captionFontWeight",
+						"css:line-height": "captionLineHeight",
+						"css:letter-spacing": "captionLetterSpacing",
+						"css:font-style": "captionFontStyle",
+						"css:text-transform": "captionTextTransform",
+						"css:text-decoration": "captionTextDecoration",
+						"css:color": "captionColour",
+						"css:color-gradient": "captionColourGradient",
+						"css:text-align": "captionTextAlign",
+						"css:font-family": "captionFontFamily",
+						"css:text-wrap": "captionTextWrap",
+						"css:column-count": "captionTextColumns",
+						"css:writing-mode": "captionWritingMode"
+					},
+					"_note": "prefix \"\" with every typography member mapped explicitly: css:writing-mode is not a text-cluster member, so prefix scanning would report it as an orphan."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".sgs-measured-diagram"
+	},
+	"attributes": {
+		"drawingImageId": {
+			"type": "integer",
+			"default": 0,
+			"role": "content"
+		},
+		"drawingImageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"drawingImageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"drawingImageDecorative": {
+			"type": "boolean",
+			"default": false
+		},
+		"drawingImageWidth": {
+			"type": "number"
+		},
+		"drawingImageHeight": {
+			"type": "number"
+		},
+		"maxWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"labelMode": {
+			"type": "object",
+			"default": {}
+		},
+		"lineColour": {
+			"type": "string",
+			"default": ""
+		},
+		"lineColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"lineWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"tickLength": {
+			"type": "number"
+		},
+		"extensionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"extensionColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"extensionWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"extensionStyle": {
+			"type": "string",
+			"enum": [
+				"solid",
+				"dashed",
+				"dotted"
+			],
+			"default": "solid"
+		},
+		"valueColour": {
+			"type": "string",
+			"default": ""
+		},
+		"valueColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"labelGap": {
+			"type": "object",
+			"default": {}
+		},
+		"valueFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"valueFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"valueFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"valueFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"valueFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"valueTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"valueTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"valueLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"valueLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"valueTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"valueTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"valueTextColumns": {
+			"type": "number"
+		},
+		"valueWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"captionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"captionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"captionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"captionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"captionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"captionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"captionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"captionTextColumns": {
+			"type": "number"
+		},
+		"captionWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

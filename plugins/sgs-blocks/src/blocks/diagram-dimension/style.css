@@ -1,0 +1,175 @@
+/**
+ * sgs/diagram-dimension — one measurement's line overlay and label.
+ *
+ * Every paint default reads a token chain inside :where(), so the parent
+ * diagram's per-instance rules (class-scoped) always win:
+ *   var(--sgs-measured-diagram-<role>,
+ *       var(--wp--custom--measured-diagram-presets--default--<role>,  (FR-32-5 snapshot preset)
+ *           var(--wp--preset--color--<token>)))
+ * Roles and framework tokens: line = accent, extension = border,
+ * value = text, caption = text-muted.
+ *
+ * Strokes use `vector-effect: non-scaling-stroke`, so a width is screen
+ * pixels whatever the drawing's own size; the dash rhythm is set per width.
+ *
+ * The overlay is positioned against the parent figure (the item and the
+ * list stay static) and takes the frame's aspect ratio, so it lies exactly
+ * over the drawing in both label modes.
+ */
+
+.sgs-diagram-dimension {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10);
+	counter-increment: sgs-measured-diagram;
+}
+
+.sgs-diagram-dimension--hide-empty:has(.sgs-bound[data-sgs-bound-empty]) {
+	display: none;
+}
+
+/* ── Line overlay ─────────────────────────────────────────────────────────── */
+
+.sgs-diagram-dimension__overlay {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: 0;
+	width: 100%;
+	aspect-ratio: var(--sgs-measured-diagram-ratio, 16 / 9);
+	pointer-events: none;
+}
+
+.sgs-diagram-dimension__lines {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+.sgs-diagram-dimension__lines path {
+	fill: none;
+	stroke-linecap: butt;
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+}
+
+:where(.sgs-diagram-dimension__line, .sgs-diagram-dimension__ends) {
+	stroke: var(--sgs-measured-diagram-line, var(--wp--custom--measured-diagram-presets--default--line, var(--wp--preset--color--accent)));
+	stroke-width: var(--sgs-measured-diagram-line-width, var(--wp--custom--measured-diagram-presets--default--line-width, 1.5px));
+}
+
+:where(.sgs-diagram-dimension__dot) {
+	fill: var(--sgs-measured-diagram-line, var(--wp--custom--measured-diagram-presets--default--line, var(--wp--preset--color--accent)));
+	stroke: none;
+}
+
+:where(.sgs-diagram-dimension__guides) {
+	stroke: var(--sgs-measured-diagram-extension, var(--wp--custom--measured-diagram-presets--default--extension, var(--wp--preset--color--border)));
+	stroke-width: var(--sgs-measured-diagram-extension-width, var(--wp--custom--measured-diagram-presets--default--extension-width, 1px));
+}
+
+/* Dash rhythm at the default 1px width; a set width re-derives it per
+ * instance from that width (sgs/measured-diagram render). */
+:where(.sgs-measured-diagram--extension-dashed .sgs-diagram-dimension__guides) {
+	stroke-dasharray: 4px 3px;
+}
+
+:where(.sgs-measured-diagram--extension-dotted .sgs-diagram-dimension__guides) {
+	stroke-dasharray: 0 2.5px;
+	stroke-linecap: round;
+}
+
+/* ── Numbered marker (numbered label mode only) ──────────────────────────── */
+
+.sgs-diagram-dimension__marker {
+	position: absolute;
+	display: var(--sgs-measured-diagram-marker-display, none);
+	align-items: center;
+	justify-content: center;
+	min-width: 1.6em;
+	height: 1.6em;
+	padding-inline: 0.3em;
+	box-sizing: border-box;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	background-color: var(--wp--preset--color--surface);
+	transform: translate(-50%, -50%);
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+.sgs-diagram-dimension__marker::before,
+.sgs-diagram-dimension__number::before {
+	content: counter(sgs-measured-diagram);
+}
+
+.sgs-diagram-dimension__number {
+	display: var(--sgs-measured-diagram-number-display, none);
+	align-items: center;
+	justify-content: center;
+	min-width: 1.6em;
+	height: 1.6em;
+	padding-inline: 0.3em;
+	box-sizing: border-box;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+:where(.sgs-diagram-dimension__marker, .sgs-diagram-dimension__number) {
+	color: var(--sgs-measured-diagram-value, var(--wp--custom--measured-diagram-presets--default--value, var(--wp--preset--color--text)));
+	font-size: var(--wp--preset--font-size--small);
+}
+
+/* ── Label ────────────────────────────────────────────────────────────────── */
+
+.sgs-diagram-dimension__label {
+	position: var(--sgs-measured-diagram-label-position, absolute);
+	display: flex;
+	flex-direction: column;
+	align-items: var(--sgs-diagram-dimension-align, center);
+	text-align: var(--sgs-diagram-dimension-text-align, center);
+	transform: var(--sgs-measured-diagram-label-transform, translate(var(--sgs-diagram-dimension-shift, -50%), -50%));
+	white-space: nowrap;
+}
+
+/* labelOrder flips only the visual stacking; the DOM stays caption, value. */
+.sgs-diagram-dimension--value-first .sgs-diagram-dimension__label {
+	flex-direction: column-reverse;
+}
+
+.sgs-diagram-dimension--align-start {
+	--sgs-diagram-dimension-shift: 0%;
+	--sgs-diagram-dimension-align: flex-start;
+	--sgs-diagram-dimension-text-align: start;
+}
+
+.sgs-diagram-dimension--align-center {
+	--sgs-diagram-dimension-shift: -50%;
+	--sgs-diagram-dimension-align: center;
+	--sgs-diagram-dimension-text-align: center;
+}
+
+.sgs-diagram-dimension--align-end {
+	--sgs-diagram-dimension-shift: -100%;
+	--sgs-diagram-dimension-align: flex-end;
+	--sgs-diagram-dimension-text-align: end;
+}
+
+:where(.sgs-diagram-dimension__label) {
+	gap: 0;
+}
+
+:where(.sgs-diagram-dimension__value) {
+	color: var(--sgs-measured-diagram-value, var(--wp--custom--measured-diagram-presets--default--value, var(--wp--preset--color--text)));
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+:where(.sgs-diagram-dimension__caption) {
+	color: var(--sgs-measured-diagram-caption, var(--wp--custom--measured-diagram-presets--default--caption, var(--wp--preset--color--text-muted)));
+	font-size: var(--wp--preset--font-size--small);
+}

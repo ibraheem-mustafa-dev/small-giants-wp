@@ -111,6 +111,8 @@ final class Sgs_Block_Bindings_Support {
 		'sgs/button'            => array( 'url', 'label', 'linkTarget', 'rel' ),
 		'sgs/media'             => array( 'imageAlt', 'imageUrl', 'caption', 'linkUrl', 'videoUrl' ),
 		'sgs/decorative-image'  => array( 'imageAlt', 'imageUrl' ),
+		'sgs/measured-diagram'  => array( 'drawingImageUrl', 'drawingImageId', 'drawingImageAlt' ),
+		'sgs/diagram-dimension' => array( 'value', 'caption' ),
 		'sgs/responsive-logo'   => array( 'alt', 'logoUrl' ),
 		'sgs/team-member'       => array( 'name', 'bio' ),
 		'sgs/testimonial'       => array( 'quote', 'reviewerName', 'reviewerRole', 'orgName', 'summaryPhrase' ),
