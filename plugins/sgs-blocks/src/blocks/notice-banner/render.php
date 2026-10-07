@@ -210,10 +210,6 @@ $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sg
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-// Border — WP-native style.border (color/width/style/radius). Style-engine
-// consumes this shape directly (mirrors core's own border support output).
-$style_border = isset( $style_obj['border'] ) && is_array( $style_obj['border'] ) ? $style_obj['border'] : array();
-
 // Colour support values — BLOCK-PRIVATE (D744): native `supports.color` is
 // fully false, so core no longer writes `style.color.*`/`textColor`/
 // `backgroundColor`. Text + background are now `textColour*`/
@@ -368,10 +364,6 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
-}
-
-if ( ! empty( $style_border ) ) {
-	$base_style_engine_args['border'] = $style_border;
 }
 
 if ( ! empty( $base_style_engine_args ) ) {

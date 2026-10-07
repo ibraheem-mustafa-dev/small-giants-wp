@@ -237,20 +237,12 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	$spacing_args['margin'] = $sgs_tor_margin_desktop;
 }
 
-// Native border group (colour/width/style/radius) — base only, via the
-// stable core style-engine API (matches sgs/media + sgs/quote's proven
-// pattern: WP core's own sanitisation, never hand-rolled).
-$native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-
 $root_style_args = array();
 if ( $color_args ) {
 	$root_style_args['color'] = $color_args;
 }
 if ( $spacing_args ) {
 	$root_style_args['spacing'] = $spacing_args;
-}
-if ( $native_border ) {
-	$root_style_args['border'] = $native_border;
 }
 
 if ( ! empty( $root_style_args ) ) {

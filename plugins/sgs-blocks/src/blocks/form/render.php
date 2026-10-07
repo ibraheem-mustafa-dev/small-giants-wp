@@ -220,31 +220,7 @@ if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_grou
 	$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
 }
 
-if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
-	$sgs_form_border_raw = $sgs_form_style_group['border'];
-	$sgs_form_border     = array();
-	if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
-		$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
-	}
-	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-	// default — never fall through to the browser's initial medium (~3px)
-	// border-width.
-	if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] && isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
-		$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
-	}
-	if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
-		$sgs_form_border['width'] = $sgs_form_border_raw['width'];
-	}
-	if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
-		$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
-	}
-	if ( ! empty( $sgs_form_border ) ) {
-		$sgs_form_style_engine_input['border'] = $sgs_form_border;
-	}
-}
-
-// Hoisted out of the conditional: the Shape-B border emission scopes to
-// $sgs_form_sel, which was only assigned when NATIVE style-engine input existed.
+// The border and typography emitters below scope to $sgs_form_sel.
 $sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
 

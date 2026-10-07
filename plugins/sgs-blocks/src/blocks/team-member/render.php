@@ -164,35 +164,7 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-// Base border — WP-native style.border.* (width/style/color/radius), all
-// skip-serialised. Unlike sgs/quote (custom borderWidth + native radius
-// only), team-member declares FULL native __experimentalBorder support, so
-// everything lives under $attributes['style']['border'].
-$style_border       = isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ? $attributes['style']['border'] : array();
-$border_width_raw   = isset( $style_border['width'] ) ? sgs_css_length_value( $style_border['width'] ) : '';
-$border_style_raw   = isset( $style_border['style'] ) ? sgs_css_keyword_sanitise( $style_border['style'] ) : '';
-$border_color_raw   = isset( $style_border['color'] ) && is_string( $style_border['color'] ) ? $style_border['color'] : '';
 $preset_border_slug = isset( $attributes['borderColor'] ) ? sanitize_html_class( $attributes['borderColor'] ) : '';
-
-$base_border_radius = null;
-if ( isset( $style_border['radius'] ) ) {
-	$radius_raw = $style_border['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
 
 // Native style.color.text/background/gradient reads + the textColor/backgroundColor
 // preset-slug reads are REMOVED here (2026-08-23) — block.json's `supports.color`
@@ -509,25 +481,6 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
-}
-
-$border_args = array();
-if ( null !== $base_border_radius ) {
-	$border_args['radius'] = $base_border_radius;
-}
-if ( '' !== $border_width_raw ) {
-	$border_args['width'] = $border_width_raw;
-}
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
-// never fall through to the browser's initial medium (~3px) border-width.
-if ( '' !== $border_style_raw && '' !== $border_width_raw ) {
-	$border_args['style'] = $border_style_raw;
-}
-if ( '' !== $border_color_raw ) {
-	$border_args['color'] = sgs_colour_value( $border_color_raw );
-}
-if ( ! empty( $border_args ) ) {
-	$base_style_engine_args['border'] = $border_args;
 }
 
 if ( ! empty( $base_style_engine_args ) ) {

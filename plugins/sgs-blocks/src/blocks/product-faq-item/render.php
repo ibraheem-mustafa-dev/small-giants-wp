@@ -71,8 +71,6 @@ $style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['t
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-$native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-
 // ---------------------------------------------------------------------------
 // 2. Resolve scope id. Uid is a CLASS — this block declares no anchor
 // support, but a class uid keeps the pattern consistent with every other
@@ -83,8 +81,6 @@ $uid      = 'sgs-product-faq-item-' . substr( md5( wp_json_encode( $attributes )
 $root_sel = '.' . $uid . '.sgs-product-faq-item';
 
 $scoped_css = array();
-
-$base_style_engine_args = array();
 
 // Precondition check (colour-conformance pass, 2026-09-07): the `item`
 // manifest element shares BOTH css:color (textColour) and
@@ -131,20 +127,6 @@ if ( $sgs_pfi_hover_is_gradient ) {
 	);
 	if ( '' !== $sgs_pfi_fill_css ) {
 		$scoped_css[] = $sgs_pfi_fill_css;
-	}
-}
-
-if ( ! empty( $native_border ) ) {
-	$base_style_engine_args['border'] = $native_border;
-}
-
-if ( ! empty( $base_style_engine_args ) ) {
-	$base_scoped_styles = wp_style_engine_get_styles(
-		$base_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $base_scoped_styles['css'] ) ) {
-		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 

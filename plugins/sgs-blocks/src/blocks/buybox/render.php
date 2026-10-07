@@ -545,17 +545,10 @@ if ( ! empty( $margin_raw ) ) {
 	}
 }
 
-$style_group       = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
-
 $base_style_engine_args = array();
 
 if ( ! empty( $base_margin_obj ) ) {
 	$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
-}
-
-if ( ! empty( $style_border_args ) ) {
-	$base_style_engine_args['border'] = $style_border_args;
 }
 
 if ( ! empty( $base_style_engine_args ) ) {

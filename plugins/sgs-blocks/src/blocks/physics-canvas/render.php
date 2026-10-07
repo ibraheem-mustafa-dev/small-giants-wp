@@ -40,12 +40,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // name.
 // ---------------------------------------------------------------------------
 
-$sgs_ps_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-
 $sgs_ps_supports_css     = '';
 $sgs_ps_supports_classes = array();
-
-$sgs_ps_engine_input = array();
 
 // D635-pattern migration: text was turned off with no replacement attr
 // (block.json's element note: decorative-only children never inherit `color`
@@ -53,35 +49,14 @@ $sgs_ps_engine_input = array();
 // shared fill emitter below, NOT by the style engine and NOT by
 // supports.color.gradients.
 //
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client
-// saw two and could not tell which won. Switching the flag off alone would
-// have REMOVED the only gradient control this block had, because the sole
-// gradient read was $sgs_ps_style_group['color']['gradient'] (core's own
-// storage). The flag flip is therefore PAIRED with a block-private
-// backgroundColourGradient exposed through fillRow(), so capability is moved
-// rather than lost.
-if ( ! empty( $sgs_ps_style_group['border'] ) && is_array( $sgs_ps_style_group['border'] ) ) {
-	$sgs_ps_engine_input['border'] = $sgs_ps_style_group['border'];
-}
-
-// Uid is computed UNCONDITIONALLY (not just when the style engine has
-// output) — the shared fill emitter below always needs a stable selector to
-// attach to, and the uid class must always be present on the wrapper for
+// The gradient control is the block-private backgroundColourGradient exposed
+// through fillRow().
+// Uid is computed unconditionally — the shared fill emitter below always needs
+// a stable selector to attach to, and the uid class must always be present on the wrapper for
 // that selector to resolve.
 $sgs_ps_uid                = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_ps_sel                = '.' . $sgs_ps_uid . '.wp-block-sgs-physics-canvas';
 $sgs_ps_supports_classes[] = $sgs_ps_uid;
-
-if ( ! empty( $sgs_ps_engine_input ) ) {
-	$sgs_ps_engine_styles = wp_style_engine_get_styles(
-		$sgs_ps_engine_input,
-		array( 'selector' => $sgs_ps_sel )
-	);
-	if ( ! empty( $sgs_ps_engine_styles['css'] ) ) {
-		$sgs_ps_supports_css = $sgs_ps_engine_styles['css'];
-	}
-}
 
 $sgs_ps_fill_css = sgs_fill_states_css(
 	$sgs_ps_sel,

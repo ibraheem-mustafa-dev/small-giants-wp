@@ -25,10 +25,8 @@
  * BOX-GROUP (contract §B): base padding/margin = WP-native style.spacing.*
  * objects (skip-serialised, emitted scoped); tiers = paddingTablet/
  * paddingMobile/marginTablet/marginMobile object attrs (scoped @media
- * 1023/767). Border radius/width/colour/style stay WP-native
- * `style.border.*` (skip-serialised, wholesale-passed to the style engine —
- * matches sgs/container's no-inline residual; this block never had a
- * per-side custom-attr border model). width/maxWidth are kept-scalar
+ * 1023/767). Border width/colour/style/radius are block-private attrs
+ * (borderWidth/borderStyle/borderColour/borderRadius). width/maxWidth are kept-scalar
  * single-value families (contract §C), base only — matches the pre-existing
  * contract (no tablet/mobile tiers were ever declared for this block).
  *
@@ -153,25 +151,14 @@ $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // ---------------------------------------------------------------------------
-// 4. WP `color` / `typography` / `border` / `shadow` support values
+// 4. WP `color` / `typography` / `shadow` support values
 // (skip-serialised in block.json → NOT auto-inlined). Passed WHOLESALE to the
 // style engine below — the engine safely ignores any sub-key it doesn't
 // recognise + resolves preset "var:preset|…" references itself. Mirrors
 // sgs/container's no-inline residual (proven D292) + sgs/process-steps.
 // ---------------------------------------------------------------------------
 
-$style_group           = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_border_args     = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
-// COLOUR key stripped (2026-08-30 owner decision): this block declares no
-// __experimentalBorder/border support, so style.border.color was never a real
-// editor control — the deleted bespoke picker's comment claiming it mirrored
-// WP's native Border panel was false (no such panel exists on this block).
-// borderColour (Shape B, §8-9 below) is the sole canonical owner of the
-// block-private border colour. Live-verified 2026-08-30: 0 of 418 stored
-// info-box instances carry style.border.color, so nothing is stranded.
-// RADIUS (and any other key) is left untouched — 388 stored instances rely on
-// style.border.radius reaching wp_style_engine_get_styles() below.
-unset( $style_border_args['color'] );
+$style_group  = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
 $style_shadow = isset( $style_group['shadow'] ) ? (string) $style_group['shadow'] : '';
 
 // D744: native color support (background/text/link/gradients) is retired —
@@ -262,8 +249,7 @@ if ( $sgs_hover_gray ) {
 
 $scoped_css = array();
 
-// --- Base spacing (padding/margin), colour, border (incl. radius/width/
-// style), typography, shadow — skip-serialised, emitted scoped via the
+// --- Base spacing (padding/margin), colour, typography, shadow — skip-serialised, emitted scoped via the
 // stable core style engine (exactly how WP core outputs these supports). ---
 
 $base_style_engine_args = array();
@@ -282,10 +268,6 @@ if ( ! empty( $base_spacing ) ) {
 // D744: no 'color' key here — background/text colour are block-private
 // (emitted separately below via the shared colour-variant helpers), not
 // passed wholesale to the style engine any more.
-if ( ! empty( $style_border_args ) ) {
-	$base_style_engine_args['border'] = $style_border_args;
-}
-
 if ( '' !== $style_shadow ) {
 	$base_style_engine_args['shadow'] = $style_shadow;
 }
@@ -465,15 +447,8 @@ if ( '' !== $sgs_info_link_hover_resolved && $sgs_info_link_hover_resolved !== $
 // --- Border gradient, RESTING state (D636 border builder, base counterpart to
 // the hover emission below) — masked ::before ring, emitted AFTER the base
 // style-engine rule above so it wins the cascade over that rule's flat
-// `border-color` (native style.border.color), same later-wins-in-source
-// trick sgs/quote uses for its own base border-color/border-color-gradient
-// pair. Width reads the native border width the style engine already
-// resolved (style.border.width) so the ring matches whatever width the
-// operator set in the native Border panel; '1px' is the fallback for "no
-// width set" (matches the hover emission's own fallback below). ---
-$sgs_border_width_native = isset( $style_border_args['width'] ) && is_string( $style_border_args['width'] )
-	? sgs_css_length_value( $style_border_args['width'] )
-	: '';
+// `border-color`, same later-wins-in-source trick sgs/quote uses for its own
+// base border-color/border-color-gradient pair. ---
 
 // --- Width (kept-scalar, base only) ---
 if ( $sgs_content_width ) {

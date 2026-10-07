@@ -42,43 +42,15 @@ $label = $attributes['label'] ?? __( 'Step', 'sgs-blocks' );
 // Block-private scoped color/border supports (no-inline contract §A) — mirrors
 // sgs/container's render.php pattern.
 // ---------------------------------------------------------------------------
-$sgs_fs_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-
 $sgs_fs_supports_css     = '';
 $sgs_fs_supports_classes = array( 'sgs-form-step' );
-
-$sgs_fs_style_engine_input = array();
 
 // SGS flat colour attrs (D635 pattern — native color.text/color.background
 // supports are off; the SgsColourPanel writes here instead). Background
 // (colour + gradient, resting + hover) is owned by the shared fill emitter
 // below, NOT by the style engine and NOT by supports.color.gradients.
-if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['border'] ) ) {
-	$sgs_fs_border_raw = $sgs_fs_style_group['border'];
-	$sgs_fs_border     = array();
-	if ( isset( $sgs_fs_border_raw['color'] ) && '' !== $sgs_fs_border_raw['color'] ) {
-		$sgs_fs_border['color'] = (string) $sgs_fs_border_raw['color'];
-	}
-	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-	// default — never fall through to the browser's initial medium (~3px)
-	// border-width.
-	if ( isset( $sgs_fs_border_raw['style'] ) && '' !== $sgs_fs_border_raw['style'] && isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
-		$sgs_fs_border['style'] = sgs_css_keyword_sanitise( $sgs_fs_border_raw['style'] );
-	}
-	if ( isset( $sgs_fs_border_raw['width'] ) && '' !== $sgs_fs_border_raw['width'] ) {
-		$sgs_fs_border['width'] = $sgs_fs_border_raw['width'];
-	}
-	if ( isset( $sgs_fs_border_raw['radius'] ) && '' !== $sgs_fs_border_raw['radius'] ) {
-		$sgs_fs_border['radius'] = $sgs_fs_border_raw['radius'];
-	}
-	if ( ! empty( $sgs_fs_border ) ) {
-		$sgs_fs_style_engine_input['border'] = $sgs_fs_border;
-	}
-}
-
-// uid/selector are computed UNCONDITIONALLY — the fill emitter below needs a
-// scoped selector regardless of whether the style-engine branch has anything
-// to emit (background is no longer part of $sgs_fs_style_engine_input).
+// uid/selector are computed unconditionally — the emitters below always need
+// a scoped selector.
 //
 // The uid class itself is pushed onto $sgs_fs_supports_classes HERE,
 // unconditionally, mirroring sgs/counter's `$wrapper_classes = array(
@@ -94,17 +66,6 @@ if ( ! empty( $sgs_fs_style_group['border'] ) && is_array( $sgs_fs_style_group['
 $sgs_fs_uid                = 'sgs-fs-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_fs_sel                = '.' . $sgs_fs_uid . '.sgs-form-step';
 $sgs_fs_supports_classes[] = $sgs_fs_uid;
-
-if ( ! empty( $sgs_fs_style_engine_input ) ) {
-	$sgs_fs_engine_styles = wp_style_engine_get_styles(
-		$sgs_fs_style_engine_input,
-		array( 'selector' => $sgs_fs_sel )
-	);
-	if ( ! empty( $sgs_fs_engine_styles['css'] ) ) {
-		$sgs_fs_supports_css       = $sgs_fs_engine_styles['css'];
-		$sgs_fs_supports_classes[] = $sgs_fs_uid;
-	}
-}
 
 // Text colour — gradient-capable paint path (D636 gap-closure, sibling
 // attribute shape, matches sgs/counter's labelColour/labelColourGradient).
@@ -164,13 +125,8 @@ if ( '' !== $sgs_fs_text_colour_hover_effective ) {
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $sgs_fs_style_group['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
+// The gradient control is the block-private backgroundColourGradient exposed
+// through fillRow().
 $sgs_fs_fill_css = sgs_fill_states_css(
 	$sgs_fs_sel,
 	$attributes,

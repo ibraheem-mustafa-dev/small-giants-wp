@@ -93,11 +93,8 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 	}
 }
 
-// Border COLOUR/WIDTH/STYLE are block-private (R2c pattern, mirrors
-// sgs/product-card render.php) — NOT read from $sgs_container_style_group any
-// more. Only border-RADIUS stays on the native style.border path (a
-// corner-shape control, not a colour/paint decision), resolved here exactly
-// as sgs/product-card's own radius-only extraction (render.php ~L352-375).
+// Border colour, width and style are block-private. The radius comes from the
+// block's own radius tiers and is passed to the style engine as border.radius.
 if ( null !== $sgs_radius_tiers['desktop'] ) {
 	$sgs_container_radius_raw = $sgs_radius_tiers['desktop'];
 	if ( is_string( $sgs_container_radius_raw ) && '' !== $sgs_container_radius_raw ) {

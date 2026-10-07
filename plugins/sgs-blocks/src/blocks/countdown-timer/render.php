@@ -165,10 +165,6 @@ $radius_tiers = sgs_border_radius_tiers( $attributes );
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];
 
-// Whole native border group (colour/width/style/radius) — read wholesale, like
-// sgs/media, because __experimentalBorder carries all four under one object.
-$native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-
 // Wrapper text/background colour — block-private, gradient-capable attrs
 // (WP-native `supports.color` is disabled; the old `style.color.*` path was
 // never populated — colour-conformance track fix, 2026-09-06). Text paints
@@ -212,14 +208,6 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 if ( ! empty( $base_spacing ) ) {
 	$base_args['spacing'] = $base_spacing;
-}
-
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. The gate strips a lone 'style' key so this rule is
-// applied identically everywhere, not per block (helpers-box.php).
-if ( ! empty( $native_border ) ) {
-	$base_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
 if ( ! empty( $base_args ) ) {

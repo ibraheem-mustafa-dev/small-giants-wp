@@ -476,10 +476,6 @@ if ( ! empty( $spacing_arr ) ) {
 	$base_style_engine_args['spacing'] = $spacing_arr;
 }
 
-if ( isset( $style_arr['border'] ) && is_array( $style_arr['border'] ) && ! empty( $style_arr['border'] ) ) {
-	$base_style_engine_args['border'] = $style_arr['border'];
-}
-
 // Colour is NOT routed through the style engine any more. supports.color's
 // sub-flags are all false (the `link` one was rule 31's native-colour-ui
 // finding), so nothing can write style.color.* or style.elements.link — the

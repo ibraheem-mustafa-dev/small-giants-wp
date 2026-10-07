@@ -203,8 +203,6 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-$native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
@@ -241,14 +239,6 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
-}
-
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width. The gate strips a lone 'style' key so this rule is
-// applied identically everywhere, not per block (helpers-box.php).
-if ( ! empty( $native_border ) ) {
-	$base_style_engine_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
 $sgs_pf_fill_css = sgs_fill_states_css(

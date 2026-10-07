@@ -55,51 +55,22 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // re-add the has-*-color / has-*-background-color / has-*-gradient-background
 // preset classes that skip-serialisation suppresses.
 // ---------------------------------------------------------------------------
-$sgs_ft_style_group = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-
 $sgs_ft_supports_css     = '';
 $sgs_ft_supports_classes = array();
-
-$sgs_ft_style_engine_input = array();
 
 // SGS flat colour attrs (D635 pattern — native color.text/color.background
 // supports are off; the SgsColourPanel writes here instead). Background
 // (colour + gradient, resting + hover) is owned by the shared fill emitter
 // below, NOT by the style engine and NOT by supports.color.gradients.
 //
-// D636 — sibling gradient attribute wins when set+valid. Text colour is kept
-// OUT of $sgs_ft_style_engine_input (which stays border-only) because a
-// gradient needs the background-clip:text mechanism (sgs_text_colour_decl()),
-// not the native style engine's plain `color` declaration.
+// D636 — sibling gradient attribute wins when set+valid. Text colour goes
+// through sgs_text_colour_decl() because a gradient needs the
+// background-clip:text mechanism, not a plain `color` declaration.
 $sgs_ft_text_colour           = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
 $sgs_ft_text_colour_gradient  = isset( $attributes['textColourGradient'] ) ? (string) $attributes['textColourGradient'] : '';
 $sgs_ft_text_colour_effective = sgs_resolve_text_colour_or_gradient( $sgs_ft_text_colour, $sgs_ft_text_colour_gradient );
-if ( ! empty( $sgs_ft_style_group['border'] ) && is_array( $sgs_ft_style_group['border'] ) ) {
-	$sgs_ft_border_raw = $sgs_ft_style_group['border'];
-	$sgs_ft_border     = array();
-	if ( isset( $sgs_ft_border_raw['color'] ) && '' !== $sgs_ft_border_raw['color'] ) {
-		$sgs_ft_border['color'] = (string) $sgs_ft_border_raw['color'];
-	}
-	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-	// default — never fall through to the browser's initial medium (~3px)
-	// border-width.
-	if ( isset( $sgs_ft_border_raw['style'] ) && '' !== $sgs_ft_border_raw['style'] && isset( $sgs_ft_border_raw['width'] ) && '' !== $sgs_ft_border_raw['width'] ) {
-		$sgs_ft_border['style'] = sgs_css_keyword_sanitise( $sgs_ft_border_raw['style'] );
-	}
-	if ( isset( $sgs_ft_border_raw['width'] ) && '' !== $sgs_ft_border_raw['width'] ) {
-		$sgs_ft_border['width'] = $sgs_ft_border_raw['width'];
-	}
-	if ( isset( $sgs_ft_border_raw['radius'] ) && '' !== $sgs_ft_border_raw['radius'] ) {
-		$sgs_ft_border['radius'] = $sgs_ft_border_raw['radius'];
-	}
-	if ( ! empty( $sgs_ft_border ) ) {
-		$sgs_ft_style_engine_input['border'] = $sgs_ft_border;
-	}
-}
-
-// uid/selector are computed UNCONDITIONALLY — the fill emitter below needs a
-// scoped selector regardless of whether the style-engine branch has anything
-// to emit (background is no longer part of $sgs_ft_style_engine_input).
+// uid/selector are computed unconditionally — the emitters below always need
+// a scoped selector.
 //
 // The uid class itself is pushed onto $sgs_ft_supports_classes HERE,
 // unconditionally, mirroring sgs/counter's `$wrapper_classes = array(
@@ -113,17 +84,6 @@ if ( ! empty( $sgs_ft_style_group['border'] ) && is_array( $sgs_ft_style_group['
 $sgs_ft_uid                = 'sgs-ft-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_ft_sel                = '.' . $sgs_ft_uid . '.sgs-form-field--tiles';
 $sgs_ft_supports_classes[] = $sgs_ft_uid;
-
-if ( ! empty( $sgs_ft_style_engine_input ) ) {
-	$sgs_ft_engine_styles = wp_style_engine_get_styles(
-		$sgs_ft_style_engine_input,
-		array( 'selector' => $sgs_ft_sel )
-	);
-	if ( ! empty( $sgs_ft_engine_styles['css'] ) ) {
-		$sgs_ft_supports_css       = $sgs_ft_engine_styles['css'];
-		$sgs_ft_supports_classes[] = $sgs_ft_uid;
-	}
-}
 
 // D636 — sibling gradient attribute wins when set+valid.
 if ( '' !== $sgs_ft_text_colour_effective ) {
@@ -153,13 +113,8 @@ if ( '' !== $sgs_ft_text_colour_hover_decl ) {
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $sgs_ft_style_group['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
+// The gradient control is the block-private backgroundColourGradient exposed
+// through fillRow().
 $sgs_ft_fill_map = array(
 	'base'           => 'backgroundColour',
 	'hover'          => 'backgroundColourHover',
