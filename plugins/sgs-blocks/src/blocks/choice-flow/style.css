@@ -121,7 +121,7 @@
 }
 
 .sgs-choice-flow__nav-back:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 
@@ -164,7 +164,7 @@
 }
 
 .sgs-choice-flow__continue:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 
@@ -244,7 +244,7 @@
 
 .sgs-choice-flow__add-to-basket:focus-visible,
 .sgs-choice-flow__buy-now:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 
@@ -809,7 +809,7 @@
 }
 
 .sgs-choice-flow__summary-toggle > summary:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 
@@ -1420,7 +1420,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 

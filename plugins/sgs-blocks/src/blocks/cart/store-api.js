@@ -135,22 +135,16 @@ export function fetchProducts( ids ) {
 	return request( '/products?include=' + ids.join( ',' ) + '&per_page=100' );
 }
 
-let trimZeros = null;
-
 /**
- * Whether whole amounts drop their decimals, read once from the cart block's
- * `data-trim-zeros` (includes/price-trim-zeros.php), as wc_trim_zeros() does
- * server-side.
+ * Whether whole amounts drop their decimals: the page-wide `sgs-trim-zeros`
+ * body class (includes/price-trim-zeros.php), as wc_trim_zeros() does
+ * server-side. Read on every call, so a page without a cart block (a wishlist
+ * panel on its own) formats the same way.
  *
  * @return {boolean} True when "£115.00" should read "£115".
  */
 function shouldTrimZeros() {
-	if ( null === trimZeros ) {
-		trimZeros =
-			'undefined' !== typeof document &&
-			null !== document.querySelector( '.wp-block-sgs-cart[data-trim-zeros="1"]' );
-	}
-	return trimZeros;
+	return 'undefined' !== typeof document && !! document.body && document.body.classList.contains( 'sgs-trim-zeros' );
 }
 
 /**

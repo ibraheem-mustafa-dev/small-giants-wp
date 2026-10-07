@@ -124,7 +124,9 @@ def token_ok(tok: str) -> bool:
         name, _, fallback = inner.partition(",")
         name = name.strip()
         if ALLOWED_VARS.match(name):
-            return True
+            # The token's own fallback is what a client without the token paints, so it
+            # must be contrast-safe: never the accent, which is often pale (1.5:1 on white).
+            return not (name.startswith("--wp--custom--focus-ring") and "--wp--preset--color--accent" in fallback)
         if NON_COLOUR_VAR.search(name):
             return True
         if name.startswith("--wp--preset--color"):
@@ -193,11 +195,26 @@ def scan_css(css: str) -> List[Tuple[str, str, str]]:
 
 
 def files() -> Iterator[Path]:
-    for base, pattern in GLOBS:
+    for base, pattern in GLOBS + PHP_GLOBS:
         for p in sorted((REPO / base).glob(pattern)):
             if p.name.endswith(".min.css") or SKIP_PARTS & set(p.relative_to(REPO).parts):
                 continue
             yield p
+
+
+# CSS a PHP file writes out: each `<selector>:focus…{…}` fragment inside its string literals.
+PHP_GLOBS = [
+    ("plugins/sgs-blocks/includes", "**/*.php"),
+    ("plugins/sgs-blocks/src/blocks", "**/*.php"),
+    ("theme/sgs-theme", "**/*.php"),
+]
+PHP_FOCUS_FRAGMENT = re.compile(r"[^'\"{};]*:focus[\w-]*\{[^{}]*\}")
+
+
+def scan_file(p: Path, text: str) -> List[Tuple[str, str, str]]:
+    if p.suffix == ".php":
+        return [hit for frag in PHP_FOCUS_FRAGMENT.findall(text) for hit in scan_css(frag)]
+    return scan_css(text)
 
 
 def self_test() -> int:
@@ -209,8 +226,15 @@ def self_test() -> int:
     chain_bad = ".x:focus-visible{outline-color:var(--sgs-x-focus-colour, #141414);}"
     nested = "@media (min-width:1px){.x:focus{box-shadow:0 0 0 3px #141414}}"
     plain = ".x:hover{outline:2px solid #141414}"
-    checks = [(bad, 1), (good, 0), (chain, 0), (chain_bad, 1), (nested, 1), (plain, 0)]
+    pale = (".x:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, "
+            "var(--wp--preset--color--accent));}")
+    safe = (".x:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, "
+            "var(--wp--preset--color--primary));}")
+    checks = [(bad, 1), (good, 0), (chain, 0), (chain_bad, 1), (nested, 1), (plain, 0), (pale, 1), (safe, 0)]
     failed = [c for c, want in checks if len(scan_css(c)) != want]
+    php = "$css .= $sel . ' .x__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);}';"
+    if len(scan_file(Path("x.php"), php)) != 1:
+        failed.append("php fragment")
     print("self-test:", "FAIL " + str(failed) if failed else "ok (negative and positive controls)")
     return 1 if failed else 0
 
@@ -226,7 +250,7 @@ def main() -> int:
     for p in files():
         text = p.read_text(encoding="utf-8", errors="replace")
         rel = p.relative_to(REPO).as_posix()
-        for selector, prop, value in scan_css(text):
+        for selector, prop, value in scan_file(p, text):
             if any(rel.endswith(f) and frag in selector for f, frag, _ in ALLOWLIST):
                 continue
             total += 1

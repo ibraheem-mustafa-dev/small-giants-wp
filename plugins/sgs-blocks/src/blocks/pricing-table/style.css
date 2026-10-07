@@ -225,7 +225,7 @@
 }
 
 .sgs-pricing-table__cta:focus-visible {
-	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 3px;
 }
 
@@ -509,7 +509,7 @@
 
 /* Focus ring on inputs (keyboard nav — both styles) */
 .sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 

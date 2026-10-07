@@ -459,7 +459,7 @@
       "focus-ring": {
         "width": "3px",
         "offset": "2px",
-        "color-primary": "var(--wp--preset--color--accent, #d8ca50)",
+        "color-primary": "var(--wp--preset--color--primary, #1F7A7A)",
         "color-accent": "color-mix(in srgb, var(--wp--preset--color--accent, #d8ca50) 40%, transparent)"
       }
     },

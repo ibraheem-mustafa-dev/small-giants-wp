@@ -164,7 +164,7 @@
 }
 
 .sgs-link-list__nav .wp-block-navigation-item__content:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 

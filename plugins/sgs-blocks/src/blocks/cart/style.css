@@ -618,7 +618,7 @@
 }
 
 .sgs-cart__item-qty-input:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 1px;
 }
 
@@ -813,7 +813,7 @@
 
 .sgs-cart__panel-view:focus-visible,
 .sgs-cart__panel-checkout:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 2px;
 }
 

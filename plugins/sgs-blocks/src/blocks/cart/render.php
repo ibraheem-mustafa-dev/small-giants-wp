@@ -524,8 +524,6 @@ $wrapper_data_attributes = array(
 	'data-display-mode'     => esc_attr( $effective_mode ),
 	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
 	'data-count-pop'        => $count_pop_animation,
-	// Whole-pound bag prices drop ".00" when the site does (price-trim-zeros.php).
-	'data-trim-zeros'       => ( function_exists( 'sgs_price_trim_zeros_applies' ) && sgs_price_trim_zeros_applies() ) ? '1' : '0',
 );
 if ( $has_panel ) {
 	$wrapper_data_attributes['data-free-delivery-threshold']       = ( null !== $free_delivery_threshold ) ? (string) $free_delivery_threshold : '';

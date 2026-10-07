@@ -345,7 +345,7 @@
    ================================================================ */
 
 .sgs-option-picker__option input[type="radio"]:focus-visible ~ .sgs-option-picker__pill {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
 	outline-offset: 3px;
 }
 

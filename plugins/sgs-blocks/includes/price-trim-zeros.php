@@ -10,13 +10,14 @@
  * script). A price with pennies keeps them (£59.50), since wc_trim_zeros()
  * strips the decimals only when they are all zero.
  *
- * Pennies stay on order records: admin screens, every WooCommerce email
+ * Pennies stay on order records: admin screens and the AJAX/REST calls they
+ * send, scheduled jobs (which build alert emails), every WooCommerce email
  * (HTML and plain, whatever request sends it), the checkout page with its
  * order-received endpoint, and the account's order views.
  *
  * Prices formatted in the browser follow the same switch: the product card
- * through its Interactivity context (`trimZeros`), the bag through the cart
- * block's `data-trim-zeros` attribute.
+ * through its Interactivity context (`trimZeros`), the bag and wishlist panel
+ * through the `sgs-trim-zeros` body class.
  *
  * @package SGS\Blocks
  */
@@ -87,6 +88,45 @@ if ( ! function_exists( 'sgs_price_trim_leave_template' ) ) {
 	add_action( 'woocommerce_after_template_part', 'sgs_price_trim_leave_template' );
 }
 
+if ( ! function_exists( 'sgs_price_trim_from_admin_screen' ) ) {
+	/**
+	 * Whether an AJAX or REST request was sent from an admin screen (an order edit,
+	 * an editor preview), where prices keep their pennies. is_admin() is true for
+	 * every admin-ajax.php call, front end included, so the referer decides; a
+	 * request with no referer keeps pennies.
+	 *
+	 * @return bool
+	 */
+	function sgs_price_trim_from_admin_screen(): bool {
+		$is_rest = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		if ( ! wp_doing_ajax() && ! $is_rest ) {
+			return false;
+		}
+		$referer = (string) wp_get_raw_referer();
+		if ( '' === $referer ) {
+			return wp_doing_ajax() && is_admin();
+		}
+		return 0 === strpos( $referer, admin_url() );
+	}
+}
+
+if ( ! function_exists( 'sgs_price_trim_body_class' ) ) {
+	/**
+	 * Page-wide flag for prices formatted in the browser (the bag, the wishlist
+	 * panel): `sgs-trim-zeros` on <body> when this page drops ".00".
+	 *
+	 * @param array $classes Body classes.
+	 * @return array
+	 */
+	function sgs_price_trim_body_class( $classes ) {
+		if ( sgs_price_trim_zeros_applies() ) {
+			$classes[] = 'sgs-trim-zeros';
+		}
+		return $classes;
+	}
+	add_filter( 'body_class', 'sgs_price_trim_body_class' );
+}
+
 if ( ! function_exists( 'sgs_price_trim_zeros_applies' ) ) {
 	/**
 	 * Whether a price formatted right now should drop ".00".
@@ -98,6 +138,13 @@ if ( ! function_exists( 'sgs_price_trim_zeros_applies' ) ) {
 			return false;
 		}
 		if ( is_admin() && ! wp_doing_ajax() ) {
+			return false;
+		}
+		// Scheduled jobs build emails and stored text (e.g. the wishlist price-drop alert).
+		if ( wp_doing_cron() ) {
+			return false;
+		}
+		if ( sgs_price_trim_from_admin_screen() ) {
 			return false;
 		}
 		if ( sgs_price_trim_email_depth() > 0 ) {
