@@ -1921,31 +1921,44 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
     """Run assign-canonical.py as a subprocess (Stage 1 tail step).
 
     Releases the write lock briefly so the subprocess can open its own connection.
-    Prints a one-line summary; swallows all errors as warnings.
+    Prints a one-line summary.
+
+    A timeout or a non-zero exit STOPS the reseed (SystemExit 1). The step writes
+    block_attributes.role for the shared DB (it is what seeds `boolean-visibility`),
+    so finishing the run without it leaves ~45 boolean attrs with fallback roles
+    while the run still looks successful, and every regenerated role map then
+    carries them. Under machine load the step takes close to a minute, so the cap
+    is generous; it exists only to stop a hung child.
     """
+    ac_script = REPO_ROOT / "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py"
+    if not ac_script.exists():
+        return
+    conn.commit()
     try:
-        ac_script = REPO_ROOT / "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py"
-        if not ac_script.exists():
-            return
-        conn.commit()
         result = subprocess.run(
             ["python", str(ac_script)],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, text=True, timeout=900,
             encoding="utf-8", errors="replace",
         )
-        if result.returncode == 0:
-            tail = [
-                ln for ln in (result.stdout or "").splitlines()
-                if "resolved" in ln.lower() or "gaps" in ln.lower()
-            ]
-            print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
-        else:
-            print(
-                f"Stage 1 tail (canonical assignment): WARN exit={result.returncode}; "
-                f"stderr={result.stderr[:200]}"
-            )
-    except Exception as exc:  # noqa: BLE001
-        print(f"Stage 1 tail (canonical assignment): WARN {exc}")
+    except subprocess.TimeoutExpired:
+        print(
+            "Stage 1 tail (canonical assignment): FAILED, timed out after 900s. "
+            "block_attributes.role is incomplete; re-run this stage before any build, "
+            "deploy or role-map regeneration."
+        )
+        raise SystemExit(1)
+    if result.returncode != 0:
+        print(
+            f"Stage 1 tail (canonical assignment): FAILED exit={result.returncode}; "
+            f"stderr={result.stderr[:200]}. block_attributes.role is incomplete; "
+            "re-run this stage before any build, deploy or role-map regeneration."
+        )
+        raise SystemExit(1)
+    tail = [
+        ln for ln in (result.stdout or "").splitlines()
+        if "resolved" in ln.lower() or "gaps" in ln.lower()
+    ]
+    print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
 
 
 def _run_composition_role_seed(conn: sqlite3.Connection) -> None:
