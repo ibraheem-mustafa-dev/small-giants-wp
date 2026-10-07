@@ -156,7 +156,6 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:width": "thumbSize",
 						"css:height": "thumbPixelSize",
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
