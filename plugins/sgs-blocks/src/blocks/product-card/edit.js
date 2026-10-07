@@ -1698,6 +1698,24 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					</PanelBody>
 				) }
 
+				{ /* Bound mode: the price comes from the linked product, so the
+				     panel explains that instead of offering fields. Its "From"
+				     label typography is a target in the Styles tab's Typography
+				     panel. */ }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'Price', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<Notice status="info" isDismissible={ false }>
+							{ __(
+								'Price is drawn from the linked product and cannot be edited here.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					</PanelBody>
+				) }
+
 				{ /* ── Button panel — MOVED to the Styles tab (rule 41, 2026-09-08).
 				     See that panel's own comment for the merge + tab-placement
 				     rationale. ── */ }
@@ -2396,6 +2414,20 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showLineHeight: false,
 								},
 								{
+									key: 'priceFromLabel',
+									label: __( '"From" label', 'sgs-blocks' ),
+									prefix: 'priceFromLabel',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								{
 									key: 'pill',
 									label: __( 'Pill', 'sgs-blocks' ),
 									prefix: 'pill',
@@ -2505,33 +2537,11 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						) }
 					</PanelBody>
 				) }
-				{ isBound && (
-					<PanelBody
-						title={ __( 'Price', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<Notice status="info" isDismissible={ false }>
-							{ __(
-								'Price is drawn from the linked product and cannot be edited here.',
-								'sgs-blocks'
-							) }
-						</Notice>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="priceFromLabel"
-							showWeight={ false }
-							showStyle={ false }
-							showLineHeight={ false }
-						/>
-					</PanelBody>
-				) }
-
 				{ /* Brand overlay typography (bound mode) — the typed-mode
 				     equivalent lives inside the Typography panel below
 				     (isBuiltIn). render.php emits the brand rule from the
 				     shared, pre-branch-split section, so bound mode needs its
-				     own mount, same reason priceFromLabel gets one above. */ }
+				     own mount. */ }
 				{ isBound && (
 					<PanelBody
 						title={ __( 'Brand overlay typography', 'sgs-blocks' ) }

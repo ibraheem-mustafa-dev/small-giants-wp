@@ -239,7 +239,21 @@
 						"text"
 					],
 					"prefix": "priceFromLabel",
-					"_note": "No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
+					"attrMap": {
+						"css:font-size": "priceFromLabelFontSize",
+						"css:font-weight": "priceFromLabelFontWeight",
+						"css:font-style": "priceFromLabelFontStyle",
+						"css:font-family": "priceFromLabelFontFamily",
+						"css:text-transform": "priceFromLabelTextTransform",
+						"css:text-decoration": "priceFromLabelTextDecoration",
+						"css:line-height": "priceFromLabelLineHeight",
+						"css:letter-spacing": "priceFromLabelLetterSpacing",
+						"css:text-align": "priceFromLabelTextAlign",
+						"css:text-wrap": "priceFromLabelTextWrap",
+						"css:column-count": "priceFromLabelTextColumns",
+						"css:writing-mode": "priceFromLabelWritingMode"
+					},
+					"_note": "The \"From\" label owns a full typography surface (priceFromLabel*), painted on .price-from-label by sgs_typography_css_rule( $attributes, 'priceFromLabel', … ). No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
 				},
 				"tag": {
 					"label": "Tag (trial/featured badge)",
@@ -1318,6 +1332,91 @@
 		"priceFromLabelFontSizeUnit": {
 			"type": "string",
 			"default": "px"
+		},
+		"priceFromLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFromLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"priceFromLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"priceFromLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceFromLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFromLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceFromLabelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"priceFromLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"priceFromLabelTextColumns": {
+			"type": "number"
+		},
+		"priceFromLabelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		},
 		"tagFontSize": {
 			"type": "object",

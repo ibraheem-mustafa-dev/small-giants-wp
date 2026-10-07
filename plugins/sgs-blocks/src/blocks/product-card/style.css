@@ -181,12 +181,14 @@
 	flex-wrap: wrap;
 }
 
-.product-card .price-from-label {
-	font-family: 'Inter', sans-serif;
+:where(.product-card .price-from-label) {
 	font-size: var(--sgs-product-card-price-from-label-font-size, 12px);
 	font-weight: var(--sgs-card-price-from-label-font-weight, 600);
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
+}
+
+.product-card .price-from-label {
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 
