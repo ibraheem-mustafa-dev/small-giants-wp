@@ -675,7 +675,9 @@
                 "desktop": "full"
               },
               "flexWrap": "nowrap",
-              "className": "cr-ref-header-5"
+              "className": "cr-ref-header-5",
+              "sgsBlockLink": "/",
+              "sgsBlockLinkLabel": "Eye Care Birmingham, home"
             },
             "innerBlocks": [
               {

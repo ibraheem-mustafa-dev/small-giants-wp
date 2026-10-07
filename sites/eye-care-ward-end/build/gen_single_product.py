@@ -193,8 +193,14 @@ tree = [
                 pickerAlwaysShowAxes=["pa_frame-size"], pickerBandAxis="pa_frame-size", pickerBandScale="S:52,M:57,L",
                 pickerLabelLinkAxis="pa_frame-size", pickerLabelLinkText="Which size am I?", pickerLabelLinkUrl="#size-guide",
                 galleryColumnRatio=1.353, galleryColumnGap="60px", extrasBeforeCount=3, extrasBeforeCartCount=1, stackBelow="tablet"), [
-                btxt("brand", fontFamily="heading", fontWeight="500", fontSize={"desktop": 20}, fontSizeUnit="px",
-                     letterSpacing={"desktop": 0.3}, letterSpacingUnit="em", textTransform="uppercase"),
+                # D8 / register N33A: the brand's logo (every brand has one) above the name, linking to the
+                # brand page; its text alternative is the brand name.
+                B("sgs/media", dict(mediaType="image", imageUrl="", imageAlt="", linkUrl="", height={"desktop": "40px"},
+                                    objectFit="contain", maxWidth={"desktop": "180px"}, alignment="left",
+                                    metadata={"bindings": {
+                                        "imageUrl": {"source": "sgs-product/field", "args": {"key": "brand_logo_url"}},
+                                        "imageAlt": {"source": "sgs-product/field", "args": {"key": "brand"}},
+                                        "linkUrl": {"source": "sgs-product/field", "args": {"key": "brand_url"}}}})),
                 B("sgs/heading", dict(level="h1", content="", fontFamily="heading", fontWeight="500",
                                       fontSize={"desktop": 48, "mobile": 34}, fontSizeUnit="px",
                                       lineHeight={"desktop": 1.02}, lineHeightUnit="unitless",

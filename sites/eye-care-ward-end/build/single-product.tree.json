@@ -143,26 +143,38 @@
             },
             "innerBlocks": [
               {
-                "name": "sgs/text",
+                "name": "sgs/media",
                 "attributes": {
-                  "text": "",
-                  "fontFamily": "heading",
-                  "fontWeight": "500",
-                  "fontSize": {
-                    "desktop": 20
+                  "mediaType": "image",
+                  "imageUrl": "",
+                  "imageAlt": "",
+                  "linkUrl": "",
+                  "height": {
+                    "desktop": "40px"
                   },
-                  "fontSizeUnit": "px",
-                  "letterSpacing": {
-                    "desktop": 0.3
+                  "objectFit": "contain",
+                  "maxWidth": {
+                    "desktop": "180px"
                   },
-                  "letterSpacingUnit": "em",
-                  "textTransform": "uppercase",
+                  "alignment": "left",
                   "metadata": {
                     "bindings": {
-                      "text": {
+                      "imageUrl": {
+                        "source": "sgs-product/field",
+                        "args": {
+                          "key": "brand_logo_url"
+                        }
+                      },
+                      "imageAlt": {
                         "source": "sgs-product/field",
                         "args": {
                           "key": "brand"
+                        }
+                      },
+                      "linkUrl": {
+                        "source": "sgs-product/field",
+                        "args": {
+                          "key": "brand_url"
                         }
                       }
                     }
