@@ -278,9 +278,20 @@ wrappers.forEach( ( wrapper ) => {
 	// Re-measure when the bar's width changes inside the range (the query above only fires
 	// on crossing the breakpoint). Never before the first measure, never out of range.
 	widthWatch = watchWidth( wrapper, () => {
-		if ( measured && inRange() ) {
-			measure();
+		if ( ! measured || ! inRange() ) {
+			return;
 		}
+		// Already scrolling, still overflowing and enough copies to cover the new width: leave the
+		// running (or user-paused) marquee where it is instead of rebuilding it from the start.
+		if ( track.classList.contains( 'sgs-trust-bar__track--ready' ) ) {
+			const trackWidth = track.getBoundingClientRect().width;
+			const clones = cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).length;
+			if ( trackWidth > wrapper.offsetWidth && clones >= Math.ceil( wrapper.offsetWidth / trackWidth ) + 1 ) {
+				widthWatch.rebase();
+				return;
+			}
+		}
+		measure();
 	} );
 	if ( marqueeQuery ) {
 		marqueeQuery.addEventListener( 'change', sync );
