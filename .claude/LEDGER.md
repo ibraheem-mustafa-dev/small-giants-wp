@@ -57,7 +57,10 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 **Now (2026-10-07).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
-No blockers.
+No blockers. **eye-care-test runs `f89b016f9`** (deploy marker). The backlog's QC finds Q3 to Q8 and Q11 are closed
+with live proof in their rows; N36S's real frame measurements and the draft's four-row Sizing table are live and follow
+the picked size, and its diagram is the D1 session's (`plans/2026-10-07-measured-diagram-block.md`). Still open in the
+backlog: Q1, Q9, Q10 (Bean's choice, below) and Q12.
 
 **Spec 47 (v0.15.2): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
@@ -138,6 +141,10 @@ does not produce real matches on real data for it to consume.
 
 ### Tasks — need Bean directly, not a subagent
 
+- **Eye Care: six frames have no lens height** (backlog Q10). jpopticians does not carry Prada PR 17WS, Versace VE4361,
+  Ferrari FZ6001, Police SPL872 or D&G DG4268, and Carrera 1055/S's page lists no measurements, so their Sizing table's
+  Lens height row shows a label with no value. Choose: a fallback text on the binding, hide the row when empty, or
+  source those figures elsewhere.
 - **Drawer-burger click retest.** Confirm live whether the intermittent click-miss (2/3 real
   clicks failed to open the drawer in automated testing) still occurs now the duplicate-burger fix
   has shipped. If it still fails, dispatch a fresh `/systematic-debugging`.
