@@ -84,4 +84,4 @@ Ranked roughly by size. "Files" is the overlap column for selection.
 - S9 family — N10, N33A (framework built, **tree half still open**)
 - S7 family — S7, N27, N31, and D7 moves into the panel S7 deletes
 
-> The verdicts here are the Phase 1 partition, written before the live checks. **`CATEGORISATION.md` holds the final verdicts** (10 built, not 8; N26 fixed in code).
+> The verdicts here are the Phase 1 partition, written before the live checks. **`CATEGORISATION.md` holds the final verdicts** (21 closed, not 8; N26 verified live).

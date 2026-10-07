@@ -1,25 +1,25 @@
 # The 63 rows the walker cannot see — categorised
 
-**2026-10-06.** Live block code **`578a8830b`** (`~/.sgs-deploy-marker-eye-care-test.json`).
+**2026-10-06, fixes verified 2026-10-07.** Fixes live at **`0cc773b19`** (`~/.sgs-deploy-marker-eye-care-test.json`).
 Live `https://darkcyan-grouse-898606.hostingersite.com` · draft `https://mintcream-lyrebird-224487.hostingersite.com/`.
 Source of truth: `.claude/plans/2026-10-02-eye-care-fix-register.md`. Partition: `worksheet.md`.
 
-**No deploy was needed.** All 21 commits cited by the register's built rows are ancestors of `578a8830b`,
-including `ea72eab7b`, which the register still calls "committed but NOT yet deployed". That note is stale.
+**Classification needed no deploy**: every commit the register's built rows cite was already an ancestor of the
+then-live `578a8830b`. The **fixes** this session then made shipped in `4aa477507`, `110b53738` and `0cc773b19`.
 
 ## Headline
 
 | Category | Rows |
 |---|---|
-| Built and verified live | 11 (10 verified live + 152, confirm-only) |
-| Genuinely open | 20 (9 measured + 11 now root-caused) |
-| Needs content from the client | 4, drafted in `sites/eye-care-ward-end/content/` |
+| **Closed** — built and live, fixed, or already closed | **21** |
+| **Still open** — with a measured cause and fix shape | **14**, plus 4 aliases to verify |
+| Content — written, ours to own | 4 |
 | Accepted divergence / beyond the draft | 2 |
-| Alias of a parent row | 12 (9 modelled by the register's Covers column, 3 not) |
-| CR — route, not client-visible | 14, with 2 orphans needing an owner |
+| Alias of a parent row | 12 |
+| CR — route, not client-visible | 14 (CR12 parked, CR6 a migration) |
 | Still to measure | **0** |
 
-Plus **one defect found that is not in the 63 at all** — see §5.
+§5 is the product card (N26): measured at 1-2% clickable, now 99% and permanent.
 
 ---
 
@@ -143,7 +143,8 @@ deliberate stand-in awaiting the client's photography, and 1 (the QA test item) 
 > (`sgs_manifest_v8_<id>_<fingerprint>` written vs `sgs_manifest_<id>` deleted) was starving the cards of
 > images, and offered the fact that `gucci-oversized-cat-eye` rendered correctly as corroboration. That was a
 > coincidence: the Gucci product is simply one of the four with a real photo. The cache-key mismatch is still a
-> real bug — register row 59 records it — but it is **not** the cause of anything observed here, and no fix
+> real bug, untracked anywhere (`class-product-manifest.php` writes `sgs_manifest_v8_<id>_<fingerprint>`; the purge
+> deletes `sgs_manifest_<id>`, so it never matches; an earlier draft wrongly cited row 59) — but it is **not** the cause of anything observed here, and no fix
 > should be built on it. Caught by Bean, who knew the photo inventory.
 >
 > The measuring error behind it: the check for a placeholder image tested only for the string `placeholder`,
@@ -201,9 +202,9 @@ host was held by two peers). Each carries the one live measurement that would co
 
 | Ref | Cause, verified | Fix |
 |---|---|---|
-| **58** hero buttons appear instantly | `home.tree.json`: the hero heading and text carry `sgsAnimation: fade-up`; the `sgs/multi-button` node carries **none**. The attribute exists on the block. | **TREE** — add fade-up, 18, 900, ease, 560 |
-| **N33B** Save shown twice | `single-product.tree.json` sets `gallerySavingBadge: true`; the `block.json` default is `false`. The price-row pill comes separately from `rrpMetaKey`. | **TREE** — remove the flag (and from `gen_single_product.py`) |
-| **9** Ferrari tile reads its name twice | `mega-brands.tree.json`: **1 of 12** tiles carries a `title`, and it is Ferrari Scuderia with `title` identical to its `media.alt`. Every other tile has `title: ""`. | **TREE** — set the title to `""` |
+| **58** hero buttons appear instantly | `home.tree.json`: the hero heading and text carry `sgsAnimation: fade-up`; the `sgs/multi-button` node carries **none**. The attribute exists on the block. | **FIXED, verified live `0cc773b19`** (page rebuilt with `wp-build-page.js`) |
+| **N33B** Save shown twice | `single-product.tree.json` sets `gallerySavingBadge: true`; the `block.json` default is `false`. The price-row pill comes separately from `rrpMetaKey`. | **FIXED, verified live `0cc773b19`** (page rebuilt with `wp-build-page.js`) |
+| **9** Ferrari tile reads its name twice | `mega-brands.tree.json`: **1 of 12** tiles carries a `title`, and it is Ferrari Scuderia with `title` identical to its `media.alt`. Every other tile has `title: ""`. | **FIXED, verified live `0cc773b19`** (page rebuilt with `wp-build-page.js`) |
 
 **The rest:**
 
@@ -212,15 +213,15 @@ host was held by two peers). Each carries the one live measurement that would co
 | 152 coupon / note / terms | **BUILT** | the three are separate unlocked inner blocks in `parts/sgs-checkout-content.html`; confirm-only |
 | N30 bridge-size box | TREE + seed data | the seeder writes `U+25A1` into `_sgs_size_measure` (`woo-seed/seed.php::sgs_seed_find_or_create_size_term`); the draft uses the same glyph |
 | N36S sizing tab | mixed | 4th row is a tree change needing lens-height data that does not exist; the diagram is a new block (D1). **The register's "no description column" is STALE — it is already built** |
-| 64 filter bar scrolls | FRAMEWORK | `sgs-shop-filters.js::ensureParts` puts the header inside `.sgs-shop-filters__scroll`, which has `overflow-y:auto`; the footer is appended outside it, which is why it stays pinned |
+| 64 filter bar scrolls | **FIXED, verified live `0cc773b19`** | `sgs-shop-filters.js::ensureParts` puts the header inside `.sgs-shop-filters__scroll`, which has `overflow-y:auto`; the footer is appended outside it, which is why it stays pinned |
 | 14 drawer stagger | FRAMEWORK | `nav-drawer-menu/style.css` staggers only direct children of `.sgs-nav-drawer__body`; the tree's `sgs/container` is one child, so everything inside it arrives together |
-| 17, 3 bag count pop | FRAMEWORK | `count-pop.js::maybeAnimateCountPop` pops only on increase and the first call is `NaN`, so no pop on load; the CSS is fixed at 0.35s against the draft's 0.5s |
-| 19 delivery bar | FRAMEWORK | `cart/style.css` hardcodes `transition: width 0.3s ease`; no duration or easing attribute exists |
+| 17, 3 bag count pop | **FIXED, verified live `0cc773b19`** | `count-pop.js::maybeAnimateCountPop` pops only on increase and the first call is `NaN`, so no pop on load; the CSS is fixed at 0.35s against the draft's 0.5s |
+| 19 delivery bar | **FIXED, verified live `0cc773b19`** | `cart/style.css` hardcodes `transition: width 0.3s ease`; no duration or easing attribute exists |
 | 73 photo fade | FRAMEWORK | `sgs/buybox` has no photo-entrance attribute; the existing crossfade fires only on variation swap |
-| N13 WhatsApp overlap | FRAMEWORK | `whatsapp-cta/view.js` observes only another `sgs/whatsapp-cta`; nothing exists for a footer strip |
+| N13 WhatsApp overlap | **CLOSED — already worked** | `floatingHideNearInline` defaults to true and the footer holds a real `sgs/whatsapp-cta`, which `whatsapp-cta/view.js` matches; measured hiding at the footer |
 | N37 advance on pick | FRAMEWORK | `block.json::advanceMode` is an enum of `continue` and `tap` only; tap hides Continue, so Back cannot return without re-picking |
 | D7 Google rating | FRAMEWORK or tree | the top bar is `sgs/trust-bar`, dynamic with no InnerBlocks and an icon-and-label repeater, so it cannot host `sgs/google-reviews` |
-| N24 review logo link | FRAMEWORK | `google-reviews/render.php` draws the logo as a bare `<img aria-hidden="true">`; a per-review `reviewUrl` already reaches the render |
+| N24 review logo link | **FIXED, verified live `0cc773b19`** | `google-reviews/render.php` draws the logo as a bare `<img aria-hidden="true">`; a per-review `reviewUrl` already reaches the render |
 
 **Fix together — these share one mechanism:**
 - **Cart motion (17, 3, 19)** — one pass over `cart/count-pop.js` and `cart/style.css`
@@ -231,17 +232,22 @@ host was held by two peers). Each carries the one live measurement that would co
 N36S (whether real lens-height values exist), 14 (whether the live drawer uses the tree's `sgs/button` nav
 container), 19 (whether the bar transitions at all, a different cause from the duration).
 
-## What I would do next, in order
+## What is left, grouped by shared mechanism
 
-1. **The 5-minute tree batch** — `58`, `N33B`, `9`, and confirm `152`. Three one-line tree edits, all three
-   causes verified directly, one build. The largest visible return per minute in this whole document.
-2. **Verify N26 live** once the host frees. `3db77f090` is built and pushed; the number to beat is 73-79%
-   clickable on photographed cards and 2-5% on the rest.
-3. **The cart-motion pass** (`17`, `3`, `19`) — one file pair, three rows.
-4. **CR6 is owned by the route session** (a migration, not an evening's work) and **CR12 is parked**, so
-   nothing in the CR bucket needs a decision.
-5. **Hand the content drafts to Fatima** with their 59 `[CONFIRM: …]` questions, and get a solicitor onto the
-   privacy policy and terms before launch: the eye test and prescription are special-category health data.
+**Quick:** `36` address line break (Site Info content) · `S8` (+N9, N34) one filter hides `.00` on whole-pound
+prices · `S7` (+N27, N31) remove the "No reviews yet" text and panel (tree).
 
-**One thing not to do:** build anything on the manifest-cache theory in this document's history. It was
-withdrawn - the imageless cards are 12 products carrying `photo-to-come.png`, which is content, not a defect.
+**Entrance motion, one shared keyframe convention:** `14` drawer stagger inside groups · `73` product photo
+fade · `51` hero zoom-out (the keyframes exist; nothing applies them) · `N4` top-bar marquee with a pause
+control for WCAG 2.2.2.
+
+**Lens flow (`choice-flow`):** `N37` advance on pick · `N38` skip adds to bag (the `lens-skip-to-bag` flow is
+the ready-made acceptance test).
+
+**Single fixes:** `96` focus ring reads the client token · `D7` Google rating in the header · `N30` bridge-size
+glyph (seeder + term meta) · `N36S` sizing tab (needs lens-height data; the diagram is a new block, D1) ·
+`N8` to prove.
+
+**Verify only:** aliases `N2A`, `N10`, `N33A`, `N6` inherit a built parent but were not measured individually.
+
+**Do not rebuild on:** the manifest-cache theory in §5(b). It was withdrawn.

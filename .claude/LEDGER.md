@@ -110,18 +110,13 @@ a cosmetic path change re-keys rows wholesale.
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows — ALL CLASSIFIED, 18 NOW FIXED** (`reports/2026-10-06-eye-care-63/` has every
-  verdict and its evidence). 11 built, 20 open, 2 divergences, 12 aliases, 14 CR, **0 left to measure**. The
-  4 content rows are WRITTEN and OURS (`sites/eye-care-ward-end/content/`), not a client dependency: Fatima
-  reviews when the site is ready. All 40 brand intros STAY — the catalogue is test products for development.
-  **CR12 PARKED** (dark mode IS built in the theme); `CR6` is the route session's, as a migration. `N11`, `N25`, `N13` were already closed, not unbuilt.
-  **N26 VERIFIED LIVE** (`3db77f090`): every card is **99% clickable** against 1-2% before; `blockLinkAlways`
-  makes it PERMANENT (Bean), the hover underline is gone, and `sgsBlockLinkAuto` is deliberately no longer a
-  product-card attribute (gone, not lost) while the URL field STAYS for typed cards.
-  **SEVEN VERIFIED LIVE at `0cc773b19`:** `58` `9` `N33B` `17`/`3` `19` `64` `N24`; `152` BUILT, `N13` closed.
-  ⚠️ **A plugin deploy does NOT apply a tree fix:** those needed `wp-build-page.js` on posts 208/176/199 and
-  the `single-product` template. **CR: none of the 14 closed by
-  the cleanup; **`CR12` PARKED pending Bean; `CR6` owned, see below.**
+- **The 63 walker-blind rows** — register rows the Spec 47 walker cannot see (`reports/2026-10-06-eye-care-63/`
+  holds every verdict). **21 CLOSED** (built and live at `0cc773b19`): N26 makes the whole product card 99%
+  clickable and PERMANENT via `blockLinkAlways`; 58, 9, N33B, 17, 3, 19, 64, N24 verified live; N11, N25, N13,
+  152, 18, 59, 61, 91, 95 were already closed. The 4 content rows are WRITTEN and ours; all 40 brand intros
+  STAY (test catalogue). 14 CR are the route's (CR12 PARKED, CR6 a migration). **STILL OPEN:** S8, S7, 36, N38,
+  51, 96, N4, 14, 73, N37, D7, N30, N36S, N8, and verify aliases N2A, N10, N33A, N6. ⚠️ A plugin deploy does
+  NOT apply a tree fix: rebuild the page with `wp-build-page.js`.
 
 
 **Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate
@@ -140,8 +135,8 @@ why the product card read as dead outside its name and image (report §5a).
 The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 
 **The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
-**Resume from:** the 63's §5 — prove or kill the manifest-cache cause behind the 12 imageless, unclickable
-shop cards, then the quick wins 36 and S8. Per-surface Solve work is Session D.
+**Resume from:** the 63's STILL OPEN rows above (report §2 and §8 carry each cause and fix shape). Per-surface
+Solve work is Session D.
 
 **Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked: the composites'
 editor canvases and the cart panel show spacing only in the editor.

@@ -178,7 +178,7 @@ Nothing here is dropped; each has an owner.
 | Register items whose cause is **not stated in code terms** | 48 | They need investigating before anything is built, which is Session C2's step 2 (fact-check with a cited `file::symbol`) and step 3 (live test) |
 | Items whose remaining work is a **tree or content value** | S3, S5, S11, N45 and the tree halves of items above | Session D, per `plans/2026-10-04-spec47-full-coverage.md` "Progress". Record the value, never write it |
 | Items needing a **new setting plus a design decision** | N4 top bar drop-and-scroll, N5 mega panel width-limit mode, N5.5 mega items link-plus-button, 53 hero drift mode, 65B shop single column below 400px, 75/82/158 gallery and the WooCommerce product gallery | `plans/2026-10-05-eye-care-functionality-backlog.md` Tier 2, or C2's list. Each is register-decided, so none needs Bean again, but each is larger than the items above and adds editor UI |
-| `sgs/google-reviews` | its attribution work | Built and closed. The block is available to build again (2026-10-05); N24, the per-card logo link, is in the functionality backlog |
+| `sgs/google-reviews` | its attribution work | Built and closed. The block is available to build again (2026-10-05); N24, the per-card logo link, is DONE (`4aa477507`, verified live at `0cc773b19`). |
 | The Spec 47 route and its unbuilt parts | all of it | Session C |
 
 **What to build next is no longer this list.** The whole register was read for functional work and the result is
