@@ -22,6 +22,13 @@
  * block's scoped stylesheet (includes/helpers-trust-bar-marquee.php), this script only clones
  * the track. Without the attribute (or 0) the scroll runs at every width, as before.
  *
+ * Resize inside the range: the breakpoint query does not fire when the viewport narrows or
+ * widens while staying in range, so width-watch.js re-runs the measurement (at most once per
+ * animation frame) whenever the wrapper's width changes. Badges that fitted at load start
+ * scrolling once the bar narrows past them; a bar that widens until everything fits drops
+ * its clones and returns to the static row. Height-only changes are ignored, and nothing
+ * re-runs while the viewport is outside the range (stop() owns that).
+ *
  * Marquee and drop coexist: while the marquee runs every badge is in the scrolling track
  * (restoreDropped() runs before cloning, so no clone inherits a hidden badge). Leaving the
  * range removes the clones and the row class, and overflow-drop.js then drops what does not
@@ -36,6 +43,7 @@
 // on import.
 import { restoreDropped } from './overflow-drop.js';
 import { marqueeRangeQuery } from './marquee-mode.js';
+import { watchWidth } from './width-watch.js';
 
 const wrappers = document.querySelectorAll( '.sgs-trust-bar[data-auto-scroll="true"]' );
 
@@ -64,6 +72,11 @@ wrappers.forEach( ( wrapper ) => {
 	// Set synchronously by start() BEFORE any await, so two matchMedia `change` events
 	// (rotate / resize) that arrive while images are still loading cannot both init.
 	let started = false;
+	// True once the first measure() has run, so a resize while images are still loading
+	// (track widths are 0) never measures early. A fits-so-static result keeps it true:
+	// a later narrowing must still be able to start the scroll.
+	let measured = false;
+	let widthWatch = null;
 
 	/**
 	 * Wait for all images inside the track to finish loading before measuring.
@@ -105,6 +118,7 @@ wrappers.forEach( ( wrapper ) => {
 		// measuring, so the track is as wide as its badges. Without this the track is a
 		// shrinkable flex item that is never wider than the bar, and the overflow test
 		// below could never pass (scroll at every width, `below` 0, never started).
+		measured = true;
 		cloneParent.classList.add( 'sgs-trust-bar__marquee-row' );
 
 		// Idempotent: a re-run never stacks a second set of clones on the first.
@@ -119,9 +133,13 @@ wrappers.forEach( ( wrapper ) => {
 		// Only activate scroll if items genuinely overflow the visible container.
 		if ( trackWidth === 0 || containerWidth === 0 || trackWidth <= containerWidth ) {
 			cloneParent.classList.remove( 'sgs-trust-bar__marquee-row' );
+			track.style.removeProperty( '--sgs-scroll-distance' );
 			setPauseButtonVisible( false );
 			// Nothing scrolls, so allow a later resize into range to measure again.
 			started = false;
+			if ( widthWatch ) {
+				widthWatch.rebase();
+			}
 			return;
 		}
 
@@ -155,6 +173,11 @@ wrappers.forEach( ( wrapper ) => {
 		track.classList.add( 'sgs-trust-bar__track--ready' );
 		setPauseButtonVisible( true );
 		syncPause();
+		// The clones live in the overflow-hidden bar, so the bar's width should not move; if
+		// a layout does let it, that change is absorbed here instead of re-triggering.
+		if ( widthWatch ) {
+			widthWatch.rebase();
+		}
 	}
 
 	/**
@@ -163,6 +186,7 @@ wrappers.forEach( ( wrapper ) => {
 	 */
 	function stop() {
 		started = false;
+		measured = false;
 		cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).forEach( ( old ) => old.remove() );
 		cloneParent.classList.remove( 'sgs-trust-bar__marquee-row' );
 		track.classList.remove( 'sgs-trust-bar__track--ready', 'is-paused' );
@@ -251,6 +275,13 @@ wrappers.forEach( ( wrapper ) => {
 	}
 
 	sync();
+	// Re-measure when the bar's width changes inside the range (the query above only fires
+	// on crossing the breakpoint). Never before the first measure, never out of range.
+	widthWatch = watchWidth( wrapper, () => {
+		if ( measured && inRange() ) {
+			measure();
+		}
+	} );
 	if ( marqueeQuery ) {
 		marqueeQuery.addEventListener( 'change', sync );
 	}
