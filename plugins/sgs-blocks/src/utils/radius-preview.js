@@ -61,3 +61,56 @@ export function borderRadiusPreview( borderRadius, tier = 'desktop', { wholeTier
 	if ( ! CORNERS.some( ( corner ) => merged[ corner ] ) ) return {};
 	return { borderRadius: CORNERS.map( ( corner ) => merged[ corner ] || '0' ).join( ' ' ) };
 }
+
+const LONGHAND_KEYS = {
+	topLeft: 'borderTopLeftRadius',
+	topRight: 'borderTopRightRadius',
+	bottomRight: 'borderBottomRightRadius',
+	bottomLeft: 'borderBottomLeftRadius',
+};
+
+/**
+ * borderRadiusLonghands — the editor-canvas twin of the front end's per-corner
+ * longhand output: only the corners the client set are returned, so an unset
+ * corner keeps the stylesheet's own radius instead of being painted `0`.
+ *
+ * Accepts the same shapes as borderRadiusPreview: a tier object
+ * `{ desktop, tablet, mobile }` of corner boxes, a desktop-only single CSS
+ * length string (the uniform radius, all four corners), or the legacy flat
+ * corner box whose whole value is the desktop tier. A narrower tier overrides
+ * only the corners it declares. An explicit `0` counts as set; only undefined,
+ * null and the empty string are unset.
+ *
+ * @param {Object|string|undefined} borderRadius The block's borderRadius attribute.
+ * @param {string}                  [tier='desktop'] 'desktop' | 'tablet' | 'mobile'.
+ * @return {Object} React style fragment of border*Radius longhands; {} when nothing is set.
+ */
+export function borderRadiusLonghands( borderRadius, tier = 'desktop' ) {
+	const isObject = borderRadius && 'object' === typeof borderRadius && ! Array.isArray( borderRadius );
+	const hasTierKey = isObject && TIER_KEYS.some( ( key ) => key in borderRadius );
+	const desktop = hasTierKey ? borderRadius.desktop : borderRadius;
+	const isSet = ( value ) => undefined !== value && null !== value && '' !== value;
+
+	const merged = {};
+	const apply = ( box ) => {
+		if ( ! box || 'object' !== typeof box ) return;
+		CORNERS.forEach( ( corner ) => {
+			if ( isSet( box[ corner ] ) ) merged[ corner ] = box[ corner ];
+		} );
+	};
+	if ( 'string' === typeof desktop && '' !== desktop ) {
+		CORNERS.forEach( ( corner ) => {
+			merged[ corner ] = desktop;
+		} );
+	} else {
+		apply( desktop );
+	}
+	if ( hasTierKey && ( 'tablet' === tier || 'mobile' === tier ) ) apply( borderRadius.tablet );
+	if ( hasTierKey && 'mobile' === tier ) apply( borderRadius.mobile );
+
+	const style = {};
+	CORNERS.forEach( ( corner ) => {
+		if ( corner in merged ) style[ LONGHAND_KEYS[ corner ] ] = merged[ corner ];
+	} );
+	return style;
+}
