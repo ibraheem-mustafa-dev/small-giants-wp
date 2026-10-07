@@ -34,7 +34,7 @@ const SPRINTF_FN = new Set( [ 'sprintf', 'printf' ] );
 // Functions the block does not define that hand their argument's markup through
 // unchanged, so the call lands where their own result lands. Any other unknown
 // function may drop or rewrite it, which leaves the call unplaced.
-const TRANSPARENT_CALLS = new Set( [ 'esc_html', 'esc_attr', 'esc_textarea', 'wp_kses_post', 'wp_kses', 'trim', 'ltrim', 'rtrim', 'strval', 'implode', 'join', 'return', 'echo', 'print' ] );
+const TRANSPARENT_CALLS = new Set( [ 'esc_html', 'esc_attr', 'esc_textarea', 'wp_kses_post', 'wp_kses', 'trim', 'ltrim', 'rtrim', 'strval', 'implode', 'join', 'array', 'return', 'echo', 'print' ] );
 const MAX_COPY_MEMBERS = 400;
 const PLACEHOLDER_RE = /%%|%(?:(\d+)\$)?[-+0-9.' ]*[a-zA-Z]/g;
 
@@ -69,18 +69,18 @@ function placeholderOffset( template, n ) {
 	return -1;
 }
 
-/** Index of the argument of a call (arguments text starts at `base`) that holds `pos`, with the split pieces. */
+/** Index of the argument of a call (arguments text starts at `base`) that holds `pos`, its start offset from `base`, and the split pieces. */
 function argumentAt( argsText, base, pos, splitTopLevel ) {
 	const pieces = splitTopLevel( argsText, ',' );
 	let off = 0;
 	for ( let i = 0; i < pieces.length; i++ ) {
 		const end = off + pieces[ i ].length;
 		if ( pos - base >= off && pos - base <= end ) {
-			return { index: i, pieces };
+			return { index: i, start: off, pieces };
 		}
 		off = end + 1;
 	}
-	return { index: -1, pieces };
+	return { index: -1, start: 0, pieces };
 }
 
 /**
@@ -113,24 +113,34 @@ function spliceFragments( instances, files, deps ) {
 		return best;
 	};
 
-	/** Start of the statement holding `pos` (after the last `;`, `{` or `}` at bracket depth 0). */
+	/**
+	 * Start of the statement holding `pos`: after the last `;`, `{` or `}` (also inside a
+	 * call's brackets, where only a closure body has them) or PHP open tag. `nested` is true
+	 * when that boundary sat inside brackets, i.e. the statement is a closure body's.
+	 */
 	const statementStart = ( fileIdx, from, pos ) => {
 		const src = masked[ fileIdx ];
-		let depth = 0;
-		let start = from;
+		let depth  = 0;
+		let start  = from;
+		let nested = false;
 		for ( let i = from; i < pos; i++ ) {
 			const ch = src[ i ];
 			if ( '(['.includes( ch ) ) {
 				depth++;
 			} else if ( ')]'.includes( ch ) ) {
 				depth = Math.max( 0, depth - 1 );
-			} else if ( ( 0 === depth && ';{}'.includes( ch ) ) || ( '>' === ch && '?' === src[ i - 1 ] ) ) {
-				start = i + 1; // `?>` ends a statement too: the HTML after it is a new run of markup
+			} else if ( ';{}'.includes( ch ) ) {
+				start  = i + 1;
+				nested = depth > 0;
+			} else if ( '>' === ch && '?' === src[ i - 1 ] ) {
+				start  = i + 1; // `?>` ends a statement too: the HTML after it is a new run of markup
+				nested = false;
 			} else if ( '<' === ch && '?' === src[ i + 1 ] ) {
-				start = i + ( src.startsWith( '<?php', i ) ? 5 : ( src.startsWith( '<?=', i ) ? 3 : 2 ) ); // code starts here, after the HTML
+				start  = i + ( src.startsWith( '<?php', i ) ? 5 : ( src.startsWith( '<?=', i ) ? 3 : 2 ) ); // code starts here, after the HTML
+				nested = false;
 			}
 		}
-		return start;
+		return { start, nested };
 	};
 
 	const statementEnd = ( fileIdx, from, limit ) => {
@@ -150,15 +160,16 @@ function spliceFragments( instances, files, deps ) {
 	};
 
 	/**
-	 * Innermost element of the file open at `pos` whose open tag lies at or after `minPos`.
-	 * A position inside an element's own open tag (an attribute value) is no element's child.
+	 * Innermost element of the file open at `pos` whose open tag lies at or after `minPos`
+	 * (an empty list when there is none). A position inside an element's own open tag (an
+	 * attribute value) is no element's child, so the answer is null: nothing outside it counts.
 	 */
 	const containing = ( fileIdx, pos, minPos, limit ) => {
 		let best = -1;
 		for ( const i of perFile[ fileIdx ] ) {
 			const inst = instances[ i ];
 			if ( inst.pos < pos && pos < inst.tagEnd ) {
-				return [];
+				return null;
 			}
 			if ( inst.pos >= pos || inst.pos < minPos ) {
 				continue;
@@ -182,6 +193,9 @@ function spliceFragments( instances, files, deps ) {
 			if ( open >= pos ) {
 				break;
 			}
+			if ( /(?:->|::)\s*$/.test( src.slice( Math.max( 0, m.index - 4 ), m.index ) ) ) {
+				continue; // a method or static call that shares a function's name
+			}
 			const close = matchBracket( src, open );
 			if ( close - 1 > pos ) {
 				out.push( { name: m[ 1 ].toLowerCase(), open, close: close - 1 } );
@@ -200,7 +214,7 @@ function spliceFragments( instances, files, deps ) {
 			return [];
 		}
 		const ph = placeholderOffset( pieces[ 0 ], index );
-		return -1 === ph ? [] : containing( fileIdx, base + ph, base, limit );
+		return -1 === ph ? [] : ( containing( fileIdx, base + ph, base, limit ) || [] );
 	};
 
 	const viaParameter = ( fileIdx, call, pos, callee, depth, seen ) => {
@@ -214,10 +228,21 @@ function spliceFragments( instances, files, deps ) {
 		return usesOf( callee.fileIdx, param.name, callee.bodyStart + 1, callee.bodyEnd, depth, seen );
 	};
 
+	/** Net `{` minus `}` between two offsets: above zero means the second offset sits in a block opened after the first. */
+	const braceNet = ( fileIdx, a, b ) => {
+		let net = 0;
+		for ( const ch of masked[ fileIdx ].slice( a, b ) ) {
+			net += '{' === ch ? 1 : ( '}' === ch ? -1 : 0 );
+		}
+		return net;
+	};
+
 	/**
-	 * Where every later read of `$name` lands: up to the next plain reassignment
-	 * (`$name = …` holds a different value from there), skipping assignments TO the name
-	 * (`.=` appends to the same value, so it stays) and comparisons (`'' !== $name`).
+	 * Where every later read of `$name` lands: up to the end of the next plain reassignment
+	 * (`$name = …` holds a different value from there; its own right-hand side still reads the
+	 * old one, and a reassignment inside a branch opened after the first assignment does not end
+	 * the old value), skipping assignments TO the name (`.=` appends to the same value, so it
+	 * stays) and comparisons (`'' !== $name`).
 	 */
 	const usesOf = ( fileIdx, name, from, to, depth, seen ) => {
 		const out    = [];
@@ -225,13 +250,14 @@ function spliceFragments( instances, files, deps ) {
 		const reset  = new RegExp( '\\$' + name + '\\s*=(?![=>])', 'g' );
 		reset.lastIndex = from;
 		const rm     = reset.exec( whole );
-		const src    = whole.slice( 0, rm && rm.index < to ? rm.index : to );
+		const cut    = rm && rm.index < to && braceNet( fileIdx, from, rm.index ) <= 0 ? statementEnd( fileIdx, rm.index, to ) : to;
+		const src    = whole.slice( 0, cut );
 		const re     = new RegExp( '\\$' + name + '\\b(?!\\s*\\.?=(?![=>]))', 'g' );
 		re.lastIndex = from;
 		let m;
 		while ( ( m = re.exec( src ) ) !== null ) {
-			const isComparison = /(?:===?|!==?|<>)\s*$/.test( src.slice( Math.max( 0, m.index - 6 ), m.index ) ) || /^\$\w+\s*(?:===?|!==?|<>)/.test( src.slice( m.index, m.index + name.length + 6 ) );
-			if ( ! isComparison ) {
+			const comparison = /(?:===?|!==?|<>)\s*$/.test( src.slice( Math.max( 0, m.index - 6 ), m.index ) ) || /^\s*(?:===?|!==?|<>)/.test( src.slice( re.lastIndex ) );
+			if ( ! comparison ) {
 				out.push( ...resolveRef( fileIdx, m.index, depth + 1, seen ) );
 			}
 		}
@@ -248,8 +274,19 @@ function spliceFragments( instances, files, deps ) {
 		const fn        = fnAt( fileIdx, pos );
 		const from      = fn ? fn.bodyStart + 1 : 0;
 		const limit     = fn ? fn.bodyEnd : masked[ fileIdx ].length;
-		const stmtStart = statementStart( fileIdx, from, pos );
-		for ( const call of enclosingCalls( fileIdx, from, pos ) ) {
+		const { start: stmtStart, nested } = statementStart( fileIdx, from, pos );
+		const stmtEnd = statementEnd( fileIdx, pos, limit );
+		const stmt    = masked[ fileIdx ].slice( stmtStart, stmtEnd );
+		for ( const call of enclosingCalls( fileIdx, stmtStart, pos ) ) {
+			// An element the argument itself builds around the call is where it lands, whatever the call does with it.
+			const { start: argStart } = argumentAt( files[ fileIdx ].src.slice( call.open + 1, call.close ), call.open + 1, pos, splitTopLevel );
+			const literal = containing( fileIdx, pos, call.open + 1 + argStart, limit );
+			if ( ! literal ) {
+				return [];
+			}
+			if ( literal.length ) {
+				return literal;
+			}
 			if ( SPRINTF_FN.has( call.name ) ) {
 				return viaSprintf( fileIdx, call, pos, limit );
 			}
@@ -261,17 +298,20 @@ function spliceFragments( instances, files, deps ) {
 				return []; // a function the block does not define may do anything with its argument
 			}
 		}
-		const inside = containing( fileIdx, pos, stmtStart, limit );
+		// Output (`echo`, `print`, `<?=`) goes into whatever element is open at that point of the template.
+		const isOutput = /^\s*(?:echo|print)\b/.test( stmt ) || '<?=' === masked[ fileIdx ].slice( stmtStart - 3, stmtStart );
+		const inside   = containing( fileIdx, pos, isOutput ? from : stmtStart, limit );
+		if ( ! inside ) {
+			return [];
+		}
 		if ( inside.length ) {
 			return inside;
 		}
-		const stmtEnd = statementEnd( fileIdx, pos, limit );
-		const stmt    = masked[ fileIdx ].slice( stmtStart, stmtEnd );
-		const assign  = /^\s*\$(\w+)\s*\.?=(?![=>])/.exec( stmt );
+		const assign = /^\s*\$(\w+)\s*\.?=(?![=>])/.exec( stmt );
 		if ( assign && fn ) {
 			return usesOf( fileIdx, assign[ 1 ], stmtEnd, fn.bodyEnd, depth, seen );
 		}
-		if ( fn && /^\s*return\b/.test( stmt ) ) {
+		if ( fn && ! nested && /^\s*return\b/.test( stmt ) ) {
 			const sites = collectPhpCallSites( files, [ fn ] ).get( fn ) || [];
 			return sites.flatMap( ( s ) => resolveRef( s.fileIdx, s.pos, depth + 1, seen ) );
 		}

@@ -4528,10 +4528,80 @@ function selfTestMarkupSplice( assert ) {
 		[ [ 'CLASS-2' ], [] ]
 	);
 	assert(
-		'splice: a call inside a closure passed to array_map is not read as part of the statement around it (array_map is not a pass-through)',
+		'splice: a call inside a closure body lands in the element the closure builds, and the closure sits in its caller\'s element',
 		verdict(
 			"<?php echo sprintf( '<ul class=\"sgs-x__link\">%s</ul>', sgs_x_list( array( 1 ) ) ); ?>\n",
 			label + "function sgs_x_list( $items ) {\n\treturn implode( '', array_map( function ( $i ) {\n\t\t$y = sgs_x_label();\n\t\treturn '<li class=\"sgs-x__li\">' . $y . '</li>';\n\t}, $items ) );\n}\n"
+		).concat( verdict(
+			'<?php echo sgs_x_cb( "x" ); ?>\n',
+			label + "function sgs_x_cb( $s ) {\n\treturn preg_replace_callback( '/x/', function ( $m ) {\n\t\t$y = sgs_x_label();\n\t\treturn '<li class=\"sgs-x__link\">' . $y . '</li>';\n\t}, $s );\n}\n"
+		) ),
+		[ 'CLASS-2', 'CLASS-2' ]
+	);
+	assert(
+		'splice: a `return call()` inside a closure is not the named function\'s return value',
+		verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', sgs_x_ret( array( 1 ) ) ); ?>\n",
+			label + "function sgs_x_ret( $items ) {\n\treturn implode( '', array_map( function ( $i ) {\n\t\treturn sgs_x_label();\n\t}, $items ) );\n}\n"
+		),
+		[]
+	);
+	assert(
+		'splice: an echo between inline-HTML tags lands in the element the HTML has open there (`<?php echo`, `<?=` and ob_start forms)',
+		[
+			verdict( '<div class="sgs-x__link"><?php echo sgs_x_label(); ?></div>\n', label ),
+			verdict( '<div class="sgs-x__link"><?= sgs_x_label() ?></div>\n', label ),
+			verdict( '<div class="sgs-x__link"><?php if ( true ) { echo sgs_x_label(); } ?></div>\n', label ),
+			verdict( '<?php echo sgs_x_page2(); ?>\n', label + "function sgs_x_page2() {\n\tob_start(); ?><div class=\"sgs-x__link\"><?php echo sgs_x_label(); ?></div><?php\n\treturn ob_get_clean();\n}\n" ),
+		],
+		[ [ 'CLASS-2' ], [ 'CLASS-2' ], [ 'CLASS-2' ], [ 'CLASS-2' ] ]
+	);
+	assert(
+		'splice: a literal element built inside an argument of an unknown function, or of sprintf, is where the call lands',
+		[
+			verdict( "<?php echo apply_filters( 'f', '<a class=\"sgs-x__link\">' . sgs_x_label() . '</a>' ); ?>\n", label ),
+			verdict( "<?php echo sprintf( '<p class=\"sgs-x__p\">%s</p>', '<span class=\"sgs-x__link\">' . sgs_x_label() . '</span>' ); ?>\n", label ),
+		],
+		[ [ 'CLASS-2' ], [ 'CLASS-2' ] ]
+	);
+	assert(
+		'splice: markup handed on inside array() lands where the array\'s value is used',
+		[
+			verdict(
+				'<?php echo sgs_x_row2(); ?>\n',
+				label + "function sgs_x_opts() {\n\treturn array( 'html' => sgs_x_label() );\n}\nfunction sgs_x_row2() {\n\t$o = sgs_x_opts();\n\treturn '<a class=\"sgs-x__link\">' . $o['html'] . '</a>';\n}\n"
+			),
+			verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', implode( '', array( sgs_x_label() ) ) ); ?>\n", label ),
+		],
+		[ [ 'CLASS-2' ], [ 'CLASS-2' ] ]
+	);
+	assert(
+		'splice: a read inside the reassignment\'s own right-hand side still carries the call, and so does a read after a reassignment inside a branch',
+		[
+			verdict(
+				'<?php echo sgs_x_rw(); ?>\n',
+				label + "function sgs_x_rw() {\n\t$x = sgs_x_label();\n\t$x = '<b class=\"sgs-x__link\">' . $x . '</b>';\n\treturn $x;\n}\n"
+			),
+			verdict(
+				'<?php echo sgs_x_br( true ); ?>\n',
+				label + "function sgs_x_br( $c ) {\n\t$x = sgs_x_label();\n\tif ( $c ) {\n\t\t$x = '';\n\t}\n\treturn '<b class=\"sgs-x__link\">' . $x . '</b>';\n}\n"
+			),
+		],
+		[ [ 'CLASS-2' ], [ 'CLASS-2' ] ]
+	);
+	assert(
+		'splice: a comparison with aligned spacing does not carry the call',
+		verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%s</a>', sgs_x_cmp2() ); ?>\n",
+			label + "function sgs_x_cmp2() {\n\t$x = sgs_x_label();\n\treturn ( $x      === '' ) ? 'a' : 'b';\n}\n"
+		),
+		[]
+	);
+	assert(
+		'splice: a method call that shares a block function\'s name is not a call of that function',
+		verdict(
+			"<?php echo $o->sgs_x_wrap( 'a', sgs_x_label() ); ?>\n",
+			label + "function sgs_x_wrap( $li, $inner ) {\n\treturn sprintf( '<li><span class=\"sgs-x__link\">%2$s</span></li>', $li, $inner );\n}\n"
 		),
 		[]
 	);
