@@ -819,8 +819,8 @@
 /* 48 × 48 px minimum (exceeds the 44 px WCAG 2.2 AA touch-target floor). */
 .sgs-buybox .product-card__thumb {
 	flex-shrink: 0;
-	width: 64px;
-	height: 64px;
+	width: var(--sgs-buybox-thumb-size, 64px);
+	height: var(--sgs-buybox-thumb-size, 64px);
 	min-width: 48px;
 	min-height: 48px;
 	padding: 0;
