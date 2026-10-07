@@ -202,9 +202,10 @@ Decision D1 (register): a general "measured diagram" block. Plan and current sta
   - the drawings are uploaded (attachments 1293, 1294);
   - the diagram card is in `single-product.tree.json` above the table, bound to `meta._sgs_frame_eye/bridge/height/temple`, from geometry measured off the draft (`build/insert_sizing_diagram.py`, ed5af2458);
   - the colours are in the snapshot's `measuredDiagramPresets`.
-- **Still to do:**
-  - the canary deploy and live check (it waits on another session's reseed of ea574379a, which every HEAD build needs);
-  - then the eye-care-test deploy, snapshot push and page rebuild, checked at 375/768/1440 across sizes.
+- **Live and verified 2026-10-07:**
+  - canary page 4971: label anchors, numbered phone layout, no reflow overflow, axe clean, and a non-product binding (`sgs/site-info`);
+  - eye-care-test: the Ray-Ban Sizing tab reads 14/58/50/135 and 14/62/54/140 after picking 62-14-140; axe is clean at 1440 and 375; the fade is off under reduced motion (on without it).
+- **Closed:** nothing left in this section. Deferrals live in the plan's §G.
 
 ## Open items with no other home
 
