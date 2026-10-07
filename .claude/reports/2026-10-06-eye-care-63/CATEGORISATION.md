@@ -53,12 +53,20 @@ Each verified against the running site tonight, not against its commit.
 | **N26 / S10** | was clickable only on the name (1-2%) and image (73%); imageless cards 2-5% | the whole card is one link | **FIXED IN CODE 2026-10-06 (`3db77f090`)** - permanent, not a toggle; see §5(a) | awaiting live verify |
 | **N4** | no marquee markers found live | — | repair so "drop" and "scroll" coexist; pause button for WCAG 2.2.2 | framework repair |
 
-## 3. Needs content from the client
+## 3. Content — written, ours to own
 
-**45** legal copy for `/privacy` and `/terms` · **159** a clinic photo, and a photo of Fatima only if she asks ·
-**161** a short unique intro per brand page · **151** shipping method titles and descriptions.
+**Bean's ruling: the content is ours to write, not a client dependency.** Fatima reviews it when the site is
+ready, and she is not asked to draft anything while the build is in progress. So these are no longer "needs
+content from the client":
 
-**95 is NOT here** — the product data has already been filled.
+- **45** `/privacy` and `/terms`: WRITTEN, `sites/eye-care-ward-end/content/{privacy,terms}.md`. UK GDPR, the
+  eye test and prescription treated as special-category health data, made-to-order lenses against the 14-day
+  cancellation right. Every value is a UK-law or trade default; no placeholders remain.
+- **151** delivery wording: WRITTEN, `content/shipping.md`, for the three methods the shop already runs.
+- **161** brand intros: WRITTEN, `content/brand-intros.md`. 40 intros, all distinct openings. **All 40 stay** —
+  the site carries test products built for design and development, so there is no real catalogue to trim
+  against yet.
+- **159** is clinic photography, which arrives with the real build rather than being drafted.
 
 ## 4. Accepted divergence / beyond the draft
 
@@ -162,7 +170,8 @@ fixed by one of the 16. So no CR status is stale on that account, and none is ma
 | Route already fixed, waiting on a **re-calibration host window** | CR3, CR7, CR10, CR11, CR17 | a quiet host, not a decision |
 | Still to prove, so no owner needed yet | CR1, CR2, CR4, CR5, CR9 (prove CR9 with CR1 — same pattern) | investigation |
 | Partly fixed | CR14, CR18 | finish (CR18: Lenses and the rest still to re-pair) |
-| **ORPHANED — needs an owner** | **CR6**, **CR12** | **a decision from Bean** |
+| **CR6** — owned by the route session | **CR6** | a MIGRATION: 178 call sites / 56 files |
+| **CR12** — PARKED by Bean | **CR12** | no owner needed |
 
 **CR6** was genuinely orphaned: `LEDGER.md` named "Spec 47 §5 Residual" as its owner and that section never
 mentioned it, so the one CR row marked proven-and-unbuilt had nobody. Now recorded there (`c0d45ec20`) with its
@@ -170,8 +179,9 @@ blocker: `lib/resolve.mjs::seedSides` models the zero-fill CR6 removes, so the h
 **must land together** or the route re-introduces what it just removed. Not scheduled. c8 offered to take it as
 one focused piece.
 
-**CR12** (the dark-mode toggle renders nothing for every current client) is the second orphan and the only CR
-row that is client-visible, so it arguably does not belong in this bucket at all.
+**CR12 is PARKED (Bean, 2026-10-07).** Dark mode IS implemented in the theme (`dark-mode.css`,
+`dark-mode.js`), so it is a toggle that renders nothing for current clients, not an unbuilt feature.
+Parked rather than orphaned, and not to be picked up without Bean.
 
 ⚠️ **Any re-calibration must run AFTER the framework-DB reseed now in flight**, or it measures against a DB
 that is about to change.
@@ -228,7 +238,8 @@ container), 19 (whether the bar transitions at all, a different cause from the d
 2. **Verify N26 live** once the host frees. `3db77f090` is built and pushed; the number to beat is 73-79%
    clickable on photographed cards and 2-5% on the rest.
 3. **The cart-motion pass** (`17`, `3`, `19`) — one file pair, three rows.
-4. **Give `CR6` and `CR12` owners**, or park them deliberately. They are the only two CR rows with nobody.
+4. **CR6 is owned by the route session** (a migration, not an evening's work) and **CR12 is parked**, so
+   nothing in the CR bucket needs a decision.
 5. **Hand the content drafts to Fatima** with their 59 `[CONFIRM: …]` questions, and get a solicitor onto the
    privacy policy and terms before launch: the eye test and prescription are special-category health data.
 

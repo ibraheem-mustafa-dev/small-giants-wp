@@ -1,6 +1,6 @@
 # Brand intros
 
-One short intro per brand for the brand pages. Delete the intro for any brand we do not stock before publishing.
+One short intro per brand for the brand pages. All 40 stay: the site carries test products built for design and development, so the real catalogue is not set yet and nothing here should be cut against it.
 
 ---
 

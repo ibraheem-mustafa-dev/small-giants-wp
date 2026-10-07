@@ -111,14 +111,16 @@ a cosmetic path change re-keys rows wholesale.
   (SearXNG).**
 
 - **The 63 walker-blind rows — ALL CLASSIFIED, 18 NOW FIXED** (`reports/2026-10-06-eye-care-63/` has every
-  verdict and its evidence). 11 built, 20 open, 4 content (drafted in `sites/eye-care-ward-end/content/`),
-  2 divergences, 12 aliases, 14 CR, **0 left to measure**. `N11`, `N25`, `N13` were already closed, not unbuilt.
+  verdict and its evidence). 11 built, 20 open, 2 divergences, 12 aliases, 14 CR, **0 left to measure**. The
+  4 content rows are WRITTEN and OURS (`sites/eye-care-ward-end/content/`), not a client dependency: Fatima
+  reviews when the site is ready. All 40 brand intros STAY — the catalogue is test products for development.
+  **CR12 PARKED** (dark mode IS built in the theme); `CR6` is the route session's, as a migration. `N11`, `N25`, `N13` were already closed, not unbuilt.
   **N26 VERIFIED LIVE** (`3db77f090`): every card is **99% clickable** against 1-2% before; `blockLinkAlways`
   makes it PERMANENT (Bean), the hover underline is gone, and `sgsBlockLinkAuto` is deliberately no longer a
   product-card attribute (gone, not lost) while the URL field STAYS for typed cards.
-  **SEVEN more VERIFIED LIVE at `0cc773b19`:** `58` `9` `N33B` `17`/`3` `19` `64` `N24`; `152` BUILT, `N13`
-  closed unchanged. ⚠️ **A plugin deploy does NOT apply a tree fix:** 58/9/N33B/17 needed `wp-build-page.js`
-  on posts 208/176/199 + the `single-product` template. **CR: none of the 14 closed by
+  **SEVEN VERIFIED LIVE at `0cc773b19`:** `58` `9` `N33B` `17`/`3` `19` `64` `N24`; `152` BUILT, `N13` closed.
+  ⚠️ **A plugin deploy does NOT apply a tree fix:** those needed `wp-build-page.js` on posts 208/176/199 and
+  the `single-product` template. **CR: none of the 14 closed by
   the cleanup; **`CR12` PARKED pending Bean; `CR6` owned, see below.**
 
 
@@ -141,9 +143,8 @@ The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-ba
 **Resume from:** the 63's §5 — prove or kill the manifest-cache cause behind the 12 imageless, unclickable
 shop cards, then the quick wins 36 and S8. Per-surface Solve work is Session D.
 
-**Separators** (DONE, live on both sites): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked:
-the composites' editor canvases and the cart panel show spacing only in the editor. The container roster script
-(`scripts/sync-container-wrapping-blocks.py`) writes the DB only; container capabilities are opt-in per block.
+**Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked: the composites'
+editor canvases and the cart panel show spacing only in the editor.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
