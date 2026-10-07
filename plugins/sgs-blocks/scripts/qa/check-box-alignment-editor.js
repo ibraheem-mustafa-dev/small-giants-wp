@@ -56,7 +56,11 @@ const CASES = [
 	{
 		name: 'sgs/media', attr: 'alignment', group: 'Alignment',
 		insert: { imageUrl: 'https://placehold.co/120x120', imageAlt: 'qa', maxWidth: { desktop: '120px' }, height: { desktop: '120px' } },
-		canvas: ( el ) => ( { ok: 'auto' === el.style.marginInlineStart, detail: 'wrapper inline margin-inline-start ' + ( el.style.marginInlineStart || '(none)' ) } ),
+		canvas: ( el ) => {
+			const r = el.querySelector( 'img' ).getBoundingClientRect(), p = el.getBoundingClientRect();
+			const g = { left: Math.round( r.left - p.left ), right: Math.round( p.right - r.right ), w: Math.round( r.width ) };
+			return { ok: g.right <= 2 && g.left > 100, detail: 'image ' + JSON.stringify( g ) };
+		},
 		visual: ( el ) => {
 			const r = el.querySelector( 'img' ).getBoundingClientRect(), p = el.getBoundingClientRect();
 			return JSON.stringify( { left: Math.round( r.left - p.left ), right: Math.round( p.right - r.right ), w: Math.round( r.width ) } );

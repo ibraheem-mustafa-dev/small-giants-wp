@@ -86,12 +86,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const previewTier = usePreviewTier();
-	// Wrapper-level placement the front end emits on the scope selector: the
-	// alignment margins (render.php step 6) and the flex/grid item order.
+	// Placement the front end emits on the scope selector: the alignment margins (render.php
+	// step 6) and the flex/grid item order. The margins sit on the picture itself in image and
+	// SVG mode, because the canvas figure fills its row and only the picture is narrower; the
+	// caption stays full width beneath it. Other modes keep them on the wrapper.
 	const orderAtTier = resolveTier( attributes.order, previewTier ).value;
+	const alignMargins =
+		'center' === attributes.alignment
+			? { marginInlineStart: 'auto', marginInlineEnd: 'auto' }
+			: 'end' === attributes.alignment
+				? { marginInlineStart: 'auto' }
+				: {};
+	const alignsPicture = 'svg' === attributes.mediaType || 'image' === attributes.mediaType || ! attributes.mediaType;
 	const placementStyle = {
-		...( 'center' === attributes.alignment ? { marginInlineStart: 'auto', marginInlineEnd: 'auto' } : {} ),
-		...( 'end' === attributes.alignment ? { marginInlineStart: 'auto' } : {} ),
+		...( alignsPicture ? {} : alignMargins ),
 		...( '' !== orderAtTier && null != orderAtTier ? { order: parseInt( orderAtTier, 10 ) } : {} ),
 	};
 	const blockProps = useBlockProps( { style: placementStyle } );
@@ -535,7 +543,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					alt={ imageDecorative ? '' : imageAlt }
 					aria-hidden={ imageDecorative ? 'true' : undefined }
 					className={ mediaElementClassName }
-					style={ mediaElementStyle }
+					style={ { ...mediaElementStyle, ...alignMargins } }
 				/>
 				{ captionText && (
 					<CaptionTag className="sgs-media__caption" style={ captionStyle }>
@@ -595,7 +603,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* eslint-disable-next-line react/no-danger */ }
 				<div
 					className={ [ svgClass, 'sgs-media-el', mediaScopeClass ].filter( Boolean ).join( ' ' ) }
-					style={ mediaElementStyle }
+					style={ { ...mediaElementStyle, ...alignMargins } }
 					aria-hidden="true"
 					dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
 				/>
