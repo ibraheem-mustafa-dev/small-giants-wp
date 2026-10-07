@@ -1233,6 +1233,22 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			],
 		} );
 	}
+	// The value ladder only exists on a bound (live-product) card.
+	if ( isBound ) {
+		colourRows.push( {
+			key: 'valueLadderSaving',
+			label: __( 'Value ladder saving colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributes.valueLadderSavingColour,
+					onChange: ( val ) => setAttributes( { valueLadderSavingColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		} );
+	}
 	if ( isTrial ) {
 		colourRows.push( {
 			key: 'tagBackground',

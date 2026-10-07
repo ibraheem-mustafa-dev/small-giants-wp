@@ -119,14 +119,6 @@
 	padding: 20px;
 }
 
-.product-card h3 {
-	font-size: var(--sgs-card-title-font-size, 20px);
-	font-weight: 500;
-	color: var(--wp--preset--color--text, #3a2e26);
-	/* A5 (QC): reset h3 margin — gap on .product-card-body drives spacing now. */
-	margin: 0;
-}
-
 .product-card .product-desc {
 	line-height: var(--sgs-product-card-desc-line-height, 1.55);
 	font-size: var(--sgs-product-card-desc-font-size, 14px);
@@ -242,7 +234,6 @@
 	 * font-family: inherit) instead of being locked to a specific typeface.
 	 * The typed-mode CTA keeps its visual defaults via the :where() rule below.
 	 */
-	font-weight: var(--sgs-product-card-btn-font-weight, 600);
 	text-decoration: none;
 	cursor: pointer;
 	/* Reads the site's button-preset timing, like every other button surface.
@@ -250,7 +241,6 @@
 	   0.15s stays as the fallback, so an unset token is unchanged. */
 	transition: background-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, border-color var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, transform var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, translate var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, box-shadow var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease, opacity var(--wp--custom--button-presets--default--hover-transition, 0.15s) ease;
 	box-sizing: border-box;
-	line-height: var(--sgs-product-card-btn-line-height, 1.4);
 }
 
 /* Button text alignment default — :where() keeps this at specificity 0 so
@@ -277,6 +267,10 @@
 	 * D314); removed so a cloned CTA matches the draft's standard `.sgs-button`
 	 * padding. A per-instance ctaPadding still wins via the helper (0,2,0). */
 	font-size: 15px;
+	/* ctaFontWeight (default 600) paints this element through the helper's scoped
+	 * rule (0,2,0); line-height has no CTA control. */
+	font-weight: 600;
+	line-height: 1.4;
 }
 
 /*
@@ -945,6 +939,11 @@
 :where(.value-ladder__saving) {
 	font-weight: 600;
 	font-size: 13px;
+	/* The theme's body text colour, NOT the brand primary: a light primary (a pink or
+	 * pastel brand) fails WCAG AA on a light card surface (live-measured 2.25:1
+	 * pink-on-cream). #1a1a1a is a near-black fallback. valueLadderSavingColour
+	 * (render.php, `.{uid} .value-ladder__saving`, 0,2,0) overrides it. */
+	color: var( --wp--preset--color--text, #1a1a1a );
 }
 
 /*
@@ -1015,7 +1014,6 @@
 	 * theme's accessible-on-surface text colour; #1a1a1a is a near-black fallback.
 	 * Emphasis comes from weight, not a low-contrast hue (not colour-only either).
 	 */
-	color: var( --wp--preset--color--text, #1a1a1a );
 	white-space: nowrap;
 }
 
@@ -1066,7 +1064,7 @@
  * Rules below cover the typed built-in elements.
  *
  * Contrast notes (all on #ffffff card background):
- *   .sgs-product-card__title:     inherits .product-card h3 rules — unchanged.
+ *   .sgs-product-card__title:     styled by the title rules above — unchanged.
  *   .sgs-product-card__price:     inherits .product-card .price rules — unchanged.
  *   .sgs-product-card__price-note: #6b5c50 on #fff = 4.55:1 ✓ WCAG AA.
  *   .sgs-product-card__tag--trial:   accent bg + dark text — same as .trial-tag.
@@ -1113,7 +1111,6 @@
 .product-card .sgs-product-card__tag {
 	display: inline-flex;
 	align-items: center;
-	font-size: var(--sgs-product-card-tag-font-size, 11px);
 	/* Overridable defaults — the tagPadding / tagBorderRadius attrs own these; the
 	 * trial tag's render.php box rule overrides them, featured falls to the default. */
 	padding: var(--sgs-product-card-tag-padding, 4px 10px);
@@ -1125,6 +1122,7 @@
    tagFontWeight / tagLetterSpacing / tagTextTransform attributes always win
    via sgs_typography_css_rule() scoped rules (0,2,0). */
 :where(.product-card) .sgs-product-card__tag {
+	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
@@ -1151,17 +1149,24 @@
 	width: max-content;
 }
 
-/* Title — same rules as .product-card h3 for the new BEM class. */
-.product-card .sgs-product-card__title {
-	font-size: var( --sgs-card-title-font-size, 20px );
-	font-weight: var( --sgs-card-title-font-weight, 500 );
+/* Title typography defaults. `:where(.product-card)` leaves the title class as the
+ * only specificity (0,1,0): that still beats the theme's global h1-h6 styles (0,0,1),
+ * so the rendered default is unchanged, and the uid-scoped titleFontSize / titleFontWeight
+ * rules (0,2,0, sgs_typography_css_rule) strictly outrank it. The colour reads
+ * --sgs-card-title-colour, which render.php writes from titleColour. */
+:where(.product-card) .sgs-product-card__title {
+	font-size: 20px;
+	font-weight: 500;
 	color: var( --sgs-card-title-colour, var( --wp--preset--color--text, #3a2e26 ) );
+}
+
+.product-card .sgs-product-card__title {
 	margin: 0;
 }
 
-/* Description — same rules as .product-card .product-desc. */
+/* Description — same rules as .product-card .product-desc. font-size sits in the
+ * :where() default block below. */
 .product-card .sgs-product-card__description {
-	font-size: var(--sgs-product-card-desc-font-size, 14px);
 	color: var( --sgs-card-desc-colour, var( --wp--preset--color--text, #3a2e26 ) );
 	margin: 0;
 	flex: 1;
@@ -1174,6 +1179,7 @@
  * (mirrors the CTA radius/padding/font-size :where() block below).
  */
 :where(.product-card) .sgs-product-card__description {
+	font-size: 14px;
 	line-height: 1.55;
 }
 
@@ -1194,7 +1200,8 @@
 	margin: 0;
 }
 
-/* Price amount — matches .product-card .price. */
+/* Price amount — matches .product-card .price. The typography defaults sit in the
+ * :where() block below so the priceFont* controls (0,2,0, sgs_typography_css_rule) outrank them. */
 .product-card .sgs-product-card__price {
 	/*
 	 * FRAMEWORK-CORRECTNESS: was hardcoded to the client-only 'Fraunces' — a
@@ -1202,16 +1209,26 @@
 	 * theme's Display token ('DM Serif Display', Georgia, serif — theme.json)
 	 * is per-client overridable, unlike a hardcoded family name.
 	 */
-	font-family: var( --wp--preset--font-family--display );
-	font-size: var( --sgs-card-price-font-size, 28px );
-	font-weight: var( --sgs-card-price-font-weight, 700 );
 	color: var( --sgs-card-price-colour, var( --wp--preset--color--text, #3a2e26 ) );
 }
 
-/* Price note — matches .product-card .price-note. */
+/* Price note — matches .product-card .price-note. font-size sits in the :where()
+ * default block below. */
 .product-card .sgs-product-card__price-note {
-	font-size: var(--sgs-product-card-price-note-font-size, 13px);
 	color: var( --sgs-card-price-note-colour, var( --wp--preset--color--text-muted, #6b5c50 ) );
+}
+
+/* Price and price-note typography defaults: the uid-scoped priceFont* / priceNoteFont*
+ * rules (0,2,0) strictly outrank these (0,1,0). The family is the theme's Display
+ * token (per-client overridable), never a client typeface. */
+:where(.product-card) .sgs-product-card__price {
+	font-family: var( --wp--preset--font-family--display );
+	font-size: 28px;
+	font-weight: 700;
+}
+
+:where(.product-card) .sgs-product-card__price-note {
+	font-size: 13px;
 }
 
 /*
@@ -1235,35 +1252,11 @@
 }
 
 /*
- * FP-H / D649: bound-branch title styling is keyed on the CLASS, not the tag.
- *
- * This rule used to enumerate `.product-card-body > h2, > h4` because bound
- * markup emitted a bare tag with no class. That enumeration was a standing
- * maintenance trap: it had already been extended once (h3 -> h2/h4) and the
- * newest selectable tag, `p`, was silently unstyled — a dead-control-by-styling
- * gap that reappears every time the headingLevel enum grows.
- *
- * render.php now emits `class="sgs-product-card__title"` on the bound title at
- * both emission sites, so the single rule above
- * (`.product-card .sgs-product-card__title`) styles EVERY level identically —
- * h2..h6, p, and anything added later.
- *
- * The two rules' declarations carried the SAME PROPERTY VALUES, so h2/h4 are
- * visually unchanged. ⚠ An earlier version of this comment (and commit
- * a21dda8d's message) said "byte-identical" — that is FALSE and was corrected
- * by a source-level audit: the deleted rule wrote `var(--sgs-card-title-font-size,
- * 20px)` while the surviving rule writes `var( --sgs-card-title-font-size, 20px )`
- * (spaces inside the parens), on all three var() declarations. CSS ignores that
- * whitespace so the rendered result is identical, but the literal byte claim was
- * wrong. Kept here because "byte-identical" is the kind of overclaim that gets
- * trusted instead of re-checked.
- *
- * It also closes a real defect on the DEFAULT path: bound h3 matched only
- * `.product-card h3` (0,1,1), which hardcodes weight and colour, so a client's
- * titleColour was silently IGNORED on bound h3 while h2/h4 honoured it. The
- * class rule (0,2,0) now wins and reads the custom properties. Verified safe on
- * the canary: all 4 live instances carrying titleColour are typed-mode (they
- * already used this class); zero bound-mode instances set it.
+ * Title styling is keyed on the CLASS, not the tag: render.php emits
+ * `class="sgs-product-card__title"` on every title (typed, bound and read-only),
+ * so the rules above style EVERY level identically (h2..h6, p, and anything the
+ * headingLevel enum gains later). The (0,1,0) default beats the theme's global
+ * heading styles (0,0,1); the uid-scoped title controls (0,2,0) beat it.
  *
  * ⛔ Do not reintroduce a tag-enumerated title rule here.
  */
@@ -1687,9 +1680,13 @@
 }
 
 /* The '+N' overflow is a count, not a control: no handler, no tab stop. */
+/* The count has no typography control of its own: its size is an overridable default. */
+:where(.sgs-product-card__swatch-more) {
+	font-size: 11px;
+}
+
 .sgs-product-card__swatch-more {
 	cursor: default;
-	font-size: var( --sgs-pc-swatch-more-font-size, 11px );
 	color: var( --wp--preset--color--text-muted, #5e584f );
 	border: 1px solid rgba( 0, 0, 0, 0.15 );
 	border-radius: 999px;

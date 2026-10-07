@@ -1972,6 +1972,11 @@
 			"default": "",
 			"description": "No-photo label colour. Theme token slug or raw hex. Empty = the no-photo box's muted text colour."
 		},
+		"valueLadderSavingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the saving text on each value-ladder row (bound mode). Theme token slug or raw hex. Empty = the theme's text colour."
+		},
 		"priceRowSpaceAbove": {
 			"type": "string",
 			"default": "",

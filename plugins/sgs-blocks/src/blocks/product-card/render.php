@@ -254,6 +254,10 @@ $sgs_no_image_label_colour = sgs_colour_value( $attributes['noImageLabelColour']
 if ( '' !== $sgs_no_image_label_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__no-image-label{color:' . $sgs_no_image_label_colour . ';}';
 }
+$sgs_ladder_saving_colour = sgs_colour_value( $attributes['valueLadderSavingColour'] ?? '' );
+if ( '' !== $sgs_ladder_saving_colour ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .value-ladder__saving{color:' . $sgs_ladder_saving_colour . ';}';
+}
 $sgs_price_row_space = trim( (string) ( $attributes['priceRowSpaceAbove'] ?? '' ) );
 if ( preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $sgs_price_row_space ) ) {
 	// Padding, so a shop layout's margin-top:auto (prices level at the card's foot) still applies.
@@ -1119,7 +1123,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 		<?php endif; ?>
 		<div class="sgs-product-card__title-row">
-			<h3><?php echo esc_html( $sgs_resolved_title ); ?></h3>
+			<h3 class="sgs-product-card__title"><?php echo esc_html( $sgs_resolved_title ); ?></h3>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_attribute_tag_markup( $attributes, $product_id, $source_mode );
