@@ -516,6 +516,36 @@
 }
 
 /*
+ * The panel below is `position: absolute; inset: 0` and must be anchored to the
+ * bar, not to the 44px item or accordion row that hold it (which are
+ * `position: relative` for the accordion's overlaid expander). In drill mode the
+ * item and the row are static, and the row becomes a one-cell grid so the
+ * expander sits at the row's end in normal flow instead of being absolutely
+ * placed against the row.
+ */
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item,
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion-row {
+	position: static;
+}
+
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion-row {
+	display: grid;
+}
+
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion-row > * {
+	grid-area: 1 / 1;
+}
+
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion {
+	align-self: start;
+	justify-self: end;
+}
+
+.sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] .sgs-nav-drawer-menu__accordion-summary {
+	position: static;
+}
+
+/*
  * `:not(:has(… [open]))` — see the bar block's own comment for the live
  * pointer-intercept bug this excludes (a `transform` on the open item's own
  * row would drag its child `.sgs-nav-drawer-menu__submenu` off-screen alongside it).

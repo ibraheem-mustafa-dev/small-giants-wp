@@ -164,7 +164,12 @@ final class Sgs_Drawer_Render {
 		if ( Sgs_Block_CPTs::DRAWER_CPT !== $post->post_type ) {
 			return '';
 		}
-		if ( 'publish' !== $post->post_status ) {
+		// A draft or pending drawer is served only as the validated preview
+		// (capability, nonce and type are checked by get_preview_id); to a visitor
+		// only a published drawer exists.
+		$is_preview = in_array( $post->post_status, array( 'draft', 'pending' ), true )
+			&& Sgs_Active_Layout::get_preview_id( Sgs_Active_Layout::AREA_DRAWER ) === $post_id;
+		if ( 'publish' !== $post->post_status && ! $is_preview ) {
 			return '';
 		}
 		return (string) $post->post_content;
