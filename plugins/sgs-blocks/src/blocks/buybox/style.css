@@ -847,7 +847,7 @@
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 0.5rem;
-	margin: calc(0.75rem - var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter));
+	margin: calc(var(--sgs-buybox-thumb-offset, 0.75rem) - var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter));
 	padding: var(--sgs-buybox-thumb-gutter);
 	overflow-x: auto;
 	scroll-padding-inline: var(--sgs-buybox-thumb-gutter);

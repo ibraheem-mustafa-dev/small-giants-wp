@@ -129,6 +129,30 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	if ( 64 !== thumbSize ) {
 		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSize }px;}`;
 	}
+	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
+	const rawGap = String( attributes.thumbGap || '' ).trim();
+	const thumbGap = /^\d+(\.\d+)?$/.test( rawGap ) ? `${ rawGap }px` : rawGap;
+	const rawPerRow = Number( attributes.thumbsPerRow );
+	const perRow = Number.isFinite( rawPerRow ) ? Math.min( 8, Math.max( 0, Math.trunc( rawPerRow ) ) ) : 0;
+	const rawOffset = String( attributes.thumbStripOffset || '' ).trim();
+	const thumbOffset = /^\d+(\.\d+)?$/.test( rawOffset ) ? `${ rawOffset }px` : rawOffset;
+	const railDecls = [];
+	if ( thumbOffset && ! /[;{}<>]/.test( thumbOffset ) ) {
+		railDecls.push( `--sgs-buybox-thumb-offset:${ thumbOffset }` );
+	}
+	if ( perRow > 0 ) {
+		railDecls.push( 'display:grid', `grid-template-columns:repeat(${ perRow },minmax(48px,1fr))`, `--sgs-buybox-thumb-gutter:calc(4px + 10% / ${ perRow })` );
+	}
+	if ( thumbGap && ! /[;{}<>]/.test( thumbGap ) ) {
+		railDecls.push( `gap:${ thumbGap }` );
+	}
+	if ( railDecls.length ) {
+		css += `${ root } .product-card__thumbs{${ railDecls.join( ';' ) };}`;
+	}
+	if ( perRow > 0 ) {
+		css += `@supports(overflow-clip-margin:1px){${ root } .product-card__thumbs{overflow:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0;}}`;
+		css += `${ root } .product-card__thumb{width:100%;height:auto;aspect-ratio:1;}`;
+	}
 	const rawWidth = String( attributes.thumbBorderWidth || '' ).trim();
 	// A bare number is pixels, as sgs_css_length_value() reads it on the front end.
 	const thumbWidth = /^\d+(\.\d+)?$/.test( rawWidth ) ? `${ rawWidth }px` : rawWidth;
@@ -309,8 +333,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 				>
 					{ __( 'Product image', 'sgs-blocks' ) }
 				</div>
-				<div className="product-card__thumbs" aria-hidden="true" style={ { display: 'flex', gap: '8px', marginTop: '8px' } }>
-					{ [ 1, 2, 3 ].map( ( n ) => (
+				<div className="product-card__thumbs" aria-hidden="true">
+					{ [ 1, 2, 3, 4 ].map( ( n ) => (
 						<span key={ n } className="product-card__thumb" aria-current={ 1 === n ? 'true' : undefined } style={ { display: 'block', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } } />
 					) ) }
 				</div>

@@ -240,6 +240,40 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			$css[] = $root_sel . '{--sgs-buybox-thumb-size:' . rtrim( rtrim( number_format( $thumb_size, 2, '.', '' ), '0' ), '.' ) . 'px;}';
 		}
 
+		// Thumbnail rail layout. thumbGap (any length) replaces the stylesheet's 0.5rem
+		// gap and thumbStripOffset its 0.75rem space under the main image. thumbsPerRow
+		// N (1 to 8) turns the rail into N equal fluid columns, each thumbnail square;
+		// a column is never narrower than the 48px floor. A grid rail has no scrolling
+		// to do, so where overflow-clip-margin exists the rail clips with a
+		// 24px margin (room for the selected scale and the focus ring, and no page-wide
+		// horizontal scroll when the gallery touches the viewport edge) and needs none
+		// of the padded scroll container's gutter. Browsers without it keep that
+		// padded, scrolling rail.
+		$thumbs_sel   = $root_sel . ' .product-card__thumbs:not([hidden])';
+		$thumb_gap    = sgs_css_length_value( $attributes['thumbGap'] ?? '' );
+		$thumb_offset = sgs_css_length_value( $attributes['thumbStripOffset'] ?? '' );
+		$thumbs_per   = isset( $attributes['thumbsPerRow'] ) && is_numeric( $attributes['thumbsPerRow'] )
+			? max( 0, min( 8, (int) $attributes['thumbsPerRow'] ) )
+			: 0;
+		$thumbs_decls = '';
+		if ( '' !== $thumb_offset ) {
+			$thumbs_decls .= '--sgs-buybox-thumb-offset:' . $thumb_offset . ';';
+		}
+		if ( '' !== $thumb_gap ) {
+			$thumbs_decls .= 'gap:' . $thumb_gap . ';';
+		}
+		if ( $thumbs_per > 0 ) {
+			$thumbs_decls .= 'display:grid;grid-template-columns:repeat(' . $thumbs_per . ',minmax(48px,1fr));';
+			$thumbs_decls .= '--sgs-buybox-thumb-gutter:calc(4px + 10% / ' . $thumbs_per . ');';
+		}
+		if ( '' !== $thumbs_decls ) {
+			$css[] = $thumbs_sel . '{' . $thumbs_decls . '}';
+		}
+		if ( $thumbs_per > 0 ) {
+			$css[] = '@supports(overflow-clip-margin:1px){' . $thumbs_sel . '{overflow:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0;}}';
+			$css[] = $root_sel . ' .product-card__thumb{width:100%;height:auto;aspect-ratio:1;}';
+		}
+
 		$thumb_sel    = $root_sel . ' .product-card__thumb';
 		$thumb_width  = sgs_css_length_value( $attributes['thumbBorderWidth'] ?? '' );
 		$thumb_colour = sgs_colour_value( (string) ( $attributes['thumbBorderColour'] ?? '' ) );

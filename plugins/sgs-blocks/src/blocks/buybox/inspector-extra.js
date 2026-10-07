@@ -35,6 +35,9 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		showStockStatus,
 		extrasBeforeCount,
 		thumbSize,
+		thumbsPerRow,
+		thumbGap,
+		thumbStripOffset,
 		thumbBorderWidth,
 		thumbSelectedScale,
 	} = attributes;
@@ -193,6 +196,46 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 					}
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+				<RangeControl
+					label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
+					help={ __(
+						'0 keeps the fixed-size, scrolling strip. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px; the strip scrolls sideways instead.',
+						'sgs-blocks'
+					) }
+					value={ thumbsPerRow ?? 0 }
+					min={ 0 }
+					max={ 8 }
+					step={ 1 }
+					onChange={ ( val ) =>
+						setAttributes( { thumbsPerRow: val ?? 0 } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<SgsLengthControl
+					label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
+					value={ thumbGap }
+					units={ THUMB_BORDER_UNITS }
+					onChange={ ( val ) =>
+						setAttributes( { thumbGap: val ?? '' } )
+					}
+					help={ __(
+						'Space between thumbnails. Empty keeps the default 0.5rem.',
+						'sgs-blocks'
+					) }
+				/>
+				<SgsLengthControl
+					label={ __( 'Space above thumbnails', 'sgs-blocks' ) }
+					value={ thumbStripOffset }
+					units={ THUMB_BORDER_UNITS }
+					onChange={ ( val ) =>
+						setAttributes( { thumbStripOffset: val ?? '' } )
+					}
+					help={ __(
+						'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
+						'sgs-blocks'
+					) }
 				/>
 				<SgsLengthControl
 					label={ __( 'Border width', 'sgs-blocks' ) }
