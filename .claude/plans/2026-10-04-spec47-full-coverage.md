@@ -68,7 +68,9 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     2026-10-04 draft reading, a taupe S2 rules out, so Contact's next Solve run needs a ledger entry holding `text` against the
     draft, or it writes the taupe back. Owed: rebuild the footer part and the Contact page, then a live hover read. The S2
     underline sweep on the contact pair waits for S2's framework half.
-  - The drawer link fade: 14 rows open, the rise is not sampled.
+  - The mobile drawer's links (mobile-menu surface): the draft fades and rises each link in when the drawer opens, live
+    shows them at once; 14 rows open (2026-10-05 sweep), but the walker does not sample the rise, so they cannot be judged.
+    Taken with the mobile-menu surface's Solve pass: first make the walker sample an entrance inside the `drawer-open` state.
   - 87's tree half: `single-product.tree.json` takes `showArchiveCrumb` and `showCurrentCrumb` true (2026-10-07), owed one
     rebuild of the Single Product template and a live read of the trail (Home / Sunglasses / Gucci / <product>).
 - **Coverage still owed:**
