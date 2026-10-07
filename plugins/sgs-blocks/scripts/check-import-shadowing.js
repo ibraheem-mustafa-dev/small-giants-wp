@@ -83,24 +83,23 @@ function patternBindings( pattern, out ) {
 	return out;
 }
 
-function walk( node, visit ) {
-	if ( ! node || 'object' !== typeof node ) {
-		return;
-	}
-	if ( Array.isArray( node ) ) {
-		node.forEach( ( n ) => walk( n, visit ) );
-		return;
-	}
-	visit( node );
+const SKIP_KEYS = new Set( [ 'loc', 'start', 'end', 'leadingComments', 'trailingComments', 'innerComments' ] );
+const FUNCTION_TYPES = new Set( [ 'FunctionDeclaration', 'FunctionExpression', 'ArrowFunctionExpression', 'ObjectMethod', 'ClassMethod', 'ClassPrivateMethod' ] );
+
+function children( node ) {
+	const out = [];
 	for ( const key of Object.keys( node ) ) {
-		if ( 'loc' === key || 'start' === key || 'end' === key || 'leadingComments' === key || 'trailingComments' === key ) {
+		const child = node[ key ];
+		if ( SKIP_KEYS.has( key ) || ! child || 'object' !== typeof child ) {
 			continue;
 		}
-		const child = node[ key ];
-		if ( child && 'object' === typeof child ) {
-			walk( child, visit );
+		if ( Array.isArray( child ) ) {
+			out.push( ...child.filter( ( c ) => c && 'object' === typeof c ) );
+		} else {
+			out.push( child );
 		}
 	}
+	return out;
 }
 
 const isAttributesKey = ( node ) => 'ObjectProperty' === node.type && ! node.computed && node.key &&
@@ -109,35 +108,50 @@ const isAttributesKey = ( node ) => 'ObjectProperty' === node.type && ! node.com
 
 const propertyValue = ( node ) => ( 'AssignmentPattern' === node.value?.type ? node.value.left : node.value );
 
-// Locals the attributes object is renamed to: `{ attributes: attrs }`.
-function attributeAliases( program ) {
+// Locals a function renames the attributes object to (`{ attributes: attrs }` in its
+// parameters or its own body), not counting nested functions, which have their own.
+function aliasesDeclaredIn( fn ) {
 	const aliases = new Set();
-	walk( program, ( node ) => {
+	const stack = [ ...fn.params, fn.body ];
+	while ( stack.length ) {
+		const node = stack.pop();
+		if ( ! node || 'object' !== typeof node || FUNCTION_TYPES.has( node.type ) ) {
+			continue;
+		}
 		if ( isAttributesKey( node ) ) {
 			const value = propertyValue( node );
 			if ( value && 'Identifier' === value.type && 'attributes' !== value.name ) {
 				aliases.add( value.name );
 			}
 		}
-	} );
+		stack.push( ...children( node ) );
+	}
 	return aliases;
 }
 
-// Every ObjectPattern that destructures attributes, wherever it sits.
-function attributeDestructurings( program, aliases ) {
-	const out = [];
-	walk( program, ( node ) => {
-		if ( 'VariableDeclarator' === node.type && node.id && 'ObjectPattern' === node.id.type && isAttributesExpression( node.init, aliases ) ) {
-			out.push( node.id );
+// Every ObjectPattern that destructures attributes. An alias counts only inside the
+// function that declares it and the functions nested in it. A reassignment
+// (`let attrs = attributes;`) is not followed.
+function attributeDestructurings( node, aliases, out ) {
+	if ( FUNCTION_TYPES.has( node.type ) ) {
+		const own = aliasesDeclaredIn( node );
+		if ( own.size ) {
+			aliases = new Set( [ ...aliases, ...own ] );
 		}
-		// `{ attributes: { a, b } }` inside a parameter or any other pattern.
-		if ( isAttributesKey( node ) ) {
-			const value = propertyValue( node );
-			if ( value && 'ObjectPattern' === value.type ) {
-				out.push( value );
-			}
+	}
+	if ( 'VariableDeclarator' === node.type && node.id && 'ObjectPattern' === node.id.type && isAttributesExpression( node.init, aliases ) ) {
+		out.push( node.id );
+	}
+	// `{ attributes: { a, b } }` inside a parameter or any other pattern.
+	if ( isAttributesKey( node ) ) {
+		const value = propertyValue( node );
+		if ( value && 'ObjectPattern' === value.type ) {
+			out.push( value );
 		}
-	} );
+	}
+	for ( const child of children( node ) ) {
+		attributeDestructurings( child, aliases, out );
+	}
 	return out;
 }
 
@@ -175,7 +189,7 @@ function scanSource( source ) {
 		return [];
 	}
 	const violations = [];
-	for ( const pattern of attributeDestructurings( ast.program, attributeAliases( ast.program ) ) ) {
+	for ( const pattern of attributeDestructurings( ast.program, new Set(), [] ) ) {
 		for ( const binding of patternBindings( pattern, [] ) ) {
 			if ( bindings.has( binding.name ) ) {
 				violations.push( { name: binding.name, line: binding.line, from: bindings.get( binding.name ) } );
@@ -234,6 +248,11 @@ const FIXTURES = [
 		name: 'shadowing a module-level function fires',
 		src: "function formatPrice( v ) { return v; }\nexport default function Edit( { attributes } ) { const { formatPrice } = attributes; return formatPrice( 1 ); }",
 		expect: [ 'formatPrice' ],
+	},
+	{
+		name: 'an alias in one function does not capture a same-named object in another',
+		src: "import { items } from './i';\nfunction A( { attributes: settings } ) { return settings; }\nfunction C( { settings } ) { const { items } = settings; return items; }",
+		expect: [],
 	},
 	{
 		name: 'reading attributes.name does not fire',

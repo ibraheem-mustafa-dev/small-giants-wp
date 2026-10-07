@@ -6815,7 +6815,7 @@
 				"css_layer": "GRID_AREA",
 				"derived_selector": ".sgs-hero__content"
 			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL. The converter's area route then gapped a cloned value (attr_for_area_property returned None, measured on a DB copy). Values restored from the pre-reseed DB. Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
+			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		},
 		{
 			"slug": "sgs/hero",
@@ -6824,9 +6824,9 @@
 				"css_property": "padding",
 				"css_element": "media",
 				"css_layer": "GRID_AREA",
-				"derived_selector": ".sgs-hero__image"
+				"derived_selector": ".sgs-hero__media"
 			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL. The converter's area route then gapped a cloned value (attr_for_area_property returned None, measured on a DB copy). Values restored from the pre-reseed DB. Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
+			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		},
 		{
 			"slug": "sgs/language-switch",
@@ -6836,7 +6836,7 @@
 				"css_element": "panel",
 				"derived_selector": ".sgs-language-switch__panel"
 			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL. The converter's area route then gapped a cloned value (attr_for_area_property returned None, measured on a DB copy). Values restored from the pre-reseed DB. Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
+			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		},
 		{
 			"slug": "sgs/option-picker",
@@ -6844,18 +6844,18 @@
 			"fields": {
 				"css_property": "padding",
 				"css_element": "pill",
-				"derived_selector": ".sgs-option-picker__label"
+				"derived_selector": ".sgs-option-picker__pill"
 			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL. The converter's area route then gapped a cloned value (attr_for_area_property returned None, measured on a DB copy). Values restored from the pre-reseed DB. Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
+			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'padding' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"padding:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		},
 		{
 			"slug": "sgs/icon",
 			"attr": "margin",
 			"fields": {
 				"css_property": "margin",
-				"derived_selector": ".sgs-icon__margin"
+				"derived_selector": null
 			},
-			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'margin' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"margin:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL. The converter's area route then gapped a cloned value (attr_for_area_property returned None, measured on a DB copy). Values restored from the pre-reseed DB. Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
+			"_why": "2026-10-07: CR6 (7851261e5) moved this attr's emission to sgs_box_object_longhands( $obj, 'margin' ), which takes the property name as an argument; behavioural-analyser/extract-signatures.py only reads a property from literal declaration text (the old \"margin:{$value}\"), so the regenerated css-property-classifications.json dropped the entry and the reseed left css_property NULL, and the converter then gapped a cloned value (measured on a DB copy). The routing columns are the pre-reseed values; derived_selector is the selector render.php emits today (the root, which needs none, for icon margin). Remove when extract-signatures.py learns sgs_box_object_longhands()'s property argument."
 		}
 	]
 }
