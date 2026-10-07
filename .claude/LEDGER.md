@@ -80,16 +80,15 @@ panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, not
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — `var()` values admitted; every row fixed and live-verified on eye-care-test.** Ceilings
-  **CLASS-2 31, CLASS-3 1, CANNOT-RESOLVE 54** (self-test 49/49; main `51a67c791`; eye-care-test runs every
-  block change, through `4fa8c204f`; the later gate-only commit needs no deploy). Each var() row got its own control or a
-  default its control strictly beats (form, product-card, choice-flow, google-reviews, team-member,
-  table-of-contents, cta-section); defaults unchanged live except the bound price's hard-coded `'Fraunces'`,
-  now the display token. **Next (each open, none started):** the gate gaps of triage §7 (gap 9: an inner
-  block's controls are invisible, holding the cta-section headline's 3 rows; gap 10: the writer set's limits;
-  gap 7: no CLASS 4 category); a CTA line-height control and a swatch "+N" control on product-card (both
-  have defaults but no control). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6–§7.
-  google-reviews' accent hover shades: owned by the google-reviews session (handed over 2026-10-07).
+- **F3/E14 — every gate gap the triage could fix in-session is closed, and every element it found with no control has one.**
+  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 5** (self-test 60/60; main `223bec72a`; eye-care-test runs it all,
+  deployed `73cdb64ca`). The gate reads InnerBlocks template children (gap 9), bounds the writer set to reachable
+  helpers (gap 10b) and closes three council-found false exemptions; every element on product-card, buybox, post-grid,
+  card-grid, media, account and nav-drawer-menu that the gate found uncontrolled gained a control, defaults unchanged, live-verified D/S/C
+  (`reports/2026-10-07-f3-e14-live-verification.md` round 3). **Open:** live coverage owed on sites with the data
+  (card-grid collection, buybox RRP/guided, bound product-card, account, drawer); account `*TextAlign` attributes
+  with no control; gate gaps 2-8, 10(a,c,d), 11, 12. Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+  google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). Open: Spec 47 §5 "Route, open"

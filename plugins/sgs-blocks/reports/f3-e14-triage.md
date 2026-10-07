@@ -10,7 +10,7 @@ Status: the analysis stands. Its highest-reach recommendations shipped in `6f196
 - Reach is read from each block's own markup (`render.php`, sibling PHP, `includes/` helpers, `edit.js` and `view.js`). Every "no markup emits this class" claim comes from a search of all `.php` and `.js` files under `src/` and `includes/`, plus `theme/`; one such claim was wrong on first pass (the form table headings are built from a class map in `includes/forms/field-render-helpers.php::field_headings`) and was corrected, so the DEAD rows carry the search scope.
 - Specificity is computed from the emitted selector strings (`.{uid}` stands for the per-instance class). An inherited property reaches a descendant only through inheritance, so specificity does not rescue a control that targets an ancestor: a declaration on the descendant wins at any specificity. Specificity matters only for same-element pairs (CLASS 1).
 
-Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 2026-10-06; the CANNOT-RESOLVE rows count the 54 the gate reports now (section 4.2 gives the arithmetic):
+Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 2026-10-06; the CANNOT-RESOLVE rows count the 54 the gate reported at triage (section 4.2 gives the arithmetic; section 6 has today's counts, 28 / 1 / 5):
 
 | | Count |
 |---|---|
@@ -19,7 +19,7 @@ Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 
 | ... DEFENSIBLE (documented intent, UI chrome, or measured) | 29 remain (28 CLASS 2, 1 CLASS 3); the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline's 3 are CLASS 1 now the gate reads its `sgs/heading` child's controls (section 7 gap 9) |
 | ... DEAD (no markup emits the class) | 10, deleted in `6f1963c28` |
 | ... EDITOR-ONLY | 3, moved to `editor.css` in `6d30835bd` |
-| CANNOT-RESOLVE now | 54 |
+| CANNOT-RESOLVE at triage | 54 |
 | ... CLASS 4 shaped (carried from the triage) | 40 |
 | ... newly visible since `53ba85750`, not yet classified | 9 |
 | ... own control already exists (CLASS 1 in effect) | 1 (`media` caption; the bare `figcaption` member keeps it unresolved) |
@@ -424,6 +424,9 @@ Net effect of the `require` hop on the CANNOT-RESOLVE count is -3 (64 to 61): 12
 
 ### 4.2 What the 54 are really, one level down
 
+As measured at triage. Every CLASS 4 shaped row below now has a control (section 7 gap 7).
+
+
 - **CLASS 4 shaped: 40** (52 at triage, less the 12 `sgs/post-grid` card parts that now resolve and are no longer findings, though those elements still have no control). For these the block has controls for the property but none on, or above, the declaring element (the only controls are on sibling leaf elements such as a title, a price or a label), so the real question is "this element has no control", not "the gate could not place it". This is a reading of the controls list and the markup, not gate output; the gate cannot prove it.
 - **Own control already exists: 1** (`media` figcaption font-size). The gate now checks a resolved own control first (`87eb25957`), but this selector list also holds a bare `figcaption` the gate cannot place (section 7 gap 4), so the row stays CANNOT-RESOLVE. CLASS 1 in effect.
 - **CANNOT-TELL from source: 4** (`cart` badge x2; `buybox` cart-price; `theme-toggle` icon glyph, which is not text).
@@ -492,6 +495,8 @@ Net effect of the `require` hop on the CANNOT-RESOLVE count is -3 (64 to 61): 12
 
 ## 5. CLASS 4 flags (an element, or a whole block, with no typography control at all)
 
+As measured at triage. Every element in the second table now has a control (`ea574379a`, `6ff3e3687`, `fd0be21e4`; section 7 gap 7), except three rows this work did not touch: the value ladder and `form` elements (closed earlier, section 6), `option-picker` (not re-checked; the gate reports none of its rows) and `google-reviews` (its own session).
+
 Two scales, kept apart.
 
 **Whole blocks (E14 is blind to them).** E14 builds a model only for blocks whose PHP calls `sgs_typography_css_rule` or `sgs_button_element_style_css` with a prefix that matches a declared attribute. 44 of 95 blocks have no model, so none of the findings can come from them (`--survey`: "Blocks with a resolvable control: 51"). The 86-declaration indicator below was measured at triage over 47 blocks. The brief's measured context (46 never call the helper; `choice-flow` and `choice-flow-question` 0 calls, `cart` 1, `product-card` 12) is consistent with that; I did not recount helper calls. As a rough size of the unmeasured pool, a throwaway regex walker (not gate output, nested at-rules approximated) found 86 literal declarations of inherited typography properties outside hover, media and modifier selectors in the triage's 47 unmodelled blocks' `style.css`: `trustpilot-reviews` 19, `choice-flow-question` 11, `gallery` 9, `hero` 8, `account` 6 (now modelled; its 6 findings are cause H), `audio` 6, `wishlist-panel` 6, `choice-flow-result` 5, the rest 1 to 4 each. Treat 86 as an indicator, not a finding count.
@@ -515,7 +520,7 @@ Two scales, kept apart.
 
 `E14_OPEN_BACKLOG` is `CLASS-2: 28`, `CLASS-3: 1`, `CANNOT-RESOLVE: 5`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
-Measured 2026-10-07 on a clean detached worktree at `4fa63cfb1` plus the admission (`043e2e457`), from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 31/31, CLASS-3 1/1, CANNOT-RESOLVE 54/54` and 0 net-new legacy violations; `--self-test` reports `49/49 checks passed` at `51a67c791`.
+Measured 2026-10-07 on clean detached worktrees, from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 28/28, CLASS-3 1/1, CANNOT-RESOLVE 5/5` and 0 net-new legacy violations at `6ff3e3687` (each lowering measured in the commit that removed the rows: 31 to 28 at `05b5923d8`, 54 to 21 at `ea574379a`, 21 to 5 at `6ff3e3687`); `--self-test` reports `60/60 checks passed` at `4f5b5f87a`, and the same counts hold at `73cdb64ca`.
 
 **Shipped in `6f1963c28` (2026-10-06).** The 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field` typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`. Every literal on an element that now owns a control sits inside `:where()`, which also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control could beat, and the ladder row weights, which blocked the ladder's own font-weight control. Unifying the ladder markup put it outside the block-directory walk, which cost 4 CANNOT-RESOLVE rows, and buybox's first `line-height` control made one pre-existing literal visible; both were absorbed by de-specifying those literals.
 
@@ -545,8 +550,8 @@ Measured 2026-10-07 on a clean detached worktree at `4fa63cfb1` plus the admissi
 | After `75a583e23`, `53ba85750` | | 48 | 2 | 61 |
 | After `87eb25957`..`c70b7eb54` | 3.1, 3.2, 4.1 | 35 | 1 | 55 |
 | var() fixed and admitted (`00994a40d`..`dc822fcdd`) | 7 gap 1 | 31 | 1 | 54 |
-| **Now: InnerBlocks template children modelled** | 7 gap 9 | **28** | **1** | **54** |
-| Controls for every CLASS 4 shaped element (`ea574379a`, `6ff3e3687`) | 4.3, 5, 7 gap 7 | 28 | 1 | 5 |
+| InnerBlocks template children modelled (`05b5923d8`) | 7 gap 9 | 28 | 1 | 54 |
+| **Now: controls for every CLASS 4 shaped element** (`ea574379a`, `6ff3e3687`) | 4.3, 5, 7 gap 7 | **28** | **1** | **5** |
 | Remaining floor | | 28 | 1 | 5: the `cart` badge (CANNOT-TELL), the `media` caption list's bare `figcaption` (gap 4), the `nav-drawer-menu` ornament (gap 12), the `theme-toggle` svg glyph size |
 
 The descent this section predicted was 33 / 1 / 54. The two differences are measured, not missed: the `cta-section` headline pair is DEFENSIBLE (2 CLASS-2), and the own-control reorder clears only one of its two named rows, because `media`'s caption selector list also contains a bare `figcaption` that the gate cannot place (causes E and F), so 1 CANNOT-RESOLVE remains. The option-picker pill's row went with its dead `line-height: 1`.
@@ -571,6 +576,10 @@ The 29 DEFENSIBLE findings (28 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 **Still open on this track, outside the gate gaps of section 7** (each resumable cold):
 
+- **Live coverage owed for some new surfaces.** Round 3 of `reports/2026-10-07-f3-e14-live-verification.md` could not reach on eye-care-test: `sgs/card-grid` `pageButton`/`glyphInitial`/`badge` (its paginating `cpt-collection` mode needs a registered post type with posts), `sgs/buybox` `savingBadge` (a product with an RRP) and `guidedMeter`/`guidedGroupTitle` (the guided layout), `sgs/product-card` bound-mode `rrp` and `swatchMore`, `sgs/account` `cardDesc`/`chip`/`progressStep`/`guestLine` (a signed-in customer) and `sgs/nav-drawer-menu` `drillBack` (an open drawer drill-down), plus the buybox editor-canvas alignment mirror (`73cdb64ca`). Done = each read D / S / C with a sham at 375 / 768 / 1440 by the same method, on a site that has that data (sandybrown has the CPT and products).
+- **`sgs/account` text-align attributes with no control.** `menuTextAlign`, `headingTextAlign`, `cardTitleTextAlign` (older) and `cardDescTextAlign`, `progressStepTextAlign`, `guestLineTextAlign` (this session) are declared but the account switcher offers no Text align field, so a client cannot set them. Per element: if the box is wider than its text (the guest line and progress steps are), add `showTextAlign` to the target; otherwise delete the attribute (the `fd0be21e4` rule). Low: setting a progress-step weight also removes the bold on completed steps (`.sgs-account__progress-step--done`), which stay marked by their border.
+- **`sgs/nav-drawer-menu` drill-back divider never paints** (pre-existing): `.sgs-nav-drawer-menu__drill-back-btn{border:0}` (0,1,0) beats the `:where()` `border-bottom`. Decide whether the drill-back row should have a divider, then keep one of the two.
+- **`sgs/media` editor sample.** In video mode the canvas shows a black 64px bar reading "0:00 / 1:24" under the "Preview not available" notice so the `videoTime` typography is visible; it reads as a broken player. A clearer frame (a label, or the poster behind it) is a design call.
 - **`sgs/product-card::valueLadder*::L3`** (24 baselined wiring-fingerprint gaps) need a bound-mode canvas mirror. **Parked by Bean (2026-10-07).** The `#block-{clientId}` scoped `typographyPreviewCss` rule that cleared `priceFromLabel*` (`02e259b33`) is the mechanism that would clear these too.
 
 ## 7. Capability gaps in the gate that this triage exposed

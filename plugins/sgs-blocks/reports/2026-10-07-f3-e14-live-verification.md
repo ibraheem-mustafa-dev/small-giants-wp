@@ -90,7 +90,7 @@ held by its own (0,1,0) default over the theme's heading styles, as measured and
 and `ED-product-card` all PASS** (each block's new targets on the Styles tab, a pre-existing control panel present,
 the sham label absent), and a bound product-card loads in the editor with 0 JavaScript errors.
 
-## Round 3: the element controls from gap 7 (deployed `f1527a858`, editor-mock follow-up `73cdb64ca`)
+## Round 3: the element controls from gap 7 (eye-care-test, deployed through `73cdb64ca`)
 
 Same method: one private fixture page (`sgs-e14-live`, 4 product-cards, 8 post-grids, 2 media, 2 buybox bound through `core/query` to product 136), D / S / C at 375 / 768 / 1440, phase marker confirmed in all 9 reads, a sham read on the same element of an unset sibling instance. S set desktop-only tier values (33px, 300, 47px, 7px, capitalize, right). 0 console errors, 0 HTTP 403. Fixture deleted (`DELETE /wp/v2/pages/1317?force=true` 200; the search returned `[]`; the page 404s).
 
