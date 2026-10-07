@@ -404,6 +404,16 @@ if ( ! empty( $cta_style_engine_args ) ) {
 // paragraph inside the element.
 $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 
+// The ribbon and stats each own a typography surface, because neither can be
+// reached from the root: both declare their own size in style.css, which beats an
+// inherited value. (The headline is an InnerBlocks sgs/heading child and keeps its
+// own typography controls.) Each rule is `.{uid}.wp-block-sgs-cta-section
+// .sgs-cta-section__x` (0,3,0), so it out-ranks the stylesheet default (0,1,0).
+// An empty attribute family emits nothing, so the stylesheet default renders
+// unchanged. One literal-prefix call per surface, each building its selector inline.
+$responsive_css .= sgs_typography_css_rule( $attributes, 'ribbon', $root_sel . ' .sgs-cta-section__ribbon' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'stats', $root_sel . ' .sgs-cta-section__stats' );
+
 // Text alignment — bare `textAlign` attribute (Spec 31/converter routing:
 // `block_attributes` maps textAlign → css_property `text-align`, css_element
 // `headline`; the cloning converter writes this TOP-LEVEL attribute on cloned

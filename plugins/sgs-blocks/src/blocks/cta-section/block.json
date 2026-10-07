@@ -118,14 +118,54 @@
 				"ribbon": {
 					"label": "Ribbon",
 					"order": 4,
-					"clusters": [],
-					"_note": "The ribbon attribute is a plain string with no dedicated style attrs — it renders with fixed component styling, not a per-instance Text/Fill/Layout control set."
+					"clusters": [
+						"text"
+					],
+					"prefix": "ribbon",
+					"attrMap": {
+						"css:font-size": "ribbonFontSize",
+						"css:font-weight": "ribbonFontWeight",
+						"css:font-style": "ribbonFontStyle",
+						"css:font-family": "ribbonFontFamily",
+						"css:text-transform": "ribbonTextTransform",
+						"css:text-decoration": "ribbonTextDecoration",
+						"css:line-height": "ribbonLineHeight",
+						"css:letter-spacing": "ribbonLetterSpacing",
+						"css:text-align": "ribbonTextAlign",
+						"css:text-wrap": "ribbonTextWrap",
+						"css:column-count": "ribbonTextColumns",
+						"css:writing-mode": "ribbonWritingMode"
+					},
+					"_note": "The ribbon attribute is the badge text. Its typography (ribbon*) is painted on .sgs-cta-section__ribbon by sgs_typography_css_rule( $attributes, 'ribbon', … ); the stylesheet keeps the default size, weight, letter-spacing, transform and line-height inside :where() so the surface out-ranks them."
 				},
 				"buttons": {
 					"label": "Buttons",
 					"order": 5,
 					"clusters": [],
 					"_note": "Each buttons[] item carries a 'style' preset token (e.g. accent/outline), not per-instance colour/typography/layout attrs — button appearance is driven by the shared button-style tokens, outside the Text/Fill/Layout style clusters."
+				},
+				"stats": {
+					"label": "Stats / social proof",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "stats",
+					"attrMap": {
+						"css:font-size": "statsFontSize",
+						"css:font-weight": "statsFontWeight",
+						"css:font-style": "statsFontStyle",
+						"css:font-family": "statsFontFamily",
+						"css:text-transform": "statsTextTransform",
+						"css:text-decoration": "statsTextDecoration",
+						"css:line-height": "statsLineHeight",
+						"css:letter-spacing": "statsLetterSpacing",
+						"css:text-align": "statsTextAlign",
+						"css:text-wrap": "statsTextWrap",
+						"css:column-count": "statsTextColumns",
+						"css:writing-mode": "statsWritingMode"
+					},
+					"_note": "The stats attribute is the repeater of short proof lines. Its typography (stats*) is painted on .sgs-cta-section__stats by sgs_typography_css_rule( $attributes, 'stats', … ); the stylesheet keeps the default size inside :where() so the surface out-ranks it."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -801,6 +841,202 @@
 			"default": ""
 		},
 		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ribbonFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ribbonFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ribbonFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ribbonFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ribbonFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"ribbonTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ribbonTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ribbonLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ribbonLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ribbonLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ribbonLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ribbonTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"ribbonTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ribbonTextColumns": {
+			"type": "number"
+		},
+		"ribbonWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"statsFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"statsFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"statsFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"statsFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"statsFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"statsTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"statsTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"statsLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"statsLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"statsLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"statsLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"statsTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"statsTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"statsTextColumns": {
+			"type": "number"
+		},
+		"statsWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

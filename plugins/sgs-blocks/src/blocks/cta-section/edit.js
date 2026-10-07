@@ -15,7 +15,7 @@ import {
 } from '@wordpress/components';
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
-import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting, usePreviewTier, textIndentPreviewCss, wrapperToneClass, tierBackgroundImageUrl } from '../../utils';
+import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting, usePreviewTier, textIndentPreviewCss, typographyPreviewCss, wrapperToneClass, tierBackgroundImageUrl } from '../../utils';
 import { applyCtaWrapperPreview } from './preview-style';
 import ShapeDividerPreview from '../../components/ShapeDividerPreview';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
@@ -249,6 +249,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// A narrower tier paints its own image over the desktop one (the wrapper's @media rules).
 	const previewTier = usePreviewTier();
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	// The ribbon and stats are siblings of the content column, so one scoped rule
+	// per surface carries their typography, twinning render.php.
+	const surfacePreviewCss = [
+		typographyPreviewCss( attributes, 'ribbon', `#block-${ clientId } .sgs-cta-section__ribbon`, previewTier ),
+		typographyPreviewCss( attributes, 'stats', `#block-${ clientId } .sgs-cta-section__stats`, previewTier ),
+	].filter( Boolean ).join( '' );
 	if ( activeMedia && activeMedia.type === 'image' && activeMedia.url ) {
 		wrapperStyle.backgroundImage = `url(${ tierBackgroundImageUrl( activeMedia, attributes.backgroundImageTablet, attributes.backgroundImageMobile, previewTier ) })`;
 		wrapperStyle.backgroundSize = 'cover';
@@ -553,25 +559,68 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
 				{ /* Typography (D971/D972 full-replacement track, oracle: sgs/accordion) —
-					root prefix '' (fontSize/fontWeight/fontStyle/lineHeight/letterSpacing/
-					textTransform), emitted server-side by sgs_typography_css_rule() onto the
+					ONE panel, three targets: the section (root prefix '') plus the
+					ribbon and stats, each with its own surface. The section target is
+					fontSize/fontWeight/fontStyle/lineHeight/letterSpacing/textTransform, emitted server-side by sgs_typography_css_rule() onto the
 					block ROOT selector (see render.php's typography comment). The bare
 					`textAlign` attribute replaces the retired native "Align text" toolbar
 					control (rule 45-typography-full-replacement flags ANY real native
 					typography sub-flag, including textAlign) — mirrors sgs/heading's plain
 					SelectControl pattern rather than a toolbar button. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix=""
-						showSize={ true }
-						showWeight={ true }
-						showStyle={ true }
-						showLineHeight={ true }
-						showLetterSpacing={ true }
-						showTransform={ true }
-						showResponsive={ true }
+						targets={ [
+							{
+								key: 'section',
+								label: __( 'Section', 'sgs-blocks' ),
+								prefix: '',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+								showSize: true,
+								showWeight: true,
+								showStyle: true,
+								showLineHeight: true,
+								showLetterSpacing: true,
+								showTransform: true,
+								showResponsive: true,
+							},
+							{
+								key: 'ribbon',
+								label: __( 'Ribbon', 'sgs-blocks' ),
+								prefix: 'ribbon',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'stats',
+								label: __( 'Stats', 'sgs-blocks' ),
+								prefix: 'stats',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 					<SelectControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
@@ -878,6 +927,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 			<div { ...blockProps }>
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
+				{ surfacePreviewCss && <style>{ surfacePreviewCss }</style> }
 				<ShapeDividerPreview attributes={ attributes } position="top" />
 				<ShapeDividerPreview attributes={ attributes } position="bottom" />
 				{ svgLayer }

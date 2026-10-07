@@ -131,8 +131,12 @@
 	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--30);
 	margin-bottom: var(--wp--preset--spacing--30);
-	font-size: var(--wp--preset--font-size--small);
 	opacity: 0.9;
+}
+
+/* Size default at zero specificity: the stats own a typography surface (stats*). */
+:where(.sgs-cta-section__stats) {
+	font-size: var(--wp--preset--font-size--small);
 }
 
 .sgs-cta-section--centred .sgs-cta-section__stats {
@@ -419,15 +423,19 @@
 	right: var(--wp--preset--spacing--40, 1.5rem);
 	background-color: var(--wp--preset--color--accent, #F87A1F);
 	color: var(--wp--preset--color--text-inverse, #fff);
+	padding: 0.25rem 0.75rem;
+	border-radius: 0 0 var(--wp--custom--border-radius--small, 4px) var(--wp--custom--border-radius--small, 4px);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* Typography defaults at zero specificity: the ribbon owns a typography surface (ribbon*). */
+:where(.sgs-cta-section__ribbon) {
 	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
 	font-weight: 700;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
-	padding: 0.25rem 0.75rem;
-	border-radius: 0 0 var(--wp--custom--border-radius--small, 4px) var(--wp--custom--border-radius--small, 4px);
 	line-height: 1.4;
-	pointer-events: none;
-	z-index: 1;
 }
 
 /* ===== Gradient Background Presets ===== */
