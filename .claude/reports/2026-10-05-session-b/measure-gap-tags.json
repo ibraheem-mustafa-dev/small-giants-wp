@@ -194,7 +194,7 @@
     "evidence": {
       "db": "sgs-db.py sql \"SELECT attr_name, role FROM block_attributes WHERE block_slug='sgs/social-icons' AND (attr_name LIKE '%fill%' OR attr_name LIKE '%fullWidth%' OR attr_name LIKE '%stretch%' OR attr_name LIKE '%layout%')\" -> 0 rows; the block's content and presence family is icons (content) and showLabels (boolean-visibility), its text-decoration row is textDecoration (typography, text-decoration)",
       "files": [
-        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-1"
+        ".claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md PA-1"
       ]
     },
     "frameworkGap": true
@@ -478,7 +478,7 @@
     "evidence": {
       "db": "sgs-db.py sql \"SELECT block_slug, attr_name, role FROM block_attributes WHERE attr_name LIKE '%narrow%' OR attr_name LIKE '%minColumn%' OR attr_name LIKE '%columnsMobile%'\" -> 4 rows, of which only sgs/container::minColumnWidth and ::minColumnWidthUnit (layout) are SGS layout rows; no shop narrow-layout single-column row",
       "files": [
-        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md"
+        ".claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md"
       ]
     },
     "frameworkGap": true
@@ -802,7 +802,7 @@
     "evidence": {
       "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
       "files": [
-        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-3"
+        ".claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md PA-3"
       ]
     },
     "frameworkGap": false
@@ -874,7 +874,7 @@
     "evidence": {
       "db": "sgs-db.py sql \"SELECT role, COUNT(*) FROM block_attributes GROUP BY role\" -> boolean-visibility 600, presence-boolean 3, content 84, text-content 235, link-href 37, image-object 74 (the DB opened read-only at ~/.claude/skills/sgs-wp-engine/sgs-framework.db)",
       "files": [
-        ".claude/plans/2026-10-04-eye-care-sweep-audit-fix.md PA-5"
+        ".claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md PA-5"
       ]
     },
     "frameworkGap": false

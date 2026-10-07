@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15"
+spec_version: "0.15.1"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -645,7 +645,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        it to #7d7d7d to be visible on a dark surface, and `primary-text`/`text-inverse` #FAF8F5 on that is 3.88:1
        against the 4.5:1 required; no `palette` or `roles` override passes both constraints. Left enabled it
        would fail every Eye Care deploy. The three ways forward are design calls, recorded on the register row.
-     - First (plan `plans/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
+     - First (plan `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
        (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
        surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the plan
@@ -660,12 +660,12 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        is the source of truth: the 163 F rows are findings to assess, not a list of gaps to build, and many of them ignore how the
        framework works (a CPT canvas composes blocks, and a setting can arrive from a parent by context), which is a route defect.
        So **Session C repaired the route first** — every unbuilt and known-broken item in this spec, including the new FR-47-8 —
-       and recorded the new framework-gap count (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): **the route
+       and recorded the new framework-gap count (`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`): **the route
        result is raw F 338 to 176 on identical Solve reports, and the current measured state on a fresh sweep of all 17
        surfaces at block code `7f375f765` is raw F 192**, in `qa/triage/*.json`. Session C is complete, with ten route
        defects carried in the bullet below. **Session C2** then matches
        each remaining row to a register item, fact-checks it, tests it live at four widths, and builds only what Bean approves
-       (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). A mechanism group is a filing label for review and never a unit of
+       (`plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`). A mechanism group is a filing label for review and never a unit of
        work, and `SGS_Container_Wrapper` is never a blanket fix.
      - Then (Session D) each surface to 100%, in the order the sweep ranks, Contact and its form first. Every surface has
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
@@ -736,7 +736,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        - **The 338 to 176 decomposition is machine-local.** `.gitignore` ignores `sites/*/build/qa/solve/`, so it
          re-derives only while the 2026-10-05 report folders survive on disk.
      - **Route defects found by Session C2 (2026-10-06): ALL CLOSED 2026-10-06** by
-       `plans/2026-10-06-spec47-route-cleanup.md`, which carries the file-ownership map, the wave order and the
+       `plans/archive/2026-10-06-spec47-route-cleanup.md`, which carries the file-ownership map, the wave order and the
        per-fix briefs under `reports/2026-10-06-session-c2/briefs/`. Both write hazards (`entranceStart` writing
        `sgsAnimationStart` from an armed pose, and `sgs_transition_vars` stripping a decimal so `"0.3"` emitted
        3ms), the forced-hover false green, the three reader-scope defects, the missing icon abstraction, the
@@ -768,6 +768,12 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        hover `transform` rows on different paths and a single entry would have closed two genuine findings as well
        as the decided one. Not fixed there: it changes the ledger schema, `lint.mjs` and every existing entry, and
        the row it would close is already decided by register S1, so C2 closes that one by citation.
+     - **The seeder leaves 368 rows unrouted** (2026-10-07): 81 are ambiguous, about 30 are gradient siblings that need an
+       `attrMap`, and the rest have no evidence; `sgsHover*` and `sgsChildWidth` stay NULL on purpose. Session C's C3.1
+       routed 2 of the 32 NULL rows it took; the rest await a routing pass.
+     - **Calibration exhausts Node's 4 GB heap over a full run.** One `calibrate.mjs` run across 46 blocks runs out of
+       memory; `SGS_CAL_CHUNK` (`calibrate.mjs`) is a workaround. What the run holds between blocks is uninvestigated,
+       so the cause is unproven.
      - Presence, text and link (Bean, 2026-10-05): calibration's `presence`, `text` and `link` reads (§3.2), Solve
        writing presence, text and link rows and its `handover` list (§3.3), and Fill setting visibility and variant
        settings: **all built 2026-10-06** (Session C lanes L7, L8 and L9). The framework database already marks the
@@ -781,7 +787,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `lib/issue-classes.mjs::HANDOVER_OWNERS` and shared by Solve and Fill. The sweep (`lib/sweep.mjs`) carries
        text and presence rows as of sitting i, so they reach the register check.
      - Residual from the measure-gap tags (Session B, 2026-10-05; the table is Appendix A of
-       `plans/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
+       `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`, the data `.claude/reports/2026-10-05-session-b/measure-gap-tags.json`).
        Of the 78 register items the walker could not fully see: **8 `content-fixable`** (a setting holds the value and only
        §3.2/§3.3's unbuilt presence, text and link reads block it: S7, 9, N16b, N27, N30, N31, N33B, 159), **17 `pairing`**
        (the element sits on a measured surface but no pair reaches it), **28 `FR-47-6`** (a walker read that was unbuilt: focus and

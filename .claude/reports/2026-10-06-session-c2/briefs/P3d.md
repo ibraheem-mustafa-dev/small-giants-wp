@@ -2,7 +2,7 @@
 task: P3d
 lane: W3-G
 wave: 3
-plan: .claude/plans/2026-10-06-spec47-route-cleanup.md
+plan: .claude/plans/archive/2026-10-06-spec47-route-cleanup.md
 ---
 
 # P3d - Tighten triage transientOf so a resting opacity 0.75 is not swallowed

@@ -346,7 +346,7 @@ Then set `self_closing=False` in `emit_wp_block()` for hero (and any other Inner
 
 ## X. `role: content` requirement under WP 7.0 (2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.8 — Decision 23a.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.8 — Decision 23a.
 
 **Symptom:** Block attributes that hold editable content (headlines, subheadings, body text, CTA labels) are not editable by operators using the `contentOnly` pattern editing mode (e.g. locking a pattern so operators can edit content but not structure). WP silently prevents attribute editing via the inspector.
 
@@ -386,7 +386,7 @@ Then set `self_closing=False` in `emit_wp_block()` for hero (and any other Inner
 
 ## Y. Pseudo-element selectors in theme.json (WP 7.0)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.8 — Decision 22.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.8 — Decision 22.
 
 **Symptom:** Button hover/focus states look identical to base state even though hover styles are set in theme.json. Or: button colour changes in Site Editor preview but hover styling is ignored.
 

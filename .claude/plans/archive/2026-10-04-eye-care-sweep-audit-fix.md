@@ -16,7 +16,7 @@ per-surface walker work resumes.
 134 to 19 issues, and 13 of 17 surfaces have never been measured with today's walker, so nobody knows what is already
 fixed, what the register still needs, or whether "missing setting" labels are true.
 
-**Session C is COMPLETE (2026-10-06):** Waves 0 to 3 and Gates 1 to 3 all passed. Spec 47 §5 stage 3's walker items 2, 4, 5 and the focus and active half of 3 are built, FR-47-7's flows ran live, FR-47-8 canvas awareness is live, and FR-47-2's presence/text/link reads, FR-47-3's content writes and handover, and FR-47-4's Fill are built. **The route result is raw F 338 to 176 on identical reports; the current measured figure on a fresh sweep is 192** (`qa/triage/*.json`), neither comparable to Session B's audited 163. Session C2 is runnable and consumes the 192. Detail: `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
+**Session C is COMPLETE (2026-10-06):** Waves 0 to 3 and Gates 1 to 3 all passed. Spec 47 §5 stage 3's walker items 2, 4, 5 and the focus and active half of 3 are built, FR-47-7's flows ran live, FR-47-8 canvas awareness is live, and FR-47-2's presence/text/link reads, FR-47-3's content writes and handover, and FR-47-4's Fill are built. **The route result is raw F 338 to 176 on identical reports; the current measured figure on a fresh sweep is 192** (`qa/triage/*.json`), neither comparable to Session B's audited 163. Session C2 is runnable and consumes the 192. Detail: `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`.
 
 **Order:** Session 0 (repair everything the 2026-10-04 audit proved) → Session A (sweep) → Session B (audit what is
 still open + divergence protection + writes Session C's plan) → Session C (repair the measuring route: every unbuilt Spec 47 item) → Session C2 (assess each
@@ -302,8 +302,8 @@ None blocks Session B.
 `919c23be4`, `314add9c6`). Every one of the 2,373 open issues carries one **audited** class with proof (W 1,710, F 163, T 447,
 U 28, D 17, deferred 8); the 78 unmeasurable register items carry a measure-gap tag; Bean's decisions can no longer
 be overwritten (B4, N41 and 113 closed); Session C's plan is written
-(since re-split into `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
-and `plans/2026-10-05-eye-care-session-c2-finding-assessment.md`). **Gate B is answered: yes,
+(since re-split into `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`
+and `plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`). **Gate B is answered: yes,
 route fixes first (Bean, 2026-10-05).**
 Actual against the estimate: about 2 h, matching the realistic figure.
 
@@ -355,8 +355,8 @@ No-go: the F gaps stay in the register (Sweep column) and work goes straight to 
 ## Session C: repair the measuring route, then Session C2: assess the findings
 
 **The work runs in two sessions.** The plan is in two files:
-`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and
-`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`.
+`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md` and
+`plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`.
 
 **Why the split.** The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth: it already
 holds the decided issues and the agreed fixes. The **audited** 163 **F** rows (raw 338, which Session C's Gate 1 took to 177) are *findings to assess*, not a list of gaps to
@@ -428,7 +428,7 @@ Corrected on the main-thread check: the stagger settings that make register 14's
 `::itemStaggerOnClose` and `::itemStaggerReveal`, with `sgs/nav-bar-menu::submenuItemStagger*` for the submenu case;
 there is no `sgs/nav-drawer-menu` block.
 
-One measure-gap tag and a one-line reason for every register item the 2026-10-05 strict A4 pass left **not walker-measurable** (63) or **partly measured** (15). Tag vocabulary: `.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md`, "Measure-gap tag (Bean, 2026-10-05)".
+One measure-gap tag and a one-line reason for every register item the 2026-10-05 strict A4 pass left **not walker-measurable** (63) or **partly measured** (15). Tag vocabulary: `.claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`, "Measure-gap tag (Bean, 2026-10-05)".
 
 **How to read this.** The tag says *why the walker cannot see it*, never how big the fix is; `Register Type` says what the fix touches. In the JSON, `frameworkGap` is `true` only where **no block setting can hold the value** (Bean's decisive rule), so an item can be a framework repair with `frameworkGap: false` when the setting exists and framework code ignores it. Where a setting exists and the only blocker is Spec 47 section 3.2/3.3's unbuilt presence, text and link reads, the tag is `content-fixable`; where **no** setting exists and that same unbuilt read is the blocker, the tag is `FR-47-6` (a route read that is not built) and the reason says "no setting exists; framework gap", so Session C picks it up rather than content. Settings are cited `<block_slug>::<attr_name>` with their database `role`; every claim of absence names the search and its row count. Three `content-fixable` rows (S7, N27, N31) cite a setting whose role is `text-content` rather than `content`: the setting is real and holds the words, but Spec 47 section 3.2 scopes its text read to role `content` (84 rows) and would not reach role `text-content` (235 rows), which the main thread should resolve before that read is built.
 

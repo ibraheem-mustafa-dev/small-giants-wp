@@ -3,11 +3,11 @@ title: "Eye Care Session C: repair the measuring route (Spec 47 gaps only)"
 project: small-giants-wp
 created: 2026-10-05
 status: complete at `b0492a5af` (Waves 0 to 3 and Gates 1 to 3 all passed; three host jobs owed, see "Wave 3's remaining items")
-governs: Session C of .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
+governs: Session C of .claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md
 references:
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
-  - .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
-  - .claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md
+  - .claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md
+  - .claude/plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md
   - .claude/plans/2026-10-02-eye-care-fix-register.md
   - scripts/computed-route/README.md
 ---
@@ -40,7 +40,7 @@ Four reasons, and they set the whole scope.
 4. **Those bad findings are a route defect.** So the route is repaired *before* the findings are judged.
 
 Judging the findings is **Session C2**, on the post-C sweep, planned in
-`.claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md`. The block work (W1 and W2 there) sits behind
+`.claude/plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md`. The block work (W1 and W2 there) sits behind
 Bean's per-item approval.
 
 ## Two sittings
@@ -62,7 +62,7 @@ as `file::symbol` or a named test, recorded in this plan beside the item.
 | Block controls, `block.json`, `render.php`, block `style.css`, theme CSS, shared helpers | Session C2 step 4, after Bean's per-item yes |
 | The 447 **T** rows (values the next run writes) and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
 | `sgs/google-reviews`: 3 F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track (closed 2026-10-05, `plans/archive/2026-10-05-google-reviews-attribution.md`); expect it to deploy |
-| The register items whose cause is already proven in code and whose fix is already decided | a parallel track, `plans/2026-10-05-eye-care-register-proven-repairs.md`, which runs beside this session and touches only `plugins/` and `theme/` |
+| The register items whose cause is already proven in code and whose fix is already decided | a parallel track, `plans/archive/2026-10-05-eye-care-register-proven-repairs.md`, which runs beside this session and touches only `plugins/` and `theme/` |
 | Spec 47 stage 5, a second draft from a different designer | blocked: no second draft exists. See "The one item not built" |
 | Spec 47 stage 6, handover to Spec 31 | a Spec 31 decision under Spec 31's own plan (`sc_var_responsive_bridge.py`) |
 

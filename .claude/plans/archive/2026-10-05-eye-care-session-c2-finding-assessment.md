@@ -5,9 +5,9 @@ created: 2026-10-05
 status: COMPLETE 2026-10-06 — every approved fix shipped, deployed and verified
 governs: the assessment and framework-fix stage after Session C
 references:
-  - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
+  - .claude/plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md
   - .claude/plans/2026-10-02-eye-care-fix-register.md
-  - .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md
+  - .claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md
   - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
   - .claude/reports/2026-10-05-session-b/b2/
 ---
@@ -51,7 +51,7 @@ sweeps.** A bare "45" or "50" is ambiguous without the sweep attached.
   `--sgs-accordion-header-pad`). `headerGap` was built on exactly that shape in `776a93639`.
 
 **Route defects found while judging are NOT in this plan.** They are in Spec 47 §5 Residual and owned by
-`plans/2026-10-06-spec47-route-cleanup.md`, including two write hazards, a forced-hover false green, the
+`plans/archive/2026-10-06-spec47-route-cleanup.md`, including two write hazards, a forced-hover false green, the
 stale-report failure mode and the `canvasSettable` masking.
 
 **The number this session consumes is raw F = 192**, in `sites/eye-care-ward-end/build/qa/triage/*.json` (17 files, rewritten 2026-10-06). It is a **raw machine classification** and is **not** comparable to Session B's audited 163: Session B audited 338 raw rows down to 163, so an audited equivalent of 192 is this session's own judgement to produce. Per surface: lens 28, help 36, home 49, footer 20, contact 17, product 17, mega-brands 8, shop 4, mobile-menu 4, mega-lenses 4, mega-help 3, mega-sunglasses 1, contact-form 1, and 0 on about, lenses, header and size-guide. There are also **29 U rows** that nothing explains.
@@ -85,7 +85,7 @@ stale-report failure mode and the `canvasSettable` masking.
 fact-checked against how the framework really works, and live-tested; Bean approves or rejects each one; and only
 the approved items become framework fixes.
 
-**Status: not started. Blocked on Session C** (`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`), which
+**Status: not started. Blocked on Session C** (`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`), which
 repairs the measuring route first. **This session runs on the post-C sweep (raw F 192), never on Session B's audited 163 rows.**
 
 ## The rule this session exists to enforce
@@ -127,7 +127,7 @@ item marked "still open" or "partly measured"; and the framework fixes for whate
 |---|---|
 | Any Spec 47 route or logic work | Session C |
 | The 447 **T** rows and the 28 **U** rows | Session D, `plans/2026-10-04-spec47-full-coverage.md` "Progress" |
-| The register items the parallel repairs track already built (`sgs/button` hover timing, `sgs/business-info` day-label weight, `sgs/site-footer-row` full width, the nav drawer body height, the cart cooldown, the colour tile padding, and whatever else that track records as done) | `plans/2026-10-05-eye-care-register-proven-repairs.md`. Judge the remaining findings against the repaired code, never against today's |
+| The register items the parallel repairs track already built (`sgs/button` hover timing, `sgs/business-info` day-label weight, `sgs/site-footer-row` full width, the nav drawer body height, the cart cooldown, the colour tile padding, and whatever else that track records as done) | `plans/archive/2026-10-05-eye-care-register-proven-repairs.md`. Judge the remaining findings against the repaired code, never against today's |
 | `sgs/google-reviews`: its F rows, 8 deferred icon combos, all attribution work | the parallel Google reviews track. Its colours and sizes follow Google's UI (40px pills and arrows), an **accepted difference** from the theme and the 44px target (Bean, 2026-10-05): never flag them as gaps |
 | Writing page-tree or Site Info values | Session D |
 
@@ -820,5 +820,5 @@ checked would spend about four hours, including 38 controls on one block, on row
 ## First action (under 5 minutes, no dependencies)
 
 Read Session C's **C3.8 table** (the new F count and what moved, per lane) at the end of
-`plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, and list every row that is still open after the
+`plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md`, and list every row that is still open after the
 repaired route measured it. That list, not Session B's 163, is this session's input.

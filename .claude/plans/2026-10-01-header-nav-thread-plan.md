@@ -131,6 +131,7 @@ on either side.
 | W3-c | FR-37-6: prove every live site renders header and footer from its own CPTs (sandybrown, indus-test) | session, 45m |
 | W3-d | FR-37-26 blind-tester arm: a screen-recorded non-coder session, the authoritative half of the FAIL verdict | Bean |
 | W3-e | FR-37-18 inspector conformance (Spec 35A Part L): triage the raw gap counts before acting | session, 1h |
+| Header rows align | `includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css` shares register N46's latent content-band collapse (its own comment says there is no content band, so it does not fire); fix when a header row gains a content band | session |
 
 ## 4. Wave 4 preconditions (all closed before W4-b starts)
 

@@ -6,8 +6,8 @@ status: complete - built and verified on sandybrown 2026-10-05; the eye-care-tes
 governs: a track that ran beside Session C (Session C is now complete)
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
-  - .claude/plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md
-  - .claude/plans/2026-10-05-eye-care-session-c2-finding-assessment.md
+  - .claude/plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md
+  - .claude/plans/archive/2026-10-05-eye-care-session-c2-finding-assessment.md
 ---
 
 # Eye Care: the register-proven framework repairs (parallel track)

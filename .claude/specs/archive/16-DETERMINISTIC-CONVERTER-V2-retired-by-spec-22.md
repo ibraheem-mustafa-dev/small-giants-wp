@@ -847,7 +847,7 @@ Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis
 
 ## §16 — DB Consolidation (2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 1, 2, 11.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decisions 1, 2, 11.
 
 **Status: CLOSED 2026-05-24.** Originally three separate databases held different parts of the WP + SGS knowledge surface; the consolidation shipped in architecture-staging Phase 1 close-out (see decisions.md D56). Today the canonical store is a single database: `~/.agents/skills/sgs-wp-engine/sgs-framework.db`. Rows in `blocks`, `block_attributes`, `block_supports`, `variations`, `markup_examples`, `hooks`, and `docs` carry a `source` column with values `sgs`, `native_wp`, or `third_party` for the relevant tables.
 
@@ -863,7 +863,7 @@ Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis
 
 ## §17 — Variations Table + Indexing (2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 7, 8.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decisions 7, 8.
 
 **Decision 7:** Create `sgs-framework.db.variations` table mirroring (but leaner than) `blocks.db`'s variations schema:
 ```sql
@@ -879,7 +879,7 @@ The `variations` column referenced in Spec 02's per-block table (§6.7) reads fr
 
 ## §18 — INNER_BLOCK_PATTERNS Retirement (2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 12.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decision 12.
 
 The hardcoded `INNER_BLOCK_PATTERNS` dict in `convert.py` (2 entries after the Wave 2 hero entry from commit `ad706d0d`) is RETIRED in Phase 3. The Wave 2 hardcoded hero entry added in commit `ad706d0d` becomes obsolete once Phase 3 lands.
 
@@ -895,7 +895,7 @@ Add adjacent-slot grouping logic: when 2+ adjacent siblings need the same parent
 
 ## §19 — Pre-Phase-3 Pattern Overrides Research Finding (Decision 24)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 24.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decision 24.
 
 **Research question:** Is WP 7.0's `block_bindings_supported_attributes` filter + Pattern Overrides a cleaner alternative to extending `_lift_inner_blocks` to read from DB?
 
@@ -909,7 +909,7 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 ## §20 — /sgs-update Rebuild + Option B (Decision 13)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 13, with completeness assurance from Decision 30.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decision 13, with completeness assurance from Decision 30.
 
 **Decision 13 [SHIPPED]:** `/sgs-update` rebuilt from 4 stages to 9 stages (Phase 4). All upstream scraping logic now lives inside `/sgs-update`; the legacy source DBs + their MCP servers have been retired. Stage 2 walks 10 canonical sources every invocation and re-populates the merged tables, pinned to the active WP version tag. **Post-shipment 2026-05-24 (D56):** the Mode A / Mode B distinction + the `--refresh-upstream` flag were retired (the refresh IS the default now). Stage 3 retired in the same close-out — Stage 2 Source 3 covers the wp-cli/handbook scrape.
 
@@ -935,7 +935,7 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 ## §21 — Backfill Audits (2026-05-21)
 
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 9, 10, 23, 25.
+> Per `.claude/plans/archive/2026-05-21-architecture-staging.md` §6.1 — Decisions 9, 10, 23, 25.
 
 **Decision 9 — Markup examples:** Author `markup_examples` for all 69 SGS blocks — one per block minimum, more for variation-heavy blocks. SGS currently has zero markup examples; core has 331. Gives cv2 a copy-paste reference + operators a template.
 

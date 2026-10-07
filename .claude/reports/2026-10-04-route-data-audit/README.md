@@ -1,6 +1,6 @@
 # Route data audit (2026-10-04)
 
-**Written for:** the sessions running `.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md` (Sessions B and C).
+**Written for:** the sessions running `.claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md` (Sessions B and C).
 Four read-only investigations, asked by Bean, into how the computed route (Spec 47) and the framework's attribute
 detectors use the block source and the framework DB. Main-thread checks against the code are noted with ✔. Scripts
 in each folder rerun the measurements; nothing here edited the repo, the DB or a site.
@@ -185,7 +185,7 @@ fails only on a new one. Rerun: `python plugins/sgs-blocks/scripts/check-wiring-
 
 ## 7. Session 0 results (2026-10-05)
 
-Plan: `.claude/plans/2026-10-04-eye-care-sweep-audit-fix.md` (Session 0 status). Block code at `4726700c1` is deployed to
+Plan: `.claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md` (Session 0 status). Block code at `4726700c1` is deployed to
 eye-care-test (checksums verified) and, as the identical block build `7f770ebb5`, to sandybrown.
 
 - **Wiring gate (section 6):** blocking gaps 1,781 to 201 (`3fee871a2`; the baseline keeps one accepted entry,

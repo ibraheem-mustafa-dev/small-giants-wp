@@ -2,7 +2,7 @@
 task: P2a
 lane: W2-E
 wave: 2
-plan: .claude/plans/2026-10-06-spec47-route-cleanup.md
+plan: .claude/plans/archive/2026-10-06-spec47-route-cleanup.md
 ---
 
 # P2a - Twin-containment gate: judgePairScope, enforced by lintConfig before a browser opens

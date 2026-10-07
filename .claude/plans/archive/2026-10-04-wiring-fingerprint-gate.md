@@ -3,7 +3,7 @@ title: Wiring-fingerprint gate
 project: small-giants-wp
 created: 2026-10-04
 status: done
-parent: .claude/plans/2026-10-04-eye-care-sweep-audit-fix.md (Session 0)
+parent: .claude/plans/archive/2026-10-04-eye-care-sweep-audit-fix.md (Session 0)
 ---
 
 # Wiring-fingerprint gate
@@ -137,5 +137,5 @@ Engineering:
 
 Triaged by the final whole-branch review (2026-10-04): `readsContextKey`'s left boundary is fixed in this plan's
 review fixes; the shared context-consumed helper, the split of `check-editor-render-parity.js` and the three further
-orphan context keys are Session 0 group S0-7 of `plans/2026-10-04-eye-care-sweep-audit-fix.md`; the
+orphan context keys are Session 0 group S0-7 of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`; the
 `getConsumedContextKeys` full scan is speed only (the check runs in 3.7 s) and stays as is.

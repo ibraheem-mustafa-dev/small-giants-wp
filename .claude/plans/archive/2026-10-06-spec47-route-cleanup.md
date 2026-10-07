@@ -163,7 +163,7 @@ they belong here rather than in a separate session:
    to exercise the content reads on a block that has them, because `sgs/hero`'s run recorded nothing across
    17 qualifying settings and nobody knows whether that is legitimate; and a **`node scripts/parity/benchmark.mjs --noise`**
    re-run with control and noise back to back (DONE, see above). Commands in
-   `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md` §"Wave 3's remaining items".
+   `plans/archive/2026-10-05-eye-care-session-c-spec47-route-fixes.md` §"Wave 3's remaining items".
 
 Both slot into **Wave 4**, alongside the verification sweep, since they share its host window.
 

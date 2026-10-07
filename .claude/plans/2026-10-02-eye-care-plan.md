@@ -3,7 +3,7 @@ doc_type: plan
 plan_id: eye-care
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: BUILD IN PROGRESS (2026-10-03)
+status: BUILD IN PROGRESS (2026-10-07)
 ---
 
 # Eye Care Birmingham: the one plan
@@ -36,18 +36,21 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
 
 ## Status
 
-- Every surface is built and live, the footer included (`sgs_footer` 182), each applied from its tree in
-  `sites/eye-care-ward-end/build/` with no invalid blocks. Step 0 is done: all 17 trees rebuilt on 2026-10-03, so the
-  live header now has its 18px wordmark shrinking to 15px.
-- The footer's layout values were written by Spec 47's Solve (2026-10-03, 47 setting writes; register 25-29 marked
-  "Solve closed"). It still uses the banned `core/list` (register 30) and its framework items stay open.
-- Every surface was re-walked on 2026-10-02 ("Review results").
-- The walker was upgraded on 2026-10-02 before the walk (below, "Walker"), so the next walk measures more than any
-  earlier one.
-- Bean reviewed every surface and the register on 2026-10-03; all nine register decisions (D1-D9) are settled.
-- The build is driven by the register (`plans/2026-10-02-eye-care-fix-register.md`) in the order of "Work plan" below.
-  Spec 47 stage 3 (Solve on every other surface, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` §5) writes the surfaces'
-  layout values first, and its Hardcode and Missing-setting rows feed the register's framework items.
+- Every surface is built and live on `eye-care-test`, each applied from its tree in `sites/eye-care-ward-end/build/`.
+- The fix register (`plans/2026-10-02-eye-care-fix-register.md`) is the source of truth for fixes; its Sweep column was
+  re-judged on the 2026-10-07 measure-only sweep.
+- Route and per-surface work (Spec 47, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`) lives in
+  `plans/2026-10-04-spec47-full-coverage.md` (Session D).
+- Features and controls that change what the site can do live in `plans/2026-10-05-eye-care-functionality-backlog.md`.
+- CR6 phase 2 (box longhands) has its own plan, `plans/2026-10-07-cr6-box-longhand-migration.md`.
+
+**Owed:**
+- P0-6: rebuild the sandybrown pages 2742, 3405 and 3448 from their trees, then delete the 6 testimonial-slider
+  entries in `plugins/sgs-blocks/scripts/oldshape-audit-baseline.json`.
+- The canary's `sgs_block_defaults` option pins `transitionDuration` 300 (site data), which contradicts the saved-defaults
+  channels in `.claude/rules/block-authoring.md`.
+- CR6's live read extends to option-picker, hero, card-grid and product-card (the cr6 plan's "Extend the live script"
+  box).
 
 ## Decisions (Bean's, still in force)
 

@@ -173,7 +173,7 @@ CR1-CR12, CR14, CR17, CR18 are route and calibration findings. **Their table has
 owner, answered on 2026-10-06:
 
 **None of the 14 were closed by the route cleanup.** Its 16 tasks are H1, H2, P1, P2a, P2b1-3, P3a-d, P4 and
-R1-R3, and no CR reference appears anywhere in `plans/2026-10-06-spec47-route-cleanup.md`. State that precisely:
+R1-R3, and no CR reference appears anywhere in `plans/archive/2026-10-06-spec47-route-cleanup.md`. State that precisely:
 it is strong evidence the two sets are disjoint, **not** a line-by-line proof that no CR row was incidentally
 fixed by one of the 16. So no CR status is stale on that account, and none is marked closed here.
 

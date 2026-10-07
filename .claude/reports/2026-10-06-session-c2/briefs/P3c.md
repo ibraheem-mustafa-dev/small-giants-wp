@@ -2,7 +2,7 @@
 task: P3c
 lane: W2-D
 wave: 2
-plan: .claude/plans/2026-10-06-spec47-route-cleanup.md
+plan: .claude/plans/archive/2026-10-06-spec47-route-cleanup.md
 ---
 
 # P3c - Record loops and exclude infinitely-animated properties from style and hover rows

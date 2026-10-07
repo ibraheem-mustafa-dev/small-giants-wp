@@ -59,7 +59,7 @@ The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source 
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
 No blockers.
 
-**Spec 47 (v0.15): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+**Spec 47 (v0.15.1): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
 read per-surface counts from `qa/triage/*.json`, never a cached figure. **Everything except stage 5 (a second draft)
 is built.** Route defects with owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time
@@ -67,71 +67,39 @@ is built.** Route defects with owners are in §5 Residual. Run host tools with `
 ⚠️ **`solve.mjs --rounds 0` is NOT read-only against the live site**: `solve.mjs::build` runs `wp-build-page.js` for
 real, so every surface's page is rebuilt from its tree file. It writes no solver setting; it does rewrite the page.
 
-**Sessions A, B and C — COMPLETE** (`plans/2026-10-04-eye-care-sweep-audit-fix.md`,
-`plans/2026-10-04-spec47-full-coverage.md`, `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`).
-⚠️ **B's audited 163 is never comparable to any RAW triage count**, and Gate 3's stripped-control 338 is
-**refuted** (C2 measured 345 then 346), though its zero-movement-on-non-canvas half holds.
-
-**Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`; all
-evidence in `reports/2026-10-06-session-c2/`). Raw **F 193 at `94122e326`**. Of 178 judged F rows: 30 real,
-22 settable or accepted, 11 wrong block, 90 artefacts, 25 register-decided; 14 Google Reviews excluded as
-accepted differences. Bean approved 5 of the 7 candidate fixes. ⚠️ Compare sweeps on a **normalised** path:
-a cosmetic path change re-keys rows wholesale.
+**The live Eye Care plans (one job each):** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, what is owed);
+the fix register (fixes; its Sweep column re-judged on the 2026-10-07 measure-only sweep); `plans/2026-10-04-spec47-full-coverage.md`
+(Session D: route and per-surface Solve work, including the register's owed tree values); `plans/2026-10-05-eye-care-functionality-backlog.md`
+(features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2).
+**Measured state (2026-10-07, all 17 surfaces, `qa/triage/*.json`):** W 1469, F 311, T 402, U 30. The W-to-F reclassification is
+applied (`ffac809ce`, `844ee7bf2`) and the mega panels are paired again. ⚠️ Never compare a raw triage count with an
+audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
 - **F3/E14 — every FIX declaration resolved and live; the gate's `var()` blind spot measured, not yet closed.**
-  Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55** (self-test 31/31). eye-care-test runs `1f6cdb4dc`:
-  product-card has one Typography switcher in both modes (editor probe: 0 errors, typed and bound),
-  `sgs/form`'s field weight/style no longer make a cloned root weight ambiguous (`cc144ca96`), and the fast-tier
-  gate `check-import-shadowing.js` blocks the attribute-shadows-a-helper crash. **Next:** the 40 `var()` rows
+  Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55** (self-test 31/31). **Next:** the 40 `var()` rows
   (Bean: fix all, then admit `var()` with no new counter), 6 of them DEFENSIBLE and **awaiting Bean's choice**
   of a gate marker or a one-time ceiling rise at admission. Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md`
-  §7 gap 1 (the row table) and §6 "Still open". Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
+  §7 gap 1 and §6 "Still open". Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
-- **Route cleanup DONE 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, `WAVE4-RESULTS.md`).
-  ⚠️ **Its F 193 → 173 is mostly LOST COVERAGE, not fixes:** a 2026-10-06 re-pairing emptied all four mega
-  panels' walker configs (rows 493 → 48, F 16 → 2), so 14 of the 20 fall is unmeasured rows. Re-pair them
-  (`--state` open) BEFORE the W→F move. **Canvas:** 63 families confirmed live, 59 refuted
-  (`CANVAS-SETTABLE-CONFIRMATION.md`); `reachesElement` **fails open**, so each read W untested. A register
-  check (2026-10-07) found ~60 of those 164 rows are NOT framework gaps: route by category after a `/qc-council`.
-  **`sgs/hero`'s 3 closed** (`HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap — **never remove
-  `section.sgs-hero{max-width:none}`** (D725, 24px off-screen).
-  **OWED:** (1) a fresh measure-only sweep after the peers' deploys, then the W→F move by category
-  (`reports/2026-10-07-route/canvas-register-crosscheck.json`, `/qc-council` first); (2) **CR6 DONE, verified live** (`7851261e5`;
-  phase 2 named in `plans/2026-10-07-cr6-box-longhand-migration.md`). **CR12 is PARKED pending Bean**: the deriver
-  hard-refuses Eye Care on contrast, 3 design options on its register row.
-  ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) are fast but carry
-  **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
-  (SearXNG).**
+- **Route:** a register check (2026-10-07) found ~60 of the 164 canvas rows are NOT framework gaps: route them by
+  category after a `/qc-council` (`reports/2026-10-07-route/canvas-register-crosscheck.json`). `reachesElement`
+  **fails open**. **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`**
+  (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
+  ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
+  for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
+- **The walker-blind rows** are all closed and verified live on eye-care-test except **N36S** (see its register row).
+  The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
+  `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
+- **Routing:** the 31 held rows stay NULL (deliberate). Transition rows calibrate
+  (`calibrate-markers.mjs::transitionMarker`), but the marker gates on the attr NAME
+  `/(^|[a-z])Transition(Duration)$/`, so 36 of 63 transition attrs in 12 blocks read dead. Fix: key on `css_property`.
+- **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
+  row carries its hash. The stretched link was rebuilt so a block's OWN visible link owns the surface. `brandUseLogo`
+  ships `true` (a cross-client default).
+- The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **The walker-blind rows** — register rows the Spec 47 walker cannot see (verdicts and the closing pass:
-  `reports/2026-10-06-eye-care-63/CATEGORISATION.md`; each row's proof is in its register Fix cell). **All
-  closed and verified live on eye-care-test (`da925c40c`) except N36S**, blocked: no product carries a
-  lens-height value, and the diagram is the new D1 block. Two post-hoc `/qc-council` passes on this work found
-  and fixed seven defects (proof in commits 7346235f3 and da925c40c); pre-existing finds are parked as Q3 to Q8 in
-  `plans/2026-10-05-eye-care-functionality-backlog.md`. The focus ring stays the client accent (D467, confirmed
-  2026-10-07). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with `wp-build-page.js` (one at a
-  time; the host's edge challenge refuses bursts).
-
-
-**Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate
-(`calibrate-markers.mjs::transitionMarker`); the gap is the marker gating on the attr NAME
-`/(^|[a-z])Transition(Duration)$/`, so 36 of 63 transition attrs in 12 blocks read dead. Fix: key on
-`css_property`, which it already checks.
-
-**Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
-five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own hash. `brandUseLogo` ships
-`true` (a cross-client default).
-**All four open items CLOSED**, with a `/qc-council` pass and Bean's live-breakage finds fixed and verified.
-Causes and negative controls are in register rows S10, 59 and 20+23; the lessons are in auto-memory. The one
-still load-bearing: the stretched link was rebuilt so a block's OWN visible link owns the surface, which is
-why the product card read as dead outside its name and image (report §5a).
-
-The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
-
-**The one Eye Care plan:** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, work plan).
-**Resume from:** the 63's STILL OPEN rows above (report §2 and §8 carry each cause and fix shape). Per-surface
-Solve work is Session D.
+**Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
 **Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked: the composites'
 editor canvases and the cart panel show spacing only in the editor.

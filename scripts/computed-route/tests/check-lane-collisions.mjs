@@ -5,7 +5,7 @@
 // PROVEN disjoint per wave. This gate is that proof, run immediately before each wave is dispatched and
 // immediately after it returns, before anything is committed. It replaces a promise to be careful.
 //
-// The owned-file map below is the one in `.claude/plans/2026-10-06-spec47-route-cleanup.md`. The plan's
+// The owned-file map below is the one in `.claude/plans/archive/2026-10-06-spec47-route-cleanup.md`. The plan's
 // table is the source of truth; if a lane's scope changes there, change it here and re-run.
 //
 //   node scripts/computed-route/tests/check-lane-collisions.mjs --wave 1 --snapshot
@@ -269,7 +269,7 @@ function selfTest() {
 	for ( const doc of [
 		'.claude/reports/2026-10-06-session-c2/lane-snapshot.json',
 		'.claude/reports/2026-10-06-session-c2/lane-reports/W1-A.md',
-		'.claude/plans/2026-10-06-spec47-route-cleanup.md',
+		'.claude/plans/archive/2026-10-06-spec47-route-cleanup.md',
 	] ) {
 		expect( `${ doc } is ignored as prose, not judged as code`, ignored( doc ) ? 0 : 1, 0 );
 	}

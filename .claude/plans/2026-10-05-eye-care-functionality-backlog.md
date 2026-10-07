@@ -2,11 +2,11 @@
 title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
 project: small-giants-wp
 created: 2026-10-05
-status: Tier 1 built except CR6; Tier 2 shop-journey group built (2026-10-06, see the group marker below); the rest of Tier 2 and Tiers 3-4 not started
+status: Tier 1 built (CR6 phase 1 shipped and verified live 2026-10-07; phase 2 in plans/2026-10-07-cr6-box-longhand-migration.md); Tier 2 shop-journey group built (2026-10-06, see the group marker below) and S8, 17 and 64 done 2026-10-07; the rest of Tier 2 and Tiers 3-4 not started
 governs: what to build next, after the register-proven repairs track closed
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
-  - .claude/plans/2026-10-05-eye-care-register-proven-repairs.md
+  - .claude/plans/archive/2026-10-05-eye-care-register-proven-repairs.md
 ---
 
 # Eye Care: the functionality and feature backlog
@@ -126,10 +126,8 @@ files**.
   property read as `padding: var(--x)`, where a longhand cannot work at any price (the accordion-item
   pair, `nav-menu-submenu-css.php`, `multi-button`, `trust-bar`, `--sgs-gi-padding`).
 - **A JS consumer encodes the zero-fill deliberately**: `scripts/computed-route/lib/resolve.mjs::seedSides`,
-  with a test named **"MUST FAIL TO ZERO"** asserting the current behaviour. ✅ **That cross-session dependency is DISCHARGED
-  (2026-10-07): the Spec 47 route cleanup is complete and CR6 is owned by that same route track, so the
-  `seedSides` deletion and the helper change can now land together in one session. The "MUST FAIL TO ZERO"
-  test goes with them.**
+  with a test named **"MUST FAIL TO ZERO"** asserting the zero-fill. ✅ **Landed with the helper change
+  (2026-10-07):** `seedSides` now seeds unset sides only where a box still zero-fills.
 - **Four sibling helpers share the identical defect** and would be left inconsistent:
   `sgs_corner_object_shorthand`, `helpers-container.php::sgs_serialise_box_corners`, and the two media
   atoms in `includes/media/atoms/` (one with a JS twin, `sidesToShorthand()`).
@@ -148,12 +146,13 @@ the 157 sites migrate deliberately rather than all at once.
 old function is byte-identical, and `scripts/computed-route/` has been coordinated with its owning
 session.
 
-**Re-tiering:** CR6 sat behind the Spec 47 route work for its cross-session dependency. **That work is now
-COMPLETE (2026-10-07) and CR6 is owned by the route track, so the dependency no longer defers it** — it is
-buildable as soon as its `/strategic-plan` is written and the behavioural decision above is taken. The validated
-shape in this section is the design to follow; a later, shallower scoping that proposed swapping the existing
-helper's return type is superseded by it, because 157 sites interpolate after the property name and the `var()`
-consumers cannot take a longhand at all.
+**Built:** CR6 phase 1 shipped and is verified live (`7851261e5`). The validated shape in this section is the
+design it follows: padding and margin print only the sides a client set, the border-width helper and the `var()`
+holdouts keep the zero-fill, and the route's half (`scripts/computed-route/lib/resolve.mjs::seedSides`) landed with
+it. Phase 2 (corner radius, the `var()` holdouts, the media-padding atom and its JS twin, two zero-fill copies
+outside the helper) is in `plans/2026-10-07-cr6-box-longhand-migration.md`. Swapping the existing helper's return
+type is never the shape, because 157 sites interpolate after the property name and the `var()` consumers cannot
+take a longhand at all.
 
 ## Found by the QC pass, 2026-10-06 (not yet built)
 
@@ -180,12 +179,29 @@ Found 2026-10-07 while closing the walker-blind rows (both pre-existing, neither
 | **Q7** | The Shield's one-size term `99-0-130` shows '99 · 0 · 130' on its product page: placeholder seed data with a 0 bridge | Correct the seed data for that frame (test catalogue) or hide a 0 bridge | 4 |
 | **Q8** | A trust-bar loaded inside its marquee range at a width where every item fits never starts the marquee (or drops) when narrowed further within the range: `trust-bar/view.js::measure` only re-runs on the breakpoint `matchMedia` change, and there is no ResizeObserver. Latent; not a regression | Re-measure on resize within the range (ResizeObserver on the wrapper) | 4 |
 
+## Carried from the archived Eye Care plans (2026-10-07)
+
+Open items with no other home. Each names its evidence; the register stays the source of truth for fixes.
+
+| Ref | What is open | Evidence and what to do first | Tier |
+|---|---|---|---|
+| **P0-4** | The wiring gate's L5 tracer misses a value that passes through a normalising variable and then a ternary | `sgs/google-reviews::scrollbarStyle`, still listed in `wiring-fingerprint-baseline.json`. Extend the tracer to follow the variable, then clear the baseline entry | 4 |
+| **P0-5** | 34 structural borders have no control: post-grid card, pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels | Add a border control per block (every customisable property needs an inspector control) | 3 |
+| **P0-7** | The gradient regex is duplicated in `src/utils/tokens.js` and `surface-tone.js`, because `surface-tone.js` cannot import it without a circular import with background-preview | Move the regex to a leaf module both import | 4 |
+| **P0-8** | Unread: does the container load the svg-bg and shape-divider CSS on a page with a hero but no container? | One live read on such a page | 4 |
+| **N25** | Register-proven repairs, measurement limit 3: never reproduced; the invariant holds | Nothing to build unless it reproduces | 4 |
+| **148** | The checkout sections' CSS fade-up stays a CSS-tier fix | Fix in the stylesheet, not through a setting | 3 |
+| **sgs/hero maxWidth** | A real framework gap: `section.sgs-hero{max-width:none}` beats the wrapper's uid rule (`353b9b4ed`, `HERO-DEAD-SETTINGS.md`) | Never remove the `max-width:none` (D725); give maxWidth a path that wins on the hero | 3 |
+| **Tier background, no base image** | A tier background with no base image may paint nothing (candidate live gap, `HERO-DEAD-SETTINGS.md`) | `class-sgs-container-wrapper.php`'s tier rule against the `::before` box guarded by `$has_bg_image`. Proof: an instance with `backgroundImageTablet` set and `backgroundImage` empty, then read `getComputedStyle(root,'::before')` `content` and `background-image` at 768 | 3 |
+| **sgs/hero gridTemplateColumns** | The live path is still undetermined (`HERO-DEAD-SETTINGS.md`) | Find the rule that writes it before deciding it is dead | 4 |
+| **Spacing rows (Session C2)** | Cause 1: `sgs/container` margin against core `is-layout-constrained` (the class-list read is not done). Cause 2: `sgs/site-footer::margin-top`, the cause is refuted and no replacement is proven | `reports/2026-10-06-session-c2/FACT-CHECK-RESULTS.md`. Read the class list, then prove the cause | 3 |
+
 ## Tier 1 — a shopper cannot finish the job (build these first)
 
 > **Built and verified on the sandybrown canary, 2026-10-05** (`65573118c`, plus `c06f71ea6` for the
 > tabs correction): **N11(a)**, **52**, **75/82/158** and **91**. Each one's register row carries the
-> commit hash, what was measured and what was not. **CR6 remains deliberately unbuilt** - see its
-> falsified entry above; it needs `scripts/computed-route/lib/resolve.mjs`, which another session owns.
+> commit hash, what was measured and what was not. **CR6** shipped as phase 1 on 2026-10-07 (see its
+> entry above for the shape it followed); phase 2 is in its own plan.
 >
 > Three findings from building them that change what the rows above say:
 >
@@ -211,7 +227,7 @@ Found 2026-10-07 while closing the walker-blind rows (both pre-existing, neither
 | **75, 82, 158** | **Product gallery thumbnails and colour-swatch photos do not show, although the photos are set up.** Your data is right and the framework ignores it | Three parts: (1) the gallery reads the variation's photo **plus** WooCommerce's own product gallery, without duplicates — today it reads an SGS-only field and never WooCommerce's; (2) turn on swatch photos; (3) any variation with its own photo shows it. Today a photo equal to the main image is skipped, which is why Ivory stays flat | No — proven live |
 | **91** | A product with stock tracking off shows no availability at all in the Details tab | Fall back to "In stock" / "Out of stock" when stock is not tracked | No |
 | **52** | The brand logo strip never starts scrolling | Thought to be waiting on off-screen images before starting | **Yes.** Read the live page first |
-| **CR6** | **Setting one side of a padding or margin box silently zeroes the other three**, wiping the block's own default. The About WhatsApp button lost its 24px sides when only the top was set | `includes/helpers-box.php::sgs_box_object_shorthand` prints `0` for every unset side. It reaches **every block that uses the helper**, so this is the widest-blast-radius bug in the register | No — proven live. Note the route worked *around* it (Solve now writes the other sides), so the framework bug itself is still there |
+| **CR6** | **Setting one side of a padding or margin box silently zeroes the other three**, wiping the block's own default. The About WhatsApp button lost its 24px sides when only the top was set | `includes/helpers-box.php::sgs_box_object_shorthand` prints `0` for every unset side. It reaches **every block that uses the helper**, so this is the widest-blast-radius bug in the register | No — proven live. **FIXED and verified live 2026-10-07** (`7851261e5`; box-longhands live checks 18/18 and 30/30): padding and margin print only the sides a client set, across 41 blocks. Phase 2 is in `plans/2026-10-07-cr6-box-longhand-migration.md` |
 
 **Why CR6 is in Tier 1 despite looking like a styling bug:** it is not a value being wrong, it is a
 control destroying three values the operator never touched. Every client hits it, on any block, the
@@ -233,8 +249,8 @@ Each is already decided in the register. Grouped so one sitting can close a them
 > rebuilding the stretched-link pattern so the block's own visible link owns the surface), the
 > `Product_Manifest` "divergence" turned out to be two different 48-variation products with near-identical names
 > and the photo swap is verified on a realistic fixture, and 20+23 is verified on eye-care-test with the client's
-> wording, a real order and a foreign-row negative control. **S8, 17, 65B and 64 below are untouched** and are
-> what remains of Tier 2. Two register rows were also wrong to call their
+> wording, a real order and a foreign-row negative control. **S8, 17 and 64 are done (2026-10-07, see their rows) and 65B below is untouched**; it
+> is what remains of Tier 2's shop group. Two register rows were also wrong to call their
 > work new: S10's stretched link already existed as the `blockLink` extension and S9's brand-logo lookup already
 > existed in `brand-strip`, so both became reuse plus adaptation.
 
@@ -246,9 +262,9 @@ Each is already decided in the register. Grouped so one sitting can close a them
 | **S10** (N26, N2A) | **One shared "stretched link" piece.** The main link covers the whole card or logo row, while buttons inside it (wishlist, swatches) sit above and keep working | Used by product cards and the header logo. This is the piece 59/61 needs to not fight the card link **N26 DONE 2026-10-06 (`3db77f090`)** on product-card via a new `supports.sgs.blockLinkAlways` flag, which makes the whole-card link permanent (Bean: not switchable off); 99% clickable live. N2A still to verify. |
 | **S9** (N10, N27-brand, N33A) | **Brand logos instead of typed brand names.** One shared lookup prints the brand logo with the brand name as its text alternative, on product cards, the product page top and bag lines, falling back to the name when a brand has no logo | All 40 brands already have a logo saved. Pairs with **D8**: the logo above the product name, linking to the brand page |
 | **S8** (N9, N34) | **One switch hides ".00"** on whole-pound prices across the product page, cards, bag, lens pop-up and the shop's price text. Emails and admin keep pennies | Checkout total lines keep pennies per D4 **DONE 2026-10-07** (111bcd98b, 473b42694): `includes/price-trim-zeros.php`; live proof on register row S8. |
-| **17** | The bag count pop becomes **off / on change / on load and change** (today just on/off), and takes the draft's shape | Check it plays at 0 |
+| **17** | The bag count pop becomes **off / on change / on load and change** (today just on/off), and takes the draft's shape | Check it plays at 0. **DONE, verified live 2026-10-07 at `0cc773b19`** (register row 17) |
 | **65B** | **The shop goes to a single column below 400px.** Today its "narrow layout: grid" floors each column at 50%, so it can never reach one column | Also fixes 65A and 65C as a side effect |
-| **64** | **Pin the filter drawer's top bar**, like the bottom one already is | |
+| **64** | **Pin the filter drawer's top bar**, like the bottom one already is | **DONE, verified live 2026-10-07 at `0cc773b19`** (register row 64) |
 
 ### The lens pop-up
 
@@ -347,9 +363,8 @@ Worth doing in one sitting together, since each is a single control plus a reade
 
 ## What I would do first, and why
 
-If you want one sitting: **Tier 1 in order.** N11(a) and 75/82/158 are the two items where a shopper
-is actually blocked or misled, and CR6 is the one bug every future client will hit on every block. All
-three are independent, so they can run in parallel.
+Tier 1 is built: N11(a), 75/82/158, 52, 91 and CR6 phase 1 (the one bug every future client would hit on
+every block) are verified live.
 
 If you want the biggest felt improvement for Eye Care specifically: **18, 20+23, 59/61, S10 and S9 as
 one "shop journey" sitting.** Those five together are what makes the shop feel finished rather than

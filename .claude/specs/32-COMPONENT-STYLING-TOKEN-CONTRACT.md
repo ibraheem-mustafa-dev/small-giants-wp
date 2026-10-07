@@ -11,9 +11,9 @@ references:
   - .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md
   - .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
-  - .claude/plans/2026-07-07-button-external-css-rearchitecture.md
-  - .claude/plans/2026-07-09-no-inline-styling-design-gate.md
-  - .claude/plans/2026-07-09-box-object-interface-contract.md
+  - .claude/plans/archive/2026-07-07-button-external-css-rearchitecture.md
+  - .claude/plans/archive/2026-07-09-no-inline-styling-design-gate.md
+  - .claude/plans/archive/2026-07-09-box-object-interface-contract.md
 absorbs: null
 absorbed_by: null
 lock_reason: null
@@ -83,7 +83,7 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
 - The cloning pipeline populates tokens; blocks consume them; nothing hand-authored.
 
 **Non-goals**
-- WordPress Block Style Variations (`register_block_style` + theme.json variations). Rejected: they optimise for MANUAL authoring (editor Styles switcher, client self-service editing) which a pipeline-driven, auto-preset-determined library does not need; they add pipeline-mapping friction + WP-cascade coupling for ~zero gain here. (Research: `.claude/plans/2026-07-07-button-external-css-rearchitecture.md`.)
+- WordPress Block Style Variations (`register_block_style` + theme.json variations). Rejected: they optimise for MANUAL authoring (editor Styles switcher, client self-service editing) which a pipeline-driven, auto-preset-determined library does not need; they add pipeline-mapping friction + WP-cascade coupling for ~zero gain here. (Research: `.claude/plans/archive/2026-07-07-button-external-css-rearchitecture.md`.)
 - Editor Global-Styles self-service preset editing (clients do not author; Bean QCs).
 
 ## 3. Hard constraints
