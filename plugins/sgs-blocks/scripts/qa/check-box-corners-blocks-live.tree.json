@@ -1,0 +1,145 @@
+[
+  {
+    "name": "sgs/text",
+    "attributes": {
+      "className": "cr6r-text",
+      "text": "Corner radius check",
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px",
+          "topRight": "6px",
+          "bottomRight": "6px",
+          "bottomLeft": "6px"
+        },
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/heading",
+    "attributes": {
+      "className": "cr6r-heading",
+      "content": "Corner radius check",
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px",
+          "topRight": "6px",
+          "bottomRight": "6px",
+          "bottomLeft": "6px"
+        },
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/quote",
+    "attributes": {
+      "className": "cr6r-quote",
+      "attribution": "Corner radius check",
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px",
+          "topRight": "6px",
+          "bottomRight": "6px",
+          "bottomLeft": "6px"
+        },
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/breadcrumbs",
+    "attributes": {
+      "className": "cr6r-breadcrumbs",
+      "showHome": true,
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px",
+          "topRight": "6px",
+          "bottomRight": "6px",
+          "bottomLeft": "6px"
+        },
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/card-grid",
+    "attributes": {
+      "className": "cr6r-card-grid",
+      "items": [
+        {
+          "title": "Card"
+        }
+      ],
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px",
+          "topRight": "6px",
+          "bottomRight": "6px",
+          "bottomLeft": "6px"
+        },
+        "tablet": {
+          "topLeft": "20px"
+        },
+        "mobile": {
+          "bottomRight": "4px"
+        }
+      }
+    }
+  },
+  {
+    "name": "sgs/media",
+    "attributes": {
+      "className": "cr6r-media",
+      "mediaType": "image",
+      "imageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-includes/images/w-logo-blue.png",
+      "borderRadius": {
+        "topLeft": "6px",
+        "topRight": "6px",
+        "bottomRight": "6px",
+        "bottomLeft": "6px"
+      },
+      "borderRadiusTablet": {
+        "topLeft": "20px"
+      },
+      "borderRadiusMobile": {
+        "bottomRight": "4px"
+      },
+      "padding": {
+        "desktop": {
+          "top": "6px",
+          "right": "6px",
+          "bottom": "6px",
+          "left": "6px"
+        },
+        "tablet": {
+          "top": "20px"
+        },
+        "mobile": {
+          "bottom": "4px"
+        }
+      }
+    }
+  }
+]
