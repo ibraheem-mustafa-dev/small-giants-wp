@@ -2063,7 +2063,7 @@
 		"postId"
 	],
 	"editorScript": "file:./index.js",
-	"style": "file:./style-index.css",
+	"style": [ "sgs-button-style", "file:./style-index.css" ],
 	"editorStyle": "file:./index.css",
 	"viewScriptModule": "file:./view.js",
 	"render": "file:./render.php",

@@ -884,6 +884,11 @@ select.sgs-form-field__input {
 
 .sgs-form__progress-step--active .sgs-form__progress-step-label {
 	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* Active-step weight default at (0,0,0), so the stepLabel typography control
+ * (0,2,0) strictly wins. */
+:where(.sgs-form__progress-step--active .sgs-form__progress-step-label) {
 	font-weight: 600;
 }
 

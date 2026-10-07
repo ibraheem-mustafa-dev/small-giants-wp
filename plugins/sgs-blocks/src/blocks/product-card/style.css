@@ -119,9 +119,14 @@
 	padding: 20px;
 }
 
+/* Description typography defaults at (0,1,0), so the uid-scoped desc typography
+ * rule render.php emits (0,2,0) strictly wins. */
+:where(.product-card) .product-desc {
+	line-height: 1.55;
+	font-size: 14px;
+}
+
 .product-card .product-desc {
-	line-height: var(--sgs-product-card-desc-line-height, 1.55);
-	font-size: var(--sgs-product-card-desc-font-size, 14px);
 	/* Body content — full text colour, NOT muted (Bean: descriptions read as
 	 * real copy; muting is reserved for small necessary contextual text). */
 	color: var(--wp--preset--color--text, #3a2e26);
@@ -148,15 +153,23 @@
 	margin: 0;
 }
 
+/* Price and price-note typography defaults at (0,1,0), so the uid-scoped price and
+ * priceNote typography rules render.php emits (0,2,0) strictly win. */
+:where(.product-card) .price {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 28px;
+	font-weight: 700;
+}
+
+:where(.product-card) .price-note {
+	font-size: 13px;
+}
+
 .product-card .price {
-	font-family: 'Fraunces', serif;
-	font-size: var(--sgs-card-price-font-size, 28px);
-	font-weight: var(--sgs-card-price-font-weight, 700);
 	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
 .product-card .price-note {
-	font-size: var(--sgs-product-card-price-note-font-size, 13px);
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 
@@ -173,9 +186,9 @@
 	flex-wrap: wrap;
 }
 
-:where(.product-card .price-from-label) {
-	font-size: var(--sgs-product-card-price-from-label-font-size, 12px);
-	font-weight: var(--sgs-card-price-from-label-font-weight, 600);
+:where(.product-card) .price-from-label {
+	font-size: 12px;
+	font-weight: 600;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 }
@@ -184,11 +197,14 @@
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 }
 
+:where(.product-card) .price-from-amount {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1;
+}
+
 .product-card .price-from-amount {
-	font-family: 'Fraunces', serif;
-	font-size: var(--sgs-card-price-font-size, 28px);
-	font-weight: var(--sgs-card-price-font-weight, 700);
-	line-height: var(--sgs-product-card-price-line-height, 1);
 	color: var(--sgs-card-price-colour, var(--wp--preset--color--text, #3a2e26));
 }
 
@@ -941,7 +957,8 @@
 	font-size: 13px;
 	/* The theme's body text colour, NOT the brand primary: a light primary (a pink or
 	 * pastel brand) fails WCAG AA on a light card surface (live-measured 2.25:1
-	 * pink-on-cream). #1a1a1a is a near-black fallback. valueLadderSavingColour
+	 * pink-on-cream). #1a1a1a is a near-black fallback. Emphasis comes from
+	 * weight, not a low-contrast hue. valueLadderSavingColour
 	 * (render.php, `.{uid} .value-ladder__saving`, 0,2,0) overrides it. */
 	color: var( --wp--preset--color--text, #1a1a1a );
 }
@@ -1001,19 +1018,9 @@
 	font-weight: 700;
 }
 
-/*
- * Saving percentage — uses theme primary as text colour (supplementary signal;
- * "save X%" is also conveyed as text). Falls back to #000 so any pale primary
- * cannot produce a failing contrast ratio against the card surface.
- */
+/* Saving percentage — keeps "save X%" on one line. Its weight, size and colour
+ * defaults sit in the :where(.value-ladder__saving) rule above. */
 .value-ladder__saving {
-	/*
-	 * Use the theme's body/contrast text colour, NOT the brand primary: a light
-	 * primary (e.g. a pink/pastel brand) fails WCAG AA on a light card surface
-	 * (live-measured 2.25:1 on pink-on-cream). The contrast preset is the
-	 * theme's accessible-on-surface text colour; #1a1a1a is a near-black fallback.
-	 * Emphasis comes from weight, not a low-contrast hue (not colour-only either).
-	 */
 	white-space: nowrap;
 }
 
@@ -1472,15 +1479,16 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: var( --sgs-product-card-brand-font-size, 11px );
 	text-transform: uppercase;
 	color: var( --wp--preset--color--text, #141414 );
 	background: linear-gradient( 135deg, rgba( 255, 255, 255, 0.92 ) 0%, rgba( 255, 255, 255, 0.82 ) 62%, rgba( 255, 255, 255, 0 ) 100% );
 }
 
-/* Padding, weight and spacing defaults at specificity 0, so brandPadding,
-   brandFontWeight and brandLetterSpacing (the scoped brand rules) always win. */
+/* Size, padding, weight and spacing defaults at specificity 0, so brandFontSize,
+   brandPadding, brandFontWeight and brandLetterSpacing (the scoped brand rules)
+   always win. */
 :where(.sgs-product-card__brand) {
+	font-size: 11px;
 	padding: 10px 12px;
 	font-weight: 600;
 	letter-spacing: 0.12em;
@@ -1679,8 +1687,8 @@
 	}
 }
 
-/* The '+N' overflow is a count, not a control: no handler, no tab stop. */
-/* The count has no typography control of its own: its size is an overridable default. */
+/* The '+N' overflow is a count, not a control: no handler, no tab stop. It has no
+ * typography control of its own, so its size is an overridable default. */
 :where(.sgs-product-card__swatch-more) {
 	font-size: 11px;
 }

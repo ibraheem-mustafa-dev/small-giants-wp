@@ -1447,7 +1447,7 @@
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note-sub {
 	display: block;
-	color: var(--wp--preset--color--text-muted, #606D80);
+	color: var(--sgs-choice-flow-note-colour, var(--wp--preset--color--text-muted, #606D80));
 	font-size: 13px;
 }
 

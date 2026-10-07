@@ -65,11 +65,12 @@ require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 // The CTA below always carries .sgs-button/.sgs-button--primary classes, but it
 // is raw HTML, not a real `sgs/button` InnerBlocks instance — so WordPress's
 // automatic "only load a block's style.css when that block is actually parsed
-// on the page" detection never sees it and skips `sgs-button-style`. On a page
-// with no OTHER real sgs/button instance, the CTA's base look (background,
-// padding, colour) never loads until something else happens to pull the
-// stylesheet in. Declaring the dependency explicitly, every render, removes
-// the coincidence.
+// on the page" detection never sees it and skips `sgs-button-style`.
+// block.json `style` lists `sgs-button-style` BEFORE the card's own sheet, so on
+// any page where the card is parsed the button base prints first and the card's
+// :where() CTA defaults win by specificity, not by source order. This call stays
+// for a card rendered outside the block parser (render_block() from PHP, a
+// pattern or template part), where the block.json handles are not enqueued.
 wp_enqueue_style( 'sgs-button-style' );
 
 $variant_style  = $attributes['variantStyle'] ?? 'standard';
