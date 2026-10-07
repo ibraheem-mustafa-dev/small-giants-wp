@@ -2559,12 +2559,19 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 			}
 			selectorStack.push( pendingSelector.trim() );
 			pendingSelector = '';
-		} else if ( closes === 0 ) {
+		} else if ( closes > 0 ) {
+			// Text before a `}` is never selector text; only what follows the last
+			// `}` on the line can start the next selector.
+			pendingSelector = line.slice( line.lastIndexOf( '}' ) + 1 ).trim();
+		} else if ( line.includes( ';' ) ) {
+			// A `;` ends a declaration, including the closing line of a value
+			// split over several lines (`linear-gradient(` … `);`), whose
+			// continuation lines would otherwise read as selector text.
+			pendingSelector = '';
+		} else if ( ! /^\s*[\w-]+\s*:/.test( line ) ) {
 			// No braces → could be a continuation of a multi-line selector.
 			// Only accumulate if it looks like a selector (no `:` followed by value).
-			if ( ! /^\s*[\w-]+\s*:/.test( line ) ) {
-				pendingSelector += ' ' + line.trim();
-			}
+			pendingSelector += ' ' + line.trim();
 		}
 
 		// Update depth AFTER selector stack push.
@@ -3479,6 +3486,27 @@ function selfTestE14( assert ) {
 		assert( 'ratchet: under the ceiling exits 0', run( make( 'CLASS-2', 1 ) ), 0 );
 		assert( 'ratchet: a category with no ceiling entry is not counted', run( make( 'CLASS-9', 5 ) ), 0 );
 		assert( 'ratchet: without --check the exit code is 0 even over the ceiling', checkExitCode( false, 0, [ 'CLASS-2' ], 3, false ), 0 );
+	}
+
+	// Selector capture: a declaration value split over several lines (a
+	// `linear-gradient(` whose arguments sit one per line) must not leak its
+	// continuation lines into the NEXT rule's selector. Without the reset at `;`
+	// and `}` the finding below is filed under "135deg, … ); .sgs-x-item__header".
+	{
+		const r = runE14Fixture(
+			[ 'lineHeight' ],
+			E14_FIXTURE_PHP_HEAD +
+				"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN +
+				'<div class="sgs-x-item"><div class="sgs-x-item__header">Title</div></div>\n</div>\n',
+			'.sgs-x-item {\n\tbackground-image: linear-gradient(\n\t\t135deg,\n\t\trgba(245, 208, 80, 0.08) 0%,\n\t\trgba(31, 122, 122, 0.06) 100%\n\t);\n}\n\n' +
+				'.sgs-x-item__header {\n\tline-height: 1.4;\n}\n'
+		);
+		assert(
+			'selector capture: a multi-line gradient value does not leak into the next rule\'s selector',
+			lineHeightOnHeader( r ).map( ( f ) => f.class ),
+			[ 'CLASS-2' ]
+		);
 	}
 }
 
