@@ -1,43 +1,42 @@
 {
  "surface": "product",
- "when": "2026-10-06T16:44:03.407Z",
+ "when": "2026-10-07T11:19:19.794Z",
+ "states": [
+  "opening",
+  "tab-details",
+  "tab-sizing",
+  "accordion-open"
+ ],
  "width": 1440,
  "recheck": [
   375,
-  768
+  768,
+  1920
  ],
  "lifted": [],
- "blocks": 37,
- "kept": 14,
+ "blocks": 104,
+ "kept": 116,
  "coveredByHand": [
   "cr-ref-product-8",
-  "cr-ref-product-11"
+  "cr-ref-product-11",
+  "cr-ref-product-110"
  ],
  "handMeasured": [
   "cr-ref-product-6",
-  "cr-ref-product-5",
   "cr-ref-product-4",
   "cr-ref-product-8",
   "cr-ref-product-12",
   "cr-ref-product-9",
   "cr-ref-product-11",
-  "cr-ref-product-100",
-  "cr-ref-product-110"
+  "cr-ref-product-110",
+  "cr-ref-product-91"
  ],
  "handScope": [
   {
    "name": "title",
    "ok": true,
    "judged": false,
-   "checked": 0,
-   "split": [],
-   "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
-  },
-  {
-   "name": "brand",
-   "ok": true,
-   "judged": false,
-   "checked": 0,
+   "checked": 3,
    "split": [],
    "why": "not judged: 0 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
@@ -53,7 +52,9 @@
    "name": "colour-picker",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "colour-swatch",
@@ -66,8 +67,7 @@
   {
    "name": "add-prescription",
    "ok": true,
-   "judged": false,
-   "checked": 2,
+   "checked": 11,
    "split": [],
    "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
@@ -75,7 +75,7 @@
    "name": "add-to-bag",
    "ok": true,
    "judged": false,
-   "checked": 2,
+   "checked": 8,
    "split": [],
    "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
@@ -83,13 +83,15 @@
    "name": "gallery-photo",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "tab-description-heading",
    "ok": true,
    "judged": false,
-   "checked": 1,
+   "checked": 4,
    "split": [],
    "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
@@ -97,7 +99,7 @@
    "name": "tab-details-heading",
    "ok": true,
    "judged": false,
-   "checked": 1,
+   "checked": 4,
    "split": [],
    "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
@@ -105,14 +107,14 @@
    "name": "tab-sizing-heading",
    "ok": true,
    "judged": false,
-   "checked": 1,
+   "checked": 4,
    "split": [],
    "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "tab-panel",
    "ok": true,
-   "checked": 48,
+   "checked": 153,
    "split": [],
    "why": null
   },
@@ -120,19 +122,25 @@
    "name": "gallery-thumb",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "gallery-thumb-selected",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "colour-chosen",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "colour-value",
@@ -146,24 +154,30 @@
    "name": "size-chosen",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "size-button-m",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "gallery-photo-zoom",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "whatsapp-card",
    "ok": true,
-   "checked": 8,
+   "checked": 30,
    "split": [],
    "why": null
   },
@@ -171,49 +185,38 @@
    "name": "tabs-reveal",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
-  },
-  {
-   "name": "reviews-reveal",
-   "ok": true,
-   "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
   },
   {
    "name": "similar-reveal",
    "ok": true,
    "judged": false,
-   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words",
+   "checked": 0,
+   "split": []
+  },
+  {
+   "name": "accordion-header",
+   "ok": true,
+   "judged": false,
+   "checked": 2,
+   "split": [],
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   }
  ],
  "retargeted": {},
  "left": [
   {
-   "ref": "cr-ref-product-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
-   "why": "the draft element also holds 2 word(s) that belong outside this block",
-   "words": 299,
-   "matched": 262,
-   "first": "home",
-   "last": "£296"
-  },
-  {
-   "ref": "cr-ref-product-91",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its width is 266px on the draft against 561px live",
-   "words": 6,
-   "matched": 6,
-   "first": "will",
-   "last": "these?"
-  },
-  {
    "ref": "cr-ref-product-90",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2)",
    "why": "the draft element also holds 3 word(s) that belong outside this block",
-   "words": 16,
-   "matched": 16,
+   "words": 51,
+   "matched": 51,
    "first": "will",
-   "last": "repairs"
+   "last": "repairs",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-93",
@@ -222,7 +225,8 @@
    "words": 4,
    "matched": 4,
    "first": "what's",
-   "last": "box"
+   "last": "box",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-95",
@@ -231,7 +235,8 @@
    "words": 3,
    "matched": 3,
    "first": "delivery",
-   "last": "returns"
+   "last": "returns",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-97",
@@ -240,117 +245,223 @@
    "words": 3,
    "matched": 3,
    "first": "adjustments",
-   "last": "repairs"
-  },
-  {
-   "ref": "cr-ref-product-102",
-   "draft": null,
-   "why": "no draft element holds its words",
-   "words": 12,
-   "matched": 4,
-   "first": "reviews",
-   "last": "the"
-  },
-  {
-   "ref": "cr-ref-product-101",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4) > div:nth-child(1)",
-   "why": "only 29% of its words matched the draft",
-   "words": 24,
-   "matched": 7,
-   "first": "reviews",
-   "last": "review"
-  },
-  {
-   "ref": "cr-ref-product-100",
-   "draft": null,
-   "why": "no draft element holds its words",
-   "words": 27,
-   "matched": 7,
-   "first": "reviews",
-   "last": "review"
-  },
-  {
-   "ref": "cr-ref-product-99",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(4)",
-   "why": "only 26% of its words matched the draft",
-   "words": 27,
-   "matched": 7,
-   "first": "reviews",
-   "last": "review"
-  },
-  {
-   "ref": "cr-ref-product-103",
-   "draft": null,
-   "why": "no draft element holds its words",
-   "words": 12,
-   "matched": 3,
-   "first": "and",
-   "last": "review"
-  },
-  {
-   "ref": "cr-ref-product-104",
-   "draft": null,
-   "why": "no matched words",
-   "words": 3,
-   "matched": 0,
-   "first": null,
-   "last": null
-  },
-  {
-   "ref": "cr-ref-product-110",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)",
-   "why": "only 77% of its words matched the draft",
-   "words": 13,
-   "matched": 10,
-   "first": "similar",
-   "last": "£296"
-  },
-  {
-   "ref": "cr-ref-product-114",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 11,
-   "matched": 8,
-   "first": "photo",
-   "last": "£296"
-  },
-  {
-   "ref": "cr-ref-product-113",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 11,
-   "matched": 8,
-   "first": "photo",
-   "last": "£296"
-  },
-  {
-   "ref": "cr-ref-product-112",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 11,
-   "matched": 8,
-   "first": "photo",
-   "last": "£296"
+   "last": "repairs",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-115",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "no painted words (an image, an icon or an empty wrapper)",
+   "state": "accordion-open"
   },
   {
-   "ref": "cr-ref-product-92",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "ref": "cr-ref-product-5",
+   "why": "its paired ancestor holds 5 img live against 0 on the draft",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-94",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "no painted words (an image, an icon or an empty wrapper)",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-96",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "no painted words (an image, an icon or an empty wrapper)",
+   "state": "accordion-open"
   },
   {
    "ref": "cr-ref-product-98",
-   "why": "no painted words (an image, an icon or an empty wrapper)"
+   "why": "no painted words (an image, an icon or an empty wrapper)",
+   "state": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3)",
+   "why": "only 75% of its words matched the draft",
+   "words": 4,
+   "matched": 3,
+   "first": "lens",
+   "last": "mm",
+   "state": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-25",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 1,
+   "first": "mm",
+   "last": "mm",
+   "state": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-29",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(5)",
+   "why": "only 75% of its words matched the draft",
+   "words": 4,
+   "matched": 3,
+   "first": "temple",
+   "last": "mm",
+   "state": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-31",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 1,
+   "first": "mm",
+   "last": "mm",
+   "state": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
+   "why": "only 76% of its words matched the draft",
+   "words": 110,
+   "matched": 84,
+   "first": "description",
+   "last": "repairs",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-71",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2)",
+   "why": "only 70% of its words matched the draft",
+   "words": 88,
+   "matched": 62,
+   "first": "this",
+   "last": "fit.",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-77",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 2,
+   "first": "lens",
+   "last": "width",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-76",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1)",
+   "why": "only 62% of its words matched the draft",
+   "words": 13,
+   "matched": 8,
+   "first": "lens",
+   "last": "its",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-75",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3)",
+   "why": "only 60% of its words matched the draft",
+   "words": 43,
+   "matched": 26,
+   "first": "lens",
+   "last": "to",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-78",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 1,
+   "first": "mm",
+   "last": "mm",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-79",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > span:nth-child(3) > span:nth-child(1)",
+   "why": "only 56% of its words matched the draft",
+   "words": 9,
+   "matched": 5,
+   "first": "across",
+   "last": "its",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-81",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 1,
+   "matched": 1,
+   "first": "bridge",
+   "last": "bridge",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-80",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2)",
+   "why": "only 67% of its words matched the draft",
+   "words": 15,
+   "matched": 10,
+   "first": "bridge",
+   "last": "nose.",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-82",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 2,
+   "first": "17",
+   "last": "mm",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-83",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > span:nth-child(3) > span:nth-child(1)",
+   "why": "only 58% of its words matched the draft",
+   "words": 12,
+   "matched": 7,
+   "first": "the",
+   "last": "nose.",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-85",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 1,
+   "first": "temple",
+   "last": "temple",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-84",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 15,
+   "matched": 8,
+   "first": "temple",
+   "last": "to",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-86",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 2,
+   "matched": 1,
+   "first": "mm",
+   "last": "mm",
+   "state": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-87",
+   "draft": null,
+   "why": "no draft element holds its words",
+   "words": 11,
+   "matched": 6,
+   "first": "the",
+   "last": "to",
+   "state": "tab-sizing"
   }
  ],
  "keptPairs": [
@@ -361,29 +472,8 @@
    "words": 5,
    "matched": 5,
    "first": "home",
-   "last": "gucci"
-  },
-  {
-   "ref": "cr-ref-product-4",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
-   "why": null,
-   "words": 107,
-   "matched": 99,
-   "first": "save",
-   "last": "them."
-  },
-  {
-   "ref": "cr-ref-product-5",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > a:nth-child(1) > span:nth-child(1)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(gucci)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "gucci",
-   "last": "gucci"
+   "last": "gucci",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-6",
@@ -392,7 +482,22 @@
    "words": 2,
    "matched": 2,
    "first": "oversized",
-   "last": "cat-eye"
+   "last": "cat-eye",
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-product-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(oversized|cat-eye|gg1566s|·|001|£289|rrp|£340|you|save|£51|in|stock|—|dispatched|next|working|day|colour|ivory|black|havana|size|which|am|i\\?|m|add|my|prescription|from|\\+£59|to|bag|as|they|are|need|advice\\?|message|me|on|whatsapp|i'm|an|optician,|and|happy|help\\.|genuine|boxed|with|the|brand's|own|case,|cloth|two-year|guarantee\\.|free|uk|delivery|over|£75,|or|collect|birmingham|i'll|adjust|them|fit|while|wait\\.|adjustments,|tightening|re-fitting|for|long|them\\.)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 104,
+   "matched": 99,
+   "first": "oversized",
+   "last": "them.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-7",
@@ -405,7 +510,8 @@
    "words": 3,
    "matched": 3,
    "first": "gg1566s",
-   "last": "001"
+   "last": "001",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-9",
@@ -414,7 +520,8 @@
    "words": 15,
    "matched": 15,
    "first": "need",
-   "last": "help."
+   "last": "help.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-10",
@@ -423,7 +530,8 @@
    "words": 43,
    "matched": 43,
    "first": "genuine",
-   "last": "them."
+   "last": "them.",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-12",
@@ -432,7 +540,8 @@
    "words": 128,
    "matched": 122,
    "first": "description",
-   "last": "varifocal"
+   "last": "varifocal",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-14",
@@ -441,7 +550,8 @@
    "words": 125,
    "matched": 119,
    "first": "the",
-   "last": "varifocal"
+   "last": "varifocal",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-13",
@@ -450,7 +560,8 @@
    "words": 125,
    "matched": 119,
    "first": "the",
-   "last": "varifocal"
+   "last": "varifocal",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-89",
@@ -459,7 +570,8 @@
    "words": 3,
    "matched": 3,
    "first": "good",
-   "last": "know"
+   "last": "know",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-88",
@@ -468,7 +580,8 @@
    "words": 19,
    "matched": 19,
    "first": "good",
-   "last": "repairs"
+   "last": "repairs",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-111",
@@ -477,24 +590,1184 @@
    "words": 2,
    "matched": 2,
    "first": "similar",
-   "last": "shapes"
+   "last": "shapes",
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-product-114",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-product-113",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-product-112",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "opening"
   },
   {
    "ref": "cr-ref-product-2",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
    "why": null,
-   "words": 299,
-   "matched": 262,
+   "words": 266,
+   "matched": 255,
    "first": null,
    "last": null,
    "group": {
     "paths": [
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
      "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)"
     ]
-   }
+   },
+   "scope": "opening"
+  },
+  {
+   "ref": "cr-ref-product-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "home",
+   "last": "gucci",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > h1:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "oversized",
+   "last": "cat-eye",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(oversized|cat-eye|gg1566s|·|001|£289|rrp|£340|you|save|£51|in|stock|—|dispatched|next|working|day|colour|ivory|black|havana|size|which|am|i\\?|m|add|my|prescription|from|\\+£59|to|bag|as|they|are|need|advice\\?|message|me|on|whatsapp|i'm|an|optician,|and|happy|help\\.|genuine|boxed|with|the|brand's|own|case,|cloth|two-year|guarantee\\.|free|uk|delivery|over|£75,|or|collect|birmingham|i'll|adjust|them|fit|while|wait\\.|adjustments,|tightening|re-fitting|for|long|them\\.)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 104,
+   "matched": 99,
+   "first": "oversized",
+   "last": "them.",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(3) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(gg1566s|·|001)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "gg1566s",
+   "last": "001",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > a:nth-child(10) > span:nth-child(2)",
+   "why": null,
+   "words": 15,
+   "matched": 15,
+   "first": "need",
+   "last": "help.",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(11)",
+   "why": null,
+   "words": 43,
+   "matched": 43,
+   "first": "genuine",
+   "last": "them.",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 69,
+   "matched": 67,
+   "first": "description",
+   "last": "days",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-18",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(brand)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "brand",
+   "last": "brand",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "brand",
+   "last": "gucci",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 66,
+   "matched": 64,
+   "first": "brand",
+   "last": "days",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-15",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 66,
+   "matched": 64,
+   "first": "brand",
+   "last": "days",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-19",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(gucci)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "gucci",
+   "last": "gucci",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-21",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "model",
+   "last": "code",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "model",
+   "last": "001",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-22",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "gg1566s",
+   "last": "001",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-24",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "lens",
+   "last": "width",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-27",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(bridge)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "bridge",
+   "last": "bridge",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "bridge",
+   "last": "mm",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-28",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(4) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(17|mm)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "17",
+   "last": "mm",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-30",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(5) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "temple",
+   "last": "length",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(6) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(style)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "style",
+   "last": "style",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-32",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(6)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "style",
+   "last": "cat-eye",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(6) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(cat-eye)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "cat-eye",
+   "last": "cat-eye",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "frame",
+   "last": "type",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-35",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(7)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "frame",
+   "last": "rim",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-37",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(7) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(full|rim)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "full",
+   "last": "rim",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-39",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(8) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(material)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "material",
+   "last": "material",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-38",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(8)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "material",
+   "last": "acetate",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-40",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(8) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(acetate)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "acetate",
+   "last": "acetate",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-42",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(9) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(hinge)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "hinge",
+   "last": "hinge",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-41",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(9)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "hinge",
+   "last": "barrel",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-43",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(9) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "standard",
+   "last": "barrel",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-45",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(10) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "nose",
+   "last": "pads",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-44",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(10)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "nose",
+   "last": "bridge",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-46",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(10) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "moulded",
+   "last": "bridge",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-48",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(11) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "lenses",
+   "last": "supplied",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-47",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(11)",
+   "why": null,
+   "words": 6,
+   "matched": 6,
+   "first": "lenses",
+   "last": "2",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-49",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(11) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "tinted,",
+   "last": "2",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-51",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(12) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "uv",
+   "last": "protection",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-50",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(12)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "uv",
+   "last": "uv400",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-52",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(12) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "100%",
+   "last": "uv400",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-54",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(13) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "prescription",
+   "last": "prescription",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-53",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(13)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "prescription",
+   "last": "varifocal",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-55",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(13) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "single",
+   "last": "varifocal",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-57",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(14) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(gender)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "gender",
+   "last": "gender",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-56",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(14)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "gender",
+   "last": "women",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-58",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(14) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(women)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "women",
+   "last": "women",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-60",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(15) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "availability",
+   "last": "availability",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-59",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(15)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "availability",
+   "last": "stock",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-61",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(15) > div:nth-child(2) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(in|stock)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "in",
+   "last": "stock",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-63",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(16) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "warranty",
+   "last": "warranty",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-62",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(16)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "warranty",
+   "last": "manufacturer",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-64",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(16) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "2",
+   "last": "manufacturer",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-66",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(17) > div:nth-child(1) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(dispatch)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "dispatch",
+   "last": "dispatch",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-65",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(17)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "dispatch",
+   "last": "day",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-67",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(17) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "1",
+   "last": "day",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-69",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(18) > div:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "with",
+   "last": "lenses",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-68",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(18)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "with",
+   "last": "days",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-70",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(18) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "7–10",
+   "last": "days",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-89",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > h2:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "good",
+   "last": "know",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-88",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 19,
+   "matched": 19,
+   "first": "good",
+   "last": "repairs",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-111",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > h2:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "similar",
+   "last": "shapes",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-114",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-113",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-112",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 207,
+   "matched": 200,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)"
+    ]
+   },
+   "scope": "tab-details"
+  },
+  {
+   "ref": "cr-ref-product-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "home",
+   "last": "gucci",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 229,
+   "matched": 198,
+   "first": "home",
+   "last": "£296",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 229,
+   "matched": 198,
+   "first": "home",
+   "last": "£296",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > h1:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "oversized",
+   "last": "cat-eye",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(oversized|cat-eye|gg1566s|·|001|£289|rrp|£340|you|save|£51|in|stock|—|dispatched|next|working|day|colour|ivory|black|havana|size|which|am|i\\?|m|add|my|prescription|from|\\+£59|to|bag|as|they|are|need|advice\\?|message|me|on|whatsapp|i'm|an|optician,|and|happy|help\\.|genuine|boxed|with|the|brand's|own|case,|cloth|two-year|guarantee\\.|free|uk|delivery|over|£75,|or|collect|birmingham|i'll|adjust|them|fit|while|wait\\.|adjustments,|tightening|re-fitting|for|long|them\\.)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 104,
+   "matched": 99,
+   "first": "oversized",
+   "last": "them.",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(3) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(gg1566s|·|001)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "gg1566s",
+   "last": "001",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > a:nth-child(10) > span:nth-child(2)",
+   "why": null,
+   "words": 15,
+   "matched": 15,
+   "first": "need",
+   "last": "help.",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(11)",
+   "why": null,
+   "words": 43,
+   "matched": 43,
+   "first": "genuine",
+   "last": "them.",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-73",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "this",
+   "last": "measured",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-72",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 7,
+   "matched": 7,
+   "first": "this",
+   "last": "i?",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-74",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > button:nth-child(2)",
+   "why": null,
+   "words": 4,
+   "matched": 4,
+   "first": "which",
+   "last": "i?",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-89",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > h2:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "good",
+   "last": "know",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-111",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > h2:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "similar",
+   "last": "shapes",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-114",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-113",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-112",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "tab-sizing"
+  },
+  {
+   "ref": "cr-ref-product-3",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
+   "why": null,
+   "words": 5,
+   "matched": 5,
+   "first": "home",
+   "last": "gucci",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-6",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > h1:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "oversized",
+   "last": "cat-eye",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-4",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(oversized|cat-eye|gg1566s|·|001|£289|rrp|£340|you|save|£51|in|stock|—|dispatched|next|working|day|colour|ivory|black|havana|size|which|am|i\\?|m|add|my|prescription|from|\\+£59|to|bag|as|they|are|need|advice\\?|message|me|on|whatsapp|i'm|an|optician,|and|happy|help\\.|genuine|boxed|with|the|brand's|own|case,|cloth|two-year|guarantee\\.|free|uk|delivery|over|£75,|or|collect|birmingham|i'll|adjust|them|fit|while|wait\\.|adjustments,|tightening|re-fitting|for|long|them\\.)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 104,
+   "matched": 99,
+   "first": "oversized",
+   "last": "them.",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-7",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(3) > span:nth-child(1)",
+   "textRun": {
+    "direct": true,
+    "match": "(^|[^\\p{L}\\p{N}])(gg1566s|·|001)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "gg1566s",
+   "last": "001",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > a:nth-child(10) > span:nth-child(2)",
+   "why": null,
+   "words": 15,
+   "matched": 15,
+   "first": "need",
+   "last": "help.",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(11)",
+   "why": null,
+   "words": 43,
+   "matched": 43,
+   "first": "genuine",
+   "last": "them.",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1)",
+   "why": null,
+   "words": 128,
+   "matched": 122,
+   "first": "description",
+   "last": "varifocal",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-14",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 125,
+   "matched": 119,
+   "first": "the",
+   "last": "varifocal",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-13",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(1) > div:nth-child(2)",
+   "why": null,
+   "words": 125,
+   "matched": 119,
+   "first": "the",
+   "last": "varifocal",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-89",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > h2:nth-child(1)",
+   "why": null,
+   "words": 3,
+   "matched": 3,
+   "first": "good",
+   "last": "know",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-88",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 54,
+   "matched": 54,
+   "first": "good",
+   "last": "repairs",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-91",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 41,
+   "matched": 41,
+   "first": "will",
+   "last": "one.",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-92",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > span:nth-child(1)",
+   "why": null,
+   "words": 35,
+   "matched": 35,
+   "first": "yes",
+   "last": "one.",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-111",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > h2:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "similar",
+   "last": "shapes",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-114",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-113",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-112",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)",
+   "textRun": {
+    "direct": false,
+    "match": "(^|[^\\p{L}\\p{N}])(photo|to|come|save|£57|symbole|£239|£296)($|[^\\p{L}\\p{N}])"
+   },
+   "why": null,
+   "words": 8,
+   "matched": 8,
+   "first": "photo",
+   "last": "£296",
+   "scope": "accordion-open"
+  },
+  {
+   "ref": "cr-ref-product-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 301,
+   "matched": 290,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > nav:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(3)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > section:nth-child(5)"
+    ]
+   },
+   "scope": "accordion-open"
   }
  ]
 }

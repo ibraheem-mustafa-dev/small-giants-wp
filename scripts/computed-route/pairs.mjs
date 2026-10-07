@@ -273,10 +273,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			run.retarget.forEach( ( v, k ) => retarget.set( k, v ) );
 			run.duplicate.forEach( ( r ) => duplicate.add( r ) );
 			run.measured.forEach( ( r ) => measured.add( r ) );
-			// A pair judged in several states is a mispair when any state says so.
+			// A pair judged in several states is a mispair when any state says so. A pair the config declares `text: false`
+			// is never judged, so its verdict carries no counts or split list.
 			run.handScope.forEach( ( v ) => {
 				const prev = scopeBy.get( v.name );
-				scopeBy.set( v.name, prev ? { ...prev, ok: prev.ok && v.ok, checked: prev.checked + v.checked, split: [ ...prev.split, ...v.split ], why: prev.why || v.why } : v );
+				scopeBy.set( v.name, prev ? { ...prev, ok: prev.ok && v.ok, checked: ( prev.checked || 0 ) + ( v.checked || 0 ), split: [ ...( prev.split || [] ), ...( v.split || [] ) ], why: prev.why || v.why } : v );
 			} );
 			Object.keys( run.boxes ).filter( ( r ) => r.startsWith( prefix ) ).forEach( ( r ) => allRefs.add( r ) );
 			lifted = run.lifted;
