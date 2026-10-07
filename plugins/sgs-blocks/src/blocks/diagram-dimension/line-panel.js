@@ -58,7 +58,7 @@ export default function LinePanel( { attributes, setAttributes, endpoints, onOri
 	return (
 			<PanelBody title={ __( 'Line', 'sgs-blocks' ) } initialOpen={ false }>
 				<ToolsPanel
-					label={ __( 'Line', 'sgs-blocks' ) }
+					label={ __( 'Line style', 'sgs-blocks' ) }
 					resetAll={ () => setAttributes( { ...LINE_DEFAULTS } ) }
 				>
 					<ToolsPanelItem

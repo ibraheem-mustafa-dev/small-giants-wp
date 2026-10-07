@@ -173,6 +173,8 @@ require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-info-toggle.php';
+// sgs/measured-diagram + sgs/diagram-dimension (and their geometry twin).
+require_once __DIR__ . '/helpers-measured-diagram.php';
 require_once __DIR__ . '/helpers-brand-glyphs.php';
 require_once __DIR__ . '/helpers-brand-logo.php';
 require_once __DIR__ . '/helpers-button-note.php';

@@ -33,9 +33,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once SGS_BLOCKS_PATH . 'includes/render-helpers.php';
-require_once SGS_BLOCKS_PATH . 'includes/helpers-measured-diagram.php';
-
 // ── Drawing (media-element atoms, prefix `drawing`) ─────────────────────────
 $sgs_md_image_url  = isset( $attributes['drawingImageUrl'] ) ? (string) $attributes['drawingImageUrl'] : '';
 $sgs_md_decorative = ! empty( $attributes['drawingImageDecorative'] );

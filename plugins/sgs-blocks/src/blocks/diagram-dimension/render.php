@@ -46,9 +46,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once SGS_BLOCKS_PATH . 'includes/render-helpers.php';
-require_once SGS_BLOCKS_PATH . 'includes/helpers-measured-diagram.php';
-
 $sgs_dd_context = ( $block instanceof WP_Block ) ? $block->context : array();
 list( $sgs_dd_w, $sgs_dd_h ) = sgs_measured_diagram_box(
 	$sgs_dd_context['sgs/measuredDiagramWidth'] ?? null,
