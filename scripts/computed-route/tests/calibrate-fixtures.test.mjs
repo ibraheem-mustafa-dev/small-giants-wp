@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildTree, planInstances } from '../lib/calibrate.mjs';
+import { buildTree, planInstances, preconditionsFor } from '../lib/calibrate.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -117,5 +117,21 @@ test( 'every fixture variant names only attributes its block declares (or an ext
 				assert.ok( declared.has( k ) || /^sgs[A-Z]/.test( k ), `${ block } variant names undeclared attribute ${ k }` );
 			}
 		}
+		// A per-setting precondition names a declared setting and declared attributes only.
+		for ( const [ setting, attrs ] of Object.entries( fx.preconditions || {} ) ) {
+			assert.ok( declared.has( setting ), `${ block } precondition for undeclared setting ${ setting }` );
+			for ( const k of Object.keys( attrs ) ) {
+				assert.ok( declared.has( k ), `${ block } precondition sets undeclared attribute ${ k }` );
+			}
+		}
 	}
+} );
+
+test( 'MUST FAIL ON REVERT (hero splitMediaWidth dead): a fixture precondition puts the gating attribute on the setting\'s instance', () => {
+	const schema = { splitMediaWidth: { type: 'object' }, splitMediaObjectFit: { type: 'string', default: 'cover' } };
+	const ctx = { settingPreconditions: FX[ 'sgs/hero' ].preconditions };
+	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaWidth', css_property: 'width' }, schema, { splitMediaObjectFit: 'cover' }, ctx ), { splitMediaObjectFit: 'custom' } );
+	// Another setting is untouched, and an instance already holding the value gets nothing extra.
+	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaHeight', css_property: 'height' }, schema, {}, ctx ), {} );
+	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaWidth', css_property: 'width' }, schema, { splitMediaObjectFit: 'custom' }, ctx ), {} );
 } );

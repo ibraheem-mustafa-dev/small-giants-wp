@@ -114,7 +114,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
 	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
 	const variant = variantInfo( db, block );
-	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx: { ...variant, image } } );
+	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx: { ...variant, image, settingPreconditions: fixture.preconditions || {} } } );
 	// Text, presence and link settings paint no CSS property, so attrsFor never returns them: they are queried by role
 	// and planned apart (lib/calibrate-content.mjs), then read for existence, text and link attributes.
 	const contentPlan = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx: { ...variant, image } } );

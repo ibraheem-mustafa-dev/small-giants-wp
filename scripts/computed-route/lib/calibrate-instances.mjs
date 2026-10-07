@@ -70,6 +70,13 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 			}
 		}
 	}
+	// A setting the render gates on another attribute's value that no toggle or variant names (hero's splitMediaWidth
+	// paints only under splitMediaObjectFit 'custom'): the block's fixture lists it under `preconditions`.
+	for ( const [ attr, value ] of Object.entries( ctx.settingPreconditions?.[ row.attr_name ] || {} ) ) {
+		if ( schema[ attr ] && current[ attr ] !== value ) {
+			out[ attr ] = value;
+		}
+	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
 	Object.assign( out, borderPartners( row.attr_name, first, schema ) );
 	Object.assign( out, shadowPartners( row.attr_name, first, schema ) );
