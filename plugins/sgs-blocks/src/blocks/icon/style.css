@@ -202,6 +202,11 @@
  * carries the alignment modifier, then flex + justify-content moves the whole
  * icon unit (glyph + background shape together).
  *
+ * The front end renders ONE element that is both `.wp-block-sgs-icon` and
+ * `.sgs-icon`, so the modifier sits on the root itself and `:has()` never matches
+ * there: the root is turned block-level (its width stays the icon size) and auto
+ * margins on the inline axis place it, following the writing direction.
+ *
  * :has() is supported in all evergreen browsers (Chrome 105+, Firefox 121+,
  * Safari 15.4+). Older browsers fall back to start alignment (acceptable degradation).
  */
@@ -213,6 +218,16 @@
 .wp-block-sgs-icon:has(.sgs-icon--align-end) {
 	display: flex;
 	justify-content: flex-end;
+}
+
+.sgs-icon.sgs-icon--align-center {
+	display: flex;
+	margin-inline: auto;
+}
+
+.sgs-icon.sgs-icon--align-end {
+	display: flex;
+	margin-inline-start: auto;
 }
 
 /* ── Editor preview placeholder ─────────────────────────────────────────── */
