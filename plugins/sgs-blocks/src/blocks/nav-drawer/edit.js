@@ -78,7 +78,7 @@ const BG_ATTACHMENT_OPTIONS = [
 	{ label: __( 'Scroll', 'sgs-blocks' ), value: 'scroll' },
 	{ label: __( 'Fixed', 'sgs-blocks' ), value: 'fixed' },
 ];
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
+import { LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl, IconPicker, IconPreview, TypographyControls, StarterLookPresetControl,
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
@@ -106,9 +106,9 @@ const TEMPLATE = [
 
 /** drawerAlign → align-items (mirrors render.php). */
 const ALIGN_ITEMS = {
-	left: 'flex-start',
+	start: 'flex-start',
 	center: 'center',
-	right: 'flex-end',
+	end: 'flex-end',
 	stretch: 'stretch',
 };
 
@@ -937,19 +937,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanel>
 
 					{ /* Layout */ }
-					<ToggleGroupControl
+					<LogicalAlignControl
 						label={ __( 'Content alignment', 'sgs-blocks' ) }
 						value={ drawerAlign }
-						onChange={ ( value ) => setAttributes( { drawerAlign: value || 'left' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="right" label={ __( 'Right', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="stretch" label={ __( 'Full width', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
+						withStretch
+						onChange={ ( value ) => setAttributes( { drawerAlign: value } ) }
+					/>
 
 					<ResponsiveControl label={ __( 'Inner element spacing', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (

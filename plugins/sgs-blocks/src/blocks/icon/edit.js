@@ -3,7 +3,6 @@ import {
 	useBlockProps,
 	InspectorControls,
 	BlockControls,
-	AlignmentControl,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -11,7 +10,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { LogicalAlignToolbar, SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
 
 /**
@@ -125,7 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		sizeModifier( iconSize ),
 		backgroundShape !== 'none' && `sgs-icon--bg-${ backgroundShape }`,
 		`align${ blockAlign }`,
-		iconAlign && iconAlign !== 'left' && `sgs-icon--align-${ iconAlign }`,
+		iconAlign && iconAlign !== 'start' && `sgs-icon--align-${ iconAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -200,10 +199,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<BlockControls group="block">
-				<AlignmentControl
+				<LogicalAlignToolbar
 					value={ iconAlign }
 					onChange={ ( val ) =>
-						setAttributes( { iconAlign: val || 'left' } )
+						setAttributes( { iconAlign: val } )
 					}
 				/>
 			</BlockControls>

@@ -179,7 +179,7 @@
                   "maxWidth": {
                     "desktop": "180px"
                   },
-                  "alignment": "left",
+                  "alignment": "start",
                   "metadata": {
                     "bindings": {
                       "imageUrl": {

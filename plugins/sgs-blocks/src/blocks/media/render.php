@@ -61,9 +61,9 @@ $object_position     = isset( $attributes['objectPosition'] ) ? (string) $attrib
 // via $sgs_media_atom_css) replaces the hand-rolled $opacity/$box_shadow*
 // reads and the base+hover box-shadow rules this file used to build here.
 
-$allowed_alignments = array( 'left', 'center', 'right' );
-$alignment_raw      = $attributes['alignment'] ?? 'left';
-$alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'left';
+$allowed_alignments = array( 'start', 'center', 'end' );
+$alignment_raw      = $attributes['alignment'] ?? 'start';
+$alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'start';
 
 // `order` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
 // {desktop,tablet,mobile}. Read the object through the shared normaliser so a
@@ -277,9 +277,9 @@ if ( $media_base_decls ) {
 // ---------------------------------------------------------------------------
 $wrap_base_decls = array();
 if ( 'center' === $alignment ) {
-	$wrap_base_decls[] = 'margin-left:auto;margin-right:auto';
-} elseif ( 'right' === $alignment ) {
-	$wrap_base_decls[] = 'margin-left:auto';
+	$wrap_base_decls[] = 'margin-inline-start:auto;margin-inline-end:auto';
+} elseif ( 'end' === $alignment ) {
+	$wrap_base_decls[] = 'margin-inline-start:auto';
 }
 $wrap_base_css = '';
 if ( $wrap_base_decls ) {

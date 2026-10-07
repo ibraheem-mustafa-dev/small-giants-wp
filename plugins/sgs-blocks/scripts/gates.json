@@ -1426,5 +1426,23 @@
     "added_commit": null,
     "budget_ms": 800,
     "order": 157
+  },
+  {
+    "id": "migrate-box-alignment",
+    "cmd": "python scripts/migrate-box-alignment.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 158
+  },
+  {
+    "id": "migrate-box-alignment-selftest",
+    "cmd": "python scripts/migrate-box-alignment.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 159
   }
 ]

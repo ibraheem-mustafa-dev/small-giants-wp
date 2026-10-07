@@ -537,11 +537,11 @@
 		},
 		"alignment": {
 			"type": "string",
-			"default": "left",
+			"default": "start",
 			"enum": [
-				"left",
+				"start",
 				"center",
-				"right"
+				"end"
 			]
 		},
 		"order": {

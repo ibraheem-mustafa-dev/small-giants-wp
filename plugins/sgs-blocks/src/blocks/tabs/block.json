@@ -176,11 +176,11 @@
 		},
 		"tabAlignment": {
 			"type": "string",
-			"default": "left",
+			"default": "start",
 			"enum": [
-				"left",
+				"start",
 				"center",
-				"right",
+				"end",
 				"stretch"
 			]
 		},
@@ -470,7 +470,7 @@
 		"attributes": {
 			"orientation": "horizontal",
 			"tabStyle": "underline",
-			"tabAlignment": "left"
+			"tabAlignment": "start"
 		},
 		"innerBlocks": [
 			{

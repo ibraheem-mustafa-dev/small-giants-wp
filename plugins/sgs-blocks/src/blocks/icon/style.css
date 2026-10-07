@@ -203,14 +203,14 @@
  * icon unit (glyph + background shape together).
  *
  * :has() is supported in all evergreen browsers (Chrome 105+, Firefox 121+,
- * Safari 15.4+). Older browsers fall back to left alignment (acceptable degradation).
+ * Safari 15.4+). Older browsers fall back to start alignment (acceptable degradation).
  */
 .wp-block-sgs-icon:has(.sgs-icon--align-center) {
 	display: flex;
 	justify-content: center;
 }
 
-.wp-block-sgs-icon:has(.sgs-icon--align-right) {
+.wp-block-sgs-icon:has(.sgs-icon--align-end) {
 	display: flex;
 	justify-content: flex-end;
 }

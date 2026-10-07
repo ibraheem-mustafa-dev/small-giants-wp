@@ -85,7 +85,7 @@ $colour = $attributes['colour'] ?? '';
 $opacity_raw = $attributes['opacity'] ?? 100;
 $opacity     = is_numeric( $opacity_raw ) ? max( 0, min( 100, (float) $opacity_raw ) ) : 100;
 
-$allowed_alignments = array( 'left', 'center', 'right' );
+$allowed_alignments = array( 'start', 'center', 'end' );
 $alignment_raw      = $attributes['alignment'] ?? 'center';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'center';
 
@@ -238,18 +238,18 @@ if ( '' !== $width_css ) {
 
 $alignment_decls = array();
 switch ( $alignment ) {
-	case 'left':
-		$alignment_decls[] = 'margin-left:0';
-		$alignment_decls[] = 'margin-right:auto';
+	case 'start':
+		$alignment_decls[] = 'margin-inline-start:0';
+		$alignment_decls[] = 'margin-inline-end:auto';
 		break;
-	case 'right':
-		$alignment_decls[] = 'margin-left:auto';
-		$alignment_decls[] = 'margin-right:0';
+	case 'end':
+		$alignment_decls[] = 'margin-inline-start:auto';
+		$alignment_decls[] = 'margin-inline-end:0';
 		break;
 	case 'center':
 	default:
-		$alignment_decls[] = 'margin-left:auto';
-		$alignment_decls[] = 'margin-right:auto';
+		$alignment_decls[] = 'margin-inline-start:auto';
+		$alignment_decls[] = 'margin-inline-end:auto';
 		break;
 }
 $scoped_css[] = "{$root_sel}{" . implode( ';', $alignment_decls ) . ';}';

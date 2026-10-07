@@ -38,7 +38,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // declaration. Mirrors sgs/hero.
 $orientation = $attributes['orientation'] ?? 'horizontal';
 $tab_style   = $attributes['tabStyle'] ?? 'underline';
-$tab_align   = $attributes['tabAlignment'] ?? 'left';
+$tab_align   = in_array( $attributes['tabAlignment'] ?? 'start', array( 'start', 'center', 'end', 'stretch' ), true )
+	? $attributes['tabAlignment']
+	: 'start';
 $transition  = isset( $attributes['transitionDuration'] )
 	? (int) $attributes['transitionDuration']
 	: 200;

@@ -23,7 +23,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
+import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -37,12 +37,6 @@ const LINE_STYLE_OPTIONS = [
 	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
 	{ label: __( 'None (invisible)', 'sgs-blocks' ), value: 'none' },
-];
-
-const ALIGNMENT_OPTIONS = [
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 ];
 
 const CONTENT_MODE_OPTIONS = [
@@ -92,13 +86,13 @@ function parseUnit( raw, currentUnit ) {
 
 // Alignment → margin preview (mirrors render.php's alignment decl builder).
 function alignmentMargin( alignment ) {
-	if ( 'left' === alignment ) {
-		return { marginLeft: 0, marginRight: 'auto' };
+	if ( 'start' === alignment ) {
+		return { marginInlineStart: 0, marginInlineEnd: 'auto' };
 	}
-	if ( 'right' === alignment ) {
-		return { marginLeft: 'auto', marginRight: 0 };
+	if ( 'end' === alignment ) {
+		return { marginInlineStart: 'auto', marginInlineEnd: 0 };
 	}
-	return { marginLeft: 'auto', marginRight: 'auto' };
+	return { marginInlineStart: 'auto', marginInlineEnd: 'auto' };
 }
 
 // The per-source attribute that holds the content icon's identifier
@@ -301,19 +295,17 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<SelectControl
+					<LogicalAlignControl
 						label={ __( 'Alignment', 'sgs-blocks' ) }
 						help={ __(
 							'Position when width is less than 100%.',
 							'sgs-blocks'
 						) }
 						value={ alignment }
-						options={ ALIGNMENT_OPTIONS }
+						defaultValue="center"
 						onChange={ ( val ) =>
 							setAttributes( { alignment: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 

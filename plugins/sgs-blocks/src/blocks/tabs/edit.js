@@ -17,7 +17,8 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { SgsColourPanel,
+import { LogicalAlignControl,
+	SgsColourPanel,
 	SgsBorderControl,
 	SgsBoxControl,
 	SgsLengthControl,
@@ -37,13 +38,6 @@ const TEMPLATE = [
 const ORIENTATION_OPTIONS = [
 	{ label: __( 'Horizontal', 'sgs-blocks' ), value: 'horizontal' },
 	{ label: __( 'Vertical', 'sgs-blocks' ), value: 'vertical' },
-];
-
-const ALIGNMENT_OPTIONS = [
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
 const STYLE_OPTIONS = [
@@ -416,15 +410,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<LogicalAlignControl
 						label={ __( 'Tab alignment', 'sgs-blocks' ) }
 						value={ tabAlignment }
-						options={ ALIGNMENT_OPTIONS }
+						withStretch
 						onChange={ ( val ) =>
 							setAttributes( { tabAlignment: val } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<SelectControl
 						label={ __( 'Tab style', 'sgs-blocks' ) }

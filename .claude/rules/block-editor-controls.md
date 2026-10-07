@@ -169,3 +169,13 @@ that wraps, auto-fits, or whose items it does not own (native `column-rule` / `r
 block's own grid, so a block's OTHER list takes its own name (`featureSeparators`), and a block whose grid is a child element
 (post-grid, gallery) calls the helper itself and hands the wrapper no `separators`. Design and measurements:
 `.claude/plans/archive/2026-10-01-separators-plan.md`.
+
+## Box alignment — `LogicalAlignControl` is the one control
+
+A block's horizontal alignment is stored as `start | center | end` (plus `stretch` where the block allows it), never
+`left | right`, so a right-to-left site flips with no second setting. Mount `<LogicalAlignControl>`
+(`src/components/LogicalAlignControl.js`, `withStretch` for the fourth option) in the inspector, or
+`<LogicalAlignToolbar>` for a toolbar. Render with logical margins (`margin-inline-start|end:auto`) or flex
+`justify-content`/`align-items`, which already follow the direction. Detector and gate: `scripts/migrate-box-alignment.py`
+(`--survey`/`--fix`/`--check`/`--self-test`, registered in `scripts/gates.json`); it covers `icon.iconAlign`,
+`media.alignment`, `separator.alignment`, `nav-drawer.drawerAlign` and `tabs.tabAlignment`.

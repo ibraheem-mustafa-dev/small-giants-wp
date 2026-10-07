@@ -89,11 +89,6 @@
       "disposition": "accepted-debt"
     },
     {
-      "block": "media",
-      "attr": "alignment",
-      "disposition": "accepted-debt"
-    },
-    {
       "block": "nav-drawer",
       "attr": "backgroundAttachment",
       "disposition": "accepted-debt"
@@ -156,11 +151,6 @@
     {
       "block": "tabs",
       "attr": "orientation",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "tabs",
-      "attr": "tabAlignment",
       "disposition": "accepted-debt"
     },
     {

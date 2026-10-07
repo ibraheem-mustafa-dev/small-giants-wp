@@ -11,10 +11,10 @@ import {
 	PanelBody,
 	Button,
 	TextControl,
-	SelectControl,
 	Notice,
 } from '@wordpress/components';
 import {
+	LogicalAlignControl,
 	SgsColourPanel,
 	textRow,
 	MediaPanelLayout,
@@ -90,8 +90,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// alignment margins (render.php step 6) and the flex/grid item order.
 	const orderAtTier = resolveTier( attributes.order, previewTier ).value;
 	const placementStyle = {
-		...( 'center' === attributes.alignment ? { marginLeft: 'auto', marginRight: 'auto' } : {} ),
-		...( 'right' === attributes.alignment ? { marginLeft: 'auto' } : {} ),
+		...( 'center' === attributes.alignment ? { marginInlineStart: 'auto', marginInlineEnd: 'auto' } : {} ),
+		...( 'end' === attributes.alignment ? { marginInlineStart: 'auto' } : {} ),
 		...( '' !== orderAtTier && null != orderAtTier ? { order: parseInt( orderAtTier, 10 ) } : {} ),
 	};
 	const blockProps = useBlockProps( { style: placementStyle } );
@@ -311,7 +311,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ ( isImage || isVideo ) && (
 				<ToolsPanel
 					label={ __( 'Media Styling', 'sgs-blocks' ) }
-					resetAll={ () => setAttributes( { alignment: 'left', order: {} } ) }
+					resetAll={ () => setAttributes( { alignment: 'start', order: {} } ) }
 				>
 					<ToolsPanelItem
 						label={ __( 'Order', 'sgs-blocks' ) }
@@ -353,35 +353,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ToolsPanelItem
 						label={ __( 'Alignment', 'sgs-blocks' ) }
 						hasValue={ () =>
-							( attributes.alignment || 'left' ) !== 'left'
+							( attributes.alignment || 'start' ) !== 'start'
 						}
 						onDeselect={ () =>
-							setAttributes( { alignment: 'left' } )
+							setAttributes( { alignment: 'start' } )
 						}
 						isShownByDefault
 					>
-						<SelectControl
-							label={ __( 'Alignment', 'sgs-blocks' ) }
-							value={ attributes.alignment || 'left' }
-							options={ [
-								{
-									label: __( 'Left', 'sgs-blocks' ),
-									value: 'left',
-								},
-								{
-									label: __( 'Centre', 'sgs-blocks' ),
-									value: 'center',
-								},
-								{
-									label: __( 'Right', 'sgs-blocks' ),
-									value: 'right',
-								},
-							] }
+						<LogicalAlignControl
+							value={ attributes.alignment }
 							onChange={ ( value ) =>
 								setAttributes( { alignment: value } )
 							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

@@ -159,10 +159,10 @@ if ( 'dashicon' === $icon_source ) {
 }
 
 // ── Alignment ─────────────────────────────────────────────────────────────────
-$allowed_aligns = array( 'left', 'center', 'right' );
-$icon_align     = $attributes['iconAlign'] ?? 'left';
+$allowed_aligns = array( 'start', 'center', 'end' );
+$icon_align     = $attributes['iconAlign'] ?? 'start';
 if ( ! in_array( $icon_align, $allowed_aligns, true ) ) {
-	$icon_align = 'left';
+	$icon_align = 'start';
 }
 
 $text_align          = $attributes['textAlign'] ?? '';
@@ -212,8 +212,8 @@ if ( 'none' !== $bg_shape ) {
 		$classes[] = 'sgs-icon--bg-' . $bg_shape;
 	}
 }
-// Alignment modifier — only add non-default class; 'left' is the default (no modifier needed).
-if ( 'left' !== $icon_align ) {
+// Alignment modifier — only add non-default class; 'start' is the default (no modifier needed).
+if ( 'start' !== $icon_align ) {
 	$classes[] = 'sgs-icon--align-' . $icon_align;
 }
 

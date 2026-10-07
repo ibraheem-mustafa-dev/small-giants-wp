@@ -140,9 +140,9 @@
 		"alignment": {
 			"type": "string",
 			"enum": [
-				"left",
+				"start",
 				"center",
-				"right"
+				"end"
 			],
 			"default": "center"
 		},

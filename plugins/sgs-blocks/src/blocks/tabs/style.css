@@ -58,7 +58,7 @@
 	justify-content: center;
 }
 
-.sgs-tabs--align-right .sgs-tabs__nav {
+.sgs-tabs--align-end .sgs-tabs__nav {
 	justify-content: flex-end;
 }
 

@@ -206,7 +206,6 @@ Decision D1 (register): a general "measured diagram" block. Plan and current sta
   - canary page 4971: label anchors, numbered phone layout, no reflow overflow, axe clean, and a non-product binding (`sgs/site-info`);
   - eye-care-test: the Ray-Ban Sizing tab reads 14/58/50/135 and 14/62/54/140 after picking 62-14-140; axe is clean at 1440 and 375; the fade is off under reduced motion (on without it).
 - **Deferred, each with its trigger** (moved here from the archived plan's §G):
-  - Box alignment `left|center|right` → logical `start|center|end` on `icon.iconAlign`, `media.alignment`, `separator.alignment`, `nav-drawer.drawerAlign` and `tabs.tabAlignment`. This is a client-visible enum migration, run through THE-MIGRATION-METHOD with its own detector. Trigger: Bean confirms the logical shape.
   - An angle `kind` for `sgs/diagram-dimension` (an arc plus degrees). Trigger: the first client needing angles.
   - A conditional-visibility rule for product category or field, so one template can hold one diagram per product shape. Trigger: the first shop selling two product shapes.
   - Number formatting (`decimals`, units) and a shopper mm/inch toggle. Trigger: the first non-mm client.
