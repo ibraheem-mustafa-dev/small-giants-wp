@@ -549,8 +549,8 @@ if ( null !== $pill_padding_mob_val ) {
 // helper — colour/margin-bottom are single declarations, scoped below. ---
 $sel_label = "{$root_sel} .sgs-option-picker__label";
 
-$typography_css = sgs_typography_css_rule( $attributes, 'label', $sel_label )
-	. sgs_typography_css_rule( $attributes, 'pill', $sel_pill );
+$typography_css = sgs_typography_css_rule( $attributes, 'label', "{$root_sel} .sgs-option-picker__label" )
+	. sgs_typography_css_rule( $attributes, 'pill', "{$root_sel} .sgs-option-picker__pill" );
 if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }

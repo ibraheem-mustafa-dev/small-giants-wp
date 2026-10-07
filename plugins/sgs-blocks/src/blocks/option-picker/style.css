@@ -102,7 +102,6 @@
 	 * --sgs-op-pill-font-size-default (set by the size modifier rules below).
 	 */
 	font-size: var(--sgs-op-pill-font-size, var(--sgs-op-pill-font-size-default));
-	line-height: 1;
 	white-space: nowrap;
 	/*
 	 * WCAG selection tick: the ::before tick is ABSOLUTELY positioned (see below),
@@ -116,6 +115,16 @@
 	            box-shadow       var(--wp--custom--transition--fast, 0.15s ease);
 	/* Prevent text selection on rapid clicks */
 	user-select: none;
+}
+
+/*
+ * The pill's default line-height lives in a zero-specificity :where() so the
+ * `pill` typography control (`.{uid} .sgs-option-picker__pill`, emitted by this
+ * block's render.php and by sgs/product-card's) wins and its value inherits into
+ * .sgs-option-picker__pill-text and the label, which declare no line-height.
+ */
+:where(.sgs-option-picker__pill) {
+	line-height: 1.25;
 }
 
 /*
@@ -609,7 +618,6 @@
 .sgs-option-picker__pill-text {
 	display: inline-flex;
 	flex-direction: column;
-	line-height: 1.25;
 	white-space: normal;
 }
 
