@@ -1721,7 +1721,64 @@ function resolvePhpExpr( expr, resolveVar ) {
 	return splitTopLevel( expr, '.' ).map( ( p ) => resolvePhpTerm( p, resolveVar ) ).join( '' );
 }
 
-/** Build a resolver for the block's PHP variables from its simple `$x = <expr>;` assignments. */
+/**
+ * Every named function in `files`: its name, the source range of its parameter
+ * list and its parameters (`name`, `def` = default expression or null), in order.
+ */
+function collectPhpFunctionParams( files ) {
+	const fns = [];
+	files.forEach( ( f, fileIdx ) => {
+		for ( const m of f.src.matchAll( /\bfunction\s+&?([A-Za-z_]\w*)\s*\(/g ) ) {
+			const from   = m.index + m[ 0 ].length;
+			const end    = findStatementEnd( f.src, from );
+			const params = [];
+			for ( const piece of splitTopLevel( f.src.slice( from, end ), ',' ) ) {
+				const pm = /^\s*(?:[\w\\?|]+\s+)?(&?\s*(?:\.\.\.)?)\$([A-Za-z_]\w*)\s*(?:=([\s\S]*))?$/.exec( piece );
+				if ( pm ) {
+					params.push( { name: pm[ 2 ], def: undefined !== pm[ 3 ] ? pm[ 3 ].trim() : null, variadic: pm[ 1 ].includes( '...' ) } );
+				}
+			}
+			const brace = f.src.slice( end ).search( /[{;]/ );
+			const open  = -1 !== brace && '{' === f.src[ end + brace ] ? end + brace : -1;
+			fns.push( { name: m[ 1 ], fileIdx, from, end, params, bodyStart: open, bodyEnd: -1 === open ? -1 : matchBracket( f.src, open ) } );
+		}
+	} );
+	return fns;
+}
+
+/**
+ * Calls to each function of `fns` across `files`: where each call sits and its
+ * trimmed arguments (null when a spread or named argument hides the positions).
+ */
+function collectPhpCallSites( files, fns ) {
+	const sites = new Map();
+	for ( const fn of fns ) {
+		const list = [];
+		for ( const [ fileIdx, f ] of files.entries() ) {
+			const starts  = [];
+			const regions = captureCallRegions( f.src, fn.name, starts );
+			regions.forEach( ( region, i ) => {
+				const args = splitTopLevel( region, ',' ).map( ( a ) => a.trim() );
+				list.push( { fileIdx, pos: starts[ i ], args: args.some( ( a ) => /^\.\.\.|^[A-Za-z_]\w*\s*:(?!:)/.test( a ) ) ? null : args } );
+			} );
+		}
+		sites.set( fn, list );
+	}
+	return sites;
+}
+
+/**
+ * Build a resolver for the block's PHP variables.
+ *
+ * The block-wide table holds every simple `$x = <expr>;` assignment; a name with
+ * one distinct value resolves, anything else is UNK. `resolver.scopedAt( file, pos )`
+ * resolves inside the function enclosing that position: a name the function
+ * assigns itself is read from its own body, and a parameter is bound to the
+ * argument each caller passes (the default for a call that omits it), each
+ * argument resolved in its own caller's scope. Two functions sharing a
+ * parameter name therefore never conflict, and a chain of pass-through calls
+ * (`f( $bem_root )` inside a function that received it) carries the literal.
+ */
 function buildPhpVarResolver( files ) {
 	const raw = new Map(); // name → { exprs: Set<string>, append: boolean }
 	for ( const f of files ) {
@@ -1765,11 +1822,91 @@ function buildPhpVarResolver( files ) {
 		memo.set( name, value );
 		return value;
 	};
+
+	const fns    = collectPhpFunctionParams( files );
+	const sites  = collectPhpCallSites( files, fns );
+	const scopes = new Map();
+	const single = ( values ) => ( 1 === new Set( values ).size ? values[ 0 ] : UNK );
+	const scopeAt = ( fileIdx, pos ) => {
+		const fn = fns.find( ( c ) => c.fileIdx === fileIdx && -1 !== c.bodyStart && pos > c.bodyStart && pos < c.bodyEnd );
+		return fn ? scopeOf( fn ) : resolveVar;
+	};
+	const resolveParam = ( fn, idx ) => {
+		const p = fn.params[ idx ];
+		if ( p.variadic ) {
+			return UNK;
+		}
+		const fallback = null !== p.def ? resolvePhpExpr( p.def, resolveVar ) : UNK;
+		const calls    = sites.get( fn );
+		if ( 0 === calls.length ) {
+			return fallback;
+		}
+		const values = [];
+		for ( const call of calls ) {
+			if ( ! call.args ) {
+				return UNK;
+			}
+			const arg = call.args[ idx ];
+			values.push( arg ? resolvePhpExpr( arg, scopeAt( call.fileIdx, call.pos ) ) : fallback );
+		}
+		return single( values );
+	};
+	const scopeOf = ( fn ) => {
+		if ( scopes.has( fn ) ) {
+			return scopes.get( fn );
+		}
+		const body       = files[ fn.fileIdx ].src.slice( fn.bodyStart, fn.bodyEnd );
+		const scopeMemo  = new Map();
+		const scopeStack = new Set();
+		const resolve    = ( name ) => {
+			if ( INST_VAR_RE.test( name ) ) {
+				return INST_CLASS;
+			}
+			if ( scopeMemo.has( name ) ) {
+				return scopeMemo.get( name );
+			}
+			if ( scopeStack.has( name ) ) {
+				return UNK;
+			}
+			scopeStack.add( name );
+			const exprs = [];
+			let append  = false;
+			const re    = new RegExp( '\\$' + name + '\\s*(\\.?=)(?![=>])', 'g' );
+			let m;
+			while ( ( m = re.exec( body ) ) !== null ) {
+				if ( '>' === body[ m.index - 1 ] || ':' === body[ m.index - 1 ] ) {
+					continue;
+				}
+				if ( '.=' === m[ 1 ] ) {
+					append = true;
+				} else {
+					exprs.push( body.slice( re.lastIndex, findStatementEnd( body, re.lastIndex ) ).trim() );
+				}
+			}
+			const idx = fn.params.findIndex( ( p ) => p.name === name );
+			let value;
+			if ( append ) {
+				value = UNK;
+			} else if ( exprs.length ) {
+				value = single( exprs.map( ( e ) => resolvePhpExpr( e, resolve ) ) );
+			} else if ( idx >= 0 ) {
+				value = resolveParam( fn, idx );
+			} else {
+				value = resolveVar( name );
+			}
+			scopeStack.delete( name );
+			scopeMemo.set( name, value );
+			return value;
+		};
+		scopes.set( fn, resolve );
+		return resolve;
+	};
+	resolveVar.scopedAt = scopeAt;
 	return resolveVar;
 }
 
 /** Argument regions of every call to `fnName` (quote- and bracket-aware; skips the definition). */
-function captureCallRegions( src, fnName ) {
+function captureCallRegions( src, fnName, starts ) {
 	const regions = [];
 	const needle  = fnName + '(';
 	let from = 0;
@@ -1784,6 +1921,9 @@ function captureCallRegions( src, fnName ) {
 		}
 		const end = findStatementEnd( src, from );
 		regions.push( src.slice( from, end ) );
+		if ( starts ) {
+			starts.push( idx ); // where the call sits, for a caller that needs its enclosing function
+		}
 		from = end;
 	}
 	return regions;
@@ -2023,12 +2163,15 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 	};
 
 	for ( const [ fnName, spec ] of Object.entries( CONTROL_HELPERS ) ) {
-		for ( const f of files ) {
-			for ( const region of captureCallRegions( f.src, fnName ) ) {
+		for ( const [ fileIdx, f ] of files.entries() ) {
+			const starts  = [];
+			const regions = captureCallRegions( f.src, fnName, starts );
+			for ( const [ ri, region ] of regions.entries() ) {
 				ELEMENT_MODEL_STATS.helperCalls++;
+				const scoped = resolveVar.scopedAt ? resolveVar.scopedAt( fileIdx, starts[ ri ] ) : resolveVar;
 				const args   = splitTopLevel( region, ',' );
-				const prefix = args[ spec.prefixArg ] !== undefined ? resolvePhpExpr( args[ spec.prefixArg ], resolveVar ) : UNK;
-				const selRaw = args[ spec.selectorArg ] !== undefined ? resolvePhpExpr( args[ spec.selectorArg ], resolveVar ) : UNK;
+				const prefix = args[ spec.prefixArg ] !== undefined ? resolvePhpExpr( args[ spec.prefixArg ], scoped ) : UNK;
+				const selRaw = args[ spec.selectorArg ] !== undefined ? resolvePhpExpr( args[ spec.selectorArg ], scoped ) : UNK;
 				if ( prefix.includes( UNK ) || prefix.includes( INST_CLASS ) ) {
 					ELEMENT_MODEL_STATS.prefixUnresolved++;
 					for ( const s of spec.suffixes ) {
@@ -3578,6 +3721,7 @@ function selfTestE12() {
 
 	selfTestE14( assert );
 	selfTestRequireHop( assert );
+	selfTestParamBinding( assert );
 
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
@@ -4100,6 +4244,45 @@ function selfTestRequireHop( assert ) {
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
+}
+
+function selfTestParamBinding( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] function parameters bind to call-site literals\n\n' );
+	// `at( file, marker )` is the resolver for the position of `marker` in that file.
+	const build = ( ...srcs ) => {
+		const resolver = buildPhpVarResolver( srcs.map( ( src, i ) => ( { file: `f${ i }.php`, src } ) ) );
+		return ( file, marker ) => resolver.scopedAt( file, srcs[ file ].indexOf( marker ) );
+	};
+	const one = build(
+		"function sgs_pb_one( array $a, string $root, $tail = '__x' ) { $s = '.' . $root . $tail; return sgs_pb_pass( $root, 1 ); }\n" +
+			"function sgs_pb_pass( string $root, $n ) { return sgs_pb_deep( $root ); }\n" +
+			'function sgs_pb_deep( $r ) { return $r; }\n' +
+			"$css = sgs_pb_one( $attributes, 'sgs-pb-block' );\n"
+	);
+	assert( 'param binding: a parameter takes the literal its one caller passes', one( 0, '$s = ' )( 'root' ), 'sgs-pb-block' );
+	assert( 'param binding: a parameter the call omits takes its declared default', one( 0, '$s = ' )( 'tail' ), '__x' );
+	assert( 'param binding: a local built from parameters resolves in the function\'s own scope', one( 0, 'return sgs_pb_pass' )( 's' ), '.sgs-pb-block__x' );
+	assert( 'param binding: a pass-through chain, even under another name, carries the literal down', [ one( 0, 'return sgs_pb_deep' )( 'root' ), one( 0, 'return $r' )( 'r' ) ], [ 'sgs-pb-block', 'sgs-pb-block' ] );
+	assert( 'param binding: a parameter bound to a non-literal argument stays unresolved', one( 0, '$s = ' )( 'a' ), UNK );
+	const two = build( "function sgs_pb_two( $root ) { return $root; }\n$a = sgs_pb_two( 'sgs-pb-a' );\n$b = sgs_pb_two( 'sgs-pb-b' );\n" );
+	assert( 'param binding: two callers passing different literals leave the parameter unresolved', two( 0, 'return $root' )( 'root' ), UNK );
+	const none = build( 'function sgs_pb_none( $root ) { return $root; }\n' );
+	assert( 'param binding: a function nothing calls leaves its parameter unresolved', none( 0, 'return $root' )( 'root' ), UNK );
+	const split = build( "function sgs_pb_split( $root ) { return $root; }\n", "$x = sgs_pb_split( 'sgs-pb-file' );\n" );
+	assert( 'param binding: the call may sit in another file of the block\'s set', split( 0, 'return $root' )( 'root' ), 'sgs-pb-file' );
+	const share = build(
+		"function sgs_pb_a( $root ) { return $root; }\nfunction sgs_pb_b( $root ) { return $root; }\n" +
+			"$a = sgs_pb_a( 'sgs-pb-one' );\n$b = sgs_pb_b( 'sgs-pb-two' );\n"
+	);
+	assert(
+		'param binding: two functions sharing a parameter name each keep their own binding',
+		[ share( 0, 'return $root' )( 'root' ), share( 0, 'return $root; }\n$a' )( 'root' ) ],
+		[ 'sgs-pb-one', 'sgs-pb-two' ]
+	);
+	const top = build( "function sgs_pb_top( $sel ) { return $sel; }\n$sel = '.sgs-pb-top';\n$x = sgs_pb_top( $sel );\n" );
+	assert( 'param binding: a same-named argument from top-level code resolves through the caller\'s own scope', top( 0, 'return $sel' )( 'sel' ), '.sgs-pb-top' );
+	const reassigned = build( "function sgs_pb_re( $root ) { $root = 'sgs-pb-inner'; return $root; }\n$x = sgs_pb_re( 'sgs-pb-arg' );\n" );
+	assert( 'param binding: a parameter the function reassigns reads its own assignment', reassigned( 0, 'return $root' )( 'root' ), 'sgs-pb-inner' );
 }
 
 // ---------------------------------------------------------------------------
