@@ -2273,13 +2273,16 @@ function classValueTokens( value ) {
 /** Literal-HTML markup tree of the block: instances with their class sets and parent links. */
 function buildMarkupModel( files, rootClasses ) {
 	const instances = [];
-	const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)\b((?:"[^"]*"|'[^']*'|<\?[\s\S]*?\?>|[^<>"'])*?)(\/?)>/g;
+	// A tag name is a literal, a sprintf slot (`<%1$s class="x">`) or a PHP echo
+	// (`<<?php echo esc_attr( $level ); ?> class="x">`). The last two are an
+	// element of unknown tag (`*`) that still carries its class.
+	const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*\b|%(?:\d+\$)?s|<\?(?:php|=)[\s\S]*?\?>)((?:"[^"]*"|'[^']*'|<\?[\s\S]*?\?>|[^<>"'])*?)(\/?)>/g;
 	for ( const [ fileIdx, f ] of files.entries() ) {
 		const stack = [];
 		let m;
 		tagRe.lastIndex = 0;
 		while ( ( m = tagRe.exec( f.src ) ) !== null ) {
-			const tag = m[ 2 ].toLowerCase();
+			const tag = /^[a-zA-Z]/.test( m[ 2 ] ) ? m[ 2 ].toLowerCase() : '*';
 			if ( '/' === m[ 1 ] ) {
 				for ( let k = stack.length - 1; k >= 0; k-- ) {
 					if ( instances[ stack[ k ] ].tag === tag ) {
@@ -3797,6 +3800,7 @@ function selfTestE12() {
 	selfTestRequireHop( assert );
 	selfTestParamBinding( assert );
 	selfTestMarkupSplice( assert );
+	selfTestUnknownTag( assert );
 
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
@@ -4612,6 +4616,42 @@ function selfTestMarkupSplice( assert ) {
 		'splice: a function with many elements is placed under its first landing element only, not copied per element',
 		splice( bigIcons + "echo sprintf( '<p class=\"p1\">%s</p>', sgs_x_icons() ); echo sprintf( '<p class=\"p2\">%s</p>', sgs_x_icons() );\n" ).length - bigBase,
 		2
+	);
+}
+
+/** An element whose tag name is a sprintf slot or a PHP echo is read as an element of unknown tag with its class. */
+function selfTestUnknownTag( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] an element of unknown tag keeps its class\n\n' );
+	const css     = '.sgs-x__cap {\n\tline-height: 1;\n}\n';
+	const control = '$css .= sgs_typography_css_rule( $attributes, \'item\', "{$root_sel} .sgs-x__link" );\n';
+	const verdict = ( render ) => {
+		const r = runE14Fixture( [ 'itemLineHeight' ], E14_FIXTURE_PHP_HEAD + control + E14_FIXTURE_ROOT_OPEN + render + '</div>\n', css );
+		return r.findings.filter( ( f ) => 'line-height' === f.property && '.sgs-x__cap' === f.selector ).map( ( f ) => f.class );
+	};
+	assert(
+		'unknown tag: a sprintf slot tag (`<%1$s class="x">`) inside the controlled element is a descendant',
+		verdict( "<a class=\"sgs-x__link\"><?php printf( '<%1$s class=\"sgs-x__cap\">t</%1$s>', 'span' ); ?></a>\n" ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'unknown tag: a plain `%s` slot tag is read the same way',
+		verdict( "<a class=\"sgs-x__link\"><?php printf( '<%s class=\"sgs-x__cap\">t</%s>', 'span', 'span' ); ?></a>\n" ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'unknown tag: a PHP echo tag (`<<?php echo esc_attr( $level ); ?> class="x">`) is read the same way',
+		verdict( "<a class=\"sgs-x__link\"><<?php echo esc_attr( $level ); ?> class=\"sgs-x__cap\">t</<?php echo esc_attr( $level ); ?>></a>\n" ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'unknown tag: one placed outside the controlled element is not its descendant (negative control)',
+		verdict( "<a class=\"sgs-x__link\">t</a><?php printf( '<%1$s class=\"sgs-x__cap\">t</%1$s>', 'span' ); ?>\n" ),
+		[]
+	);
+	assert(
+		'unknown tag: a close tag written differently from the open tag still ends it, so a following sibling is not inside it (negative control)',
+		verdict( "<<?php echo esc_attr( \$level ); ?> class=\"sgs-x__link\">t</<?php echo esc_attr( \$tag ); ?>><span class=\"sgs-x__cap\">t</span>\n" ),
+		[]
 	);
 }
 
