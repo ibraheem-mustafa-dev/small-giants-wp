@@ -89,11 +89,16 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     declared `current` in their block.json (account `menuActive*` x3, language-switch `currentColour`); no open Eye Care row
     needs them. No open Eye Care triage row is blocked by any of the 29: the business-info hover rows on contact and footer
     are `ambiguous` (`textColourHover` and `labelColourHover` both paint the label inside the link), a different gap.
-  - 106 calibration rows judged dead and unexplained, plus the `oneWidth` probe list (multi-button 8,
-    notice-banner 4, wishlist-panel 3, nav-bar-menu 2, google-reviews 2).
-  - `sgs/hero` calibrates 34 of its 47 settings as dead (sgs/media: 0, `2b4516195`). The backlog's hero rows
-    cover maxWidth, the tier background and gridTemplateColumns, not the count; Session D measures hero-heavy
-    pages against it.
+  - Dead calibration rows, re-classified 2026-10-07 on today's caches (`.claude/reports/2026-10-07-dead-calibration-rerun/SUMMARY.md`,
+    the 2026-10-04 pipeline re-run unchanged, with its `classify3` split): 546 dead; FIXTURE_LACKS_ELEMENT 210, **UNEXPLAINED 106**,
+    PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: the 106,
+    to be diagnosed per mechanism, largest groups first (by property: background-image 19, grid-template-columns 10, text-indent
+    9; by block: nav-bar-menu 10, nav-drawer-menu 9, hero 7, cta-section 6), plus the `oneWidth` probe list (23 today).
+  - [x] `sgs/hero`'s dead count: the "34 of 47" premise is stale. Recalibrated 2026-10-07 it is 15 dead of 66 settings: 7
+    UNEXPLAINED (backgroundImageMobile, backgroundImageTablet, bgSvgOpacity, bgZoomStart, gridTemplateColumns, maxWidth,
+    textIndent; maxWidth and gridTemplateColumns are already the backlog's hero rows), 5 FIXTURE_LACKS_ELEMENT (the media and
+    overlay-hover settings: a fixture gap, not a dead setting), 1 each HOVER_POINTER_MISSES_ELEMENT, NEEDS_OVERLAY_COMPANION,
+    NEEDS_LAYOUT_MODE. Its 7 unexplained travel with the 106 above.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with

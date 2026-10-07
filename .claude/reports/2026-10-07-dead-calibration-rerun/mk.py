@@ -1,0 +1,35 @@
+import csv,collections,json
+R=list(csv.DictReader(open('dead-classified.csv',encoding='utf8')))
+O=list(csv.DictReader(open('../2026-10-04-route-data-audit/calibration/all-entries-classified.csv',encoding='utf8')))
+od=collections.Counter(x['class'] for x in O if x['category']=='dead')
+c3={'UNEXPLAINED':106,'HOVER_POINTER_MISSES_ELEMENT':21,'DB_STATE_MISSING_HOVER':11,'NEEDS_BG_IMAGE':7,'NEEDS_VARIANT_OR_TOGGLE':4,'STATE_FOCUS_UNROUTED':2,'NEEDS_LAYOUT_MODE':1}
+td=collections.Counter(x['class'] for x in R)
+cls=sorted(set(td)|set(od)|set(c3),key=lambda k:-td.get(k,0))
+o=[]
+o.append('# Dead-calibration rerun, 2026-10-07\n')
+o.append('## Run order and commands\n\nAll run from `.claude/reports/2026-10-07-dead-calibration-rerun/` (scripts copied unchanged; absolute repo paths kept, no path edits were needed).\n')
+o.append('1. `node dump.mjs` : reads `scripts/computed-route/cache/*.json` (not `.tree.json`), `calibration-fixtures.json`, the two theme snapshots and the framework DB read-only (`lib/db.mjs::openDb` uses `readOnly: true`); writes `entries.json`. Printed: `{ discovered: 624, dead: 546, noMarker: 99, oneWidth: 23, untested: 58, rejected: 2 }`.\n2. `python layer.py` : scans block PHP; writes `layer.json` (read by `classify_dead.py`).\n3. `python run_classify.py` : NEW 20-line driver I added, because `classify_dead.py` only defines classifiers and has no main (it imports `elem.py`, which reads the caches). It calls `classify3` on every `dead` entry of `entries.json` and writes `dead-classified.csv`. `classify3` raises IndexError on an entry with no row carrying a `css_property`; the driver labels those `NO_CSS_PROPERTY_ROW` instead (5 entries).\n4. `node miss.mjs` : optional side check (unread-property census); output not used below.\n5. `python mk.py` : builds this file.\n\n`codeidx.py` and `readpath.py` are not imported by anything in the chain (library helpers); not run. No hard limits were hit: no cache writes, DB read-only, no browser, no network.\n')
+o.append('## Totals\n\nDead settings today: **%d** (2026-10-05 session-b report: 605; the 10-04 CSV: %d).\n'%(len(R),sum(od.values())))
+o.append('## Per-class counts\n\nColumns: today (`classify3`); 2026-10-04 `classify3` split of RESIDUAL as quoted in the task (only those 7 classes were split; 152 RESIDUAL then); 2026-10-04 CSV `all-entries-classified.csv` dead rows (older `classify`/`classify2` labels, 1,567 rows total, dead sum below).\n\n| Class | Today | 10-04 classify3 | 10-04 CSV (dead) |\n|---|---|---|---|')
+for k in cls: o.append('| %s | %d | %s | %s |'%(k,td.get(k,0),c3.get(k,'-'),od.get(k,'-')))
+o.append('| **Total** | **%d** | 152 RESIDUAL split | **%d** |\n'%(len(R),sum(od.values())))
+o.append('Caveat: the 10-04 classify3 column covers only the RESIDUAL bucket (152 of 605 dead on the 10-05 recalibrated caches); the other classes were not split by classify3 then, so only the 7 split classes (and UNEXPLAINED) compare like-for-like with the other columns here.\n')
+U=[x for x in R if x['class']=='UNEXPLAINED']
+o.append('## UNEXPLAINED rows today (%d)\n\n| block | setting | css_property | css_element | css_state | measured | site |\n|---|---|---|---|---|---|---|'%len(U))
+for x in sorted(U,key=lambda x:(x['block'],x['attr'])): o.append('| %s | %s | %s | %s | %s | %s | %s |'%(x['block'],x['attr'],x['css_property'],x['css_element'] or '-',x['css_state'] or '-',x['measured'],x['site']))
+o.append('\n## UNEXPLAINED grouped by css_property\n\n| css_property | count |\n|---|---|')
+for k,v in collections.Counter(x['css_property'] for x in U).most_common(): o.append('| %s | %d |'%(k,v))
+o.append('\n## UNEXPLAINED grouped by block\n\n| block | count |\n|---|---|')
+for k,v in collections.Counter(x['block'] for x in U).most_common(): o.append('| %s | %d |'%(k,v))
+H=[x for x in R if x['block']=='sgs/hero']
+o.append('\n## sgs/hero dead settings today (%d)\n\n| setting | class | css_property | css_element | css_state | measured | site |\n|---|---|---|---|---|---|---|'%len(H))
+for x in sorted(H,key=lambda x:x['attr']): o.append('| %s | %s | %s | %s | %s | %s | %s |'%(x['attr'],x['class'],x['css_property'],x['css_element'] or '-',x['css_state'] or '-',x['measured'],x['site']))
+N=[x for x in R if x['class']=='NO_CSS_PROPERTY_ROW']
+o.append('\n## NO_CSS_PROPERTY_ROW entries\n\n'+'\n'.join('- %s::%s'%(x['block'],x['attr']) for x in N))
+ms=sorted(set(x['measured'] for x in R)); o.append('\n## Measured range\n\n%s to %s'%(ms[0],ms[-1]))
+open('SUMMARY.md','w',encoding='utf8').write('\n'.join(o)+'\n')
+for k in cls: print(k,td.get(k,0),c3.get(k,'-'),od.get(k,'-'))
+print(sum(od.values()))
+print(collections.Counter(x['css_property'] for x in U).most_common(10))
+print(collections.Counter(x['block'] for x in U).most_common(10))
+print([(x['attr'],x['class']) for x in sorted(H,key=lambda x:x['attr'])]); print(ms[0],ms[-1], [x['block']+x['attr'] for x in N])
