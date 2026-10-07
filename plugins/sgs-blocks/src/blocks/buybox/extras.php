@@ -224,6 +224,51 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			$css[]      = $status_sel . '{color:' . $resolved . ';}' . $status_sel . ' .buybox__stock-dot{background-color:' . $resolved . ';}';
 		}
 
+		// --- Gallery thumbnails. Defaults (empty width/colours, scale 105) emit
+		// nothing, so style.css's 2px transparent border, primary-token selected
+		// border and 1.05 scale paint exactly as before. Accessibility: with
+		// scale 100 and only a colour change, selection is still conveyed by
+		// aria-current (announced to assistive tech) and the border's luminance
+		// change; the default keeps scale + border so colour is never the sole cue. ---
+		$thumb_sel    = $root_sel . ' .product-card__thumb';
+		$thumb_width  = sgs_css_length_value( $attributes['thumbBorderWidth'] ?? '' );
+		$thumb_colour = sgs_colour_value( (string) ( $attributes['thumbBorderColour'] ?? '' ) );
+		$thumb_decls  = '';
+		if ( '' !== $thumb_width ) {
+			$thumb_decls .= 'border-width:' . $thumb_width . ';';
+		}
+		if ( '' !== $thumb_colour ) {
+			$thumb_decls .= 'border-color:' . $thumb_colour . ';';
+		}
+		if ( '' !== $thumb_decls ) {
+			$css[] = $thumb_sel . '{' . $thumb_decls . '}';
+		}
+
+		$thumb_sel_colour = sgs_colour_value( (string) ( $attributes['thumbSelectedBorderColour'] ?? '' ) );
+		$thumb_scale      = isset( $attributes['thumbSelectedScale'] ) && is_numeric( $attributes['thumbSelectedScale'] )
+			? max( 50.0, min( 150.0, (float) $attributes['thumbSelectedScale'] ) )
+			: 105.0;
+		$thumb_cur_sel    = $thumb_sel . '[aria-current="true"]';
+		$thumb_cur_decls  = '';
+		if ( '' !== $thumb_sel_colour ) {
+			$thumb_cur_decls .= 'border-color:' . $thumb_sel_colour . ';';
+		} elseif ( '' !== $thumb_colour ) {
+			// A resting colour alone outranks style.css's selected rule, so the
+			// selected thumbnail keeps the stylesheet's primary-token border here.
+			$thumb_cur_decls .= 'border-color:var(--wp--preset--color--primary,#0f7e80);';
+		}
+		if ( 105.0 !== $thumb_scale ) {
+			$thumb_cur_decls .= 'transform:scale(' . rtrim( rtrim( number_format( $thumb_scale / 100, 4, '.', '' ), '0' ), '.' ) . ');';
+		}
+		if ( '' !== $thumb_cur_decls ) {
+			$css[] = $thumb_cur_sel . '{' . $thumb_cur_decls . '}';
+		}
+		// Reduced motion keeps winning for scale: same selector, emitted after
+		// the rule above, so the media rule overrides it when the query matches.
+		if ( 105.0 !== $thumb_scale ) {
+			$css[] = '@media(prefers-reduced-motion:reduce){' . $thumb_cur_sel . '{transform:none;}}';
+		}
+
 		return $css;
 	}
 }

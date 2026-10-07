@@ -149,6 +149,26 @@
 					},
 					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				},
+				"gallery-thumb": {
+					"label": "Gallery thumbnails",
+					"order": 9,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:border-width": "thumbBorderWidth",
+						"css:border-color": "thumbBorderColour"
+					},
+					"states": {
+						"current": {
+							"attrMap": {
+								"css:border-color": "thumbSelectedBorderColour",
+								"css:transform": "thumbSelectedScale"
+							}
+						}
+					},
+					"_note": "The thumbnail rail buttons (.product-card__thumb). Resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
+				},
 				"valueLadder": {
 					"label": "Value ladder",
 					"order": 7,
@@ -648,6 +668,26 @@
 		"stockOutOfStockColour": {
 			"type": "string",
 			"default": ""
+		},
+		"thumbBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length of the gallery thumbnails' border (e.g. \"1px\"). Empty keeps the stylesheet's 2px."
+		},
+		"thumbBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of the gallery thumbnails (palette slug or colour). Empty keeps the stylesheet's transparent border."
+		},
+		"thumbSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the selected gallery thumbnail (palette slug or colour). Empty keeps the primary-token colour."
+		},
+		"thumbSelectedScale": {
+			"type": "number",
+			"default": 105,
+			"description": "Scale of the selected gallery thumbnail, in percent. 105 is the stylesheet's 1.05 lift; 100 turns the scale off."
 		},
 		"extrasBeforeCount": {
 			"type": "number",

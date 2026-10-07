@@ -81,6 +81,10 @@
               "stockInStockColour": "success",
               "stickyEnabled": true,
               "stickyOffset": "24px",
+              "thumbBorderWidth": "1px",
+              "thumbBorderColour": "border",
+              "thumbSelectedBorderColour": "text",
+              "thumbSelectedScale": 100,
               "showLadder": false,
               "priceFontFamily": "heading",
               "priceFontSize": {

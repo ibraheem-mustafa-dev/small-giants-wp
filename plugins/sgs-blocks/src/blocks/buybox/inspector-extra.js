@@ -3,6 +3,11 @@ import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } fr
 import { fillRow, textRow, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
+const THUMB_BORDER_UNITS = [
+	{ value: 'px', label: 'px', default: 1 },
+	{ value: 'rem', label: 'rem', default: 0.0625 },
+];
+
 const STICKY_OFFSET_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
@@ -29,6 +34,8 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		rrpSavingFormat,
 		showStockStatus,
 		extrasBeforeCount,
+		thumbBorderWidth,
+		thumbSelectedScale,
 	} = attributes;
 
 	return (
@@ -166,6 +173,39 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
+				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<SgsLengthControl
+					label={ __( 'Border width', 'sgs-blocks' ) }
+					value={ thumbBorderWidth }
+					units={ THUMB_BORDER_UNITS }
+					onChange={ ( val ) =>
+						setAttributes( { thumbBorderWidth: val ?? '' } )
+					}
+					help={ __(
+						'Width of the border around every thumbnail. Empty keeps the default 2px. Border colours are in the Colours panel.',
+						'sgs-blocks'
+					) }
+				/>
+				<RangeControl
+					label={ __( 'Selected thumbnail scale (%)', 'sgs-blocks' ) }
+					help={ __(
+						'105 gently enlarges the selected thumbnail. 100 turns the enlargement off; the selected thumbnail is then shown by its border colour alone, so keep the two border colours clearly different.',
+						'sgs-blocks'
+					) }
+					value={ thumbSelectedScale ?? 105 }
+					min={ 90 }
+					max={ 120 }
+					onChange={ ( val ) =>
+						setAttributes( { thumbSelectedScale: val ?? 105 } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</PanelBody>
+
+			<PanelBody
 				title={ __( 'Extras placement', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
@@ -254,6 +294,20 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			key: 'add-to-cart-border',
 			label: __( 'Add to cart border', 'sgs-blocks' ),
 			attrs: { base: 'addToCartBorderColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'thumb-border',
+			label: __( 'Thumbnail border', 'sgs-blocks' ),
+			attrs: { base: 'thumbBorderColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'thumb-selected-border',
+			label: __( 'Selected thumbnail border', 'sgs-blocks' ),
+			attrs: { base: 'thumbSelectedBorderColour' },
 			attributes,
 			setAttributes,
 		} ),
