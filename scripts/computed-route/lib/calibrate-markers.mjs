@@ -146,17 +146,30 @@ function nonLengthTiers( prop, def ) {
 
 // The marker for a transition duration or easing setting, or null when the row is not one. The duration is written in
 // the setting's own type (a number or a digit string); the easing is a keyword that differs from the default.
+// A row qualifies on two facts together: its css_property names the timing longhand (or is a bare `transition`), and
+// its name ends in Duration, Easing or EasingCustom, whatever comes before it (transitionDuration, panelSlideDuration,
+// bgHoverZoomEasing, submenuCaretTurnEasingCustom). The suffix is needed because css_property alone also lists
+// transition-duration on a setting that only triggers a transition, whose value is not a time (a hover lift), and
+// the DB holds no column that separates the two: role is `motion` for both and inspector_control_type is null on
+// most of these rows.
+const DURATION_NAME = /Duration$/;
+const EASING_NAME = /Easing(Custom)?$/;
 function transitionMarker( row, def, t, prop ) {
 	const name = row.attr_name;
 	const listed = row.css_property.split( ',' ).map( ( x ) => x.trim() );
 	const set = ( v ) => ( { [ name ]: v } );
-	if ( /(^|[a-z])Transition(Duration)$|^transitionDuration$/.test( name ) && ( listed.includes( 'transition-duration' ) || 'transition' === prop ) ) {
+	if ( DURATION_NAME.test( name ) && ( listed.includes( 'transition-duration' ) || 'transition' === prop ) ) {
 		if ( t.includes( 'number' ) || t.includes( 'integer' ) ) {
-			return MARKER_DURATION_MS === Number( def.default ) ? [] : [ { label: 'duration-ms', attrs: set( MARKER_DURATION_MS ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ];
+			// A fractional default is a time in seconds (sgs/cart freeDeliveryFillDuration, 0.6, clamped 0 to 3); every
+			// millisecond setting defaults to a whole number or to nothing, so it takes the millisecond marker.
+			const d = Number( def.default );
+			const seconds = Number.isFinite( d ) && ! Number.isInteger( d );
+			const v = seconds ? MARKER_DURATION_MS / 1000 : MARKER_DURATION_MS;
+			return v === d ? [] : [ { label: seconds ? 'duration-s' : 'duration-ms', attrs: set( v ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ];
 		}
 		return t.includes( 'string' ) ? [ { label: 'duration-ms', attrs: set( String( MARKER_DURATION_MS ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ MARKER_DURATION_MS / 1000 }s` ] ) ) } ] : [];
 	}
-	if ( /(^|[a-z])Transition(Easing)$|^transitionEasing$/.test( name ) && ( listed.includes( 'transition-timing-function' ) || 'transition' === prop ) && t.includes( 'string' ) ) {
+	if ( EASING_NAME.test( name ) && ( listed.includes( 'transition-timing-function' ) || 'transition' === prop ) && t.includes( 'string' ) ) {
 		const value = MARKER_EASING === def.default ? MARKER_EASING_ALT : MARKER_EASING;
 		return [ { label: 'easing', attrs: set( value ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, value ] ) ) } ];
 	}
@@ -214,8 +227,8 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 		const extra = pair ? pair.attrs : {};
 		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, attrs: { ...set( v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
 	}
-	// Transition timing: only the settings named transitionDuration / transitionEasing (a block with no such attribute
-	// has no control to write to, so it gets no marker). An enum setting returned above.
+	// Transition timing: only a setting whose value is a time or an easing (transitionMarker's two-fact gate); a setting
+	// that merely triggers a transition has no time to write, so it gets no marker. An enum setting returned above.
 	const timing = transitionMarker( row, def, t, prop );
 	if ( timing ) {
 		return timing;

@@ -192,6 +192,34 @@ test( 'NO OVER-REACH: a block with no transition attribute produces no marker', 
 	assert.deepEqual( markersFor( easeRow( { attr_type: null, default_value: null } ), {}, snap ), [] );
 } );
 
+test( 'MUST FAIL ON REVERT: a timing setting named for what it moves gets a marker, not only one named transition*', () => {
+	// 37 of the 64 timing rows in the DB carry no "Transition" in their name (cart, nav menus, the bgHoverZoom family).
+	const [ slide ] = markersFor( { attr_name: 'panelSlideDuration', attr_type: 'number', default_value: '0', enum_values: null, css_property: 'transition-duration' }, {}, snap );
+	assert.equal( slide.label, 'duration-ms' );
+	assert.strictEqual( slide.attrs.panelSlideDuration, 437 );
+	assert.equal( slide.expect[ 768 ], '0.437s' );
+	const [ caret ] = markersFor( { attr_name: 'submenuCaretTurnEasingCustom', attr_type: 'string', default_value: '""', enum_values: null, css_property: 'transition-timing-function' }, {}, snap );
+	assert.equal( caret.label, 'easing' );
+	const [ exit ] = markersFor( { attr_name: 'submenuExitDuration', attr_type: 'number', default_value: '150', enum_values: null, css_property: 'transition' }, {}, snap );
+	assert.strictEqual( exit.attrs.submenuExitDuration, 437 );
+} );
+
+test( 'MUST FAIL ON REVERT: a duration held in seconds gets its marker in seconds, never 437 seconds', () => {
+	// sgs/cart freeDeliveryFillDuration defaults to 0.6 and render.php clamps it to 0..3 seconds: 437 would read as 3s.
+	const [ fill ] = markersFor( { attr_name: 'freeDeliveryFillDuration', attr_type: 'number', default_value: '0.6', enum_values: null, css_property: 'transition-duration' }, {}, snap );
+	assert.equal( fill.label, 'duration-s' );
+	assert.strictEqual( fill.attrs.freeDeliveryFillDuration, 0.437 );
+	assert.equal( fill.expect[ 1440 ], '0.437s' );
+} );
+
+test( 'NO OVER-REACH: a Duration-named setting that paints no timing longhand gets no timing marker, and no default stays milliseconds', () => {
+	const ms = markersFor( { attr_name: 'countDuration', attr_type: 'number', default_value: '2000', enum_values: null, css_property: 'animation-duration' }, {}, snap );
+	assert.ok( ! ms.some( ( m ) => /^duration-/.test( m.label ) ), `labels ${ ms.map( ( m ) => m.label ) }` );
+	const [ motion ] = markersFor( { attr_name: 'itemMotionDuration', attr_type: 'number', default_value: null, enum_values: null, css_property: 'transition-duration' }, {}, snap );
+	assert.equal( motion.label, 'duration-ms' );
+	assert.strictEqual( motion.attrs.itemMotionDuration, 437 );
+} );
+
 test( 'slotFor reads a transition marker through timingSet: repeated and reordered lists are one timing', () => {
 	const [ m ] = markersFor( durRow(), {}, snap );
 	const at = ( v ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '': { 'transition-duration': v } } ] ) );
