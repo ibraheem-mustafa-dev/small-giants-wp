@@ -260,21 +260,17 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		}
 
 		$per_row_tiers = sgs_responsive_normalise_object( $attributes['thumbsPerRow'] ?? array() );
-		$per_row_by_n  = array();
 		$inherited     = 0;
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier_name ) {
 			if ( is_numeric( $per_row_tiers[ $tier_name ] ) ) {
 				$inherited = max( 0, min( 8, (int) $per_row_tiers[ $tier_name ] ) );
 			}
 			if ( $inherited > 0 ) {
-				$per_row_by_n[ $inherited ][] = $tier_name;
+				$grid_rules = $thumbs_sel . '{display:grid;grid-template-columns:repeat(' . $inherited . ',minmax(48px,1fr));--sgs-buybox-thumb-gutter:calc(4px + 10% / ' . $inherited . ');}'
+					. '@supports(overflow-clip-margin:1px){' . $thumbs_sel . '{overflow:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0;}}'
+					. $root_sel . ' .product-card__thumb{width:100%;height:auto;aspect-ratio:1;}';
+				$css[]      = sgs_tier_exact_media_css( array( $tier_name ), $grid_rules );
 			}
-		}
-		foreach ( $per_row_by_n as $per_row => $tier_names ) {
-			$grid_rules = $thumbs_sel . '{display:grid;grid-template-columns:repeat(' . $per_row . ',minmax(48px,1fr));--sgs-buybox-thumb-gutter:calc(4px + 10% / ' . $per_row . ');}'
-				. '@supports(overflow-clip-margin:1px){' . $thumbs_sel . '{overflow:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0;}}'
-				. $root_sel . ' .product-card__thumb{width:100%;height:auto;aspect-ratio:1;}';
-			$css[]      = sgs_tier_exact_media_css( $tier_names, $grid_rules );
 		}
 
 		$thumb_sel    = $root_sel . ' .product-card__thumb';
