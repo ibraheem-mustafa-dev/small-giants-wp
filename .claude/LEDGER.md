@@ -61,7 +61,7 @@ No blockers. **eye-care-test and the sandybrown canary both run `d358e1026`** (d
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the empty-field "Ask us" whole-cell button, linked to the Site Info WhatsApp number) and Q12 (the gallery's four-up grid and
-the thumbnails on the shared border panel) are closed with live proof at 375, 768 and 1440 (Q12 still owes one batched editor-canvas and inspector pass, in its row). Still open in the backlog: Q9, and one edge
+the thumbnails on the shared border panel) are closed with live proof at 375, 768 and 1440 (Q12 still owes one batched editor-canvas and inspector pass, in its row). Still open in the backlog: one edge
 inside a closed row: the lens flow's note link cannot read Site Info (Q10 row). On the six frames with no lens height the
 diagram's lens-height dimension is hidden at 375, 768 and 1440 (`display:none`, so no bare "mm" shows and screen readers skip it;
 read live on /product/prada-symbole/). Q1 is decided, not building.
@@ -107,7 +107,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 - **The walker-blind rows** are all closed and verified live on eye-care-test, N36S included.
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
-- **Box alignment is logical (2026-10-07, `8671c0e64`, icon fix `78fe6a4b0`):** icon, media, separator, nav-drawer and tabs store `start|center|end` (`stretch` kept on drawer and tabs) through `LogicalAlignControl`; gate `scripts/migrate-box-alignment.py` (`npm run check:box-alignment`). Live on sandybrown and eye-care-test (`430545e06`, without the icon CSS fix) with the stored starter drawers migrated on all three sites; measured at 375/768/1440 in LTR and RTL on sandybrown. **Owed:** deploy to indus-test and redeploy eye-care-test for the icon fix (held until peer 2b's Solve run ends); the editor-canvas and inspector pass for the five blocks (batched).
+- **Box alignment is logical (2026-10-07, `8671c0e64`, icon fix `78fe6a4b0`):** icon, media, separator, nav-drawer and tabs store `start|center|end` (`stretch` kept on drawer and tabs) through `LogicalAlignControl`; gate `scripts/migrate-box-alignment.py` (`npm run check:box-alignment`). Live on sandybrown and eye-care-test (`430545e06`, without the icon CSS fix) with the stored starter drawers migrated on all three sites; measured at 375/768/1440 in LTR and RTL on sandybrown. indus-test runs it too (`2adf0dd06`, with the icon fix; its deploy printed DEPLOYED-BUT-BROKEN from a host 403 on headless/probe requests, while `curl` returns the real page). **Owed:** redeploy eye-care-test so it carries the icon CSS fix (coordinate with peer 2b first); the editor-canvas and inspector pass for the five blocks (batched).
 - **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2: P2-d and P2-f done; P2-a (corner radius) is
   next, then P2-b, P2-c, P2-e (`plans/2026-10-07-cr6-box-longhand-migration.md` Phase 2).
 - **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
