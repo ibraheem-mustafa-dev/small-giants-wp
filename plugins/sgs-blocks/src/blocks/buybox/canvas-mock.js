@@ -91,6 +91,15 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	css += typographyPreviewCss( attributes, 'guidedMeter', `${ root } .sgs-buybox-guided__meter-index`, tier );
 	css += typographyPreviewCss( attributes, 'guidedMeter', `${ root } .sgs-buybox-guided__meter-compact`, tier );
 	css += typographyPreviewCss( attributes, 'guidedGroupTitle', `${ root } .sgs-buybox-guided__group-title`, tier );
+	// The stock status row and the guided meter buttons are full-width flex boxes:
+	// render.php maps their alignment to justify-content, and so does the canvas.
+	const justify = { left: 'flex-start', start: 'flex-start', justify: 'flex-start', center: 'center', right: 'flex-end', end: 'flex-end' };
+	if ( justify[ attributes.stockTextAlign ] ) {
+		css += `${ root } .buybox__stock--status{justify-content:${ justify[ attributes.stockTextAlign ] };}`;
+	}
+	if ( justify[ attributes.guidedMeterTextAlign ] ) {
+		css += `${ root } .sgs-buybox-guided__meter-btn{justify-content:${ justify[ attributes.guidedMeterTextAlign ] };}`;
+	}
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
 	const gap = String( attributes.galleryColumnGap || '' ).trim();
 	const decls = [];

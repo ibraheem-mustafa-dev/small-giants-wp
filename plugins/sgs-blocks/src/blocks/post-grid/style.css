@@ -602,7 +602,7 @@
 	margin-top: 40px;
 }
 
-/* Type defaults sit in :where() (zero specificity) so the scoped paginationFont*
+/* Type defaults sit in :where() (zero specificity) so the scoped pageButton*
  * rule emitted by render.php wins; the declaration still beats inheritance. */
 :where(.sgs-post-grid__page-btn) {
 	font-size: 0.875rem;

@@ -529,7 +529,7 @@ a.sgs-card-grid__item:focus-visible {
 	margin-top: 40px;
 }
 
-/* Zero-specificity type defaults: the scoped paginationFont* rule wins. */
+/* Zero-specificity type defaults: the scoped pageButton* rule wins. */
 :where(.sgs-card-grid__page-btn) {
 	font-size: 0.875rem;
 	font-weight: 600;
