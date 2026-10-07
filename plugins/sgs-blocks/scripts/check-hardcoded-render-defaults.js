@@ -2210,9 +2210,10 @@ function childRootControls( childDir ) {
 }
 
 /**
- * E14 gap 9: className → controls of the template child that renders it. The
- * child paints those properties on its own root, which is the element carrying
- * the className.
+ * E14 gap 9: className → one controls list per template tuple that places it.
+ * Each child paints those properties on its own root, which is the element
+ * carrying the className; the element is owned only when every tuple's child
+ * paints the property.
  */
 function collectTemplateChildOwners( blockDir ) {
 	const owners = new Map();
@@ -2226,7 +2227,7 @@ function collectTemplateChildOwners( blockDir ) {
 			attrs: c.attrs.map( ( a ) => `sgs/${ child }:${ a }` ),
 		} ) );
 		for ( const cls of classes ) {
-			owners.set( cls, [ ...( owners.get( cls ) || [] ), ...controls ] );
+			owners.set( cls, [ ...( owners.get( cls ) || [] ), controls ] );
 		}
 	}
 	return owners;
@@ -2494,6 +2495,9 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 	}
 	const members = parseSelectorMembers( cand.selector );
 	const attrsOf = ( list ) => [ ...new Set( list.flatMap( ( c ) => c.attrs ) ) ].join( ', ' );
+	// The parsed chain drops sibling combinators and :not()/:is()/:has(), so it
+	// under-counts such a selector's specificity: a "beats" verdict is unsafe.
+	const specCounted = ! /[+~]|:(?:not|is|has|matches)\(/.test( cand.selector.replace( /\[[^\]]*\]/g, '' ) );
 	let sawSame   = false;
 	let worst     = null;
 	for ( const chain of members ) {
@@ -2506,10 +2510,13 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 			// Rendered by the editor canvas only: no front-end control can be blocked.
 			continue;
 		}
-		if ( b.classes.some( ( cl ) => ( model.childOwners.get( cl ) || [] ).some( ( oc ) =>
-			oc.prop === prop && oc.members.some( ( cm ) => chainBeatsChain( cm, chain ) )
-		) ) ) {
-			// An InnerBlocks template child renders this element and paints the
+		if ( specCounted && b.classes.some( ( cl ) => {
+			const tuples = model.childOwners.get( cl ) || [];
+			return tuples.length > 0 && tuples.every( ( owned ) => owned.some( ( oc ) =>
+				oc.prop === prop && oc.members.some( ( cm ) => chainBeatsChain( cm, chain ) )
+			) );
+		} ) ) {
+			// Every InnerBlocks template child that renders this element paints the
 			// property on its own root at a strictly higher specificity. A tie is
 			// decided by source order, so it falls through.
 			sawSame = true;
@@ -2526,7 +2533,7 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 			const pick = [ 'same', 'control-above', 'control-below', 'unrelated' ].find( ( r ) => set.includes( r ) );
 			return { c, rel: pick || 'unknown' };
 		} );
-		if ( controls.some( ( c ) => c.members && c.members.some( ( cm ) =>
+		if ( specCounted && controls.some( ( c ) => c.members && c.members.some( ( cm ) =>
 			chainBeatsChain( cm, chain ) && 'same' === relateElements( lastCompound( cm ), chain, model )
 		) ) ) {
 			// A resolved control on the declaring element itself that strictly outranks
@@ -2657,13 +2664,17 @@ function phpFunctionBodies( src ) {
 	return out;
 }
 
-/** Lower-cased names `src` calls (`name(`, `->name(`, `::name(`) or quotes whole (a callback). */
+/**
+ * Lower-cased names `src` calls (`name(`, `->name(`, `::name(`) or quotes whole
+ * as a callback. A quoted callback must hold an underscore (a prefixed name such
+ * as 'sgs_x'): a generic quoted word ('style', 'value') is data, not a reach.
+ */
 function phpNamesReferenced( src ) {
 	const names = new Set();
 	for ( const m of src.matchAll( /(?<!\bfunction\s+&?\s*)\b([A-Za-z_]\w*)\s*\(/g ) ) {
 		names.add( m[ 1 ].toLowerCase() );
 	}
-	for ( const m of src.matchAll( /['"]([A-Za-z_]\w*)['"]/g ) ) {
+	for ( const m of src.matchAll( /['"]([A-Za-z]\w*_\w+)['"]/g ) ) {
 		names.add( m[ 1 ].toLowerCase() );
 	}
 	return names;
@@ -3822,6 +3833,38 @@ function selfTestE14( assert ) {
 		const fs2 = ( r ) => r.findings.filter( ( f ) => 'font-size' === f.property && '.sgs-x__headline' === f.selector ).map( ( f ) => f.class );
 		assert( 'inner-block child: a template child that paints font-size on its own root owns the element (not reported)', fs2( run( [ 'fontSize' ] ) ), [] );
 		assert( 'inner-block child: a template child with no font-size control does not (still CLASS-2)', fs2( run( [ 'textColour' ] ) ), [ 'CLASS-2' ] );
+
+		// The child's (0,2,0) root control cannot be shown to beat a declaration
+		// whose selector the parser simplifies: a sibling combinator or
+		// :not()/:is()/:has() adds specificity the chain does not count, so a
+		// tie looks like a win. Those stay reported.
+		const runCss = ( css, sel, tmpl = "[ 'sgs/y', { className: 'sgs-x__headline' } ]," ) => runE14Fixture(
+			[ 'fontSize' ],
+			E14_FIXTURE_PHP_HEAD + "$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN + '<span class="sgs-x__lead"></span><?php echo $content; ?>\n</div>\n',
+			css,
+			{ 'edit.js': `const TEMPLATE = [\n\t${ tmpl }\n];\n` },
+			{ y: { attributes: [ 'fontSize' ], renderPhp: childPhp }, z: { attributes: [ 'textColour' ], renderPhp: childPhp.replace( /sgs-y/g, 'sgs-z' ) } }
+		).findings.filter( ( f ) => 'font-size' === f.property && sel === f.selector ).map( ( f ) => f.class );
+		assert(
+			'inner-block child: a :not() selector tying the child control (0,2,0) is not owned (reported)',
+			runCss( '.sgs-x__headline:not(.is-plain) {\n\tfont-size: 2rem;\n}\n', '.sgs-x__headline:not(.is-plain)' ).length,
+			1
+		);
+		assert(
+			'inner-block child: a sibling-combinator selector tying the child control (0,2,0) is not owned (reported)',
+			runCss( '.sgs-x__lead + .sgs-x__headline {\n\tfont-size: 2rem;\n}\n', '.sgs-x__lead + .sgs-x__headline' ).length,
+			1
+		);
+		assert(
+			'inner-block child: a class placed on two template children owns the element only if EVERY child paints it (reported)',
+			runCss(
+				'.sgs-x__headline {\n\tfont-size: 2rem;\n}\n',
+				'.sgs-x__headline',
+				"[ 'sgs/y', { className: 'sgs-x__headline' } ],\n\t[ 'sgs/z', { className: 'sgs-x__headline' } ],"
+			),
+			[ 'CLASS-2' ]
+		);
 	}
 
 	// CASE 14 — the button helper's LineHeight is a control only for a scalar
@@ -3979,6 +4022,9 @@ function selfTestRequireHop( assert ) {
 				"function sgs_hop_chain( $a ) { return '--sgs-hop-fn-chain:1'; }\n" +
 				"function sgs_hop_callback() { return array( '--sgs-hop-fn-cb' => 1 ); }\n" +
 				"function sgs_hop_uncalled() { $s = '}'; $w = '--sgs-hop-fn-uncalled:1'; }\n" +
+				"function sgs_hop_html() { ?>\n<p>Don't panic</p>\n<?php $w = '--sgs-hop-fn-html:1'; }\n" +
+				"function sgs_hop_heredoc() { $h = <<<HTML\n<p>It's here</p>\nHTML;\n$w = '--sgs-hop-fn-heredoc:1'; }\n" +
+				"function style() { return '--sgs-hop-fn-generic:1'; }\n" +
 				"?>\n<aside class=\"sgs-hop-c\"></aside>\n",
 			'utf8'
 		);
@@ -4007,7 +4053,7 @@ function selfTestRequireHop( assert ) {
 				"require_once dirname( __DIR__, 2 ) . '/includes/notphp.txt';\n" + // not .php: skipped
 				"// require_once dirname( __DIR__, 2 ) . '/includes/commented.php';\n" + // comment: not followed
 				"/* require_once dirname( __DIR__, 2 ) . '/includes/commented.php'; */\n" +
-				"$css = sgs_hop_called( $attributes );\nadd_filter( 'sgs_hop', 'sgs_hop_callback' );\n" +
+				"$css = sgs_hop_called( $attributes );\nadd_filter( 'sgs_hop', 'sgs_hop_callback' );\n$kind = 'style';\n" +
 				"?>\n<div class=\"sgs-hop-own\"></div>\n",
 			'utf8'
 		);
@@ -4045,6 +4091,12 @@ function selfTestRequireHop( assert ) {
 			[ true, true, true ]
 		);
 		assert( 'writer set: a helper function nothing in the block reaches is NOT a writer (a `}` in a string does not end its body)', written.has( '--sgs-hop-fn-uncalled' ), false );
+		assert(
+			'writer set: an apostrophe in a function\'s inline HTML or heredoc does not leak an unreached function\'s write',
+			[ written.has( '--sgs-hop-fn-html' ), written.has( '--sgs-hop-fn-heredoc' ) ],
+			[ false, false ]
+		);
+		assert( 'writer set: a generic quoted word (\'style\') is not a callback reach for a function of that name', written.has( '--sgs-hop-fn-generic' ), false );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
