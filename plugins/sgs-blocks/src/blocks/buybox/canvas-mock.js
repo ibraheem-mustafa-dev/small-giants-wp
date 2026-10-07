@@ -116,7 +116,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
 	// Thumbnail size: 64 is style.css's default, so only another size writes the property.
-	const rawSize = Number( attributes.thumbSize );
+	const rawSize = Number( attributes.thumbPixelSize );
 	const thumbSize = Number.isFinite( rawSize ) && rawSize > 0 ? Math.min( 240, Math.max( 48, rawSize ) ) : 64;
 	if ( 64 !== thumbSize ) {
 		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSize }px;}`;

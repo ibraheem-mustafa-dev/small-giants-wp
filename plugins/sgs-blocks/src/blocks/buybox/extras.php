@@ -233,8 +233,8 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		// Thumbnail size: 64 (the stylesheet default) emits nothing; anything else
 		// sets the custom property style.css reads for the thumbnail's width, height
 		// and the strip's clip gutter. Clamped to the 48px touch-target floor.
-		$thumb_size = isset( $attributes['thumbSize'] ) && is_numeric( $attributes['thumbSize'] )
-			? max( 48.0, min( 240.0, (float) $attributes['thumbSize'] ) )
+		$thumb_size = isset( $attributes['thumbPixelSize'] ) && is_numeric( $attributes['thumbPixelSize'] )
+			? max( 48.0, min( 240.0, (float) $attributes['thumbPixelSize'] ) )
 			: 64.0;
 		if ( 64.0 !== $thumb_size ) {
 			$css[] = $root_sel . '{--sgs-buybox-thumb-size:' . rtrim( rtrim( number_format( $thumb_size, 2, '.', '' ), '0' ), '.' ) . 'px;}';

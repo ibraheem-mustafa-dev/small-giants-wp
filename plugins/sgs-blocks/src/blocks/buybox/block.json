@@ -157,6 +157,7 @@
 					],
 					"attrMap": {
 						"css:width": "thumbSize",
+						"css:height": "thumbPixelSize",
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
@@ -880,7 +881,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"thumbSize": {
+		"thumbPixelSize": {
 			"type": "number",
 			"default": 64,
 			"description": "Width and height of each gallery thumbnail, in px. 64 is the stylesheet default; written as --sgs-buybox-thumb-size on the block. Never smaller than the 48px touch-target floor."
@@ -888,7 +889,7 @@
 		"thumbsPerRow": {
 			"type": "integer",
 			"default": 0,
-			"description": "Thumbnails per row, 0 to 8. 0 (default) keeps the fixed-size strip (thumbSize, one scrolling row). 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor (the strip scrolls sideways instead)."
+			"description": "Thumbnails per row, 0 to 8. 0 (default) keeps the fixed-size strip (thumbPixelSize, one scrolling row). 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor (the strip scrolls sideways instead)."
 		},
 		"thumbGap": {
 			"type": "string",
