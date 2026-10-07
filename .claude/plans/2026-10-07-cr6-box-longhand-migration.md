@@ -171,18 +171,19 @@ byte-identical. **Fail:** an unexplained difference → fix the recogniser; neve
   `sgs/whatsapp-cta` instances:
   (A) desktop sides 24px, tablet `{top:'40px'}`; (B) desktop unset, tablet `{top:'40px'}`;
   (C) tablet `{left:'30px'}`, mobile `{top:'50px'}`.
-- [ ] Read with one script, `.claude/scratch/cr6-read.mjs` (Playwright `chromium`, `channel: 'chrome'`):
+- [ ] Read with one script, `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` (Playwright `chromium`, `channel: 'chrome'`):
   for each instance and each width 1440 / 768 / 375, `getComputedStyle(el)` padding-top/right/bottom/left
   on the front end, and the same on the editor canvas (`/wp-admin/post.php?post=<id>&action=edit`, the
   canvas iframe, `Edit` preview width set to Desktop / Tablet / Mobile). It prints one row per
   (instance, surface, width) and exits 1 on any mismatch with the expectations below.
-- [ ] **VERIFY** (`node .claude/scratch/cr6-read.mjs` exit 0), values top/right/bottom/left:
+- [ ] **VERIFY** (`node plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` exit 0), values top/right/bottom/left:
   A at 768 = `40px 24px 24px 24px` (was `40px 0px 0px 0px`; desktop bottom 24px inherited);
   B at 768 = `40px 24px 12px 24px` (stylesheet `.sgs-whatsapp-cta--inline.sgs-whatsapp-cta__btn{padding:12px 24px}`);
   C at 375 = `50px 24px 12px 30px` (D-2: mobile keeps tablet's left 30px). All three at 1440 unchanged
   from before. Editor rows equal front-end rows. Empty the calibration post in the same command.
 
 ### GATE 2 — the shape holds live (auto-gate; D-3 settles the shape) — **HARD STOP before the batch**
+**PASSED 2026-10-07** (sandybrown, deploy of `53172f1d5`): `node plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` 18/18 rows, front end and editor, at 1440/768/375. The same read before the deploy failed 6 rows (e.g. case A at 768 `40 0 0 0`; case C at 375 `50 0 0 0`, the mobile tier wiping the tablet's left), so the check is proven able to fail.
 **Pass:** every VERIFY value above, front end and editor. **Fail:** any side 0 or editor/front-end
 disagreement → stop; the helper, the cascade or the preview is wrong.
 
@@ -261,10 +262,10 @@ unnarrowed `seedSides` would write explicit `0px` sides onto whatsapp-cta); peer
 ### U8 — both surfaces, then the client — 40 min
 - [ ] Deploy sandybrown (message peers; `ps -ef | grep -E "[s]gs-update|[b]uild-deploy"` empty; deploys
   are serialised, never concurrent).
-- [ ] Extend `.claude/scratch/cr6-read.mjs` with one instance each of: a boilerplate block, `label`
+- [ ] Extend `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` with one instance each of: a boilerplate block, `label`
   (pill fill), `option-picker` pill, `hero` content/media padding, `card-grid`, `product-card`, one
   `helpers-button-style` caller — each with its expected values written into the script BEFORE it runs.
-  `node .claude/scratch/cr6-read.mjs` exit 0 at 375, 768 and 1440, front end and editor; the fixture post
+  `node plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` exit 0 at 375, 768 and 1440, front end and editor; the fixture post
   emptied in the same command.
 - [ ] Push.
 - [ ] Eye Care: after the next eye-care-test deploy (peers' schedule; message them), `solve.mjs --rounds 0` per surface; then

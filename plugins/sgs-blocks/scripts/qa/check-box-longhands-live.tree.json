@@ -1,0 +1,42 @@
+[
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-a",
+      "variant": "inline",
+      "label": "Case A",
+      "phoneNumber": "447000000001",
+      "padding": {
+        "desktop": { "top": "24px", "right": "24px", "bottom": "24px", "left": "24px" },
+        "tablet": { "top": "40px" }
+      }
+    }
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-b",
+      "variant": "inline",
+      "label": "Case B",
+      "phoneNumber": "447000000002",
+      "padding": {
+        "desktop": {},
+        "tablet": { "top": "40px" }
+      }
+    }
+  },
+  {
+    "name": "sgs/whatsapp-cta",
+    "attributes": {
+      "anchor": "cr6-c",
+      "variant": "inline",
+      "label": "Case C",
+      "phoneNumber": "447000000003",
+      "padding": {
+        "desktop": {},
+        "tablet": { "left": "30px" },
+        "mobile": { "top": "50px" }
+      }
+    }
+  }
+]
