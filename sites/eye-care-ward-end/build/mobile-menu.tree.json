@@ -535,7 +535,7 @@
                   "inheritStyle": "custom",
                   "label": "WhatsApp",
                   "ariaLabel": "WhatsApp",
-                  "url": "https://wa.me/4479605978",
+                  "linkSource": "whatsapp",
                   "linkTarget": "_blank",
                   "rel": "noopener",
                   "icon": "",
