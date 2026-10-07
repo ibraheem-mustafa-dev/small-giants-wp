@@ -132,7 +132,8 @@
 	flex-direction: column;
 	align-items: var(--sgs-diagram-dimension-align, center);
 	text-align: var(--sgs-diagram-dimension-text-align, center);
-	transform: var(--sgs-measured-diagram-label-transform, translate(var(--sgs-diagram-dimension-shift, -50%), -50%));
+	/* labelY is the label's TOP edge (as fill-diagram.mjs measures a draft); labelAlign picks the horizontal anchor. */
+	transform: var(--sgs-measured-diagram-label-transform, translateX(var(--sgs-diagram-dimension-shift, -50%)));
 	white-space: nowrap;
 }
 

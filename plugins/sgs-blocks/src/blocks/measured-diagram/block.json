@@ -210,7 +210,9 @@
 		},
 		"labelMode": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"mobile": "numbered"
+			}
 		},
 		"lineColour": {
 			"type": "string",
