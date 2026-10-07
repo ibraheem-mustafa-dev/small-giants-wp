@@ -78,15 +78,30 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     Cause proven there: `product-card/edit.js::Edit` destructured the attribute `attributeTagText`, shadowing the imported
     function of that name; fixed in `cd004d31a`, an ancestor of the deployed `d358e1026`. Re-read 2026-10-07: the shop
     archive template (one product-card) opens in the eye-care-test Site Editor with no product-card error.
-  - 13 calibration rows with `css_state` NULL (`DB_STATE_MISSING_HOVER` and `STATE_FOCUS_UNROUTED`). This is a
-    different set from the 31 held rows the routing deliberately leaves NULL.
+  - [x] The calibration rows with `css_state` NULL (`DB_STATE_MISSING_HOVER`, `STATE_FOCUS_UNROUTED`), judged 2026-10-07
+    against the framework DB (`block_attributes` rows with a CSS property, no state, and Hover/Focus/Active/Current in the
+    name: 29). 14 are right as they are (`bgHoverZoomDuration`/`Easing`: a transition is declared on the resting element).
+    6 are focus rings (filter-search, product-search, 4 on form): the route has no `focus` state (the DB holds hover,
+    current, open, scrolled, shrunk) because the walker measures no focus state, so they stay NULL until it does. 5 are
+    hover-only settings with no resting twin (business-info attribution x2, responsive-logo `opacityHover`, post-grid
+    `textColourHoverGradient`, google-reviews `buttonHoverLift`), deliberately undeclared
+    (`plugins/sgs-blocks/scripts/check-hover-state-classification.py`, FR-35-5's state-without-base baseline). 4 could be
+    declared `current` in their block.json (account `menuActive*` x3, language-switch `currentColour`); no open Eye Care row
+    needs them. No open Eye Care triage row is blocked by any of the 29: the business-info hover rows on contact and footer
+    are `ambiguous` (`textColourHover` and `labelColourHover` both paint the label inside the link), a different gap.
   - 106 calibration rows judged dead and unexplained, plus the `oneWidth` probe list (multi-button 8,
     notice-banner 4, wishlist-panel 3, nav-bar-menu 2, google-reviews 2).
   - `sgs/hero` calibrates 34 of its 47 settings as dead (sgs/media: 0, `2b4516195`). The backlog's hero rows
     cover maxWidth, the tier background and gridTemplateColumns, not the count; Session D measures hero-heavy
     pages against it.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
-    Spec 47 L1.3 resolves child sizing through discovery.
+    Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
+    triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
+    `sgsChildSizing:{desktop:fill}` emits the `sgs-child-sizing` scope classes), the editor registration
+    (`extensions/child-sizing.js` adds the attributes to every block opting in), the comparison
+    (`lib/calibrate.mjs::discoverEffects` found flex-grow and flex-basis on container, text and seven others) and a panel
+    rule overriding the flex (none). Cause still unproven; the direct test is `calibrate.mjs --site local-eye-care --blocks
+    sgs/mega-group --recalibrate` (cache measured 2026-10-05; blocked on 2026-10-07 by R-47-11).
 
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
@@ -144,7 +159,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
   and rebuilt. Also seen: cr-ref-lenses-25's gap setting holds 0 yet its inner band paints a 16px column gap (Hardcode
-  class). Diagnose those three, fix generally, re-run.
+  class). **Diagnosed 2026-10-07: none of the three is a defect; each is an artefact of that run's single write round.**
+  The draft's two columns (gen-lenses-22, -25) are block flow whose children carry the spacing as margins (read on the
+  draft at 375 and 1440: h2 `margin-bottom:16px`, the list 0, the "Choose a frame" button `margin-top:28px`); live's
+  stacks add a 16px gap on top of the heading's 16px margin (32px under each heading, register 101). So `gap: 0` is the
+  right write; the h@375 "regression" that reverted it was marked unconfirmed (the run ended before the next walk), and
+  the Hardcode row compared the new tree value with a page measured before the rebuild (the live rule is on the inner
+  band, `.sgs-container-<uid>>.sgs-container__inner{gap}`, so 0 paints 0). Register 100 (price margins, gen-lenses-11/15/19)
+  and 102 (step numbers on cr-ref-lenses-27) are open as `T resolver-writes` on the 2026-10-07 measure-only sweep. Next: a
+  full three-round Solve on Lenses (blocked twice on 2026-10-07 by R-47-11 while sandybrown deploys ran).
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
