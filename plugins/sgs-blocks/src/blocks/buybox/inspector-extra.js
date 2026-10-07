@@ -222,7 +222,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						setAttributes( { thumbRadius: val ?? '' } )
 					}
 					help={ __(
-						'Rounding of every thumbnail corner. 0 is square. Empty follows the main image's radius.',
+						'Rounding of every thumbnail corner. 0 is square. Empty follows the main image’s radius.',
 						'sgs-blocks'
 					) }
 				/>
