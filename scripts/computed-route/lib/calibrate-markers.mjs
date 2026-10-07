@@ -17,6 +17,8 @@ const MARKER_EASING_ALT = 'ease-out';
 const TIER_PX = { desktop: 37, tablet: 23, mobile: 7 };
 // Minimum sizes a render floors at the 44px touch target.
 const FLOORED = /^min-(height|width)$/;
+// A setting whose render clamps its value to the 44px touch target (the detached burger chip's size), so its markers sit above it.
+const FLOORED_ATTR = /^triggerDetachSize$/;
 const WIDTH_TIER = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
 const BOX = { desktop: [ 11, 13, 17, 19 ], tablet: [ 21, 23, 25, 27 ], mobile: [ 3, 5, 7, 9 ] };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -247,6 +249,11 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 		const value = tiered ? { desktop: cornersOf( 'desktop' ), tablet: cornersOf( 'tablet' ), mobile: cornersOf( 'mobile' ) } : cornersOf( 'desktop' );
 		return [ { label: tiered ? 'corners-tiers' : 'corners', attrs: set( value ), expect: null, box: true } ];
 	}
+	// A per-tier {x, y} offset (the detached burger chip): each tier gets its own pair, so a dead tier shows.
+	if ( 'tier_object' === row.tier_shape && /\{x, y\}/.test( def.description ?? '' ) ) {
+		const pairOf = ( x, y ) => ( { x, y } );
+		return [ { label: 'tiers-xy', attrs: set( { desktop: pairOf( 37, 41 ), tablet: pairOf( 23, 29 ), mobile: pairOf( 7, 11 ) } ), expect: null } ];
+	}
 	if ( 'tier_object' === row.tier_shape ) {
 		if ( box ) {
 			return [ { label: 'box-tiers', attrs: set( { desktop: boxOf( 'desktop' ), tablet: boxOf( 'tablet' ), mobile: boxOf( 'mobile' ) } ), expect: null, box: true } ];
@@ -262,7 +269,7 @@ export function markersFor( row, schema, snapshot, current = {}, ctx = {} ) {
 			return [ { label: 'tiers', attrs: withUnit( set( { desktop: lengthIn( 37 ), tablet: lengthIn( 23 ), mobile: lengthIn( 7 ) } ) ), expect: { 1440: '37px', 768: '23px', 375: '7px' } } ];
 		}
 		// A minimum size is held at or above the 44px touch target (a render floors it there), so its markers sit above it.
-		const lift = FLOORED.test( prop ) ? 100 : 0;
+		const lift = FLOORED.test( prop ) || FLOORED_ATTR.test( row.attr_name ) ? 100 : 0;
 		return [ { label: 'tiers', attrs: withUnit( set( { desktop: lengthIn( 37 + lift ), tablet: lengthIn( 23 + lift ), mobile: lengthIn( 7 + lift ) } ) ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `${ TIER_PX[ WIDTH_TIER[ w ] ] + lift }px` ] ) ) } ];
 	}
 	if ( box ) {

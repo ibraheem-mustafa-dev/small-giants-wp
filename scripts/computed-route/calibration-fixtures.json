@@ -1669,7 +1669,18 @@
           "mobile": "on"
         }
       }
-    ]
+    ],
+    "preconditions": {
+      "featuredRadius": {
+        "featuredBg": "primary"
+      },
+      "itemBorderRadius": {
+        "itemBg": "primary"
+      },
+      "itemMotionEasing": {
+        "itemMotionDuration": 300
+      }
+    }
   },
   "sgs/nav-drawer": {
     "attributes": {

@@ -53,6 +53,12 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 		collect( els, root, '' );
 		const ids = [ ...new Set( [ root, ...root.querySelectorAll( '[aria-controls]' ) ].flatMap( ( e ) => ( e.getAttribute( 'aria-controls' ) || '' ).split( /\s+/ ) ).filter( Boolean ) ) ];
 		ids.map( ( id ) => document.getElementById( id ) ).filter( ( t ) => t && ! root.contains( t ) ).forEach( ( t, i ) => collect( els, t, i ? `@controls:${ i + 1 }` : '@controls' ) );
+		// A companion the block prints outside its root (the detached burger chip, queued to wp_footer) carries the
+		// root's per-instance uid class (sgs-<block>-<hex>), so it is read too, keyed @companion.
+		const uid = [ ...root.classList ].find( ( c ) => /^sgs-[a-z0-9-]+-[0-9a-f]{8}$/.test( c ) );
+		if ( uid ) {
+			[ ...document.querySelectorAll( `.${ uid }` ) ].filter( ( c ) => ! root.contains( c ) && ! c.contains( root ) ).forEach( ( c, i ) => collect( els, c, i ? `@companion:${ i + 1 }` : '@companion' ) );
+		}
 		out.push( els );
 	}
 	return out;
