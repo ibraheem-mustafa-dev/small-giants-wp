@@ -72,6 +72,17 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   - The footer's size-guide modal: the `modal-open` state, its scoped pair and the `surfaces.json` state map, all
     three together.
   - Product's 2 lost pairs.
+- **Carried from Session C (found open by the 2026-10-07 completion check; each needs a decision or a proof):**
+  - `sgs/product-card` throws a TypeError in the block editor ("Me is not a function" in `edit()`): never diagnosed.
+  - 13 calibration rows with `css_state` NULL (`DB_STATE_MISSING_HOVER` and `STATE_FOCUS_UNROUTED`). This is a
+    different set from the 31 held rows the routing deliberately leaves NULL.
+  - 106 calibration rows judged dead and unexplained, plus the `oneWidth` probe list (multi-button 8,
+    notice-banner 4, wishlist-panel 3, nav-bar-menu 2, google-reviews 2).
+  - `sgs/hero` calibrates 34 of its 47 settings as dead (sgs/media: 0, `2b4516195`). The backlog's hero rows
+    cover maxWidth, the tier background and gridTemplateColumns, not the count; Session D measures hero-heavy
+    pages against it.
+  - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
+    Spec 47 L1.3 resolves child sizing through discovery.
 
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
@@ -167,10 +178,11 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   `7255be68d`: its state opener matched the Menu button by rendered text `^$`, and the label is hidden at 375
   but reads "Menu" from 768, so the click silently missed and `clickText`'s `optional` swallowed it — both sides
   behaved alike, so it was never a site regression; all 17 surfaces now carry `handScope`); shop's and product's draft
-  finders hold other words at 375 and 768 (the draft rebuilds its layout per width); Help's FAQ items are 319px on the
+  finders hold other words at 375 and 768, so the pairing merges a finder chosen per width
+  (`lib/pairs.mjs::mergeWidthFinders`, `d605bb5ba`; shop now keeps 21 pairs); Help's FAQ items are 319px on the
   draft against 996px live; lens shows 3 of its 24 blocks at step 1 (lens.mjs's hand pairs walk the later steps). Bag,
   checkout and confirmation are walked by their hand configs (`qa/sweep/2026-10-05/walks/`; confirmation against the
-  one cancelled order, so partly).
+  paid order 652, walked in full at `2b4516195`).
 - [x] **Recalibration of every block with today's calibration changes:** done 2026-10-05 for all 94 cache files on the
   local WSL mirrors (Session 0 of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`; counts in
   `.claude/reports/2026-10-04-route-data-audit/README.md` section 7). sgs/modal calibrates (22 settings).

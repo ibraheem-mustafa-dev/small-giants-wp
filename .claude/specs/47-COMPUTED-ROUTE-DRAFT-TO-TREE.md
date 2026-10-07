@@ -689,9 +689,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
        at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
        Progress (Contact: the hours list's row gap and the address width; the form: the select's height; Lenses: three
-       regressions to diagnose). Known measuring gaps (2026-10-05): the collector reads no words inside the open live
-       phone drawer; shop's and product's draft finders change words between widths; the independent check counts
-       off-screen screen-reader text as painted (Contact).
+       regressions to diagnose). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
+       (`lib/pairs.mjs::rootFor`, `d605bb5ba`), per-width draft finders (`mergeWidthFinders`), and off-screen
+       screen-reader text in the independent check (`independent-check.mjs::srOnly`).
      - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in
        the framework DB (`source='sgs-ext'`), calibration `reaches` and `_tag`, the per-round `conflict` rule, grid
        tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
