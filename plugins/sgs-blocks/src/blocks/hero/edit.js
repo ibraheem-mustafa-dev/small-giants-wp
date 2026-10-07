@@ -1866,7 +1866,16 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								{ label: __( 'Loop', 'sgs-blocks' ), value: 'loop' },
 								{ label: __( 'Zoom out once', 'sgs-blocks' ), value: 'zoom-out-once' },
 							] }
-							onChange={ ( val ) => setAttributes( { bgKenBurnsMode: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( {
+									bgKenBurnsMode: val,
+									// A one-off zoom at the loop's 20s default reads as no motion;
+									// it starts at 3s unless a duration was chosen.
+									...( 'zoom-out-once' === val && ( attributes.bgAnimationDuration ?? 20 ) === 20
+										? { bgAnimationDuration: 3 }
+										: {} ),
+								} )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

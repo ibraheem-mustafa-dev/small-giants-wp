@@ -224,10 +224,14 @@ export async function addFrameToBag( buttonEl ) {
 		toastActions.showError( 'Sorry, this item could not be added to your bag.' );
 		return false;
 	}
-	// The frame alone: any add-on the shopper had picked is dropped, as the
-	// "no add-ons" route drops it (`flow-routing.js::commitStepRouting`).
-	resetAddonAnswers( flowRoot );
-	return addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout: false, bareFrame: true } );
+	// The frame alone: the request sends no add-ons (`bareFrame`). The shopper's
+	// picks are dropped only once the frame is in the bag, so a failed add
+	// leaves the pop-up exactly as it was.
+	const added = await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout: false, bareFrame: true } );
+	if ( added ) {
+		resetAddonAnswers( flowRoot );
+	}
+	return added;
 }
 
 /**

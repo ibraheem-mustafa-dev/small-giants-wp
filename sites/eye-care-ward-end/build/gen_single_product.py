@@ -112,7 +112,10 @@ def detail_field(mode, value, after):
 
 details_grid = B("sgs/container", dict(
     layout="grid", gridTemplateColumns={"desktop": "repeat(auto-fit,minmax(min(100%,170px),1fr))"},
-    gap={"desktop": "1px"}, backgroundColour="border", borderWidth=BOX, borderColour="border"), [
+    # Hairlines between the cells are the grid's own separators (the tree's current shape).
+    gap={"desktop": "1px"}, separators={"row": {"style": "solid", "width": {"desktop": "1px"}, "colour": "border"},
+                                        "column": {"style": "solid", "width": {"desktop": "1px"}, "colour": "border"}},
+    borderWidth=BOX, borderColour="border"), [
     B("sgs/container", dict(backgroundColour="surface-alt",
                             padding={"desktop": {"top": "18px", "right": "20px", "bottom": "18px", "left": "20px"}}),
       [txt(label, **LABEL), detail_field(mode, value, after)])

@@ -175,10 +175,20 @@ wrappers.forEach( ( wrapper ) => {
 	// instead of writing the property inline — the declaration lives in style.css
 	// (`.sgs-trust-bar__track.is-paused`), never on the element. Each cause is tracked
 	// separately so leaving one does not resume a bar another is still holding.
+	// Pressing play is an explicit choice: it overrides the hover and focus pause
+	// (the button itself sits inside the bar, so using it always hovers or focuses
+	// the bar) until both have ended.
 	let hovered = false;
 	let focused = false;
 	let userPaused = false;
-	const syncPause = () => track.classList.toggle( 'is-paused', userPaused || hovered || focused );
+	let userPlayed = false;
+	const syncPause = () =>
+		track.classList.toggle( 'is-paused', userPaused || ( ! userPlayed && ( hovered || focused ) ) );
+	const releasePlay = () => {
+		if ( ! hovered && ! focused ) {
+			userPlayed = false;
+		}
+	};
 
 	function setPauseButtonVisible( visible ) {
 		if ( pauseButton ) {
@@ -189,6 +199,7 @@ wrappers.forEach( ( wrapper ) => {
 	if ( pauseButton ) {
 		pauseButton.addEventListener( 'click', () => {
 			userPaused = ! userPaused;
+			userPlayed = ! userPaused;
 			pauseButton.setAttribute( 'aria-pressed', userPaused ? 'true' : 'false' );
 			syncPause();
 		} );
@@ -201,6 +212,7 @@ wrappers.forEach( ( wrapper ) => {
 		} );
 		wrapper.addEventListener( 'mouseleave', () => {
 			hovered = false;
+			releasePlay();
 			syncPause();
 		} );
 	}
@@ -214,6 +226,7 @@ wrappers.forEach( ( wrapper ) => {
 			return;
 		}
 		focused = false;
+		releasePlay();
 		syncPause();
 	} );
 

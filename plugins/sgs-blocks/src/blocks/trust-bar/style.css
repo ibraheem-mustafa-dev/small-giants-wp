@@ -316,7 +316,8 @@ a.sgs-trust-bar__badge:focus-visible {
 
 .sgs-trust-bar__pause:focus-visible {
 	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, currentColor);
-	outline-offset: 2px;
+	/* Inside the button: the bar clips anything outside its own height. */
+	outline-offset: -4px;
 }
 
 .sgs-trust-bar__pause-icon {

@@ -20,6 +20,9 @@ import { getSteps, updateContinueState, showContinueHint, hideContinueHint, adva
 import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
 import { recordOptionAnswer, commitStepRouting, routesToQuestionStep } from './flow-routing.js';
 
+/** How long after a 'pick' advance option clicks are ignored (a double tap's second half). */
+const PICK_SETTLE_MS = 400;
+
 /**
  * D1 — visually select an option and deselect its siblings in the same
  * options group (continue and pick advanceModes).
@@ -46,6 +49,12 @@ function selectOption( buttonEl ) {
 export function handleOptionClick( buttonEl ) {
 	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
 	if ( ! flowRoot ) {
+		return;
+	}
+	// 'pick' advanceMode: the next step appears where the picked option was, so
+	// the second half of a double tap would answer it unseen. Clicks in the
+	// moment after an advance are ignored.
+	if ( Date.now() - Number( flowRoot.dataset.pickAdvancedAt || 0 ) < PICK_SETTLE_MS ) {
 		return;
 	}
 
@@ -80,6 +89,7 @@ export function handleOptionClick( buttonEl ) {
 	// button; arrow keys never do) on a single-choice question moves on at
 	// once, by the same routing Continue commits. Continue stays for Back.
 	if ( 'pick' === advanceModeOf( flowRoot ) && routesToQuestionStep( flowRoot, buttonEl, currentIndex ) ) {
+		flowRoot.dataset.pickAdvancedAt = String( Date.now() );
 		commitStepRouting( flowRoot, buttonEl, currentIndex );
 	}
 }
