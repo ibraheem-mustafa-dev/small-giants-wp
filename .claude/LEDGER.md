@@ -100,9 +100,9 @@ a cosmetic path change re-keys rows wholesale.
   check (2026-10-07) found ~60 of those 164 rows are NOT framework gaps: route by category after a `/qc-council`.
   **`sgs/hero`'s 3 closed** (`HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap — **never remove
   `section.sgs-hero{max-width:none}`** (D725, 24px off-screen).
-  **OWED, no host needed:** (1) the W→F reclassification over all 63 at once so F keeps one meaning; (2) **CR6 is
-  a MIGRATION** — 178 call sites / 56 files through ONE helper whose contract is the defect, 112 identical
-  boilerplate, needs `/strategic-plan` first (spec 47 §5). **CR12 is PARKED pending Bean**: the deriver
+  **OWED:** (1) a fresh measure-only sweep after the peers' deploys, then the W→F move by category
+  (`reports/2026-10-07-route/canvas-register-crosscheck.json`, `/qc-council` first); (2) **CR6 is planned**:
+  `plans/2026-10-07-cr6-box-longhand-migration.md` (U1 first; border WIDTH stays zero-fill). **CR12 is PARKED pending Bean**: the deriver
   hard-refuses Eye Care on contrast, 3 design options on its register row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) are fast but carry
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
