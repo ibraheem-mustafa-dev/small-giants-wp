@@ -348,8 +348,6 @@ nothing — so each is a support question waiting to happen.
 | Ref | The dead control | Where |
 |---|---|---|
 | **CR12** | **The dark-mode toggle renders nothing for any current client.** `theme-toggle/render.php` returns early with no derived dark palette, and no `sites/*/theme-snapshot.json` has one. So the whole feature is inert | Decide whether to derive a dark palette per client or hide the toggle until one exists |
-| **CR2** | **A header's scrolled background and text colours show no change.** `site-header/render.php` only switches the scroll script on for transparent, shrink, hide, a scrolled shadow or section ink — never for these two colours. Calibration also saw no change with shrink on, so a second cause remains | Prove the second cause |
-| **CR1, CR9** | **Per-device settings that skip one width.** Header-row and footer-row per-device gap and content width reach 375 and 1440 but not 768 — identically on both blocks, so likely shared code. Same pattern: `gallery` gap and content width, `mega-aside` aside gap (768 missed), `notice-banner` padding and margin (1440 missed), `form-field-tiles` grid columns (375 missed) | One likely shared cause; worth one investigation covering all of them |
 | **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | A control-plumbing job |
 | **CR10** | `sgs/media`'s `aspectRatio` has no `css_property` in the framework DB, so it can never be resolved or written | Small, DB-side |
 
@@ -396,7 +394,7 @@ whether `wp-build-page.js` can build a template or template part).
 
 Tier 1 is about 2 hours in total if the three investigations land where expected. Tier 2 is the real
 body of work: the shop-journey group is a session on its own, checkout another, and the rest splits
-into half-sessions by theme. Tier 3 is about an hour once CR1/CR9's shared cause is found. Tier 4 is
+into half-sessions by theme. Tier 3 is about an hour. Tier 4 is
 one sitting of roughly an hour for the lot.
 
 ## Deferred: product-manifest transient is never purged (found 2026-10-06, untracked until now)

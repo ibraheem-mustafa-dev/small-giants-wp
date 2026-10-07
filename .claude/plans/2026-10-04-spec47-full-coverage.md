@@ -136,7 +136,9 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   measure-only Solve run per surface (`--rounds 0`, no writes), aggregated by `sweep.mjs` into
   `sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json` (`run-manifest.tsv` names each report). "Unmapped
   state" issues come from walker states Solve does not map to a setting state (shop's filters, sort and brand states).
-  The register's Sweep column gives each register item its status.
+  The register's Sweep column gives each register item its status. Re-paired 2026-10-07 with a state open or a
+  desktop re-check: the four mega panels (`3fda5b734`), shop (`fb7dcecaa`, 4 -> 21 of 48) and product with its tab
+  and accordion panels open (`7a15720cf`, 37 -> 104 blocks seen, 14 -> 74 kept).
 
 | Surface | Blocks measured (paired + hand) | Open issues | Unresolved | Derived | Unmapped state |
 |---|---|---|---|---|---|

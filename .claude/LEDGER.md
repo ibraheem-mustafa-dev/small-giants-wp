@@ -59,7 +59,7 @@ The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source 
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
 No blockers.
 
-**Spec 47 (v0.15.1): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+**Spec 47 (v0.15.2): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
 read per-surface counts from `qa/triage/*.json`, never a cached figure. **Everything except stage 5 (a second draft)
 is built.** Route defects with owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time
@@ -72,7 +72,8 @@ the fix register (fixes; its Sweep column re-judged on the 2026-10-07 measure-on
 (Session D: route and per-surface Solve work, including the register's owed tree values); `plans/2026-10-05-eye-care-functionality-backlog.md`
 (features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2); `plans/2026-10-07-measured-diagram-block.md` (the D1 diagram block, its own session).
 **Measured state:** read the counts from `qa/triage/*.json` (all 17 surfaces), never a cached figure. The W-to-F reclassification is
-applied (`ffac809ce`, `844ee7bf2`) and the mega panels are paired again. ⚠️ Never compare a raw triage count with an
+applied (`ffac809ce`, `844ee7bf2`) with every canvas citation read live (`canvas-confirm.json`), and the mega
+panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, nothing stale or unmeasured). ⚠️ Never compare a raw triage count with an
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
@@ -87,18 +88,17 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   have defaults but no control). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6–§7.
   google-reviews' accent hover shades: owned by the google-reviews session (handed over 2026-10-07).
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
-- **Route:** a register check (2026-10-07) found ~60 of the 164 canvas rows are NOT framework gaps: route them by
-  category after a `/qc-council` (`reports/2026-10-07-route/canvas-register-crosscheck.json`). `reachesElement`
-  **fails open**. **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`**
-  (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
+- **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
+  ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). Open: Spec 47 §5 "Route, open"
+  (a candidates mode for `confirm-canvas.mjs`, nav-bar-menu calibration, help's all-open state, CR25).
+  **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`** (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
   for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
 - **The walker-blind rows** are all closed and verified live on eye-care-test except **N36S** (see its register row).
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
-- **Routing:** the 31 held rows stay NULL (deliberate). Transition rows calibrate
-  (`calibrate-markers.mjs::transitionMarker`), but the marker gates on the attr NAME
-  `/(^|[a-z])Transition(Duration)$/`, so 36 of 63 transition attrs in 12 blocks read dead. Fix: key on `css_property`.
+- **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2: P2-d and P2-f done; P2-a (corner radius) is
+  next, then P2-b, P2-c, P2-e (`plans/2026-10-07-cr6-box-longhand-migration.md` Phase 2).
 - **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
   row carries its hash. The stretched link was rebuilt so a block's OWN visible link owns the surface. `brandUseLogo`
   ships `true` (a cross-client default).

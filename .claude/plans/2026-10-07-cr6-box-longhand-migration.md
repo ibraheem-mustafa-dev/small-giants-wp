@@ -2,7 +2,7 @@
 title: CR6 — migrate the padding and margin shorthand that zero-fills unset sides
 project: small-giants-wp
 created: 2026-10-07
-status: phase 1 shipped
+status: phase 1 shipped; phase 2 P2-d and P2-f done, P2-a P2-b P2-c P2-e open
 authors: Bean, Claude (small-giants-wp-cd)
 governs: register CR6 (.claude/plans/2026-10-02-eye-care-fix-register.md), Spec 47 §5 Residual (CR6)
 ---

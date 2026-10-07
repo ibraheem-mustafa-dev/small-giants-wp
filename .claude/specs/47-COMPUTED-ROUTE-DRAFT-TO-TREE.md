@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.1"
+spec_version: "0.15.2"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-06
+last_verified: 2026-10-07
 status: draft
 references:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
@@ -470,7 +470,13 @@ designed.
   block and attribute. This is a classification, not a write path: the route cannot decide which sibling should own
   the value.
 - **A `canvas-settable` row closes nothing by itself.** It is a claim with a citation, and the citation is tested on
-  the live site before the row is called resolved.
+  the live site before the row is called resolved: `confirm-canvas.mjs` enumerates every stylesheet rule that could
+  govern the property on the row's element, and its committed result (`sites/<client>/build/qa/canvas-confirm.json`)
+  feeds `lib/triage.mjs::measuredReachFrom` -> `ctx.measuredReach`, which decides a citation before the source gate's
+  deliberate fail-open. A refuted citation makes `canvasSettable` cite the NEXT block on the page that declares the
+  property, so a sweep is measured only when every candidate family is (Eye Care 2026-10-07: 1,243 families, 0
+  skipped stylesheets; the 16 remaining canvas rows rest on CONFIRMED families except one whose element exists only
+  in a filter state).
 
 **Done when:** a draft padding row on an `sgs/mega-group` inside a mega-menu canvas whose `sgs/mega-panel` ancestor
 declares a padding box family classes `canvas-settable` citing that ancestor's attribute, and the same row classes a
@@ -634,8 +640,17 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        every border width, and the census's `zeroFillPairs` (`reports/migrations/box-longhands-census.json`); with no
        census it seeds everywhere, the safe direction. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
        (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
-       **Phase 2, named in the plan:** corner radius, the `var()` holdouts, the media-padding atom and its JS twin,
-       and two zero-fill copies outside the helper (`google-reviews`, `helpers-border-style.php::sgs_border_box_decls`).
+       **Phase 2** (plan table): P2-d done (`google-reviews` padding prints set sides; `sgs_border_box_decls` holds no
+       padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
+       literal, so the five CR6 classification overrides are gone). Open: P2-a corner radius, P2-b the `var()`
+       holdouts, P2-c the media-padding atom and its JS twin, P2-e the Eye Care tier boxes holding an explicit zero.
+     - **Route, open (2026-10-07):** (1) `confirm-canvas.mjs` measures only the family each row CURRENTLY cites, so
+       after a fresh sweep the fallback citations are unmeasured again and fail open; the 2026-10-07 sweep was closed
+       by a one-off enumeration of every `lib/triage.mjs::canvasSettable` candidate (2,009 claims, 883 families,
+       one pass), not committed: build it into `confirm-canvas.mjs` as a candidates mode. (2) CR4: `sgs/nav-bar-menu`
+       cannot be re-calibrated on the local mirror (its first chunk times out loading the editor). (3) CR14: help's
+       FAQ answers pair only with a walker state that opens every answer. (4) CR25: the shop template build fails
+       intermittently in Solve (`wp-build-page.js::buildTemplate`, "page.evaluate: Object"). Each is a register row.
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
        `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
