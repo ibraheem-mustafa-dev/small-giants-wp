@@ -1,11 +1,11 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T09-26-12/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T09-26-12/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T10-12-58/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T10-12-58/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
   "W": 40,
-  "F": 30,
+  "F": 28,
   "T": 0,
   "U": 0
  },
@@ -689,154 +689,6 @@
     ],
     "rules": [],
     "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-lens-0||style|border-radius",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "border-radius",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-radius setting on sgs/choice-flow paints \"\" (candidates: backBorderRadius)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "backBorderRadius",
-     "css_property": "border-radius",
-     "css_element": "back",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "backBorderRadius",
-       "borderRadius"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "backBorderRadius",
-       "borderRadius"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "radius_shorthand ) { $base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';",
-       "= $border_radius ) { $base_decls[] = 'border-radius:' . $border_radius . 'px;'; } if ( '' !==",
-       "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\" . $bg_decl . ';"
-      ]
-     },
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "$radius .= 'px'; } $decls[] = 'border-radius:' . $radius; } } // Background colour"
-      ]
-     },
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
-      "mentions": [],
-      "declares": [
-       "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\"; $css .= $pai"
-      ]
-     },
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "sition:absolute;inset:0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-lens-0||style|box-shadow",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for box-shadow"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "modal",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     }
-    ]
    }
   },
   {

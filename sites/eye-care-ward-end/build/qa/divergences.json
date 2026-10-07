@@ -735,5 +735,305 @@
     },
     "reason": "CLAUDE.md non-negotiable (44px touch targets): the header phone link cancels its tap-area padding with negative margins the draft does not have. Measured 2026-10-05 on cr-ref-header-11 (pair header-phone, state closed, 1440 and 1920 only): the draft declares 0px; live pulls -7.5px left/right and -12.625px top/bottom. Same decided mechanism as D-17 to D-24 on cr-ref-contact-9. NOT independently proven: lint.mjs::lintLedger skips HOUSE_RULES before any evidence check, so nothing here verifies the resulting tap target reaches 44px",
     "decided": "2026-10-05 Session C (touch-target house rule; Bean decided the rule and cr-ref-contact-9 as D-17 to D-24, this entry extends it to this node by the same mechanism)"
+  },
+  {
+    "id": "D-52",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-1",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the name field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-53",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-1",
+    "state": "*",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the name field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-54",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-2",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the email field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-55",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-2",
+    "state": "*",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the email field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-56",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-4",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the topic field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-57",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-4",
+    "state": "*",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the topic field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-58",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-5",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red 1px ring on the message field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-59",
+    "scope": "contact-form",
+    "node": "cr-ref-contact-form-5",
+    "state": "*",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 162 (Bean 2026-10-07): the contact form's empty-submit messages are kept, including the red error icon on the message field after an empty submit; the draft shows none",
+    "register": [
+      "162"
+    ],
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-60",
+    "scope": "footer",
+    "node": "cr-ref-footer-6",
+    "state": "*",
+    "property": "padding-top",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+    "register": [
+      "39-43"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-61",
+    "scope": "footer",
+    "node": "cr-ref-footer-6",
+    "state": "*",
+    "property": "padding-right",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+    "register": [
+      "39-43"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-62",
+    "scope": "footer",
+    "node": "cr-ref-footer-6",
+    "state": "*",
+    "property": "padding-bottom",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+    "register": [
+      "39-43"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-63",
+    "scope": "footer",
+    "node": "cr-ref-footer-6",
+    "state": "*",
+    "property": "padding-left",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+    "register": [
+      "39-43"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-64",
+    "scope": "footer",
+    "node": "cr-ref-footer-6",
+    "state": "*",
+    "property": "width",
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "Register 39-43 (Bean): social boxes stay 44px, not the draft's 40px, for the 44px touch-target rule; social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px forms that box around the 28px glyph",
+    "register": [
+      "39-43"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-65",
+    "scope": "footer",
+    "node": "cr-ref-footer-9",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
+    "register": [
+      "S2"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-66",
+    "scope": "footer",
+    "node": "cr-ref-footer-16",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "Register S2 (Bean): footer links stay black on hover; this list root's border-top-color is currentColor following that decided colour on a 0px border, so nothing paints",
+    "register": [
+      "S2"
+    ],
+    "decided": "2026-10-02 Bean"
+  },
+  {
+    "id": "D-67",
+    "scope": "lens",
+    "node": "cr-ref-lens-0",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "accessibility"
+    },
+    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+    "register": [
+      "96"
+    ],
+    "decided": "2026-10-07 house rule"
+  },
+  {
+    "id": "D-68",
+    "scope": "lens",
+    "node": "cr-ref-lens-0",
+    "state": "*",
+    "property": "border-radius",
+    "expected": {
+      "rule": "accessibility"
+    },
+    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+    "register": [
+      "96"
+    ],
+    "decided": "2026-10-07 house rule"
+  },
+  {
+    "id": "D-69",
+    "scope": "mobile-menu",
+    "node": "cr-ref-mobile-menu-0",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "accessibility"
+    },
+    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+    "register": [
+      "96"
+    ],
+    "decided": "2026-10-07 house rule"
+  },
+  {
+    "id": "D-70",
+    "scope": "shop",
+    "node": "cr-ref-shop-31",
+    "state": "*",
+    "property": "box-shadow",
+    "expected": {
+      "rule": "accessibility"
+    },
+    "reason": "CLAUDE.md non-negotiable (WCAG 2.1 AA visible focus, 2.4.7): theme utilities.css::*:focus-visible paints the glow and 4px radius; the draft has none. Keyboard-only: proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440) that after real mouse clicks the focused element does not match :focus-visible (box-shadow none, radius 0px) and after Tab it does; the walker's state openers drive keyboard modality. Council row R35/R36/R69 (.claude/reports/2026-10-07-route/canvas-register-crosscheck.json)",
+    "register": [
+      "96"
+    ],
+    "decided": "2026-10-07 house rule"
+  },
+  {
+    "id": "D-71",
+    "scope": "product",
+    "node": "cr-ref-product-4",
+    "state": "hover",
+    "property": "transform",
+    "expected": {
+      "value": "matrix(1, 0, 0, 1, 0, -3)"
+    },
+    "reason": "Register S1 (Bean 2026-10-02): one site-wide button lift, 3px over 0.25s; the draft's add-to-bag lifts 2px",
+    "register": [
+      "S1"
+    ],
+    "decided": "2026-10-04 Bean"
   }
 ]

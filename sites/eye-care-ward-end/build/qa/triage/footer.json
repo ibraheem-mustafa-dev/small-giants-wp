@@ -1,11 +1,11 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T03-44-02/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T03-44-02/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T10-09-41/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T10-09-41/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
   "W": 97,
-  "F": 63,
+  "F": 46,
   "T": 15,
   "U": 0
  },
@@ -921,658 +921,6 @@
    }
   },
   {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-top",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-top setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
-       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
-       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-right",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
-       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
-       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-bottom",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-bottom setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-left",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
-       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
-       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-left-color",
    "ref": "cr-ref-footer-6",
    "pair": "social-instagram",
@@ -2114,114 +1462,6 @@
       "mentions": [],
       "declares": [
        "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-instagram",
-   "path": ".sgs-social-icons__item:nth-of-type(1)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(1)\" (candidates: iconSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "iconSize",
-     "css_property": "height,width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "iconSize",
-       "width"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "width:25px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
-      ]
-     },
-     {
-      "block": "site-footer",
-      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
-      "mentions": [],
-      "declares": [
-       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
       ]
      }
     ]
@@ -2880,658 +2120,6 @@
    }
   },
   {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|padding-top",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-top setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
-       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
-       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|padding-right",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
-       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
-       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|padding-bottom",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-bottom setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|padding-left",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
-       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
-       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-left-color",
    "ref": "cr-ref-footer-6",
    "pair": "social-google",
@@ -4079,114 +2667,6 @@
    }
   },
   {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|width",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-google",
-   "path": ".sgs-social-icons__item:nth-of-type(3)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(3)\" (candidates: iconSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "iconSize",
-     "css_property": "height,width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "iconSize",
-       "width"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "width:25px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
-      ]
-     },
-     {
-      "block": "site-footer",
-      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
-      "mentions": [],
-      "declares": [
-       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|painted-ground",
    "ref": "cr-ref-footer-6",
    "pair": "social-google",
@@ -4714,658 +3194,6 @@
        "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
        "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
       ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|padding-top",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-top setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingTop"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingTop"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "dding_top ) { $base_band_decls[] = 'padding-top:' . $band_padding_top; } if ( '' !== $b",
-       "let ) { $tablet_padding_decls[] = 'padding-top:' . $padding_top_tablet; } if ( '' !=",
-       "ile ) { $mobile_padding_decls[] = 'padding-top:' . $padding_top_mobile; } if ( '' !="
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|padding-right",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-right setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingRight"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingRight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ing_right ) { $base_band_decls[] = 'padding-right:' . $band_padding_right; } if ( '' !=",
-       "let ) { $tablet_padding_decls[] = 'padding-right:' . $padding_right_tablet; } if ( '",
-       "ile ) { $mobile_padding_decls[] = 'padding-right:' . $padding_right_mobile; } if ( '"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|padding-bottom",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-bottom setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingBottom"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingBottom"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ng_bottom ) { $base_band_decls[] = 'padding-bottom:' . $band_padding_bottom; } if ( ''",
-       "let ) { $tablet_padding_decls[] = 'padding-bottom:' . $padding_bottom_tablet; } if (",
-       "ile ) { $mobile_padding_decls[] = 'padding-bottom:' . $padding_bottom_mobile; } if ("
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|padding-left",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no padding-left setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: padding)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "padding"
-      ],
-      "absent": [
-       "paddingLeft"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "padding",
-       "paddingLeft"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--filled .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--outlined .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--boxed .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".sgs-social-icons--pill .sgs-social-icons__item",
-      "declaration": "padding:8px"
-     },
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "padding:0"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "padding"
-      ],
-      "declares": [
-       "ding_left ) { $base_band_decls[] = 'padding-left:' . $band_padding_left; } // contentBa",
-       "let ) { $tablet_padding_decls[] = 'padding-left:' . $padding_left_tablet; } if ( $ta",
-       "ile ) { $mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile; } if ( $mo"
-      ]
-     },
-     {
-      "block": "site-footer-row",
-      "cite": "includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css",
-      "mentions": [
-       "padding"
-      ],
-      "declares": []
      }
     ]
    }
@@ -5912,114 +3740,6 @@
       "mentions": [],
       "declares": [
        "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(2)|style|width",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-whatsapp",
-   "path": ".sgs-social-icons__item:nth-of-type(2)",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/social-icons paints \".sgs-social-icons__item:nth-of-type(2)\" (candidates: iconSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/social-icons",
-     "setting": "iconSize",
-     "css_property": "height,width",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "social-icons/render.php",
-      "mentions": [
-       "iconSize",
-       "width"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [
-       "width"
-      ],
-      "absent": [
-       "iconSize"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "social-icons/style.css",
-      "selector": ".is-style-social-icons-footer .sgs-social-icons__item",
-      "declaration": "width:25px"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "ecls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( isset( $box['display'] ) && '' !="
-      ]
-     },
-     {
-      "block": "social-icons",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
-      ]
-     },
-     {
-      "block": "site-footer",
-      "cite": "includes/sgs-footer-rows-full-width-css.php::sgs_footer_rows_full_width_css",
-      "mentions": [],
-      "declares": [
-       "oot_sel . ' > .sgs-container__inner > *){width:100%;}'; }"
       ]
      }
     ]
@@ -11415,91 +9135,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-9||hover|border-top-color",
-   "ref": "cr-ref-footer-9",
-   "pair": "gen-footer-9",
-   "path": "",
-   "block": "core/list",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "core/list has no setting for border-top-color (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
-      "mentions": [],
-      "declares": [
-       "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
-       "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-footer-16||hover|color",
    "ref": "cr-ref-footer-16",
    "pair": "gen-footer-16",
@@ -11530,91 +9165,6 @@
      "css_element": null
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-16||hover|border-top-color",
-   "ref": "cr-ref-footer-16",
-   "pair": "gen-footer-16",
-   "path": "",
-   "block": "core/list",
-   "kind": "hover",
-   "property": "border-top-color",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "core/list has no setting for border-top-color (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer-row/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     },
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "borderTopColor",
-       "borderColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/helpers-colour-variants.php::sgs_border_states_css",
-      "mentions": [],
-      "declares": [
-       "if ( ! $any_suppressed ) { return 'border-color:' . $paint . ';'; } $decls = ''; fore",
-       "ormal_paint ) { $css .= $selector . '{border-color:' . $normal_paint . ';}'; } // Current is"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
-      "mentions": [],
-      "declares": [
-       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
-      ]
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-footer-0||style|margin-top",
@@ -11998,9 +9548,9 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
+     "parent": "cr-ref-footer-6||box|h",
      "ref": "cr-ref-footer-6",
-     "key": "width",
+     "key": "h",
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
@@ -12010,37 +9560,6 @@
       768,
       1440,
       1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-7||box|y-after-social-whatsapp-icon",
-   "ref": "cr-ref-footer-7",
-   "pair": "col-shop",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-social-whatsapp-icon",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-top",
-     "ref": "cr-ref-footer-6",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 8,
-     "widths": [
-      375
      ]
     }
    ]
@@ -12227,7 +9746,8 @@
    "kind": "box",
    "property": "y-after-col-brand",
    "widths": [
-    375
+    375,
+    768
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -12244,7 +9764,8 @@
      "width": 375,
      "delta": -6,
      "widths": [
-      375
+      375,
+      768
      ]
     }
    ]
@@ -12270,11 +9791,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12307,11 +9828,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12344,11 +9865,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12381,11 +9902,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12418,11 +9939,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12455,11 +9976,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -12492,11 +10013,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
      "delta": 4,
      "widths": [
@@ -13411,13 +10932,13 @@
    ]
   },
   {
-   "key": "cr-ref-footer-2||box|y-after-columns-row",
-   "ref": "cr-ref-footer-2",
-   "pair": "col-brand",
+   "key": "cr-ref-footer-7||box|y-after-brand-wordmark",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-columns-row",
+   "property": "y-after-brand-wordmark",
    "widths": [
     768
    ],
@@ -13434,7 +10955,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -5,
+     "delta": 5,
      "widths": [
       768
      ]
@@ -13490,11 +11011,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 768,
      "delta": 5,
      "widths": [
@@ -13726,7 +11247,40 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -5,
+     "delta": 12,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-2||box|y-after-columns-row",
+   "ref": "cr-ref-footer-2",
+   "pair": "col-brand",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-columns-row",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|margin-top",
+     "ref": "cr-ref-footer-0",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": -11,
      "widths": [
       1440,
       1920
@@ -13753,11 +11307,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-0||style|margin-top",
-     "ref": "cr-ref-footer-0",
-     "key": "margin-top",
+     "parent": "cr-ref-footer-1||box|y-after-footer-root",
+     "ref": "cr-ref-footer-1",
+     "key": "y-after-footer-root",
      "relation": "ancestor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 1440,
      "delta": 11,
      "widths": [
@@ -13786,11 +11340,11 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|width",
-     "ref": "cr-ref-footer-6",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-footer-0||style|margin-top",
+     "ref": "cr-ref-footer-0",
+     "key": "margin-top",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 1440,
      "delta": 5,
      "widths": [

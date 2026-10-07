@@ -1,11 +1,11 @@
 {
  "surface": "shop",
- "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T09-28-51/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T09-28-51/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T10-21-32/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T10-21-32/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 58,
-  "F": 20,
+  "W": 59,
+  "F": 19,
   "T": 2,
   "U": 8
  },
@@ -96,6 +96,73 @@
       "mentions": [],
       "declares": [
        "ed_wraps, true ) ) { $base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';'; } // writin"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-shop-9|form > select|style|display",
+   "ref": "cr-ref-shop-9",
+   "pair": "sort",
+   "path": "form > select",
+   "block": "woocommerce/catalog-sorting",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "woocommerce/catalog-sorting has no setting for display"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
       ]
      }
     ]
@@ -1616,72 +1683,6 @@
    ]
   },
   {
-   "key": "cr-ref-shop-9|form > select|style|display",
-   "ref": "cr-ref-shop-9",
-   "pair": "sort",
-   "path": "form > select",
-   "block": "woocommerce/catalog-sorting",
-   "kind": "style",
-   "property": "display",
-   "widths": [
-    375,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "woocommerce/catalog-sorting has no setting for display"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "display"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
-       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
-       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
-       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-shop-22|fieldset > div > button:nth-of-type(1)|style|border-radius",
    "ref": "cr-ref-shop-22",
    "pair": "size-small",
@@ -2288,77 +2289,6 @@
    }
   },
   {
-   "key": "cr-ref-shop-31|.sgs-filter-search__input|style|box-shadow",
-   "ref": "cr-ref-shop-31",
-   "pair": "brand-search",
-   "path": ".sgs-filter-search__input",
-   "block": "sgs/filter-search",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/filter-search has no setting for box-shadow"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "filter-search/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-shadow-hover.php::sgs_shadow_hover_rules",
-      "mentions": [],
-      "declares": [
-       "eturn sgs_hover_state_rules( $selector, 'box-shadow:' . $hover, ':focus-visible' ); }"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-shop-9|form > select|hover|reached",
    "ref": "cr-ref-shop-9",
    "pair": "sort",
@@ -2430,6 +2360,63 @@
       375,
       375,
       375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-shop-9|form > select|box|y-from-title",
+   "ref": "cr-ref-shop-9",
+   "pair": "sort",
+   "path": "form > select",
+   "block": "woocommerce/catalog-sorting",
+   "kind": "box",
+   "property": "y-from-title",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-shop-9|form > select|style|display",
+     "ref": "cr-ref-shop-9",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
       375,
       768,
       768,
@@ -2439,12 +2426,12 @@
       768,
       768,
       768,
+      768,
       1440,
       1440,
       1440,
-      1440,
-      1440,
-      1440,
+      1920,
+      1920,
       1920,
       1920
      ]
@@ -2503,6 +2490,9 @@
       1440,
       1440,
       1920,
+      1920,
+      1920,
+      1920,
       1920
      ]
     }
@@ -2553,7 +2543,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 178,
+     "delta": 179,
      "widths": [
       375,
       375,
@@ -2704,56 +2694,6 @@
    ]
   },
   {
-   "key": "cr-ref-shop-9|form > select|box|y-from-title",
-   "ref": "cr-ref-shop-9",
-   "pair": "sort",
-   "path": "form > select",
-   "block": "woocommerce/catalog-sorting",
-   "kind": "box",
-   "property": "y-from-title",
-   "widths": [
-    375,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-shop-9|form > select|style|display",
-     "ref": "cr-ref-shop-9",
-     "key": "display",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -5,
-     "widths": [
-      375,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-shop-22|fieldset > div > button:nth-of-type(1)|box|y-after-count",
    "ref": "cr-ref-shop-22",
    "pair": "size-small",
@@ -2778,7 +2718,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -180,
+     "delta": -174,
      "widths": [
       375,
       768
@@ -2955,6 +2895,37 @@
    "class": "U",
    "decidedBy": "box-unexplained",
    "evidence": []
+  },
+  {
+   "key": "cr-ref-shop-4||box|y-after-gen-shop-5",
+   "ref": "cr-ref-shop-4",
+   "pair": "gen-shop-4",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-gen-shop-5",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-shop-5||style|margin-bottom",
+     "ref": "cr-ref-shop-5",
+     "key": "margin-bottom",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": -6,
+     "widths": [
+      768
+     ]
+    }
+   ]
   },
   {
    "key": "cr-ref-shop-25|fieldset > div > button:nth-of-type(1)|box|y-after-active-pill",

@@ -1,11 +1,11 @@
 {
  "surface": "mobile-menu",
- "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T03-59-46/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T03-59-46/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T10-16-30/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T10-16-30/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
   "W": 69,
-  "F": 8,
+  "F": 7,
   "T": 13,
   "U": 0
  },
@@ -878,72 +878,6 @@
      "reaches": false
     }
    ]
-  },
-  {
-   "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|box-shadow",
-   "ref": "cr-ref-mobile-menu-0",
-   "pair": "drawer-close",
-   "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
-   "block": "sgs/nav-drawer",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no box-shadow setting on sgs/nav-drawer paints \".sgs-nav-drawer__chrome > .sgs-nav-drawer__close\" (candidates: shadow)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/nav-drawer",
-     "setting": "shadow",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "nav-drawer/render.php",
-      "mentions": [
-       "shadow"
-      ],
-      "absent": [
-       "boxShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-shadow-layers.php::sgs_shadow_box_decls",
-      "mentions": [],
-      "declares": [
-       "{ return array(); } $decls = array( 'box-shadow:' . $value ); if ( 'none' !== $value ) { $dec"
-      ]
-     },
-     {
-      "block": "nav-drawer",
-      "cite": "includes/helpers-responsive.php::includes/helpers-responsive.php",
-      "mentions": [
-       "shadow"
-      ],
-      "declares": []
-     }
-    ]
-   }
   },
   {
    "key": "cr-ref-mobile-menu-0|.sgs-nav-drawer__chrome > .sgs-nav-drawer__close|style|padding-top",
