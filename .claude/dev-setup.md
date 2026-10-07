@@ -849,7 +849,7 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 225 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 229 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 1028 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
@@ -995,7 +995,7 @@ Each entry's purpose is quoted from the script's own header.
 | 128 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
 | 129 | `check-focus-ring-token.py` | : every keyboard focus ring is drawn from the focus-ring token. |
 | 130 | `migrate-box-longhands.py` | CR6: move padding and margin boxes off the shorthand that zero-fills unset sides. |
-| 131 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level import in the same file. The destructured attribute value then… |
+| 131 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level function… |
 | 132 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
 | 133 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
 | 134 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
@@ -1344,7 +1344,7 @@ Every field below is extracted from the script's own executable code (regex over
 
 **`plugins/sgs-blocks/scripts/check-single-instance-invariants.py`** (build)
 - Path constants: `PLUGIN_ROOT` = Path(__file__).resolve().parent.parent
-- Reads: `MEGA_PANEL_STYLE`, `SITE_HEADER_RENDER`, `TESTIMONIAL_SLIDER_RENDER`, `VALUE_LADDER_HELPER`
+- Reads: `MEGA_PANEL_STYLE`, `SITE_HEADER_RENDER`, `SITE_HEADER_SCROLL_HELPER`, `TESTIMONIAL_SLIDER_RENDER`, `VALUE_LADDER_HELPER`
 - Writes: **read-only** — no write call site found in source
 - CLI flags read: `--check`, `--self-test`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
@@ -1838,7 +1838,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 869 scripts
+#### `plugins/sgs-blocks/scripts/` — 870 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1926,6 +1926,7 @@ for the verb you happen to have in mind.
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
 | `check-hover-state-classification.py` | manifest+npm+script-call | Gate: a `*Hover` attribute that carries a real CSS property MUST be classified |
 | `check-id-scoped-emits.js` | manifest+npm+script-call | STRUCTURAL GUARD — ID-scoped CSS selector emissions. |
+| `check-import-shadowing.js` | manifest | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level… |
 | `check-inert-controls.py` | manifest+npm+script-call | Find block attributes that are OVERWRITTEN in render.php before being used. |
 | `check-interaction-only-css.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-jsonld-flags.py` | manifest+npm | guard the ONE json_encode flag combination that is unsafe. |
@@ -2712,7 +2713,7 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 114 scripts
+#### `scripts/` — 115 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2739,6 +2740,7 @@ for the verb you happen to have in mind.
 | `computed-route/lib/draft.mjs` | manifest+script-call+skill+test-import | Serves a draft that exists only as local files (Fill step 1, FR-47-4): a static server on 127.0.0.1 at an ephemeral port, so the browser reads the… |
 | `computed-route/lib/entrance.mjs` | manifest+script-call | Entrance start (Spec 38, sgsAnimationStart): a block with an entrance that the draft shows at rest while live still holds it hidden is one whose… |
 | `computed-route/lib/fill-config.mjs` | script-call | The walker config Fill generates (FR-47-4 step 4): one pair per skeleton node that has a draftRef, drawn from the node's own ref class, with… |
+| `computed-route/lib/fill-diagram.mjs` | — | Measure a rendered draft's dimension diagram into sgs/diagram-dimension settings (plan archive/2026-10-07-measured-diagram-block.md §C). R-47-4… |
 | `computed-route/lib/fill-entrance.mjs` | script-call | Entrances for Fill (FR-47-4 "values that need care"): what a draft element does as it paints in, measured in a real browser, and the settings that… |
 | `computed-route/lib/fill-handover.mjs` | script-call | The handover list (§3.3, shared with Solve): content a draft shows that no block setting could hold, because it lives outside the tree. Each entry… |
 | `computed-route/lib/fill-page.mjs` | script-call | The page baseline for inherited properties (R-47-5). Calibration records no default for an inherited property |
