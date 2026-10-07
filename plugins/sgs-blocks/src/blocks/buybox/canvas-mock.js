@@ -92,6 +92,37 @@ export function buyboxMockCss( attributes, scope, palette ) {
 			css += `${ root } .buybox__stock--${ status }{color:${ resolved };}${ root } .buybox__stock--${ status } .buybox__stock-dot{background-color:${ resolved };}`;
 		}
 	} );
+	// Gallery thumbnails: the same four settings extras.php::sgs_buybox_extras_scoped_css writes.
+	const colourOf = ( value ) => {
+		const resolved = value ? resolveColourToken( value, palette ) || value : '';
+		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
+	};
+	const thumbWidth = String( attributes.thumbBorderWidth || '' ).trim();
+	const thumbColour = colourOf( attributes.thumbBorderColour );
+	const thumbSelected = colourOf( attributes.thumbSelectedBorderColour );
+	const thumbScale = Number.isFinite( Number( attributes.thumbSelectedScale ) ) ? Math.min( 150, Math.max( 50, Number( attributes.thumbSelectedScale ) ) ) : 105;
+	const thumbDecls = [];
+	if ( thumbWidth && ! /[;{}<>]/.test( thumbWidth ) ) {
+		thumbDecls.push( `border-width:${ thumbWidth }` );
+	}
+	if ( thumbColour ) {
+		thumbDecls.push( `border-color:${ thumbColour }` );
+	}
+	if ( thumbDecls.length ) {
+		css += `${ root } .product-card__thumb{${ thumbDecls.join( ';' ) };}`;
+	}
+	const selectedDecls = [];
+	if ( thumbSelected ) {
+		selectedDecls.push( `border-color:${ thumbSelected }` );
+	} else if ( thumbColour ) {
+		selectedDecls.push( 'border-color:var(--wp--preset--color--primary,#0f7e80)' );
+	}
+	if ( 105 !== thumbScale ) {
+		selectedDecls.push( `transform:scale(${ thumbScale / 100 })` );
+	}
+	if ( selectedDecls.length ) {
+		css += `${ root } .product-card__thumb[aria-current="true"]{${ selectedDecls.join( ';' ) };}`;
+	}
 	return css;
 }
 
@@ -211,6 +242,11 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 					style={ { aspectRatio: '1 / 1', display: 'grid', placeItems: 'center', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } }
 				>
 					{ __( 'Product image', 'sgs-blocks' ) }
+				</div>
+				<div className="product-card__thumbs" aria-hidden="true" style={ { display: 'flex', gap: '8px', marginTop: '8px' } }>
+					{ [ 1, 2, 3 ].map( ( n ) => (
+						<span key={ n } className="product-card__thumb" aria-current={ 1 === n ? 'true' : undefined } style={ { display: 'block', background: 'var(--wp--preset--color--surface-alt, #f0f0f0)' } } />
+					) ) }
 				</div>
 				{ attributes.gallerySavingBadge && (
 					<span className={ `sgs-buybox__saving-badge sgs-buybox__saving-badge--${ badgePosition }` }>{ savingText }</span>
