@@ -38,6 +38,11 @@ export async function revealSweep( page, y ) {
 // other pair's hover end state is read too, with :hover forced on it and its ancestors (devtools.mjs::forcedHover).
 // A phone has no hover (Bean 2026-09-28), so phones skip it.
 export async function hoverPass( page, pairs, side, snap, { state, h, RESOLVE, full, phone, cdp = null } ) {
+	// A phone marks every pair it measured as having no hover, so compare.mjs::timingIrrelevant can tell "no hover to read"
+	// from "hover never read".
+	if ( phone ) {
+		pairs.filter( ( q ) => ! snap[ q.name ].missing ).forEach( ( q ) => ( snap[ q.name ].noHover = true ) );
+	}
 	for ( const p of cdp && ! phone ? pairs.filter( ( q ) => ! q.hover && ! snap[ q.name ].missing ) : [] ) {
 		snap[ p.name ].hover = await forcedHover( cdp, page, p[ side ], RESOLVE, () => page.evaluate( hoverStyles, [ p[ side ], p.hoverProps || HOVER_PROPS, RESOLVE, PAINT_SRC ] ) );
 	}

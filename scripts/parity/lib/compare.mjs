@@ -138,9 +138,19 @@ function partIrrelevant( p, d, l ) {
 	return /^icon-/.test( p ) && ( undefined === d[ p ] || undefined === l[ p ] );
 }
 
+// Whether a side's element changes anything between rest and a state it was read in (hover, focus, pressed): a state
+// property read at rest with a different value. A property with no resting read (filter) is not a change.
+const moves = ( x ) => [ x.hover, x.focus, x.active ].some( ( st ) => st && 'object' === typeof st && Object.entries( st ).some( ( [ k, v ] ) => undefined !== x.styles?.[ k ] && String( v ) !== String( x.styles[ k ] ) ) );
+// Whether a side's states were read at all: a hover end state, or a phone run, which has no hover (state-passes.mjs::hoverPass).
+const statesRead = ( x ) => undefined !== x.hover || true === x.noHover;
+
 // Motion timings that run nothing: an animation's while neither side animates (no keyframes), a transition's delay and
-// easing while neither side's transition takes any time.
+// easing while neither side's transition takes any time, and any transition timing while neither side's element changes
+// in any state read on both sides (a heading carrying the site's hover timing with no hover effect paints no motion).
 function timingIrrelevant( p, d, l ) {
+	if ( /^transition-/.test( p ) && statesRead( d ) && statesRead( l ) && ! moves( d ) && ! moves( l ) ) {
+		return true;
+	}
 	// Animation timings compare only where both sides animate with CSS keyframes: a side animating from script (the
 	// Web Animations API, an SGS entrance) leaves no CSS timing, and the keyframes motion row already reports the
 	// difference in technique.

@@ -405,12 +405,16 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   waits a floor (a state's `settle`, default 900ms: a reveal class added on load runs no animation to wait on) then until no finite animation on the document timeline is left
   (6s cap; a state that hits it is recorded as `unsettled`); `forcedHover` forces `:hover` on the element and every
   ancestor (`CSS.forcePseudoState`, as a pointer hovers the chain), reads `hoverStyles` once its transitions finish and
-  clears it, for every pair not flagged `hover` (`state-passes.mjs::hoverPass`; phones still skip hover);
+  clears it, for every pair not flagged `hover` (`state-passes.mjs::hoverPass`; phones still skip hover and mark each
+  measured pair `noHover`);
   `declaredValues` reads `DECLARED_PROPS` from `CSS.getMatchedStylesForNode` (`cascadeWinner`: author rules then inline,
   last wins, `!important` first, user-agent ignored) into `snap.declared`. `collect.mjs`: `DEFAULT_PROPS` reads
   transition and animation duration, delay and easing; `PSEUDO_PROPS` are read on each painting layer (`snap.pseudo`).
   `compare.mjs`: timings compare as sets of distinct values and are skipped where nothing runs; animation timings only
-  where both sides animate with CSS keyframes (a script-driven entrance leaves no CSS timing) (`timingIrrelevant`);
+  where both sides animate with CSS keyframes (a script-driven entrance leaves no CSS timing), and transition timings
+  not where both sides' states were read (a hover end state, or a phone's `noHover`) and neither side's element changes
+  in any of them (hover, focus, pressed): a heading carrying the site's hover timing with no hover effect plays no motion
+  (`timingIrrelevant`; `walker-reads.test.mjs`, red without it, 2026-10-07);
   layer rows carry `pseudo` and stamp on `<path>::before` (`ref-trace.mjs`), calibration's key for the layer; a layer on
   one side only is one `content` row; `chrome-walk.mjs::compareChrome` keeps a layer's background row.
   `paint.mjs::textRun` groups its text boxes into rows by top; `rows.space` is the median space between rows less the

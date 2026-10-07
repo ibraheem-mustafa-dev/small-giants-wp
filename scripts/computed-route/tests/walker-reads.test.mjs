@@ -28,6 +28,35 @@ test( 'MUST FAIL TO MISS: a different transition duration or easing is a style r
 	assert.deepEqual( keys( comparePair( { text: false }, d, l, tol ) ), [ 'transition-duration', 'transition-timing-function' ] );
 } );
 
+test( 'MUST FAIL (Lenses headings, 2026-10-07): a transition timing on an element that changes in no state read on either side is no row', () => {
+	// The draft's heading has no transition; live's carries the site's hover timing but no hover effect. Hover end states
+	// were read on both sides and equal rest, so the 0.25s plays on nothing.
+	const rest = { color: 'rgb(20, 20, 20)', transform: 'none' };
+	const d = snap( { ...rest, 'transition-duration': '0s' }, { hover: { ...rest, filter: 'none' } } );
+	const l = snap( { ...rest, 'transition-duration': '0.25s, 0.25s', 'transition-timing-function': 'ease' }, { hover: { ...rest, filter: 'none' } } );
+	assert.deepEqual( comparePair( { text: false }, d, l, tol ), [] );
+	// A phone run (no hover to read) with nothing pressed is the same judgement.
+	const dp = snap( { ...rest, 'transition-duration': '0s' }, { noHover: true } );
+	const lp = snap( { ...rest, 'transition-duration': '0.25s' }, { noHover: true } );
+	assert.deepEqual( comparePair( { text: false }, dp, lp, tol ), [] );
+} );
+
+test( 'MUST FAIL TO MISS: a transition timing still compares where either side changes in a state, or where states were not read', () => {
+	const rest = { color: 'rgb(20, 20, 20)', transform: 'none' };
+	const timing = ( diffs ) => keys( diffs ).filter( ( k ) => /^transition-/.test( k ) );
+	// Live lifts on hover: its 0.25s is visible motion the draft's 0s lacks (the lift is its own hover row).
+	const d = snap( { ...rest, 'transition-duration': '0s' }, { hover: { ...rest } } );
+	const l = snap( { ...rest, 'transition-duration': '0.25s' }, { hover: { ...rest, transform: 'matrix(1, 0, 0, 1, 0, -3)' } } );
+	assert.deepEqual( timing( comparePair( { text: false }, d, l, tol ) ), [ 'transition-duration' ] );
+	// A phone that presses (the :active pass runs on phones): the press is visible motion.
+	const dp = snap( { ...rest, 'transition-duration': '0s' }, { noHover: true } );
+	const lp = snap( { ...rest, 'transition-duration': '0.25s' }, { noHover: true, active: { ...rest, color: 'rgb(42, 42, 42)' } } );
+	assert.deepEqual( timing( comparePair( { text: false }, dp, lp, tol ) ), [ 'transition-duration' ] );
+	// One side's states unread: nothing proves the timing plays on nothing.
+	const unread = snap( { ...rest, 'transition-duration': '0.25s' } );
+	assert.deepEqual( timing( comparePair( { text: false }, d, unread, tol ) ), [ 'transition-duration' ] );
+} );
+
 test( 'positive control: one timing for every property matches a list of the same timing; still transitions compare no easing', () => {
 	const d = snap( { 'transition-duration': '0.25s', 'transition-delay': '0s' } );
 	const l = snap( { 'transition-duration': '0.25s, 0.25s', 'transition-delay': '0s, 0s' } );

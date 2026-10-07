@@ -581,6 +581,12 @@
                   "titleFontWeight": "400",
                   "className": "cr-ref-lenses-27",
                   "stepGap": "15px",
+                  "numberGap": "16px",
+                  "titleLineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
                   "padding": {
                     "mobile": {
                       "top": "0px",
