@@ -84,3 +84,19 @@ test( 'MUST FAIL (Lenses eyebrow, 2026-10-07): text repeated in a trust bar outs
 		await browser.close();
 	}
 } );
+
+test( 'MUST FAIL (Lenses button, 2026-10-07): a block whose own text another block\'s text starts with resolves to the exact match, not the earlier container of the words', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><h3 style="margin:0">Choose a frame and tap Add my prescription.</h3>
+			<a id="btn" href="/shop/" style="display:inline-block;width:180px;padding:12px 0">Choose a frame</a></main>` );
+		const rows = await page.evaluate( readPage, [ { ref: 'btn', block: 'sgs/button', own: 'choose a frame', texts: [], field: null } ] );
+		assert.equal( rows[ 0 ].found, true );
+		assert.equal( Math.round( rows[ 0 ].box.w ), 180, 'the match is the button, not the step title that starts with its words' );
+	} finally {
+		await browser.close();
+	}
+} );

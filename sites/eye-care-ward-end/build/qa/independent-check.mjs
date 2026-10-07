@@ -108,7 +108,10 @@ export function readPage( list ) {
 		if ( ! el ) {
 			// A container by every text inside it that the page holds (a wording difference elsewhere is a text row, not a lost block).
 			const texts = it.own ? [ it.own ] : it.texts.filter( ( t ) => all.some( ( e ) => has( e, t ) ) );
-			el = texts.length ? deepest( texts ).find( ( e ) => ! used.has( e ) ) || null : null;
+			const candidates = texts.length ? deepest( texts ).filter( ( e ) => ! used.has( e ) ) : [];
+			// A block found by its own text is the element painting exactly that text when one exists: a button reading
+			// "Choose a frame" is not the earlier step title "Choose a frame and tap ..." that merely holds its words.
+			el = ( it.own && candidates.find( ( e ) => textOf.get( e ) === N( it.own ) ) ) || candidates[ 0 ] || null;
 		}
 		if ( ! el ) {
 			out.push( { ref: it.ref, found: false } );
