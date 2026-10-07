@@ -818,8 +818,6 @@ a.sgs-field-fallback:focus {
 }
 
 a.sgs-field-fallback:focus-visible {
-	background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
-	border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);
 	outline: 3px solid var(--sgs-focus-color, currentColor);
 	outline-offset: 2px;
 }
