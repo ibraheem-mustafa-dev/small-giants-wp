@@ -149,6 +149,20 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 	return style;
 }
 
+// A value is only safe to interpolate into CSS TEXT if it cannot terminate the
+// declaration or the rule. typographyPreviewStyle()'s output is normally handed
+// to React as a `style` object, where React itself blocks a breakout, so two of
+// its values reach it unsanitised: `{prefix}FontFamily` is passed through raw,
+// and the three `{prefix}*Unit` attributes are concatenated raw onto a number.
+// In a <style> rule those become a CSS-injection vector, so they are sanitised
+// here, mirroring the PHP this file is the twin of:
+// helpers-typography.php sanitises font-family with `[^a-zA-Z0-9 ,"'\-]` and
+// helpers-responsive.php::sgs_responsive_sanitise_unit units with `[^a-z%]/i`.
+const CSS_TEXT_BREAKOUT = /[{}<>;=\\]|url\s*\(|expression\s*\(|@import|\/\*/i;
+
+// PHP's font-family charset, applied to the whole declaration value.
+const safeFontFamily = ( v ) => String( v ).replace( /[^a-zA-Z0-9 ,"'\-]/g, '' );
+
 /**
  * typographyPreviewCss — the same declarations typographyPreviewStyle() returns,
  * emitted as a CSS RULE for an editor <style> element instead of an inline
@@ -175,9 +189,22 @@ export function typographyPreviewCss( attributes, prefix, scopeSelector, tier = 
 	if ( ! scopeSelector ) {
 		return '';
 	}
+	if ( CSS_TEXT_BREAKOUT.test( scopeSelector ) ) {
+		return '';
+	}
 	const style = typographyPreviewStyle( attributes, prefix, tier );
 	const decls = Object.keys( style )
-		.map( ( key ) => `${ key.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ style[ key ] }` )
+		.map( ( key ) => {
+			const prop  = key.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` );
+			const value = 'fontFamily' === key ? safeFontFamily( style[ key ] ) : String( style[ key ] );
+			// Drop the declaration rather than the rule: one hostile value must not
+			// silently take the other properties' preview down with it.
+			if ( '' === value.trim() || CSS_TEXT_BREAKOUT.test( value ) ) {
+				return '';
+			}
+			return `${ prop }:${ value }`;
+		} )
+		.filter( Boolean )
 		.join( ';' );
 	return decls ? `${ scopeSelector }{${ decls };}` : '';
 }
