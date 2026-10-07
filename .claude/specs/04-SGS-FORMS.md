@@ -63,7 +63,7 @@ The wrapper block that handles the entire form lifecycle.
 | `formName` | string | Human-readable form name (for admin reference) |
 | `submitLabel` | string | Submit button text (default: "Submit") |
 | `submitStyle` | string | Button style: primary, success, accent |
-| `submitFontWeight` / `submitFontSize` / `submitTextTransform` / `submitLetterSpacing` | string / number / string / string | Submit button typography on the scoped `.sgs-form__button--submit` rule; unset keeps the stylesheet (600, small preset size) |
+| Element typography: `label*`, `field*`, `tileIcon*`, `tileLabel*`, `consent*`, `reviewTerm*`, `submit*`, `navButton*` | the full 15-attr typography family per prefix (`FontSize` / `LineHeight` / `LetterSpacing` are `{desktop,tablet,mobile}` tier objects with a `*Unit` sibling) | One Typography panel (Styles tab) switches between All text and these elements. Each prefix paints its element through `sgs_typography_css_rule` on `.{uid} <element>`: `.sgs-form-field__label`, `.sgs-form-field__input`, `.sgs-form-tile__icon`, `.sgs-form-tile__label`, `.sgs-form-field__consent-text`, `.sgs-form-review__term` (built by `view.js`), `.sgs-form__button--submit`, and `.sgs-form__button--prev` / `--next`. Unset keeps the stylesheet's `:where()` defaults (buttons 600 weight, small preset size, 1.5 line-height) |
 | `submitPadding` / `submitMinHeight` | object (box) / number | Submit button padding and minimum height (px); unset keeps 0.75rem 2rem and 44px |
 | `successMessage` | string | Message shown after successful submission |
 | `successRedirect` | string | URL to redirect to after submission (optional, overrides message) |
