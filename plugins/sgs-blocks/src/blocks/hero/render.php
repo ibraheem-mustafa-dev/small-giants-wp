@@ -568,6 +568,25 @@ if ( '' !== $hover_border_colour_gradient ) {
 	);
 }
 
+// Background zoom on hover. The wrapper's rule (includes/container-bg-hover-zoom.php) aims at
+// its own `.sgs-container__image-bg` or ::before, neither of which the standard hero renders
+// (it paints a private <img class="sgs-hero__bg-img"> and nulls backgroundImage before the
+// wrapper), so the hero emits the same rule at that <img>. The `scale` property composes with
+// the transform that parallax or ken-burns set on the same element. Off with parallax,
+// ken-burns or a video, exactly as the wrapper gates it.
+if ( $has_standard_bg_image && ! empty( $attributes['bgHoverZoom'] ) && ! $bg_parallax && ! $bg_ken_burns && empty( $bg_video_attr['url'] ) ) {
+	$responsive_css .= sgs_container_bg_hover_zoom_css(
+		$uid,
+		false,
+		$attributes['bgHoverZoomScale'] ?? 105,
+		$attributes['bgHoverZoomDuration'] ?? 600,
+		(string) ( $attributes['bgHoverZoomEasing'] ?? 'ease' ),
+		(string) ( $attributes['bgHoverZoomEasingCustom'] ?? '' ),
+		'.sgs-hero__bg-img',
+		'scale'
+	);
+}
+
 // Split variant: replace the default flex layout with CSS Grid.
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.

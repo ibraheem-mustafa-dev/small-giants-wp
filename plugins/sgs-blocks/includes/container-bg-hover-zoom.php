@@ -20,6 +20,11 @@
  *
  * Off while Ken Burns or parallax is on: both already move the same image.
  *
+ * A block that paints its own private <img> (the standard hero's `.sgs-hero__bg-img`) passes
+ * that child selector as $target and `scale` as $property: the individual `scale` property
+ * composes with the `transform` that parallax or a ken-burns keyframe animation sets on the
+ * same element, so neither is overwritten.
+ *
  * The wrapper reads the attributes and calls sgs_container_bg_hover_zoom_css() with the
  * instance's uid; the rules come back as scoped CSS text (Spec 32: never inline).
  *
@@ -42,9 +47,12 @@ if ( ! function_exists( 'sgs_container_bg_hover_zoom_css' ) ) {
 	 * @param mixed  $duration_ms   Duration in ms.
 	 * @param string $easing        Named easing.
 	 * @param string $easing_custom Custom cubic-bezier() for the 'custom' easing.
+	 * @param string $target        Optional descendant selector of the block's own image (e.g. '.sgs-hero__bg-img');
+	 *                              when set it replaces the wrapper's image/::before target and $img_path is ignored.
+	 * @param string $property      CSS property that carries the zoom: 'transform' (default) or 'scale'.
 	 * @return string CSS text, or '' when there is nothing to zoom.
 	 */
-	function sgs_container_bg_hover_zoom_css( string $uid, bool $img_path, $scale_pct, $duration_ms, string $easing, string $easing_custom ): string {
+	function sgs_container_bg_hover_zoom_css( string $uid, bool $img_path, $scale_pct, $duration_ms, string $easing, string $easing_custom, string $target = '', string $property = 'transform' ): string {
 		$uid = preg_replace( '/[^a-zA-Z0-9_-]/', '', $uid );
 		if ( '' === $uid ) {
 			return '';
@@ -58,10 +66,15 @@ if ( ! function_exists( 'sgs_container_bg_hover_zoom_css' ) ) {
 		$factor = rtrim( rtrim( number_format( $scale / 100, 3, '.', '' ), '0' ), '.' );
 		$ease   = sgs_motion_easing_css( '' === $easing ? 'ease' : $easing, $easing_custom, 'ease' );
 		$suffix = $img_path ? ' > .sgs-container__image-bg' : '::before';
+		if ( '' !== $target ) {
+			$suffix = ' ' . trim( $target );
+		}
+		$property = 'scale' === $property ? 'scale' : 'transform';
+		$value    = 'scale' === $property ? $factor : 'scale(' . $factor . ')';
 
-		return '.' . $uid . $suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}'
+		return '.' . $uid . $suffix . '{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}'
 			. '@media (prefers-reduced-motion: no-preference){'
-			. sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix )
+			. sgs_hover_state_rules( '.' . $uid, $property . ':' . $value, ':focus-within', $suffix )
 			. '}';
 	}
 }
