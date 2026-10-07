@@ -43,7 +43,11 @@ function readEnv( file, key ) {
 const CASES = [
 	{
 		name: 'sgs/icon', attr: 'iconAlign', insert: { iconName: 'star', iconSize: 32 }, toolbar: true,
-		canvas: ( el ) => ( { ok: el.classList.contains( 'sgs-icon--align-end' ), detail: 'wrapper class ' + ( [ ...el.classList ].find( ( c ) => c.includes( '--align-' ) ) || '(no align class)' ) } ),
+		canvas: ( el ) => {
+			const r = el.getBoundingClientRect(), pr = el.parentElement.getBoundingClientRect();
+			const g = { left: Math.round( r.left - pr.left ), right: Math.round( pr.right - r.right ), w: Math.round( r.width ) };
+			return { ok: g.right <= 2 && g.left > 100, detail: JSON.stringify( g ) };
+		},
 		visual: ( el ) => {
 			const r = el.getBoundingClientRect(), pr = el.parentElement.getBoundingClientRect();
 			return JSON.stringify( { left: Math.round( r.left - pr.left ), right: Math.round( pr.right - r.right ), w: Math.round( r.width ) } );
@@ -60,7 +64,11 @@ const CASES = [
 	},
 	{
 		name: 'sgs/separator', attr: 'alignment', group: 'Alignment', insert: { width: { desktop: 40 }, widthUnit: '%' },
-		canvas: ( el ) => ( { ok: 'auto' === el.style.marginInlineStart && '0px' === el.style.marginInlineEnd, detail: 'inline margin-inline ' + ( el.style.marginInlineStart || '(none)' ) + ' / ' + ( el.style.marginInlineEnd || '(none)' ) } ),
+		canvas: ( el ) => {
+			const r = el.getBoundingClientRect(), pr = el.parentElement.getBoundingClientRect();
+			const g = { left: Math.round( r.left - pr.left ), right: Math.round( pr.right - r.right ), w: Math.round( r.width ) };
+			return { ok: g.w > 0 && g.w < pr.width && g.right <= 2 && g.left > 100, detail: JSON.stringify( g ) };
+		},
 		visual: ( el ) => {
 			const r = el.getBoundingClientRect(), p = el.parentElement.getBoundingClientRect(), cs = getComputedStyle( el );
 			return JSON.stringify( { left: Math.round( r.left - p.left ), right: Math.round( p.right - r.right ), w: Math.round( r.width ), computedMarginLeft: cs.marginLeft, computedMarginRight: cs.marginRight } );
@@ -103,9 +111,11 @@ async function freshEditor( page, url ) {
 }
 
 async function insertAndSelect( page, name, attrs ) {
+	// Nested in an sgs/container: a block placed directly at the page root is centred by core's own
+	// !important margin rule (.is-root-container > :where(...)), which hides its alignment.
 	const id = await page.evaluate( ( { name: n, attrs: a } ) => {
 		const block = wp.blocks.createBlock( n, a );
-		wp.data.dispatch( 'core/block-editor' ).insertBlocks( block );
+		wp.data.dispatch( 'core/block-editor' ).insertBlocks( wp.blocks.createBlock( 'sgs/container', {}, [ block ] ) );
 		wp.data.dispatch( 'core/block-editor' ).selectBlock( block.clientId );
 		return block.clientId;
 	}, { name, attrs } );

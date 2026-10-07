@@ -832,7 +832,7 @@ scoped `<style>`, zero inline):
 |---|---|---|---|---|
 | Background | `drawerBg` | string slug | `surface` | fg computed (WCAG resolver — contrast holds with zero config) |
 | Close icon colour | `toggleCloseColour` | string slug | `""` = computed from header context | × colour when open; burger colour untouched (owned by header styling) |
-| Content alignment | `drawerAlign` | enum `left`/`center`/`right`/`stretch` (CSS keyword — US spelling is the syntax, UK-rule exempt) | `left` | maps to align-items on the drawer body; children may override. `stretch` ("Full width") is the only value that makes a child span the drawer: align-items can move a shrunk-to-content box but never widen it, so a container or a row of buttons needs it (U-18 G7) |
+| Content alignment | `drawerAlign` | enum `start`/`center`/`end`/`stretch` (logical, so it flips in a right-to-left language; `center` is US spelling as the CSS keyword) | `start` | maps to align-items on the drawer body; children may override. `stretch` ("Full width") is the only value that makes a child span the drawer: align-items can move a shrunk-to-content box but never widen it, so a container or a row of buttons needs it (U-18 G7) |
 | Inner element spacing | `drawerGap` | object `{desktop,tablet,mobile}` | `{desktop:"20px"}` | gap between child rows |
 | Popup padding | `drawerPadding` | object `{desktop:{top,right,bottom,left},…}` | `{}` | emitted via `sgs_emit_responsive_css` |
 

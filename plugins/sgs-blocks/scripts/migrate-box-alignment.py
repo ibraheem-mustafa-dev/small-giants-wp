@@ -56,6 +56,8 @@ OLD_TO_NEW = {'left': 'start', 'right': 'end'}
 ATTRS = sorted({a for a, _, _ in SPEC.values()})
 KEY_RE = re.compile(r'"(' + '|'.join(ATTRS) + r')"\s*:')
 VALUE_RE = re.compile(r'\s*"([^"\\]*)"')
+# Names only these blocks declare: a physical value on one of them is wrong in ANY file, whatever its shape.
+UNIQUE_PHYSICAL_RE = re.compile(r'"(drawerAlign|tabAlignment|iconAlign)"\s*:\s*"(left|right)"')
 COMMENT_RE = re.compile(r'<!--\s*wp:(sgs/[a-zA-Z0-9-]+)\s+')
 
 DATA_SUFFIX_TEXT = ('.php', '.html', '.htm')
@@ -307,6 +309,12 @@ def crosscheck(narrow):
         _, sites, _ = transform(text, path)
         if any(s['verdict'] != 'ignore' for s in sites):
             out.append(f'{rel(path)}: holds a watched five-block value but is not a migration target (add it or WIDTH_OK)')
+    for path in broad_targets():
+        if rel(path) in WIDTH_OK:
+            continue
+        hit = UNIQUE_PHYSICAL_RE.search(read(path))
+        if hit:
+            out.append(f'{rel(path)}: {hit.group(1)} still holds the physical value {hit.group(2)!r} (any file shape)')
     return out
 
 
@@ -359,6 +367,8 @@ def self_test():
     expect('already migrated is ok', [s['verdict'] for s in sites], ['ok'])
     _, sites, _ = transform('<!-- wp:sgs/separator {"alignment":"stretch"} /-->', 'x.php')
     expect('stretch is not allowed on separator', [s['verdict'] for s in sites], ['unrecognised'])
+    expect('unique-name regex catches a loose fixture', bool(UNIQUE_PHYSICAL_RE.search('{"drawerAlign": "right"}')), True)
+    expect('unique-name regex ignores a migrated value', bool(UNIQUE_PHYSICAL_RE.search('{"drawerAlign": "end"}')), False)
     if not narrow_targets():
         failures.append('narrow_targets() is empty')
     return failures
