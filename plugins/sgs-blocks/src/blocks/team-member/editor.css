@@ -2,3 +2,8 @@
 .sgs-team-member__photo img {
 	cursor: pointer;
 }
+
+/* Canvas twin of the front-end social-link size default (zero specificity, so the socialLink typography surface wins). */
+:where(.sgs-team-member__social-preview) {
+	font-size: var(--wp--preset--font-size--small, 0.75rem);
+}

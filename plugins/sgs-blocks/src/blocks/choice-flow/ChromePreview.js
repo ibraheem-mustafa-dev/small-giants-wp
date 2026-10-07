@@ -2,11 +2,14 @@
  * Editor-canvas preview of sgs/choice-flow's header, step-count line and
  * progress line, in the markup and classes `includes/choice-flow-chrome.php`
  * and `render.php` emit, so `style.css` paints them identically. Shows the
- * flow at question 1.
+ * flow at question 1. The numbered-steps row, the step-count badge and the
+ * summary help note are built by view.js and the summary helper on the front
+ * end; the canvas shows the same elements so their colour controls preview.
  *
  * @package SGS\Blocks
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
 import { colourVar } from '../../utils';
 import { firstQuestionProgress } from './preview-style';
 
@@ -17,7 +20,7 @@ import { firstQuestionProgress } from './preview-style';
  * @return {JSX.Element} The preview rows.
  */
 export default function ChromePreview( { attributes, questionTotal } ) {
-	const { showHeader, flowLayout, headerLogo, closeStyle, closeLabel, stepCountLabel, progressColour } = attributes;
+	const { showHeader, flowLayout, headerLogo, closeStyle, closeLabel, stepCountLabel, progressColour, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
 	const showcase = 'showcase' === flowLayout;
 	const hasHeader = !! showHeader || showcase;
 	const label = stepCountLabel && stepCountLabel.trim() ? stepCountLabel.trim() : __( 'Step', 'sgs-blocks' );
@@ -39,8 +42,26 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 	const progressStyle = { '--sgs-choice-flow-progress': firstQuestionProgress( attributes, questionTotal ) };
 	const fillStyle = fillColour ? { '--sgs-choice-flow-progress-colour': fillColour } : undefined;
 
+	// view.js builds one circle per question (flow-progress.js::buildStepperMarkup); an empty flow shows three.
+	const stepperTotal = questionTotal > 0 ? questionTotal : 3;
+	const stepperItems = Array.from( { length: stepperTotal }, ( _, index ) => index + 1 );
+	const noteText = stageNote && stageNote.trim() ? stageNote.trim() : '';
+
 	return (
 		<>
+			{ 'circles' === progressVariant && (
+				<div className="sgs-choice-flow__stepper" aria-hidden="true">
+					{ stepperItems.map( ( number ) => (
+						<Fragment key={ number }>
+							<div className={ `sgs-choice-flow__stepper-item${ 1 === number ? ' is-current' : '' }` }>
+								<span className="sgs-choice-flow__stepper-circle">{ number }</span>
+								<span className="sgs-choice-flow__stepper-label">{ `${ label } ${ number }` }</span>
+							</div>
+							{ number < stepperTotal && <span className="sgs-choice-flow__stepper-connector" /> }
+						</Fragment>
+					) ) }
+				</div>
+			) }
 			{ hasHeader && (
 				<div className="sgs-choice-flow__chrome-header">
 					{ logoUrl && (
@@ -77,7 +98,17 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 			) }
 			<div className="sgs-choice-flow__progress" aria-hidden="true" style={ progressStyle }>
 				<div className="sgs-choice-flow__progress-fill" style={ fillStyle } />
+				{ 'badge' === progressVariant && (
+					<span className="sgs-choice-flow__progress-badge" style={ { left: 'calc(var(--sgs-choice-flow-progress) * 100%)' } }>
+						{ `1/${ stepperTotal }` }
+					</span>
+				) }
 			</div>
+			{ noteText && ( showPricePanel || showcase ) && (
+				<p className="sgs-choice-flow__summary-note sgs-choice-flow__summary-note--stage">
+					<span className="sgs-choice-flow__summary-note-text">{ noteText }</span>
+				</p>
+			) }
 		</>
 	);
 }

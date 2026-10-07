@@ -554,6 +554,12 @@ foreach ( array(
 ) as $gr_el => $gr_colour_attr ) {
 	$gr_responsive_css .= $gr_colour_rule( $gr_root_sel . ' .sgs-google-reviews__' . $gr_el, 'color', $attributes[ $gr_colour_attr ] ?? '' );
 }
+// Google's two block-wide colours are custom properties the stylesheet reads (--sgs-gr-ink-muted for every muted
+// line, --sgs-gr-blue for links, the focus outline and the blue fills). Writing them on the block's own scoped rule
+// (0,2,0) out-ranks both the stylesheet default and its dark-mode counterpart; empty writes nothing, so Google's
+// own palette stays the default. A per-element colour above still wins on its own element.
+$gr_responsive_css .= $gr_colour_rule( $gr_root_sel, '--sgs-gr-ink-muted', $attributes['mutedTextColour'] ?? '' );
+$gr_responsive_css .= $gr_colour_rule( $gr_root_sel, '--sgs-gr-blue', $attributes['accentColour'] ?? '' );
 $gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__card-logo', $attributes['cardLogoSize'] ?? null, array( 'width', 'height' ) );
 
 // Text clamp: lines are written only once the author moved them off the default, and switching the clamp off

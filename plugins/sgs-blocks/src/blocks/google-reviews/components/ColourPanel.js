@@ -28,6 +28,8 @@ export const COLOUR_ATTRS = [
 	'textColour',
 	'reviewLinkColour',
 	'footnoteColour',
+	'mutedTextColour',
+	'accentColour',
 	'seeAllColourBackground',
 	'seeAllColourBackgroundHover',
 	'seeAllColourBackgroundGradient',
@@ -77,6 +79,9 @@ export function colourRows( attributes, setAttributes ) {
 		text( 'review-text', __( 'Review text', 'sgs-blocks' ), 'textColour' ),
 		text( 'review-link', __( 'Full review link', 'sgs-blocks' ), 'reviewLinkColour' ),
 		text( 'footnote', __( 'Footnote', 'sgs-blocks' ), 'footnoteColour' ),
+		// Block-wide: each sets one custom property that every line or link in its family reads.
+		text( 'muted-text', __( 'Muted text (all secondary lines)', 'sgs-blocks' ), 'mutedTextColour' ),
+		text( 'accent', __( 'Accent (links, focus ring, blue fills)', 'sgs-blocks' ), 'accentColour' ),
 		fillRow( {
 			key: 'see-all-background',
 			label: __( 'See all reviews button background', 'sgs-blocks' ),

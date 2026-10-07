@@ -1164,6 +1164,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"mutedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "The block-wide muted text colour: every secondary line (source caption, review count, reviewer details, review date, badge caption, breakdown counts) reads Google's grey from one custom property, and this sets it. Empty keeps Google's own grey (and its dark-mode counterpart). A per-line colour (sourceLabelColour, countColour, metaColour, dateColour) still wins on its own line."
+		},
+		"accentColour": {
+			"type": "string",
+			"default": "",
+			"description": "The block-wide accent colour: the View on Google Maps and Read the full review links, the focus outline, the initials avatar and the See all reviews fill all read Google's blue from one custom property, and this sets it. Empty keeps Google's own blue (and its dark-mode counterpart). The review-link colour (reviewLinkColour) and the button colours still win on their own elements."
+		},
 		"navPosition": {
 			"type": "string",
 			"enum": [

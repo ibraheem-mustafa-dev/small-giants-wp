@@ -541,8 +541,8 @@ if ( ! empty( $base_style_engine_args ) ) {
 }
 
 // Typography — the card root ('' prefix: font size, weight, style, line height
-// inherited by every text surface) and three independent text surfaces (name /
-// role / bio), each with its own prefix and selector, through the shared
+// inherited by every text surface) and four independent text surfaces (name /
+// role / bio / socialLink), each with its own prefix and selector, through the shared
 // TypographyControls/sgs_typography_css_rule() mechanism. Each surface is a
 // single text element, so none carries a text indent. textAlign is the
 // has-text-align-* class added at step 14.
@@ -553,6 +553,7 @@ $sgs_tm_typo_css = array(
 	sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name' ),
 	sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role' ),
 	sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio' ),
+	sgs_typography_css_rule( $attributes, 'socialLink', $root_sel . ' .sgs-team-member__social-link' ),
 );
 foreach ( array_filter( $sgs_tm_typo_css ) as $sgs_tm_typo_rule ) {
 	$scoped_css[] = $sgs_tm_typo_rule;

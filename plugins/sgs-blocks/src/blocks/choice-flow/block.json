@@ -196,6 +196,26 @@
 			"default": "",
 			"description": "The progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
 		},
+		"stepperColour": {
+			"type": "string",
+			"default": "",
+			"description": "The numbered-circles progress style: the colour of a step's number and name before it is reached. Empty = the muted text colour."
+		},
+		"stepperActiveColour": {
+			"type": "string",
+			"default": "",
+			"description": "The numbered-circles progress style: the colour of the current and completed steps' number, ring and name. Empty = the primary colour."
+		},
+		"progressBadgeColour": {
+			"type": "string",
+			"default": "",
+			"description": "The step-count badge progress style: the colour of the badge's text. Empty = the dark primary colour."
+		},
+		"summaryNoteColour": {
+			"type": "string",
+			"default": "",
+			"description": "The text colour of the summary panel's help note, in both layouts. Empty = the muted text colour in the compact layout and the text colour in the showcase layout."
+		},
 		"showHeader": {
 			"type": "boolean",
 			"default": false,

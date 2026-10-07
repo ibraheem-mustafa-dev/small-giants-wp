@@ -42,7 +42,7 @@ import {
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { usePreviewTier } from '../../utils';
+import { usePreviewTier, typographyPreviewStyle } from '../../utils';
 import { buildWrapperStyle, textSurfaceStyle } from './preview-style';
 
 const CARD_STYLES = [
@@ -713,6 +713,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextColumns: true,
 								showWritingMode: true,
 							},
+							{
+								key: 'socialLink',
+								label: __( 'Social links', 'sgs-blocks' ),
+								prefix: 'socialLink',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
 						] }
 					/>
 					<ToggleGroupControl
@@ -857,6 +871,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									className="sgs-team-member__social-preview"
 									title={ link.url }
 									aria-hidden="true"
+									style={ typographyPreviewStyle( attributes, 'socialLink', previewTier ) }
 								>
 									{ link.platform || 'website' }
 								</span>

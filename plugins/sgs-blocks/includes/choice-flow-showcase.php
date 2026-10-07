@@ -100,7 +100,10 @@ if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 	 * The flow's scoped colour and logo-size values, consumed by style.css:
 	 * `--sgs-choice-flow-stage` (stage and chosen card), the help note's
 	 * `--sgs-choice-flow-note-icon` / `-note-border` / `-note-hover`, and
-	 * `--sgs-choice-flow-logo-height`. Each colour resolves a token slug or
+	 * `--sgs-choice-flow-logo-height`, plus the step indicator's
+	 * `--sgs-choice-flow-stepper` (resting) and `-stepper-active` (current and
+	 * complete), the progress badge's `--sgs-choice-flow-badge-colour` and the
+	 * summary note's `--sgs-choice-flow-note-colour`. Each colour resolves a token slug or
 	 * passes a raw colour through (`sgs_colour_value()`).
 	 *
 	 * @param array  $attributes Root block attributes.
@@ -117,6 +120,10 @@ if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 			'headerEyebrowColour'    => '--sgs-choice-flow-eyebrow',
 			'infoToggleColour'       => '--sgs-choice-flow-toggle',
 			'infoToggleBorderColour' => '--sgs-choice-flow-toggle-border',
+			'stepperColour'          => '--sgs-choice-flow-stepper',
+			'stepperActiveColour'    => '--sgs-choice-flow-stepper-active',
+			'progressBadgeColour'    => '--sgs-choice-flow-badge-colour',
+			'summaryNoteColour'      => '--sgs-choice-flow-note-colour',
 		);
 		foreach ( $colour as $key => $property ) {
 			$raw      = isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';

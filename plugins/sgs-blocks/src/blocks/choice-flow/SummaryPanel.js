@@ -17,6 +17,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
+import { SgsColourPanel } from '../../components';
+import textRow from '../../components/colour-variants/textRow';
 
 /**
  * @param {Object}   props
@@ -26,6 +28,7 @@ import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress
  * @param {string}   props.summaryBaseLabel Current `summaryBaseLabel` attribute (FIXES item 4).
  * @param {string}   props.stageNote        Current `stageNote` attribute.
  * @param {Object}   props.stageNoteLink    Current `stageNoteLink` attribute ({url,text}).
+ * @param {Object}   props.attributes       Block attributes (the colour row reads and writes `summaryNoteColour`).
  * @param {Function} props.setAttributes    Block attribute setter.
  */
 export default function SummaryPanel( {
@@ -35,6 +38,7 @@ export default function SummaryPanel( {
 	summaryBaseLabel,
 	stageNote,
 	stageNoteLink,
+	attributes,
 	setAttributes,
 } ) {
 	if ( ! showPricePanel ) {
@@ -111,6 +115,17 @@ export default function SummaryPanel( {
 					/>
 				</>
 			) }
+			<SgsColourPanel
+				rows={ [
+					textRow( {
+						key: 'summary-note',
+						label: __( 'Help note text', 'sgs-blocks' ),
+						attrs: { base: 'summaryNoteColour' },
+						attributes,
+						setAttributes,
+					} ),
+				] }
+			/>
 		</PanelBody>
 	);
 }

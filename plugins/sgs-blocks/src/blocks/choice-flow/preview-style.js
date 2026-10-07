@@ -42,6 +42,10 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 	setColour( '--sgs-choice-flow-eyebrow', attributes.headerEyebrowColour );
 	setColour( '--sgs-choice-flow-toggle', attributes.infoToggleColour );
 	setColour( '--sgs-choice-flow-toggle-border', attributes.infoToggleBorderColour );
+	setColour( '--sgs-choice-flow-stepper', attributes.stepperColour );
+	setColour( '--sgs-choice-flow-stepper-active', attributes.stepperActiveColour );
+	setColour( '--sgs-choice-flow-badge-colour', attributes.progressBadgeColour );
+	setColour( '--sgs-choice-flow-note-colour', attributes.summaryNoteColour );
 
 	// choice-flow-showcase.php: 12 to 80 px, 32 is the stylesheet's own default.
 	const logoHeight = Number( headerLogoHeight );

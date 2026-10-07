@@ -165,8 +165,25 @@
 				"social": {
 					"label": "Social links",
 					"order": 6,
-					"clusters": [],
-					"_note": "socialLinks is a content array (platform+url); icons are fixed Lucide glyphs (render.php:290-349) with no per-icon colour/size style controls."
+					"clusters": [
+						"text"
+					],
+					"prefix": "socialLink",
+					"attrMap": {
+						"css:font-size": "socialLinkFontSize",
+						"css:font-weight": "socialLinkFontWeight",
+						"css:font-style": "socialLinkFontStyle",
+						"css:font-family": "socialLinkFontFamily",
+						"css:text-transform": "socialLinkTextTransform",
+						"css:text-decoration": "socialLinkTextDecoration",
+						"css:line-height": "socialLinkLineHeight",
+						"css:letter-spacing": "socialLinkLetterSpacing",
+						"css:text-align": "socialLinkTextAlign",
+						"css:text-wrap": "socialLinkTextWrap",
+						"css:column-count": "socialLinkTextColumns",
+						"css:writing-mode": "socialLinkWritingMode"
+					},
+					"_note": "socialLinks is a content array (platform+url); icons are fixed Lucide glyphs (render.php) with no per-icon colour control. The link text size, weight, style, family, transform, decoration, line-height, letter-spacing, alignment, wrap, columns and writing mode are painted on .sgs-team-member__social-link by sgs_typography_css_rule( $attributes, 'socialLink', … ); the stylesheet keeps the default size inside :where() so this surface out-ranks it."
 				}
 			},
 			"boxFamilies": {
@@ -736,6 +753,104 @@
 			"type": "number"
 		},
 		"bioWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"socialLinkFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"socialLinkFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinkFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"socialLinkTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"socialLinkTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"socialLinkLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"socialLinkLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"socialLinkLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"socialLinkTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"socialLinkTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"socialLinkTextColumns": {
+			"type": "number"
+		},
+		"socialLinkWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

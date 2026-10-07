@@ -361,6 +361,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		style: buildWrapperStyle( attributes, previewTier ),
 		'data-summary-base-label': summaryBaseLabel || '',
 		'data-opener-label': attributes.openerLabel || '',
+		'data-progress-style': progressStyle || 'bar',
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -596,6 +597,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					summaryBaseLabel={ summaryBaseLabel }
 					stageNote={ attributes.stageNote }
 					stageNoteLink={ attributes.stageNoteLink }
+					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
