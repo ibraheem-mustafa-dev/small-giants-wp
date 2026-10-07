@@ -5747,6 +5747,11 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "flipX",
+      "fields": {}
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "fx",
       "fields": {
         "css_property": "max-width",
@@ -5794,6 +5799,13 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "rotation",
+      "fields": {
+        "css_property": "z-index"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "width",
       "fields": {
         "css_property": "width",
@@ -5806,6 +5818,22 @@
       "fields": {
         "css_property": "z-index",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/diagram-dimension",
+      "attr": "endX",
+      "fields": {
+        "css_property": "left",
+        "css_element": "marker"
+      }
+    },
+    {
+      "slug": "sgs/diagram-dimension",
+      "attr": "endY",
+      "fields": {
+        "css_property": "top",
+        "css_element": "marker"
       }
     },
     {
@@ -8001,6 +8029,13 @@
         "css_property": "anim:stagger",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "accentColour",
+      "fields": {
+        "css_property": "color"
       }
     },
     {
@@ -11883,6 +11918,250 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "time"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "extensionColour",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "extension"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "extensionWidth",
+      "fields": {
+        "css_property": "stroke-width",
+        "css_element": "extension"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "lineColour",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "line"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "lineWidth",
+      "fields": {
+        "css_property": "stroke-width",
+        "css_element": "line"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "value"
       }
     },
     {
@@ -18718,16 +18997,6 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "backgroundColourScrolledGradient",
-      "fields": {
-        "css_property": "background-color-gradient",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "scrolled"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "backgroundImage",
       "fields": {
         "css_property": "background-image",
@@ -18945,17 +19214,6 @@
       "attr": "surfaceOpacity",
       "fields": {
         "css_property": "background-color"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "textColourScrolled",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "scrolled"
       }
     },
     {
@@ -25349,6 +25607,22 @@
       }
     },
     {
+      "slug": "sgs/diagram-dimension",
+      "attr": "labelX",
+      "fields": {
+        "css_property": "left",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/diagram-dimension",
+      "attr": "labelY",
+      "fields": {
+        "css_property": "top",
+        "css_element": "label"
+      }
+    },
+    {
       "slug": "sgs/feature-grid",
       "attr": "borderColourGradient",
       "fields": {
@@ -26979,6 +27253,64 @@
         "css_property": "color-gradient",
         "css_element": "time",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "captionColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "extensionColourGradient",
+      "fields": {
+        "css_property": "stroke-gradient",
+        "css_element": "extension"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "extensionStyle",
+      "fields": {
+        "css_property": "stroke-dasharray",
+        "css_element": "extension"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "labelGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "lineColourGradient",
+      "fields": {
+        "css_property": "stroke-gradient",
+        "css_element": "line"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/measured-diagram",
+      "attr": "valueColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "value"
       }
     },
     {
@@ -31182,6 +31514,16 @@
     },
     {
       "slug": "sgs/site-header",
+      "attr": "backgroundColourScrolledGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "scrolled"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
       "attr": "bgParallax",
       "fields": {
         "css_property": "anim:parallax",
@@ -31234,6 +31576,17 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "textColourScrolled",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "scrolled"
       }
     },
     {
