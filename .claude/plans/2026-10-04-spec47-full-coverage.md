@@ -171,8 +171,16 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   right write; the h@375 "regression" that reverted it was marked unconfirmed (the run ended before the next walk), and
   the Hardcode row compared the new tree value with a page measured before the rebuild (the live rule is on the inner
   band, `.sgs-container-<uid>>.sgs-container__inner{gap}`, so 0 paints 0). Register 100 (price margins, gen-lenses-11/15/19)
-  and 102 (step numbers on cr-ref-lenses-27) are open as `T resolver-writes` on the 2026-10-07 measure-only sweep. Next: a
-  full three-round Solve on Lenses (blocked twice on 2026-10-07 by R-47-11 while sandybrown deploys ran).
+  and 102 (step numbers on cr-ref-lenses-27) are open as `T resolver-writes` on the 2026-10-07 measure-only sweep.
+  **Solve run 2026-10-07 (`qa/solve/lenses/2026-10-07T20-06-48/`, eye-care-test at `430545e06`): distinct issues 67 to
+  25, 42 closed, 0 new; 17 writes** (the price lines' 10px/6px margins, register 100; the step numbers at 15.5px weight 500
+  line-height 1.5, the steps' 15px gap and zero padding, register 102; both columns' stack gap 0, the draft's spacing
+  being its children's margins; the lens-card ground). The guard reverted the page container's padding (S6) on an
+  unconfirmed `h@375 780→684` reading of the page container's own height (the sum of everything in it, a weak signal for
+  one padding write) and then cycled one suspect per round through round 9; round 10's rebuild failed ("editor did not
+  load", the host's bot challenge after nine builds). The page container then took S6's decided value by hand, the same
+  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Owed: one rebuild-and-measure (`--rounds 0`) to bring
+  the live page in line with the tree and read the real count; then the done line.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One

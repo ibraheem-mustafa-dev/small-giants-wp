@@ -8,16 +8,16 @@
       },
       "padding": {
         "desktop": {
-          "top": "104px",
-          "bottom": "104px"
+          "top": "48px",
+          "bottom": "90px"
         },
         "tablet": {
-          "top": "104px",
-          "bottom": "104px"
+          "top": "48px",
+          "bottom": "90px"
         },
         "mobile": {
-          "top": "56px",
-          "bottom": "56px"
+          "top": "28px",
+          "bottom": "60px"
         }
       },
       "layout": "stack",
@@ -136,7 +136,8 @@
             "left": "1px"
           },
           "borderColour": "border",
-          "className": "cr-ref-lenses-4"
+          "className": "cr-ref-lenses-4",
+          "backgroundColour": "border"
         },
         "innerBlocks": [
           {
@@ -253,7 +254,21 @@
                   "fontSize": {
                     "desktop": 34
                   },
-                  "className": "cr-ref-lenses-11"
+                  "className": "cr-ref-lenses-11",
+                  "margin": {
+                    "mobile": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "tablet": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "desktop": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    }
+                  }
                 }
               },
               {
@@ -308,7 +323,21 @@
                   "fontSize": {
                     "desktop": 34
                   },
-                  "className": "cr-ref-lenses-15"
+                  "className": "cr-ref-lenses-15",
+                  "margin": {
+                    "mobile": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "tablet": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "desktop": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    }
+                  }
                 }
               },
               {
@@ -363,7 +392,21 @@
                   "fontSize": {
                     "desktop": 34
                   },
-                  "className": "cr-ref-lenses-19"
+                  "className": "cr-ref-lenses-19",
+                  "margin": {
+                    "mobile": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "tablet": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    },
+                    "desktop": {
+                      "top": "10px",
+                      "bottom": "6px"
+                    }
+                  }
                 }
               },
               {
@@ -406,7 +449,9 @@
             "attributes": {
               "layout": "stack",
               "gap": {
-                "desktop": "16px"
+                "desktop": "0px",
+                "mobile": "0px",
+                "tablet": "0px"
               },
               "className": "cr-ref-lenses-22"
             },
@@ -472,7 +517,9 @@
             "attributes": {
               "layout": "stack",
               "gap": {
-                "desktop": "16px"
+                "desktop": "0px",
+                "mobile": "0px",
+                "tablet": "0px"
               },
               "className": "cr-ref-lenses-25"
             },
@@ -532,7 +579,33 @@
                   },
                   "titleFontSizeUnit": "px",
                   "titleFontWeight": "400",
-                  "className": "cr-ref-lenses-27"
+                  "className": "cr-ref-lenses-27",
+                  "stepGap": "15px",
+                  "padding": {
+                    "mobile": {
+                      "top": "0px",
+                      "bottom": "0px"
+                    },
+                    "tablet": {
+                      "top": "0px",
+                      "bottom": "0px"
+                    },
+                    "desktop": {
+                      "top": "0px",
+                      "bottom": "0px"
+                    }
+                  },
+                  "numberLineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  },
+                  "numberFontWeight": "500",
+                  "numberFontSize": {
+                    "mobile": 15.5,
+                    "tablet": 15.5,
+                    "desktop": 15.5
+                  }
                 }
               },
               {
