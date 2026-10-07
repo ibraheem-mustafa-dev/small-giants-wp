@@ -1578,6 +1578,7 @@ const E14_BLOCKS_BUILD = false;
 // `--survey --verbose` lists zero findings for the three blocks it touched
 // (positive control: sgs/form still lists 21, sgs/cta-section 8).
 //
+
 // The nine declarations that went: sgs/product-faq's question font-weight,
 // font-size and line-height; sgs/countdown-timer's number font-weight and
 // line-height, label text-transform and letter-spacing, and expired
@@ -1587,13 +1588,24 @@ const E14_BLOCKS_BUILD = false;
 // panel, and each literal sits inside :where() so the control outranks it
 // while the default still paints.
 //
-// CANNOT-RESOLVE stays at 64 in THIS commit: the one-hop `require` follow that
-// moves it is a separate change, committed on its own so each number is
-// attributable to the work that earned it.
+//
+// CANNOT-RESOLVE LOWERED 64 -> 61, measured not predicted: `node
+// scripts/check-hardcoded-render-defaults.js --check` reports
+// `CLASS-2 56/56, CLASS-3 3/3, CANNOT-RESOLVE 61/64` once readBlockPhpFiles()
+// follows a block's `require` / `require_once` ONE hop into shared PHP (markup
+// extracted into includes/ is part of the block's element model). The 61 is a
+// net of two moves: post-grid's 12 findings now resolve, because
+// includes/class-post-grid-rest.php carries its card markup, and 9 findings
+// appear that were previously invisible (account 6, nav-drawer-menu 3), because
+// the required includes/ files hold the typography control calls whose
+// selectors the gate cannot yet resolve. The hop is deliberately not
+// transitive: includes/render-helpers.php requires the whole helper tree and
+// almost every block requires it, so a transitive follower would put every
+// helper's markup into every block's model.
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        48,
 	'CLASS-3':        2,
-	'CANNOT-RESOLVE': 64,
+	'CANNOT-RESOLVE': 61,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
@@ -1860,27 +1872,95 @@ function parseSelectorMembers( selector ) {
 
 // ── Block model: root classes, controls, markup ───────────────────────────
 
+/** Blank out PHP block and line comments, keeping line breaks and any `?>`. */
+function maskPhpComments( raw ) {
+	return raw
+		.replace( /\/\*[\s\S]*?\*\//g, ( c ) => c.replace( /[^\n]/g, ' ' ) )
+		// A `//` comment ends at the line break OR at a `?>` — keep the `?>`
+		// so an inline `<?php // note ?>` does not leave an unclosed PHP tag.
+		.replace( /(^|[^:'"])\/\/([^\n]*)/g, ( all, pre, rest ) => {
+			const close = rest.indexOf( '?>' );
+			return pre + ' ' + ( close >= 0 ? rest.slice( close ) : '' );
+		} );
+}
+
+/**
+ * Resolve the path expression of one `require` / `require_once` found in
+ * `fromFile` to an absolute .php path. Understands `__DIR__`,
+ * `dirname( __DIR__ [, n] )` and string literals joined by `.`; anything else
+ * (constants, variables, function calls) returns null and is skipped.
+ */
+function resolveRequirePath( expr, fromFile ) {
+	let e = expr.trim();
+	if ( e.startsWith( '(' ) && e.endsWith( ')' ) ) {
+		e = e.slice( 1, -1 ).trim();
+	}
+	const dir  = path.dirname( fromFile );
+	const term = /\s*(?:dirname\(\s*(__DIR__|__FILE__)\s*(?:,\s*(\d+)\s*)?\)|(__DIR__)|'([^']*)'|"([^"$\\]*)")\s*(\.|$)/y;
+	let out = '';
+	let m;
+	while ( ( m = term.exec( e ) ) !== null ) {
+		if ( undefined !== m[ 4 ] ) {
+			out += m[ 4 ];
+		} else if ( undefined !== m[ 5 ] ) {
+			out += m[ 5 ];
+		} else if ( undefined !== m[ 3 ] ) {
+			out += dir;
+		} else {
+			// dirname( X, n ) applies n dirnames to X (__FILE__ or __DIR__).
+			let d = '__FILE__' === m[ 1 ] ? fromFile : dir;
+			const levels = m[ 2 ] ? parseInt( m[ 2 ], 10 ) : 1;
+			for ( let i = 0; i < levels; i++ ) {
+				d = path.dirname( d );
+			}
+			out += d;
+		}
+		if ( '' === m[ 6 ] ) {
+			return /\.php$/i.test( out ) ? path.resolve( out ) : null;
+		}
+	}
+	return null;
+}
+
+/**
+ * The block's own PHP files, plus the files they `require` ONE HOP out.
+ * The hop is deliberately not transitive: includes/render-helpers.php requires
+ * the whole helper tree and almost every block requires it, so following
+ * requires found inside required files would pull every helper's markup into
+ * every block's element model.
+ */
 function readBlockPhpFiles( blockDir ) {
 	const files = [];
-	const walk = ( dir ) => {
+	const seen  = new Set();
+	const walk  = ( dir ) => {
 		for ( const e of fs.readdirSync( dir, { withFileTypes: true } ) ) {
 			const p = path.join( dir, e.name );
 			if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
 				walk( p );
 			} else if ( e.isFile() && /\.php$/i.test( e.name ) ) {
-				const src = fs.readFileSync( p, 'utf8' )
-					.replace( /\/\*[\s\S]*?\*\//g, ( c ) => c.replace( /[^\n]/g, ' ' ) )
-					// A `//` comment ends at the line break OR at a `?>` — keep the `?>`
-					// so an inline `<?php // note ?>` does not leave an unclosed PHP tag.
-					.replace( /(^|[^:'"])\/\/([^\n]*)/g, ( all, pre, rest ) => {
-						const close = rest.indexOf( '?>' );
-						return pre + ' ' + ( close >= 0 ? rest.slice( close ) : '' );
-					} );
-				files.push( { file: p, src } );
+				seen.add( path.resolve( p ) );
+				files.push( { file: p, src: maskPhpComments( fs.readFileSync( p, 'utf8' ) ) } );
 			}
 		}
 	};
 	walk( blockDir );
+	for ( const f of files.slice() ) {
+		for ( const m of f.src.matchAll( /(?<![\w$>:])require(?:_once)?\b\s*([^;]+);/g ) ) {
+			const target = resolveRequirePath( m[ 1 ], f.file );
+			if ( ! target || seen.has( target ) ) {
+				continue;
+			}
+			try {
+				if ( fs.statSync( target ).isFile() ) {
+					const src = maskPhpComments( fs.readFileSync( target, 'utf8' ) );
+					seen.add( target );
+					files.push( { file: target, src } );
+				}
+			} catch ( err ) {
+				// Missing or unreadable target: skip it, the gate never fails on a require.
+			}
+		}
+	}
 	return files;
 }
 
@@ -3070,6 +3150,7 @@ function selfTestE12() {
 	}
 
 	selfTestE14( assert );
+	selfTestRequireHop( assert );
 
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
@@ -3246,6 +3327,66 @@ function selfTestE14( assert ) {
 		assert( 'ratchet: under the ceiling exits 0', run( make( 'CLASS-2', 1 ) ), 0 );
 		assert( 'ratchet: a category with no ceiling entry is not counted', run( make( 'CLASS-9', 5 ) ), 0 );
 		assert( 'ratchet: without --check the exit code is 0 even over the ceiling', checkExitCode( false, 0, [ 'CLASS-2' ], 3, false ), 0 );
+	}
+}
+
+// ---------------------------------------------------------------------------
+// SELF-TEST — readBlockPhpFiles() follows a require exactly ONE hop
+//
+// The hop must not be transitive: includes/render-helpers.php requires the whole
+// helper tree and almost every block requires it, so a transitive follower would
+// put every helper's markup into every block's element model. The fixture is a
+// plugin-shaped temp tree (includes/ beside blocks/x/) where the block requires
+// B and B requires C; both directions are asserted, because a test of the
+// positive alone passes identically for a transitive follower.
+// ---------------------------------------------------------------------------
+
+function selfTestRequireHop( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] require one-hop\n\n' );
+	const tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-hop-selftest-' ) );
+	try {
+		const inc      = path.join( tmp, 'includes' );
+		const blockDir = path.join( tmp, 'blocks', 'x' );
+		fs.mkdirSync( inc );
+		fs.mkdirSync( blockDir, { recursive: true } );
+		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
+		fs.writeFileSync( path.join( inc, 'c.php' ), '<?php ?>\n<aside class="sgs-hop-c"></aside>\n', 'utf8' );
+		fs.writeFileSync( path.join( inc, 'paren.php' ), '<?php ?>\n<nav class="sgs-hop-paren"></nav>\n', 'utf8' );
+		fs.writeFileSync( path.join( inc, 'plain.php' ), '<?php ?>\n<p class="sgs-hop-plain"></p>\n', 'utf8' );
+		fs.writeFileSync( path.join( inc, 'commented.php' ), '<?php ?>\n<footer class="sgs-hop-commented"></footer>\n', 'utf8' );
+		fs.writeFileSync( path.join( inc, 'notphp.txt' ), '<figure class="sgs-hop-txt"></figure>\n', 'utf8' );
+		fs.writeFileSync(
+			path.join( blockDir, 'render.php' ),
+			'<?php\n' +
+				"require_once dirname( __DIR__, 2 ) . '/includes/b.php';\n" +
+				"require_once dirname( __DIR__, 2 ) . '/includes/b.php';\n" + // dedupe
+				"require_once( dirname( __DIR__, 2 ) . '/includes/paren.php' );\n" +
+				"require dirname( __DIR__, 2 ) . '/includes/plain.php';\n" +
+				"require_once dirname( __DIR__, 2 ) . '/includes/does-not-exist.php';\n" + // missing: skipped
+				"require_once dirname( __DIR__, 2 ) . '/includes/notphp.txt';\n" + // not .php: skipped
+				"// require_once dirname( __DIR__, 2 ) . '/includes/commented.php';\n" + // comment: not followed
+				"/* require_once dirname( __DIR__, 2 ) . '/includes/commented.php'; */\n" +
+				"?>\n<div class=\"sgs-hop-own\"></div>\n",
+			'utf8'
+		);
+		const files   = readBlockPhpFiles( blockDir );
+		const classes = new Set();
+		for ( const inst of buildMarkupModel( files, new Set() ) ) {
+			for ( const c of inst.classes ) {
+				classes.add( c );
+			}
+		}
+		const names = files.map( ( f ) => path.basename( f.file ) ).sort();
+		assert( 'one hop: the block\'s own markup is in the model', classes.has( 'sgs-hop-own' ), true );
+		assert( 'one hop: markup in B (required by the block) IS in the model (hop 1 followed)', classes.has( 'sgs-hop-b' ), true );
+		assert( 'one hop: markup in C (required by B, not by the block) is NOT in the model (hop 2 not followed)', classes.has( 'sgs-hop-c' ), false );
+		assert( 'one hop: C is never even read', names.includes( 'c.php' ), false );
+		assert( 'require forms: parenthesised require_once and bare require are both followed', [ classes.has( 'sgs-hop-paren' ), classes.has( 'sgs-hop-plain' ) ], [ true, true ] );
+		assert( 'require forms: a require inside a // or /* */ comment is not followed', classes.has( 'sgs-hop-commented' ), false );
+		assert( 'require forms: a non-.php target is not read', classes.has( 'sgs-hop-txt' ), false );
+		assert( 'require forms: a missing target is skipped and a repeated require is read once', names, [ 'b.php', 'paren.php', 'plain.php', 'render.php' ] );
+	} finally {
+		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
 }
 
