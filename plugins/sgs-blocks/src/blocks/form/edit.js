@@ -24,7 +24,7 @@ import {
 	borderBoxPreview,
 	spacingPreview,
 	typographyPreviewStyle,
-	typographyPreviewCss as typographyPreviewCssFor,
+	typographyPreviewCss,
 	textIndentPreviewCss,
 	usePreviewTier,
 	BandWrap,
@@ -385,15 +385,15 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// Tile icon, tile label, consent text and review term are emitted by child
 	// blocks or by view.js, and the submit button is the canvas-only preview
 	// below, so each gets a scoped rule through typographyPreviewCss().
-	const typographyPreviewCss = [
+	const typographyPreviewRules = [
 		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
 		fieldTypographyDecls && `${ fieldSel }{${ fieldTypographyDecls }}`,
-		typographyPreviewCssFor( attributes, 'tileIcon', `.${ formPreviewScope } .sgs-form-tile__icon`, previewTier ),
-		typographyPreviewCssFor( attributes, 'tileLabel', `.${ formPreviewScope } .sgs-form-tile__label`, previewTier ),
-		typographyPreviewCssFor( attributes, 'consent', `.${ formPreviewScope } .sgs-form-field__consent-text`, previewTier ),
-		typographyPreviewCssFor( attributes, 'reviewTerm', `.${ formPreviewScope } .sgs-form-review__term`, previewTier ),
-		typographyPreviewCssFor( attributes, 'submit', `.${ formPreviewScope } .sgs-form__button--submit`, previewTier ),
-		typographyPreviewCssFor( attributes, 'navButton', `.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`, previewTier ),
+		typographyPreviewCss( attributes, 'tileIcon', `.${ formPreviewScope } .sgs-form-tile__icon`, previewTier ),
+		typographyPreviewCss( attributes, 'tileLabel', `.${ formPreviewScope } .sgs-form-tile__label`, previewTier ),
+		typographyPreviewCss( attributes, 'consent', `.${ formPreviewScope } .sgs-form-field__consent-text`, previewTier ),
+		typographyPreviewCss( attributes, 'reviewTerm', `.${ formPreviewScope } .sgs-form-review__term`, previewTier ),
+		typographyPreviewCss( attributes, 'submit', `.${ formPreviewScope } .sgs-form__button--submit`, previewTier ),
+		typographyPreviewCss( attributes, 'navButton', `.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`, previewTier ),
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -1173,7 +1173,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
 				{ fieldPreviewCss && <style>{ fieldPreviewCss }</style> }
-				{ typographyPreviewCss && <style>{ typographyPreviewCss }</style> }
+				{ typographyPreviewRules && <style>{ typographyPreviewRules }</style> }
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
 				<BandWrap hasBandProps={ wrapper.hasBandProps } bandStyle={ wrapper.bandStyle }>
 				<div { ...innerBlocksProps } />
