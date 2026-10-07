@@ -8,9 +8,15 @@
       "submitBackground": "text",
       "submitColour": "surface",
       "submitFontWeight": "400",
-      "submitFontSize": 13,
+      "submitFontSize": {
+        "desktop": 13
+      },
+      "submitFontSizeUnit": "px",
       "submitTextTransform": "uppercase",
-      "submitLetterSpacing": "0.1em",
+      "submitLetterSpacing": {
+        "desktop": 0.1
+      },
+      "submitLetterSpacingUnit": "em",
       "submitBackgroundHover": "primary-hover",
       "submitPadding": {
         "top": "0px",
