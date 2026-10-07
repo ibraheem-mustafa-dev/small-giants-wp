@@ -237,7 +237,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* One switcher: the caption and the video player's time read-out.
-					     The read-out is built by view.js, so it has no canvas preview. */ }
+					     The read-out is built by view.js; the canvas shows a static sample. */ }
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -748,6 +748,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</Notice>
 			) }
+			{ /* view.js builds the player bar on the front end; a static sample of its
+			     time read-out wears the same classes so the canvas shows the client's
+			     time typography. */ }
+			<div className="sgs-video sgs-video--editor-sample" aria-hidden="true">
+				<div className="sgs-video__bar">
+					<span
+						className="sgs-video__time"
+						style={ typographyPreviewStyle( attributes, 'videoTime', previewTier ) }
+					>
+						0:00 / 1:24
+					</span>
+				</div>
+			</div>
 		</figure>
 	);
 }

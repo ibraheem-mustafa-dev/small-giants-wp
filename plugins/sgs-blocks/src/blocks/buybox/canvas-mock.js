@@ -62,26 +62,6 @@ export function buyboxRootStyle( attributes, tier, palette ) {
 }
 
 /**
- * Typography prefix and the sample elements it paints, as render.php's
- * sgs_typography_css_rule() calls pair them (the stock line, the gallery saving
- * badge, the back-in-stock notify form and the guided meter and group title).
- */
-const SURFACE_TYPOGRAPHY = [
-	[ 'stock', '.buybox__stock' ],
-	[ 'savingBadge', '.sgs-buybox__saving-badge' ],
-	[ 'notifyHeading', '.sgs-buybox__notify-heading' ],
-	[ 'notifyLabel', '.sgs-buybox__notify-label' ],
-	[ 'notifyLabel', '.sgs-buybox__notify-consent-label' ],
-	[ 'notifyInput', '.sgs-buybox__notify-email' ],
-	[ 'notifySubmit', '.sgs-buybox__notify-submit' ],
-	[ 'notifyStatus', '.sgs-buybox__notify-status' ],
-	[ 'guidedMeter', '.sgs-buybox-guided__meter-btn' ],
-	[ 'guidedMeter', '.sgs-buybox-guided__meter-index' ],
-	[ 'guidedMeter', '.sgs-buybox-guided__meter-compact' ],
-	[ 'guidedGroupTitle', '.sgs-buybox-guided__group-title' ],
-];
-
-/**
  * The breakpoint-bound and state-bound rules, scoped to the editor instance:
  * the gallery column ratio/gap from the stack point up, the three stock
  * status colours (the sample shows the in-stock state), and the typography of
@@ -96,9 +76,21 @@ const SURFACE_TYPOGRAPHY = [
 export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	const root = `.${ scope }.${ scope }`;
 	let css = '';
-	SURFACE_TYPOGRAPHY.forEach( ( [ prefix, selector ] ) => {
-		css += typographyPreviewCss( attributes, prefix, `${ root } ${ selector }`, tier );
-	} );
+	// Each prefix paints the sample elements render.php's
+	// sgs_typography_css_rule() calls pair it with. The prefixes stay literal
+	// so the wiring-fingerprint gate can credit each surface's canvas read.
+	css += typographyPreviewCss( attributes, 'stock', `${ root } .buybox__stock`, tier );
+	css += typographyPreviewCss( attributes, 'savingBadge', `${ root } .sgs-buybox__saving-badge`, tier );
+	css += typographyPreviewCss( attributes, 'notifyHeading', `${ root } .sgs-buybox__notify-heading`, tier );
+	css += typographyPreviewCss( attributes, 'notifyLabel', `${ root } .sgs-buybox__notify-label`, tier );
+	css += typographyPreviewCss( attributes, 'notifyLabel', `${ root } .sgs-buybox__notify-consent-label`, tier );
+	css += typographyPreviewCss( attributes, 'notifyInput', `${ root } .sgs-buybox__notify-email`, tier );
+	css += typographyPreviewCss( attributes, 'notifySubmit', `${ root } .sgs-buybox__notify-submit`, tier );
+	css += typographyPreviewCss( attributes, 'notifyStatus', `${ root } .sgs-buybox__notify-status`, tier );
+	css += typographyPreviewCss( attributes, 'guidedMeter', `${ root } .sgs-buybox-guided__meter-btn`, tier );
+	css += typographyPreviewCss( attributes, 'guidedMeter', `${ root } .sgs-buybox-guided__meter-index`, tier );
+	css += typographyPreviewCss( attributes, 'guidedMeter', `${ root } .sgs-buybox-guided__meter-compact`, tier );
+	css += typographyPreviewCss( attributes, 'guidedGroupTitle', `${ root } .sgs-buybox-guided__group-title`, tier );
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
 	const gap = String( attributes.galleryColumnGap || '' ).trim();
 	const decls = [];

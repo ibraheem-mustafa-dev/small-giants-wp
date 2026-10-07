@@ -220,8 +220,20 @@
         "badge": {
           "label": "Card badge",
           "order": 7,
-          "clusters": [],
-          "_note": "Renamed from 'card-badge' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__badge` (render.php:719), not `.sgs-card-grid__card-badge`. Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
+          "clusters": [
+            "text"
+          ],
+          "prefix": "badge",
+          "_note": "The per-item badge (`.sgs-card-grid__badge`). Its badge text and badgeVariant preset are content/variant fields; its typography is the `badge*` surface, painted by sgs_typography_css_rule( $attributes, 'badge', … ) in render.php."
+        },
+        "glyphInitial": {
+          "label": "Card glyph initial",
+          "order": 6,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "glyphInitial",
+          "_note": "The title's first letter shown in the glyph circle when a card has no image (`.sgs-card-grid__glyph-initial`); its typography is the `glyphInitial*` surface. Its font-size also reads --sgs-card-grid-glyph-size, which sizes the circle."
         },
         "imageOverlay": {
           "label": "Image overlay",

@@ -198,6 +198,20 @@
 						"text"
 					],
 					"prefix": "notifyHeading",
+					"attrMap": {
+						"css:font-size": "notifyHeadingFontSize",
+						"css:font-weight": "notifyHeadingFontWeight",
+						"css:font-style": "notifyHeadingFontStyle",
+						"css:font-family": "notifyHeadingFontFamily",
+						"css:text-transform": "notifyHeadingTextTransform",
+						"css:text-decoration": "notifyHeadingTextDecoration",
+						"css:line-height": "notifyHeadingLineHeight",
+						"css:letter-spacing": "notifyHeadingLetterSpacing",
+						"css:text-align": "notifyHeadingTextAlign",
+						"css:text-wrap": "notifyHeadingTextWrap",
+						"css:column-count": "notifyHeadingTextColumns",
+						"css:writing-mode": "notifyHeadingWritingMode"
+					},
 					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading)."
 				},
 				"notifyLabel": {
@@ -207,6 +221,20 @@
 						"text"
 					],
 					"prefix": "notifyLabel",
+					"attrMap": {
+						"css:font-size": "notifyLabelFontSize",
+						"css:font-weight": "notifyLabelFontWeight",
+						"css:font-style": "notifyLabelFontStyle",
+						"css:font-family": "notifyLabelFontFamily",
+						"css:text-transform": "notifyLabelTextTransform",
+						"css:text-decoration": "notifyLabelTextDecoration",
+						"css:line-height": "notifyLabelLineHeight",
+						"css:letter-spacing": "notifyLabelLetterSpacing",
+						"css:text-align": "notifyLabelTextAlign",
+						"css:text-wrap": "notifyLabelTextWrap",
+						"css:column-count": "notifyLabelTextColumns",
+						"css:writing-mode": "notifyLabelWritingMode"
+					},
 					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap."
 				},
 				"notifyInput": {
@@ -216,6 +244,20 @@
 						"text"
 					],
 					"prefix": "notifyInput",
+					"attrMap": {
+						"css:font-size": "notifyInputFontSize",
+						"css:font-weight": "notifyInputFontWeight",
+						"css:font-style": "notifyInputFontStyle",
+						"css:font-family": "notifyInputFontFamily",
+						"css:text-transform": "notifyInputTextTransform",
+						"css:text-decoration": "notifyInputTextDecoration",
+						"css:line-height": "notifyInputLineHeight",
+						"css:letter-spacing": "notifyInputLetterSpacing",
+						"css:text-align": "notifyInputTextAlign",
+						"css:text-wrap": "notifyInputTextWrap",
+						"css:column-count": "notifyInputTextColumns",
+						"css:writing-mode": "notifyInputWritingMode"
+					},
 					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email)."
 				},
 				"notifySubmit": {
@@ -225,6 +267,20 @@
 						"text"
 					],
 					"prefix": "notifySubmit",
+					"attrMap": {
+						"css:font-size": "notifySubmitFontSize",
+						"css:font-weight": "notifySubmitFontWeight",
+						"css:font-style": "notifySubmitFontStyle",
+						"css:font-family": "notifySubmitFontFamily",
+						"css:text-transform": "notifySubmitTextTransform",
+						"css:text-decoration": "notifySubmitTextDecoration",
+						"css:line-height": "notifySubmitLineHeight",
+						"css:letter-spacing": "notifySubmitLetterSpacing",
+						"css:text-align": "notifySubmitTextAlign",
+						"css:text-wrap": "notifySubmitTextWrap",
+						"css:column-count": "notifySubmitTextColumns",
+						"css:writing-mode": "notifySubmitWritingMode"
+					},
 					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit)."
 				},
 				"notifyStatus": {
@@ -234,6 +290,20 @@
 						"text"
 					],
 					"prefix": "notifyStatus",
+					"attrMap": {
+						"css:font-size": "notifyStatusFontSize",
+						"css:font-weight": "notifyStatusFontWeight",
+						"css:font-style": "notifyStatusFontStyle",
+						"css:font-family": "notifyStatusFontFamily",
+						"css:text-transform": "notifyStatusTextTransform",
+						"css:text-decoration": "notifyStatusTextDecoration",
+						"css:line-height": "notifyStatusLineHeight",
+						"css:letter-spacing": "notifyStatusLetterSpacing",
+						"css:text-align": "notifyStatusTextAlign",
+						"css:text-wrap": "notifyStatusTextWrap",
+						"css:column-count": "notifyStatusTextColumns",
+						"css:writing-mode": "notifyStatusWritingMode"
+					},
 					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status)."
 				},
 				"savingBadge": {
@@ -243,6 +313,20 @@
 						"text"
 					],
 					"prefix": "savingBadge",
+					"attrMap": {
+						"css:font-size": "savingBadgeFontSize",
+						"css:font-weight": "savingBadgeFontWeight",
+						"css:font-style": "savingBadgeFontStyle",
+						"css:font-family": "savingBadgeFontFamily",
+						"css:text-transform": "savingBadgeTextTransform",
+						"css:text-decoration": "savingBadgeTextDecoration",
+						"css:line-height": "savingBadgeLineHeight",
+						"css:letter-spacing": "savingBadgeLetterSpacing",
+						"css:text-align": "savingBadgeTextAlign",
+						"css:text-wrap": "savingBadgeTextWrap",
+						"css:column-count": "savingBadgeTextColumns",
+						"css:writing-mode": "savingBadgeWritingMode"
+					},
 					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge)."
 				},
 				"stock": {
@@ -252,6 +336,20 @@
 						"text"
 					],
 					"prefix": "stock",
+					"attrMap": {
+						"css:font-size": "stockFontSize",
+						"css:font-weight": "stockFontWeight",
+						"css:font-style": "stockFontStyle",
+						"css:font-family": "stockFontFamily",
+						"css:text-transform": "stockTextTransform",
+						"css:text-decoration": "stockTextDecoration",
+						"css:line-height": "stockLineHeight",
+						"css:letter-spacing": "stockLetterSpacing",
+						"css:text-align": "stockTextAlign",
+						"css:text-wrap": "stockTextWrap",
+						"css:column-count": "stockTextColumns",
+						"css:writing-mode": "stockWritingMode"
+					},
 					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements."
 				},
 				"guidedMeter": {
@@ -261,6 +359,20 @@
 						"text"
 					],
 					"prefix": "guidedMeter",
+					"attrMap": {
+						"css:font-size": "guidedMeterFontSize",
+						"css:font-weight": "guidedMeterFontWeight",
+						"css:font-style": "guidedMeterFontStyle",
+						"css:font-family": "guidedMeterFontFamily",
+						"css:text-transform": "guidedMeterTextTransform",
+						"css:text-decoration": "guidedMeterTextDecoration",
+						"css:line-height": "guidedMeterLineHeight",
+						"css:letter-spacing": "guidedMeterLetterSpacing",
+						"css:text-align": "guidedMeterTextAlign",
+						"css:text-wrap": "guidedMeterTextWrap",
+						"css:column-count": "guidedMeterTextColumns",
+						"css:writing-mode": "guidedMeterWritingMode"
+					},
 					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step."
 				},
 				"guidedGroupTitle": {
@@ -270,6 +382,20 @@
 						"text"
 					],
 					"prefix": "guidedGroupTitle",
+					"attrMap": {
+						"css:font-size": "guidedGroupTitleFontSize",
+						"css:font-weight": "guidedGroupTitleFontWeight",
+						"css:font-style": "guidedGroupTitleFontStyle",
+						"css:font-family": "guidedGroupTitleFontFamily",
+						"css:text-transform": "guidedGroupTitleTextTransform",
+						"css:text-decoration": "guidedGroupTitleTextDecoration",
+						"css:line-height": "guidedGroupTitleLineHeight",
+						"css:letter-spacing": "guidedGroupTitleLetterSpacing",
+						"css:text-align": "guidedGroupTitleTextAlign",
+						"css:text-wrap": "guidedGroupTitleTextWrap",
+						"css:column-count": "guidedGroupTitleTextColumns",
+						"css:writing-mode": "guidedGroupTitleWritingMode"
+					},
 					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title)."
 				}
 			},

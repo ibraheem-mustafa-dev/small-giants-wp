@@ -1560,6 +1560,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</div>
 					</div>
 				) }
+
+				{ /* Pagination controls are built outside the canvas on the front end
+				     (includes/class-grid-pagination.php), so a static, non-interactive
+				     sample wears the same classes and the client's typography shows. */ }
+				{ 'standard' === pagination && (
+					<div className="sgs-post-grid__pagination" aria-hidden="true">
+						{ [ 1, 2, 3 ].map( ( n ) => (
+							<span
+								key={ n }
+								className={ 1 === n ? 'sgs-post-grid__page-btn sgs-post-grid__page-btn--current' : 'sgs-post-grid__page-btn' }
+								aria-current={ 1 === n ? 'page' : undefined }
+								style={ typographyPreviewStyle( attributes, 'pagination', previewTier ) }
+							>
+								{ n }
+							</span>
+						) ) }
+					</div>
+				) }
+				{ 'load-more' === pagination && (
+					<div className="sgs-post-grid__load-more-wrap" aria-hidden="true">
+						<span
+							className="sgs-post-grid__load-more"
+							style={ typographyPreviewStyle( attributes, 'loadMore', previewTier ) }
+						>
+							{ __( 'Load more', 'sgs-blocks' ) }
+						</span>
+					</div>
+				) }
 			</div>
 		</>
 	);

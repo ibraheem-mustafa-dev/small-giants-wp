@@ -109,6 +109,7 @@
 						"text",
 						"fill"
 					],
+					"prefix": "chip",
 					"attrMap": {
 						"css:color": "chipTextColour",
 						"css:background-color": "chipBackgroundColour"

@@ -10,3 +10,10 @@
 	opacity: 0.5;
 }
 
+
+/* Static sample of the video player bar's time read-out (the real bar is
+   built by view.js on the front end); gives the absolutely-positioned bar a
+   box to sit in. */
+.sgs-video--editor-sample {
+	min-height: 64px;
+}
