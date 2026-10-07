@@ -55,6 +55,21 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	if ( slot && ctx.variantAttr && current[ ctx.variantAttr ] !== slot.variant_value ) {
 		out[ ctx.variantAttr ] = slot.variant_value;
 	}
+	// A variant whose media renders only with an image (hero's split media is absent without splitMediaImageUrl) gets
+	// the calibration image in that variant's own base image slots, so its media settings have an element to paint.
+	if ( slot && ctx.image ) {
+		for ( const s of ( ctx.variantSlots || [] ).filter( ( x ) => x.variant_value === slot.variant_value ) ) {
+			const name = s.unique_slot;
+			if ( ! schema[ name ] || ( current[ name ] ?? '' ) !== '' ) {
+				continue;
+			}
+			if ( /ImageUrl$/.test( name ) ) {
+				out[ name ] = ctx.image.url;
+			} else if ( /ImageId$/.test( name ) ) {
+				out[ name ] = ctx.image.id;
+			}
+		}
+	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
 	Object.assign( out, borderPartners( row.attr_name, first, schema ) );
 	Object.assign( out, shadowPartners( row.attr_name, first, schema ) );

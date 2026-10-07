@@ -93,6 +93,19 @@ test( 'MUST FAIL (dead, needs variant / toggle / partner / image): preconditions
 	assert.deepEqual( preconditionsFor( row( { attr_name: 'overlayColour', css_property: 'background-color' } ), overlay, {}, ctx ), { backgroundImage: { id: 7, url: 'u' } } );
 } );
 
+test( 'MUST FAIL ON REVERT (dead, variant media needs an image): a variant slot also fills that variant\'s base image slots', () => {
+	const ctx = { variantAttr: 'variant', image: { id: 7, url: 'u' }, variantSlots: [
+		{ variant_value: 'split', unique_slot: 'splitMediaImageUrl' }, { variant_value: 'split', unique_slot: 'splitMediaImageId' },
+		{ variant_value: 'split', unique_slot: 'splitMediaImageUrlMobile' }, { variant_value: 'split', unique_slot: 'splitMediaAspectRatio' },
+		{ variant_value: 'standard', unique_slot: 'backgroundImageUrl' } ] };
+	const schema = { splitMediaImageUrl: { type: 'string' }, splitMediaImageId: { type: 'number' }, splitMediaImageUrlMobile: { type: 'string' }, splitMediaAspectRatio: { type: 'string' }, backgroundImageUrl: { type: 'string' } };
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, ctx ),
+		{ variant: 'split', splitMediaImageUrl: 'u', splitMediaImageId: 7 } );
+	// An image the instance already holds is kept, and no image is invented without a calibration image.
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard', splitMediaImageUrl: 'x', splitMediaImageId: 3 }, ctx ), { variant: 'split' } );
+	assert.deepEqual( preconditionsFor( row( { attr_name: 'splitMediaAspectRatio', css_property: 'aspect-ratio' } ), schema, { variant: 'standard' }, { ...ctx, image: null } ), { variant: 'split' } );
+} );
+
 test( 'MUST FAIL (dead, needs layout mode): a layout property is also marked under each other layout mode', () => {
 	const schema = { layout: { type: 'string', enum: [ 'stack', 'flex', 'grid' ], default: 'stack' }, flexWrap: { type: 'string', enum: [ 'wrap', 'nowrap' ], default: 'wrap' } };
 	assert.deepEqual( layoutModes( schema ), [ { name: 'layout', values: [ 'flex', 'grid' ] } ] );
