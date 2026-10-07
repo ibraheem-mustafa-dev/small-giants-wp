@@ -382,8 +382,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			.join( '' );
 	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
 	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
-	// Tile icon, tile label, consent text and review term are emitted by child
-	// blocks or by view.js, and the submit button is the canvas-only preview
+	// Tile icon, tile label, consent text, review term and answer, help, error,
+	// file status, review heading and step label are emitted by child blocks,
+	// field-render-helpers.php or by view.js, and the submit button is the canvas-only preview
 	// below, so each gets a scoped rule through typographyPreviewCss().
 	const typographyPreviewRules = [
 		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
@@ -394,6 +395,12 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'reviewTerm', `.${ formPreviewScope } .sgs-form-review__term`, previewTier ),
 		typographyPreviewCss( attributes, 'submit', `.${ formPreviewScope } .sgs-form__button--submit`, previewTier ),
 		typographyPreviewCss( attributes, 'navButton', `.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`, previewTier ),
+		typographyPreviewCss( attributes, 'helpText', `.${ formPreviewScope } .sgs-form-field__help,.${ formPreviewScope } .sgs-form-field__file-hint`, previewTier ),
+		typographyPreviewCss( attributes, 'errorText', `.${ formPreviewScope } .sgs-form-field__error,.${ formPreviewScope } .sgs-form-field__error-message`, previewTier ),
+		typographyPreviewCss( attributes, 'fileStatus', `.${ formPreviewScope } .sgs-form-file__preview,.${ formPreviewScope } .sgs-form-file__progress`, previewTier ),
+		typographyPreviewCss( attributes, 'reviewHeading', `.${ formPreviewScope } .sgs-form-review__heading`, previewTier ),
+		typographyPreviewCss( attributes, 'reviewDetail', `.${ formPreviewScope } .sgs-form-review__detail`, previewTier ),
+		typographyPreviewCss( attributes, 'stepLabel', `.${ formPreviewScope } .sgs-form__progress-step-label`, previewTier ),
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -922,7 +929,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					   `.sgs-form-field__label` (a <label>, or a <legend> on checkbox, radio
 					   and tiles); field is `.sgs-form-field__input` (input, select,
 					   textarea); tile icon, tile label and consent text are emitted by the
-					   child field blocks; review term is a <dt> view.js creates; submit is
+					   child field blocks; review term and answer are the <dt> and <dd> view.js
+					   creates; help text, error text, file upload status, review heading and
+					   step label each own the element(s) their name says; submit is
 					   `.sgs-form__button--submit`. render.php emits every target through
 					   sgs_typography_css_rule(). */ }
 					<TypographyControls
@@ -1046,6 +1055,90 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'navButton',
 								label: __( 'Step buttons', 'sgs-blocks' ),
 								prefix: 'navButton',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'helpText',
+								label: __( 'Help text', 'sgs-blocks' ),
+								prefix: 'helpText',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'errorText',
+								label: __( 'Error text', 'sgs-blocks' ),
+								prefix: 'errorText',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'fileStatus',
+								label: __( 'File upload status', 'sgs-blocks' ),
+								prefix: 'fileStatus',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'reviewHeading',
+								label: __( 'Review heading', 'sgs-blocks' ),
+								prefix: 'reviewHeading',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'reviewDetail',
+								label: __( 'Review answer', 'sgs-blocks' ),
+								prefix: 'reviewDetail',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'stepLabel',
+								label: __( 'Step label', 'sgs-blocks' ),
+								prefix: 'stepLabel',
 								fontSizePresets: true,
 								showFontFamily: true,
 								showDecoration: true,

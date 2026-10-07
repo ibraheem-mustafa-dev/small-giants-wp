@@ -369,6 +369,132 @@
 						"css:writing-mode": "navButtonWritingMode"
 					},
 					"_note": "Typography of the multi-step Previous and Next buttons (.sgs-form__button--prev, .sgs-form__button--next). The submit button has its own submit* surface."
+				},
+				"help-text": {
+					"label": "Help text",
+					"order": 16,
+					"clusters": [ "text" ],
+					"prefix": "helpText",
+					"attrMap": {
+						"css:font-size": "helpTextFontSize",
+						"css:font-weight": "helpTextFontWeight",
+						"css:font-style": "helpTextFontStyle",
+						"css:font-family": "helpTextFontFamily",
+						"css:text-transform": "helpTextTextTransform",
+						"css:text-decoration": "helpTextTextDecoration",
+						"css:line-height": "helpTextLineHeight",
+						"css:letter-spacing": "helpTextLetterSpacing",
+						"css:text-align": "helpTextTextAlign",
+						"css:text-wrap": "helpTextTextWrap",
+						"css:column-count": "helpTextTextColumns",
+						"css:writing-mode": "helpTextWritingMode"
+					},
+					"_note": "Typography only (helpText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__help and .{uid} .sgs-form-field__file-hint). The help paragraph is emitted by field_label/field_help in field-render-helpers.php and the file size hint by sgs/form-field-file; neither child declares typography attributes."
+				},
+				"error-text": {
+					"label": "Error text",
+					"order": 17,
+					"clusters": [ "text" ],
+					"prefix": "errorText",
+					"attrMap": {
+						"css:font-size": "errorTextFontSize",
+						"css:font-weight": "errorTextFontWeight",
+						"css:font-style": "errorTextFontStyle",
+						"css:font-family": "errorTextFontFamily",
+						"css:text-transform": "errorTextTextTransform",
+						"css:text-decoration": "errorTextTextDecoration",
+						"css:line-height": "errorTextLineHeight",
+						"css:letter-spacing": "errorTextLetterSpacing",
+						"css:text-align": "errorTextTextAlign",
+						"css:text-wrap": "errorTextTextWrap",
+						"css:column-count": "errorTextTextColumns",
+						"css:writing-mode": "errorTextWritingMode"
+					},
+					"_note": "Typography only (errorText* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__error and .{uid} .sgs-form-field__error-message). Both are the inline validation message lines under a field."
+				},
+				"file-status": {
+					"label": "File upload status",
+					"order": 18,
+					"clusters": [ "text" ],
+					"prefix": "fileStatus",
+					"attrMap": {
+						"css:font-size": "fileStatusFontSize",
+						"css:font-weight": "fileStatusFontWeight",
+						"css:font-style": "fileStatusFontStyle",
+						"css:font-family": "fileStatusFontFamily",
+						"css:text-transform": "fileStatusTextTransform",
+						"css:text-decoration": "fileStatusTextDecoration",
+						"css:line-height": "fileStatusLineHeight",
+						"css:letter-spacing": "fileStatusLetterSpacing",
+						"css:text-align": "fileStatusTextAlign",
+						"css:text-wrap": "fileStatusTextWrap",
+						"css:column-count": "fileStatusTextColumns",
+						"css:writing-mode": "fileStatusWritingMode"
+					},
+					"_note": "Typography only (fileStatus* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-file__preview and .{uid} .sgs-form-file__progress). Both are emitted by the child sgs/form-field-file block."
+				},
+				"review-heading": {
+					"label": "Review heading",
+					"order": 19,
+					"clusters": [ "text" ],
+					"prefix": "reviewHeading",
+					"attrMap": {
+						"css:font-size": "reviewHeadingFontSize",
+						"css:font-weight": "reviewHeadingFontWeight",
+						"css:font-style": "reviewHeadingFontStyle",
+						"css:font-family": "reviewHeadingFontFamily",
+						"css:text-transform": "reviewHeadingTextTransform",
+						"css:text-decoration": "reviewHeadingTextDecoration",
+						"css:line-height": "reviewHeadingLineHeight",
+						"css:letter-spacing": "reviewHeadingLetterSpacing",
+						"css:text-align": "reviewHeadingTextAlign",
+						"css:text-wrap": "reviewHeadingTextWrap",
+						"css:column-count": "reviewHeadingTextColumns",
+						"css:writing-mode": "reviewHeadingWritingMode"
+					},
+					"_note": "Typography only (reviewHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__heading). The heading is emitted by the child sgs/form-review block, as a heading element whose level the block sets."
+				},
+				"review-detail": {
+					"label": "Review answer",
+					"order": 20,
+					"clusters": [ "text" ],
+					"prefix": "reviewDetail",
+					"attrMap": {
+						"css:font-size": "reviewDetailFontSize",
+						"css:font-weight": "reviewDetailFontWeight",
+						"css:font-style": "reviewDetailFontStyle",
+						"css:font-family": "reviewDetailFontFamily",
+						"css:text-transform": "reviewDetailTextTransform",
+						"css:text-decoration": "reviewDetailTextDecoration",
+						"css:line-height": "reviewDetailLineHeight",
+						"css:letter-spacing": "reviewDetailLetterSpacing",
+						"css:text-align": "reviewDetailTextAlign",
+						"css:text-wrap": "reviewDetailTextWrap",
+						"css:column-count": "reviewDetailTextColumns",
+						"css:writing-mode": "reviewDetailWritingMode"
+					},
+					"_note": "Typography only (reviewDetail* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__detail). The answer <dd> is built by view.js::populateReview, beside the reviewTerm surface."
+				},
+				"step-label": {
+					"label": "Step label",
+					"order": 21,
+					"clusters": [ "text" ],
+					"prefix": "stepLabel",
+					"attrMap": {
+						"css:font-size": "stepLabelFontSize",
+						"css:font-weight": "stepLabelFontWeight",
+						"css:font-style": "stepLabelFontStyle",
+						"css:font-family": "stepLabelFontFamily",
+						"css:text-transform": "stepLabelTextTransform",
+						"css:text-decoration": "stepLabelTextDecoration",
+						"css:line-height": "stepLabelLineHeight",
+						"css:letter-spacing": "stepLabelLetterSpacing",
+						"css:text-align": "stepLabelTextAlign",
+						"css:text-wrap": "stepLabelTextWrap",
+						"css:column-count": "stepLabelTextColumns",
+						"css:writing-mode": "stepLabelWritingMode"
+					},
+					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue."
 				}
 			}
 		}
@@ -1440,6 +1566,390 @@
 			"type": "number"
 		},
 		"navButtonWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"helpTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"helpTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"helpTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"helpTextFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"helpTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"helpTextTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"helpTextTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"helpTextLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"helpTextLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"helpTextLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"helpTextLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"helpTextTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"helpTextTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"helpTextTextColumns": {
+			"type": "number"
+		},
+		"helpTextWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"errorTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"errorTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"errorTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"errorTextFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"errorTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"errorTextTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"errorTextTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"errorTextLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"errorTextLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"errorTextLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"errorTextLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"errorTextTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"errorTextTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"errorTextTextColumns": {
+			"type": "number"
+		},
+		"errorTextWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"fileStatusFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fileStatusFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fileStatusFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fileStatusFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"fileStatusFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fileStatusTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"fileStatusTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"fileStatusLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"fileStatusLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileStatusLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"fileStatusLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileStatusTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"fileStatusTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"fileStatusTextColumns": {
+			"type": "number"
+		},
+		"fileStatusWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"reviewHeadingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewHeadingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"reviewHeadingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewHeadingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewHeadingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewHeadingTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"reviewHeadingTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"reviewHeadingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewHeadingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewHeadingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewHeadingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewHeadingTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"reviewHeadingTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"reviewHeadingTextColumns": {
+			"type": "number"
+		},
+		"reviewHeadingWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"reviewDetailFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewDetailFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"reviewDetailFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewDetailFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewDetailFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewDetailTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"reviewDetailTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"reviewDetailLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewDetailLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewDetailLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewDetailLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewDetailTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"reviewDetailTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"reviewDetailTextColumns": {
+			"type": "number"
+		},
+		"reviewDetailWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"stepLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"stepLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"stepLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"stepLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"stepLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"stepLabelTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"stepLabelTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"stepLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"stepLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"stepLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepLabelTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"stepLabelTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"stepLabelTextColumns": {
+			"type": "number"
+		},
+		"stepLabelWritingMode": {
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""

@@ -520,6 +520,17 @@ $sgs_field_css .= sgs_typography_css_rule( $attributes, 'submit', '.' . $sgs_for
 // The multi-step Previous and Next buttons share one surface, separate from the
 // submit button's, so step navigation can be styled without restyling the submit.
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_form_uid . ' .sgs-form__button--prev, .' . $sgs_form_uid . ' .sgs-form__button--next' );
+// Help, error, file status, review heading and answer, and step label text. Each
+// element is emitted by a child block, by field-render-helpers.php or by view.js
+// inside the uid root, and the stylesheet's own size for each is a :where()
+// default (the review heading keeps its (0,1,0) literal so the theme's heading
+// styles cannot beat it), so an unset control leaves the look unchanged.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'helpText', '.' . $sgs_form_uid . ' .sgs-form-field__help, .' . $sgs_form_uid . ' .sgs-form-field__file-hint' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'errorText', '.' . $sgs_form_uid . ' .sgs-form-field__error, .' . $sgs_form_uid . ' .sgs-form-field__error-message' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileStatus', '.' . $sgs_form_uid . ' .sgs-form-file__preview, .' . $sgs_form_uid . ' .sgs-form-file__progress' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewHeading', '.' . $sgs_form_uid . ' .sgs-form-review__heading' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewDetail', '.' . $sgs_form_uid . ' .sgs-form-review__detail' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepLabel', '.' . $sgs_form_uid . ' .sgs-form__progress-step-label' );
 
 // Submit button row alignment (the stylesheet's own value is flex-end). Narrow
 // containers still stack the button full width (style.css @container rule).
