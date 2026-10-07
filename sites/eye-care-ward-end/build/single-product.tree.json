@@ -2147,7 +2147,9 @@
                                             "source": "sgs-product/field",
                                             "args": {
                                               "key": "meta._sgs_frame_height",
-                                              "after": " mm"
+                                              "after": " mm",
+                                              "fallback": "Ask us",
+                                              "fallback_link": "whatsapp"
                                             }
                                           }
                                         }

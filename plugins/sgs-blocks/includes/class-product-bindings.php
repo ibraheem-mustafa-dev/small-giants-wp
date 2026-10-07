@@ -105,7 +105,7 @@ final class Product_Bindings {
 			$selected = Product_Field_Variations::selected_value( $product_id, $key );
 			$value    = null !== $selected ? \esc_html( $selected ) : self::resolve_wc_field( $product_id, $key );
 			if ( '' === $value ) {
-				return '';
+				return self::empty_value( $source_args );
 			}
 			// A text value follows the size picker: only the value is wrapped, never the block's own markup.
 			if ( Product_Field_Variations::follows( $block, (string) $attribute ) && Product_Field_Variations::varies( $key ) ) {
@@ -119,6 +119,31 @@ final class Product_Bindings {
 		}
 
 		return self::resolve_cpt_field( $product_id, $key );
+	}
+
+	/**
+	 * What a binding paints when the product has no value for its field.
+	 *
+	 * Optional args: `fallback` (plain text, e.g. "Ask us") and `fallback_link`
+	 * (a Site Info link source: phone, email or whatsapp) that turns the text into
+	 * a link to the business's own contact. Neither set keeps the value empty.
+	 *
+	 * @param array $source_args Binding arguments.
+	 * @return string Escaped text or one anchor; '' when no fallback is set.
+	 */
+	private static function empty_value( array $source_args ): string {
+		$text = isset( $source_args['fallback'] ) ? \trim( (string) $source_args['fallback'] ) : '';
+		if ( '' === $text ) {
+			return '';
+		}
+		$link = isset( $source_args['fallback_link'] ) ? \sanitize_key( (string) $source_args['fallback_link'] ) : '';
+		if ( \in_array( $link, array( 'phone', 'email', 'whatsapp' ), true ) && \function_exists( 'sgs_resolve_link_source' ) ) {
+			$resolved = sgs_resolve_link_source( $link, '' );
+			if ( '' !== $resolved['url'] ) {
+				return '<a href="' . \esc_url( $resolved['url'] ) . '">' . \esc_html( $text ) . '</a>';
+			}
+		}
+		return \esc_html( $text );
 	}
 
 	/**
