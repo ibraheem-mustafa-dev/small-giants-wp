@@ -16,7 +16,7 @@ Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 
 |---|---|
 | CLASS 2 + CLASS 3 findings triaged | 73 |
 | ... judged FIX | 26 declarations (22 CLASS 2, 4 CLASS 3): **all resolved**. 24 closed by a control (4 in `6f1963c28`, 9 in `75a583e23`, 11 in `4a4d442fd`..`4289311a9`), 2 (`cta-section` headline) re-verdicted DEFENSIBLE on a live measurement |
-| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 32 remain (31 CLASS 2, 1 CLASS 3); the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline adds its `var()` size (section 7 gap 9) |
+| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 29 remain (28 CLASS 2, 1 CLASS 3); the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline's 3 are CLASS 1 now the gate reads its `sgs/heading` child's controls (section 7 gap 9) |
 | ... DEAD (no markup emits the class) | 10, deleted in `6f1963c28` |
 | ... EDITOR-ONLY | 3, moved to `editor.css` in `6d30835bd` |
 | CANNOT-RESOLVE now | 54 |
@@ -511,7 +511,7 @@ Two scales, kept apart.
 
 ## 6. What this lets a later task lower, and what it cannot
 
-`E14_OPEN_BACKLOG` is `CLASS-2: 31`, `CLASS-3: 1`, `CANNOT-RESOLVE: 54`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
+`E14_OPEN_BACKLOG` is `CLASS-2: 28`, `CLASS-3: 1`, `CANNOT-RESOLVE: 54`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
 Measured 2026-10-07 on a clean detached worktree at `4fa63cfb1` plus the admission (`043e2e457`), from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 31/31, CLASS-3 1/1, CANNOT-RESOLVE 54/54` and 0 net-new legacy violations; `--self-test` reports `49/49 checks passed` at `51a67c791`.
 
@@ -542,18 +542,19 @@ Measured 2026-10-07 on a clean detached worktree at `4fa63cfb1` plus the admissi
 | After `6f1963c28` | | 56 | 3 | 64 |
 | After `75a583e23`, `53ba85750` | | 48 | 2 | 61 |
 | After `87eb25957`..`c70b7eb54` | 3.1, 3.2, 4.1 | 35 | 1 | 55 |
-| **Now: var() fixed and admitted (`00994a40d`..this commit)** | 7 gap 1 | **31** | **1** | **54** |
-| Remaining floor | | 31 | 1 | the CLASS 4 shaped rows, the unclassified (cause H) and the CANNOT-TELL, until the gate gains a CLASS 4 category and the causes of section 4 are modelled |
+| var() fixed and admitted (`00994a40d`..`dc822fcdd`) | 7 gap 1 | 31 | 1 | 54 |
+| **Now: InnerBlocks template children modelled** | 7 gap 9 | **28** | **1** | **54** |
+| Remaining floor | | 28 | 1 | the CLASS 4 shaped rows, the unclassified (cause H) and the CANNOT-TELL, until the gate gains a CLASS 4 category and the causes of section 4 are modelled |
 
 The descent this section predicted was 33 / 1 / 54. The two differences are measured, not missed: the `cta-section` headline pair is DEFENSIBLE (2 CLASS-2), and the own-control reorder clears only one of its two named rows, because `media`'s caption selector list also contains a bare `figcaption` that the gate cannot place (causes E and F), so 1 CANNOT-RESOLVE remains. The option-picker pill's row went with its dead `line-height: 1`.
 
-The 32 DEFENSIBLE findings (31 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows would clear if the gate could see an inner block's controls (section 7 gap 9).
+The 29 DEFENSIBLE findings (28 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows are CLASS 1: the gate reads its `sgs/heading` child's controls (section 7 gap 9).
 
 **Shipped 2026-10-07 (`00994a40d`..the admission commit): every `var()` row fixed, then `var()` admitted.**
 
 - The selector capture no longer leaks a multi-line value (`linear-gradient(` … `);`) into the next rule's selector (`00994a40d`, with a self-test that fails without it).
 - `sgs/form` gained `helpText`, `errorText`, `fileStatus`, `reviewHeading`, `reviewDetail` and `stepLabel` surfaces (`875196fe5`). `sgs/product-card` lost twelve unwritten custom-property hooks, merged its duplicate title rule and gained `valueLadderSavingColour` (`9924e4e3f`). `choice-flow` gained four colour controls through its showcase colour map, `google-reviews` gained `mutedTextColour` and `accentColour` (Google's palette stays the default), `team-member` gained `socialLink`, and `table-of-contents` moved its root size into `:where()` (`5a9b9b9da`). `cta-section` gained `ribbon` and `stats` (`7dfc6552b`).
-- The `cta-section` headline got no section-level surface: it is an `sgs/heading` child whose own controls (0,2,0) out-rank the stylesheet default, and HC2 keeps a composite's text typography on the child. Its three rows stay counted (section 7 gap 9).
+- The `cta-section` headline got no section-level surface: it is an `sgs/heading` child whose own controls (0,2,0) out-rank the stylesheet default, and HC2 keeps a composite's text typography on the child. Its three rows are CLASS 1 since gap 9 was built.
 - Admission: `isLiteralConstant`'s E14 call admits a `var()` value unless the block writes one of the properties it reads (`isUnwrittenVarValue`, `collectWrittenCustomProps`). Measured on a clean worktree, the ceilings fell to 31 / 1 / 54.
 - A /qc-council pass (block CSS, gate logic, project rules; 2026-10-07) found no control left to a source-order tie only after these follow-ups: the product-card CTA defaults now load after the shared `.sgs-button` base (block.json `style` lists `sgs-button-style` first), the bound-card price, description, note, from-label and brand defaults moved to `:where(.product-card) .X` with nine unwritten hooks removed, the live variable card's prices lost a hard-coded `'Fraunces'` for the display token, the form's active step weight and choice-flow's note sub-line were fixed (`ef7a33daf`, `4fa8c204f`), and the gate's selector capture and writer set were hardened with each branch pinned by a mutation-tested self-test (`dc822fcdd`, 47/47). google-reviews' accent hover and active shades still read Google's fixed blues: handed to the session that owns google-reviews.
 - **Live, eye-care-test (deploy 3e54d6f08, 7 fixture specs, 375 / 768 / 1440, D / S / C with a sham sibling):** every default is unchanged against a before-deploy baseline except the intended bound price family; every new control wins on its element; the product-card CTA holds weight 600 and line-height 21px on typed and bound cards; the editor shows 0 console errors and the card title at 20px. Not coverable on that site: the value-ladder saving colour (no product with pack-size variations), the google-reviews maps link (synced data only), choice-flow step 2.
@@ -572,7 +573,7 @@ The 32 DEFENSIBLE findings (31 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 ## 7. Capability gaps in the gate that this triage exposed
 
-Gap 1 is built; gaps 2 to 10 are open, each evidence for a later gate task. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
+Gaps 1 and 9 are built; the others are open, each evidence for a later gate task. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
 
 1. **`var()`-valued declarations: built (2026-10-07).** The record below is how it was designed and measured.
 
@@ -582,7 +583,7 @@ Gap 1 is built; gaps 2 to 10 are open, each evidence for a later gate task. Shar
 
    **The 40 rows the rule admitted (13 CLASS-2, 27 CANNOT-RESOLVE), all fixed before admission except the `cta-section` headline size (gap 9).** Bean's decision (2026-10-07): fix them all first, then admit `var()` into the existing categories at zero ceiling cost; no separate counter.
 
-   **The six "DEFENSIBLE" rows get controls (Bean, 2026-10-07).** The 5 google-reviews colours (Google's own palette) and the `cta-section` headline `font-size` are not exempted: each gets an inspector control whose default is today's exact value, so the rendered default is unchanged and a client may still override it. No marker comment and no ceiling rise. Outcome: the 5 google-reviews colours got two block-wide controls; the headline already had one, its own `sgs/heading` child's (gap 9), so its row stays counted inside the lowered ceiling.
+   **The six "DEFENSIBLE" rows get controls (Bean, 2026-10-07).** The 5 google-reviews colours (Google's own palette) and the `cta-section` headline `font-size` are not exempted: each gets an inspector control whose default is today's exact value, so the rendered default is unchanged and a client may still override it. No marker comment and no ceiling rise. Outcome: the 5 google-reviews colours got two block-wide controls; the headline already had one, its own `sgs/heading` child's (gap 9), which the gate reads since gap 9 was built.
 
    **Caveats on the product-card rows.** `.product-card h3` and `.product-card .sgs-product-card__title` both declare `font-size: var(--sgs-card-title-font-size, 20px)` on the same element, so 14 rows are about 11 distinct fixes. Two rows (`.product-card .sgs-button` weight and line-height) are reported under a selector the gate garbled: its multi-line value capture leaked a `linear-gradient( 135deg, … )` continuation into the selector text. Fix that capture before admission, or those rows cannot be verified. `.product-card h3 color` sits under the theme-heading caveat too. Each row gets the same treatment as the literal rows of section 3: its own control, or its default moved up to the ancestor whose control should reach it, never a bare `:where()` wrap where the control is on an ancestor. Rows on headings must be measured live first (the theme's global heading styles hold `h1`-`h6`; see the `cta-section` headline, already DEFENSIBLE as a literal).
 
@@ -636,7 +637,7 @@ Gap 1 is built; gaps 2 to 10 are open, each evidence for a later gate task. Shar
 6. **State selectors are not exempt.** `[aria-current="true"]` (`store-selector`) is a state, like the `:hover` and `:focus` that E3 already exempts.
 7. **No CLASS 4 category.** 40 of the 54 CANNOT-RESOLVE findings, and the largest real gaps (post-grid card parts, which the gate no longer reports at all, and the buybox notify form), are "this element has no control". The gate has no way to say so.
 8. **44 blocks have no E14 model**, so the gate reports nothing for them (section 5).
-9. **An InnerBlocks child's controls are invisible.** The `cta-section` headline is an `sgs/heading` placed by the editor template with `className: sgs-cta-section__headline`; its own controls own it, but the gate models only PHP markup and the parent's controls, so its size, weight and line-height count as CLASS-2 (3 of the 31).
+9. **InnerBlocks template children: built (2026-10-07).** A `[ 'sgs/<child>', { className: '<cls>' } ]` tuple in a block's editor template (`collectTemplateChildren`) makes `<cls>` a front-end class: the child renders it and the className is saved into the post, so `isEditorOnlyClass` no longer treats it as editor-only (before, a template class whose only literal sat in `edit.js` was silently skipped; `cta-section` was reported only because `includes/variations/sgs-cta-section-variations.php` repeats the class). The child's controls that paint its own root (`childRootControls`, built from the child's own element model) own the element when one strictly out-specifies the literal (`.{uid}.wp-block-sgs-heading`, (0,2,0), against (0,1,0)); a tie stays reported. The `cta-section` headline's size, weight and line-height moved to CLASS 1 (CLASS-2 31 to 28). Self-test case 13: a child with a root control exempts, a child without one still reports CLASS-2; removing either the ownership branch or the editor-only exception turns one of the pair red.
 10. **The writer set is block-wide and cannot tell a control from a computed write** (qc-council, 2026-10-07; none mis-exempts a row today, all 25 exempted rows have a real writer). (a) A computed write counts: `product-card/render.php` writes `--sgs-pc-badge-fg` from `sgs_wcag_text_colour_for_bg()`, an auto-contrast value, which exempts its three `color: var(--sgs-pc-badge-fg, …)` rows. (b) The transitive follow gives every block that requires `render-helpers.php` the whole helper tree's writes (median 94 properties, e.g. `--sgs-gi-color`), so the first block to READ one of those names without writing it would be exempted. (c) A CSS default inside a PHP string (`'.x{--x:1.4}'`) and a PHP `#` comment still count as writes. (d) Computed names (`sprintf('--%s', …)`, `'--sgs-' . $n`, a JS template literal) are missed, which errs safe: the row is reported. JS comments, `getPropertyValue`/`removeProperty` reads and `*.test.js` files are excluded and self-tested.
 
 ## 8. Scope limits and CANNOT-TELL

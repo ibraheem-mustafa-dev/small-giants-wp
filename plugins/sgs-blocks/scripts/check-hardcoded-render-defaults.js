@@ -1575,10 +1575,8 @@ const E14_BLOCKS_BUILD = false;
 // The ceilings are the counts `--check` MEASURES on a clean HEAD, lowered in the
 // same commit that removes findings. What remains (plugins/sgs-blocks/reports/
 // f3-e14-triage.md §6 holds the full accounting):
-// - CLASS-2 31: findings the triage rates DEFENSIBLE (UI chrome, documented
-//   intent, and the cta-section headline's size, weight and line-height, held
-//   by the theme's global heading styles and owned by its own sgs/heading
-//   controls, which the gate cannot see).
+// - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
+//   intent).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
 // - CANNOT-RESOLVE 54: elements with no typography control at all (the
 //   CLASS 4 shape the gate cannot yet name), elements built from sprintf
@@ -1589,8 +1587,11 @@ const E14_BLOCKS_BUILD = false;
 // Shared PHP is read one hop from a block's require (readBlockPhpFiles): not
 // transitively, because includes/render-helpers.php requires the whole helper
 // tree and almost every block requires it.
+// An element an InnerBlocks template child renders (a `className` in the
+// block's editor template) is a front-end element, and the child's own root
+// controls own it (collectTemplateChildOwners).
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        31,
+	'CLASS-2':        28,
 	'CLASS-3':        1,
 	'CANNOT-RESOLVE': 54,
 };
@@ -2111,7 +2112,7 @@ function buildMarkupModel( files, rootClasses ) {
 	return instances;
 }
 
-function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypography ) {
+function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypography, withChildren = true ) {
 	const files = readBlockPhpFiles( blockDir );
 	const slug  = path.basename( blockDir );
 	if ( 0 === files.length ) {
@@ -2136,8 +2137,94 @@ function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypograph
 		wildcardProps,
 		rootClasses,
 		instances: buildMarkupModel( files, rootClasses ),
+		childOwners: withChildren ? collectTemplateChildOwners( blockDir ) : new Map(),
 		isEditorOnlyClass: ( cls ) => isEditorOnlyClass( cls, blockDir, files ),
 	};
+}
+
+// ── InnerBlocks template children ─────────────────────────────────────────
+
+const TEMPLATE_CHILDREN_CACHE = new Map();
+const CHILD_ROOT_CONTROLS_CACHE = new Map();
+
+/**
+ * The SGS children the block's editor templates place with a className:
+ * `[ 'sgs/<child>', { …, className: '<classes>' } ]` tuples in its non-test JS.
+ * Returns [{ child, classes }]. An attribute object holding a nested object is
+ * not matched, which errs towards reporting.
+ */
+function collectTemplateChildren( blockDir ) {
+	if ( ! TEMPLATE_CHILDREN_CACHE.has( blockDir ) ) {
+		const out = [];
+		for ( const file of listSourceFiles( blockDir, [ '.js' ] ) ) {
+			if ( /\.test\.js$/i.test( file ) ) {
+				continue;
+			}
+			const src = maskJsComments( fs.readFileSync( file, 'utf8' ) );
+			for ( const m of src.matchAll( /\[\s*(['"])sgs\/([a-z0-9-]+)\1\s*,\s*\{([^{}]*)\}/g ) ) {
+				const cm = /\bclassName\s*:\s*(['"])([^'"]+)\1/.exec( m[ 3 ] );
+				if ( cm ) {
+					out.push( { child: m[ 2 ], classes: cm[ 2 ].split( /\s+/ ).filter( Boolean ) } );
+				}
+			}
+		}
+		TEMPLATE_CHILDREN_CACHE.set( blockDir, out );
+	}
+	return TEMPLATE_CHILDREN_CACHE.get( blockDir );
+}
+
+/**
+ * Controls the block in `childDir` paints on its OWN root, with resolved
+ * members. The child's model is built without its own template children and
+ * without touching the survey stats.
+ */
+function childRootControls( childDir ) {
+	if ( CHILD_ROOT_CONTROLS_CACHE.has( childDir ) ) {
+		return CHILD_ROOT_CONTROLS_CACHE.get( childDir );
+	}
+	CHILD_ROOT_CONTROLS_CACHE.set( childDir, [] );
+	let meta;
+	try {
+		meta = JSON.parse( fs.readFileSync( path.join( childDir, 'block.json' ), 'utf8' ) );
+	} catch ( err ) {
+		return [];
+	}
+	const hasSelTypo = !! ( meta.selectors && 'object' === typeof meta.selectors && 'typography' in meta.selectors );
+	const saved      = JSON.stringify( ELEMENT_MODEL_STATS );
+	const model      = buildElementModel( childDir, meta, new Set( Object.keys( meta.attributes || {} ) ), hasSelTypo, false );
+	Object.assign( ELEMENT_MODEL_STATS, JSON.parse( saved ) );
+	const own = [];
+	for ( const c of model ? model.controls : [] ) {
+		const members = ( c.members || [] ).filter( ( cm ) => isRootCompound( lastCompound( cm ), model ) );
+		if ( members.length ) {
+			own.push( { prop: c.prop, attrs: c.attrs, members } );
+		}
+	}
+	CHILD_ROOT_CONTROLS_CACHE.set( childDir, own );
+	return own;
+}
+
+/**
+ * E14 gap 9: className → controls of the template child that renders it. The
+ * child paints those properties on its own root, which is the element carrying
+ * the className.
+ */
+function collectTemplateChildOwners( blockDir ) {
+	const owners = new Map();
+	for ( const { child, classes } of collectTemplateChildren( blockDir ) ) {
+		const childDir = path.join( path.dirname( blockDir ), child );
+		if ( path.resolve( childDir ) === path.resolve( blockDir ) ) {
+			continue;
+		}
+		const controls = childRootControls( childDir ).map( ( c ) => ( {
+			...c,
+			attrs: c.attrs.map( ( a ) => `sgs/${ child }:${ a }` ),
+		} ) );
+		for ( const cls of classes ) {
+			owners.set( cls, [ ...( owners.get( cls ) || [] ), ...controls ] );
+		}
+	}
+	return owners;
 }
 
 // ── Editor-only classes ───────────────────────────────────────────────────
@@ -2195,6 +2282,11 @@ function isEditorOnlyClass( cls, blockDir, phpFiles ) {
 	}
 	const token = new RegExp( '(?<![\\w-])' + escapeRegExp( cls ) + '(?![\\w-])' );
 	if ( ! token.test( editSrc ) ) {
+		return false;
+	}
+	if ( collectTemplateChildren( blockDir ).some( ( t ) => t.classes.includes( cls ) ) ) {
+		// An InnerBlocks template className is saved into the post and rendered
+		// by the child block on the front end.
 		return false;
 	}
 	const stemAt = cls.indexOf( '__' );
@@ -2407,6 +2499,15 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 		}
 		if ( b.classes.length > 0 && b.classes.some( ( cl ) => model.isEditorOnlyClass( cl ) ) ) {
 			// Rendered by the editor canvas only: no front-end control can be blocked.
+			continue;
+		}
+		if ( b.classes.some( ( cl ) => ( model.childOwners.get( cl ) || [] ).some( ( oc ) =>
+			oc.prop === prop && oc.members.some( ( cm ) => chainBeatsChain( cm, chain ) )
+		) ) ) {
+			// An InnerBlocks template child renders this element and paints the
+			// property on its own root at a strictly higher specificity. A tie is
+			// decided by source order, so it falls through.
+			sawSame = true;
 			continue;
 		}
 		const rels = controls.map( ( c ) => {
@@ -3369,9 +3470,11 @@ function selfTestE12() {
  * Write a synthetic one-block tree (block.json, render.php, style.css) into a
  * fresh temp directory named `x` (so the block slug is `x`) and run the real
  * checkBlock() over it. `extraFiles` ({ name: contents }) adds files beside them
- * (edit.js, view.js). The tree is removed afterwards.
+ * (edit.js, view.js). `siblings` ({ slug: { attributes, renderPhp } }) writes
+ * further blocks beside `x`, for a template child the parent places. The tree is
+ * removed afterwards.
  */
-function runE14Fixture( attributes, renderPhp, styleCss, extraFiles = {} ) {
+function runE14Fixture( attributes, renderPhp, styleCss, extraFiles = {}, siblings = {} ) {
 	const tmp      = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-e14-selftest-' ) );
 	const blockDir = path.join( tmp, 'x' );
 	try {
@@ -3385,6 +3488,16 @@ function runE14Fixture( attributes, renderPhp, styleCss, extraFiles = {} ) {
 		fs.writeFileSync( path.join( blockDir, 'style.css' ), styleCss, 'utf8' );
 		for ( const [ name, body ] of Object.entries( extraFiles ) ) {
 			fs.writeFileSync( path.join( blockDir, name ), body, 'utf8' );
+		}
+		for ( const [ slug, sib ] of Object.entries( siblings ) ) {
+			const sibDir   = path.join( tmp, slug );
+			const sibAttrs = {};
+			for ( const name of sib.attributes ) {
+				sibAttrs[ name ] = { type: 'string' };
+			}
+			fs.mkdirSync( sibDir );
+			fs.writeFileSync( path.join( sibDir, 'block.json' ), JSON.stringify( { name: `sgs/${ slug }`, attributes: sibAttrs } ), 'utf8' );
+			fs.writeFileSync( path.join( sibDir, 'render.php' ), sib.renderPhp, 'utf8' );
 		}
 		ELEMENT_MODEL_STATS.class1.length = 0;
 		const findings = checkBlock( blockDir );
@@ -3579,6 +3692,28 @@ function selfTestE14( assert ) {
 			'.sgs-x__title {\n\tline-height: 1.4;\n}\n'
 		);
 		assert( 'own control: an UNRESOLVABLE control selector is not treated as an own control (still CLASS-2)', lh( unresolved, '.sgs-x__title' ), [ 'CLASS-2' ] );
+	}
+
+	// CASE 13 — an InnerBlocks child owns its element. The parent's editor
+	// template places an sgs/y child with `className: 'sgs-x__headline'`; y paints
+	// font-size on its own root at (0,2,0), which beats the (0,1,0) literal. The
+	// twin child declares no typography attribute, so the parent's root control
+	// above still reports CLASS-2.
+	{
+		const childPhp = "<?php\n$uid = 'sgs-y-' . wp_unique_id();\n$root_sel = '.' . $uid . '.wp-block-sgs-y';\n$css = '';\n" +
+			"$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+			"?>\n<h2 <?php echo get_block_wrapper_attributes( array( 'class' => $uid . ' sgs-y' ) ); ?>>Title</h2>\n";
+		const run = ( childAttrs ) => runE14Fixture(
+			[ 'fontSize' ],
+			E14_FIXTURE_PHP_HEAD + "$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n" +
+				E14_FIXTURE_ROOT_OPEN + '<?php echo $content; ?>\n</div>\n',
+			'.sgs-x__headline {\n\tfont-size: 2rem;\n}\n',
+			{ 'edit.js': "const TEMPLATE = [\n\t[ 'sgs/y', { level: 'h2', className: 'sgs-x__headline' } ],\n];\n" },
+			{ y: { attributes: childAttrs, renderPhp: childPhp } }
+		);
+		const fs2 = ( r ) => r.findings.filter( ( f ) => 'font-size' === f.property && '.sgs-x__headline' === f.selector ).map( ( f ) => f.class );
+		assert( 'inner-block child: a template child that paints font-size on its own root owns the element (not reported)', fs2( run( [ 'fontSize' ] ) ), [] );
+		assert( 'inner-block child: a template child with no font-size control does not (still CLASS-2)', fs2( run( [ 'textColour' ] ) ), [ 'CLASS-2' ] );
 	}
 
 	// CASE 10 — ratchet: past a ceiling the exit code is 1, at or under it 0.
