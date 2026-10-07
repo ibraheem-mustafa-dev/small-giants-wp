@@ -1,8 +1,8 @@
 {
  "surface": "lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T18-19-19/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T18-19-19/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-07T03-46-44/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-07T03-46-44/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
   "W": 48,
   "F": 0,
@@ -101,8 +101,8 @@
    "evidence": [
     {
      "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/icon-list path \".sgs-icon-list__item:nth-of-type(1)\" is not a calibrated element"
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/icon-list paints \".sgs-icon-list__item:nth-of-type(1)\" (candidates: itemMotionDuration)"
     },
     {
      "check": "attribute",
@@ -1455,6 +1455,24 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "iconFontSize",
+     "css_property": "font-size",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "descriptionFontSize",
+     "css_property": "font-size",
+     "css_element": "description",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -1508,6 +1526,24 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "iconFontWeight",
+     "css_property": "font-weight",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "descriptionFontWeight",
+     "css_property": "font-weight",
+     "css_element": "description",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -1561,6 +1597,24 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "iconLineHeight",
+     "css_property": "line-height",
+     "css_element": "icon",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "descriptionLineHeight",
+     "css_property": "line-height",
+     "css_element": "description",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -1935,13 +1989,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lenses-27||style|padding-top",
-     "ref": "cr-ref-lenses-27",
+     "parent": "cr-ref-lenses-0||style|padding-top",
+     "ref": "cr-ref-lenses-0",
      "key": "padding-top",
-     "relation": "descendant",
-     "match": "same-delta",
+     "relation": "self",
+     "match": "layout-row",
      "width": 375,
-     "delta": -23,
+     "delta": -22,
      "widths": [
       375,
       768,

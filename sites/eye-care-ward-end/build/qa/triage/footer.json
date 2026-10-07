@@ -1,11 +1,11 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T18-17-14/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T18-17-14/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T03-44-02/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T03-44-02/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
-  "W": 141,
-  "F": 21,
+  "W": 97,
+  "F": 63,
   "T": 15,
   "U": 0
  },
@@ -296,21 +296,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for align-items"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "alignItems",
-     "property": "align-items",
-     "via": "declared"
     }
    ],
    "source": {
@@ -389,21 +381,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for flex-wrap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "flexWrap",
-     "property": "flex-wrap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -952,8 +936,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -969,14 +953,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1062,23 +1038,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -1119,8 +1099,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1136,14 +1116,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1229,23 +1201,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -1286,8 +1262,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1303,14 +1279,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1396,23 +1364,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -1453,8 +1425,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1470,14 +1442,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1563,23 +1527,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -2090,22 +2058,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "property": "transition-duration",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -2176,8 +2135,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -2193,14 +2152,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2944,8 +2895,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -2961,14 +2912,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3054,23 +2997,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -3111,8 +3058,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -3128,14 +3075,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3221,23 +3160,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -3278,8 +3221,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -3295,14 +3238,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3388,23 +3323,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -3445,8 +3384,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -3462,14 +3401,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3555,23 +3486,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -4082,22 +4017,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "property": "transition-duration",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -4168,8 +4094,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -4185,14 +4111,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -4816,8 +4734,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -4833,14 +4751,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -4926,23 +4836,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -4983,8 +4897,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -5000,14 +4914,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -5093,23 +4999,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -5150,8 +5060,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -5167,14 +5077,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -5260,23 +5162,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -5317,8 +5223,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -5334,14 +5240,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -5427,23 +5325,27 @@
      },
      {
       "block": "social-icons",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "social-icons",
       "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "social-icons",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -5954,22 +5856,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "transitionDuration",
-     "property": "transition-duration",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -6040,8 +5933,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -6057,14 +5950,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6338,21 +6223,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6425,21 +6302,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6486,21 +6355,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6573,21 +6434,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6634,21 +6487,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6721,21 +6566,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6782,21 +6619,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6869,21 +6698,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6930,21 +6751,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7017,21 +6830,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7078,21 +6883,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7165,21 +6962,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7226,21 +7015,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for font-size"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7313,21 +7094,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -8975,22 +8748,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "boxShadowHover",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -9068,21 +8832,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "sgsHoverLift",
-     "property": "transform",
-     "via": "declared"
     }
    ],
    "source": {
@@ -9529,22 +9285,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "boxShadowHover",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -9622,21 +9369,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "sgsHoverLift",
-     "property": "transform",
-     "via": "declared"
     }
    ],
    "source": {
@@ -10076,22 +9815,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for box-shadow (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-3",
-     "block": "sgs/heading",
-     "setting": "boxShadowHover",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -10169,21 +9899,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for transform (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "sgsHoverLift",
-     "property": "transform",
-     "via": "declared"
     }
    ],
    "source": {
@@ -11707,22 +11429,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-6",
-     "block": "sgs/social-icons",
-     "setting": "iconBorderColourHover",
-     "property": "border-color",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -11833,22 +11546,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/list has no setting for border-top-color (hover)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-footer-6",
-     "block": "sgs/social-icons",
-     "setting": "iconBorderColourHover",
-     "property": "border-color",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -12189,7 +11893,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 69,
+     "delta": -33,
      "widths": [
       375,
       768,
@@ -12226,7 +11930,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 43,
+     "delta": 66,
      "widths": [
       375,
       768,
@@ -12246,6 +11950,7 @@
    "property": "h",
    "widths": [
     375,
+    768,
     1440,
     1920
    ],
@@ -12262,44 +11967,10 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 21,
+     "delta": 43,
      "widths": [
       375,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-2||box|y-after-columns-row",
-   "ref": "cr-ref-footer-2",
-   "pair": "col-brand",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-columns-row",
-   "widths": [
-    375,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -5,
-     "widths": [
-      375,
+      768,
       1440,
       1920
      ]
@@ -12339,6 +12010,37 @@
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-7||box|y-after-social-whatsapp-icon",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-social-whatsapp-icon",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|padding-top",
+     "ref": "cr-ref-footer-6",
+     "key": "padding-top",
+     "relation": "anchor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": 8,
+     "widths": [
+      375
      ]
     }
    ]
@@ -12506,12 +12208,43 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -11,
+     "delta": 12,
      "widths": [
       375,
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-3||box|y-after-col-brand",
+   "ref": "cr-ref-footer-3",
+   "pair": "brand-wordmark",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-col-brand",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375
      ]
     }
    ]
@@ -12799,7 +12532,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 15,
+     "delta": 17,
      "widths": [
       375
      ]
@@ -13005,7 +12738,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 17,
+     "delta": 16,
      "widths": [
       375
      ]
@@ -13277,7 +13010,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -12,
+     "delta": -11,
      "widths": [
       375
      ]
@@ -13422,7 +13155,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 12,
+     "delta": 11,
      "widths": [
       375,
       768,
@@ -13459,7 +13192,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -20,
+     "delta": 3,
      "widths": [
       375,
       768,
@@ -13496,7 +13229,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": 9,
+     "delta": 10,
      "widths": [
       375,
       768,
@@ -13678,13 +13411,13 @@
    ]
   },
   {
-   "key": "cr-ref-footer-7||box|y-after-brand-wordmark",
-   "ref": "cr-ref-footer-7",
-   "pair": "col-shop",
+   "key": "cr-ref-footer-2||box|y-after-columns-row",
+   "ref": "cr-ref-footer-2",
+   "pair": "col-brand",
    "path": "",
    "block": "sgs/container",
    "kind": "box",
-   "property": "y-after-brand-wordmark",
+   "property": "y-after-columns-row",
    "widths": [
     768
    ],
@@ -13701,38 +13434,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": 6,
-     "widths": [
-      768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-3||box|y-after-col-brand",
-   "ref": "cr-ref-footer-3",
-   "pair": "brand-wordmark",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "y-after-col-brand",
-   "widths": [
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|max-width",
-     "ref": "cr-ref-footer-0",
-     "key": "max-width",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 768,
-     "delta": -6,
+     "delta": -5,
      "widths": [
       768
      ]
@@ -13990,7 +13692,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -21,
+     "delta": -20,
      "widths": [
       768,
       1440,
@@ -14024,7 +13726,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 7,
+     "delta": -5,
      "widths": [
       1440,
       1920
@@ -14128,68 +13830,6 @@
       1440,
       1920
      ]
-    }
-   ]
-  },
-  {
-   "key": "footer-root||text|text",
-   "ref": null,
-   "pair": "footer-root",
-   "path": null,
-   "block": null,
-   "kind": "text",
-   "property": "text",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "content",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "content",
-   "evidence": [
-    {
-     "check": "content",
-     "kinds": [
-      "text"
-     ],
-     "keys": [
-      "text"
-     ],
-     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
-    }
-   ]
-  },
-  {
-   "key": "address||text|text",
-   "ref": null,
-   "pair": "address",
-   "path": null,
-   "block": null,
-   "kind": "text",
-   "property": "text",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "content",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "content",
-   "evidence": [
-    {
-     "check": "content",
-     "kinds": [
-      "text"
-     ],
-     "keys": [
-      "text"
-     ],
-     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

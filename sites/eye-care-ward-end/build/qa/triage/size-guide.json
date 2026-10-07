@@ -1,8 +1,8 @@
 {
  "surface": "size-guide",
- "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T18-38-21/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T18-38-21/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-07T04-12-00/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-07T04-12-00/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
   "W": 54,
   "F": 0,
@@ -717,7 +717,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
@@ -733,63 +733,8 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-size-guide-0",
-     "block": "sgs/heading",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared",
-     "where": "sibling"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": []
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "fontSize"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-size-guide-2|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container__inner > p:nth-of-type(1)|style|line-height",
@@ -2409,7 +2354,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -68,
+     "delta": -242,
      "widths": [
       375
      ]
@@ -2613,7 +2558,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -87,
+     "delta": -261,
      "widths": [
       375
      ]
@@ -2823,7 +2768,7 @@
      "relation": "descendant",
      "match": "same-delta",
      "width": 375,
-     "delta": 21,
+     "delta": 22,
      "widths": [
       375
      ]
@@ -2854,7 +2799,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -87,
+     "delta": -261,
      "widths": [
       375
      ]
@@ -2990,7 +2935,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -75,
+     "delta": -249,
      "widths": [
       375
      ]
@@ -3059,7 +3004,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 375,
-     "delta": -76,
+     "delta": -250,
      "widths": [
       375,
       768
@@ -3166,7 +3111,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -86,
+     "delta": -259,
      "widths": [
       375,
       768
@@ -3272,7 +3217,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 375,
-     "delta": -85,
+     "delta": -259,
      "widths": [
       375
      ]
@@ -3342,7 +3287,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -111,
+     "delta": -256,
      "widths": [
       768,
       1440,
@@ -3377,7 +3322,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -111,
+     "delta": -256,
      "widths": [
       768,
       1440,
@@ -3410,7 +3355,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 768,
-     "delta": -121,
+     "delta": -266,
      "widths": [
       768
      ]
@@ -3442,7 +3387,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -121,
+     "delta": -266,
      "widths": [
       1440,
       1920
@@ -3475,7 +3420,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -113,
+     "delta": -259,
      "widths": [
       1440,
       1920

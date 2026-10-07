@@ -18,13 +18,10 @@ const pickRx = ( label ) => ( {
 	live: ( h ) => h.clickText( `^${ label }`, { within: L, tag: '.sgs-choice-flow-question__option-button', wait: 600 } ),
 } );
 
-// Picks an option on the draft (the card click advances) or on live (card, then Continue).
+// Picks an option: on both sides the card click advances (live's flow runs advanceMode 'pick').
 const choose = ( label ) => ( {
 	draft: ( h ) => h.clickText( `^${ label }`, { within: D, tag: 'button' } ),
-	live: async ( h ) => {
-		await h.clickText( `^${ label }`, { within: L, tag: '.sgs-choice-flow-question__option-button', wait: 150 } );
-		await h.click( `${ L } .sgs-choice-flow__continue` );
-	},
+	live: ( h ) => h.clickText( `^${ label }`, { within: L, tag: '.sgs-choice-flow-question__option-button', wait: 900 } ),
 } );
 
 export default {
@@ -228,7 +225,7 @@ export default {
 			return /^moved "[^"]*£\d/.test( d.key ) && Math.abs( dy - ly ) <= 2 && Math.abs( dx - lx ) <= 60;
 		} },
 		{ pair: '(auto)', width: 375, reason: 'Accepted (Bean 2026-09-27): the draft’s 72px stage thumbnail shows a clipped "POLARIS" label; live keeps the thumbnail clean', when: ( d ) => /^text-missing "polarised"/.test( d.key ) },
-		{ pair: '(auto)', reason: 'Spec 43 Continue model (shipped 2026-09-26): choosing an option selects it and a muted Continue advances, where the draft advances on the card click', when: ( d ) => ( ( d ) => /^text-extra "continue"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
+		{ pair: '(auto)', reason: 'Register N37 (advanceMode pick): a pick advances as on the draft, and live keeps a muted Continue so Back then Continue returns without re-picking', when: ( d ) => ( ( d ) => /^text-extra "continue"$/.test( d.key ) )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		{ pair: '(auto)', reason: 'Accepted (Bean 2026-09-28, as the help toggle 2026-09-27): badge text is the palette’s text-inverse #FAF8F5, the draft’s pure white', when: ( d ) => ( ( d ) => /^style:color "most people pick this"$/.test( d.key ) && 'rgb(255,255,255)' === d.draft )( { ...d, key: d.key.replace( / #\d+$/, '' ) } ) },
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'option-card', state, kind: 'box', reason: 'Measured, not painted: live’s first text in DOM order is the EASIEST badge at the card’s right; the titles start 24px in on both (the automatic check compares every word’s place)', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),
 		...[ 'q4-prescription', 'q4-upload', 'q4-type' ].map( ( state ) => ( { pair: 'stage', state, width: 375, kind: 'box', reason: 'Accepted (Bean 2026-09-27): the draft’s first text is the thumbnail’s clipped POLARIS label, which live leaves off', when: ( d ) => /^text-inset-/.test( d.key ) } ) ),

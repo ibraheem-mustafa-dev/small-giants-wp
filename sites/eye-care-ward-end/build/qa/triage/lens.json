@@ -1,11 +1,11 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T18-39-23/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T18-39-23/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T09-26-12/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-07T09-26-12/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
   "W": 40,
-  "F": 26,
+  "F": 30,
   "T": 0,
   "U": 0
  },
@@ -142,44 +142,6 @@
    ]
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-total > .sgs-choice-flow__summary-summary-total-value|style|width",
-   "ref": "cr-ref-lens-0",
-   "pair": "stage-total",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-total > .sgs-choice-flow__summary-summary-total-value",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-bottom-width",
    "ref": "cr-ref-lens-0",
    "pair": "stage",
@@ -192,8 +154,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -209,14 +171,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-115",
-     "block": "sgs/modal",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -386,10 +340,10 @@
      {
       "block": "choice-flow",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -397,11 +351,7 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -410,6 +360,14 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
+     },
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      }
     ]
    }
@@ -474,10 +432,10 @@
      {
       "block": "choice-flow",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -485,11 +443,7 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -498,6 +452,14 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
+     },
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      }
     ]
    }
@@ -562,10 +524,10 @@
      {
       "block": "choice-flow",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -573,11 +535,7 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -586,6 +544,14 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
+     },
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      }
     ]
    }
@@ -650,10 +616,10 @@
      {
       "block": "choice-flow",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -661,11 +627,7 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "choice-flow",
@@ -674,6 +636,14 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
+     },
+     {
+      "block": "choice-flow",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      }
     ]
    }
@@ -737,8 +707,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -754,15 +724,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-lens-1",
-     "block": "sgs/form-step",
-     "setting": "borderRadius",
-     "property": "border-radius",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -839,21 +800,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/choice-flow has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-115",
-     "block": "sgs/modal",
-     "setting": "dialogShadow",
-     "property": "box-shadow",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1348,6 +1301,249 @@
     ],
     "helpers": []
    }
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|font-size",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": ".sgs-choice-flow__announcer",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|line-height",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": ".sgs-choice-flow__announcer",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|letter-spacing",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": ".sgs-choice-flow__announcer",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|text-transform",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": ".sgs-choice-flow__announcer",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|color",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": ".sgs-choice-flow__announcer",
+   "block": "sgs/choice-flow",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/choice-flow path \".sgs-choice-flow__announcer\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBackground",
+     "css_property": "background-color",
+     "css_element": "back",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourText",
+     "css_property": "color",
+     "css_element": "back",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBorder",
+     "css_property": "border-color",
+     "css_element": "back",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "back",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourTextHover",
+     "css_property": "color",
+     "css_element": "back",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "backColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "back",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "progressColour",
+     "css_property": "background-color,border-color",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stageColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stageNoteIconColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stageNoteHoverColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "headerEyebrowColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "infoToggleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
   },
   {
    "key": "cr-ref-lens-6|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button|style|column-gap",
@@ -1921,11 +2117,13 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-lens-7",
-     "block": "sgs/form-step",
-     "setting": "textColour",
+     "ref": "cr-ref-lens-0",
+     "block": "sgs/choice-flow",
+     "setting": "backColourText",
      "property": "color",
-     "via": "declared"
+     "via": "declared",
+     "where": "ancestor",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -2595,58 +2793,14 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/choice-flow path \".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand\" is not a calibrated element"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-lens-2",
-     "block": "sgs/choice-flow-question",
-     "setting": "questionFontWeight",
-     "property": "font-weight",
-     "via": "declared",
-     "where": "sibling"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "fontWeight"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "fontWeight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "choice-flow/style.css",
-      "selector": ".sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-brand",
-      "declaration": "font-weight:500"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "choice-flow",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-summary > .sgs-choice-flow__summary-summary-name > .sgs-choice-flow__summary-brand|style|line-height",
@@ -2881,59 +3035,14 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/form-step path \".sgs-form-field:nth-of-type(1) > .sgs-form-field__label\" is not a calibrated element"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-lens-2",
-     "block": "sgs/choice-flow-question",
-     "setting": "questionFontWeight",
-     "property": "font-weight",
-     "via": "declared",
-     "where": "sibling"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form-step/render.php",
-      "mentions": [],
-      "absent": [
-       "fontWeight"
-      ]
-     },
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "fontWeight"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "fontWeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form-step",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-lens-14|.sgs-form-field:nth-of-type(1) > .sgs-form-field__label|style|line-height",
@@ -3012,8 +3121,24 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "consequence",
    "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__announcer|style|text-transform",
+     "ref": "cr-ref-lens-0",
+     "key": "text-transform",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
@@ -3341,46 +3466,6 @@
    }
   },
   {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-total > .sgs-choice-flow__summary-total-value|style|width",
-   "ref": "cr-ref-lens-0",
-   "pair": "stage-total",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-total > .sgs-choice-flow__summary-total-value",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary|style|border-right-width",
    "ref": "cr-ref-lens-0",
    "pair": "stage",
@@ -3395,8 +3480,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -3412,14 +3497,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-115",
-     "block": "sgs/modal",
-     "setting": "borderWidth",
-     "property": "border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3638,6 +3715,63 @@
    }
   },
   {
+   "key": "cr-ref-lens-0||box|y-in-main",
+   "ref": "cr-ref-lens-0",
+   "pair": "gen-lens-0",
+   "path": "",
+   "block": "sgs/choice-flow",
+   "kind": "box",
+   "property": "y-in-main",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-lens-0|.sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-close|style|min-height",
+     "ref": "cr-ref-lens-0",
+     "key": "min-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -175,
+     "widths": [
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-total > .sgs-choice-flow__summary-total-value|box|y-after-option-description",
    "ref": "cr-ref-lens-0",
    "pair": "stage-total",
@@ -3661,9 +3795,8 @@
      "relation": "self",
      "match": "layout-row",
      "width": 768,
-     "delta": -17,
+     "delta": -18,
      "widths": [
-      768,
       768,
       768
      ]
@@ -3693,9 +3826,9 @@
      "ref": "cr-ref-lens-0",
      "key": "column-gap",
      "relation": "anchor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 768,
-     "delta": -17,
+     "delta": 6,
      "widths": [
       768,
       768,

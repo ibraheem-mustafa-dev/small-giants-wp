@@ -1,13 +1,13 @@
 {
  "surface": "shop",
- "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T18-41-54/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-06T18-41-54/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T09-28-51/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T09-28-51/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
-  "W": 55,
-  "F": 5,
-  "T": 21,
-  "U": 7
+  "W": 58,
+  "F": 20,
+  "T": 2,
+  "U": 8
  },
  "verdicts": [
   {
@@ -69,21 +69,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "core/query-title has no setting for text-wrap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "property": "text-wrap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -110,78 +102,6 @@
    }
   },
   {
-   "key": "cr-ref-shop-9|form > select|style|display",
-   "ref": "cr-ref-shop-9",
-   "pair": "sort",
-   "path": "form > select",
-   "block": "woocommerce/catalog-sorting",
-   "kind": "style",
-   "property": "display",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "woocommerce/catalog-sorting has no setting for display"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-7",
-     "block": "sgs/container",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "display"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
-       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
-       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
-       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-shop-9|form > select|style|max-width",
    "ref": "cr-ref-shop-9",
    "pair": "sort",
@@ -197,21 +117,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/catalog-sorting has no setting for max-width"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-7",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "property": "max-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -298,21 +210,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for text-wrap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "property": "text-wrap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -354,22 +258,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-5",
-     "block": "sgs/text",
-     "setting": "transitionDuration",
-     "property": "transition-duration",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -426,22 +321,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for transition-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-5",
-     "block": "sgs/text",
-     "setting": "transitionEasing",
-     "property": "transition-timing-function",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -498,8 +384,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -515,15 +401,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "contentBandMargin",
-     "property": "margin-bottom,margin-left,margin-right,margin-top",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -557,6 +434,14 @@
       ]
      },
      {
+      "block": "filter-search",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "margin"
+      ],
+      "declares": []
+     },
+     {
       "block": "container",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [
@@ -585,21 +470,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for width"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -662,21 +539,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for max-width"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "property": "max-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -728,70 +597,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "ambiguous",
-     "detail": "sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet all paint display on \"\""
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [
-       "display"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "display"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "text",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
-       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
-       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
-       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|text-align",
@@ -810,22 +622,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "start is not one of , left, center, right, justify"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textAlign",
-     "css_property": "text-align",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -846,97 +647,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no background-image setting on sgs/text paints \"\" (candidates: backgroundColourGradient)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "backgroundImage",
-     "property": "background-image",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [
-       "backgroundColourGradient",
-       "backgroundColourHoverGradient"
-      ],
-      "absent": [
-       "backgroundImage"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "backgroundColourGradient",
-       "backgroundColourHoverGradient"
-      ],
-      "absent": [
-       "backgroundImage"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "text",
-      "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
-      "mentions": [],
-      "declares": [
-       "adient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
-      ]
-     },
-     {
-      "block": "text",
-      "cite": "includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule",
-      "mentions": [],
-      "declares": [
-       "background-clip:text)){' . $selector . '{background-image:none;color:' . esc_attr( $fallback_colour"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "backgroundColourGradient"
-      ],
-      "declares": [
-       "s:none'; $sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';",
-       "(max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] )",
-       "(max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] )"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|opacity",
@@ -955,68 +672,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for opacity"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "property": "opacity",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "opacity"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100",
-       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/shape-dividers.php::includes/shape-dividers.php",
-      "mentions": [],
-      "declares": [
-       "e stop. * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity. */ function s"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-tokens.php::sgs_overlay_decls",
-      "mentions": [],
-      "declares": [
-       "`; a bare `0` stays `0`. $decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.'"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|border-top-width",
@@ -1034,30 +696,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1077,30 +721,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderStyle"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderStyle",
-     "css_property": "border-style",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1120,50 +746,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1183,30 +771,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1226,50 +796,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1289,30 +821,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1332,30 +846,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderWidth"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1375,30 +871,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderRadius"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderRadius",
-     "css_property": "border-radius",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1418,58 +896,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "boxShadow"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadow",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowHover",
-     "css_property": "box-shadow",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1489,30 +921,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1532,30 +946,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1575,30 +971,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1618,30 +996,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1662,57 +1022,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for column-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|row-gap",
@@ -1731,57 +1047,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for row-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|object-fit",
@@ -1800,53 +1072,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for object-fit"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "backgroundSize",
-     "property": "background-size,object-fit",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "objectFit"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "objectFit"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "tml ) { $sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_img_style_",
-       "o ) { $sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size ); $sgs_bg_video_styl",
-       "l (style.css's `.sgs-container__video-bg{object-fit:cover}` // stays as the CSS fallback default"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|aspect-ratio",
@@ -1865,51 +1097,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for aspect-ratio"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-4",
-     "block": "sgs/container",
-     "setting": "boxAspectRatio",
-     "property": "aspect-ratio",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "aspectRatio"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "!== $sgs_box_ratio ) { $styles[] = 'aspect-ratio:' . $sgs_box_ratio; } // Ken-burns dura"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|flex-grow",
@@ -1928,20 +1122,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "discovered",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for flex-grow"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/text",
-     "setting": "sgsChildSizing",
-     "values": [
-      "fill"
-     ]
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1961,50 +1146,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2024,50 +1171,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "borderColour"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "borderColourHover",
-     "css_property": "border-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2088,22 +1197,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for transform"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2123,35 +1221,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for rotate"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "rotate"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "rotate"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|scale",
@@ -2170,22 +1247,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for scale"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "scaleHover",
-     "css_property": "transform",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2205,35 +1271,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for translate"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "translate"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "translate"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|backdrop-filter",
@@ -2251,44 +1296,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for backdrop-filter"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "backdropFilter"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "backdropFilter"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/helpers-surface-ground.php::sgs_surface_backdrop_decls",
-      "mentions": [],
-      "declares": [
-       "lode( ' ', $parts ); return array( 'backdrop-filter:' . $value, '-webkit-backdrop-filter:' ."
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|outline-style",
@@ -2306,35 +1321,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for outline-style"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineStyle"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-5||style|transition-duration",
@@ -2353,21 +1347,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/text paints \"\" (candidates: transitionDuration)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "transitionDuration",
-     "css_property": "transition-duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2387,30 +1371,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2430,30 +1396,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2473,30 +1421,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "margin"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "margin",
-     "css_property": "margin",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2517,53 +1447,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "used-value",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2584,48 +1472,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "none cannot be held"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2645,30 +1496,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "textWrap"
-     ],
-     "on": {
-      "ref": "cr-ref-shop-5",
-      "block": "sgs/text",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textWrap",
-     "css_property": "text-wrap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2689,54 +1522,13 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/text has no setting for gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
+     "check": "no-live-element",
+     "detail": "8 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "text/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-shop-4||style|width",
@@ -2824,6 +1616,72 @@
    ]
   },
   {
+   "key": "cr-ref-shop-9|form > select|style|display",
+   "ref": "cr-ref-shop-9",
+   "pair": "sort",
+   "path": "form > select",
+   "block": "woocommerce/catalog-sorting",
+   "kind": "style",
+   "property": "display",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "woocommerce/catalog-sorting has no setting for display"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "display"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ed it: <main> on 404.html computes // display:block and stacks correctly with zero flex involved,",
+       "// a container with neither must stay display:block, byte-identical to // before this fix. $gr",
+       "flex_fill ) { $base_outer_decls[] = 'display:flex'; $base_outer_decls[] = 'flex-direction:co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "' ) . ';'; } $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-co"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
+      "mentions": [],
+      "declares": [
+       "( $box['fullWidth'] ) ) { $decls[] = 'display:block'; $decls[] = 'width:100%'; } elseif ( is",
+       "if ( '' !== $display ) { $decls[] = 'display:' . $display; } } $css = ''; if ( $decls"
+      ]
+     }
+    ]
+   }
+  },
+  {
    "key": "cr-ref-shop-22|fieldset > div > button:nth-of-type(1)|style|border-radius",
    "ref": "cr-ref-shop-22",
    "pair": "size-small",
@@ -2839,21 +1697,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for border-radius"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "gridItemBorderRadius",
-     "property": "border-radius",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2913,21 +1763,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for padding-top"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2960,24 +1802,6 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
      }
     ]
    }
@@ -2998,21 +1822,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for padding-bottom"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3045,24 +1861,6 @@
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
       ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
      }
     ]
    }
@@ -3083,22 +1881,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for column-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -3144,22 +1933,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for row-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -3219,7 +1999,8 @@
      "block": "sgs/container",
      "setting": "minHeight",
      "property": "min-height",
-     "via": "declared"
+     "via": "declared",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -3263,22 +2044,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-5",
-     "block": "sgs/text",
-     "setting": "transitionDuration",
-     "property": "transition-duration",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -3359,21 +2131,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for text-wrap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "property": "text-wrap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3415,22 +2179,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-chips has no setting for gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-16",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "property": "gap",
-     "via": "declared",
-     "where": "sibling"
     }
    ],
    "source": {
@@ -3474,21 +2229,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/filter-search paints \".sgs-filter-search__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3556,22 +2303,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-shop-11",
-     "block": "sgs/container",
-     "setting": "gridItemShadow",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -3621,41 +2359,6 @@
    }
   },
   {
-   "key": "cr-ref-shop-31|.sgs-filter-search__input|style|outline-color",
-   "ref": "cr-ref-shop-31",
-   "pair": "brand-search",
-   "path": ".sgs-filter-search__input",
-   "block": "sgs/filter-search",
-   "kind": "style",
-   "property": "outline-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no outline-color setting on sgs/filter-search paints \".sgs-filter-search__input\" (candidates: focusRingColour)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/filter-search",
-     "setting": "focusRingColour",
-     "css_property": "outline-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-shop-9|form > select|hover|reached",
    "ref": "cr-ref-shop-9",
    "pair": "sort",
@@ -3700,7 +2403,10 @@
    "kind": "box",
    "property": "y-in-main",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -3713,64 +2419,51 @@
      "ref": "cr-ref-shop-5",
      "key": "margin-bottom",
      "relation": "self",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 4,
+     "delta": 3,
      "widths": [
       375,
       375,
       375,
       375,
-      375
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920
      ]
     }
    ]
   },
   {
-   "key": "cr-ref-shop-9|form > select|box|y-from-title",
-   "ref": "cr-ref-shop-9",
-   "pair": "sort",
-   "path": "form > select",
-   "block": "woocommerce/catalog-sorting",
-   "kind": "box",
-   "property": "y-from-title",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-shop-9|form > select|style|display",
-     "ref": "cr-ref-shop-9",
-     "key": "display",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -5,
-     "widths": [
-      375,
-      375,
-      375,
-      375,
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-shop-4||box|y-after-eyebrow",
-   "ref": "cr-ref-shop-4",
-   "pair": "gen-shop-4",
+   "key": "cr-ref-shop-5||box|y-after-eyebrow",
+   "ref": "cr-ref-shop-5",
+   "pair": "gen-shop-5",
    "path": "",
-   "block": "sgs/container",
+   "block": "sgs/text",
    "kind": "box",
    "property": "y-after-eyebrow",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -3783,16 +2476,34 @@
      "ref": "cr-ref-shop-5",
      "key": "margin-bottom",
      "relation": "anchor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": -4,
+     "delta": -3,
      "widths": [
       375,
       375,
       375,
       375,
       375,
-      375
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920
      ]
     }
    ]
@@ -3826,7 +2537,8 @@
    "kind": "box",
    "property": "y-after-gender-all",
    "widths": [
-    375
+    375,
+    768
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -3839,14 +2551,35 @@
      "ref": "cr-ref-shop-5",
      "key": "margin-bottom",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": 3,
+     "delta": 178,
      "widths": [
-      375
+      375,
+      375,
+      768,
+      768
      ]
     }
    ]
+  },
+  {
+   "key": "cr-ref-shop-25|fieldset > div > button:nth-of-type(1)|box|y-after-count",
+   "ref": "cr-ref-shop-25",
+   "pair": "swatch-black",
+   "path": "fieldset > div > button:nth-of-type(1)",
+   "block": "woocommerce/product-filter-chips",
+   "kind": "box",
+   "property": "y-after-count",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
   },
   {
    "key": "cr-ref-shop-57||box|y-after-polarised-toggle",
@@ -3971,6 +2704,56 @@
    ]
   },
   {
+   "key": "cr-ref-shop-9|form > select|box|y-from-title",
+   "ref": "cr-ref-shop-9",
+   "pair": "sort",
+   "path": "form > select",
+   "block": "woocommerce/catalog-sorting",
+   "kind": "box",
+   "property": "y-from-title",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-shop-9|form > select|style|display",
+     "ref": "cr-ref-shop-9",
+     "key": "display",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-shop-22|fieldset > div > button:nth-of-type(1)|box|y-after-count",
    "ref": "cr-ref-shop-22",
    "pair": "size-small",
@@ -3979,7 +2762,8 @@
    "kind": "box",
    "property": "y-after-count",
    "widths": [
-    375
+    375,
+    768
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -3992,11 +2776,12 @@
      "ref": "cr-ref-shop-22",
      "key": "padding-top",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -5,
+     "delta": -180,
      "widths": [
-      375
+      375,
+      768
      ]
     }
    ]
@@ -4028,7 +2813,7 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": 19,
+     "delta": 20,
      "widths": [
       375,
       768,
@@ -4122,7 +2907,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -47,
+     "delta": -182,
      "widths": [
       375,
       768,
@@ -4142,7 +2927,6 @@
    "property": "y-after-brand-list",
    "widths": [
     375,
-    768,
     1440,
     1920
    ],
@@ -4173,13 +2957,13 @@
    "evidence": []
   },
   {
-   "key": "cr-ref-shop-25|fieldset > div > button:nth-of-type(1)|box|y-after-clear-all",
+   "key": "cr-ref-shop-25|fieldset > div > button:nth-of-type(1)|box|y-after-active-pill",
    "ref": "cr-ref-shop-25",
    "pair": "swatch-black",
    "path": "fieldset > div > button:nth-of-type(1)",
    "block": "woocommerce/product-filter-chips",
    "kind": "box",
-   "property": "y-after-clear-all",
+   "property": "y-after-active-pill",
    "widths": [
     768
    ],
@@ -4214,7 +2998,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 56,
+     "delta": -99,
      "widths": [
       1440,
       1920

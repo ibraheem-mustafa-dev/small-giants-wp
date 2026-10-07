@@ -1,11 +1,11 @@
 {
  "surface": "contact-form",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T18-49-57/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T18-49-57/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-07T04-18-56/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-07T04-18-56/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
-  "W": 44,
-  "F": 6,
+  "W": 32,
+  "F": 18,
   "T": 45,
   "U": 0
  },
@@ -26,21 +26,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-text paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
     }
    ],
    "source": {
@@ -398,21 +390,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-email paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
     }
    ],
    "source": {
@@ -770,21 +754,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-phone paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1142,21 +1118,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "no display setting on sgs/form-field-select paints \".sgs-form-field__input\" (candidates: sgsHideOnDesktop, sgsHideOnMobile, sgsHideOnTablet)"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "sgsHideOnDesktop",
-     "property": "display",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1748,22 +1716,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for margin-top"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "contentBandMargin",
-     "property": "margin-bottom,margin-left,margin-right,margin-top",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -1869,7 +1828,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "attribute",
    "evidence": [
     {
      "check": "resolver",
@@ -1887,40 +1846,78 @@
      "reaches": false
     },
     {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "labelLineHeight",
+     "css_property": "line-height",
+     "css_element": "field-label",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fieldLineHeight",
+     "css_property": "line-height",
+     "css_element": "field-input",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileIconLineHeight",
+     "css_property": "line-height",
+     "css_element": "tile-icon",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "tileLabelLineHeight",
+     "css_property": "line-height",
+     "css_element": "tile-label",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "reviewTermLineHeight",
+     "css_property": "line-height",
+     "css_element": "review-term",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "consentLineHeight",
+     "css_property": "line-height",
+     "css_element": "consent-text",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "navButtonLineHeight",
+     "css_property": "line-height",
+     "css_element": "nav-button",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "submitLineHeight",
+     "css_property": "line-height",
+     "css_element": "submit-button",
+     "css_state": null,
+     "source": "sgs"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form/render.php",
-      "mentions": [
-       "lineHeight"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "form/style.css",
-      "selector": ".sgs-form__button",
-      "declaration": "line-height:1.5"
-     }
-    ],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|transition-duration",
@@ -2135,22 +2132,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-text has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "gridItemShadow",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -2181,7 +2169,7 @@
      {
       "file": "form/style.css",
       "selector": ".sgs-form-field__input:focus-visible",
-      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
      },
      {
       "file": "form/style.css",
@@ -2305,59 +2293,6 @@
    ]
   },
   {
-   "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|outline-color",
-   "ref": "cr-ref-contact-form-1",
-   "pair": "field-name",
-   "path": ".sgs-form-field__input",
-   "block": "sgs/form-field-text",
-   "kind": "style",
-   "property": "outline-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/form-field-text has no setting for outline-color"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form-field-text/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineColor"
-      ]
-     },
-     {
-      "file": "form/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineColor"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "outlineColor"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
    "key": "cr-ref-contact-form-1|.sgs-form-field__input|style|border-color",
    "ref": "cr-ref-contact-form-1",
    "pair": "field-name",
@@ -2414,21 +2349,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-text has no setting for background-image"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "prevColourBackgroundGradient",
-     "property": "background-image",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2513,21 +2440,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-email has no setting for background-image"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "prevColourBackgroundGradient",
-     "property": "background-image",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2694,22 +2613,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-email has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "gridItemShadow",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -2740,7 +2650,7 @@
      {
       "file": "form/style.css",
       "selector": ".sgs-form-field__input:focus-visible",
-      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
      },
      {
       "file": "form/style.css",
@@ -2920,21 +2830,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-select has no setting for background-image"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "prevColourBackgroundGradient",
-     "property": "background-image",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3101,22 +3003,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-select has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "gridItemShadow",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -3147,7 +3040,7 @@
      {
       "file": "form/style.css",
       "selector": ".sgs-form-field__input:focus-visible",
-      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
      },
      {
       "file": "form/style.css",
@@ -3327,21 +3220,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for background-image"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "prevColourBackgroundGradient",
-     "property": "background-image",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3508,22 +3393,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for box-shadow"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "gridItemShadow",
-     "property": "box-shadow",
-     "via": "declared",
-     "where": "ancestor"
     }
    ],
    "source": {
@@ -3554,7 +3430,7 @@
      {
       "file": "form/style.css",
       "selector": ".sgs-form-field__input:focus-visible",
-      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--preset--color--accent, #f59e0b))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
+      "declaration": "box-shadow:0 0 8px 2px\n\t\tcolor-mix(\n\t\t\tin srgb,\n\t\t\tvar(--sgs-focus-ring-colour, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)))\n\t\t\t\tcalc(var(--sgs-focus-ring-opacity, 1) * 100%),\n\t\t\ttransparent\n\t\t)"
      },
      {
       "file": "form/style.css",
@@ -4498,7 +4374,7 @@
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": -22,
+     "delta": -21,
      "widths": [
       375,
       375,
@@ -4663,13 +4539,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "margin-top",
+     "key": "padding-top",
      "relation": "self",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -10,
+     "delta": -8,
      "widths": [
       375,
       375,
@@ -4741,13 +4617,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|padding-top",
+     "parent": "cr-ref-contact-form-5|.sgs-form-field__input|style|margin-top",
      "ref": "cr-ref-contact-form-5",
-     "key": "padding-top",
+     "key": "margin-top",
      "relation": "anchor",
-     "match": "layout-row",
+     "match": "same-delta",
      "width": 375,
-     "delta": 8,
+     "delta": 10,
      "widths": [
       375,
       375,
@@ -4895,13 +4771,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|style|padding-right",
+     "parent": "cr-ref-contact-form-2|.sgs-form-field__input|box|y-after-gen-contact-form-0",
      "ref": "cr-ref-contact-form-2",
-     "key": "padding-right",
+     "key": "y-after-gen-contact-form-0",
      "relation": "anchor",
      "match": "same-delta",
      "width": 375,
-     "delta": 25,
+     "delta": 24,
      "widths": [
       375,
       768,
@@ -4938,13 +4814,44 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 23,
+     "delta": 24,
      "widths": [
       375,
       768,
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "form-card||presence|element",
+   "ref": null,
+   "pair": "form-card",
+   "path": null,
+   "block": null,
+   "kind": "presence",
+   "property": "element",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "presence"
+     ],
+     "keys": [
+      "element"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   },

@@ -1,13 +1,13 @@
 {
  "surface": "about",
- "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T18-18-36/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-06T18-18-36/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-07T03-45-45/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/about/2026-10-07T03-45-45/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
   "W": 6,
   "F": 0,
   "T": 0,
-  "U": 0
+  "U": 4
  },
  "verdicts": [
   {
@@ -219,6 +219,74 @@
      "source": "sgs"
     }
    ]
+  },
+  {
+   "key": "cr-ref-about-2||box|y-after-gen-about-0",
+   "ref": "cr-ref-about-2",
+   "pair": "eyebrow",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-about-0",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
+  },
+  {
+   "key": "cr-ref-about-5||box|y-from-credentials-line",
+   "ref": "cr-ref-about-5",
+   "pair": "intro-text",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-from-credentials-line",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
+  },
+  {
+   "key": "cr-ref-about-11||box|y-from-name",
+   "ref": "cr-ref-about-11",
+   "pair": "credential-stack",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-from-name",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
+  },
+  {
+   "key": "cr-ref-about-1||box|y-after-eyebrow",
+   "ref": "cr-ref-about-1",
+   "pair": "gen-about-1",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-eyebrow",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "U",
+   "decidedBy": "box-unexplained",
+   "evidence": []
   }
  ]
 }

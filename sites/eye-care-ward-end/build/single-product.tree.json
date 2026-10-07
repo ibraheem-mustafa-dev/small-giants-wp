@@ -1807,7 +1807,8 @@
                             "desktop": {
                               "top": "16px"
                             }
-                          }
+                          },
+                          "className": "cr-ref-product-88"
                         }
                       }
                     ]

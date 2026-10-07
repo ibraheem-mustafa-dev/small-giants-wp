@@ -1,45 +1,35 @@
 {
  "surface": "header",
- "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T18-29-04/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-06T18-29-04/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-07T03-57-30/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/header/2026-10-07T03-57-30/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
-  "W": 51,
-  "F": 1,
-  "T": 14,
+  "W": 55,
+  "F": 12,
+  "T": 10,
   "U": 0
  },
  "verdicts": [
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
+   "key": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "path": ".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "font-size",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "labelFontSize"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
-     },
-     "holds": false
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
     },
     {
      "check": "attribute",
@@ -59,40 +49,30 @@
      "css_element": "label",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-weight",
+   "key": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-weight",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "path": ".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "font-weight",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "labelFontWeight"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
-     },
-     "holds": false
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
     },
     {
      "check": "attribute",
@@ -112,40 +92,30 @@
      "css_element": "label",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|letter-spacing",
+   "key": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|letter-spacing",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "path": ".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "letter-spacing",
    "widths": [
-    375,
-    768,
-    1440,
-    1920
+    375
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "labelLetterSpacing"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ".sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label"
-     },
-     "holds": false
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
     },
     {
      "check": "attribute",
@@ -155,7 +125,7 @@
      "css_element": "label",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -170,10 +140,10 @@
    ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1)|style|column-gap",
+   "key": "cr-ref-header-0||style|column-gap",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+   "path": "",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "column-gap",
@@ -188,12 +158,12 @@
     {
      "check": "resolver",
      "wouldWrite": [
-      "itemGap"
+      "gap"
      ],
      "on": {
       "ref": "cr-ref-header-0",
       "block": "sgs/trust-bar",
-      "path": ".sgs-trust-bar__badge:nth-of-type(1)"
+      "path": ""
      },
      "holds": false
     },
@@ -205,7 +175,7 @@
      "css_element": "wrapper",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -215,20 +185,23 @@
      "css_element": "item",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1)|style|row-gap",
+   "key": "cr-ref-header-0||style|row-gap",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+   "path": "",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "row-gap",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -238,12 +211,12 @@
     {
      "check": "resolver",
      "wouldWrite": [
-      "itemGap"
+      "gap"
      ],
      "on": {
       "ref": "cr-ref-header-0",
       "block": "sgs/trust-bar",
-      "path": ".sgs-trust-bar__badge:nth-of-type(1)"
+      "path": ""
      },
      "holds": false
     },
@@ -255,7 +228,7 @@
      "css_element": "wrapper",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -265,30 +238,40 @@
      "css_element": "item",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1)|style|align-items",
+   "key": "cr-ref-header-0||style|align-items",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+   "path": "",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "align-items",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no align-items setting on sgs/trust-bar paints \".sgs-trust-bar__badge:nth-of-type(1)\" (candidates: alignItems)"
+     "wouldWrite": [
+      "alignItems"
+     ],
+     "on": {
+      "ref": "cr-ref-header-0",
+      "block": "sgs/trust-bar",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -298,69 +281,31 @@
      "css_element": null,
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-2",
-     "block": "sgs/site-header-row",
-     "setting": "alignItems",
-     "property": "align-items",
-     "via": "declared",
-     "where": "sibling"
+     "check": "discovered",
+     "block": "sgs/trust-bar",
+     "setting": "layout",
+     "values": [
+      ""
+     ]
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "trust-bar/render.php",
-      "mentions": [],
-      "absent": [
-       "alignItems"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "trust-bar/style.css",
-      "selector": ".sgs-trust-bar__badge",
-      "declaration": "align-items:center"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "trust-bar",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "alignItems"
-      ],
-      "declares": [
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
-       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
-      ]
-     },
-     {
-      "block": "trust-bar",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
-   "key": "cr-ref-header-0|.sgs-trust-bar__badge:nth-of-type(1)|style|gap",
+   "key": "cr-ref-header-0||style|gap",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": ".sgs-trust-bar__badge:nth-of-type(1)",
+   "path": "",
    "block": "sgs/trust-bar",
    "kind": "style",
    "property": "gap",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -380,7 +325,7 @@
      "css_element": "wrapper",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -390,16 +335,16 @@
      "css_element": "item",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|text-transform",
+   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|text-transform",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
-   "path": ".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
-   "block": "sgs/site-header-row",
+   "path": ".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "text-transform",
    "widths": [
@@ -408,35 +353,204 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "canvas-settable",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|text-transform",
-     "ref": "cr-ref-header-1",
-     "key": "text-transform",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      375
-     ]
-    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
-     "detail": "sgs/site-header-row path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
+     "detail": "sgs/google-reviews path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "sourceLabelTextTransform",
+     "css_property": "text-transform",
+     "css_element": "source-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "scoreTextTransform",
+     "css_property": "text-transform",
+     "css_element": "average",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "countTextTransform",
+     "css_property": "text-transform",
+     "css_element": "count",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "authorTextTransform",
+     "css_property": "text-transform",
+     "css_element": "author",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "metaTextTransform",
+     "css_property": "text-transform",
+     "css_element": "meta",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dateTextTransform",
+     "css_property": "text-transform",
+     "css_element": "date",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "textTextTransform",
+     "css_property": "text-transform",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "avatarTextTransform",
+     "css_property": "text-transform",
+     "css_element": "avatar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "footnoteTextTransform",
+     "css_property": "text-transform",
+     "css_element": "footnote",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "reviewLinkTextTransform",
+     "css_property": "text-transform",
+     "css_element": "review-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewTextTransform",
+     "css_property": "text-transform",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllTextTransform",
+     "css_property": "text-transform",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-header-8",
+     "block": "sgs/heading",
+     "setting": "textTransform",
+     "property": "text-transform",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "google-reviews/render.php",
+      "mentions": [],
+      "absent": [
+       "sourceLabelTextTransform",
+       "scoreTextTransform",
+       "countTextTransform",
+       "authorTextTransform",
+       "metaTextTransform",
+       "dateTextTransform",
+       "textTextTransform",
+       "avatarTextTransform",
+       "footnoteTextTransform",
+       "reviewLinkTextTransform",
+       "writeReviewTextTransform",
+       "seeAllTextTransform",
+       "textTransform"
+      ]
+     },
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "sourceLabelTextTransform",
+       "scoreTextTransform",
+       "countTextTransform",
+       "authorTextTransform",
+       "metaTextTransform",
+       "dateTextTransform",
+       "textTextTransform",
+       "avatarTextTransform",
+       "footnoteTextTransform",
+       "reviewLinkTextTransform",
+       "writeReviewTextTransform",
+       "seeAllTextTransform",
+       "textTransform"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "google-reviews",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": ".sgs-container__inner",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "grid-template-columns",
    "widths": [
@@ -449,35 +563,27 @@
    "decidedBy": "attribute",
    "evidence": [
     {
-     "check": "consequence",
-     "partial": true,
-     "widths": [
-      375,
-      768
-     ],
-     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner|style|grid-template-columns"
-    },
-    {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "no grid-template-columns setting on sgs/site-header-row paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
+     "detail": "no grid-template-columns setting on sgs/google-reviews paints \".sgs-container__inner\" (candidates: gridTemplateColumns)"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "gridTemplateColumns",
-     "css_property": "grid-template-columns",
-     "css_element": "wrapper",
+     "block": "sgs/google-reviews",
+     "setting": "columns",
+     "css_property": "grid-template-columns:count",
+     "css_element": "inner",
      "css_state": null,
      "source": "sgs"
     },
     {
-     "check": "discovered",
-     "block": "sgs/site-header-row",
-     "setting": "layout",
-     "values": [
-      "grid"
-     ]
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "gridTemplateColumns",
+     "css_property": "grid-template-columns",
+     "css_element": "inner",
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -497,21 +603,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/responsive-logo has no setting for aspect-ratio"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-5",
-     "block": "sgs/container",
-     "setting": "boxAspectRatio",
-     "property": "aspect-ratio",
-     "via": "declared"
     }
    ],
    "source": {
@@ -531,7 +629,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [],
       "absent": [
        "aspectRatio"
@@ -673,56 +771,23 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
+    {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|line-height"
+    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/cart path \".sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label\" is not a calibrated element"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "cart/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-header-13||style|text-align",
@@ -1231,8 +1296,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1248,14 +1313,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1281,7 +1338,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [
        "borderWidth"
       ],
@@ -1339,8 +1396,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1356,14 +1413,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1389,7 +1438,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [
        "borderStyle"
       ],
@@ -1446,8 +1495,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1463,14 +1512,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1496,7 +1537,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [
        "borderWidth"
       ],
@@ -1554,8 +1595,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1571,14 +1612,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1604,7 +1637,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [
        "borderWidth"
       ],
@@ -1662,8 +1695,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
@@ -1679,14 +1712,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-10",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1712,7 +1737,7 @@
       ]
      },
      {
-      "file": "site-header-row/render.php",
+      "file": "google-reviews/render.php",
       "mentions": [
        "borderWidth"
       ],
@@ -1985,8 +2010,24 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "consequence",
    "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-1||style|justify-content",
+     "ref": "cr-ref-header-1",
+     "key": "justify-content",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": null,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
@@ -2070,7 +2111,7 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/cart paints \"\" (candidates: panelSlideDuration)"
+     "detail": "no transition-duration setting on sgs/cart paints \"\" (candidates: panelSlideDuration, freeDeliveryFillDuration)"
     },
     {
      "check": "attribute",
@@ -2078,6 +2119,15 @@
      "setting": "panelSlideDuration",
      "css_property": "transition-duration",
      "css_element": "panelFrame",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/cart",
+     "setting": "freeDeliveryFillDuration",
+     "css_property": "transition-duration",
+     "css_element": "freeDeliveryFill",
      "css_state": null,
      "source": "sgs"
     }
@@ -2149,58 +2199,254 @@
    ]
   },
   {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|text-transform",
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|font-family",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
    "block": "sgs/site-header",
    "kind": "style",
-   "property": "text-transform",
+   "property": "font-family",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
-     "detail": "sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|font-size",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "font-size",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|line-height",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "line-height",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|letter-spacing",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|color",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "color",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
     },
     {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-0",
-     "block": "sgs/trust-bar",
-     "setting": "labelTextTransform",
-     "property": "text-transform",
-     "via": "declared",
-     "where": "sibling"
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundOverlayColour",
+     "css_property": "background-color",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundColourScrolled",
+     "css_property": "background-color",
+     "css_element": "wrapper",
+     "css_state": "scrolled",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundColourScrolledGradient",
+     "css_property": "background-color-gradient",
+     "css_element": "wrapper",
+     "css_state": "scrolled",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "textColourScrolled",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "scrolled",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "backgroundOverlayColourHover",
+     "css_property": "background-color",
+     "css_element": "overlay",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "shadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "shadowColourHover",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "shadowScrolledColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "scrolled",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/site-header",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "textTransform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "site-header",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-header-1||style|border-bottom-width",
@@ -2511,35 +2757,28 @@
    ]
   },
   {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner|style|grid-template-columns",
+   "key": "cr-ref-header-1||style|column-gap",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner",
+   "path": "",
    "block": "sgs/site-header",
    "kind": "style",
-   "property": "grid-template-columns",
+   "property": "column-gap",
    "widths": [
     375,
-    768
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/site-header has no setting for grid-template-columns"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-0",
-     "block": "sgs/trust-bar",
-     "setting": "columns",
-     "property": "grid-template-columns:count",
-     "via": "declared",
-     "where": "sibling"
+     "detail": "sgs/site-header has no setting for column-gap"
     }
    ],
    "source": {
@@ -2548,7 +2787,8 @@
       "file": "site-header/render.php",
       "mentions": [],
       "absent": [
-       "gridTemplateColumns"
+       "columnGap",
+       "gap"
       ]
      }
     ],
@@ -2559,9 +2799,186 @@
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
       "declares": [
-       "e ) && ! $object_grid ) { $gd[] = 'grid-template-columns:' . $gtc_base; } // D288: o",
-       "{ $responsive_css .= $grid_sel . '{grid-template-columns:' . $gtc_base . '}'; } if (",
-       "dia (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid"
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|row-gap",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "row-gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header has no setting for row-gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "rowGap",
+       "gap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|justify-content",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "justify-content",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header has no setting for justify-content"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "justifyContent"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
+      "mentions": [],
+      "declares": [
+       "=> 'display:flex;flex-direction:column;justify-content:flex-start;', 'center' => 'display:fle",
+       "=> 'display:flex;flex-direction:column;justify-content:center;', 'end' => 'display:flex;fl",
+       "=> 'display:flex;flex-direction:column;justify-content:flex-end;', 'stretch' => 'display:flex;"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "istribute vertically into, so a client's justify-content:'center' // (already correctly routed on",
+       "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }",
+       "!== $justify_content ) { $gd[] = 'justify-content:' . esc_attr( $justify_content ); }"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:a"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-header-1||style|align-items",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "align-items",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header has no setting for align-items"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "alignItems"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if",
+       "' !== $vertical_align ) { $gd[] = 'align-items:' . esc_attr( $vertical_align ); } if"
+      ]
+     },
+     {
+      "block": "site-header",
+      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
+      "mentions": [],
+      "declares": [
+       "x-wrap:nowrap;justify-content:flex-start;align-items:stretch;overflow-x:auto;overflow-y:hidden;overs"
       ]
      }
     ]
@@ -2751,6 +3168,56 @@
      "reaches": false
     }
    ]
+  },
+  {
+   "key": "cr-ref-header-1||style|gap",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "gap",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/site-header has no setting for gap"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "gap"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
+       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
+       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-header-1||style|painted-ground",
@@ -3103,11 +3570,11 @@
    ]
   },
   {
-   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|font-size",
+   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|font-size",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
-   "path": ".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
-   "block": "sgs/site-header-row",
+   "path": ".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "font-size",
    "widths": [
@@ -3116,34 +3583,171 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|font-size",
-     "ref": "cr-ref-header-1",
-     "key": "font-size",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 3,
-     "widths": [
-      375
-     ]
-    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
-     "detail": "sgs/site-header-row path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
+     "detail": "sgs/google-reviews path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "starSize",
+     "css_property": "height,width,font-size",
+     "css_element": "star",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "aggregateStarSize",
+     "css_property": "height,width,font-size",
+     "css_element": "aggregate-star",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "fontSize",
+     "css_property": "font-size",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "sourceLabelFontSize",
+     "css_property": "font-size",
+     "css_element": "source-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "scoreFontSize",
+     "css_property": "font-size",
+     "css_element": "average",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "countFontSize",
+     "css_property": "font-size",
+     "css_element": "count",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "authorFontSize",
+     "css_property": "font-size",
+     "css_element": "author",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "metaFontSize",
+     "css_property": "font-size",
+     "css_element": "meta",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dateFontSize",
+     "css_property": "font-size",
+     "css_element": "date",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "textFontSize",
+     "css_property": "font-size",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "avatarFontSize",
+     "css_property": "font-size",
+     "css_element": "avatar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "footnoteFontSize",
+     "css_property": "font-size",
+     "css_element": "footnote",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "reviewLinkFontSize",
+     "css_property": "font-size",
+     "css_element": "review-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewFontSize",
+     "css_property": "font-size",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllFontSize",
+     "css_property": "font-size",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
     }
    ]
   },
   {
-   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|line-height",
+   "key": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|line-height",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
-   "path": ".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
-   "block": "sgs/site-header-row",
+   "path": ".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "line-height",
    "widths": [
@@ -3152,25 +3756,142 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|line-height",
-     "ref": "cr-ref-header-1",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 3,
-     "widths": [
-      375
-     ]
-    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
-     "detail": "sgs/site-header-row path \".sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
+     "detail": "sgs/google-reviews path \".sgs-container__inner > .sgs-has-block-link > .sgs-container > h2\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "lineHeight",
+     "css_property": "line-height",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "sourceLabelLineHeight",
+     "css_property": "line-height",
+     "css_element": "source-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "scoreLineHeight",
+     "css_property": "line-height",
+     "css_element": "average",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "countLineHeight",
+     "css_property": "line-height",
+     "css_element": "count",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "authorLineHeight",
+     "css_property": "line-height",
+     "css_element": "author",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "metaLineHeight",
+     "css_property": "line-height",
+     "css_element": "meta",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dateLineHeight",
+     "css_property": "line-height",
+     "css_element": "date",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "textLineHeight",
+     "css_property": "line-height",
+     "css_element": "text",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "avatarLineHeight",
+     "css_property": "line-height",
+     "css_element": "avatar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "footnoteLineHeight",
+     "css_property": "line-height",
+     "css_element": "footnote",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "reviewLinkLineHeight",
+     "css_property": "line-height",
+     "css_element": "review-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewLineHeight",
+     "css_property": "line-height",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllLineHeight",
+     "css_property": "line-height",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
     }
    ]
   },
@@ -3179,7 +3900,7 @@
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "padding-top",
    "widths": [
@@ -3194,11 +3915,11 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-top (scrolled)"
+     "detail": "sgs/google-reviews has no setting for padding-top (scrolled)"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
      "setting": "padding",
      "css_property": "padding",
      "css_element": "wrapper",
@@ -3208,12 +3929,67 @@
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
+     "block": "sgs/google-reviews",
+     "setting": "headerPadding",
      "css_property": "padding",
-     "css_element": null,
+     "css_element": "header",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "cardPadding",
+     "css_property": "padding",
+     "css_element": "review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "railPadding",
+     "css_property": "padding",
+     "css_element": "list",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewPadding",
+     "css_property": "padding",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllPadding",
+     "css_property": "padding",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/google-reviews",
+     "setting": "cardStyle",
+     "values": [
+      "flat",
+      "bordered",
+      "elevated",
+      "quote-minimal",
+      "boxed",
+      "bubble",
+      "wall-tile"
+     ]
     }
    ]
   },
@@ -3222,7 +3998,7 @@
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "padding-right",
    "widths": [
@@ -3237,11 +4013,11 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-right (scrolled)"
+     "detail": "sgs/google-reviews has no setting for padding-right (scrolled)"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
      "setting": "padding",
      "css_property": "padding",
      "css_element": "wrapper",
@@ -3251,12 +4027,67 @@
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
+     "block": "sgs/google-reviews",
+     "setting": "headerPadding",
      "css_property": "padding",
-     "css_element": null,
+     "css_element": "header",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "cardPadding",
+     "css_property": "padding",
+     "css_element": "review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "railPadding",
+     "css_property": "padding",
+     "css_element": "list",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewPadding",
+     "css_property": "padding",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllPadding",
+     "css_property": "padding",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/google-reviews",
+     "setting": "cardStyle",
+     "values": [
+      "flat",
+      "bordered",
+      "elevated",
+      "quote-minimal",
+      "boxed",
+      "bubble",
+      "wall-tile"
+     ]
     }
    ]
   },
@@ -3265,7 +4096,7 @@
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "padding-bottom",
    "widths": [
@@ -3280,11 +4111,11 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-bottom (scrolled)"
+     "detail": "sgs/google-reviews has no setting for padding-bottom (scrolled)"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
      "setting": "padding",
      "css_property": "padding",
      "css_element": "wrapper",
@@ -3294,12 +4125,67 @@
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
+     "block": "sgs/google-reviews",
+     "setting": "headerPadding",
      "css_property": "padding",
-     "css_element": null,
+     "css_element": "header",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "cardPadding",
+     "css_property": "padding",
+     "css_element": "review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "railPadding",
+     "css_property": "padding",
+     "css_element": "list",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewPadding",
+     "css_property": "padding",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllPadding",
+     "css_property": "padding",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/google-reviews",
+     "setting": "cardStyle",
+     "values": [
+      "flat",
+      "bordered",
+      "elevated",
+      "quote-minimal",
+      "boxed",
+      "bubble",
+      "wall-tile"
+     ]
     }
    ]
   },
@@ -3308,7 +4194,7 @@
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "padding-left",
    "widths": [
@@ -3323,11 +4209,11 @@
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/site-header-row has no setting for padding-left (scrolled)"
+     "detail": "sgs/google-reviews has no setting for padding-left (scrolled)"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
      "setting": "padding",
      "css_property": "padding",
      "css_element": "wrapper",
@@ -3337,12 +4223,84 @@
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "rowShrinkPadding",
+     "block": "sgs/google-reviews",
+     "setting": "headerPadding",
      "css_property": "padding",
-     "css_element": null,
+     "css_element": "header",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "cardPadding",
+     "css_property": "padding",
+     "css_element": "review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "railPadding",
+     "css_property": "padding",
+     "css_element": "list",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewPadding",
+     "css_property": "padding",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllPadding",
+     "css_property": "padding",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "sgsHoverIndent",
+     "css_property": "padding-left",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/google-reviews",
+     "setting": "cardStyle",
+     "values": [
+      "flat",
+      "bordered",
+      "elevated",
+      "quote-minimal",
+      "boxed",
+      "bubble",
+      "wall-tile"
+     ]
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverIndent",
+     "css_property": "padding-left",
+     "css_element": "wrapper"
     }
    ]
   },
@@ -3355,7 +4313,8 @@
    "kind": "style",
    "property": "width",
    "widths": [
-    375
+    375,
+    768
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -3420,59 +4379,13 @@
    ]
   },
   {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|font-size",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|line-height",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2",
-   "block": "sgs/site-header",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "resolver-unmapped-element",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/site-header path \".sgs-container > .sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-0||style|row-gap",
+   "key": "cr-ref-header-0|.sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
    "ref": "cr-ref-header-0",
    "pair": "trust-ticker",
-   "path": "",
+   "path": ".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
    "block": "sgs/trust-bar",
    "kind": "style",
-   "property": "row-gap",
+   "property": "font-size",
    "widths": [
     768,
     1440,
@@ -3480,37 +4393,120 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "wouldWrite": [
-      "gap"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ""
-     },
-     "holds": false
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
     },
     {
      "check": "attribute",
      "block": "sgs/trust-bar",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
+     "setting": "titleFontSize",
+     "css_property": "font-size",
+     "css_element": "title",
      "css_state": null,
      "source": "sgs",
-     "reaches": true
+     "reaches": false
     },
     {
      "check": "attribute",
      "block": "sgs/trust-bar",
-     "setting": "itemGap",
-     "css_property": "gap",
-     "css_element": "item",
+     "setting": "labelFontSize",
+     "css_property": "font-size",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-0|.sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-weight",
+   "ref": "cr-ref-header-0",
+   "pair": "trust-ticker",
+   "path": ".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "block": "sgs/trust-bar",
+   "kind": "style",
+   "property": "font-weight",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/trust-bar",
+     "setting": "titleFontWeight",
+     "css_property": "font-weight",
+     "css_element": "title",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/trust-bar",
+     "setting": "labelFontWeight",
+     "css_property": "font-weight",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-0|.sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|letter-spacing",
+   "ref": "cr-ref-header-0",
+   "pair": "trust-ticker",
+   "path": ".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label",
+   "block": "sgs/trust-bar",
+   "kind": "style",
+   "property": "letter-spacing",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/trust-bar path \".sgs-trust-bar__track > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label\" is not a calibrated element"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/trust-bar",
+     "setting": "labelLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/trust-bar",
+     "setting": "titleLetterSpacing",
+     "css_property": "letter-spacing",
+     "css_element": "title",
      "css_state": null,
      "source": "sgs",
      "reaches": false
@@ -3563,106 +4559,11 @@
    ]
   },
   {
-   "key": "cr-ref-header-0||style|align-items",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "alignItems"
-     ],
-     "on": {
-      "ref": "cr-ref-header-0",
-      "block": "sgs/trust-bar",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "alignItems",
-     "css_property": "align-items",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/trust-bar",
-     "setting": "layout",
-     "values": [
-      ""
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-0||style|gap",
-   "ref": "cr-ref-header-0",
-   "pair": "trust-ticker",
-   "path": "",
-   "block": "sgs/trust-bar",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "shape",
-     "detail": "6px 32px cannot be held"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "gap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/trust-bar",
-     "setting": "itemGap",
-     "css_property": "gap",
-     "css_element": "item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-header-3|.sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text|style|color",
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": ".sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "style",
    "property": "color",
    "widths": [
@@ -3671,30 +4572,281 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text|style|color",
-     "ref": "cr-ref-header-1",
-     "key": "color",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 768,
-     "delta": null,
-     "widths": [
-      768,
-      768
-     ]
-    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
-     "detail": "sgs/site-header-row path \".sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text\" is not a calibrated element"
+     "detail": "sgs/google-reviews path \".sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text\" is not a calibrated element"
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
+     "setting": "starColour",
+     "css_property": "fill,color",
+     "css_element": "star",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBackground",
+     "css_property": "background-color",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "write-review",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "write-review",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourText",
+     "css_property": "color",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourTextHover",
+     "css_property": "color",
+     "css_element": "write-review",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBackground",
+     "css_property": "background-color",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBackgroundGradient",
+     "css_property": "background-image",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourText",
+     "css_property": "color",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourTextHover",
+     "css_property": "color",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBorder",
+     "css_property": "border-color",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBorderGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourBorderHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dotColour",
+     "css_property": "background-color",
+     "css_element": "dot",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dotColourHover",
+     "css_property": "background-color",
+     "css_element": "dot",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dotColourGradient",
+     "css_property": "background-image",
+     "css_element": "dot",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dotColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "dot",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "starColourGradient",
+     "css_property": "fill-gradient",
+     "css_element": "star",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "starColourHover",
+     "css_property": "fill",
+     "css_element": "star",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourTextGradient",
+     "css_property": "color-gradient",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourTextHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "write-review",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourTextGradient",
+     "css_property": "color-gradient",
+     "css_element": "arrow",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "arrowColourTextHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "arrow",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
      "setting": "backgroundColour",
      "css_property": "background-color",
      "css_element": "wrapper",
@@ -3704,113 +4856,286 @@
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "headerDividerColour",
+     "css_property": "border-bottom-color",
+     "css_element": "header",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "sourceLabelColour",
+     "css_property": "color",
+     "css_element": "source-label",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "scoreColour",
+     "css_property": "color",
+     "css_element": "average",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "countColour",
+     "css_property": "color",
+     "css_element": "count",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "starEmptyColour",
+     "css_property": "fill",
+     "css_element": "star-empty",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "avatarTextColour",
+     "css_property": "color",
+     "css_element": "avatar",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "authorColour",
+     "css_property": "color",
+     "css_element": "author",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "metaColour",
+     "css_property": "color",
+     "css_element": "meta",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "dateColour",
+     "css_property": "color",
+     "css_element": "date",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
      "setting": "textColour",
      "css_property": "color",
-     "css_element": "wrapper",
+     "css_element": "text",
      "css_state": null,
      "source": "sgs",
      "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "textColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "textColourHover",
+     "block": "sgs/google-reviews",
+     "setting": "reviewLinkColour",
      "css_property": "color",
-     "css_element": "wrapper",
+     "css_element": "review-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "footnoteColour",
+     "css_property": "color",
+     "css_element": "footnote",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "scrollbarColour",
+     "css_property": "scrollbar-color",
+     "css_element": "list",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBorder",
+     "css_property": "border-color",
+     "css_element": "write-review",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "writeReviewColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "write-review",
      "css_state": "hover",
      "source": "sgs",
      "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "textColourHoverGradient",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBackground",
+     "css_property": "background-color",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBackgroundHover",
+     "css_property": "background-color",
+     "css_element": "see-all",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourText",
+     "css_property": "color",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourTextHover",
+     "css_property": "color",
+     "css_element": "see-all",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBorder",
+     "css_property": "border-color",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBorderHover",
+     "css_property": "border-color",
+     "css_element": "see-all",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBackgroundGradient",
      "css_property": "background-image",
-     "css_element": "wrapper",
+     "css_element": "see-all",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBackgroundHoverGradient",
+     "css_property": "background-image",
+     "css_element": "see-all",
      "css_state": "hover",
      "source": "sgs",
      "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "fxFieldColour",
-     "css_property": null,
-     "css_element": null,
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourTextGradient",
+     "css_property": "color-gradient",
+     "css_element": "see-all",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "fxParticleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourTextHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "see-all",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "fxGridDotColour",
-     "css_property": null,
-     "css_element": null,
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBorderGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "see-all",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
-     "setting": "fxGridDotHoverColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
+     "block": "sgs/google-reviews",
+     "setting": "seeAllColourBorderHoverGradient",
+     "css_property": "border-color-gradient",
+     "css_element": "see-all",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
-     "block": "sgs/site-header-row",
+     "block": "sgs/google-reviews",
      "setting": "sgsClickRippleColour",
      "css_property": null,
      "css_element": null,
@@ -3830,7 +5155,7 @@
      "block": "sgs/site-header",
      "setting": "textColour",
      "via": "reaches",
-     "path": ".sgs-container > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text"
+     "path": ".sgs-container:nth-of-type(2) > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text"
     }
    ]
   },
@@ -3925,147 +5250,85 @@
    ]
   },
   {
-   "key": "cr-ref-header-1|.sgs-container > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text|style|color",
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|font-weight",
    "ref": "cr-ref-header-1",
    "pair": "gen-header-1",
-   "path": ".sgs-container > .sgs-container__inner > .sgs-nav-bar-menu > .sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
    "block": "sgs/site-header",
    "kind": "style",
-   "property": "color",
+   "property": "font-weight",
    "widths": [
-    768
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "shape",
-     "detail": "textColour holds one value for every width; draft has \"primary\", \"#000000\""
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundOverlayColour",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundColourScrolled",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "scrolled",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundColourScrolledGradient",
-     "css_property": "background-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "scrolled",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "textColourScrolled",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "scrolled",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "backgroundOverlayColourHover",
-     "css_property": "background-color",
-     "css_element": "overlay",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "shadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "shadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "shadowScrolledColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "scrolled",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/site-header",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
     }
    ]
+  },
+  {
+   "key": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|text-transform",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": ".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong",
+   "block": "sgs/site-header",
+   "kind": "style",
+   "property": "text-transform",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "canvas-settable",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/site-header path \".sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-header-8",
+     "block": "sgs/heading",
+     "setting": "textTransform",
+     "property": "text-transform",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "site-header/render.php",
+      "mentions": [],
+      "absent": [
+       "textTransform"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "site-header",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-header-1||style|margin-right",
@@ -4182,17 +5445,18 @@
    ]
   },
   {
-   "key": "cr-ref-header-3||box|h",
-   "ref": "cr-ref-header-3",
-   "pair": "header-bar",
+   "key": "cr-ref-header-0||box|y-in-main",
+   "ref": "cr-ref-header-0",
+   "pair": "trust-ticker",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/trust-bar",
    "kind": "box",
-   "property": "h",
+   "property": "y-in-main",
    "widths": [
     375,
     768,
-    1440
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -4201,11 +5465,85 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
-     "ref": "cr-ref-header-3",
-     "key": "grid-template-columns",
+     "parent": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
+     "ref": "cr-ref-header-0",
+     "key": "font-size",
      "relation": "self",
      "match": "layout-row",
+     "width": 375,
+     "delta": -175,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-3||box|y-after-trust-ticker",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/google-reviews",
+   "kind": "box",
+   "property": "y-after-trust-ticker",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-0|.sgs-trust-bar__track:nth-of-type(1) > .sgs-trust-bar__badge:nth-of-type(1) > .sgs-trust-bar__label|style|font-size",
+     "ref": "cr-ref-header-0",
+     "key": "font-size",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 175,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-3||box|h",
+   "ref": "cr-ref-header-3",
+   "pair": "header-bar",
+   "path": "",
+   "block": "sgs/google-reviews",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|font-size",
+     "ref": "cr-ref-header-1",
+     "key": "font-size",
+     "relation": "ancestor",
+     "match": "same-delta",
      "width": 375,
      "delta": 5,
      "widths": [
@@ -4213,7 +5551,8 @@
       375,
       768,
       768,
-      1440
+      1440,
+      1920
      ]
     }
    ]
@@ -4227,7 +5566,10 @@
    "kind": "box",
    "property": "y-after-gen-header-1",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -4236,15 +5578,18 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-13|.sgs-cart__trigger-wrap > .sgs-cart__trigger > .sgs-cart__pill-label|style|line-height",
-     "ref": "cr-ref-header-13",
-     "key": "line-height",
-     "relation": "self",
-     "match": "same-delta",
+     "parent": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
+     "ref": "cr-ref-header-3",
+     "key": "grid-template-columns",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": -3,
+     "delta": 171,
      "widths": [
-      375
+      375,
+      768,
+      1440,
+      1920
      ]
     }
    ]
@@ -4273,9 +5618,91 @@
      "relation": "self",
      "match": "same-delta",
      "width": 375,
-     "delta": -14,
+     "delta": -13,
      "widths": [
       375
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1||box|y-after-header-bar",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "box",
+   "property": "y-after-header-bar",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-3|.sgs-container__inner|style|grid-template-columns",
+     "ref": "cr-ref-header-3",
+     "key": "grid-template-columns",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -174,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-1||box|h",
+   "ref": "cr-ref-header-1",
+   "pair": "gen-header-1",
+   "path": "",
+   "block": "sgs/site-header",
+   "kind": "box",
+   "property": "h",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|font-size",
+     "ref": "cr-ref-header-1",
+     "key": "font-size",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 175,
+     "widths": [
+      375,
+      375,
+      768,
+      768,
+      1440,
+      1440,
+      1920,
+      1920
      ]
     }
    ]
@@ -4285,7 +5712,7 @@
    "ref": "cr-ref-header-3",
    "pair": "header-bar",
    "path": "",
-   "block": "sgs/site-header-row",
+   "block": "sgs/google-reviews",
    "kind": "box",
    "property": "y-in-main",
    "widths": [
@@ -4301,7 +5728,7 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-3|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|font-size",
+     "parent": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|font-size",
      "ref": "cr-ref-header-3",
      "key": "font-size",
      "relation": "self",
@@ -4326,7 +5753,8 @@
    "kind": "box",
    "property": "w",
    "widths": [
-    375
+    375,
+    768
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -4343,7 +5771,8 @@
      "width": 375,
      "delta": 8,
      "widths": [
-      375
+      375,
+      768
      ]
     }
    ]
@@ -4357,37 +5786,6 @@
    "kind": "box",
    "property": "h",
    "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-header-3|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-container > h2|style|font-size",
-     "ref": "cr-ref-header-3",
-     "key": "font-size",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 6,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-header-1||box|h",
-   "ref": "cr-ref-header-1",
-   "pair": "gen-header-1",
-   "path": "",
-   "block": "sgs/site-header",
-   "kind": "box",
-   "property": "h",
-   "widths": [
     375,
     768
    ],
@@ -4398,16 +5796,49 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-header-3||box|h",
+     "parent": "cr-ref-header-3|.sgs-container__inner > .sgs-has-block-link > .sgs-container > h2|style|font-size",
      "ref": "cr-ref-header-3",
-     "key": "h",
-     "relation": "descendant",
-     "match": "same-delta",
+     "key": "font-size",
+     "relation": "ancestor",
+     "match": "layout-row",
      "width": 375,
-     "delta": 5,
+     "delta": 6,
      "widths": [
       375,
       768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-header-6|.sgs-responsive-logo__link > .sgs-responsive-logo__picture > img|box|y-after-header-phone",
+   "ref": "cr-ref-header-6",
+   "pair": "header-logo",
+   "path": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > img",
+   "block": "sgs/responsive-logo",
+   "kind": "box",
+   "property": "y-after-header-phone",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-header-1|.sgs-container:nth-of-type(1) > .sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__badge > .sgs-google-reviews__badge-text > strong|style|line-height",
+     "ref": "cr-ref-header-1",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 1440,
+     "delta": 4,
+     "widths": [
+      1440,
+      1920
      ]
     }
    ]

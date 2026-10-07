@@ -1,11 +1,11 @@
 {
  "surface": "home",
- "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T18-23-07/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T18-23-07/round-1/report.json",
- "date": "2026-10-06",
+ "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-07T03-51-19/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-07T03-51-19/round-1/report.json",
+ "date": "2026-10-07",
  "counts": {
-  "W": 144,
-  "F": 50,
+  "W": 162,
+  "F": 35,
   "T": 37,
   "U": 6
  },
@@ -185,77 +185,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-family setting on sgs/brand-strip paints \"\" (candidates: nameFontFamily, brandTextFontFamily)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontFamily",
-     "css_property": "font-family",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontFamily",
-     "css_property": "font-family",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontFamily",
-     "property": "font-family",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontFamily",
-       "brandTextFontFamily",
-       "fontFamily"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontFamily",
-       "brandTextFontFamily",
-       "fontFamily"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
-       "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|font-size",
@@ -273,94 +210,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-size setting on sgs/brand-strip paints \"\" (candidates: nameFontSize, brandTextFontSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontSize",
-     "css_property": "font-size",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontSize",
-     "css_property": "font-size",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontSize",
-       "brandTextFontSize",
-       "fontSize"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": [
-       "nameFontSize",
-       "brandTextFontSize"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|font-weight",
@@ -378,84 +235,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-weight setting on sgs/brand-strip paints \"\" (candidates: nameFontWeight, brandTextFontWeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontWeight",
-     "css_property": "font-weight",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontWeight",
-     "css_property": "font-weight",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontWeight",
-     "property": "font-weight",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontWeight",
-       "brandTextFontWeight",
-       "fontWeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontWeight",
-       "brandTextFontWeight",
-       "fontWeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|font-style",
@@ -473,64 +260,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-style setting on sgs/brand-strip paints \"\" (candidates: nameFontStyle)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontStyle",
-     "css_property": "font-style",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontStyle",
-     "property": "font-style",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontStyle",
-       "fontStyle"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontStyle",
-       "fontStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|line-height",
@@ -548,55 +285,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no line-height setting on sgs/brand-strip paints \"\" (candidates: nameLineHeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLineHeight",
-     "css_property": "line-height",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLineHeight",
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLineHeight",
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|letter-spacing",
@@ -614,67 +310,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no letter-spacing setting on sgs/brand-strip paints \"\" (candidates: nameLetterSpacing, brandTextLetterSpacing)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "letterSpacing",
-     "property": "letter-spacing",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLetterSpacing",
-       "brandTextLetterSpacing",
-       "letterSpacing"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLetterSpacing",
-       "brandTextLetterSpacing",
-       "letterSpacing"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|text-transform",
@@ -692,76 +335,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no text-transform setting on sgs/brand-strip paints \"\" (candidates: nameTextTransform, brandTextTextTransform)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameTextTransform",
-     "css_property": "text-transform",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextTextTransform",
-     "css_property": "text-transform",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "textTransform",
-     "property": "text-transform",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameTextTransform",
-       "brandTextTextTransform",
-       "textTransform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameTextTransform",
-       "brandTextTextTransform",
-       "textTransform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8||style|color",
@@ -779,207 +360,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "textColour"
-     ],
-     "on": {
-      "ref": "cr-ref-home-8",
-      "block": "sgs/brand-strip",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColour",
-     "css_property": "color",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColour",
-     "css_property": "background-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "itemBackgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourHover",
-     "css_property": "color",
-     "css_element": "name",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColour",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourHover",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1257,14 +643,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/brand-strip has no setting for align-items"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "alignItems",
-     "property": "align-items",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1329,35 +707,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/brand-strip has no setting for text-shadow"
+     "check": "no-live-element",
+     "detail": "12 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "textShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "textShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a|style|font-family",
@@ -1376,40 +733,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontFamily",
-     "css_property": "font-family",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontFamily",
-     "css_property": "font-family",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontFamily",
-     "property": "font-family",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1430,40 +758,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontSize",
-     "css_property": "font-size",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontSize",
-     "css_property": "font-size",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1484,40 +783,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontWeight",
-     "css_property": "font-weight",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontWeight",
-     "css_property": "font-weight",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontWeight",
-     "property": "font-weight",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1538,30 +808,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontStyle",
-     "css_property": "font-style",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontStyle",
-     "property": "font-style",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1582,30 +833,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLineHeight",
-     "css_property": "line-height",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1626,40 +858,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "letterSpacing",
-     "property": "letter-spacing",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1680,40 +883,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameTextTransform",
-     "css_property": "text-transform",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextTextTransform",
-     "css_property": "text-transform",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "textTransform",
-     "property": "text-transform",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1734,199 +908,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "attribute",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColour",
-     "css_property": "color",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColour",
-     "css_property": "background-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "itemBackgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourHover",
-     "css_property": "color",
-     "css_element": "name",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColour",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourHover",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -1963,14 +949,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "property": "opacity",
-     "via": "declared"
     }
    ]
   },
@@ -2017,14 +995,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "gridItemBorder",
-     "property": "border-color,border-style,border-width",
-     "via": "declared"
     }
    ]
   },
@@ -2071,14 +1041,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ]
   },
@@ -2125,14 +1087,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ]
   },
@@ -2238,12 +1192,11 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -2385,14 +1338,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "textWrap",
-     "property": "text-wrap",
-     "via": "declared"
     }
    ]
   },
@@ -2412,77 +1357,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-family setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontFamily, brandTextFontFamily)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontFamily",
-     "css_property": "font-family",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontFamily",
-     "css_property": "font-family",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontFamily",
-     "property": "font-family",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontFamily",
-       "brandTextFontFamily",
-       "fontFamily"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontFamily",
-       "brandTextFontFamily",
-       "fontFamily"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
-       "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|font-size",
@@ -2500,94 +1382,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-size setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontSize, brandTextFontSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontSize",
-     "css_property": "font-size",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontSize",
-     "css_property": "font-size",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontSize",
-       "brandTextFontSize",
-       "fontSize"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": [
-       "nameFontSize",
-       "brandTextFontSize"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|font-weight",
@@ -2605,84 +1407,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-weight setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontWeight, brandTextFontWeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontWeight",
-     "css_property": "font-weight",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextFontWeight",
-     "css_property": "font-weight",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontWeight",
-     "property": "font-weight",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontWeight",
-       "brandTextFontWeight",
-       "fontWeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontWeight",
-       "brandTextFontWeight",
-       "fontWeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "s[ $k_weight ] ) ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string)"
-      ]
-     },
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "!== $font_weight ) { $base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_wei"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|font-style",
@@ -2700,64 +1432,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no font-style setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameFontStyle)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameFontStyle",
-     "css_property": "font-style",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "fontStyle",
-     "property": "font-style",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontStyle",
-       "fontStyle"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameFontStyle",
-       "fontStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|line-height",
@@ -2775,55 +1457,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no line-height setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameLineHeight)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLineHeight",
-     "css_property": "line-height",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLineHeight",
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLineHeight",
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|letter-spacing",
@@ -2841,67 +1482,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no letter-spacing setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameLetterSpacing, brandTextLetterSpacing)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextLetterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "letterSpacing",
-     "property": "letter-spacing",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLetterSpacing",
-       "brandTextLetterSpacing",
-       "letterSpacing"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameLetterSpacing",
-       "brandTextLetterSpacing",
-       "letterSpacing"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|text-transform",
@@ -2919,76 +1507,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no text-transform setting on sgs/brand-strip paints \".sgs-brand-strip__track\" (candidates: nameTextTransform, brandTextTextTransform)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameTextTransform",
-     "css_property": "text-transform",
-     "css_element": "name",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextTextTransform",
-     "css_property": "text-transform",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "textTransform",
-     "property": "text-transform",
-     "via": "declared"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "nameTextTransform",
-       "brandTextTextTransform",
-       "textTransform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "nameTextTransform",
-       "brandTextTextTransform",
-       "textTransform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "brand-strip",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|color",
@@ -3006,207 +1532,12 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "textColour"
-     ],
-     "on": {
-      "ref": "cr-ref-home-8",
-      "block": "sgs/brand-strip",
-      "path": ".sgs-brand-strip__track"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColour",
-     "css_property": "color",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColour",
-     "css_property": "background-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "itemBackgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileShadowColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "caption",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "tileBackgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "tile",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "nameColourHover",
-     "css_property": "color",
-     "css_element": "name",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColour",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "brand-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/brand-strip",
-     "setting": "brandTextColourHover",
-     "css_property": "color",
-     "css_element": "brand-text",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
    ]
   },
@@ -3253,14 +1584,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3305,6 +1628,14 @@
      },
      {
       "block": "brand-strip",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "brand-strip",
       "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
       "mentions": [],
       "declares": [
@@ -3318,19 +1649,15 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "brand-strip",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -3390,14 +1717,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-7",
-     "block": "sgs/container",
-     "setting": "gridItemPadding",
-     "property": "padding",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3442,6 +1761,14 @@
      },
      {
       "block": "brand-strip",
+      "cite": "includes/helpers-box.php::sgs_box_object_longhand_list",
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
+     },
+     {
+      "block": "brand-strip",
       "cite": "includes/helpers-separators-css.php::sgs_separators_flow_css",
       "mentions": [],
       "declares": [
@@ -3455,19 +1782,15 @@
       "mentions": [
        "padding"
       ],
-      "declares": [
-       "( null !== $padding ) { $decls[] = 'padding:' . $padding; } } // Border radius (single",
-       "edia(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}'; } } if ( isset( $b",
-       "media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}'; } } return $css;"
-      ]
+      "declares": []
      },
      {
       "block": "brand-strip",
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "adding_shorthand ) { $base_decls[] = 'padding:' . $padding_shorthand . ';'; } if ( 'full' ==="
-      ]
+      "mentions": [
+       "padding"
+      ],
+      "declares": []
      },
      {
       "block": "container",
@@ -3500,35 +1823,14 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "no-live-element",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/brand-strip has no setting for text-shadow"
+     "check": "no-live-element",
+     "detail": "4 rows, live value empty at every width: the walker found no live element"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "textShadow"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "textShadow"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
+   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|animation-name",
@@ -4204,14 +2506,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-47",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -4946,14 +3240,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -5520,14 +3806,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "property": "width",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6167,6 +4445,42 @@
    ]
   },
   {
+   "key": "cr-ref-home-55||style|translate",
+   "ref": "cr-ref-home-55",
+   "pair": "reviews-reveal",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "translate",
+   "widths": [
+    375
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/container has no setting for translate"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "translate"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
+  },
+  {
    "key": "cr-ref-home-61||style|padding-top",
    "ref": "cr-ref-home-61",
    "pair": "about-reveal",
@@ -6654,14 +4968,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/media has no setting for background-color"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-59",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColour",
-     "property": "background-color",
-     "via": "declared"
     }
    ],
    "source": {
@@ -8245,13 +6551,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/hero paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-home-0",
+      "block": "sgs/hero",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -8260,7 +6573,8 @@
      "css_property": "transition,transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -8280,13 +6594,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-timing-function setting on sgs/hero paints \"\" (candidates: transitionEasing)"
+     "wouldWrite": [
+      "transitionEasing"
+     ],
+     "on": {
+      "ref": "cr-ref-home-0",
+      "block": "sgs/hero",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -8295,7 +6616,8 @@
      "css_property": "transition,transition-timing-function",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -8721,7 +7043,7 @@
      "check": "attribute",
      "block": "sgs/hero",
      "setting": "bgHoverZoomScale",
-     "css_property": "transform",
+     "css_property": null,
      "css_element": null,
      "css_state": null,
      "source": "sgs"
@@ -8749,6 +7071,24 @@
      "block": "sgs/hero",
      "setting": "bgHoverZoomEasingCustom",
      "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/hero",
+     "setting": "bgKenBurnsMode",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/hero",
+     "setting": "bgZoomStart",
+     "css_property": "transform",
      "css_element": null,
      "css_state": null,
      "source": "sgs"
@@ -10842,14 +9182,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-47",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
     }
    ],
    "source": {
@@ -13549,7 +11881,7 @@
     {
      "check": "resolver",
      "gap": "shape",
-     "detail": "desktop differs between 1440 (584.496px) and 1920 (664.2px)"
+     "detail": "desktop differs between 1440 (584.422px) and 1920 (664.2px)"
     },
     {
      "check": "attribute",
@@ -13685,7 +12017,7 @@
      "relation": "ancestor",
      "match": "same-delta",
      "width": 1920,
-     "delta": -54.483999999999924,
+     "delta": -54.47500000000002,
      "widths": [
       1920,
       1920,
@@ -14256,16 +12588,16 @@
    ]
   },
   {
-   "key": "cr-ref-home-5||box|y-after-hero-subtext",
-   "ref": "cr-ref-home-5",
-   "pair": "hero-btn-shop",
+   "key": "cr-ref-home-2||box|y-after-hero-label",
+   "ref": "cr-ref-home-2",
+   "pair": "hero-heading",
    "path": "",
-   "block": "sgs/button",
+   "block": "sgs/heading",
    "kind": "box",
-   "property": "y-after-hero-subtext",
+   "property": "y-after-hero-label",
    "widths": [
     375,
-    768,
+    1440,
     1920
    ],
    "solveClass": "derived",
@@ -14275,16 +12607,53 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-home-4||style|column-gap",
-     "ref": "cr-ref-home-4",
-     "key": "column-gap",
+     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
+     "ref": "cr-ref-home-0",
+     "key": "display",
      "relation": "ancestor",
-     "match": "same-delta",
+     "match": "layout-row",
      "width": 375,
-     "delta": -5,
+     "delta": 3,
      "widths": [
       375,
-      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-3||box|y-after-hero-heading",
+   "ref": "cr-ref-home-3",
+   "pair": "hero-subtext",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-hero-heading",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
+     "ref": "cr-ref-home-0",
+     "key": "display",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -6,
+     "widths": [
+      375,
+      1440,
+      1920,
+      1920,
       1920
      ]
     }
@@ -14439,6 +12808,37 @@
    ]
   },
   {
+   "key": "cr-ref-home-56||box|y-after-gen-home-54",
+   "ref": "cr-ref-home-56",
+   "pair": "reviews-eyebrow",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-gen-home-54",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-54||style|border-top-width",
+     "ref": "cr-ref-home-54",
+     "key": "border-top-width",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 25,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-home-58|.sgs-google-reviews__aggregate > .sgs-google-reviews__cta > .sgs-google-reviews__see-all|box|y-after-gen-home-58",
    "ref": "cr-ref-home-58",
    "pair": "reviews-see-all",
@@ -14463,7 +12863,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 24,
+     "delta": 25,
      "widths": [
       375,
       768
@@ -14613,6 +13013,7 @@
    "property": "y-after-card-7",
    "widths": [
     375,
+    768,
     1440,
     1920
    ],
@@ -14739,6 +13140,37 @@
    ]
   },
   {
+   "key": "cr-ref-home-58||box|y-after-reviews-heading",
+   "ref": "cr-ref-home-58",
+   "pair": "gen-home-58",
+   "path": "",
+   "block": "sgs/google-reviews",
+   "kind": "box",
+   "property": "y-after-reviews-heading",
+   "widths": [
+    375
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)|style|max-width",
+     "ref": "cr-ref-home-58",
+     "key": "max-width",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -26,
+     "widths": [
+      375
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-home-58||box|h",
    "ref": "cr-ref-home-58",
    "pair": "gen-home-58",
@@ -14800,7 +13232,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 24,
+     "delta": 25,
      "widths": [
       375,
       375,
@@ -14871,7 +13303,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": -866,
+     "delta": -867,
      "widths": [
       375
      ]
@@ -14902,7 +13334,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 866,
+     "delta": 867,
      "widths": [
       375
      ]
@@ -14942,6 +13374,37 @@
       768,
       1440,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-5||box|y-after-hero-subtext",
+   "ref": "cr-ref-home-5",
+   "pair": "hero-btn-shop",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "y-after-hero-subtext",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
+     "ref": "cr-ref-home-0",
+     "key": "display",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": -5,
+     "widths": [
+      768
      ]
     }
    ]
@@ -15019,7 +13482,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 768,
-     "delta": -8,
+     "delta": -9,
      "widths": [
       768
      ]
@@ -15088,7 +13551,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 768,
-     "delta": 4466,
+     "delta": 4290,
      "widths": [
       768
      ]
@@ -15119,77 +13582,9 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 768,
-     "delta": -4467,
+     "delta": -4290,
      "widths": [
       768
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-2||box|y-after-hero-label",
-   "ref": "cr-ref-home-2",
-   "pair": "hero-heading",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "y-after-hero-label",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
-     "ref": "cr-ref-home-0",
-     "key": "display",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": 5,
-     "widths": [
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-3||box|y-after-hero-heading",
-   "ref": "cr-ref-home-3",
-   "pair": "hero-subtext",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-hero-heading",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
-     "ref": "cr-ref-home-0",
-     "key": "display",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -11,
-     "widths": [
-      1440,
-      1920,
-      1920,
-      1920
      ]
     }
    ]
@@ -15219,7 +13614,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -2966,
+     "delta": -2840,
      "widths": [
       1440,
       1920
@@ -15252,7 +13647,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 1440,
-     "delta": 2966,
+     "delta": 2840,
      "widths": [
       1440,
       1920
