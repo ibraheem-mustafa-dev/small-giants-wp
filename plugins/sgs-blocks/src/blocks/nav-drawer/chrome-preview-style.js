@@ -14,7 +14,7 @@ import {
 	textPaintPreview,
 	borderPaintPreview,
 	borderBoxPreview,
-	borderRadiusPreview,
+	borderRadiusLonghands,
 	boxShorthand,
 	tierBoxShorthand,
 	tierLengthPreview,
@@ -69,7 +69,7 @@ function chromeButtonStyle( attributes, palette ) {
 	Object.assign(
 		style,
 		borderBoxPreview( attributes.chromeButtonBorderWidth, attributes.chromeButtonBorderStyle ),
-		borderRadiusPreview( attributes.chromeButtonBorderRadius )
+		borderRadiusLonghands( attributes.chromeButtonBorderRadius )
 	);
 	const padding = boxShorthand( attributes.chromeButtonPadding );
 	if ( padding ) {

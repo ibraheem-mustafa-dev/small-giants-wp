@@ -10,7 +10,7 @@
 import { boxShorthand } from './spacing-preview';
 import { borderBoxPreview, resolveBorderStyle } from './border-style';
 import { borderPaintPreview } from './background-preview';
-import { borderRadiusPreview } from './radius-preview';
+import { borderRadiusLonghands } from './radius-preview';
 
 /**
  * The radius attribute behind a panel's `radiusValues`: the panel envelope
@@ -18,7 +18,7 @@ import { borderRadiusPreview } from './radius-preview';
  * the attribute itself (tier object, flat corner box or uniform string) passes through.
  *
  * @param {*} radiusValues Panel radius values, or the radius attribute.
- * @return {*} A value `borderRadiusPreview()` reads.
+ * @return {*} A value `borderRadiusLonghands()` reads.
  */
 function radiusSource( radiusValues ) {
 	if ( radiusValues && 'object' === typeof radiusValues && 'base' in radiusValues ) {
@@ -36,6 +36,9 @@ function radiusSource( radiusValues ) {
  * already paints a border: a chosen style, width or colour then applies on its
  * own, overriding just that part of the stylesheet's border.
  *
+ * The radius previews only the corners the client set, as render.php prints them
+ * (sgs_corner_object_longhands()): an unset corner keeps the stylesheet's radius.
+ *
  * @param {Object}  values
  * @param {Object}  [values.widthValues]         `{ top, right, bottom, left }` width box.
  * @param {string}  [values.styleValue]          Stored border-style.
@@ -47,14 +50,13 @@ function radiusSource( radiusValues ) {
  * @param {Object}  [options]
  * @param {boolean} [options.defaultBorder=false] The element's stylesheet already paints a border.
  * @param {string}  [options.fallbackColour]      Colour painted when no flat colour is set.
- * @param {boolean} [options.wholeTier=false]     Radius tiers replace whole (see borderRadiusPreview).
  * @return {Object} React style fragment; {} when nothing paints.
  */
 export function sgsBorderPreview(
 	{ widthValues, styleValue, colourValue, colourGradientValue, radiusValues } = {},
 	tier = 'desktop',
 	palette,
-	{ defaultBorder = false, fallbackColour, wholeTier = false } = {}
+	{ defaultBorder = false, fallbackColour } = {}
 ) {
 	let style;
 	if ( defaultBorder ) {
@@ -69,5 +71,5 @@ export function sgsBorderPreview(
 		Object.assign( style, borderPaintPreview( colourValue, colourGradientValue, palette ) );
 		if ( ! style.borderColor && fallbackColour ) style.borderColor = fallbackColour;
 	}
-	return Object.assign( style, borderRadiusPreview( radiusSource( radiusValues ), tier, { wholeTier } ) );
+	return Object.assign( style, borderRadiusLonghands( radiusSource( radiusValues ), tier ) );
 }

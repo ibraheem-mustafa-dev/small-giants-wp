@@ -11,7 +11,7 @@ import {
 	backgroundPaintPreview,
 	textPaintPreview,
 	typographyPreviewStyle,
-	borderRadiusPreview,
+	borderRadiusLonghands,
 } from '../../utils';
 
 /**
@@ -22,7 +22,7 @@ import {
  */
 export function iconListPreview( attributes, tier, palette ) {
 	const root = backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette );
-	Object.assign( root, borderRadiusPreview( attributes.borderRadius, tier, { wholeTier: true } ) );
+	Object.assign( root, borderRadiusLonghands( attributes.borderRadius, tier ) );
 	return {
 		root,
 		heading: typographyPreviewStyle( attributes, 'heading', tier ),

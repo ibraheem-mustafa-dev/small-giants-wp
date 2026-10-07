@@ -165,7 +165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	Object.assign( previewStyle, paddingLonghands );
 	const marginLonghands = tierBoxLonghands( attributes.margin, previewTier, 'margin' );
 	Object.assign( previewStyle, marginLonghands );
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: wrapperBorderWidth, styleValue: wrapperBorderStyle, colourValue: wrapperBorderColour, colourGradientValue: wrapperBorderColourGradient, radiusValues: attributes.borderRadius }, previewTier, palette, { wholeTier: true } ) );
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: wrapperBorderWidth, styleValue: wrapperBorderStyle, colourValue: wrapperBorderColour, colourGradientValue: wrapperBorderColourGradient, radiusValues: attributes.borderRadius }, previewTier, palette ) );
 	if ( gap ) {
 		previewStyle.gap = gapVar( gap );
 	}

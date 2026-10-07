@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-07T19:16:07Z",
+ "generated": "2026-10-07T19:59:49Z",
  "tool": "plugins/sgs-blocks/scripts/migrate-box-longhands.py",
  "totals": {
   "box": {
@@ -8,36 +8,11 @@
    "definition": 1
   },
   "corner": {
-   "migratable": 50,
-   "refused": 5,
+   "refused": 4,
    "definition": 1
   }
  },
  "sites": [
-  {
-   "file": "src/blocks/accordion/render.php",
-   "line": 106,
-   "helper": "corner",
-   "block": "accordion",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/accordion/render.php",
-   "line": 107,
-   "helper": "corner",
-   "block": "accordion",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
   {
    "file": "src/blocks/accordion-item/render.php",
    "line": 191,
@@ -49,102 +24,6 @@
    "attr": null,
    "category": "excluded",
    "reason": "var() holdout: stored in --sgs-accordion-header-pad / --sgs-accordion-content-pad, read as padding: var(), where a longhand cannot go"
-  },
-  {
-   "file": "src/blocks/audio/render.php",
-   "line": 356,
-   "helper": "corner",
-   "block": "audio",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/audio/render.php",
-   "line": 357,
-   "helper": "corner",
-   "block": "audio",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/breadcrumbs/render.php",
-   "line": 288,
-   "helper": "corner",
-   "block": "breadcrumbs",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/breadcrumbs/render.php",
-   "line": 289,
-   "helper": "corner",
-   "block": "breadcrumbs",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/business-info/render.php",
-   "line": 659,
-   "helper": "corner",
-   "block": "business-info",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/business-info/render.php",
-   "line": 660,
-   "helper": "corner",
-   "block": "business-info",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/button/render.php",
-   "line": 582,
-   "helper": "corner",
-   "block": "button",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/button/render.php",
-   "line": 583,
-   "helper": "corner",
-   "block": "button",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
   },
   {
    "file": "src/blocks/buybox/extras.php",
@@ -159,18 +38,6 @@
    "reason": "ternary or expression assignment; migrate by hand"
   },
   {
-   "file": "src/blocks/buybox/extras.php",
-   "line": 288,
-   "helper": "corner",
-   "block": "buybox",
-   "variable": "$thumb_corners",
-   "family": "border-radius",
-   "tier": "n/a",
-   "attr": "galleryThumbBorderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
    "file": "src/blocks/cart/render.php",
    "line": 373,
    "helper": "box",
@@ -183,114 +50,6 @@
    "reason": "family border-width: zero-fill is correct there, it stays on the shorthand"
   },
   {
-   "file": "src/blocks/container/render.php",
-   "line": 138,
-   "helper": "corner",
-   "block": "container",
-   "variable": "$sgs_container_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/container/render.php",
-   "line": 139,
-   "helper": "corner",
-   "block": "container",
-   "variable": "$sgs_container_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/counter/render.php",
-   "line": 289,
-   "helper": "corner",
-   "block": "counter",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/counter/render.php",
-   "line": 290,
-   "helper": "corner",
-   "block": "counter",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/form/render.php",
-   "line": 413,
-   "helper": "corner",
-   "block": "form",
-   "variable": "$sgs_field_radius_b",
-   "family": null,
-   "tier": "n/a",
-   "attr": "fieldBorderRadius",
-   "category": "refused",
-   "reason": "ternary or expression assignment; migrate by hand"
-  },
-  {
-   "file": "src/blocks/form/render.php",
-   "line": 420,
-   "helper": "corner",
-   "block": "form",
-   "variable": "$sgs_field_radius_t",
-   "family": "border-radius",
-   "tier": "n/a",
-   "attr": "fieldBorderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/form/render.php",
-   "line": 421,
-   "helper": "corner",
-   "block": "form",
-   "variable": "$sgs_field_radius_m",
-   "family": "border-radius",
-   "tier": "n/a",
-   "attr": "fieldBorderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/heading/render.php",
-   "line": 525,
-   "helper": "corner",
-   "block": "heading",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/heading/render.php",
-   "line": 526,
-   "helper": "corner",
-   "block": "heading",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
    "file": "src/blocks/hero/render.php",
    "line": 842,
    "helper": "box",
@@ -301,66 +60,6 @@
    "attr": "splitMediaBorderWidth",
    "category": "refused",
    "reason": "1 use(s) that are not a guard or a declaration (line 880)"
-  },
-  {
-   "file": "src/blocks/hero/render.php",
-   "line": 819,
-   "helper": "corner",
-   "block": "hero",
-   "variable": "$img_radius_base",
-   "family": "border-radius",
-   "tier": "desktop",
-   "attr": "splitMediaBorderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/hero/render.php",
-   "line": 823,
-   "helper": "corner",
-   "block": "hero",
-   "variable": "$img_radius_tab",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": "splitMediaBorderRadiusTablet",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/hero/render.php",
-   "line": 827,
-   "helper": "corner",
-   "block": "hero",
-   "variable": "$img_radius_mob",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": "splitMediaBorderRadiusMobile",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/icon-list/render.php",
-   "line": 553,
-   "helper": "corner",
-   "block": "icon-list",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/icon-list/render.php",
-   "line": 554,
-   "helper": "corner",
-   "block": "icon-list",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
   },
   {
    "file": "src/blocks/label/render.php",
@@ -435,54 +134,6 @@
    "reason": "family --sgs-mb-btn-radius-default: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
   },
   {
-   "file": "src/blocks/option-picker/render.php",
-   "line": 499,
-   "helper": "corner",
-   "block": "option-picker",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/option-picker/render.php",
-   "line": 500,
-   "helper": "corner",
-   "block": "option-picker",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/process-steps/render.php",
-   "line": 429,
-   "helper": "corner",
-   "block": "process-steps",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/process-steps/render.php",
-   "line": 430,
-   "helper": "corner",
-   "block": "process-steps",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
    "file": "src/blocks/product-card/render.php",
    "line": 347,
    "helper": "box",
@@ -495,222 +146,6 @@
    "reason": "family border-width: zero-fill is correct there, it stays on the shorthand"
   },
   {
-   "file": "src/blocks/product-card/render.php",
-   "line": 676,
-   "helper": "corner",
-   "block": "product-card",
-   "variable": "$sgs_pc_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/product-card/render.php",
-   "line": 677,
-   "helper": "corner",
-   "block": "product-card",
-   "variable": "$sgs_pc_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": "borderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/product-search/render.php",
-   "line": 271,
-   "helper": "corner",
-   "block": "product-search",
-   "variable": "$sgs_ps_border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/product-search/render.php",
-   "line": 272,
-   "helper": "corner",
-   "block": "product-search",
-   "variable": "$sgs_ps_border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/quote/render.php",
-   "line": 513,
-   "helper": "corner",
-   "block": "quote",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/quote/render.php",
-   "line": 514,
-   "helper": "corner",
-   "block": "quote",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/responsive-logo/render.php",
-   "line": 436,
-   "helper": "corner",
-   "block": "responsive-logo",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/responsive-logo/render.php",
-   "line": 437,
-   "helper": "corner",
-   "block": "responsive-logo",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/social-icons/render.php",
-   "line": 355,
-   "helper": "corner",
-   "block": "social-icons",
-   "variable": "$wrapper_border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/social-icons/render.php",
-   "line": 356,
-   "helper": "corner",
-   "block": "social-icons",
-   "variable": "$wrapper_border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/star-rating/render.php",
-   "line": 200,
-   "helper": "corner",
-   "block": "star-rating",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/star-rating/render.php",
-   "line": 201,
-   "helper": "corner",
-   "block": "star-rating",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/store-selector/render.php",
-   "line": 237,
-   "helper": "corner",
-   "block": "store-selector",
-   "variable": "$border_radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/store-selector/render.php",
-   "line": 238,
-   "helper": "corner",
-   "block": "store-selector",
-   "variable": "$border_radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/text/render.php",
-   "line": 515,
-   "helper": "corner",
-   "block": "text",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/text/render.php",
-   "line": 516,
-   "helper": "corner",
-   "block": "text",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/timeline/render.php",
-   "line": 489,
-   "helper": "corner",
-   "block": "timeline",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/timeline/render.php",
-   "line": 490,
-   "helper": "corner",
-   "block": "timeline",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
    "file": "src/blocks/trust-bar/render.php",
    "line": 186,
    "helper": "box",
@@ -721,30 +156,6 @@
    "attr": "iconCircleBorderWidth",
    "category": "refused",
    "reason": "1 use(s) that are not a guard or a declaration (line 188)"
-  },
-  {
-   "file": "src/blocks/whatsapp-cta/render.php",
-   "line": 314,
-   "helper": "corner",
-   "block": "whatsapp-cta",
-   "variable": "$radius_tab_val",
-   "family": "border-radius",
-   "tier": "tablet",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "src/blocks/whatsapp-cta/render.php",
-   "line": 315,
-   "helper": "corner",
-   "block": "whatsapp-cta",
-   "variable": "$radius_mob_val",
-   "family": "border-radius",
-   "tier": "mobile",
-   "attr": null,
-   "category": "migratable",
-   "reason": null
   },
   {
    "file": "src/blocks/whatsapp-cta/variant-render.php",
@@ -805,30 +216,6 @@
    "attr": "closeBorderWidth",
    "category": "refused",
    "reason": "ternary or expression assignment; migrate by hand"
-  },
-  {
-   "file": "includes/nav-drawer-menu-section-css.php",
-   "line": 63,
-   "helper": "corner",
-   "block": null,
-   "variable": "$radius",
-   "family": "border-radius",
-   "tier": "n/a",
-   "attr": "submenuBorderRadius",
-   "category": "migratable",
-   "reason": null
-  },
-  {
-   "file": "includes/nav-menu-css.php",
-   "line": 260,
-   "helper": "corner",
-   "block": null,
-   "variable": "$item_radius_shorthand",
-   "family": "border-radius",
-   "tier": "n/a",
-   "attr": "itemBorderRadius",
-   "category": "migratable",
-   "reason": null
   },
   {
    "file": "includes/nav-menu-item-border-featured-css.php",

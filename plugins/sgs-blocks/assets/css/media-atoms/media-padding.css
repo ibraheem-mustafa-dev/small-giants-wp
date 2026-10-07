@@ -1,27 +1,49 @@
 /*
- * media-padding — the media element's own inner spacing, tiered.
+ * media-padding — the media element's own inner spacing, tiered per side.
  *
  * Custom-property names match `media-padding.js`/`media-padding.php`'s
- * `css()` output exactly: `--sgs-media-padding[-tablet|-mobile]`. Follows
- * the mobile -> tablet -> desktop -> initial fallback chain `_base.css`
- * documents, same as every other tiered atom.
+ * `css()` output exactly:
+ * `--sgs-media-padding-{top|right|bottom|left}[-tablet|-mobile]`, each emitted
+ * only for a side the client set at that tier. Follows the
+ * mobile -> tablet -> desktop -> initial fallback chain `_base.css`
+ * documents, same as every other tiered atom; each side chains on its own, so
+ * setting one side on a narrower tier leaves the other sides on the wider
+ * tier's value.
  */
 
 .sgs-media-el {
-	padding: var( --sgs-media-padding, 0 );
+	padding-top: var( --sgs-media-padding-top, 0 );
+	padding-right: var( --sgs-media-padding-right, 0 );
+	padding-bottom: var( --sgs-media-padding-bottom, 0 );
+	padding-left: var( --sgs-media-padding-left, 0 );
 }
 
 @media ( max-width: 1023px ) {
 	.sgs-media-el {
-		padding: var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) );
+		padding-top: var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) );
+		padding-right: var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) );
+		padding-bottom: var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) );
+		padding-left: var( --sgs-media-padding-left-tablet, var( --sgs-media-padding-left, 0 ) );
 	}
 }
 
 @media ( max-width: 767px ) {
 	.sgs-media-el {
-		padding: var(
-			--sgs-media-padding-mobile,
-			var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) )
+		padding-top: var(
+			--sgs-media-padding-top-mobile,
+			var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) )
+		);
+		padding-right: var(
+			--sgs-media-padding-right-mobile,
+			var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) )
+		);
+		padding-bottom: var(
+			--sgs-media-padding-bottom-mobile,
+			var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) )
+		);
+		padding-left: var(
+			--sgs-media-padding-left-mobile,
+			var( --sgs-media-padding-left-tablet, var( --sgs-media-padding-left, 0 ) )
 		);
 	}
 }

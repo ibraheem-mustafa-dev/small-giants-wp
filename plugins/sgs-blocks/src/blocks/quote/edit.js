@@ -145,7 +145,7 @@ function buildWrapperStyle( attributes, tier ) {
 		wrapperStyle.boxShadow = shadowPreview;
 	}
 
-	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ) );
+	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ) );
 
 	Object.assign( wrapperStyle, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
 

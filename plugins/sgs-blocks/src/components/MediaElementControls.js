@@ -172,10 +172,10 @@ export const MEDIA_BASES = {
 		// MEDIA_TIERED_BASES below. `BorderStyle` is a flat keyword string.
 		// `BorderColour`/`BorderColourGradient` are the flat colour pair
 		// (`colourLinked:true` — a palette slug, not a baked hex). This is a
-		// SEPARATE paint from `--sgs-media-border-radius` above; the two
-		// together are the media element's own border, distinct from the
-		// block WRAPPER's border chrome (still `SgsBorderControl`/native
-		// `__experimentalBorder` on the wrapper itself).
+		// SEPARATE paint from the per-corner `--sgs-media-border-*-radius`
+		// properties above; the two together are the media element's own
+		// border, distinct from the block WRAPPER's border chrome
+		// (`SgsBorderControl` on the wrapper itself).
 		'BorderWidth',
 		'BorderStyle',
 		'BorderColour',

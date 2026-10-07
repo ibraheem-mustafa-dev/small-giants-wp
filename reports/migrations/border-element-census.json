@@ -1,0 +1,3323 @@
+{
+  "generated": "2026-10-07T19:32:19Z",
+  "tool": "scripts/migrate-border-element.py --survey",
+  "totals": {
+    "files": 95,
+    "elements": 131,
+    "shapes": 69,
+    "unclear_elements": 57
+  },
+  "shapes": [
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "count": 11,
+      "elements": [
+        "src/blocks/accordion-item/render.php#",
+        "src/blocks/google-reviews/render.php#",
+        "src/blocks/multi-button/render.php#",
+        "src/blocks/post-grid/render.php#",
+        "src/blocks/pricing-table/render.php#",
+        "src/blocks/site-footer/render.php#",
+        "src/blocks/site-footer-row/render.php#",
+        "src/blocks/site-header/render.php#",
+        "src/blocks/site-header-row/render.php#",
+        "src/blocks/trust-bar/render.php#",
+        "src/blocks/trustpilot-reviews/render.php#"
+      ]
+    },
+    {
+      "shape": "none|none|none|unclear|none|unclear",
+      "count": 8,
+      "elements": [
+        "src/blocks/google-reviews/render.php#avatar",
+        "src/blocks/mega-panel/render.php#fxField",
+        "src/blocks/mega-panel/render.php#fxGrid",
+        "src/blocks/nav-drawer/render.php#close",
+        "src/blocks/product-card/render.php#savingBadge",
+        "src/blocks/product-card/render.php#tag",
+        "src/blocks/site-header-row/render.php#fxField",
+        "src/blocks/site-header-row/render.php#fxGrid"
+      ]
+    },
+    {
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "count": 8,
+      "elements": [
+        "includes/configurator-term-fields.php#(none)",
+        "includes/variations/sgs-accordion-variations.php#(none)",
+        "includes/variations/sgs-form-variations.php#(none)",
+        "includes/variations/sgs-gallery-variations.php#(none)",
+        "includes/variations/sgs-info-box-variations.php#(none)",
+        "includes/variations/sgs-post-grid-variations.php#(none)",
+        "includes/variations/sgs-team-member-variations.php#(none)",
+        "includes/variations/sgs-testimonial-variations.php#(none)"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "count": 7,
+      "elements": [
+        "src/blocks/card-grid/render.php#",
+        "src/blocks/feature-grid/render.php#",
+        "src/blocks/gallery/render.php#",
+        "src/blocks/hero/render.php#",
+        "src/blocks/tab/render.php#",
+        "src/blocks/tabs/render.php#",
+        "src/blocks/testimonial-slider/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "count": 7,
+      "elements": [
+        "src/blocks/audio/render.php#",
+        "src/blocks/breadcrumbs/render.php#",
+        "src/blocks/business-info/render.php#",
+        "src/blocks/product-search/render.php#",
+        "src/blocks/responsive-logo/render.php#",
+        "src/blocks/star-rating/render.php#",
+        "src/blocks/store-selector/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "count": 6,
+      "elements": [
+        "src/blocks/counter/render.php#",
+        "src/blocks/heading/render.php#",
+        "src/blocks/icon-list/render.php#",
+        "src/blocks/process-steps/render.php#",
+        "src/blocks/quote/render.php#",
+        "src/blocks/timeline/render.php#"
+      ]
+    },
+    {
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "count": 5,
+      "elements": [
+        "src/blocks/google-reviews/render.php#arrow",
+        "src/blocks/google-reviews/render.php#seeAll",
+        "src/blocks/google-reviews/render.php#writeReview",
+        "src/blocks/product-card/render.php#cta",
+        "includes/nav-drawer-chrome-css.php#chromeButton"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "count": 4,
+      "elements": [
+        "src/blocks/notice-banner/render.php#",
+        "src/blocks/product-faq-item/render.php#",
+        "src/blocks/table-of-contents/render.php#",
+        "src/blocks/team-member/render.php#"
+      ]
+    },
+    {
+      "shape": "shorthand-border|literal|none|none|none|unclear",
+      "count": 4,
+      "elements": [
+        "includes/class-sgs-site-info-admin-fields.php#(none)",
+        "includes/class-sgs-site-info-admin-logo.php#(none)",
+        "includes/product-template-fields.php#(none)",
+        "includes/addon-price-list/class-addon-price-list-admin.php#(none)"
+      ]
+    },
+    {
+      "shape": "button-style|button-style|button-style|button-style|none|unclear",
+      "count": 3,
+      "elements": [
+        "src/blocks/choice-flow/render.php#back",
+        "src/blocks/form/render.php#prev",
+        "src/blocks/modal/render.php#close"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "count": 3,
+      "elements": [
+        "src/blocks/brand-strip/render.php#",
+        "src/blocks/countdown-timer/render.php#",
+        "src/blocks/product-faq/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|string-concat",
+      "count": 3,
+      "elements": [
+        "src/blocks/form-field-tiles/render.php#",
+        "src/blocks/form-step/render.php#",
+        "src/blocks/physics-canvas/render.php#"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
+      "count": 3,
+      "elements": [
+        "src/blocks/cart/render.php#pill",
+        "src/blocks/whatsapp-cta/variant-render.php#card",
+        "includes/notice-banner-icon-badge.php#iconCircle"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring+literal-border-color+custom-property|custom-property|none|mixed",
+      "count": 2,
+      "elements": [
+        "src/blocks/option-picker/render.php#pill",
+        "src/blocks/option-picker/render.php#pillSelected"
+      ]
+    },
+    {
+      "shape": "none|none|unclear|unclear|none|unclear",
+      "count": 2,
+      "elements": [
+        "src/blocks/product-card/render.php#pickerPill",
+        "src/blocks/product-card/render.php#pickerPillSelected"
+      ]
+    },
+    {
+      "shape": "sides-literal|literal|gradient-ring+literal-border-color+custom-property|none|tablet:custom-property,mobile:none|mixed",
+      "count": 2,
+      "elements": [
+        "src/blocks/brand-strip/render.php#item",
+        "src/blocks/brand-strip/render.php#tile"
+      ]
+    },
+    {
+      "shape": "border-box-decls|keyword-helper|states-css|corner-shorthand|none|decls-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/buybox/extras.php#galleryThumb"
+      ]
+    },
+    {
+      "shape": "border-box-decls|keyword-helper|states-css|none|none|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "includes/account/helpers-account-render-css.php#card"
+      ]
+    },
+    {
+      "shape": "border-box-decls|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/container/render.php#"
+      ]
+    },
+    {
+      "shape": "border-box-decls|keyword-helper|unclear|corner-shorthand|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/form/render.php#field"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal+shorthand-border|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/nav-drawer/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/info-box/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/accordion/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/testimonial/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+gradient-ring+native+literal-border-color|style-engine+corner-shorthand|style-engine+corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/form/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/buybox/render.php#"
+      ]
+    },
+    {
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+native|style-engine|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/product-card/render.php#"
+      ]
+    },
+    {
+      "shape": "none|literal|unclear|single-length|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/mega-panel/render.php#drawerCard"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring+custom-property|none|none|mixed",
+      "count": 1,
+      "elements": [
+        "includes/helpers-grid-item.php#(none)"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring+custom-property|none|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/mega-panel/render.php#group"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring+custom-property|none|single-length|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/social-icons/render.php#icon"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring+literal-border-color|none|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/helpers-colour-variants.php#(none)"
+      ]
+    },
+    {
+      "shape": "none|none|gradient-ring|none|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/tabs/render.php#panel"
+      ]
+    },
+    {
+      "shape": "none|none|literal-border-color|corner-shorthand|none|mixed",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-css.php#item"
+      ]
+    },
+    {
+      "shape": "none|none|literal-border-color|unclear|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-css.php#"
+      ]
+    },
+    {
+      "shape": "none|none|none|corner-shorthand|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-drawer-menu-section-css.php#submenu"
+      ]
+    },
+    {
+      "shape": "none|none|none|none|tablet:single-length,mobile:none|unclear",
+      "count": 1,
+      "elements": [
+        "includes/variations/sgs-tabs-variations.php#(none)"
+      ]
+    },
+    {
+      "shape": "none|none|none|serialise-corners|none|unclear",
+      "count": 1,
+      "elements": [
+        "includes/class-sgs-container-wrapper.php#gridItem"
+      ]
+    },
+    {
+      "shape": "none|none|none|single-length|none|unclear",
+      "count": 1,
+      "elements": [
+        "includes/variations/sgs-pricing-table-variations.php#(none)"
+      ]
+    },
+    {
+      "shape": "none|none|none|style-engine|corner-longhands|unclear",
+      "count": 1,
+      "elements": [
+        "src/blocks/whatsapp-cta/render.php#"
+      ]
+    },
+    {
+      "shape": "none|none|none|style-engine|corner-shorthand|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/social-icons/render.php#"
+      ]
+    },
+    {
+      "shape": "none|none|none|unclear|none|decls-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/trust-bar/render.php#badgeImage"
+      ]
+    },
+    {
+      "shape": "none|none|states-css|custom-property|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-item-border-featured-css.php#featured"
+      ]
+    },
+    {
+      "shape": "none|none|states-css|none|none|unclear",
+      "count": 1,
+      "elements": [
+        "src/blocks/filter-search/render.php#(none)"
+      ]
+    },
+    {
+      "shape": "serialise-box-sides|keyword-helper|gradient-ring+literal-border-color|serialise-corners|none|mixed",
+      "count": 1,
+      "elements": [
+        "includes/helpers-button-style.php#(none)"
+      ]
+    },
+    {
+      "shape": "shorthand-border|literal|none|single-length|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/configurator-variation-fields.php#(none)"
+      ]
+    },
+    {
+      "shape": "shorthand-border|literal|none|unclear|none|unclear",
+      "count": 1,
+      "elements": [
+        "includes/variations/sgs-cta-section-variations.php#(none)"
+      ]
+    },
+    {
+      "shape": "sides-literal+shorthand-border|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/text/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+custom-property|style-engine|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/button/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color+custom-property|style-engine+custom-property|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/option-picker/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/before-after/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|literal-border-color|style-engine|none|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/theme-toggle/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|none|none|none|unclear",
+      "count": 1,
+      "elements": [
+        "includes/helpers-border-style.php#(none)"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|states-css+gradient-ring+custom-property|none|single-length|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/social-icons/render.php#wrapper"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|states-css+gradient-ring+literal-border-color+custom-property|single-length|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/mega-panel/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|states-css|none|none|scoped-css-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/modal/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|style-engine|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/cta-section/render.php#"
+      ]
+    },
+    {
+      "shape": "sides-literal|none|gradient-ring+literal-border-color+custom-property|custom-property|none|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/card-grid/render.php#card"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|custom-property|corner-shorthand+custom-property|corner-shorthand+custom-property|unclear",
+      "count": 1,
+      "elements": [
+        "src/blocks/multi-button/render.php#childBtn"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|gradient-ring+literal-border-color|corner-shorthand|corner-shorthand|mixed",
+      "count": 1,
+      "elements": [
+        "src/blocks/hero/render.php#splitMedia"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|literal-border-color+custom-property|custom-property|none|decls-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/trust-bar/render.php#iconCircle"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|literal-border-color|none|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-drawer-chrome-css.php#close"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|literal-border-color|unclear|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-trigger-css.php#burger"
+      ]
+    },
+    {
+      "shape": "unclear|keyword-helper|unclear|none|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-item-border-featured-css.php#item"
+      ]
+    },
+    {
+      "shape": "unclear|literal|states-css+literal-border-color+custom-property|corner-shorthand+custom-property|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-submenu-css.php#submenu"
+      ]
+    },
+    {
+      "shape": "unclear|literal|states-css+literal-border-color|single-length|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/mega-aside/render.php#aside"
+      ]
+    },
+    {
+      "shape": "unclear|none|literal-border-color|unclear|none|decls-array",
+      "count": 1,
+      "elements": [
+        "src/blocks/product-card/render.php#attributeTag"
+      ]
+    },
+    {
+      "shape": "unclear|none|none|single-length|none|string-concat",
+      "count": 1,
+      "elements": [
+        "includes/nav-menu-submenu-link-css.php#submenu"
+      ]
+    },
+    {
+      "shape": "unclear|unclear|gradient-ring|unclear|none|string-concat",
+      "count": 1,
+      "elements": [
+        "src/blocks/google-reviews/render.php#card"
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "file": "src/blocks/accordion/render.php",
+      "block": "accordion",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 33,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/accordion-item/render.php",
+      "block": "accordion-item",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 35,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/audio/render.php",
+      "block": "audio",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 183,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/before-after/render.php",
+      "block": "before-after",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 193,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/brand-strip/render.php",
+      "block": "brand-strip",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 214,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/brand-strip/render.php",
+      "block": "brand-strip",
+      "prefix": "item",
+      "width": "sides-literal",
+      "style": "literal",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "tablet:custom-property,mobile:none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 114,
+      "shape": "sides-literal|literal|gradient-ring+literal-border-color+custom-property|none|tablet:custom-property,mobile:none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/brand-strip/render.php",
+      "block": "brand-strip",
+      "prefix": "tile",
+      "width": "sides-literal",
+      "style": "literal",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "tablet:custom-property,mobile:none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 101,
+      "shape": "sides-literal|literal|gradient-ring+literal-border-color+custom-property|none|tablet:custom-property,mobile:none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/breadcrumbs/render.php",
+      "block": "breadcrumbs",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 104,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/business-info/render.php",
+      "block": "business-info",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 94,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/button/render.php",
+      "block": "button",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+custom-property",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "\".{$uid}.sgs-button\"",
+      "shares_rule_with": [],
+      "line": 224,
+      "shape": "sides-literal|keyword-helper|gradient-ring+custom-property|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/buybox/extras.php",
+      "block": "buybox",
+      "prefix": "galleryThumb",
+      "width": "border-box-decls",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand",
+      "radius_tiers": "none",
+      "sink": "decls-array",
+      "sink_kinds": [
+        "decls-array"
+      ],
+      "selector": "$thumb_sel",
+      "shares_rule_with": [],
+      "line": 285,
+      "shape": "border-box-decls|keyword-helper|states-css|corner-shorthand|none|decls-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/buybox/render.php",
+      "block": "buybox",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "states-css+gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 549,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/card-grid/render.php",
+      "block": "card-grid",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [
+        "background",
+        "colour"
+      ],
+      "line": 89,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/card-grid/render.php",
+      "block": "card-grid",
+      "prefix": "card",
+      "width": "sides-literal",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": true,
+      "radius_base": "custom-property",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel . ' .sgs-card-grid__item'",
+      "shares_rule_with": [
+        "background"
+      ],
+      "line": 102,
+      "shape": "sides-literal|none|gradient-ring+literal-border-color+custom-property|custom-property|none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/cart/render.php",
+      "block": "cart",
+      "prefix": "pill",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$pill_sel",
+      "shares_rule_with": [],
+      "line": 90,
+      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/choice-flow/render.php",
+      "block": "choice-flow",
+      "prefix": "back",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 197,
+      "shape": "button-style|button-style|button-style|button-style|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/container/render.php",
+      "block": "container",
+      "prefix": "",
+      "width": "border-box-decls",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$sgs_container_border_sel",
+      "shares_rule_with": [],
+      "line": 23,
+      "shape": "border-box-decls|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/countdown-timer/render.php",
+      "block": "countdown-timer",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 96,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/counter/render.php",
+      "block": "counter",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 279,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/cta-section/render.php",
+      "block": "cta-section",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 142,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/feature-grid/render.php",
+      "block": "feature-grid",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 273,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/filter-search/render.php",
+      "block": "filter-search",
+      "prefix": "(none)",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 148,
+      "shape": "none|none|states-css|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/form/render.php",
+      "block": "form",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "states-css+gradient-ring+native+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine+corner-shorthand",
+      "radius_tiers": "style-engine+corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$sgs_field_sel",
+      "shares_rule_with": [],
+      "line": 223,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+gradient-ring+native+literal-border-color|style-engine+corner-shorthand|style-engine+corner-shorthand|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/form/render.php",
+      "block": "form",
+      "prefix": "field",
+      "width": "border-box-decls",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$sgs_field_sel",
+      "shares_rule_with": [],
+      "line": 410,
+      "shape": "border-box-decls|keyword-helper|unclear|corner-shorthand|corner-shorthand|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/form/render.php",
+      "block": "form",
+      "prefix": "prev",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 598,
+      "shape": "button-style|button-style|button-style|button-style|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/form-field-tiles/render.php",
+      "block": "form-field-tiles",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$sgs_ft_sel",
+      "shares_rule_with": [],
+      "line": 77,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/form-step/render.php",
+      "block": "form-step",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$sgs_fs_sel",
+      "shares_rule_with": [],
+      "line": 56,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/gallery/render.php",
+      "block": "gallery",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 785,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$gr_root_hi",
+      "shares_rule_with": [],
+      "line": 299,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "arrow",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 332,
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "avatar",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 588,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "card",
+      "width": "unclear",
+      "style": "unclear",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$gr_card_sel",
+      "shares_rule_with": [],
+      "line": 571,
+      "shape": "unclear|unclear|gradient-ring|unclear|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "seeAll",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 331,
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/google-reviews/render.php",
+      "block": "google-reviews",
+      "prefix": "writeReview",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 330,
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/heading/render.php",
+      "block": "heading",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [
+        "max-width",
+        "sizing",
+        "typography"
+      ],
+      "line": 151,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/hero/render.php",
+      "block": "hero",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 262,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/hero/render.php",
+      "block": "hero",
+      "prefix": "splitMedia",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "corner-shorthand",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$uid",
+      "shares_rule_with": [],
+      "line": 308,
+      "shape": "unclear|keyword-helper|gradient-ring+literal-border-color|corner-shorthand|corner-shorthand|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/icon-list/render.php",
+      "block": "icon-list",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$icon_sel}\"",
+      "shares_rule_with": [],
+      "line": 58,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/info-box/render.php",
+      "block": "info-box",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 104,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/mega-aside/render.php",
+      "block": "mega-aside",
+      "prefix": "aside",
+      "width": "unclear",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "states-css+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 56,
+      "shape": "unclear|literal|states-css+literal-border-color|single-length|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "block": "mega-panel",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css+gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 156,
+      "shape": "sides-literal|keyword-helper|states-css+gradient-ring+literal-border-color+custom-property|single-length|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "block": "mega-panel",
+      "prefix": "drawerCard",
+      "width": "none",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$sgs_dv_aside",
+      "shares_rule_with": [],
+      "line": 1088,
+      "shape": "none|literal|unclear|single-length|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "block": "mega-panel",
+      "prefix": "fxField",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 242,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "block": "mega-panel",
+      "prefix": "fxGrid",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 270,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/mega-panel/render.php",
+      "block": "mega-panel",
+      "prefix": "group",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$style_crd . $rel_group",
+      "shares_rule_with": [],
+      "line": 88,
+      "shape": "none|none|gradient-ring+custom-property|none|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/modal/render.php",
+      "block": "modal",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "\"{$bwt} \"",
+      "shares_rule_with": [],
+      "line": 64,
+      "shape": "sides-literal|keyword-helper|states-css|none|none|scoped-css-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/modal/render.php",
+      "block": "modal",
+      "prefix": "close",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 278,
+      "shape": "button-style|button-style|button-style|button-style|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/multi-button/render.php",
+      "block": "multi-button",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 347,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/multi-button/render.php",
+      "block": "multi-button",
+      "prefix": "childBtn",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "custom-property",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand+custom-property",
+      "radius_tiers": "corner-shorthand+custom-property",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 151,
+      "shape": "unclear|keyword-helper|custom-property|corner-shorthand+custom-property|corner-shorthand+custom-property|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "block": "nav-drawer",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal+shorthand-border",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [
+        "other"
+      ],
+      "line": 639,
+      "shape": "native-style-engine+sides-literal+shorthand-border|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/nav-drawer/render.php",
+      "block": "nav-drawer",
+      "prefix": "close",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 1106,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/notice-banner/render.php",
+      "block": "notice-banner",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 215,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/option-picker/render.php",
+      "block": "option-picker",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "style-engine+custom-property",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [
+        "margin",
+        "max-width",
+        "sizing"
+      ],
+      "line": 155,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color+custom-property|style-engine+custom-property|corner-shorthand|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/option-picker/render.php",
+      "block": "option-picker",
+      "prefix": "pill",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "custom-property",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 132,
+      "shape": "none|none|gradient-ring+literal-border-color+custom-property|custom-property|none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/option-picker/render.php",
+      "block": "option-picker",
+      "prefix": "pillSelected",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "custom-property",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 136,
+      "shape": "none|none|gradient-ring+literal-border-color+custom-property|custom-property|none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/physics-canvas/render.php",
+      "block": "physics-canvas",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$sgs_ps_sel",
+      "shares_rule_with": [],
+      "line": 64,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/post-grid/render.php",
+      "block": "post-grid",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 183,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/pricing-table/render.php",
+      "block": "pricing-table",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 510,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/process-steps/render.php",
+      "block": "process-steps",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 108,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "states-css+native",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$sgs_pc_root_sel",
+      "shares_rule_with": [],
+      "line": 178,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|states-css+native|style-engine|corner-shorthand|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "attributeTag",
+      "width": "unclear",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "decls-array",
+      "sink_kinds": [
+        "decls-array"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [
+        "colour"
+      ],
+      "line": 331,
+      "shape": "unclear|none|literal-border-color|unclear|none|decls-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "cta",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 744,
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "pickerPill",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 99,
+      "shape": "none|none|unclear|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "pickerPillSelected",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 106,
+      "shape": "none|none|unclear|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "savingBadge",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 309,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-card/render.php",
+      "block": "product-card",
+      "prefix": "tag",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 783,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/product-faq/render.php",
+      "block": "product-faq",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 206,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/product-faq-item/render.php",
+      "block": "product-faq-item",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 74,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/product-search/render.php",
+      "block": "product-search",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$sgs_ps_border_sel}\"",
+      "shares_rule_with": [],
+      "line": 150,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/quote/render.php",
+      "block": "quote",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [
+        "margin",
+        "max-width"
+      ],
+      "line": 129,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/responsive-logo/render.php",
+      "block": "responsive-logo",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$sel}\"",
+      "shares_rule_with": [],
+      "line": 87,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/site-footer/render.php",
+      "block": "site-footer",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 170,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/site-footer-row/render.php",
+      "block": "site-footer-row",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 242,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/site-header/render.php",
+      "block": "site-header",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 679,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/site-header-row/render.php",
+      "block": "site-header-row",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 222,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/site-header-row/render.php",
+      "block": "site-header-row",
+      "prefix": "fxField",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 339,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/site-header-row/render.php",
+      "block": "site-header-row",
+      "prefix": "fxGrid",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 386,
+      "shape": "none|none|none|unclear|none|unclear",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/social-icons/render.php",
+      "block": "social-icons",
+      "prefix": "",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 342,
+      "shape": "none|none|none|style-engine|corner-shorthand|scoped-css-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/social-icons/render.php",
+      "block": "social-icons",
+      "prefix": "icon",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "single-length",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 67,
+      "shape": "none|none|gradient-ring+custom-property|none|single-length|scoped-css-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/social-icons/render.php",
+      "block": "social-icons",
+      "prefix": "wrapper",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css+gradient-ring+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "single-length",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 88,
+      "shape": "sides-literal|keyword-helper|states-css+gradient-ring+custom-property|none|single-length|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/star-rating/render.php",
+      "block": "star-rating",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 50,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/store-selector/render.php",
+      "block": "store-selector",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "\"{$list_sel}\"",
+      "shares_rule_with": [],
+      "line": 186,
+      "shape": "sides-literal|keyword-helper|states-css|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/tab/render.php",
+      "block": "tab",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 193,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/table-of-contents/render.php",
+      "block": "table-of-contents",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 243,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/tabs/render.php",
+      "block": "tabs",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "\"{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])\"",
+      "shares_rule_with": [],
+      "line": 95,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/tabs/render.php",
+      "block": "tabs",
+      "prefix": "panel",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "\"{$root_sel} .sgs-tabs__panel\"",
+      "shares_rule_with": [],
+      "line": 170,
+      "shape": "none|none|gradient-ring|none|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/team-member/render.php",
+      "block": "team-member",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 171,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/testimonial/render.php",
+      "block": "testimonial",
+      "prefix": "",
+      "width": "native-style-engine+sides-literal",
+      "style": "keyword-helper+native",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+native+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 174,
+      "shape": "native-style-engine+sides-literal|keyword-helper+native|gradient-ring+native+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/testimonial-slider/render.php",
+      "block": "testimonial-slider",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 60,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/text/render.php",
+      "block": "text",
+      "prefix": "",
+      "width": "sides-literal+shorthand-border",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$scope",
+      "shares_rule_with": [
+        "margin",
+        "max-width",
+        "other",
+        "sizing"
+      ],
+      "line": 108,
+      "shape": "sides-literal+shorthand-border|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/theme-toggle/render.php",
+      "block": "theme-toggle",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 201,
+      "shape": "sides-literal|keyword-helper|literal-border-color|style-engine|none|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/timeline/render.php",
+      "block": "timeline",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-shorthand",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 107,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|corner-shorthand|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/trust-bar/render.php",
+      "block": "trust-bar",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$root_sel",
+      "shares_rule_with": [],
+      "line": 263,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/trust-bar/render.php",
+      "block": "trust-bar",
+      "prefix": "badgeImage",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "decls-array",
+      "sink_kinds": [
+        "decls-array"
+      ],
+      "selector": "$tb_extra_scoped_css",
+      "shares_rule_with": [
+        "sizing"
+      ],
+      "line": 93,
+      "shape": "none|none|none|unclear|none|decls-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/trust-bar/render.php",
+      "block": "trust-bar",
+      "prefix": "iconCircle",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "custom-property",
+      "radius_tiers": "none",
+      "sink": "decls-array",
+      "sink_kinds": [
+        "decls-array"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 66,
+      "shape": "unclear|keyword-helper|literal-border-color+custom-property|custom-property|none|decls-array",
+      "multi_element_file": true
+    },
+    {
+      "file": "src/blocks/trustpilot-reviews/render.php",
+      "block": "trustpilot-reviews",
+      "prefix": "",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": true,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "style-engine",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$tp_root_sel",
+      "shares_rule_with": [],
+      "line": 705,
+      "shape": "sides-literal|keyword-helper|gradient-ring+literal-border-color|style-engine|style-engine|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/render.php",
+      "block": "whatsapp-cta",
+      "prefix": "",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "style-engine",
+      "radius_tiers": "corner-longhands",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 150,
+      "shape": "none|none|none|style-engine|corner-longhands|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "src/blocks/whatsapp-cta/variant-render.php",
+      "block": "whatsapp-cta",
+      "prefix": "card",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "\"{$root_sel}\"",
+      "shares_rule_with": [],
+      "line": 42,
+      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/class-sgs-container-wrapper.php",
+      "block": "includes/class-sgs-container-wrapper.php",
+      "prefix": "gridItem",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "serialise-corners",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 3653,
+      "shape": "none|none|none|serialise-corners|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/class-sgs-site-info-admin-fields.php",
+      "block": "includes/class-sgs-site-info-admin-fields.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 48,
+      "shape": "shorthand-border|literal|none|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/class-sgs-site-info-admin-logo.php",
+      "block": "includes/class-sgs-site-info-admin-logo.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 94,
+      "shape": "shorthand-border|literal|none|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/configurator-term-fields.php",
+      "block": "includes/configurator-term-fields.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 186,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/configurator-variation-fields.php",
+      "block": "includes/configurator-variation-fields.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 97,
+      "shape": "shorthand-border|literal|none|single-length|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/helpers-border-style.php",
+      "block": "includes/helpers-border-style.php",
+      "prefix": "(none)",
+      "width": "sides-literal",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 30,
+      "shape": "sides-literal|keyword-helper|none|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/helpers-button-style.php",
+      "block": "includes/helpers-button-style.php",
+      "prefix": "(none)",
+      "width": "serialise-box-sides",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "serialise-corners",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "\"{$after_selector}\"",
+      "shares_rule_with": [
+        "colour",
+        "sizing",
+        "typography"
+      ],
+      "line": 124,
+      "shape": "serialise-box-sides|keyword-helper|gradient-ring+literal-border-color|serialise-corners|none|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/helpers-colour-variants.php",
+      "block": "includes/helpers-colour-variants.php",
+      "prefix": "(none)",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+literal-border-color",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$selector",
+      "shares_rule_with": [],
+      "line": 336,
+      "shape": "none|none|gradient-ring+literal-border-color|none|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/helpers-grid-item.php",
+      "block": "includes/helpers-grid-item.php",
+      "prefix": "(none)",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "gradient-ring+custom-property",
+      "hover_gradient": true,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "scoped-css-array",
+        "string-concat"
+      ],
+      "selector": "$cell",
+      "shares_rule_with": [],
+      "line": 75,
+      "shape": "none|none|gradient-ring+custom-property|none|none|mixed",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/nav-drawer-chrome-css.php",
+      "block": "includes/nav-drawer-chrome-css.php",
+      "prefix": "chromeButton",
+      "width": "button-style",
+      "style": "button-style",
+      "explicit_none_rule": false,
+      "colour": "button-style",
+      "hover_gradient": false,
+      "radius_base": "button-style",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 216,
+      "shape": "button-style|button-style|button-style|button-style|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-drawer-chrome-css.php",
+      "block": "includes/nav-drawer-chrome-css.php",
+      "prefix": "close",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$close_sel",
+      "shares_rule_with": [],
+      "line": 131,
+      "shape": "unclear|keyword-helper|literal-border-color|none|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-drawer-menu-section-css.php",
+      "block": "includes/nav-drawer-menu-section-css.php",
+      "prefix": "submenu",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 63,
+      "shape": "none|none|none|corner-shorthand|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/nav-menu-css.php",
+      "block": "includes/nav-menu-css.php",
+      "prefix": "",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$link_sel",
+      "shares_rule_with": [],
+      "line": 73,
+      "shape": "none|none|literal-border-color|unclear|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-menu-css.php",
+      "block": "includes/nav-menu-css.php",
+      "prefix": "item",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand",
+      "radius_tiers": "none",
+      "sink": "mixed",
+      "sink_kinds": [
+        "decls-array",
+        "string-concat"
+      ],
+      "selector": "$link_sel",
+      "shares_rule_with": [
+        "colour",
+        "typography"
+      ],
+      "line": 260,
+      "shape": "none|none|literal-border-color|corner-shorthand|none|mixed",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "block": "includes/nav-menu-item-border-featured-css.php",
+      "prefix": "featured",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": false,
+      "radius_base": "custom-property",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$link_sel",
+      "shares_rule_with": [],
+      "line": 23,
+      "shape": "none|none|states-css|custom-property|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-menu-item-border-featured-css.php",
+      "block": "includes/nav-menu-item-border-featured-css.php",
+      "prefix": "item",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$link_sel",
+      "shares_rule_with": [],
+      "line": 67,
+      "shape": "unclear|keyword-helper|unclear|none|none|string-concat",
+      "multi_element_file": true
+    },
+    {
+      "file": "includes/nav-menu-submenu-css.php",
+      "block": "includes/nav-menu-submenu-css.php",
+      "prefix": "submenu",
+      "width": "unclear",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "states-css+literal-border-color+custom-property",
+      "hover_gradient": false,
+      "radius_base": "corner-shorthand+custom-property",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$bem_root",
+      "shares_rule_with": [],
+      "line": 82,
+      "shape": "unclear|literal|states-css+literal-border-color+custom-property|corner-shorthand+custom-property|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/nav-menu-submenu-link-css.php",
+      "block": "includes/nav-menu-submenu-link-css.php",
+      "prefix": "submenu",
+      "width": "unclear",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$bem_root",
+      "shares_rule_with": [],
+      "line": 26,
+      "shape": "unclear|none|none|single-length|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/nav-menu-trigger-css.php",
+      "block": "includes/nav-menu-trigger-css.php",
+      "prefix": "burger",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "string-concat",
+      "sink_kinds": [
+        "string-concat"
+      ],
+      "selector": "$burger_sel",
+      "shares_rule_with": [],
+      "line": 317,
+      "shape": "unclear|keyword-helper|literal-border-color|unclear|none|string-concat",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/notice-banner-icon-badge.php",
+      "block": "includes/notice-banner-icon-badge.php",
+      "prefix": "iconCircle",
+      "width": "unclear",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "literal-border-color",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$badge_sel",
+      "shares_rule_with": [],
+      "line": 66,
+      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/product-template-fields.php",
+      "block": "includes/product-template-fields.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 104,
+      "shape": "shorthand-border|literal|none|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/account/helpers-account-render-css.php",
+      "block": "includes/account/helpers-account-render-css.php",
+      "prefix": "card",
+      "width": "border-box-decls",
+      "style": "keyword-helper",
+      "explicit_none_rule": false,
+      "colour": "states-css",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "scoped-css-array",
+      "sink_kinds": [
+        "scoped-css-array"
+      ],
+      "selector": "$root_sel . ' .sgs-account__card'",
+      "shares_rule_with": [],
+      "line": 16,
+      "shape": "border-box-decls|keyword-helper|states-css|none|none|scoped-css-array",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/addon-price-list/class-addon-price-list-admin.php",
+      "block": "includes/addon-price-list/class-addon-price-list-admin.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 137,
+      "shape": "shorthand-border|literal|none|none|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-accordion-variations.php",
+      "block": "includes/variations/sgs-accordion-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 26,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-cta-section-variations.php",
+      "block": "includes/variations/sgs-cta-section-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "unclear",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 26,
+      "shape": "shorthand-border|literal|none|unclear|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-form-variations.php",
+      "block": "includes/variations/sgs-form-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 25,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-gallery-variations.php",
+      "block": "includes/variations/sgs-gallery-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-info-box-variations.php",
+      "block": "includes/variations/sgs-info-box-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-post-grid-variations.php",
+      "block": "includes/variations/sgs-post-grid-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-pricing-table-variations.php",
+      "block": "includes/variations/sgs-pricing-table-variations.php",
+      "prefix": "(none)",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "none|none|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-tabs-variations.php",
+      "block": "includes/variations/sgs-tabs-variations.php",
+      "prefix": "(none)",
+      "width": "none",
+      "style": "none",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "tablet:single-length,mobile:none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 33,
+      "shape": "none|none|none|none|tablet:single-length,mobile:none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-team-member-variations.php",
+      "block": "includes/variations/sgs-team-member-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    },
+    {
+      "file": "includes/variations/sgs-testimonial-variations.php",
+      "block": "includes/variations/sgs-testimonial-variations.php",
+      "prefix": "(none)",
+      "width": "shorthand-border",
+      "style": "literal",
+      "explicit_none_rule": false,
+      "colour": "none",
+      "hover_gradient": false,
+      "radius_base": "single-length",
+      "radius_tiers": "none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
+      "shares_rule_with": [],
+      "line": 20,
+      "shape": "shorthand-border|literal|none|single-length|none|unclear",
+      "multi_element_file": false
+    }
+  ]
+}

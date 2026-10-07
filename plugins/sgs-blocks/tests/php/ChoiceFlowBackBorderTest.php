@@ -46,7 +46,8 @@ final class ChoiceFlowBackBorderTest extends TestCase {
 		$this->assertStringContainsString( 'border-color:var(--wp--preset--color--primary', $m[1] );
 		$this->assertStringContainsString( 'border-style:dashed', $m[1] );
 		$this->assertStringContainsString( 'border-width:2px 2px 2px 2px', $m[1] );
-		$this->assertStringContainsString( 'border-radius:4px 0 0 0', $m[1] );
+		$this->assertStringContainsString( 'border-top-left-radius:4px', $m[1] );
+		$this->assertStringNotContainsString( 'border-radius:', $m[1], 'an unset corner must keep the stylesheet radius, not print 0' );
 	}
 
 	/**

@@ -285,7 +285,7 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		$thumb_style      = sgs_border_style_keyword( $attributes['galleryThumbBorderStyle'] ?? '' );
 		$thumb_width_box  = is_array( $attributes['galleryThumbBorderWidth'] ?? null ) ? $attributes['galleryThumbBorderWidth'] : array();
 		$thumb_decls      = sgs_border_box_decls( $thumb_width_box, $thumb_style );
-		$thumb_corners    = sgs_corner_object_shorthand( $attributes['galleryThumbBorderRadius'] ?? null );
+		$thumb_corners    = sgs_corner_object_longhands( $attributes['galleryThumbBorderRadius'] ?? null );
 		$has_border_width = null !== sgs_box_object_shorthand( $thumb_width_box );
 		// sgs_border_box_decls() emits nothing for the explicit style `none`, which would
 		// leave the stylesheet's own border showing; the client chose no border.
@@ -293,7 +293,7 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			$thumb_decls[] = 'border-style:none';
 		}
 		if ( null !== $thumb_corners ) {
-			$thumb_decls[] = 'border-radius:' . $thumb_corners;
+			$thumb_decls[] = $thumb_corners;
 		}
 		if ( ! empty( $thumb_decls ) ) {
 			$css[] = $thumb_sel . '{' . implode( ';', $thumb_decls ) . ';}';

@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -227,7 +227,7 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 	// top-right bottom-right bottom-left). NOT part of Contract §A — render.php
 	// doesn't gate this on inheritStyle either, so neither does the preview.
 	// render.php writes each narrower tier as a full shorthand, so a tier's box replaces the wider one whole.
-	Object.assign( wrapperStyle, borderRadiusPreview( attributes.borderRadius, previewTier, { wholeTier: true } ) );
+	Object.assign( wrapperStyle, borderRadiusLonghands( attributes.borderRadius, previewTier ) );
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).

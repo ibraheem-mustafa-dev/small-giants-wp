@@ -246,6 +246,68 @@ const BOX_SHAPE_CASES = [
 	}
 }
 
+/**
+ * PER-SIDE / PER-CORNER EMISSION. A shorthand custom property fills every unset
+ * side with 0, so setting ONE side on a narrower tier used to wipe the wider
+ * tier's other sides. Each case sets exactly one side/corner on one tier over a
+ * full desktop box and asserts the tier property for THAT side/corner alone is
+ * emitted, in the same order from PHP and JS (compared unsorted).
+ */
+const PER_SIDE_CASES = [
+	{
+		atom: 'media-padding',
+		name: 'one side (top) at tablet over a full desktop box',
+		patch: {
+			padding: {
+				desktop: { top: '20px', right: '20px', bottom: '20px', left: '20px' },
+				tablet: { top: '40px' },
+			},
+		},
+		pattern: /^--sgs-media-padding/,
+		expected: [
+			'--sgs-media-padding-top:20px',
+			'--sgs-media-padding-right:20px',
+			'--sgs-media-padding-bottom:20px',
+			'--sgs-media-padding-left:20px',
+			'--sgs-media-padding-top-tablet:40px',
+		],
+	},
+	{
+		atom: 'box-shape',
+		name: 'one corner (bottomLeft) at mobile over a full desktop box',
+		patch: {
+			borderRadius: { topLeft: 8, topRight: 8, bottomRight: 8, bottomLeft: 8 },
+			borderRadiusMobile: { bottomLeft: 24 },
+		},
+		pattern: /-radius/,
+		expected: [
+			'--sgs-media-border-top-left-radius:8px',
+			'--sgs-media-border-top-right-radius:8px',
+			'--sgs-media-border-bottom-right-radius:8px',
+			'--sgs-media-border-bottom-left-radius:8px',
+			'--sgs-media-border-bottom-left-radius-mobile:24px',
+		],
+	},
+];
+
+for ( const c of PER_SIDE_CASES ) {
+	const mod = await import( 'file:///' + jsModule( c.atom ).split( BS ).join( '/' ) );
+	const attributes = { ...FIXTURE.attributes, ...c.patch };
+	const fixture = { ...FIXTURE, attributes };
+	const jsOut = mod.css( { attributes, prefix: fixture.prefix, blockSlug: fixture.blockSlug } ).filter( ( x ) => c.pattern.test( x ) );
+	const phpOut = phpDeclarations( c.atom, fixture ).filter( ( x ) => c.pattern.test( x ) );
+	ck(
+		`${ c.atom } [${ c.name }]: JS and PHP identical, same order`,
+		JSON.stringify( jsOut ) === JSON.stringify( phpOut ),
+		`JS: [${ jsOut.join( ', ' ) }]  PHP: [${ phpOut.join( ', ' ) }]`
+	);
+	ck(
+		`${ c.atom } [${ c.name }]: only the set side/corner is emitted at the narrower tier`,
+		JSON.stringify( jsOut ) === JSON.stringify( c.expected ),
+		`expected [${ c.expected.join( ', ' ) }]  got [${ jsOut.join( ', ' ) }]`
+	);
+}
+
 process.stdout.write( 'media atom value-setter parity\n\n' );
 
 let implemented = 0;

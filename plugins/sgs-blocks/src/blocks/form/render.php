@@ -410,20 +410,26 @@ $sgs_field_decls    = array_merge( $sgs_field_fill['normal'], $sgs_field_text['n
 $sgs_field_border   = sgs_border_box_decls( $attributes['fieldBorderWidth'] ?? array(), $attributes['fieldBorderStyle'] ?? '' );
 $sgs_field_decls    = array_merge( $sgs_field_decls, $sgs_field_border );
 $sgs_field_radius   = sgs_border_radius_tiers( array( 'borderRadius' => $attributes['fieldBorderRadius'] ?? null ) );
-$sgs_field_radius_b = is_array( $sgs_field_radius['base'] ) ? sgs_corner_object_shorthand( $sgs_field_radius['base'] ) : ( is_string( $sgs_field_radius['base'] ) ? sgs_css_length_value( $sgs_field_radius['base'] ) : null );
-if ( null !== $sgs_field_radius_b && '' !== $sgs_field_radius_b ) {
-	$sgs_field_decls[] = 'border-radius:' . $sgs_field_radius_b;
+// A corner object prints only its set corners; a single length is the uniform radius.
+$sgs_field_radius_b = null;
+if ( is_array( $sgs_field_radius['base'] ) ) {
+	$sgs_field_radius_b = sgs_corner_object_longhands( $sgs_field_radius['base'] );
+} elseif ( is_string( $sgs_field_radius['base'] ) && '' !== sgs_css_length_value( $sgs_field_radius['base'] ) ) {
+	$sgs_field_radius_b = 'border-radius:' . sgs_css_length_value( $sgs_field_radius['base'] );
+}
+if ( null !== $sgs_field_radius_b ) {
+	$sgs_field_decls[] = $sgs_field_radius_b;
 }
 if ( ! empty( $sgs_field_decls ) ) {
 	$sgs_field_css .= $sgs_field_sel . '{' . implode( ';', $sgs_field_decls ) . ';}';
 }
-$sgs_field_radius_t = sgs_corner_object_shorthand( $sgs_field_radius['tablet'] );
-$sgs_field_radius_m = sgs_corner_object_shorthand( $sgs_field_radius['mobile'] );
+$sgs_field_radius_t = sgs_corner_object_longhands( $sgs_field_radius['tablet'] );
+$sgs_field_radius_m = sgs_corner_object_longhands( $sgs_field_radius['mobile'] );
 if ( null !== $sgs_field_radius_t ) {
-	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{border-radius:' . $sgs_field_radius_t . ';}}';
+	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{' . $sgs_field_radius_t . ';}}';
 }
 if ( null !== $sgs_field_radius_m ) {
-	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{border-radius:' . $sgs_field_radius_m . ';}}';
+	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{' . $sgs_field_radius_m . ';}}';
 }
 
 $sgs_field_vars    = array();

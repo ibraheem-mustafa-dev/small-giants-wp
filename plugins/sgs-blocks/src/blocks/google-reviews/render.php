@@ -422,13 +422,13 @@ $gr_len_rule = static function ( string $selector, $raw, array $props ): string 
 
 // A four-sided box value (padding, border width, radius corners) per device tier.
 //
-// Border width and radius corners print one shorthand per tier: a tier inherits the tier above it side by side
-// and writes a rule only when its shorthand differs, exactly like the shared tier engine, and an unset side of a
-// set box is 0, as in sgs_box_object_shorthand(). A width stays on the shorthand because its border-style is
-// written for all four sides, so a width longhand would leave the other sides at the browser's `medium`.
+// Border width prints one shorthand per tier: a tier inherits the tier above it side by side and writes a rule
+// only when its shorthand differs, exactly like the shared tier engine, and an unset side of a set box is 0, as
+// in sgs_box_object_shorthand(). A width stays on the shorthand because its border-style is written for all four
+// sides, so a width longhand would leave the other sides at the browser's `medium`.
 //
-// Padding prints longhands for the sides a tier ITSELF sets, so an unset side keeps the stylesheet's value and a
-// narrower tier setting one side no longer wipes the wider tier's other sides. The cascade does the inheriting
+// Padding and radius corners print longhands for the sides or corners a tier ITSELF sets, so an unset one keeps
+// the stylesheet's value and a narrower tier setting one no longer wipes the wider tier's others. The cascade does the inheriting
 // (the desktop rule, then the tablet and mobile @media rules, narrowest last); a side is skipped when its
 // resolved value already equals what the tier above gives it. The whole declaration is built here, so no caller
 // can join a property name to a longhand block.
@@ -439,7 +439,13 @@ $gr_box_rule = static function ( string $selector, $raw, string $prop, array $ke
 		'tablet'  => array( 'tablet', 'desktop' ),
 		'mobile'  => array( 'mobile', 'tablet', 'desktop' ),
 	);
-	$longhand = 'padding' === $prop;
+	$longhand = in_array( $prop, array( 'padding', 'border-radius' ), true );
+	// The longhand property per key: padding-top, or border-top-left-radius for a corner.
+	$longhand_name = static function ( string $key ) use ( $prop ): string {
+		return 'border-radius' === $prop
+			? 'border-' . strtolower( preg_replace( '/([A-Z])/', '-$1', $key ) ) . '-radius'
+			: $prop . '-' . $key;
+	};
 	$rules    = array();
 	$prev     = '';
 	$prev_eff = array();
@@ -471,7 +477,7 @@ $gr_box_rule = static function ( string $selector, $raw, string $prop, array $ke
 			$decls = '';
 			foreach ( $keys as $key ) {
 				if ( null !== $own[ $key ] && ( $prev_eff[ $key ] ?? null ) !== $own[ $key ] ) {
-					$decls .= $prop . '-' . $key . ':' . $own[ $key ] . ';';
+					$decls .= $longhand_name( $key ) . ':' . $own[ $key ] . ';';
 				}
 			}
 			if ( '' !== $decls ) {

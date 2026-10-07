@@ -352,7 +352,7 @@ function sanitiseLengthString( value ) {
  *
  * ⛔ Found live 2026-09-01, sgs/media's first real deploy of this atom's
  * border feature: without this, `sidesToWidthShorthand()`/
- * `cornersToRadiusShorthand()` emitted a UNITLESS shorthand
+ * the radius emitter produced a UNITLESS shorthand
  * (`--sgs-media-border-width:4 4 4 4`), which is invalid CSS — the browser
  * discards the whole declaration and falls back to `border-width: medium`
  * (~3px), the exact G5 anti-pattern `sgs/before-after`'s own render.php
@@ -371,7 +371,7 @@ function sanitiseLengthString( value ) {
  * @return {string} A safe `px`-suffixed or sanitised length, or `'0'` when
  *                  the input cannot be trusted.
  */
-function toLengthValue( value ) {
+export function toLengthValue( value ) {
 	if ( 'number' === typeof value ) {
 		return value < 0 ? '0px' : `${ value }px`;
 	}
@@ -387,36 +387,38 @@ function toLengthValue( value ) {
 }
 
 /**
- * Convert a 4-corner box object into the CSS `border-radius` shorthand VALUE
- * string, in the shorthand's own order (top-left, top-right, bottom-right,
- * bottom-left) — note this differs from `ResponsiveBorderRadiusControl`'s
- * declared key ORDER (topLeft, topRight, bottomLeft, bottomRight), so corners
- * are read by NAME, never assumed to already be in shorthand order. An unset
- * corner defaults to `0` so the shorthand is always well-formed; an
- * ENTIRELY-empty object returns '' so the caller can fall back to the shared
- * preset instead of emitting a no-op `0 0 0 0`.
+ * Per-corner `border-radius` custom-property declarations for ONE tier, in the
+ * order top-left, top-right, bottom-right, bottom-left. Corners are read by
+ * NAME — `ResponsiveBorderRadiusControl` declares its keys in a different
+ * order (topLeft, topRight, bottomLeft, bottomRight) — and only the corners the
+ * client set are emitted, so an unset corner falls through to the wider tier's
+ * value in the stylesheet instead of being zeroed. Mirrors
+ * `sgs_media_atom_box_shape_corner_radius_decls()` in the PHP twin.
  *
- * @param {*} corners Raw `BorderRadius`-shaped value.
- * @return {string} `"TL TR BR BL"`, or '' when nothing is set.
+ * @param {*}      corners Raw `BorderRadius`-shaped value for one tier.
+ * @param {string} suffix  Tier suffix: '', '-tablet' or '-mobile'.
+ * @return {string[]} `--sgs-media-border-<corner>-radius<suffix>:<value>` declarations.
  */
-export function cornersToRadiusShorthand( corners ) {
+export function cornerRadiusDecls( corners, suffix ) {
 	if ( ! corners || 'object' !== typeof corners ) {
-		return '';
+		return [];
 	}
-	const order = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
-	const hasAny = order.some(
-		( k ) => undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
-	);
-	if ( ! hasAny ) {
-		return '';
-	}
-	return order
-		.map( ( k ) =>
-			undefined !== corners[ k ] && null !== corners[ k ] && '' !== corners[ k ]
-				? toLengthValue( corners[ k ] )
-				: '0'
+	return [
+		[ 'topLeft', 'top-left' ],
+		[ 'topRight', 'top-right' ],
+		[ 'bottomRight', 'bottom-right' ],
+		[ 'bottomLeft', 'bottom-left' ],
+	]
+		.filter(
+			( pair ) =>
+				undefined !== corners[ pair[ 0 ] ] &&
+				null !== corners[ pair[ 0 ] ] &&
+				'' !== corners[ pair[ 0 ] ]
 		)
-		.join( ' ' );
+		.map(
+			( pair ) =>
+				`--sgs-media-border-${ pair[ 1 ] }-radius${ suffix }:${ toLengthValue( corners[ pair[ 0 ] ] ) }`
+		);
 }
 
 /**
@@ -424,7 +426,7 @@ export function cornersToRadiusShorthand( corners ) {
  * string ("top right bottom left") — `SgsBorderControl`'s own `widthValues`
  * shape. An unset side defaults to `0`; an entirely-empty object returns ''
  * so the caller can skip the declaration outright. Sibling to
- * `cornersToRadiusShorthand()` above, same rules, different key set (this
+ * `cornerRadiusDecls()` above, same rules, different key set (this
  * one CANNOT read a corner-keyed object and vice versa).
  *
  * @param {*} sides Raw `BorderWidth`-shaped value.
@@ -653,18 +655,11 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const radiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
 	const radiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
 	const radiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
-	const desktopRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusKey ] );
-	const tabletRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusTabletKey ] );
-	const mobileRadiusShorthand = cornersToRadiusShorthand( attributes[ radiusMobileKey ] );
-	if ( desktopRadiusShorthand ) {
-		decls.push( `--sgs-media-border-radius:${ desktopRadiusShorthand }` );
-	}
-	if ( tabletRadiusShorthand ) {
-		decls.push( `--sgs-media-border-radius-tablet:${ tabletRadiusShorthand }` );
-	}
-	if ( mobileRadiusShorthand ) {
-		decls.push( `--sgs-media-border-radius-mobile:${ mobileRadiusShorthand }` );
-	}
+	decls.push(
+		...cornerRadiusDecls( attributes[ radiusKey ], '' ),
+		...cornerRadiusDecls( attributes[ radiusTabletKey ], '-tablet' ),
+		...cornerRadiusDecls( attributes[ radiusMobileKey ], '-mobile' )
+	);
 
 	const borderWidthKey = mediaStoredAttrName( blockSlug, prefix, 'BorderWidth' );
 	const borderWidthShorthand = sidesToWidthShorthand( attributes[ borderWidthKey ] );

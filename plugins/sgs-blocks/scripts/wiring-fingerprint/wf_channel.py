@@ -26,8 +26,17 @@ import re
 
 from wf_php import PhpIndex, PhpText, brace_body, loop_literals, rx, split_arg_spans
 from wf_returns import CALL_HEAD_RE, KeyedReturns
-from wf_tokens import (ARRAY_KW_RE, CP_SET_RE, CSS_KEY_RE, DECL_RE, FWD_ATTRS_RE, FWD_BLOCK_RE, Channel, TokenReader,
+from wf_tokens import (ARRAY_KW_RE, CP_SET_RE, CSS_KEY_RE, CSS_PROPS, DECL_RE, FWD_ATTRS_RE, FWD_BLOCK_RE, Channel, TokenReader,
                        blank_index, constant_paint_props, open_brackets, paint_prop)
+
+# A map onto CSS property names (`'topLeft' => 'border-top-left-radius'`): a helper that builds its declarations from
+# such a map emits CSS though no `prop:` literal appears in its source.
+PROP_MAP_RE = re.compile(r"""=>\s*['"]""" + CSS_PROPS + r"""['"]""")
+# The join that turns a mapped property name into a declaration (`$property . ':' . $value`). Both are required: a
+# map whose values merely look like CSS words (a link type, a token name) builds no declaration.
+DYN_DECL_RE = re.compile(r"""\.\s*['"]:['"]\s*\.""")
+# An SGS helper called from a function body; a thin wrapper emits CSS when the helper it calls does.
+SGS_CALL_RE = re.compile(r"\b(sgs_\w+)\s*\(")
 
 # A statement may open with template HTML (`?> <div …> <?php`); heads are matched after it.
 HEAD = r"^\s*(?:(?:\?>.*?)?<\?php\s*)?"
@@ -191,7 +200,17 @@ class ChannelAnalyser:
             if entry is not None:
                 src = blank_index(entry[2].src)
                 self._emits[fname] = bool(DECL_RE.search(src) or CSS_KEY_RE.search(src) or CP_SET_RE.search(src)
+                                          or ( PROP_MAP_RE.search(src) and DYN_DECL_RE.search(src) )
                                           or "wp_style_engine_get_styles" in src)
+                if not self._emits[fname] and entry[1]:
+                    # A thin wrapper: it hands its own first argument straight to a helper that emits CSS. Only that
+                    # hand-over counts, so a function that merely calls a CSS helper for something else does not turn
+                    # every attribute it reads into a painted one. The False set above stops a recursion.
+                    first = entry[1][0].lstrip('$')
+                    self._emits[fname] = any(
+                        callee != fname and re.search(r"\b" + re.escape(callee) + r"\s*\(\s*\$" + re.escape(first) + r"\b", src)
+                        and self.emits_css(callee)
+                        for callee in set(SGS_CALL_RE.findall(src)))
         return self._emits[fname]
 
     @staticmethod

@@ -5,7 +5,6 @@
  */
 import { wrapperBorderPreview } from '../../src/utils/wrapper-border-preview';
 import { sgsBorderPreview } from '../../src/utils/border-preview';
-import { borderRadiusPreview } from '../../src/utils/radius-preview';
 import { tierValueOf } from '../../src/utils/responsive';
 import { tierLengthPreview } from '../../src/utils/cssLength';
 import { isCssGradient } from '../../src/utils/background-preview';
@@ -18,28 +17,24 @@ const RADIUS = {
 	tablet: { topLeft: '20px', topRight: '20px', bottomRight: '20px', bottomLeft: '20px' },
 	mobile: { topLeft: '8px' },
 };
+// The four corner longhands, in top-left, top-right, bottom-right, bottom-left order.
+const corners = ( tl, tr, br, bl ) => ( { borderTopLeftRadius: tl, borderTopRightRadius: tr, borderBottomRightRadius: br, borderBottomLeftRadius: bl } );
+const radiusOf = ( style ) => Object.fromEntries( Object.entries( style ).filter( ( [ k ] ) => /Radius$/.test( k ) ) );
 
 describe( 'wrapperBorderPreview corner radius', () => {
 	it( 'paints the tablet corners at tablet', () => {
-		expect( wrapperBorderPreview( { borderRadius: RADIUS }, 'tablet', [] ).borderRadius ).toBe( '20px 20px 20px 20px' );
+		expect( radiusOf( wrapperBorderPreview( { borderRadius: RADIUS }, 'tablet', [] ) ) ).toEqual( corners( '20px', '20px', '20px', '20px' ) );
 	} );
 	it( 'merges a mobile corner over the tablet ones', () => {
-		expect( wrapperBorderPreview( { borderRadius: RADIUS }, 'mobile', [] ).borderRadius ).toBe( '8px 20px 20px 20px' );
+		expect( radiusOf( wrapperBorderPreview( { borderRadius: RADIUS }, 'mobile', [] ) ) ).toEqual( corners( '8px', '20px', '20px', '20px' ) );
 	} );
 	it( 'keeps the desktop corners at desktop', () => {
-		expect( wrapperBorderPreview( { borderRadius: RADIUS }, 'desktop', [] ).borderRadius ).toBe( '4px 4px 4px 4px' );
+		expect( radiusOf( wrapperBorderPreview( { borderRadius: RADIUS }, 'desktop', [] ) ) ).toEqual( corners( '4px', '4px', '4px', '4px' ) );
 	} );
-} );
-
-describe( 'borderRadiusPreview wholeTier', () => {
-	const PARTIAL = { desktop: { topLeft: '4px', topRight: '4px', bottomRight: '4px', bottomLeft: '4px' }, tablet: { topLeft: '20px' } };
-	it( 'replaces the wider box whole, unset corners 0, as a full shorthand tier rule does', () => {
-		expect( borderRadiusPreview( PARTIAL, 'tablet', { wholeTier: true } ).borderRadius ).toBe( '20px 0 0 0' );
-		expect( borderRadiusPreview( PARTIAL, 'tablet' ).borderRadius ).toBe( '20px 4px 4px 4px' );
-	} );
-	it( 'a mobile box replaces the tablet one, and a tier with no corners inherits', () => {
-		expect( borderRadiusPreview( { ...RADIUS }, 'mobile', { wholeTier: true } ).borderRadius ).toBe( '8px 0 0 0' );
-		expect( borderRadiusPreview( { desktop: '6px', tablet: {} }, 'tablet', { wholeTier: true } ).borderRadius ).toBe( '6px 6px 6px 6px' );
+	it( 'previews only the set corners, never a 0 and never a shorthand', () => {
+		const style = wrapperBorderPreview( { borderRadius: { tablet: { topLeft: '20px' } } }, 'tablet', [] );
+		expect( radiusOf( style ) ).toEqual( { borderTopLeftRadius: '20px' } );
+		expect( style ).not.toHaveProperty( 'borderRadius' );
 	} );
 } );
 
@@ -61,9 +56,8 @@ describe( 'sgsBorderPreview', () => {
 	} );
 	it( 'reads the per-device radius from the panel envelope or the attribute itself', () => {
 		const envelope = { base: RADIUS.desktop, tablet: RADIUS.tablet, mobile: RADIUS.mobile };
-		expect( sgsBorderPreview( { radiusValues: envelope }, 'tablet' ).borderRadius ).toBe( '20px 20px 20px 20px' );
-		expect( sgsBorderPreview( { radiusValues: RADIUS }, 'mobile' ).borderRadius ).toBe( '8px 20px 20px 20px' );
-		expect( sgsBorderPreview( { radiusValues: RADIUS }, 'mobile', [], { wholeTier: true } ).borderRadius ).toBe( '8px 0 0 0' );
+		expect( radiusOf( sgsBorderPreview( { radiusValues: envelope }, 'tablet' ) ) ).toEqual( corners( '20px', '20px', '20px', '20px' ) );
+		expect( radiusOf( sgsBorderPreview( { radiusValues: RADIUS }, 'mobile' ) ) ).toEqual( corners( '8px', '20px', '20px', '20px' ) );
 	} );
 	it( 'prefixed attributes paint the same as the un-prefixed wrapper', () => {
 		const attrs = { cardBorderWidth: W, cardBorderStyle: 'dotted', cardBorderColour: 'primary', cardBorderColourGradient: '', cardBorderRadius: { desktop: '6px' } };
@@ -75,7 +69,7 @@ describe( 'sgsBorderPreview', () => {
 			colourGradientValue: attrs.cardBorderColourGradient,
 			radiusValues: attrs.cardBorderRadius,
 		}, 'desktop', palette );
-		expect( prefixed ).toEqual( { borderStyle: 'dotted', borderWidth: '2px 0 0 0', borderColor: '#123456', borderRadius: '6px' } );
+		expect( prefixed ).toEqual( { borderStyle: 'dotted', borderWidth: '2px 0 0 0', borderColor: '#123456', ...corners( '6px', '6px', '6px', '6px' ) } );
 		expect( wrapperBorderPreview( { borderWidth: W, borderStyle: 'dotted', borderColour: 'primary', borderRadius: { desktop: '6px' } }, 'desktop', palette ) ).toEqual( prefixed );
 	} );
 	it( 'defaultBorder lets a chosen style or colour override the stylesheet border without a width', () => {

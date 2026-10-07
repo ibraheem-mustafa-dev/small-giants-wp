@@ -268,13 +268,13 @@ if ( null !== $sgs_ps_border_radius_base ) {
 		$sgs_scoped_css[] = $sgs_ps_border_radius_scoped['css'];
 	}
 }
-$sgs_ps_border_radius_tab_val = sgs_corner_object_shorthand( $sgs_ps_border_radius_tablet_obj );
-$sgs_ps_border_radius_mob_val = sgs_corner_object_shorthand( $sgs_ps_border_radius_mobile_obj );
+$sgs_ps_border_radius_tab_val = sgs_corner_object_longhands( $sgs_ps_border_radius_tablet_obj );
+$sgs_ps_border_radius_mob_val = sgs_corner_object_longhands( $sgs_ps_border_radius_mobile_obj );
 if ( null !== $sgs_ps_border_radius_tab_val ) {
-	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{border-radius:{$sgs_ps_border_radius_tab_val};}}";
+	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{{$sgs_ps_border_radius_tab_val};}}";
 }
 if ( null !== $sgs_ps_border_radius_mob_val ) {
-	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{border-radius:{$sgs_ps_border_radius_mob_val};}}";
+	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{{$sgs_ps_border_radius_mob_val};}}";
 }
 
 // --- Colour overrides (input border / focus ring / listbox background /
@@ -331,8 +331,8 @@ if ( ! empty( $sgs_spacing_args ) ) {
 	}
 }
 
-// --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
-// shorthand, scoped @media on the SAME selector (contract: tablet
+// --- Responsive padding/margin tiers — SGS custom object attrs, longhands for
+// the set sides and corners only, scoped @media on the SAME selector (contract: tablet
 // max-width:1023px, mobile max-width:767px). ---
 $sgs_padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $sgs_padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();

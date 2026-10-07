@@ -234,13 +234,13 @@ if ( null !== $border_radius_base ) {
 		$scoped_css[] = $border_radius_scoped['css'];
 	}
 }
-$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
 if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{border-radius:{$border_radius_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{{$border_radius_tab_val};}}";
 }
 if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{border-radius:{$border_radius_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{{$border_radius_mob_val};}}";
 }
 
 // --- Flag size (tiered {w,h}, helpers.php::sgs_store_selector_flag_size()). ---

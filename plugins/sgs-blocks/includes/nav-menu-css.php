@@ -245,7 +245,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * ── Item SHAPE — `itemBorderRadius` (FR-41-7 / FR-41-33). ────────────────
 	 *
 	 * A CORNER-keyed box object ({topLeft,topRight,bottomRight,bottomLeft}),
-	 * read through `sgs_corner_object_shorthand()` — NOT the side-keyed helper.
+	 * read through `sgs_corner_object_longhands()` — NOT the side-keyed helper.
 	 * Radius rides `SgsBorderControl`'s own radius pair, and there is no hover
 	 * radius (the control has no state axis for shape).
 	 *
@@ -257,7 +257,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * `::before` fill branch already checks — see `$item_radius_shorthand` use
 	 * below.
 	 */
-	$item_radius_shorthand = sgs_corner_object_shorthand( $attributes['itemBorderRadius'] ?? null );
+	$item_radius_shorthand = sgs_corner_object_longhands( $attributes['itemBorderRadius'] ?? null );
 
 	/*
 	 * ── ITEM TEXT — three states (FR-41-3 / FR-41-23). ───────────────────────
@@ -525,7 +525,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 		// Radius only ever rounds a VISIBLE fill (G13 scenario 4) — emitted here,
 		// alongside the background branch it exists for, not unconditionally.
 		if ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ) {
-			$css .= $link_sel . '{border-radius:' . $item_radius_shorthand . ';}';
+			$css .= $link_sel . '{' . $item_radius_shorthand . ';}';
 		}
 		/*
 		 * `itemColour`'s `color:` and `itemBg`'s `background-color:` must not

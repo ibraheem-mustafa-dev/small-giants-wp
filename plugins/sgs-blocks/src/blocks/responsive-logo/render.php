@@ -433,13 +433,13 @@ if ( null !== $border_radius_base ) {
 		$scoped_css[] = $border_radius_scoped['css'];
 	}
 }
-$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
 if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{border-radius:{$border_radius_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{{$border_radius_tab_val};}}";
 }
 if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{border-radius:{$border_radius_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{{$border_radius_mob_val};}}";
 }
 
 // --- Left placement (FR-36-22 basics) — NN/g: a left-aligned logo returns visitors
@@ -546,8 +546,8 @@ if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
 	}
 }
 
-// --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
-// shorthand, scoped @media on the SAME selector (tablet
+// --- Responsive padding/margin tiers — SGS custom object attrs, longhands for
+// the set sides and corners only, scoped @media on the SAME selector (tablet
 // max-width:1023px, mobile max-width:767px). ---
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();

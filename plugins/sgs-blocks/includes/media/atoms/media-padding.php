@@ -18,6 +18,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 2 ) . '/helpers-media-element.php';
+// sgs_media_atom_box_shape_to_length_value(): the shared length sanitiser (twin of box-shape.js's toLengthValue()).
+require_once __DIR__ . '/box-shape.php';
 
 if ( ! function_exists( 'sgs_media_atom_media_padding_sides_to_shorthand' ) ) {
 	/**
@@ -49,6 +51,31 @@ if ( ! function_exists( 'sgs_media_atom_media_padding_sides_to_shorthand' ) ) {
 			$parts[] = ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) ? $sides[ $k ] : '0';
 		}
 		return implode( ' ', $parts );
+	}
+}
+
+if ( ! function_exists( 'sgs_media_atom_media_padding_side_decls' ) ) {
+	/**
+	 * Per-side custom-property declarations for ONE tier — mirrors the JS
+	 * twin's `sideDecls()` exactly. Only the sides the client set are emitted
+	 * (order: top, right, bottom, left), so an unset side falls through to the
+	 * wider tier's value in the stylesheet instead of being zeroed.
+	 *
+	 * @param mixed  $sides  Raw `Padding`-shaped value for one tier.
+	 * @param string $suffix Tier suffix: '', '-tablet' or '-mobile'.
+	 * @return string[] `--sgs-media-padding-<side><suffix>:<value>` declarations.
+	 */
+	function sgs_media_atom_media_padding_side_decls( $sides, $suffix ) {
+		$decls = array();
+		if ( ! is_array( $sides ) ) {
+			return $decls;
+		}
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $k ) {
+			if ( isset( $sides[ $k ] ) && '' !== $sides[ $k ] ) {
+				$decls[] = '--sgs-media-padding-' . $k . $suffix . ':' . sgs_media_atom_box_shape_to_length_value( $sides[ $k ] );
+			}
+		}
+		return $decls;
 	}
 }
 
@@ -96,9 +123,8 @@ if ( ! function_exists( 'sgs_media_atom_media_padding_css' ) ) {
 		);
 
 		foreach ( $suffixes as $tier => $suffix ) {
-			$shorthand = sgs_media_atom_media_padding_sides_to_shorthand( $tiers[ $tier ] ?? null );
-			if ( '' !== $shorthand ) {
-				$decls[] = '--sgs-media-padding' . $suffix . ':' . $shorthand;
+			foreach ( sgs_media_atom_media_padding_side_decls( $tiers[ $tier ] ?? null, $suffix ) as $decl ) {
+				$decls[] = $decl;
 			}
 		}
 

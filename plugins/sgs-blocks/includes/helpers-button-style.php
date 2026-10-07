@@ -172,13 +172,11 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		}
 
 		$border_radius_raw       = $read( 'BorderRadius' );
-		$border_radius_shorthand = null;
+		$border_radius_longhands = null;
 		$border_radius           = null;
 		if ( is_array( $border_radius_raw ) ) {
-			$shorthand = function_exists( 'sgs_serialise_box_corners' ) ? sgs_serialise_box_corners( $border_radius_raw ) : '';
-			if ( '' !== $shorthand ) {
-				$border_radius_shorthand = $shorthand;
-			}
+			// Only the corners the client set: an unset corner keeps the stylesheet's radius.
+			$border_radius_longhands = function_exists( 'sgs_corner_object_longhands' ) ? sgs_corner_object_longhands( $border_radius_raw ) : null;
 		} elseif ( '' !== $border_radius_raw && null !== $border_radius_raw ) {
 			$border_radius = absint( $border_radius_raw );
 		}
@@ -232,8 +230,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		} elseif ( null !== $border_width ) {
 			$base_decls[] = 'border-width:' . $border_width . 'px;';
 		}
-		if ( null !== $border_radius_shorthand ) {
-			$base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';';
+		if ( null !== $border_radius_longhands ) {
+			$base_decls[] = esc_attr( $border_radius_longhands ) . ';';
 		} elseif ( null !== $border_radius ) {
 			$base_decls[] = 'border-radius:' . $border_radius . 'px;';
 		}

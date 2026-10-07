@@ -61,7 +61,7 @@ export function storeSelectorPreviewStyles( attributes, tier ) {
 			...gapStyle,
 			...backgroundPaintPreview( attributes.panelBackground, '' ),
 			...tierBoxLonghands( attributes.panelPadding, tier, 'padding' ),
-			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ),
+			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ),
 		},
 	};
 }

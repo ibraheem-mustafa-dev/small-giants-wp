@@ -135,8 +135,8 @@ if ( ! empty( $sgs_container_style_engine_input ) ) {
 // already have written the base colour/radius/typography CSS into it).
 $sgs_container_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
 $sgs_container_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-$sgs_container_radius_tab_val    = sgs_corner_object_shorthand( $sgs_container_radius_tablet_obj );
-$sgs_container_radius_mob_val    = sgs_corner_object_shorthand( $sgs_container_radius_mobile_obj );
+$sgs_container_radius_tab_val    = sgs_corner_object_longhands( $sgs_container_radius_tablet_obj );
+$sgs_container_radius_mob_val    = sgs_corner_object_longhands( $sgs_container_radius_mobile_obj );
 if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mob_val ) {
 	if ( empty( $sgs_container_supports_uid ) ) {
 		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
@@ -146,7 +146,7 @@ if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mo
 
 	$sgs_container_radius_tablet_decls = array();
 	if ( null !== $sgs_container_radius_tab_val ) {
-		$sgs_container_radius_tablet_decls[] = "border-radius:{$sgs_container_radius_tab_val}";
+		$sgs_container_radius_tablet_decls[] = "{$sgs_container_radius_tab_val}";
 	}
 	if ( $sgs_container_radius_tablet_decls ) {
 		$sgs_container_supports_css .= '@media(max-width:1023px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_tablet_decls ) . ';}}';
@@ -154,7 +154,7 @@ if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mo
 
 	$sgs_container_radius_mobile_decls = array();
 	if ( null !== $sgs_container_radius_mob_val ) {
-		$sgs_container_radius_mobile_decls[] = "border-radius:{$sgs_container_radius_mob_val}";
+		$sgs_container_radius_mobile_decls[] = "{$sgs_container_radius_mob_val}";
 	}
 	if ( $sgs_container_radius_mobile_decls ) {
 		$sgs_container_supports_css .= '@media(max-width:767px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_mobile_decls ) . ';}}';

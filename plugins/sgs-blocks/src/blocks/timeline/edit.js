@@ -233,7 +233,7 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	// support at all, so WP-native `style.border` is never populated (unlike
 	// `style.color`/`style.shadow` above, which stay live — see this file's
 	// colour panel and the `shadow` support declared in block.json).
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, previewTier, undefined, { wholeTier: true } ) );
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, previewTier, undefined ) );
 
 	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
 	Object.assign( previewStyle, paddingLonghands );

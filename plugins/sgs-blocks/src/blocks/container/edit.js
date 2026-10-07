@@ -249,7 +249,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // into SgsBorderControl's InspectorControls binding, never applied to the
   // wrapper style), same gap as sgs/hero. borderWidth is a box object
   // (base-only, no tiers, matching the SgsBorderControl pair standard).
-  Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette, { wholeTier: true } ) );
+  Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ) );
 
   // Grid/flex/stack layout preview — shared with every other block routed through
   // SGS_Container_Wrapper::render() via `applyGridLayoutPreview()`

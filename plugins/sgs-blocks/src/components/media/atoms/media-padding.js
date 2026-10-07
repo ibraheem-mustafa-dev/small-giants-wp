@@ -33,6 +33,7 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
+import { toLengthValue } from './box-shape.js';
 
 /**
  * [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
@@ -47,8 +48,9 @@ export function attrKey( prefix, blockSlug ) {
 }
 
 /**
- * Convert a 4-SIDE box object into the CSS `padding` shorthand VALUE string
- * ("top right bottom left"). Each side already carries its own unit
+ * Convert a 4-SIDE box object into a `padding` shorthand VALUE string
+ * ("top right bottom left"), which `validate()` uses to test whether any side
+ * is set; emission goes through `sideDecls()`. Each side already carries its own unit
  * (`ResponsiveBoxControl`'s own shape — see module docblock), so — unlike
  * `box-shape.js`'s `sidesToWidthShorthand()` — this never appends a `px`
  * fallback to a bare number. An unset side defaults to `0`; an
@@ -74,6 +76,25 @@ export function sidesToShorthand( sides ) {
 			undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ] ? sides[ k ] : '0'
 		)
 		.join( ' ' );
+}
+
+/**
+ * Per-side custom-property declarations for ONE tier, in the order top, right,
+ * bottom, left. Only the sides the client set are emitted, so an unset side
+ * falls through to the wider tier's value in the stylesheet instead of being
+ * zeroed. Mirrors `sgs_media_atom_media_padding_side_decls()` in the PHP twin.
+ *
+ * @param {*}      sides  Raw `Padding`-shaped value for one tier.
+ * @param {string} suffix Tier suffix: '', '-tablet' or '-mobile'.
+ * @return {string[]} `--sgs-media-padding-<side><suffix>:<value>` declarations.
+ */
+export function sideDecls( sides, suffix ) {
+	if ( ! sides || 'object' !== typeof sides ) {
+		return [];
+	}
+	return [ 'top', 'right', 'bottom', 'left' ]
+		.filter( ( k ) => undefined !== sides[ k ] && null !== sides[ k ] && '' !== sides[ k ] )
+		.map( ( k ) => `--sgs-media-padding-${ k }${ suffix }:${ toLengthValue( sides[ k ] ) }` );
 }
 
 /** Unconditional — nothing gates padding off. */
@@ -113,12 +134,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		[ tiers.tablet, '-tablet' ],
 		[ tiers.mobile, '-mobile' ],
 	].forEach( ( pair ) => {
-		const sides = pair[ 0 ];
-		const suffix = pair[ 1 ];
-		const shorthand = sidesToShorthand( sides );
-		if ( shorthand ) {
-			decls.push( `--sgs-media-padding${ suffix }:${ shorthand }` );
-		}
+		decls.push( ...sideDecls( pair[ 0 ], pair[ 1 ] ) );
 	} );
 
 	return decls;

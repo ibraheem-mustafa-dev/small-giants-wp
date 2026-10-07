@@ -569,18 +569,16 @@ if ( '' !== $style_colour_text || '' !== $style_colour_bg ) {
 	}
 }
 
-// Responsive padding/margin/border-radius tiers — box-object attrs, hand-built
-// shorthand (contract §2/§4). Tablet (≤1023px) then mobile (≤767px) on the
+// Responsive padding/margin/border-radius tiers — box-object attrs, longhands for
+// the set sides and corners only (contract §2/§4). Tablet (≤1023px) then mobile (≤767px) on the
 // SAME id-scoped selector as the base rule above, so plain source-order
 // cascade (no !important needed) lets the narrower tier win.
-// CSS border-radius shorthand order is top-left top-right bottom-right
-// bottom-left (NOT the box-model top/right/bottom/left order).
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -590,7 +588,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
+	$tablet_box_decls[] = "{$radius_tab_val}";
 }
 if ( $tablet_box_decls ) {
 	$scoped_css_parts[] = '@media(max-width:1023px){' . ".{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
@@ -604,7 +602,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
+	$mobile_box_decls[] = "{$radius_mob_val}";
 }
 if ( $mobile_box_decls ) {
 	$scoped_css_parts[] = '@media(max-width:767px){' . ".{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';

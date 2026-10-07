@@ -176,7 +176,7 @@ function buildEditorStyle( attributes, tier ) {
 	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
 	if ( shadowPreview ) previewStyle.boxShadow = shadowPreview;
 
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ) );
+	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined ) );
 
 	return previewStyle;
 }

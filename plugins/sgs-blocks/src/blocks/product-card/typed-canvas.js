@@ -19,7 +19,7 @@ import {
 	sgsLengthPreview,
 	typographyPreviewStyle,
 	textPaintPreview,
-	borderRadiusPreview,
+	borderRadiusLonghands,
 	isCssGradient,
 	sgsBorderPreview,
 } from '../../utils';
@@ -66,7 +66,7 @@ export function typedCardPreview( attrs, tier ) {
 		].filter( Boolean ),
 		aspectOk,
 		root: {
-			...borderRadiusPreview( attrs.borderRadius, tier, { wholeTier: true } ),
+			...borderRadiusLonghands( attrs.borderRadius, tier ),
 			...( maxWidth ? { maxWidth } : {} ),
 			'--sgs-product-card-max-width': CSS_LENGTH.test( cardMaxWidth ) ? cardMaxWidth : undefined,
 			'--sgs-product-card-image-aspect': aspectOk ? attrs.imageAspectRatio : undefined,

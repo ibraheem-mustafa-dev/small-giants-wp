@@ -42,7 +42,7 @@ function buildRootStyle( attributes, tier ) {
 	Object.assign( rootStyle, tierBoxLonghands( padding, tier, 'padding' ) );
 	Object.assign( rootStyle, tierBoxLonghands( margin, tier, 'margin' ) );
 
-	Object.assign( rootStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, undefined, { wholeTier: true } ) );
+	Object.assign( rootStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, undefined ) );
 
 	return Object.fromEntries(
 		Object.entries( rootStyle ).filter( ( [ , v ] ) => v !== undefined )

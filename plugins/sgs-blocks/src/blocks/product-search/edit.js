@@ -83,7 +83,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: {
 			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
 			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
-			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette, { wholeTier: true } ),
+			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
 			...( focusRing ? { '--sgs-ps-focus-ring': focusRing } : {} ),
 		},
 	} );

@@ -41,7 +41,7 @@ describe( 'notice-banner wrapper preview', () => {
 		expect( on.color ).toBe( '#112233' );
 		expect( on.borderWidth ).toBe( '2px 2px 2px 2px' );
 		expect( on.borderColor ).toBe( '#112233' );
-		expect( on.borderRadius ).toBe( '4px 4px 4px 4px' );
+		expect( [ on.borderTopLeftRadius, on.borderTopRightRadius, on.borderBottomRightRadius, on.borderBottomLeftRadius ] ).toEqual( [ '4px', '4px', '4px', '4px' ] );
 		expect( on.fontWeight ).toBe( '700' );
 		expect( buildWrapperStyle( {}, 'desktop', PALETTE, false ) ).toEqual( {} );
 	} );

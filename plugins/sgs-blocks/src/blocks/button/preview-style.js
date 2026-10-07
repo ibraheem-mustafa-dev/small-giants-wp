@@ -170,7 +170,7 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	// A preset class (render.php's $border_style_is_preset) already paints a border, so a chosen
 	// style or colour overrides it without a width; any other button paints a border only beside one.
 	const presetBorder = [ 'primary', 'secondary', 'outline' ].includes( attributes.inheritStyle ?? 'primary' );
-	Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, palette, { defaultBorder: presetBorder, wholeTier: true } ) );
+	Object.assign( style, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, palette, { defaultBorder: presetBorder } ) );
 
 	// Typography: the twin of render.php's sgs_typography_css_rule( $attributes, '' ).
 	Object.assign( style, typographyPreviewStyle( attributes, '', tier ) );

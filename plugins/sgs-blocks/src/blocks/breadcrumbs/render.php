@@ -285,13 +285,13 @@ if ( null !== $border_radius_base ) {
 		$scoped_css[] = $border_radius_scoped['css'];
 	}
 }
-$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
 if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$border_radius_tab_val};}}";
 }
 if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$border_radius_mob_val};}}";
 }
 
 // --- Base spacing (padding/margin) + WP colour/typography supports — skip-

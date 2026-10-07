@@ -18,17 +18,18 @@ describe( 'boxPreview', () => {
 	it( 'previews the desktop tier by default', () => {
 		const style = boxPreview( attributes, 'desktop', [] );
 		expect( style.padding ).toBe( '10px 0 0 0' );
-		expect( style.borderRadius ).toBe( '8px 8px 8px 8px' );
+		expect( [ style.borderTopLeftRadius, style.borderTopRightRadius, style.borderBottomRightRadius, style.borderBottomLeftRadius ] ).toEqual( [ '8px', '8px', '8px', '8px' ] );
 	} );
 
 	it( 'lets a tablet corner override only that corner', () => {
 		const style = boxPreview( attributes, 'tablet', [] );
 		expect( style.padding ).toBe( '20px 0 0 0' );
-		expect( style.borderRadius ).toBe( '2px 8px 8px 8px' );
+		expect( [ style.borderTopLeftRadius, style.borderTopRightRadius, style.borderBottomRightRadius, style.borderBottomLeftRadius ] ).toEqual( [ '2px', '8px', '8px', '8px' ] );
 	} );
 
 	it( 'reads a flat radius length as the desktop tier', () => {
-		expect( boxPreview( { borderRadius: '12px' }, 'mobile', [] ).borderRadius ).toBe( '12px 12px 12px 12px' );
+		const flat = boxPreview( { borderRadius: '12px' }, 'mobile', [] );
+		expect( [ flat.borderTopLeftRadius, flat.borderTopRightRadius, flat.borderBottomRightRadius, flat.borderBottomLeftRadius ] ).toEqual( [ '12px', '12px', '12px', '12px' ] );
 	} );
 
 	it( 'paints a border only when a side has a width', () => {

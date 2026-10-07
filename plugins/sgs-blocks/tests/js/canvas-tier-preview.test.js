@@ -72,8 +72,9 @@ describe( 'containerWrapperPreview', () => {
 		expect( out.style.display ).toBeUndefined();
 	} );
 
-	it( 'paints a string desktop radius as one value, as sgs_border_radius_tiers() does', () => {
-		expect( containerWrapperPreview( { borderRadius: { desktop: '6px', tablet: { topLeft: '0' } } }, 'desktop' ).style.borderRadius ).toBe( '6px' );
+	it( 'paints a uniform desktop radius on all four corners, as sgs_border_radius_tiers() does', () => {
+		const uniform = containerWrapperPreview( { borderRadius: { desktop: '6px', tablet: { topLeft: '0' } } }, 'desktop' ).style;
+		expect( [ uniform.borderTopLeftRadius, uniform.borderTopRightRadius, uniform.borderBottomRightRadius, uniform.borderBottomLeftRadius ] ).toEqual( [ '6px', '6px', '6px', '6px' ] );
 	} );
 } );
 

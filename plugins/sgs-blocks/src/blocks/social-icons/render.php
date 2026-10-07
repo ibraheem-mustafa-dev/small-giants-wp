@@ -307,8 +307,8 @@ $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 // --- Wrapper border (Block Customisation Standard) — width/style on the
 // row, colour (flat or gradient, base + hover) via the shared
 // sgs_border_states_css() helper, radius via the shared
-// sgs_border_radius_tiers() + core style engine (base) plus hand-built
-// shorthand tiers (tablet/mobile). Distinct from the per-item border
+// sgs_border_radius_tiers() + core style engine (base) plus longhand
+// tiers (tablet/mobile) for the set corners only. Distinct from the per-item border
 // gradient block below (that one paints EACH icon link; this frames the
 // whole row). ---
 $wrapper_border_base_decls = array();
@@ -352,13 +352,13 @@ if ( null !== $wrapper_border_radius_base ) {
 		$scoped_css[] = $wrapper_border_radius_scoped['css'];
 	}
 }
-$wrapper_border_radius_tab_val = sgs_corner_object_shorthand( $wrapper_border_radius_tablet_obj );
-$wrapper_border_radius_mob_val = sgs_corner_object_shorthand( $wrapper_border_radius_mobile_obj );
+$wrapper_border_radius_tab_val = sgs_corner_object_longhands( $wrapper_border_radius_tablet_obj );
+$wrapper_border_radius_mob_val = sgs_corner_object_longhands( $wrapper_border_radius_mobile_obj );
 if ( null !== $wrapper_border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$wrapper_border_radius_tab_val};}}";
 }
 if ( null !== $wrapper_border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$wrapper_border_radius_mob_val};}}";
 }
 
 // --- Border gradient (border builder) — masked ::before, the two bordered

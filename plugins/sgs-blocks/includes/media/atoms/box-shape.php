@@ -9,7 +9,7 @@
  * still belongs to `SgsBorderControl` (44 blocks) / native
  * `__experimentalBorder` (`sgs/media`) outright. Since 2026-09-01 this atom
  * ALSO writes a genuine editable radius via a SEPARATE custom property
- * (`--sgs-media-border-radius`) targeting the MEDIA ELEMENT itself, not the
+ * (`--sgs-media-border-{corner}-radius`, one property per corner) targeting the MEDIA ELEMENT itself, not the
  * wrapper. See the JS twin's docblock for the full reasoning, the collision
  * risk this leaves open for a future block, the `custom` handoff from the
  * `object-fit` atom, the ratio format bridge, and the two `reads` traps
@@ -199,7 +199,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_sides_to_width_shorthand' ) ) 
 	 * Build a 4-SIDE CSS `border-width` shorthand ("top right bottom left")
 	 * from a side-keyed box object (`SgsBorderControl`'s own `widthValues`
 	 * shape) — mirrors the JS twin's `sidesToWidthShorthand()`. Sibling to
-	 * `sgs_media_atom_box_shape_corners_to_radius_shorthand()` below; CANNOT
+	 * `sgs_media_atom_box_shape_corner_radius_decls()` below; CANNOT
 	 * read a corner-keyed object and vice versa.
 	 *
 	 * @param mixed $sides Raw `BorderWidth`-shaped value.
@@ -260,38 +260,36 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_tier_object' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_media_atom_box_shape_corners_to_radius_shorthand' ) ) {
+if ( ! function_exists( 'sgs_media_atom_box_shape_corner_radius_decls' ) ) {
 	/**
-	 * Convert a 4-corner box object into the CSS `border-radius` shorthand
-	 * VALUE string, in the shorthand's own order (top-left, top-right,
-	 * bottom-right, bottom-left) — corners are read by NAME, never assumed to
-	 * already be in shorthand order. An unset corner defaults to '0' so the
-	 * shorthand is always well-formed; an entirely-empty object returns ''
-	 * so the caller can fall back to the shared preset.
+	 * Per-corner `border-radius` custom-property declarations for ONE tier, in
+	 * the order top-left, top-right, bottom-right, bottom-left. Corners are
+	 * read by NAME (`topLeft` …), and only the corners the client set are
+	 * emitted, so an unset corner falls through to the wider tier's value in
+	 * the stylesheet instead of being zeroed. Mirrors the JS twin's
+	 * `cornerRadiusDecls()`.
 	 *
-	 * @param mixed $corners Raw `BorderRadius`-shaped value.
-	 * @return string "TL TR BR BL", or '' when nothing is set.
+	 * @param mixed  $corners Raw `BorderRadius`-shaped value for one tier.
+	 * @param string $suffix  Tier suffix: '', '-tablet' or '-mobile'.
+	 * @return string[] `--sgs-media-border-<corner>-radius<suffix>:<value>` declarations.
 	 */
-	function sgs_media_atom_box_shape_corners_to_radius_shorthand( $corners ) {
+	function sgs_media_atom_box_shape_corner_radius_decls( $corners, $suffix ) {
+		$decls = array();
 		if ( ! is_array( $corners ) ) {
-			return '';
+			return $decls;
 		}
-		$order   = array( 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' );
-		$has_any = false;
-		foreach ( $order as $k ) {
+		$order = array(
+			'topLeft'     => 'top-left',
+			'topRight'    => 'top-right',
+			'bottomRight' => 'bottom-right',
+			'bottomLeft'  => 'bottom-left',
+		);
+		foreach ( $order as $k => $css_name ) {
 			if ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) {
-				$has_any = true;
-				break;
+				$decls[] = '--sgs-media-border-' . $css_name . '-radius' . $suffix . ':' . sgs_media_atom_box_shape_to_length_value( $corners[ $k ] );
 			}
 		}
-		if ( ! $has_any ) {
-			return '';
-		}
-		$parts = array();
-		foreach ( $order as $k ) {
-			$parts[] = ( isset( $corners[ $k ] ) && '' !== $corners[ $k ] ) ? sgs_media_atom_box_shape_to_length_value( $corners[ $k ] ) : '0';
-		}
-		return implode( ' ', $parts );
+		return $decls;
 	}
 }
 
@@ -465,17 +463,15 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$radius_key        = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadius' );
 		$radius_tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusTablet' );
 		$radius_mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderRadiusMobile' );
-		$desktop_radius_shorthand = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_key ] ?? null );
-		$tablet_radius_shorthand  = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_tablet_key ] ?? null );
-		$mobile_radius_shorthand  = sgs_media_atom_box_shape_corners_to_radius_shorthand( $attributes[ $radius_mobile_key ] ?? null );
-		if ( '' !== $desktop_radius_shorthand ) {
-			$decls[] = '--sgs-media-border-radius:' . $desktop_radius_shorthand;
-		}
-		if ( '' !== $tablet_radius_shorthand ) {
-			$decls[] = '--sgs-media-border-radius-tablet:' . $tablet_radius_shorthand;
-		}
-		if ( '' !== $mobile_radius_shorthand ) {
-			$decls[] = '--sgs-media-border-radius-mobile:' . $mobile_radius_shorthand;
+		$radius_tiers = array(
+			$radius_key        => '',
+			$radius_tablet_key => '-tablet',
+			$radius_mobile_key => '-mobile',
+		);
+		foreach ( $radius_tiers as $attr_key => $suffix ) {
+			foreach ( sgs_media_atom_box_shape_corner_radius_decls( $attributes[ $attr_key ] ?? null, $suffix ) as $decl ) {
+				$decls[] = $decl;
+			}
 		}
 
 		$border_width_key       = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderWidth' );

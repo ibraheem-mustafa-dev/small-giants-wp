@@ -109,15 +109,13 @@ if ( $encoded_message ) {
 }
 
 // ---------------------------------------------------------------------------
-// Box-object interface contract §1 + security §D sanitisers, plus shorthand
-// builders (mirrors sgs/heading + sgs/button).
+// Box-object interface contract §1 + security §D sanitisers (mirrors
+// sgs/heading + sgs/button).
 // ---------------------------------------------------------------------------
 
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration.
-// Box-model shorthand: top right bottom left.
-// CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
 // Base padding/margin — block-private tier-object attrs (padding/margin,
 // desktop key), passed straight to the style engine which formats + sanitises.
 $base_padding_obj = array();

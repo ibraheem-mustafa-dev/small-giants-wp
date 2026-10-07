@@ -271,8 +271,8 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 // Title typography — the <summary> (collapsible) or <p> (flat) title.
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.wp-block-sgs-table-of-contents .sgs-toc__title' );
 
-// --- Responsive padding/margin tiers — SGS custom box objects, hand-built
-// shorthand, scoped @media on the SAME selector (contract §B2: tablet
+// --- Responsive padding/margin tiers — SGS custom box objects, longhands for
+// the set sides and corners only, scoped @media on the SAME selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). Mirrors sgs/label + sgs/quote. ---
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();

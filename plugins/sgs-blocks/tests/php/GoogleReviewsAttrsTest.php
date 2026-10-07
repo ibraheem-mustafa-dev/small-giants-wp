@@ -136,7 +136,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				),
 				array(
 					"{$r} .sgs-google-reviews__aggregate{gap:22px;}",
-					"{$r} .sgs-google-reviews__aggregate{padding:0px 0px 0px 0px;}",
+					"{$r} .sgs-google-reviews__aggregate{padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;}",
 					"{$r} .sgs-google-reviews__aggregate{border-bottom-color:#E8EAED;}",
 					"{$r} .sgs-google-reviews__aggregate{border-bottom-width:1px;}",
 				),
@@ -200,11 +200,11 @@ final class GoogleReviewsAttrsTest extends TestCase {
 					),
 				),
 				array(
-					"{$r} .sgs-google-reviews__review{padding:20px 20px 20px 20px;}",
+					"{$r} .sgs-google-reviews__review{padding-top:20px;padding-right:20px;padding-bottom:20px;padding-left:20px;}",
 					"{$r} .sgs-google-reviews__review{border-width:1px 1px 1px 1px;}",
 					"{$r} .sgs-google-reviews__review{border-style:solid;}",
 					"{$r} .sgs-google-reviews__review{border-color:#E8EAED;}",
-					"{$r} .sgs-google-reviews__review{border-radius:8px 8px 8px 8px;}",
+					"{$r} .sgs-google-reviews__review{border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}",
 					"{$r} .sgs-google-reviews__review{background-color:#ffffff;}",
 					"{$r} .sgs-google-reviews__review{gap:12px;}",
 					"{$r} .sgs-google-reviews__review{flex-basis:340px;}",
@@ -218,7 +218,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				),
 				array(
 					"{$r} .sgs-google-reviews__avatar{width:40px;height:40px;}",
-					"{$r} .sgs-google-reviews__avatar{border-radius:50% 50% 50% 50%;}",
+					"{$r} .sgs-google-reviews__avatar{border-top-left-radius:50%;border-top-right-radius:50%;border-bottom-right-radius:50%;border-bottom-left-radius:50%;}",
 				),
 			),
 			'text'    => array(
@@ -235,7 +235,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 					'scrollbarColour' => '#DADCE0',
 				),
 				array(
-					"{$r} .sgs-google-reviews__list{padding:10px 10px 10px 10px;}",
+					"{$r} .sgs-google-reviews__list{padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;}",
 					"{$r} .sgs-google-reviews__list{gap:16px;}",
 					"{$r} .sgs-google-reviews__list{scrollbar-width:auto;}",
 					"{$r} .sgs-google-reviews__list{--sgs-gr-scrollbar-colour:#DADCE0;}",
@@ -265,15 +265,15 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				array(
 					"{$r} .sgs-google-reviews__see-all::after{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:#1A73E8;}",
 					"{$r} .sgs-google-reviews__see-all{color:#ffffff;}",
-					"{$r} .sgs-google-reviews__see-all{padding:22px 22px 22px 22px;}",
-					"{$r} .sgs-google-reviews__see-all{border-radius:20px 20px 20px 20px;}",
+					"{$r} .sgs-google-reviews__see-all{padding-top:22px;padding-right:22px;padding-bottom:22px;padding-left:22px;}",
+					"{$r} .sgs-google-reviews__see-all{border-top-left-radius:20px;border-top-right-radius:20px;border-bottom-right-radius:20px;border-bottom-left-radius:20px;}",
 					"{$r} .sgs-google-reviews__see-all{min-height:40px;}",
 					"{$r} .sgs-google-reviews__write-review{border-color:#DADCE0;}",
 					"{$r} .sgs-google-reviews__write-review{border-width:1px 1px 1px 1px;}",
-					"{$r} .sgs-google-reviews__write-review{border-radius:20px 20px 20px 20px;}",
+					"{$r} .sgs-google-reviews__write-review{border-top-left-radius:20px;border-top-right-radius:20px;border-bottom-right-radius:20px;border-bottom-left-radius:20px;}",
 					"{$r} .sgs-google-reviews__write-review{min-height:40px;}",
 					"{$r} .sgs-google-reviews__arrow{width:40px;height:40px;}",
-					"{$r} .sgs-google-reviews__arrow{border-radius:50% 50% 50% 50%;}",
+					"{$r} .sgs-google-reviews__arrow{border-top-left-radius:50%;border-top-right-radius:50%;border-bottom-right-radius:50%;border-bottom-left-radius:50%;}",
 				),
 			),
 		);
@@ -417,7 +417,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			)
 		)['css'];
 		$this->assertStringContainsString( self::R . '.sgs-google-reviews{background-color:#ffffff;}', $css );
-		$this->assertStringContainsString( self::R . '.sgs-google-reviews{padding:28px 28px 28px 28px;}', $css );
+		$this->assertStringContainsString( self::R . '.sgs-google-reviews{padding-top:28px;padding-right:28px;padding-bottom:28px;padding-left:28px;}', $css );
 		$this->assertSame( 3, $this->classCount( self::R . '.sgs-google-reviews' ) );
 
 		// NEGATIVE CONTROL.
@@ -628,7 +628,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				'cardBorderRadius' => $this->corners( '8px' ),
 			)
 		)['css'];
-		$attr_rule = self::R . ' .sgs-google-reviews__review{border-radius:8px 8px 8px 8px;}';
+		$attr_rule = self::R . ' .sgs-google-reviews__review{border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}';
 		$this->assertStringContainsString( $attr_rule, $css );
 		$attr_selector = self::R . ' .sgs-google-reviews__review';
 		$look_selector = '.sgs-google-reviews--card-elevated .sgs-google-reviews__review';
@@ -639,7 +639,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 
 		// NEGATIVE CONTROL: without the attribute there is no attribute rule, so only the look paints.
 		$plain = $this->render( array( 'cardStyle' => 'elevated' ) )['css'];
-		$this->assertStringNotContainsString( 'border-radius:8px', $plain );
+		$this->assertStringNotContainsString( 'radius:8px', $plain );
 	}
 
 	public function test_the_root_rule_also_out_ranks_a_look_root_rule(): void {

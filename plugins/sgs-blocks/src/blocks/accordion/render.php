@@ -103,12 +103,12 @@ if ( ! empty( $style_engine_args ) ) {
 // Border-radius tablet/mobile tiers (base handled above via the style engine).
 $border_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
 $border_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-$radius_tab_val           = sgs_corner_object_shorthand( $border_radius_tablet_obj );
-$radius_mob_val           = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+$radius_tab_val           = sgs_corner_object_longhands( $border_radius_tablet_obj );
+$radius_mob_val           = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
+	$tablet_box_decls[] = "{$radius_tab_val}";
 }
 if ( $tablet_box_decls ) {
 	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $tablet_box_decls ) . ';}}';
@@ -116,7 +116,7 @@ if ( $tablet_box_decls ) {
 
 $mobile_box_decls = array();
 if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";
+	$mobile_box_decls[] = "{$radius_mob_val}";
 }
 if ( $mobile_box_decls ) {
 	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $mobile_box_decls ) . ';}}';

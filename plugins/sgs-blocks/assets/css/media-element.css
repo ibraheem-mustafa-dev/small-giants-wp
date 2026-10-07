@@ -330,7 +330,9 @@
  * `--sgs-media-aspect-ratio`, `--sgs-media-width[-tablet|-mobile]`,
  * `--sgs-media-min-height[-tablet|-mobile]`, `--sgs-media-max-width`,
  * `--sgs-media-max-height`,
- * `--sgs-media-clip-path`, `--sgs-media-border-radius[-tablet|-mobile]`,
+ * `--sgs-media-clip-path`,
+ * `--sgs-media-border-{top-left|top-right|bottom-right|bottom-left}-radius[-tablet|-mobile]`
+ * (one per corner, each emitted only for a corner the client set at that tier),
  * `--sgs-media-border-width`, `--sgs-media-border-style`,
  * `--sgs-media-border-color`, `--sgs-media-border-image`,
  * `--sgs-media-border-color-hover`, `--sgs-media-border-image-hover`.
@@ -371,7 +373,10 @@
 	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
-	border-radius: var( --sgs-media-border-radius, 0 );
+	border-top-left-radius: var( --sgs-media-border-top-left-radius, 0 );
+	border-top-right-radius: var( --sgs-media-border-top-right-radius, 0 );
+	border-bottom-right-radius: var( --sgs-media-border-bottom-right-radius, 0 );
+	border-bottom-left-radius: var( --sgs-media-border-bottom-left-radius, 0 );
 	border-width: var( --sgs-media-border-width, 0 );
 	border-style: var( --sgs-media-border-style, none );
 	border-color: var( --sgs-media-border-color, currentcolor );
@@ -416,7 +421,10 @@
 	.sgs-media-el {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
-		border-radius: var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) );
+		border-top-left-radius: var( --sgs-media-border-top-left-radius-tablet, var( --sgs-media-border-top-left-radius, 0 ) );
+		border-top-right-radius: var( --sgs-media-border-top-right-radius-tablet, var( --sgs-media-border-top-right-radius, 0 ) );
+		border-bottom-right-radius: var( --sgs-media-border-bottom-right-radius-tablet, var( --sgs-media-border-bottom-right-radius, 0 ) );
+		border-bottom-left-radius: var( --sgs-media-border-bottom-left-radius-tablet, var( --sgs-media-border-bottom-left-radius, 0 ) );
 		max-height: var( --sgs-media-max-height-tablet, var( --sgs-media-max-height, none ) );
 		max-width: var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) );
 	}
@@ -432,9 +440,21 @@
 			--sgs-media-width-mobile,
 			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
 		);
-		border-radius: var(
-			--sgs-media-border-radius-mobile,
-			var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) )
+		border-top-left-radius: var(
+			--sgs-media-border-top-left-radius-mobile,
+			var( --sgs-media-border-top-left-radius-tablet, var( --sgs-media-border-top-left-radius, 0 ) )
+		);
+		border-top-right-radius: var(
+			--sgs-media-border-top-right-radius-mobile,
+			var( --sgs-media-border-top-right-radius-tablet, var( --sgs-media-border-top-right-radius, 0 ) )
+		);
+		border-bottom-right-radius: var(
+			--sgs-media-border-bottom-right-radius-mobile,
+			var( --sgs-media-border-bottom-right-radius-tablet, var( --sgs-media-border-bottom-right-radius, 0 ) )
+		);
+		border-bottom-left-radius: var(
+			--sgs-media-border-bottom-left-radius-mobile,
+			var( --sgs-media-border-bottom-left-radius-tablet, var( --sgs-media-border-bottom-left-radius, 0 ) )
 		);
 		max-height: var(
 			--sgs-media-max-height-mobile,
@@ -580,29 +600,51 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 
 /* ── media-padding.css ───────────────────────────────────────────────── */
 /*
- * media-padding — the media element's own inner spacing, tiered.
+ * media-padding — the media element's own inner spacing, tiered per side.
  *
  * Custom-property names match `media-padding.js`/`media-padding.php`'s
- * `css()` output exactly: `--sgs-media-padding[-tablet|-mobile]`. Follows
- * the mobile -> tablet -> desktop -> initial fallback chain `_base.css`
- * documents, same as every other tiered atom.
+ * `css()` output exactly:
+ * `--sgs-media-padding-{top|right|bottom|left}[-tablet|-mobile]`, each emitted
+ * only for a side the client set at that tier. Follows the
+ * mobile -> tablet -> desktop -> initial fallback chain `_base.css`
+ * documents, same as every other tiered atom; each side chains on its own, so
+ * setting one side on a narrower tier leaves the other sides on the wider
+ * tier's value.
  */
 
 .sgs-media-el {
-	padding: var( --sgs-media-padding, 0 );
+	padding-top: var( --sgs-media-padding-top, 0 );
+	padding-right: var( --sgs-media-padding-right, 0 );
+	padding-bottom: var( --sgs-media-padding-bottom, 0 );
+	padding-left: var( --sgs-media-padding-left, 0 );
 }
 
 @media ( max-width: 1023px ) {
 	.sgs-media-el {
-		padding: var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) );
+		padding-top: var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) );
+		padding-right: var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) );
+		padding-bottom: var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) );
+		padding-left: var( --sgs-media-padding-left-tablet, var( --sgs-media-padding-left, 0 ) );
 	}
 }
 
 @media ( max-width: 767px ) {
 	.sgs-media-el {
-		padding: var(
-			--sgs-media-padding-mobile,
-			var( --sgs-media-padding-tablet, var( --sgs-media-padding, 0 ) )
+		padding-top: var(
+			--sgs-media-padding-top-mobile,
+			var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) )
+		);
+		padding-right: var(
+			--sgs-media-padding-right-mobile,
+			var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) )
+		);
+		padding-bottom: var(
+			--sgs-media-padding-bottom-mobile,
+			var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) )
+		);
+		padding-left: var(
+			--sgs-media-padding-left-mobile,
+			var( --sgs-media-padding-left-tablet, var( --sgs-media-padding-left, 0 ) )
 		);
 	}
 }

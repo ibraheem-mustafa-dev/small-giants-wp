@@ -816,17 +816,17 @@ if ( $is_split ) {
 // Gated on $is_split to match the old inline emission (which only ran inside
 // the split-image branch).
 if ( $is_split ) {
-	$img_radius_base = sgs_corner_object_shorthand( $image_border_radius_obj );
+	$img_radius_base = sgs_corner_object_longhands( $image_border_radius_obj );
 	if ( null !== $img_radius_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_base . '}';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . $img_radius_base . '}';
 	}
-	$img_radius_tab = sgs_corner_object_shorthand( $image_border_radius_tablet_obj );
+	$img_radius_tab = sgs_corner_object_longhands( $image_border_radius_tablet_obj );
 	if ( null !== $img_radius_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_tab . '}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{' . $img_radius_tab . '}}';
 	}
-	$img_radius_mob = sgs_corner_object_shorthand( $image_border_radius_mobile_obj );
+	$img_radius_mob = sgs_corner_object_longhands( $image_border_radius_mobile_obj );
 	if ( null !== $img_radius_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{border-radius:' . $img_radius_mob . '}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{' . $img_radius_mob . '}}';
 	}
 
 	// ── splitMediaBorderWidth / style / colour — box-object family (base only, no

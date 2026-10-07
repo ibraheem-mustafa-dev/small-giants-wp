@@ -60,9 +60,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_section_box_css' ) ) {
 	 */
 	function sgs_nav_drawer_menu_section_box_css( array $attributes, string $uid_sel ): string {
 		$decls  = '';
-		$radius = sgs_corner_object_shorthand( $attributes['submenuBorderRadius'] ?? null );
+		$radius = sgs_corner_object_longhands( $attributes['submenuBorderRadius'] ?? null );
 		if ( null !== $radius && '' !== $radius ) {
-			$decls .= 'border-radius:' . $radius . ';';
+			$decls .= $radius . ';';
 		}
 		$shadow_shape  = (string) ( $attributes['submenuShadow'] ?? '' );
 		$shadow_colour = (string) ( $attributes['submenuShadowColour'] ?? '' );
