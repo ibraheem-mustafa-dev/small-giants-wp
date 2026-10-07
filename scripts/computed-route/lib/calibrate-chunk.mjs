@@ -5,6 +5,12 @@
 // at the 300-second limit for a block with several hundred instances (sgs/business-info plans 343).
 export const NODE_HEAP_FLAG = '--max-old-space-size=8192';
 export const MIN_CHUNK = 1;
+
+// The run itself holds every chunk's reads until the block's file is written: sgs/nav-bar-menu (744 blocks a page)
+// exhausted the default 4 GB heap after 46 minutes on 2026-10-07. A run started below this limit restarts itself with
+// NODE_HEAP_FLAG (calibrate.mjs).
+export const RUN_HEAP_BYTES = 7 * 1024 ** 3;
+export const needsBiggerHeap = ( heapLimitBytes ) => heapLimitBytes < RUN_HEAP_BYTES;
 // How long each page load (the login, the editor, the save, and the front-end reads in calibrate-read.mjs and
 // calibrate-content.mjs), editor boot and save of a calibration page may take, and the whole child's limit (login,
 // the editor load, the save and the reload that reads the save back). A chunk is a large page by design: on the local

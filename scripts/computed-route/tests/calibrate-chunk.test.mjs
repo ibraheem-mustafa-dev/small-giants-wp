@@ -4,7 +4,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK } from '../lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, RUN_HEAP_BYTES, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK } from '../lib/calibrate-chunk.mjs';
 
 test( 'MUST FAIL (the build child ran on the default heap and was killed at 300s): the spawn passes --max-old-space-size=8192 before the script', () => {
 	assert.equal( NODE_HEAP_FLAG, '--max-old-space-size=8192' );
@@ -68,4 +68,14 @@ test( 'MUST FAIL (a timed-out chunk failed the whole block): splitOnTimeout halv
 	assert.ok( chunks.every( ( c ) => c[ 0 ].isDefault ) );
 	// Nothing left to halve: a single non-default instance cannot be split further.
 	assert.equal( splitOnTimeout( [ ...defaults, { key: 'o0' } ], 1 ), null );
+} );
+
+// CR4: the calibration run itself (not only its build child) exhausted the default 4 GB heap on sgs/nav-bar-menu.
+test( 'MUST FAIL (CR4, the run ran out of its 4 GB heap after 46 minutes): a run below the limit restarts itself with the bigger heap', () => {
+	assert.equal( needsBiggerHeap( 4 * 1024 ** 3 ), true, 'the default heap is too small' );
+	assert.equal( needsBiggerHeap( 8 * 1024 ** 3 + 1 ), false, 'a run already started with the flag does not restart again' );
+	assert.ok( 8192 * 1024 ** 2 > RUN_HEAP_BYTES, 'NODE_HEAP_FLAG itself clears the limit, so the restart cannot loop' );
+	const src = fs.readFileSync( new URL( '../calibrate.mjs', import.meta.url ), 'utf8' );
+	assert.match( src, /needsBiggerHeap\( v8\.getHeapStatistics\(\)\.heap_size_limit \)/ );
+	assert.match( src, /spawnSync\( process\.execPath, \[ NODE_HEAP_FLAG, \.\.\.process\.argv\.slice\( 1 \) \]/ );
 } );

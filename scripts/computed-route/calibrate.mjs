@@ -8,7 +8,8 @@
 // default paint, keyed by the deployed build's md5 and the site snapshot's md5. The page is emptied at the end.
 import fs from 'fs';
 import path from 'path';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
+import v8 from 'v8';
 import { createRequire } from 'module';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
@@ -17,7 +18,7 @@ import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
-import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
@@ -271,7 +272,10 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }
 
-if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
+if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) && needsBiggerHeap( v8.getHeapStatistics().heap_size_limit ) ) {
+	// Restart with the bigger heap: a large block's reads outgrow the default one (lib/calibrate-chunk.mjs::RUN_HEAP_BYTES).
+	process.exit( spawnSync( process.execPath, [ NODE_HEAP_FLAG, ...process.argv.slice( 1 ) ], { stdio: 'inherit' } ).status ?? 1 );
+} else if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
 	const argv = process.argv.slice( 2 );
 	const flag = ( n ) => {
 		const i = argv.indexOf( n );

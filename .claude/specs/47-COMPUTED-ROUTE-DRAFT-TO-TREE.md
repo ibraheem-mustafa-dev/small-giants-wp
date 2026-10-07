@@ -649,10 +649,11 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
        literal, so the five CR6 classification overrides are gone). Open: P2-a corner radius, P2-b the `var()`
        holdouts, P2-c the media-padding atom and its JS twin, P2-e the Eye Care tier boxes holding an explicit zero.
-     - **Route, open (2026-10-07):** (1) CR4: `sgs/nav-bar-menu`'s calibration page took 150 s to return its edit
-       screen on the local mirror against `wp-build-page.js`'s 60 s limit; calibration now passes
-       `--editor-timeout` 240 s (`lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`), and the block's re-calibration and
-       dead-set triage are the open part. A register row.
+     - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
+       calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
+       the bigger heap; `sgs/nav-bar-menu` 71 settings, 46 of its 54 dead are states the calibration page cannot show),
+       CR14 (help walks every FAQ answer open) and CR25 (a template build retries the host's transient database
+       errors). Open: CR27, eight nav-bar-menu settings dead in calibration although their preconditions are set.
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
        `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
