@@ -79,15 +79,14 @@ accepted differences. Bean approved 5 of the 7 candidate fixes. ⚠️ Compare s
 a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — every FIX declaration resolved, VERIFIED LIVE 2026-10-07** (`87eb25957`..`cd004d31a`, docs
-  `84b410d3a`); eye-care-test marker `235d54de`. Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55**
-  (measured on a clean worktree; self-test 31/31). 24 of 26 closed by a control, 2 `cta-section` headline
-  declarations DEFENSIBLE on a live measurement (theme heading styles block inheritance). Live: 65/65 on the
-  first nine surfaces, then 99 front-end + 3 editor checks PASS; a before/after run on old vs new code shows
-  one default change only, the stated `Inter` deletion. Evidence + method:
-  `plugins/sgs-blocks/reports/2026-10-07-f3-e14-live-verification.md`. Remaining track work: triage
-  (`plugins/sgs-blocks/reports/f3-e14-triage.md`) §6 "Still open" and §7 gate gaps (`var()` admission first).
-  Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
+- **F3/E14 — every FIX declaration resolved and live; the gate's `var()` blind spot measured, not yet closed.**
+  Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55** (self-test 31/31). eye-care-test runs `1f6cdb4dc`:
+  product-card has one Typography switcher in both modes (editor probe: 0 errors, typed and bound),
+  `sgs/form`'s field weight/style no longer make a cloned root weight ambiguous (`cc144ca96`), and the fast-tier
+  gate `check-import-shadowing.js` blocks the attribute-shadows-a-helper crash. **Next:** the 40 `var()` rows
+  (Bean: fix all, then admit `var()` with no new counter), 6 of them DEFENSIBLE and **awaiting Bean's choice**
+  of a gate marker or a one-time ceiling rise at admission. Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md`
+  §7 gap 1 (the row table) and §6 "Still open". Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route cleanup DONE 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, `WAVE4-RESULTS.md`).
   ⚠️ **Its F 193 → 173 is mostly LOST COVERAGE, not fixes:** a 2026-10-06 re-pairing emptied all four mega
