@@ -51,9 +51,12 @@
 
 /* ─── Title ─── */
 
-.sgs-toc__title {
+:where(.sgs-toc__title) {
 	font-weight: 600;
 	font-size: var(--wp--preset--font-size--medium, 1rem);
+}
+
+.sgs-toc__title {
 	margin: 0 0 0.75rem;
 	cursor: default;
 }
@@ -186,14 +189,6 @@
 :where(.sgs-toc__link--active) {
 	color: var(--wp--preset--color--primary, #0F7E80);
 	font-weight: 700;
-}
-
-/* ─── Empty state ─── */
-
-.sgs-toc__empty {
-	color: var(--wp--preset--color--text-muted, #555);
-	font-style: italic;
-	margin: 0;
 }
 
 /* ─── Responsive ─── */

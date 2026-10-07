@@ -10,6 +10,7 @@ import Edit from './edit';
 
 // Import frontend styles so webpack compiles them into style-index.css.
 import './style.css';
+import './editor.css';
 
 registerBlockType( metadata.name, {
 	edit: Edit,

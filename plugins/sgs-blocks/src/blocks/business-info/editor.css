@@ -1,0 +1,11 @@
+/**
+ * Business Info — editor-only styles.
+ */
+
+/* Operator-facing placeholder hint: render.php emits it only for the
+ * editor's server-side render, never on the front end. */
+.sgs-business-info__placeholder {
+	font-style: italic;
+	opacity: 0.6;
+	font-size: 0.875em;
+}

@@ -9,6 +9,9 @@
 
 /* Subtle placeholder styling */
 .sgs-toc__empty {
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+	margin: 0;
 	border: 1px dashed var(--wp--preset--color--border, #ccc);
 	padding: 1rem;
 	text-align: center;

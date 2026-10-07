@@ -411,14 +411,6 @@
 	border: 0;
 }
 
-/* ── Editor placeholder ──────────────────────────────────────────────────── */
-
-.sgs-business-info__placeholder {
-	font-style: italic;
-	opacity: 0.6;
-	font-size: 0.875em;
-}
-
 /* ── "Button" block style (Spec 37 §3.8 — labelCollapse) ──────────────────────
    A first-class, client-selectable display style: renders the contact item
    (phone/email/address/…) as a prominent button. Block-private, theme-token

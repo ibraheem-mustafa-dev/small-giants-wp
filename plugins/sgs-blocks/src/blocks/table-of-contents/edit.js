@@ -146,6 +146,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Editor-only preview style (mirrors render.php's scoped output — the
 	// frontend never inlines these; see buildRootPreviewStyle above).
 	const previewTier = usePreviewTier();
+	// Twin of render.php's sgs_typography_css_rule( $attributes, 'title', … ) plus the title colour.
+	const titlePreviewStyle = {
+		...typographyPreviewStyle( attributes, 'title', previewTier ),
+		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
+	};
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className,
@@ -406,19 +411,46 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			{ /* ── Styles tab ────────────────────────────────────────────
-			 * Typography — replaces the old WP-native supports.typography
-			 * (fontSize/lineHeight only) with the shared TypographyControls
-			 * component + sgs_typography_css_rule() render.php helper
-			 * (D971/D972 full-replacement track). Root prefix "" since this
-			 * is a single-target block (the <nav> wrapper); the helper also
-			 * now offers weight/style, which native typography never
-			 * exposed here. */ }
+			 * Typography — the shared TypographyControls component +
+			 * sgs_typography_css_rule() render.php helper (D971/D972
+			 * full-replacement track). One panel, two targets: "All text" is
+			 * the <nav> wrapper (root prefix "") and "Title" is the
+			 * <summary>/<p> title element (prefix "title"). */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix=""
+						targets={ [
+							{
+								key: 'root',
+								label: __( 'All text', 'sgs-blocks' ),
+								prefix: '',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'title',
+								label: __( 'Title', 'sgs-blocks' ),
+								prefix: 'title',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -436,7 +468,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ title && (
 							<summary
 								className="sgs-toc__title"
-								style={ resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ) }
+								style={ titlePreviewStyle }
 							>
 								{ title }
 							</summary>
@@ -485,7 +517,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ title && (
 							<p
 								className="sgs-toc__title"
-								style={ resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ) }
+								style={ titlePreviewStyle }
 							>
 								{ title }
 							</p>
