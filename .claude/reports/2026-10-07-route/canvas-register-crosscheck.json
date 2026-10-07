@@ -13,13 +13,12 @@
   "UNCLEAR": "one computed read or source check settles it; the citation names that check"
  },
  "tally": {
-  "GAP": 96,
+  "GAP": 72,
   "KEPT-162": 8,
-  "SETTING-EXISTS": 16,
-  "DECIDED": 23,
+  "DECIDED": 43,
+  "NOT-REAL": 10,
   "TRACKED": 8,
-  "UNCLEAR": 5,
-  "NOT-REAL": 8
+  "SETTING-EXISTS": 23
  },
  "visuallyInert": 18,
  "councilPrediction": "Declared before the /qc-council runs: blind re-derivation agrees with these categories on at least 90% of rows in every category. A category below 90% is re-checked in full and resolved by reading the code at the cited symbol.",
@@ -141,8 +140,8 @@
    "path": ".sgs-form-field__input",
    "property": "margin-top",
    "refutedCitation": "sgs/container::contentBandMargin",
-   "category": "SETTING-EXISTS",
-   "citation": "sgs/form gap reaches the rows (form/style.css); register N45 / N45b",
+   "category": "DECIDED",
+   "citation": "register N45 + 142-145 sets the draft's 10px row spacing through sgs/form::gap (gap|gap|inner); the contact-form tree does not set it yet, so the fix is the recorded tree value",
    "visuallyInert": false
   },
   {
@@ -185,8 +184,8 @@
    "path": "(block root)",
    "property": "align-items",
    "refutedCitation": "sgs/container::alignItems",
-   "category": "GAP",
-   "citation": "social-icons/style.css hardcodes align-items and flex-wrap; no setting",
+   "category": "NOT-REAL",
+   "citation": "every item takes the same social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item box (44px, R10-R12), so align-items center vs normal moves nothing",
    "visuallyInert": false
   },
   {
@@ -207,8 +206,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(1)",
    "property": "padding-top",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -218,8 +217,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(1)",
    "property": "padding-right",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -229,8 +228,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(1)",
    "property": "padding-bottom",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43, as R62",
    "visuallyInert": true
   },
   {
@@ -240,8 +239,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(1)",
    "property": "padding-left",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -295,8 +294,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(3)",
    "property": "padding-top",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -306,8 +305,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(3)",
    "property": "padding-right",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -317,8 +316,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(3)",
    "property": "padding-bottom",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -328,8 +327,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(3)",
    "property": "padding-left",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -383,8 +382,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(2)",
    "property": "padding-top",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43, as R62",
    "visuallyInert": true
   },
   {
@@ -394,8 +393,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(2)",
    "property": "padding-right",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -405,8 +404,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(2)",
    "property": "padding-bottom",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -416,8 +415,8 @@
    "path": ".sgs-social-icons__item:nth-of-type(2)",
    "property": "padding-left",
    "refutedCitation": "sgs/container::gridItemPadding",
-   "category": "GAP",
-   "citation": "item padding 8px hardcoded per style variant (social-icons/style.css)",
+   "category": "DECIDED",
+   "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph",
    "visuallyInert": true
   },
   {
@@ -625,8 +624,8 @@
    "path": "(block root)",
    "property": "border-top-color",
    "refutedCitation": "sgs/social-icons::iconBorderColourHover",
-   "category": "UNCLEAR",
-   "citation": "read the ul computed border-top-width at hover; 0 means a currentColor artefact",
+   "category": "DECIDED",
+   "citation": "register S2: footer links stay black on hover; the root's border-top-color is currentColor following that decided colour on a 0px border (solve report rows gen-footer-9 color and border-top-color move together)",
    "visuallyInert": false
   },
   {
@@ -636,8 +635,8 @@
    "path": "(block root)",
    "property": "border-top-color",
    "refutedCitation": "sgs/social-icons::iconBorderColourHover",
-   "category": "UNCLEAR",
-   "citation": "read the ul computed border-top-width at hover; 0 means a currentColor artefact",
+   "category": "DECIDED",
+   "citation": "register S2, as R27 (currentColor echo of the decided link colour on a 0px border)",
    "visuallyInert": false
   },
   {
@@ -769,7 +768,7 @@
    "property": "border-radius",
    "refutedCitation": "sgs/form-step::borderRadius",
    "category": "DECIDED",
-   "citation": "register closed list, 98: pop-up corners square on both (Bean)",
+   "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's",
    "visuallyInert": false
   },
   {
@@ -779,8 +778,8 @@
    "path": "(block root)",
    "property": "box-shadow",
    "refutedCitation": "sgs/modal::dialogShadow",
-   "category": "UNCLEAR",
-   "citation": "does the draft shadowed panel pair with sgs/modal dialog (dialogShadow)? if so, a pairing error",
+   "category": "DECIDED",
+   "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's",
    "visuallyInert": false
   },
   {
@@ -823,8 +822,8 @@
    "path": "(block root)",
    "property": "padding-top",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -834,8 +833,8 @@
    "path": "(block root)",
    "property": "padding-right",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -845,8 +844,8 @@
    "path": "(block root)",
    "property": "padding-bottom",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "as R67, the child container carries the padding",
    "visuallyInert": false
   },
   {
@@ -856,8 +855,8 @@
    "path": "(block root)",
    "property": "padding-left",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -878,8 +877,8 @@
    "path": "(block root)",
    "property": "padding-top",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -889,8 +888,8 @@
    "path": "(block root)",
    "property": "padding-right",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -900,8 +899,8 @@
    "path": "(block root)",
    "property": "padding-bottom",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -911,8 +910,8 @@
    "path": "(block root)",
    "property": "padding-left",
    "refutedCitation": "sgs/mega-panel::panelPadding",
-   "category": "GAP",
-   "citation": "mega-panel/render.php hardcodes card padding 17px and transition .2s",
+   "category": "SETTING-EXISTS",
+   "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root",
    "visuallyInert": false
   },
   {
@@ -988,8 +987,8 @@
    "path": ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close",
    "property": "box-shadow",
    "refutedCitation": "sgs/container::gridItemShadow",
-   "category": "GAP",
-   "citation": "nav-drawer shadow paints the dialog root, not the close button",
+   "category": "DECIDED",
+   "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's",
    "visuallyInert": false
   },
   {
@@ -1054,8 +1053,8 @@
    "path": ".sgs-buybox__config-col > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options",
    "property": "align-items",
    "refutedCitation": "sgs/container::alignItems",
-   "category": "GAP",
-   "citation": "no align-items setting on buybox or option-picker for the options row",
+   "category": "NOT-REAL",
+   "citation": "buybox/style.css::.sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options is display:grid; grid align-items normal behaves as stretch, so there is no rendered difference",
    "visuallyInert": false
   },
   {
@@ -1406,8 +1405,8 @@
    "path": ".sgs-tab__inner > div > p",
    "property": "line-height",
    "refutedCitation": "sgs/container::lineHeight",
-   "category": "UNCLEAR",
-   "citation": "is core/post-content supports.typography.lineHeight on the installed WP? (paragraph is core/post-content)",
+   "category": "DECIDED",
+   "citation": "register 67: the description takes a fixed 16.5px preset; line height 1.5 follows build rule 2 (tree)",
    "visuallyInert": false
   },
   {
@@ -1439,8 +1438,8 @@
    "path": ".sgs-tabs__panels > .sgs-tabs__panel:nth-of-type(1) > .sgs-container > .sgs-tab__inner > div > p",
    "property": "line-height",
    "refutedCitation": "sgs/container::lineHeight",
-   "category": "UNCLEAR",
-   "citation": "same check as gen-product-13 line-height",
+   "category": "DECIDED",
+   "citation": "register 67, as R48",
    "visuallyInert": false
   },
   {
@@ -1648,8 +1647,8 @@
    "path": ".sgs-filter-search__input",
    "property": "box-shadow",
    "refutedCitation": "sgs/container::gridItemShadow",
-   "category": "GAP",
-   "citation": "hardcoded transition; box-shadow is the theme focus glow with no per-block setting",
+   "category": "DECIDED",
+   "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's",
    "visuallyInert": false
   },
   {
@@ -1828,5 +1827,663 @@
    "citation": "register 116: 32px on phone, tree; sgs/text fontSize paints it",
    "visuallyInert": false
   }
- ]
+ ],
+ "council": {
+  "date": "2026-10-07",
+  "design": "two blind readers (no verdict shown) re-derived 80 rows: all 68 that would leave F plus a 12-row spread of the GAP category; each reader saw block, element, property and the solve report only",
+  "prediction": "Declared before the /qc-council runs: blind re-derivation agrees with these categories on at least 90% of rows in every category. A category below 90% is re-checked in full and resolved by reading the code at the cited symbol.",
+  "agreementWithKey": {
+   "reader1": {
+    "DECIDED": "7/23",
+    "GAP": "10/20",
+    "KEPT-162": "8/8",
+    "NOT-REAL": "8/8",
+    "SETTING-EXISTS": "11/16",
+    "UNCLEAR": "0/5"
+   },
+   "reader2": {
+    "DECIDED": "22/23",
+    "GAP": "13/20",
+    "KEPT-162": "8/8",
+    "NOT-REAL": "8/8",
+    "SETTING-EXISTS": "11/16",
+    "UNCLEAR": "0/5"
+   }
+  },
+  "barMet": {
+   "KEPT-162": true,
+   "NOT-REAL": true,
+   "DECIDED": false,
+   "SETTING-EXISTS": false,
+   "GAP": false,
+   "UNCLEAR": "n/a: a placeholder the readers were meant to settle"
+  },
+  "resolution": "categories below the bar were re-checked in full; every disagreement settled by reading the code at the cited symbol (or one live read), never by vote. Reader 2's own summary counts were wrong (it reported DECIDED 25 / SETTING-EXISTS 22); its per-row table was used",
+  "readers": {
+   "R01": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R02": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R03": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R04": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R05": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R06": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R07": {
+    "key": "SETTING-EXISTS",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R08": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R09": {
+    "key": "KEPT-162",
+    "reader1": "KEPT-162",
+    "reader2": "KEPT-162",
+    "final": "KEPT-162"
+   },
+   "R10": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R11": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R12": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R13": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R14": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R15": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R16": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R17": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R18": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R19": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R20": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R21": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R22": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R23": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R24": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R25": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R26": {
+    "key": "DECIDED",
+    "reader1": "TRACKED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R27": {
+    "key": "UNCLEAR",
+    "reader1": "NOT-REAL",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R28": {
+    "key": "UNCLEAR",
+    "reader1": "NOT-REAL",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R29": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R30": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R31": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R32": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R33": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R34": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R35": {
+    "key": "DECIDED",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "DECIDED"
+   },
+   "R36": {
+    "key": "UNCLEAR",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "DECIDED"
+   },
+   "R37": {
+    "key": "SETTING-EXISTS",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "SETTING-EXISTS"
+   },
+   "R38": {
+    "key": "SETTING-EXISTS",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "SETTING-EXISTS"
+   },
+   "R39": {
+    "key": "SETTING-EXISTS",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "SETTING-EXISTS"
+   },
+   "R40": {
+    "key": "SETTING-EXISTS",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "SETTING-EXISTS"
+   },
+   "R41": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R42": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R43": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R44": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R45": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R46": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R47": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R48": {
+    "key": "UNCLEAR",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R49": {
+    "key": "SETTING-EXISTS",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R50": {
+    "key": "DECIDED",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R51": {
+    "key": "UNCLEAR",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R52": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R53": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R54": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R55": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R56": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R57": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R58": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R59": {
+    "key": "NOT-REAL",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R60": {
+    "key": "DECIDED",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R61": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R62": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R63": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R64": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "UNCLEAR",
+    "final": "NOT-REAL"
+   },
+   "R65": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "DECIDED",
+    "final": "DECIDED"
+   },
+   "R66": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R67": {
+    "key": "GAP",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R68": {
+    "key": "GAP",
+    "reader1": "SETTING-EXISTS",
+    "reader2": "SETTING-EXISTS",
+    "final": "SETTING-EXISTS"
+   },
+   "R69": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "DECIDED"
+   },
+   "R70": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R71": {
+    "key": "GAP",
+    "reader1": "NOT-REAL",
+    "reader2": "NOT-REAL",
+    "final": "NOT-REAL"
+   },
+   "R72": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R73": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R74": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R75": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R76": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R77": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R78": {
+    "key": "GAP",
+    "reader1": "DECIDED",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R79": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   },
+   "R80": {
+    "key": "GAP",
+    "reader1": "GAP",
+    "reader2": "GAP",
+    "final": "GAP"
+   }
+  },
+  "settled": {
+   "R07": {
+    "from": "SETTING-EXISTS",
+    "to": "DECIDED",
+    "citation": "register N45 + 142-145 sets the draft's 10px row spacing through sgs/form::gap (gap|gap|inner); the contact-form tree does not set it yet, so the fix is the recorded tree value"
+   },
+   "R27": {
+    "from": "UNCLEAR",
+    "to": "DECIDED",
+    "citation": "register S2: footer links stay black on hover; the root's border-top-color is currentColor following that decided colour on a 0px border (solve report rows gen-footer-9 color and border-top-color move together)"
+   },
+   "R28": {
+    "from": "UNCLEAR",
+    "to": "DECIDED",
+    "citation": "register S2, as R27 (currentColor echo of the decided link colour on a 0px border)"
+   },
+   "R35": {
+    "from": "DECIDED",
+    "to": "DECIDED",
+    "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's"
+   },
+   "R36": {
+    "from": "UNCLEAR",
+    "to": "DECIDED",
+    "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's"
+   },
+   "R69": {
+    "from": "GAP",
+    "to": "DECIDED",
+    "citation": "keyboard-only focus indicator, kept (WCAG 2.4.7; CLAUDE.md non-negotiable): theme utilities.css::*:focus-visible paints the glow and 4px radius. Proven live 2026-10-07 on eye-care-test (product gucci-oversized-cat-eye, 1440): after real mouse clicks the focused .sgs-choice-flow does not match :focus-visible (box-shadow none, radius 0px); after Tab it does. The walker's state openers drive keyboard modality, so the row is the probe's, not a mouse visitor's"
+   },
+   "R48": {
+    "from": "UNCLEAR",
+    "to": "DECIDED",
+    "citation": "register 67: the description takes a fixed 16.5px preset; line height 1.5 follows build rule 2 (tree)"
+   },
+   "R51": {
+    "from": "UNCLEAR",
+    "to": "DECIDED",
+    "citation": "register 67, as R48"
+   },
+   "R62": {
+    "from": "GAP",
+    "to": "DECIDED",
+    "citation": "register 39-43 keeps 44px boxes: social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item padding 8px is what forms the 44px box around the 28px glyph"
+   },
+   "R63": {
+    "from": "GAP",
+    "to": "DECIDED",
+    "citation": "register 39-43, as R62"
+   },
+   "R65": {
+    "from": "GAP",
+    "to": "DECIDED",
+    "citation": "register 39-43, as R62"
+   },
+   "R64": {
+    "from": "GAP",
+    "to": "NOT-REAL",
+    "citation": "every item takes the same social-icons/style.css::.sgs-social-icons--boxed .sgs-social-icons__item box (44px, R10-R12), so align-items center vs normal moves nothing"
+   },
+   "R67": {
+    "from": "GAP",
+    "to": "SETTING-EXISTS",
+    "citation": "the card's 26px/24px sits on the child sgs/container cr-ref-mega-lenses-17 (mega-lenses.tree.json, padding 26/24/26/24; container padding|padding|wrapper): a pairing fault, the draft card pairs with the mega-group root"
+   },
+   "R68": {
+    "from": "GAP",
+    "to": "SETTING-EXISTS",
+    "citation": "as R67, the child container carries the padding"
+   },
+   "R71": {
+    "from": "GAP",
+    "to": "NOT-REAL",
+    "citation": "buybox/style.css::.sgs-buybox .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__options is display:grid; grid align-items normal behaves as stretch, so there is no rendered difference"
+   }
+  },
+  "propagatedToUnsampled": [
+   {
+    "row": "footer|sgs/social-icons|social-instagram|.sgs-social-icons__item:nth-of-type(1)|padding-top",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-instagram|.sgs-social-icons__item:nth-of-type(1)|padding-right",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-instagram|.sgs-social-icons__item:nth-of-type(1)|padding-left",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-google|.sgs-social-icons__item:nth-of-type(3)|padding-top",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-google|.sgs-social-icons__item:nth-of-type(3)|padding-right",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-google|.sgs-social-icons__item:nth-of-type(3)|padding-left",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-whatsapp|.sgs-social-icons__item:nth-of-type(2)|padding-right",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-whatsapp|.sgs-social-icons__item:nth-of-type(2)|padding-bottom",
+    "to": "DECIDED"
+   },
+   {
+    "row": "footer|sgs/social-icons|social-whatsapp|.sgs-social-icons__item:nth-of-type(2)|padding-left",
+    "to": "DECIDED"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-single|(block root)|padding-top",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-single|(block root)|padding-right",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-single|(block root)|padding-left",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-light|(block root)|padding-top",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-light|(block root)|padding-right",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "mega-lenses|sgs/mega-group|lenses-card-light|(block root)|padding-left",
+    "to": "SETTING-EXISTS"
+   },
+   {
+    "row": "shop|sgs/filter-search|brand-search|.sgs-filter-search__input|box-shadow",
+    "to": "DECIDED"
+   }
+  ],
+  "finalAgreementWithKey": "66/80"
+ }
 }
