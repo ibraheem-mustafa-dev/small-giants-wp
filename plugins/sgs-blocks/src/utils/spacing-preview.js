@@ -121,6 +121,37 @@ export function tierBoxShorthand( tiers, tier, keys = BOX_SIDE_KEYS, wholeBox = 
 }
 
 /**
+ * Resolve a padding or margin tier-of-boxes attribute into longhand style keys
+ * for the SET sides only (`{ paddingTop: '12px' }`), for a block whose
+ * render.php prints padding and margin through sgs_box_object_longhands().
+ *
+ * An unset side gets no key, so the canvas shows what the block's stylesheet or
+ * a wider tier gives it — the same as the front end. tierBoxShorthand() would
+ * print `0` for it instead. Tiers merge per side exactly as the front end's
+ * @media rules cascade (resolveBoxTierPreview): a mobile tier that sets only the
+ * top keeps the tablet tier's other sides.
+ *
+ * @param {Object|undefined} tiers  `{ desktop, tablet, mobile }` boxes.
+ * @param {string}           tier   Active preview tier ('desktop'|'tablet'|'mobile').
+ * @param {string}           family 'padding' or 'margin'.
+ * @return {Object} Style keys for the set sides; `{}` when none is set.
+ */
+export function tierBoxLonghands( tiers, tier, family ) {
+	if ( 'padding' !== family && 'margin' !== family ) {
+		return {};
+	}
+	const source = tiers && 'object' === typeof tiers ? tiers : {};
+	const merged = resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier );
+	const style = {};
+	BOX_SIDE_KEYS.forEach( ( side ) => {
+		if ( merged[ side ] ) {
+			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] = merged[ side ];
+		}
+	} );
+	return style;
+}
+
+/**
  * A block's canvas `style` object for padding + margin at the active preview
  * tier. Returns only the keys that resolved to a real shorthand, so a caller
  * can spread the result straight into its style object.

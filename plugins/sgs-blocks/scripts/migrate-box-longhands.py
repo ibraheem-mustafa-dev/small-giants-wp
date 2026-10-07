@@ -343,6 +343,27 @@ def baseline_keys(sites):
     return sorted({f"{s['file']}::{s['variable']}" for s in sites if s['category'] == 'migratable'})
 
 
+PREVIEW = re.compile(r'\b(tierBoxShorthand|spacingPreview|boxShorthand)\s*\(')
+
+
+def zero_filling_previews(js):
+    """(line, helper) for each editor preview call that prints padding/margin with 0 for unset sides.
+
+    Judged by the call's OWN arguments: spacingPreview always previews padding and margin; boxShorthand and
+    tierBoxShorthand do when an argument names padding or margin. A radius or border call is left alone
+    (its zero-fill is phase 2 or correct), and text after the call is never read.
+    """
+    out = []
+    for m in PREVIEW.finditer(js):
+        open_idx = m.end() - 1
+        close = close_paren(js, open_idx)
+        args = js[open_idx + 1:close] if close > 0 else ''
+        if 'spacingPreview' == m.group(1) or re.search(r'\b(padding|margin)\w*', args, re.I):
+            if not re.search(r'radius|border', args, re.I):
+                out.append((line_of(js, m.start()), m.group(1)))
+    return out
+
+
 def editor_mismatches(sites):
     """A migrated block whose editor still previews padding/margin through a 0-filling helper."""
     migrated = set()
@@ -354,14 +375,9 @@ def editor_mismatches(sites):
     for slug in sorted(migrated):
         d = os.path.join(PLUGIN, 'src', 'blocks', slug)
         for fn in sorted(os.listdir(d)):
-            if not fn.endswith('.js'):
-                continue
-            t = read(os.path.join(d, fn))
-            for m in re.finditer(r'\b(tierBoxShorthand|spacingPreview)\s*\(', t):
-                seg = t[m.start():t.find(')', m.start()) + 40]
-                if 'Radius' in seg or 'radius' in seg or 'border' in seg.lower():
-                    continue
-                out.append(f'src/blocks/{slug}/{fn}:{line_of(t, m.start())} {m.group(1)}() previews a migrated block\'s padding/margin with 0 for unset sides; use tierBoxLonghands()')
+            if fn.endswith('.js'):
+                for ln, helper in zero_filling_previews(read(os.path.join(d, fn))):
+                    out.append(f'src/blocks/{slug}/{fn}:{ln} {helper}() previews a migrated block\'s padding/margin with 0 for unset sides; use tierBoxLonghands()')
     return out
 
 
@@ -477,9 +493,17 @@ def self_test():
     only = transform(SELF_TEST['interp'][0], 'src/blocks/x/render.php', only={'other-block'})
     if only != SELF_TEST['interp'][0]:
         fails.append('--only: a block outside the scope was rewritten')
+    js = ("const s = { ...spacingPreview( { padding, margin }, previewTier ),\n"
+          "\tborderRadius: tierBoxShorthand( borderRadius, previewTier, BOX_CORNER_KEYS ) };\n"
+          "const p = boxShorthand( padding?.desktop, [ 'top' ] );\n"
+          "const r = boxShorthand( radius?.desktop, BOX_CORNER_KEYS );\n"
+          "const l = tierBoxLonghands( padding, previewTier, 'padding' );\n")
+    got = [h for _, h in zero_filling_previews(js)]
+    if got != ['spacingPreview', 'boxShorthand']:
+        fails.append(f'editor arm: flagged {got}; want spacingPreview and the padding boxShorthand, never the radius calls or the longhand sibling')
     for f in fails:
         print('SELF-TEST FAIL ' + f)
-    print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check; {len(fails)} failure(s)')
+    print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check, 1 editor arm; {len(fails)} failure(s)')
     return 1 if fails else 0
 
 

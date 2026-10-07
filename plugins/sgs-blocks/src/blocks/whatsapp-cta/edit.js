@@ -15,7 +15,7 @@ import { colourVar, resolveTextColourPreviewStyle, borderRadiusPreview } from '.
 import { VariantContent, cardColourRows, CardTypographyPanel } from './card-fields';
 import { FloatingPanel } from './floating-panel';
 import { buildRootStyle, buildRootClassName, floatingHideLabelPreviewCss } from './preview-style';
-import { usePreviewTier, spacingPreview } from '../../utils';
+import { usePreviewTier, tierBoxLonghands } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Inline button', 'sgs-blocks' ), value: 'inline' },
@@ -69,8 +69,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: `${ buildRootClassName( { variant, showOnMobile, showOnDesktop } ) } ${ hideLabelUid }`,
 		style: {
 			...buildRootStyle( {
-			padding,
-			margin,
 			borderRadius,
 			labelColour,
 			labelColourGradient,
@@ -83,7 +81,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			iconGap: attributes.iconGap,
 			minHeight: attributes.minHeight,
 			}, colourVar, resolveTextColourPreviewStyle ),
-			...spacingPreview( { padding, margin }, previewTier ),
+			// Set sides only, as render.php prints them (sgs_box_object_longhands): an unset side
+			// keeps the stylesheet's value in the canvas too, never a 0.
+			...tierBoxLonghands( padding, previewTier, 'padding' ),
+			...tierBoxLonghands( margin, previewTier, 'margin' ),
 			...borderRadiusPreview( borderRadius, previewTier, { wholeTier: true } ),
 		},
 	} );

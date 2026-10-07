@@ -143,10 +143,6 @@
   "src/blocks/timeline/render.php::$margin_mob_val",
   "src/blocks/timeline/render.php::$margin_tab_val",
   "src/blocks/timeline/render.php::$padding_mob_val",
-  "src/blocks/timeline/render.php::$padding_tab_val",
-  "src/blocks/whatsapp-cta/render.php::$margin_mob_val",
-  "src/blocks/whatsapp-cta/render.php::$margin_tab_val",
-  "src/blocks/whatsapp-cta/render.php::$padding_mob_val",
-  "src/blocks/whatsapp-cta/render.php::$padding_tab_val"
+  "src/blocks/timeline/render.php::$padding_tab_val"
  ]
 }

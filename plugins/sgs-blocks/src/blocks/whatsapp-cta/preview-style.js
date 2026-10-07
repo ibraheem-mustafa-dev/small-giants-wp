@@ -7,12 +7,14 @@
  *
  * @package SGS\Blocks
  */
-import { isCssGradient, boxShorthand, borderRadiusPreview, sgsBorderPreview } from '../../utils';
+import { isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
 
 /**
  * Root-element preview style (contract §B3: the button element IS the block
  * root — no wrapper div). Colour/background mirror the scoped button rule;
- * padding/margin/border-radius mirror the scoped box rule.
+ * border-radius mirrors the scoped box rule. Padding and margin are previewed in
+ * edit.js with tierBoxLonghands(), set sides only, so this object carries no
+ * padding or margin shorthand to collide with those longhand keys.
  *
  * CHECK A note: the caller (edit.js) passes an EXPLICIT object literal
  * naming every attribute this function reads, rather than the whole
@@ -28,8 +30,6 @@ import { isCssGradient, boxShorthand, borderRadiusPreview, sgsBorderPreview } fr
  */
 export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPreviewStyle ) {
 	const {
-		padding,
-		margin,
 		borderRadius,
 		labelColour,
 		labelColourGradient,
@@ -59,19 +59,11 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 			: {} ),
 	};
 
-	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		rootStyle.padding = paddingPreview;
-	}
-	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( marginPreview ) {
-		rootStyle.margin = marginPreview;
-	}
 	Object.assign( rootStyle, borderRadiusPreview( borderRadius ) );
 	// Card variant's border preview — CSS already gives the card a default
 	// 1px solid border; only overridden values need setting here.
 	// cardBorderWidth is BASE ONLY (no desktop tier — Spec 35 §14, no
-	// per-device border width), unlike padding/margin/borderRadius above.
+	// per-device border width), unlike borderRadius above.
 	if ( 'card' === variant ) {
 		Object.assign( rootStyle, sgsBorderPreview( { widthValues: cardBorderWidth, styleValue: cardBorderStyle, colourValue: cardBorderColour }, 'desktop', undefined, { defaultBorder: true } ) );
 	}
