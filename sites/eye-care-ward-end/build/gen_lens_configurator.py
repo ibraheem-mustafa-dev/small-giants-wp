@@ -219,6 +219,11 @@ tree = [
                               stageNoteIcon="whatsapp", stageNoteIconColour="whatsapp",
                               stageNoteBorderColour="whatsapp-line", stageNoteHoverColour="whatsapp-soft",
                               skipPrompt="Frame only?", skipLabel="Skip the lenses",
+                              # The draft adds the bare frame straight to the bag on skip (register N38).
+                              skipAddsToBag=True,
+                              # The draft moves on as soon as an option is picked; only the last question
+                              # (its panels open inline) needs its button (register N37).
+                              advanceMode="pick",
                               # The draft's footer Back: a 1px hairline, square corners.
                               backBorderWidth={"top": "1px", "right": "1px", "bottom": "1px", "left": "1px"},
                               backBorderRadius={"topLeft": "0px", "topRight": "0px", "bottomRight": "0px",

@@ -43,7 +43,7 @@ CARD = dict(
     noImageLabel="Photo to come", noImageLabelFontSize={"desktop": 10.5}, noImageLabelFontSizeUnit="px",
     noImageLabelFontWeight="400", noImageLabelLetterSpacing={"desktop": 0.16}, noImageLabelLetterSpacingUnit="em",
     noImageLabelTextTransform="uppercase", priceRowSpaceAbove="6px",
-    sourceMode="wc-product", titleTextWrap="wrap", showRating=True, noReviewsText="No reviews yet", showSavingBadge=True,
+    sourceMode="wc-product", titleTextWrap="wrap", showRating=True, showSavingBadge=True,
     savingBadgePosition="bottom-left", showBrandOverlay=True, brandFontFamily="heading", brandFontWeight="500",
     brandFontSize={"desktop": 12.5}, brandFontSizeUnit="px", brandLetterSpacing={"desktop": 0.26},
     brandLetterSpacingUnit="em", showPickers=False, showDescription=False, showCta=False, showWishlist=True,
@@ -137,6 +137,11 @@ sizing = [
            btxt(key, {"after": " mm"}, fontFamily="heading", fontWeight="500", fontSize={"desktop": 20}, fontSizeUnit="px"),
            txt(d, fontSize={"desktop": 14}, fontSizeUnit="px", textColour="text-muted")])
         for k, key, d in MEASURES]),
+    # The draft's note under the table, its "56▫17 145" left out: the numbers sit in the table above (N30, N36S).
+    txt("Every pair of glasses carries three numbers inside the arm: lens width, bridge, then temple length, "
+        "the same measurements as above. Compare them against a pair you already wear and you'll know straight "
+        "away whether these will fit.", fontSize={"desktop": 14}, fontSizeUnit="px", textColour="text-muted",
+        margin={"desktop": {"top": "16px"}}),
 ]
 
 FAQS = [
@@ -146,47 +151,6 @@ FAQS = [
     ("Adjustments and repairs", "Bring them in any time and I'll straighten, tighten or re-fit them for nothing, whether you bought them here last week or last year."),
 ]
 
-
-HOME = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'home.tree.json')
-
-
-def _find(nodes, name):
-    for n in nodes:
-        if n.get('name') == name:
-            return n
-        hit = _find(n.get('innerBlocks', []), name)
-        if hit:
-            return hit
-    return None
-
-
-# The clinic's Google rating comes from the same Google reviews block settings as Home, shown compact.
-with open(HOME, encoding='utf-8') as fh:
-    GOOGLE = dict(_find(json.load(fh), 'sgs/google-reviews')['attributes'])
-GOOGLE.update(variant="badge", showAggregate=True)
-# Inside the card the badge sits bare: no frame, ground or padding of its own.
-for _k in [k for k in GOOGLE if k.startswith(('border', 'background', 'padding', 'boxShadow', 'shadow'))]:
-    del GOOGLE[_k]
-
-# Shown only while the product has no reviews (conditional visibility, "none-yet").
-NO_REVIEWS = B("sgs/container", dict(
-    margin=SECTION_GAP, sgsConditionProductReviews="none-yet",
-    borderWidth={"top": "1px", "right": "0px", "bottom": "0px", "left": "0px"}, borderColour="border",
-    padding={"desktop": {"top": "44px"}}), [
-    B("sgs/container", dict(
-        layout="grid", gridTemplateColumns={"desktop": "minmax(0,1fr) auto", "mobile": "minmax(0,1fr)"},
-        alignItems="center", gap={"desktop": "20px"}, backgroundColour="surface-alt", borderWidth=BOX, borderColour="border",
-        borderRadius={"desktop": {"topLeft": "12px", "topRight": "12px", "bottomLeft": "12px", "bottomRight": "12px"}},
-        padding={"desktop": {"top": "26px", "right": "24px", "bottom": "26px", "left": "24px"}}), [
-        B("sgs/container", {}, [
-            txt("No reviews on this frame yet — it's new to the shop.", fontSize={"desktop": 15}, fontSizeUnit="px",
-                fontWeight="500"),
-            txt("Buy this pair and you can be the first to review it.", fontSize={"desktop": 13.5}, fontSizeUnit="px",
-                textColour="text-muted", margin={"desktop": {"top": "4px"}}),
-        ]),
-        B("sgs/google-reviews", GOOGLE),
-    ]),
-])
 
 tree = [
     B("core/template-part", {"slug": "header", "tagName": "header"}),
@@ -202,6 +166,8 @@ tree = [
                                       letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", linkColour="text-muted",
                                       currentColour="text-muted", margin={"desktop": {"bottom": "22px"}})),
             B("sgs/buybox", dict(
+                # The draft fades the main photo up on load (register 73).
+                photoEntrance="rise",
                 rrpMetaKey="_sgs_rrp", rrpSavingFormat="amount", rrpShowPrice=True, rrpSavingPrefix="You save",
                 rrpPillBackgroundColour="accent-light", rrpPillTextColour="accent-text",
                 showStockStatus=True, stockInStockLabel="In stock — dispatched next working day",
@@ -281,7 +247,6 @@ tree = [
                          [txt(a, fontSize={"desktop": 15}, fontSizeUnit="px", textColour="text-muted")]) for q, a in FAQS]),
                 ]),
             ]),
-            NO_REVIEWS,
             # Each related section hides, heading and all, when its list has no products (condition 9).
             B("sgs/container", dict(layout="stack", margin=SECTION_GAP, sgsConditionCollectionQueryId=11), [
                 B("sgs/heading", dict(content="", metadata=bind("content", "brand", before="More from "),

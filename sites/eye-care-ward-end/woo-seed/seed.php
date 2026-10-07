@@ -250,7 +250,7 @@ function sgs_seed_size_slug( array $size ): string {
  * Find-or-create a `pa_frame-size` term for one eye/bridge/temple measurement, idempotently
  * (by slug, since two sizes can share a lens-width NAME but never a slug). The term name is
  * just the lens width ("55"); the full measurement lives on `_sgs_size_measure` term meta
- * ("55□14 135", U+25A1) for display, and `_sgs_variesby_value` = 'size' so the product
+ * ("55 · 14 · 135", plain numbers with middle dots) for display, and `_sgs_variesby_value` = 'size' so the product
  * preflight gate's variesBy check passes.
  *
  * @param int    $eye      Lens width (mm).
@@ -262,7 +262,7 @@ function sgs_seed_size_slug( array $size ): string {
  */
 function sgs_seed_find_or_create_size_term( int $eye, int $bridge, int $temple, string $taxonomy, array &$stats ): int {
 	$slug    = sgs_seed_size_slug( array( 'eye' => $eye, 'bridge' => $bridge, 'temple' => $temple ) );
-	$measure = $eye . '□' . $bridge . ' ' . $temple;
+	$measure = $eye . ' · ' . $bridge . ' · ' . $temple;
 
 	$existing = get_term_by( 'slug', $slug, $taxonomy );
 	if ( $existing ) {

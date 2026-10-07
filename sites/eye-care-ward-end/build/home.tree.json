@@ -38,7 +38,10 @@
       "className": "sgs-hero cr-ref-home-0",
       "backgroundOverlayOpacity": {
         "desktop": 100
-      }
+      },
+      "bgKenBurnsMode": "zoom-out-once",
+      "bgAnimationDuration": 3,
+      "bgZoomStart": 108
     },
     "innerBlocks": [
       {
@@ -488,7 +491,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -590,7 +592,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -695,7 +696,6 @@
               "attributeTagTerm": "polarised",
               "attributeTagText": "Polarised",
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -794,7 +794,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -896,7 +895,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -998,7 +996,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -1100,7 +1097,6 @@
               "noImageLabelTextTransform": "uppercase",
               "showAttributeTag": true,
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,
@@ -1205,7 +1201,6 @@
               "attributeTagTerm": "polarised",
               "attributeTagText": "Polarised",
               "showRating": true,
-              "noReviewsText": "No reviews yet",
               "showSavingBadge": true,
               "savingBadgePosition": "bottom-left",
               "showBrandOverlay": true,

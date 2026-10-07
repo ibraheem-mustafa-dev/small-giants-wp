@@ -22,7 +22,7 @@ draft/target and re-run).
   from data.json's own eye/bridge/temple fields. Term name is the lens width ("55"); term
   slug is `<eye>-<bridge>-<temple>` (e.g. `55-14-135`) so two frames sharing a lens width but
   differing bridge/temple get distinct terms; each term carries `_sgs_size_measure`
-  ("55□14 135") and `_sgs_variesby_value` = `size` (the preflight gate's variesBy check).
+  ("55 · 14 · 135") and `_sgs_variesby_value` = `size` (the preflight gate's variesBy check).
   Variations are now keyed on (colour, size); a product's default attributes are its first
   colour plus its default size (middle of 3, first of 2, the only one of 1).
 - Product-level meta: `_sgs_rrp` (int, £), `_sgs_frame_eye`, `_sgs_frame_bridge`,

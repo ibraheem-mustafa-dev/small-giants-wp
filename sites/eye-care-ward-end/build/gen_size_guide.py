@@ -65,7 +65,7 @@ tree = [
     B("sgs/container", dict(backgroundColour="surface-alt", borderWidth=BOX, borderColour="border", margin=GAP_B,
                             padding={"desktop": {"top": "22px", "right": "22px", "bottom": "22px", "left": "22px"}}), [
         B("sgs/container", dict(layout="grid", gridTemplateColumns=THREE, gap={"desktop": "10px"}), [
-            txt("55", **BIG), txt("▫ 18", **BIG), txt("137", **BIG)]),
+            txt("55", **BIG), txt("18", **BIG), txt("137", **BIG)]),
         B("sgs/container", dict(layout="grid", gridTemplateColumns=THREE, gap={"desktop": "10px"},
                                 margin={"desktop": {"top": "10px"}}), [
             txt("Lens width", **CAP), txt("Bridge", **CAP), txt("Temple", **CAP)]),

@@ -54,7 +54,9 @@
         "bottomRight": "0px",
         "bottomLeft": "0px"
       },
-      "className": "cr-ref-lens-0"
+      "className": "cr-ref-lens-0",
+      "advanceMode": "pick",
+      "skipAddsToBag": true
     },
     "innerBlocks": [
       {

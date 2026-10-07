@@ -644,7 +644,6 @@
                           "sourceMode": "wc-product",
                           "titleTextWrap": "wrap",
                           "showRating": true,
-                          "noReviewsText": "No reviews yet",
                           "showSavingBadge": true,
                           "savingBadgePosition": "bottom-left",
                           "showBrandOverlay": true,

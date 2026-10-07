@@ -53,7 +53,8 @@
       "itemStaggerDistance": {
         "desktop": 18
       },
-      "className": "cr-ref-mobile-menu-0"
+      "className": "cr-ref-mobile-menu-0",
+      "staggerInsideGroups": true
     },
     "innerBlocks": [
       {

@@ -62,7 +62,7 @@ CARD = dict(
     noImageLabel="Photo to come", noImageLabelFontSize={"desktop": 10.5}, noImageLabelFontSizeUnit="px",
     noImageLabelFontWeight="400", noImageLabelLetterSpacing={"desktop": 0.16}, noImageLabelLetterSpacingUnit="em",
     noImageLabelTextTransform="uppercase", priceRowSpaceAbove="6px",
-    sourceMode="wc-product", titleTextWrap="wrap", showRating=True, noReviewsText="No reviews yet", showSavingBadge=True,
+    sourceMode="wc-product", titleTextWrap="wrap", showRating=True, showSavingBadge=True,
     savingBadgePosition="bottom-left", showBrandOverlay=True, brandFontFamily="heading", brandFontWeight="500",
     brandFontSize={"desktop": 12.5}, brandFontSizeUnit="px", brandLetterSpacing={"desktop": 0.26},
     brandLetterSpacingUnit="em", showPickers=False, showDescription=False, showCta=False, showWishlist=True,
