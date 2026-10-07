@@ -16,9 +16,15 @@
 }
 
 /* Individual step */
+/* The step's default text alignment — a low-specificity default (`:where()`)
+   that the icon, number, title and description `{prefix}TextAlign` controls
+   override on their own element. */
+:where(.sgs-process-steps__step) {
+	text-align: center;
+}
+
 .sgs-process-steps__step {
 	flex: 1;
-	text-align: center;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -30,12 +36,18 @@
 
 /* ===== Icon ===== */
 
+/* The icon's default size and line height — a low-specificity default
+   (`:where()`) that the block's own iconFontSize / iconLineHeight controls
+   override. */
+:where(.sgs-process-steps__icon) {
+	font-size: var(--wp--preset--font-size--xx-large, 2.5rem);
+	line-height: 1;
+}
+
 .sgs-process-steps__icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	font-size: var(--wp--preset--font-size--xx-large, 2.5rem);
-	line-height: 1;
 	margin-bottom: var(--wp--preset--spacing--20);
 	color: var(--wp--preset--color--primary);
 }
@@ -47,9 +59,11 @@
 
 /* ===== Number Badge ===== */
 
-/* The number's default weight and line height, at zero specificity so the
-   block's own numberFontWeight / numberLineHeight settings always win. */
+/* The number's default size, weight and line height, at zero specificity so
+   the block's own numberFontSize / numberFontWeight / numberLineHeight
+   settings always win. */
 :where(.sgs-process-steps__number) {
+	font-size: var(--wp--preset--font-size--x-large, 1.5rem); /* up from large — readable on the bigger circle */
 	font-weight: 700;
 	line-height: 1;
 }
@@ -60,7 +74,6 @@
 	justify-content: center;
 	width: var(--sgs-step-number-size);
 	height: var(--sgs-step-number-size);
-	font-size: var(--wp--preset--font-size--x-large, 1.5rem); /* up from large — readable on the bigger circle */
 	margin-bottom: var(--wp--preset--spacing--20);
 	flex-shrink: 0;
 }
@@ -228,9 +241,15 @@
 
 /* ===== Description ===== */
 
-.sgs-process-steps__description {
+/* The description's default size and line height — a low-specificity default
+   (`:where()`) that the block's own descriptionFontSize / descriptionLineHeight
+   controls override. */
+:where(.sgs-process-steps__description) {
 	font-size: var(--wp--preset--font-size--small);
 	line-height: 1.5;
+}
+
+.sgs-process-steps__description {
 	margin: 0;
 }
 

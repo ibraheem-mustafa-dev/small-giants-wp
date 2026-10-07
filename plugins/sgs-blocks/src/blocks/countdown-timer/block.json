@@ -79,7 +79,7 @@
 							}
 						}
 					},
-					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). No selectors.typography is declared (only selectors.root), so the root-level typography serialises as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size. textAlign stays a plain (non-supports) attribute with its own SelectControl since TypographyControls does not offer a text-align field. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance) are safe to paint directly on the wrapper's own selector because backgroundColour is ALREADY moved onto its own ::after layer via sgs_block_background_layer_css() (render.php) — background-clip:text on hover can never clip a background that isn't painted on this element."
+					"_note": "Root typography (fontSize/fontWeight/fontStyle/lineHeight and the extended set) uses the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '', and serialises on the wrapper as an inherited default for any text the number, label and expired-message elements do not style themselves. Those three elements each own a typography surface (prefixes number, label, expired), so a per-digit, per-label or per-message size, weight, transform or spacing is set on the element, not the wrapper. textAlign is a plain attribute edited through TypographyControls' own text-align field and emitted by render.php as a scoped declaration on the wrapper. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance) are safe to paint directly on the wrapper's own selector because backgroundColour is ALREADY moved onto its own ::after layer via sgs_block_background_layer_css() (render.php) — background-clip:text on hover can never clip a background that isn't painted on this element."
 				},
 				"number": {
 					"label": "Number",
@@ -90,9 +90,21 @@
 					],
 					"prefix": "number",
 					"attrMap": {
-						"css:background-image": "numberColourGradient"
+						"css:background-image": "numberColourGradient",
+						"css:font-size": "numberFontSize",
+						"css:font-weight": "numberFontWeight",
+						"css:font-style": "numberFontStyle",
+						"css:font-family": "numberFontFamily",
+						"css:text-transform": "numberTextTransform",
+						"css:text-decoration": "numberTextDecoration",
+						"css:line-height": "numberLineHeight",
+						"css:letter-spacing": "numberLetterSpacing",
+						"css:text-align": "numberTextAlign",
+						"css:text-wrap": "numberTextWrap",
+						"css:column-count": "numberTextColumns",
+						"css:writing-mode": "numberWritingMode"
 					},
-					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface)."
+					"_note": "numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member (every other fill member is an honest GAP, this element has no background/border surface). The number* typography family is painted on .sgs-countdown__number by sgs_typography_css_rule( $attributes, 'number', … )."
 				},
 				"label": {
 					"label": "Label",
@@ -102,7 +114,41 @@
 					],
 					"prefix": "label",
 					"attrMap": {
-						"css:color-gradient": "labelColourGradient"
+						"css:color-gradient": "labelColourGradient",
+						"css:font-size": "labelFontSize",
+						"css:font-weight": "labelFontWeight",
+						"css:font-style": "labelFontStyle",
+						"css:font-family": "labelFontFamily",
+						"css:text-transform": "labelTextTransform",
+						"css:text-decoration": "labelTextDecoration",
+						"css:line-height": "labelLineHeight",
+						"css:letter-spacing": "labelLetterSpacing",
+						"css:text-align": "labelTextAlign",
+						"css:text-wrap": "labelTextWrap",
+						"css:column-count": "labelTextColumns",
+						"css:writing-mode": "labelWritingMode"
+					}
+				},
+				"expired": {
+					"label": "Expired message",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "expired",
+					"attrMap": {
+						"css:font-size": "expiredFontSize",
+						"css:font-weight": "expiredFontWeight",
+						"css:font-style": "expiredFontStyle",
+						"css:font-family": "expiredFontFamily",
+						"css:text-transform": "expiredTextTransform",
+						"css:text-decoration": "expiredTextDecoration",
+						"css:line-height": "expiredLineHeight",
+						"css:letter-spacing": "expiredLetterSpacing",
+						"css:text-align": "expiredTextAlign",
+						"css:text-wrap": "expiredTextWrap",
+						"css:column-count": "expiredTextColumns",
+						"css:writing-mode": "expiredWritingMode"
 					}
 				}
 			}
@@ -277,7 +323,7 @@
 				"right",
 				"justify"
 			],
-			"description": "Migrated off WP-native supports.typography.textAlign (D971/D972 full-replacement track) — plain attribute + own SelectControl, since typography.fontSize was the only native flag TypographyControls replaces."
+			"description": "Wrapper text alignment — a plain attribute edited by TypographyControls' text-align field, emitted by render.php as a scoped declaration."
 		},
 		"fontFamily": {
 			"type": "string",
@@ -328,6 +374,285 @@
 			"type": "number"
 		},
 		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"numberFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"numberFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"numberFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"numberFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"numberFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"numberTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"numberTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"numberLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"numberLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"numberLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"numberLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"numberTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"numberTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"numberTextColumns": {
+			"type": "number"
+		},
+		"numberWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"labelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"labelTextColumns": {
+			"type": "number"
+		},
+		"labelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"expiredFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"expiredFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"expiredFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"expiredFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"expiredFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"expiredTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"expiredTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"expiredLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"expiredLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"expiredLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"expiredLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"expiredTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"expiredTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"expiredTextColumns": {
+			"type": "number"
+		},
+		"expiredWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

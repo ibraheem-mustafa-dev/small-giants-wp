@@ -328,9 +328,19 @@ if ( '' !== $text_colour_hover_effective ) {
 // helper, which also now offers fontWeight/fontStyle.
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-product-faq', '.' . $uid . '.wp-block-sgs-product-faq :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
 if ( '' !== $sgs_pf_typography_css ) {
 	$scoped_css[] = $sgs_pf_typography_css;
+}
+
+// Question typography — prefix 'question'. The <summary> is rendered by the
+// child sgs/product-faq-item, which declares no typography attributes; this
+// parent control paints every question in this FAQ instance through a
+// descendant selector on the uid class (specificity 0,3,0, above the
+// stylesheet's base and open/hover rules).
+$sgs_pf_question_css = sgs_typography_css_rule( $attributes, 'question', '.' . $uid . '.wp-block-sgs-product-faq .sgs-product-faq-item__question' );
+if ( '' !== $sgs_pf_question_css ) {
+	$scoped_css[] = $sgs_pf_question_css;
 }
 
 // --- Width (base only — outer maxWidth). ---

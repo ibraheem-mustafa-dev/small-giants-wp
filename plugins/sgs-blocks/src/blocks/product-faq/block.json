@@ -81,7 +81,16 @@
 							}
 						}
 					},
-					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (color/spacing/border) plus maxWidth; typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). No per-element (heading/icon) typography attrs exist on this block, so heading/icon text styling is an honest gap inherited from the wrapper, not independently controlled. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). textColourHover/textColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — this element ALSO carries css:background-color (backgroundColour, painted via sgs_fill_states_css on the same $root_sel selector, render.php), so a hover text-gradient's background-clip:text would clip/overwrite the background; render.php only swaps the background onto its own ::after layer for the specific instance where the resolved hover text value is actually a gradient (conditional-swap pattern, mirrors the brand-strip itemTextColourHover fix c785a3b7a and sgs/form-step's identical fix in this same batch)."
+					"_note": "Content-KIND composite (supports.sgs.containerKind='content', D294 box+width only) — every style control here is a WordPress-native wrapper support (color/spacing/border) plus maxWidth; typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The FAQ question has its own typography surface (the 'question' element, prefix 'question'); heading and icon text styling remain an honest gap inherited from the wrapper, not independently controlled. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). textColourHover/textColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — this element ALSO carries css:background-color (backgroundColour, painted via sgs_fill_states_css on the same $root_sel selector, render.php), so a hover text-gradient's background-clip:text would clip/overwrite the background; render.php only swaps the background onto its own ::after layer for the specific instance where the resolved hover text value is actually a gradient (conditional-swap pattern, mirrors the brand-strip itemTextColourHover fix c785a3b7a and sgs/form-step's identical fix in this same batch)."
+				},
+				"question": {
+					"label": "FAQ question",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "question",
+					"_note": "Typography only (questionFontSize/questionFontWeight/questionFontStyle/questionLineHeight and the rest of the question family). Painted by render.php on every sgs/product-faq-item summary (.sgs-product-faq-item__question) inside this FAQ instance through a descendant selector on the parent uid class, so one control styles every question uniformly. The child block declares no typography attributes. Question colour follows the wrapper's text colour and the hover/open treatment in style.css."
 				}
 			}
 		}
@@ -291,6 +300,70 @@
 				"vertical-rl",
 				"vertical-lr"
 			],
+			"default": ""
+		},
+		"questionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"questionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"questionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"questionFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"questionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"questionTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"questionTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"questionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"questionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"questionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"questionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"questionTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"questionTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"questionTextColumns": {
+			"type": "number"
+		},
+		"questionWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
 		}
 	},

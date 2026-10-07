@@ -9,7 +9,6 @@ import {
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { textPaintPreview, backgroundPaintPreview, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -23,6 +22,67 @@ const DIGIT_STYLES = [
 	{ label: __( 'Flip', 'sgs-blocks' ), value: 'flip' },
 ];
 
+
+/**
+ * Per-element typography previews — the twins of render.php's three
+ * sgs_typography_css_rule( $attributes, 'number' | 'label' | 'expired', … )
+ * calls. Every attribute is named here so the canvas visibly reads each one.
+ */
+function buildElementTypography( attributes, previewTier = 'desktop' ) {
+	const {
+		numberFontSize,
+		numberFontSizeUnit,
+		numberFontWeight,
+		numberFontStyle,
+		numberFontFamily,
+		numberTextTransform,
+		numberTextDecoration,
+		numberLineHeight,
+		numberLineHeightUnit,
+		numberLetterSpacing,
+		numberLetterSpacingUnit,
+		numberTextAlign,
+		numberTextWrap,
+		numberTextColumns,
+		numberWritingMode,
+		labelFontSize,
+		labelFontSizeUnit,
+		labelFontWeight,
+		labelFontStyle,
+		labelFontFamily,
+		labelTextTransform,
+		labelTextDecoration,
+		labelLineHeight,
+		labelLineHeightUnit,
+		labelLetterSpacing,
+		labelLetterSpacingUnit,
+		labelTextAlign,
+		labelTextWrap,
+		labelTextColumns,
+		labelWritingMode,
+		expiredFontSize,
+		expiredFontSizeUnit,
+		expiredFontWeight,
+		expiredFontStyle,
+		expiredFontFamily,
+		expiredTextTransform,
+		expiredTextDecoration,
+		expiredLineHeight,
+		expiredLineHeightUnit,
+		expiredLetterSpacing,
+		expiredLetterSpacingUnit,
+		expiredTextAlign,
+		expiredTextWrap,
+		expiredTextColumns,
+		expiredWritingMode,
+	} = attributes;
+
+	return {
+		number: typographyPreviewStyle( attributes, 'number', previewTier ),
+		label: typographyPreviewStyle( attributes, 'label', previewTier ),
+		expired: typographyPreviewStyle( attributes, 'expired', previewTier ),
+	};
+}
 
 /**
  * Build the editor-canvas preview style object (base tier only — tablet/
@@ -106,11 +166,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourGradient,
 	} = attributes;
 
+	// Expired state — the twin of render.php's $is_expired: only a fixed target
+	// date that is not in the future (evergreen mode never expires server-side).
+	// render.php hides the grid and shows the message when expired, and the
+	// reverse otherwise.
+	const targetTime = targetDate ? new Date( targetDate ).getTime() : NaN;
+	const isExpired = ! evergreenMode && ! Number.isNaN( targetTime ) && targetTime <= Date.now();
+
 	const className = [
 		'sgs-countdown',
 		`sgs-countdown--${ cardStyle }`,
 		`sgs-countdown--digit-${ 'flip' === digitStyle ? 'flip' : 'simple' }`,
-	].join( ' ' );
+		isExpired ? 'sgs-countdown--ended' : '',
+	].filter( Boolean ).join( ' ' );
 
 	// numberColour/numberColourGradient + labelColour/labelColourGradient real
 	// mechanism (render.php): a flat colour is a `--sgs-countdown-*-colour`
@@ -126,8 +194,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: buildPreviewStyle( attributes, colourPalette, previewTier ),
 	} );
 
-	const numberPreview = textPaintPreview( numberColour, numberColourGradient, colourPalette );
-	const labelPreview = textPaintPreview( labelColour, labelColourGradient, colourPalette );
+	const elementTypography = buildElementTypography( attributes, previewTier );
+	const numberPreview = {
+		...textPaintPreview( numberColour, numberColourGradient, colourPalette ),
+		...elementTypography.number,
+	};
+	const labelPreview = {
+		...textPaintPreview( labelColour, labelColourGradient, colourPalette ),
+		...elementTypography.label,
+	};
+	const expiredPreview = elementTypography.expired;
 
 	const units = [];
 	if ( showDays ) units.push( { value: '00', label: __( 'Days', 'sgs-blocks' ) } );
@@ -321,36 +397,76 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* Typography — replaces the old WP-native supports.typography
-				    (fontSize + textAlign only) with the shared TypographyControls
-				    component + sgs_typography_css_rule() render.php helper
-				    (D971/D972 full-replacement track). Root prefix "" — the wrapper
-				    is the only element this block-level typography targets (the
-				    number/label elements keep their own colour-only controls).
-				    TypographyControls has no text-align field, so that control
-				    stays block-private. D812 (2026-08-26): a 5-option enum with
-				    longest rendered label <=12 chars ("— inherit —", 11 chars)
-				    renders as ToggleGroupControl, not SelectControl. */ }
+				{ /* Typography — the shared TypographyControls component +
+				    sgs_typography_css_rule() render.php helper (D971/D972
+				    full-replacement track). A 4-target switcher: "All text" is the
+				    wrapper (root prefix "", inherited by anything the three element
+				    surfaces do not style), then the number, label and expired-message
+				    elements each own their own surface. TypographyControls offers the
+				    text-align field itself, so there is no block-private one. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix=""
+						targets={ [
+							{
+								key: 'root',
+								label: __( 'All text', 'sgs-blocks' ),
+								prefix: '',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'number',
+								label: __( 'Number', 'sgs-blocks' ),
+								prefix: 'number',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'label',
+								label: __( 'Label', 'sgs-blocks' ),
+								prefix: 'label',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'expired',
+								label: __( 'Expired message', 'sgs-blocks' ),
+								prefix: 'expired',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
-					<ToggleGroupControl
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ attributes.textAlign || '' }
-						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="" label={ __( '— inherit —', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="right" label={ __( 'Right', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="justify" label={ __( 'Justify', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
 				</PanelBody>
 				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveOverride
@@ -410,6 +526,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ /* The canvas is an authoring surface, so BOTH states stay visible: a
+				     client styling the "Expired message" typography target must be able
+				     to see it. render.php alone owns the live visibility swap, via the
+				     `hidden` attribute on whichever of these two the timer state hides.
+				     `isExpired` still drives the wrapper's --ended class, so the expired
+				     message shows its real ended-state colour once a past date is set. */ }
 				<div className="sgs-countdown__grid">
 					{ units.map( ( unit, i ) => (
 						<div key={ i } className="sgs-countdown__unit">
@@ -418,6 +540,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</div>
 					) ) }
 				</div>
+				<div className="sgs-countdown__expired" style={ expiredPreview }>{ expiredMessage }</div>
 			</div>
 		</>
 	);

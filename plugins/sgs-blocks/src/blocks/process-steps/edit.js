@@ -150,7 +150,106 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderStyle,
 		borderColour,
 		borderColourGradient,
+		iconFontSize,
+		iconFontSizeUnit,
+		iconFontWeight,
+		iconFontStyle,
+		iconFontFamily,
+		iconTextTransform,
+		iconTextDecoration,
+		iconLineHeight,
+		iconLineHeightUnit,
+		iconLetterSpacing,
+		iconLetterSpacingUnit,
+		iconTextAlign,
+		iconTextWrap,
+		iconTextColumns,
+		iconWritingMode,
+		numberFontSize,
+		numberFontSizeUnit,
+		numberFontWeight,
+		numberFontStyle,
+		numberFontFamily,
+		numberTextTransform,
+		numberTextDecoration,
+		numberLineHeight,
+		numberLineHeightUnit,
+		numberLetterSpacing,
+		numberLetterSpacingUnit,
+		numberTextAlign,
+		numberTextWrap,
+		numberTextColumns,
+		numberWritingMode,
+		descriptionFontSize,
+		descriptionFontSizeUnit,
+		descriptionFontWeight,
+		descriptionFontStyle,
+		descriptionFontFamily,
+		descriptionTextTransform,
+		descriptionTextDecoration,
+		descriptionLineHeight,
+		descriptionLineHeightUnit,
+		descriptionLetterSpacing,
+		descriptionLetterSpacingUnit,
+		descriptionTextAlign,
+		descriptionTextWrap,
+		descriptionTextColumns,
+		descriptionWritingMode,
 	} = attributes;
+
+	// Each element's typography attributes, enumerated by name so the canvas
+	// preview reads exactly the attributes the inspector writes.
+	const iconTypography = {
+		iconFontSize,
+		iconFontSizeUnit,
+		iconFontWeight,
+		iconFontStyle,
+		iconFontFamily,
+		iconTextTransform,
+		iconTextDecoration,
+		iconLineHeight,
+		iconLineHeightUnit,
+		iconLetterSpacing,
+		iconLetterSpacingUnit,
+		iconTextAlign,
+		iconTextWrap,
+		iconTextColumns,
+		iconWritingMode,
+	};
+	const numberTypography = {
+		numberFontSize,
+		numberFontSizeUnit,
+		numberFontWeight,
+		numberFontStyle,
+		numberFontFamily,
+		numberTextTransform,
+		numberTextDecoration,
+		numberLineHeight,
+		numberLineHeightUnit,
+		numberLetterSpacing,
+		numberLetterSpacingUnit,
+		numberTextAlign,
+		numberTextWrap,
+		numberTextColumns,
+		numberWritingMode,
+	};
+	const descriptionTypography = {
+		descriptionFontSize,
+		descriptionFontSizeUnit,
+		descriptionFontWeight,
+		descriptionFontStyle,
+		descriptionFontFamily,
+		descriptionTextTransform,
+		descriptionTextDecoration,
+		descriptionLineHeight,
+		descriptionLineHeightUnit,
+		descriptionLetterSpacing,
+		descriptionLetterSpacingUnit,
+		descriptionTextAlign,
+		descriptionTextWrap,
+		descriptionTextColumns,
+		descriptionWritingMode,
+	};
 
 	const className = [
 		'sgs-process-steps',
@@ -204,7 +303,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		color: colourVar( numberColour ) || undefined,
 		// The list layout draws no badge, so render.php drops the badge fill there.
 		...( 'list' === layout ? {} : backgroundPaintPreview( numberBackground, attributes.numberBackgroundGradient, palette ) ),
-		...typographyPreviewStyle( attributes, 'number', previewTier ),
+		...typographyPreviewStyle( numberTypography, 'number', previewTier ),
 	};
 
 	const titleStyle = {
@@ -212,7 +311,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
 	};
 
-	const descStyle = resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar );
+	const descStyle = {
+		...typographyPreviewStyle( descriptionTypography, 'description', previewTier ),
+		...resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar ),
+	};
+
+	const iconStyle = typographyPreviewStyle( iconTypography, 'icon', previewTier );
 
 	// D649 — heading level is an identity control (document-outline
 	// placement), not a style control; mirrors render.php's own fallback.
@@ -346,17 +450,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						);
 					} )() }
-					{ /* Font family, size, weight and line height — the same
-					     shared TypographyControls/sgs_typography_css_rule()
-					     mechanism as the `title` element below, prefix "number"
-					     matching the number element's own attrMap prefix. Unset,
-					     the number keeps style.css's own size and weight. */ }
-					<TypographyControls showFontFamily
-						showStyle={ false }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="number"
-					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -400,19 +493,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						] }
 					/>
-					{ /* Typography — replaces the old WP-native supports.typography
-					   (fontSize/lineHeight/fontWeight/fontStyle, plus letterSpacing/
-					   textTransform/textAlign now dropped as honest gaps) with the
-					   shared TypographyControls component + sgs_typography_css_rule()
-					   render.php helper (D971/D972 full-replacement track). Prefix
-					   "title" matches this element's own attrMap prefix — native
-					   typography previously painted the step title via
-					   `selectors.typography: ".sgs-process-steps__title"`, now removed. */ }
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="title"
-					/>
 				</PanelBody>
 			</InspectorControls>
 
@@ -436,6 +516,77 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: descriptionColourHover,
 								onChange: ( val ) => setAttributes( { descriptionColourHover: val ?? '' } ),
 								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* Typography — ONE panel for the four text elements, switched by the
+			   target dropdown. Each target's prefix matches that element's own
+			   attrMap prefix; render.php emits each family through
+			   sgs_typography_css_rule(). */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						targets={ [
+							{
+								key: 'icon',
+								label: __( 'Icon', 'sgs-blocks' ),
+								prefix: 'icon',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'number',
+								label: __( 'Number', 'sgs-blocks' ),
+								prefix: 'number',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'title',
+								label: __( 'Title', 'sgs-blocks' ),
+								prefix: 'title',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'description',
+								label: __( 'Description', 'sgs-blocks' ),
+								prefix: 'description',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
 							},
 						] }
 					/>
@@ -718,6 +869,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								className="sgs-process-steps__icon"
 								aria-hidden="true"
 								data-icon={ step.icon }
+								style={ iconStyle }
 							>
 								<IconPreview source="lucide" name={ step.icon } size={ 24 } />
 							</span>

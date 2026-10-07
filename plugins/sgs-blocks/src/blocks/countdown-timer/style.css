@@ -52,25 +52,42 @@
 	min-width: 80px;
 }
 
-.sgs-countdown__number {
+/*
+ * Per-element typography defaults — :where() keeps each at specificity 0 so the
+ * number/label/expired typography controls (render.php's uid-scoped
+ * sgs_typography_css_rule emits, specificity 0,3,0) always win. A direct
+ * declaration on the element beats the wrapper's inherited value, so these
+ * still paint the visual defaults exactly as before. Same sanctioned
+ * overridable-default pattern as the :where(.sgs-countdown) block above.
+ */
+:where(.sgs-countdown__number) {
 	font-size: var(--wp--preset--font-size--xx-large, 3rem);
 	font-weight: 700;
 	line-height: 1.1;
+}
+
+:where(.sgs-countdown__label) {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+:where(.sgs-countdown__expired) {
+	font-size: var(--wp--preset--font-size--large, 1.25rem);
+	font-weight: 600;
+}
+
+.sgs-countdown__number {
 	font-variant-numeric: tabular-nums;
 	color: var(--sgs-countdown-number-colour, inherit);
 }
 
 .sgs-countdown__label {
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
 	margin-top: var(--wp--preset--spacing--10, 4px);
 	color: var(--sgs-countdown-label-colour, inherit);
 }
 
 .sgs-countdown__expired {
-	font-size: var(--wp--preset--font-size--large, 1.25rem);
-	font-weight: 600;
 	color: var(--wp--preset--color--text-muted);
 }
 
@@ -124,7 +141,14 @@
 		min-width: 60px;
 	}
 
-	.sgs-countdown__number {
+	/*
+	 * Mobile step-down of the digit size. :where() so it is a default, not a
+	 * lock: once a client sets a number font size, the uid-scoped
+	 * sgs_typography_css_rule rule (0,3,0) wins at every width and this
+	 * step-down no longer applies. That is intended — TypographyControls gives
+	 * the client per-tier size fields for the number.
+	 */
+	:where(.sgs-countdown__number) {
 		font-size: var(--wp--preset--font-size--x-large, 2rem);
 	}
 }

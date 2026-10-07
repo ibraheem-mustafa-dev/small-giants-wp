@@ -88,11 +88,34 @@
 							}
 						}
 					},
-					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
+					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). The wrapper declares no native `supports.typography`; typography is owned per element (icon, number, title, description) through the shared TypographyControls/sgs_typography_css_rule() families. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
+				},
+				"icon": {
+					"label": "Step icon",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "icon",
+					"attrMap": {
+						"css:font-size": "iconFontSize",
+						"css:font-weight": "iconFontWeight",
+						"css:font-style": "iconFontStyle",
+						"css:font-family": "iconFontFamily",
+						"css:text-transform": "iconTextTransform",
+						"css:text-decoration": "iconTextDecoration",
+						"css:line-height": "iconLineHeight",
+						"css:letter-spacing": "iconLetterSpacing",
+						"css:text-align": "iconTextAlign",
+						"css:text-wrap": "iconTextWrap",
+						"css:column-count": "iconTextColumns",
+						"css:writing-mode": "iconWritingMode"
+					},
+					"_note": "The optional Lucide icon above each step's number. Its size is a font-size (the SVG is 1em square), so the icon typography family sizes the glyph and aligns it. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults. The icon colour is not an attribute on this block: style.css paints it from the primary token."
 				},
 				"title": {
 					"label": "Step title",
-					"order": 3,
+					"order": 4,
 					"clusters": [
 						"text"
 					],
@@ -117,7 +140,7 @@
 				},
 				"number": {
 					"label": "Step number badge",
-					"order": 2,
+					"order": 3,
 					"clusters": [
 						"text",
 						"fill"
@@ -130,7 +153,15 @@
 						"css:font-family": "numberFontFamily",
 						"css:font-size": "numberFontSize",
 						"css:font-weight": "numberFontWeight",
-						"css:line-height": "numberLineHeight"
+						"css:line-height": "numberLineHeight",
+						"css:font-style": "numberFontStyle",
+						"css:text-transform": "numberTextTransform",
+						"css:text-decoration": "numberTextDecoration",
+						"css:letter-spacing": "numberLetterSpacing",
+						"css:text-align": "numberTextAlign",
+						"css:text-wrap": "numberTextWrap",
+						"css:column-count": "numberTextColumns",
+						"css:writing-mode": "numberWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -144,18 +175,30 @@
 							]
 						}
 					},
-					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient (2026-09-05) mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry). When the new `layout` attribute (also a structural/variant selector, not mapped) is 'list', render.php suppresses numberBackground/numberBackgroundGradient/numberBackgroundHover — the number keeps numberColour but paints no badge fill, matching the plain-numbered-copy layout. numberFontFamily (2026-09-25) reuses the shared TypographyControls/sgs_typography_css_rule() mechanism already proven on the `title` element — the only-set-properties-emitted helper is called with prefix 'number' even though numberFontSize/numberFontWeight/numberLineHeight remain honest gaps (unlike `title`, the number's size/weight are still static style.css, not per-instance attrs); only font-family is offered in the editor."
+					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry). When the `layout` attribute (also a structural/variant selector, not mapped) is 'list', render.php suppresses numberBackground/numberBackgroundGradient/numberBackgroundHover — the number keeps numberColour but paints no badge fill, matching the plain-numbered-copy layout. Typography is the full shared TypographyControls/sgs_typography_css_rule() family under prefix 'number'; only set properties are emitted, and unset, style.css's own `:where()` size, weight and line-height defaults stay."
 				},
 				"description": {
 					"label": "Step description",
-					"order": 4,
+					"order": 5,
 					"clusters": [
 						"text"
 					],
 					"prefix": "description",
 					"attrMap": {
 						"css:color": "descriptionColour",
-						"css:background-image": "descriptionColourGradient"
+						"css:background-image": "descriptionColourGradient",
+						"css:font-size": "descriptionFontSize",
+						"css:font-weight": "descriptionFontWeight",
+						"css:font-style": "descriptionFontStyle",
+						"css:font-family": "descriptionFontFamily",
+						"css:text-transform": "descriptionTextTransform",
+						"css:text-decoration": "descriptionTextDecoration",
+						"css:line-height": "descriptionLineHeight",
+						"css:letter-spacing": "descriptionLetterSpacing",
+						"css:text-align": "descriptionTextAlign",
+						"css:text-wrap": "descriptionTextWrap",
+						"css:column-count": "descriptionTextColumns",
+						"css:writing-mode": "descriptionWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -164,17 +207,17 @@
 							}
 						}
 					},
-					"_note": "Only colour is independently controlled for the description — font-size/weight/line-height are honest gaps (no per-element typography attrs declared for this element)."
+					"_note": "Colour and the full typography family (prefix 'description') are independently controlled. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults; unset, those defaults paint."
 				},
 				"connector": {
 					"label": "Connector line",
-					"order": 5,
+					"order": 6,
 					"clusters": [],
 					"_note": "connectorStyle (line/none) is a structural variant selector — no colour/fill control exists for the connector on this block (unlike sgs/timeline's connectorColour). Declared for documentation only; orphan-scan-exempt (no prefix). The connector never renders when `layout` is 'list' (style.css hides the step's ::after regardless of connectorStyle), since a stacked list of plain numbered copy has no line to connect."
 				},
 				"animation": {
 					"label": "Scroll-reveal animation",
-					"order": 6,
+					"order": 7,
 					"clusters": [
 						"animation"
 					],
@@ -187,14 +230,14 @@
 				},
 				"step": {
 					"label": "Process step",
-					"order": 7,
+					"order": 8,
 					"clusters": [
 						"layout"
 					],
 					"attrMap": {
 						"css:gap": "numberGap"
 					},
-					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
+					"_note": "Per-step fields (number/title/description/icon) are plain repeater content from the `steps` array — styled block-wide via the icon/number/title/description elements above, no independent per-step override. Mirrors sgs/accordion's `item` and sgs/timeline's `entry`."
 				}
 			}
 		}
@@ -556,6 +599,261 @@
 			"type": "number"
 		},
 		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"iconFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"iconFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"iconFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"iconFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"iconFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"iconTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"iconTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"iconLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"iconLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"iconLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"iconLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"iconTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"iconTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"iconTextColumns": {
+			"type": "number"
+		},
+		"iconWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"numberFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"numberTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"numberTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"numberLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"numberLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"numberTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"numberTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"numberTextColumns": {
+			"type": "number"
+		},
+		"numberWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"descriptionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descriptionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"descriptionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"descriptionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descriptionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descriptionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"descriptionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"descriptionTextColumns": {
+			"type": "number"
+		},
+		"descriptionWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

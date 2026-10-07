@@ -216,13 +216,45 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ /* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight only) with the shared TypographyControls
 				    component + sgs_typography_css_rule() render.php helper
-				    (D971/D972 full-replacement track). Root prefix "" since this
-				    block has a single styled root element. */ }
+				    (D971/D972 full-replacement track). Two targets: Content (root
+				    prefix "", the section) and Question (prefix "question", every
+				    question summary in this FAQ, painted by render.php through a
+				    descendant selector). */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix=""
+						targets={ [
+							{
+								key: 'content',
+								label: __( 'Content', 'sgs-blocks' ),
+								prefix: '',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'question',
+								label: __( 'Question', 'sgs-blocks' ),
+								prefix: 'question',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 

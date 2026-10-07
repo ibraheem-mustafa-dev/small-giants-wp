@@ -170,9 +170,9 @@ $border_radius_mobile_obj = $radius_tiers['mobile'];
 // sgs_text_colour_decl() / sgs_text_colour_gradient_fallback_rule() for
 // text; sgs_fill_decls() / sgs_block_background_layer_css() for background).
 //
-// Typography (title element) moved off this wholesale native-support call
-// onto the shared `sgs_typography_css_rule()` helper (D971/D972
-// full-replacement track) — see section 4 where $title_scope is defined.
+// Typography (icon, number, title and description elements) is emitted by
+// the shared `sgs_typography_css_rule()` helper in section 4, not by this
+// wholesale native-support call.
 $style_shadow = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
 $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -464,18 +464,18 @@ $num_scope   = $root_sel . ' .sgs-process-steps__number';
 $title_scope = $root_sel . ' .sgs-process-steps__title';
 $desc_scope  = $root_sel . ' .sgs-process-steps__description';
 
-// Step title typography — shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track), replacing the old WP-native
-// supports.typography + `selectors.typography` declaration (both removed
-// from block.json). Prefix "title" matches the title element's own attrMap.
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_scope );
-
-// Step number typography (font family, size, weight, line height) — same
-// shared TypographyControls/sgs_typography_css_rule() mechanism as the title
-// element above, prefix "number" matching the number element's own attrMap
-// prefix. Only set properties are emitted; unset, style.css's own size and
-// weight stay (this scoped rule out-ranks them when set).
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', $num_scope );
+// Per-element typography — shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track), one call per prefix
+// (icon, number, title, description), each matching that element's own
+// attrMap prefix. Only set properties are emitted; unset, style.css's own
+// `:where()` defaults paint. Every selector is a descendant of the uid-scoped
+// root (0,3,0), which out-ranks style.css's bare step-class rules (0,1,0). The
+// selector is built inline in each call so the hardcoded-render-defaults gate
+// can read the prefix and the selector fragment together.
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'icon', '.' . $uid . '.sgs-process-steps .sgs-process-steps__icon' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.sgs-process-steps .sgs-process-steps__number' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.sgs-process-steps .sgs-process-steps__title' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid . '.sgs-process-steps .sgs-process-steps__description' );
 
 // Space between the steps (stepGap); unset keeps style.css's gap.
 if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {

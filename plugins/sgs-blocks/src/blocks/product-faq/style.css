@@ -50,13 +50,18 @@
 	align-items: center;
 	gap: 12px;
 	padding: 16px 20px;
-	font-weight: 600;
-	font-size: 1rem;
-	line-height: 1.4;
 	min-height: 44px; /* WCAG 2.2 AA touch target */
 	transition:
 		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
 		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Typography defaults at zero specificity: the parent block's Question
+ * typography controls (render.php, prefix 'question') override them. */
+:where(.sgs-product-faq-item__question) {
+	font-weight: 600;
+	font-size: 1rem;
+	line-height: 1.4;
 }
 
 /* No rest-state colour fallback: the question is a <summary>, which inherits
@@ -65,11 +70,12 @@
 .sgs-product-faq-item__question:hover,
 .sgs-product-faq-item[open] > .sgs-product-faq-item__question {
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	/* Rule 43 (WCAG 1.4.1): the open state is not carried by colour alone.
+	 * Two non-colour cues carry it: the answer panel becomes visible, and the
+	 * chevron rotates 180deg (.sgs-product-faq-item[open] rule below). There is
+	 * deliberately no font-weight step: it would re-wrap the question on toggle,
+	 * and the weight is a client typography control. */
 	color: var(--wp--preset--color--primary, #0f7e80);
-	/* Rule 43 (WCAG 1.4.1): open/hover state must not rely on colour alone —
-	 * the base question is already font-weight:600 (line 52), so the
-	 * open/hover state steps up to 700 as the non-colour signal. */
-	font-weight: 700;
 }
 
 .sgs-product-faq-item__question:focus-visible {
@@ -148,6 +154,9 @@
 @media (max-width: 600px) {
 	.sgs-product-faq-item__question {
 		padding: 14px 16px;
+	}
+
+	:where(.sgs-product-faq-item__question) {
 		font-size: 0.9rem;
 	}
 
@@ -164,9 +173,5 @@
 	.sgs-product-faq-item__answer {
 		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;
-	}
-
-	.sgs-product-faq-item[open] .sgs-product-faq-item__chevron {
-		transform: none !important;
 	}
 }

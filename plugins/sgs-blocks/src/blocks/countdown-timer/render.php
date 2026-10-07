@@ -182,8 +182,8 @@ $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_clas
 
 // Typography — migrated off WP-native supports.typography onto the shared
 // TypographyControls/sgs_typography_css_rule() mechanism (D971/D972
-// full-replacement track). textAlign stays a plain custom-attr keyword
-// (TypographyControls offers no text-align field).
+// full-replacement track). textAlign is a plain custom-attr keyword edited
+// through TypographyControls' own text-align field.
 $text_align_raw   = isset( $attributes['textAlign'] ) ? (string) $attributes['textAlign'] : '';
 $allowed_aligns   = array( 'left', 'center', 'right', 'justify' );
 $text_align       = in_array( $text_align_raw, $allowed_aligns, true ) ? $text_align_raw : '';
@@ -259,7 +259,16 @@ if ( '' !== $text_align ) {
 // sgs_typography_css_rule() mechanism (D971/D972 full-replacement track).
 // Replaces the old WP-native supports.typography (fontSize only) with the
 // framework's own helper, which also now offers fontWeight/fontStyle/lineHeight.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+// The number, label and expired-message elements each own a typography surface
+// (prefixes number, label, expired). Each selector is built INLINE in the call
+// so check-hardcoded-render-defaults.js reads the prefix and the element
+// selector together. The emitted rules are (0,3,0) and beat style.css's :where()
+// defaults. .sgs-countdown__expired is a direct child of the wrapper, a sibling
+// of .sgs-countdown__grid.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-countdown-timer' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__number' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__label' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'expired', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__expired' );
 
 // --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
 // inline. Values are sanitised via sgs_colour_value() and routed into the
