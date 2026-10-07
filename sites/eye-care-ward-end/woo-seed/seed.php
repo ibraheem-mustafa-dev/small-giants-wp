@@ -290,9 +290,13 @@ function sgs_seed_find_or_create_size_term( int $eye, int $bridge, int $temple, 
  * sizes-jpopticians.json when that product was `found` there, otherwise a single size from
  * data.json's own eye/bridge/temple fields.
  *
+ * Lens height comes only from sizes-jpopticians.json (`height`, the site's "Depth"); the
+ * draft's data.json has none, so a fallback size carries a null height and no figure is
+ * ever estimated.
+ *
  * @param array $p             One data.json PRODUCTS row.
  * @param array $sizes_by_code sizes-jpopticians.json rows keyed by `code`.
- * @return array List of ['eye' => int, 'bridge' => int, 'temple' => int], smallest eye first.
+ * @return array List of ['eye' => int, 'bridge' => int, 'temple' => int, 'height' => float|null], smallest eye first.
  */
 function sgs_seed_product_sizes( array $p, array $sizes_by_code ): array {
 	$entry = $sizes_by_code[ $p['code'] ] ?? null;
@@ -304,6 +308,7 @@ function sgs_seed_product_sizes( array $p, array $sizes_by_code ): array {
 				'eye'    => (int) $size_row['eye'],
 				'bridge' => (int) $size_row['bridge'],
 				'temple' => (int) $size_row['temple'],
+				'height' => isset( $size_row['height'] ) ? (float) $size_row['height'] : null,
 			);
 		}
 	} else {
@@ -311,6 +316,7 @@ function sgs_seed_product_sizes( array $p, array $sizes_by_code ): array {
 			'eye'    => (int) $p['eye'],
 			'bridge' => (int) $p['bridge'],
 			'temple' => (int) $p['temple'],
+			'height' => null,
 		);
 	}
 
@@ -322,6 +328,27 @@ function sgs_seed_product_sizes( array $p, array $sizes_by_code ): array {
 	);
 
 	return $sizes;
+}
+
+/**
+ * Write a size's frame measurements to a product or variation as `_sgs_frame_*` meta
+ * (mm), the keys the product page's measurement table binds to. A size with no known
+ * lens height has `_sgs_frame_height` removed, so a stale figure never survives a re-seed.
+ *
+ * @param int   $post_id Product or variation ID.
+ * @param array $size    A size from sgs_seed_product_sizes().
+ * @return void
+ */
+function sgs_seed_write_frame_meta( int $post_id, array $size ): void {
+	update_post_meta( $post_id, '_sgs_frame_eye', $size['eye'] );
+	update_post_meta( $post_id, '_sgs_frame_bridge', $size['bridge'] );
+	update_post_meta( $post_id, '_sgs_frame_temple', $size['temple'] );
+	if ( null === $size['height'] ) {
+		delete_post_meta( $post_id, '_sgs_frame_height' );
+	} else {
+		// 39.9 stays 39.9; 48.0 is written as 48.
+		update_post_meta( $post_id, '_sgs_frame_height', rtrim( rtrim( number_format( $size['height'], 1, '.', '' ), '0' ), '.' ) );
+	}
 }
 
 /**
@@ -596,9 +623,7 @@ foreach ( $data['PRODUCTS'] as $p ) {
 
 	// Now that we have a real ID, (re-)apply product-level meta + taxonomy terms.
 	update_post_meta( $product_id, '_sgs_rrp', $p['rrp'] );
-	update_post_meta( $product_id, '_sgs_frame_eye', $default_size['eye'] );
-	update_post_meta( $product_id, '_sgs_frame_bridge', $default_size['bridge'] );
-	update_post_meta( $product_id, '_sgs_frame_temple', $default_size['temple'] );
+	sgs_seed_write_frame_meta( $product_id, $default_size );
 
 	if ( $brand_taxonomy ) {
 		$brand_term = get_term_by( 'name', $p['brand'], $brand_taxonomy );
@@ -705,9 +730,7 @@ foreach ( $data['PRODUCTS'] as $p ) {
 				$variation->set_status( 'publish' );
 				$variation_id = $variation->save();
 
-				update_post_meta( $variation_id, '_sgs_frame_eye', $size['eye'] );
-				update_post_meta( $variation_id, '_sgs_frame_bridge', $size['bridge'] );
-				update_post_meta( $variation_id, '_sgs_frame_temple', $size['temple'] );
+				sgs_seed_write_frame_meta( $variation_id, $size );
 
 				if ( $existing_variation_id ) {
 					$stats['variations_updated']++;

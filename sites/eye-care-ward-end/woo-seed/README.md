@@ -26,9 +26,11 @@ draft/target and re-run).
   Variations are now keyed on (colour, size); a product's default attributes are its first
   colour plus its default size (middle of 3, first of 2, the only one of 1).
 - Product-level meta: `_sgs_rrp` (int, £), `_sgs_frame_eye`, `_sgs_frame_bridge`,
-  `_sgs_frame_temple` (mm) — now the product's *default* size (see above), with the same
-  three keys also written per-variation with that variation's own size. See "Meta keys"
-  below for why these existed as product-level meta in the first place.
+  `_sgs_frame_temple` and `_sgs_frame_height` (lens height) (mm), the product's *default* size
+  (see above), with the same keys also written per-variation with that variation's own size.
+  Lens height comes only from `sizes-jpopticians.json` (jpopticians' "Depth"); a frame the
+  site doesn't carry has no `_sgs_frame_height`, never an estimate. See "Meta keys" below for
+  why these existed as product-level meta in the first place.
 - **Store country** GB, selling to GB only. **UK shipping zone**: "Tracked UK delivery" £3.95, "Free UK delivery" over £75, "Collect in Birmingham" (each method's own instance settings; see `sgs_seed_zone_method_settings()`).
 
 ## Running it

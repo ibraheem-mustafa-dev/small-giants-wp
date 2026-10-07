@@ -1561,8 +1561,9 @@
                               "backgroundColour": "surface-alt",
                               "layout": "grid",
                               "gridTemplateColumns": {
-                                "desktop": "150px auto",
-                                "mobile": "1fr auto"
+                                "desktop": "212px minmax(0, 1fr)",
+                                "tablet": "212px minmax(0, 1fr)",
+                                "mobile": "minmax(0, 1fr)"
                               },
                               "gap": {
                                 "desktop": "4px 18px"
@@ -1580,50 +1581,67 @@
                             },
                             "innerBlocks": [
                               {
-                                "name": "sgs/text",
+                                "name": "sgs/container",
                                 "attributes": {
-                                  "text": "Lens width",
-                                  "fontSize": {
-                                    "desktop": 11
+                                  "layout": "grid",
+                                  "gridTemplateColumns": {
+                                    "desktop": "120px 74px",
+                                    "tablet": "120px 74px",
+                                    "mobile": "minmax(0, 1fr) auto"
                                   },
-                                  "fontSizeUnit": "px",
-                                  "letterSpacing": {
-                                    "desktop": 0.16
+                                  "gap": {
+                                    "desktop": "18px"
                                   },
-                                  "letterSpacingUnit": "em",
-                                  "textTransform": "uppercase",
-                                  "textColour": "text-label",
-                                  "className": "cr-ref-product-77"
-                                }
-                              },
-                              {
-                                "name": "sgs/text",
-                                "attributes": {
-                                  "text": "",
-                                  "fontFamily": "heading",
-                                  "fontWeight": "500",
-                                  "fontSize": {
-                                    "desktop": 20
-                                  },
-                                  "fontSizeUnit": "px",
-                                  "metadata": {
-                                    "bindings": {
-                                      "text": {
-                                        "source": "sgs-product/field",
-                                        "args": {
-                                          "key": "meta._sgs_frame_eye",
-                                          "after": " mm"
-                                        }
-                                      }
+                                  "alignItems": "baseline"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Lens width",
+                                      "fontSize": {
+                                        "desktop": 11
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "letterSpacing": {
+                                        "desktop": 0.16
+                                      },
+                                      "letterSpacingUnit": "em",
+                                      "textTransform": "uppercase",
+                                      "textColour": "text-label",
+                                      "className": "cr-ref-product-77"
                                     }
                                   },
-                                  "className": "cr-ref-product-78"
-                                }
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "",
+                                      "fontFamily": "heading",
+                                      "fontWeight": "500",
+                                      "fontSize": {
+                                        "desktop": 20
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "metadata": {
+                                        "bindings": {
+                                          "text": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_eye",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "className": "cr-ref-product-78"
+                                    }
+                                  }
+                                ]
                               },
                               {
                                 "name": "sgs/text",
                                 "attributes": {
-                                  "text": "Across one lens at its widest, rim to rim.",
+                                  "text": "Across one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
                                   "fontSize": {
                                     "desktop": 14
                                   },
@@ -1640,8 +1658,9 @@
                               "backgroundColour": "surface-alt",
                               "layout": "grid",
                               "gridTemplateColumns": {
-                                "desktop": "150px auto",
-                                "mobile": "1fr auto"
+                                "desktop": "212px minmax(0, 1fr)",
+                                "tablet": "212px minmax(0, 1fr)",
+                                "mobile": "minmax(0, 1fr)"
                               },
                               "gap": {
                                 "desktop": "4px 18px"
@@ -1659,50 +1678,67 @@
                             },
                             "innerBlocks": [
                               {
-                                "name": "sgs/text",
+                                "name": "sgs/container",
                                 "attributes": {
-                                  "text": "Bridge",
-                                  "fontSize": {
-                                    "desktop": 11
+                                  "layout": "grid",
+                                  "gridTemplateColumns": {
+                                    "desktop": "120px 74px",
+                                    "tablet": "120px 74px",
+                                    "mobile": "minmax(0, 1fr) auto"
                                   },
-                                  "fontSizeUnit": "px",
-                                  "letterSpacing": {
-                                    "desktop": 0.16
+                                  "gap": {
+                                    "desktop": "18px"
                                   },
-                                  "letterSpacingUnit": "em",
-                                  "textTransform": "uppercase",
-                                  "textColour": "text-label",
-                                  "className": "cr-ref-product-81"
-                                }
-                              },
-                              {
-                                "name": "sgs/text",
-                                "attributes": {
-                                  "text": "",
-                                  "fontFamily": "heading",
-                                  "fontWeight": "500",
-                                  "fontSize": {
-                                    "desktop": 20
-                                  },
-                                  "fontSizeUnit": "px",
-                                  "metadata": {
-                                    "bindings": {
-                                      "text": {
-                                        "source": "sgs-product/field",
-                                        "args": {
-                                          "key": "meta._sgs_frame_bridge",
-                                          "after": " mm"
-                                        }
-                                      }
+                                  "alignItems": "baseline"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Bridge",
+                                      "fontSize": {
+                                        "desktop": 11
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "letterSpacing": {
+                                        "desktop": 0.16
+                                      },
+                                      "letterSpacingUnit": "em",
+                                      "textTransform": "uppercase",
+                                      "textColour": "text-label",
+                                      "className": "cr-ref-product-81"
                                     }
                                   },
-                                  "className": "cr-ref-product-82"
-                                }
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "",
+                                      "fontFamily": "heading",
+                                      "fontWeight": "500",
+                                      "fontSize": {
+                                        "desktop": 20
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "metadata": {
+                                        "bindings": {
+                                          "text": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_bridge",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "className": "cr-ref-product-82"
+                                    }
+                                  }
+                                ]
                               },
                               {
                                 "name": "sgs/text",
                                 "attributes": {
-                                  "text": "The gap between the lenses, where the frame sits on your nose.",
+                                  "text": "The gap between the lenses that sits over your nose. Too narrow pinches; too wide slides down.",
                                   "fontSize": {
                                     "desktop": 14
                                   },
@@ -1719,8 +1755,102 @@
                               "backgroundColour": "surface-alt",
                               "layout": "grid",
                               "gridTemplateColumns": {
-                                "desktop": "150px auto",
-                                "mobile": "1fr auto"
+                                "desktop": "212px minmax(0, 1fr)",
+                                "tablet": "212px minmax(0, 1fr)",
+                                "mobile": "minmax(0, 1fr)"
+                              },
+                              "gap": {
+                                "desktop": "4px 18px"
+                              },
+                              "alignItems": "baseline",
+                              "padding": {
+                                "desktop": {
+                                  "top": "16px",
+                                  "right": "18px",
+                                  "bottom": "16px",
+                                  "left": "18px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "layout": "grid",
+                                  "gridTemplateColumns": {
+                                    "desktop": "120px 74px",
+                                    "tablet": "120px 74px",
+                                    "mobile": "minmax(0, 1fr) auto"
+                                  },
+                                  "gap": {
+                                    "desktop": "18px"
+                                  },
+                                  "alignItems": "baseline"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Lens height",
+                                      "fontSize": {
+                                        "desktop": 11
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "letterSpacing": {
+                                        "desktop": 0.16
+                                      },
+                                      "letterSpacingUnit": "em",
+                                      "textTransform": "uppercase",
+                                      "textColour": "text-label"
+                                    }
+                                  },
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "",
+                                      "fontFamily": "heading",
+                                      "fontWeight": "500",
+                                      "fontSize": {
+                                        "desktop": 20
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "metadata": {
+                                        "bindings": {
+                                          "text": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_height",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Top to bottom of the lens. Varifocals need a certain depth to work properly, so this one matters for prescription orders.",
+                                  "fontSize": {
+                                    "desktop": 14
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "textColour": "text-muted"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "backgroundColour": "surface-alt",
+                              "layout": "grid",
+                              "gridTemplateColumns": {
+                                "desktop": "212px minmax(0, 1fr)",
+                                "tablet": "212px minmax(0, 1fr)",
+                                "mobile": "minmax(0, 1fr)"
                               },
                               "gap": {
                                 "desktop": "4px 18px"
@@ -1738,50 +1868,67 @@
                             },
                             "innerBlocks": [
                               {
-                                "name": "sgs/text",
+                                "name": "sgs/container",
                                 "attributes": {
-                                  "text": "Temple length",
-                                  "fontSize": {
-                                    "desktop": 11
+                                  "layout": "grid",
+                                  "gridTemplateColumns": {
+                                    "desktop": "120px 74px",
+                                    "tablet": "120px 74px",
+                                    "mobile": "minmax(0, 1fr) auto"
                                   },
-                                  "fontSizeUnit": "px",
-                                  "letterSpacing": {
-                                    "desktop": 0.16
+                                  "gap": {
+                                    "desktop": "18px"
                                   },
-                                  "letterSpacingUnit": "em",
-                                  "textTransform": "uppercase",
-                                  "textColour": "text-label",
-                                  "className": "cr-ref-product-85"
-                                }
-                              },
-                              {
-                                "name": "sgs/text",
-                                "attributes": {
-                                  "text": "",
-                                  "fontFamily": "heading",
-                                  "fontWeight": "500",
-                                  "fontSize": {
-                                    "desktop": 20
-                                  },
-                                  "fontSizeUnit": "px",
-                                  "metadata": {
-                                    "bindings": {
-                                      "text": {
-                                        "source": "sgs-product/field",
-                                        "args": {
-                                          "key": "meta._sgs_frame_temple",
-                                          "after": " mm"
-                                        }
-                                      }
+                                  "alignItems": "baseline"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Temple",
+                                      "fontSize": {
+                                        "desktop": 11
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "letterSpacing": {
+                                        "desktop": 0.16
+                                      },
+                                      "letterSpacingUnit": "em",
+                                      "textTransform": "uppercase",
+                                      "textColour": "text-label",
+                                      "className": "cr-ref-product-85"
                                     }
                                   },
-                                  "className": "cr-ref-product-86"
-                                }
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "",
+                                      "fontFamily": "heading",
+                                      "fontWeight": "500",
+                                      "fontSize": {
+                                        "desktop": 20
+                                      },
+                                      "fontSizeUnit": "px",
+                                      "metadata": {
+                                        "bindings": {
+                                          "text": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_temple",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "className": "cr-ref-product-86"
+                                    }
+                                  }
+                                ]
                               },
                               {
                                 "name": "sgs/text",
                                 "attributes": {
-                                  "text": "The arm, from the hinge to the tip, ear bend included.",
+                                  "text": "The length of the arm, ear bend included, not the width of the front. I can adjust this to you in person.",
                                   "fontSize": {
                                     "desktop": 14
                                   },
