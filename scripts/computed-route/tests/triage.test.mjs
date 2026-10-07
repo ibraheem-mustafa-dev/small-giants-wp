@@ -432,3 +432,46 @@ test( 'the resolver hop citation is held to the same emission selector', () => {
 	const credited = runZoom( zoomRow( 'transition-duration', '.sgs-container__image-bg' ), zoomCtx( bare ) );
 	assert.equal( credited.decidedBy, 'canvas-settable' );
 } );
+
+// ctx.measuredReach: a live measurement (confirm-canvas.mjs) decides a citation before the source gate does.
+import { measuredReachFrom, reachabilityVerified } from '../lib/triage.mjs';
+
+test( 'MUST FAIL ON REVERT: a citation measured unreachable is refused even where the source credits it', () => {
+	const r = zoomRow( 'transition-duration', '.sgs-container__image-bg' );
+	assert.equal( runZoom( r ).decidedBy, 'canvas-settable', 'the control: the source alone credits this citation' );
+	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', verdict: 'NO-RULE', sheets: { skipped: 0 } } ] );
+	const v = runZoom( r, zoomCtx( { measuredReach: refuted } ) );
+	assert.equal( v.class, 'F' );
+	assert.equal( v.decidedBy, 'no-setting' );
+} );
+
+test( 'not over-suppressing: an unmeasured citation still fails open, and a measured one is recorded as tested', () => {
+	const none = measuredReachFrom( [] );
+	const v = runZoom( zoomRow( 'transition-duration', '.sgs-form-field__input' ), zoomCtx( { helpers: helperIndex( [] ), measuredReach: none } ) );
+	assert.equal( v.decidedBy, 'canvas-settable', 'no measurement and no readable source: the deliberate fail-open holds' );
+	const issue = { rows: [ { key: 'transition-duration', path: '.sgs-form-field__input', ref: 'cr-ref-s-1' } ] };
+	const cite = { block: 'sgs/container', setting: 'bgHoverZoomDuration' };
+	const refuted = measuredReachFrom( [ { block: 'sgs/container', setting: 'bgHoverZoomDuration', property: 'transition-duration', verdict: 'REFUTED', sheets: { skipped: 0 } } ] );
+	assert.equal( reachabilityVerified( cite, issue, { helpers: helperIndex( [] ), measuredReach: refuted } ), true );
+	assert.equal( reachabilityVerified( cite, issue, { helpers: helperIndex( [] ), measuredReach: none } ), false );
+} );
+
+test( 'measuredReachFrom trusts only a clean refutation: CONFIRMED, ABSENT and a read that skipped a sheet answer nothing', () => {
+	const rec = ( verdict, skipped = 0 ) => ( { block: 'sgs/x', setting: 's', property: 'width', verdict, sheets: { skipped } } );
+	assert.equal( measuredReachFrom( [ rec( 'REFUTED' ) ] )( 'sgs/x', 's', 'width' ), false );
+	assert.equal( measuredReachFrom( [ rec( 'NO-RULE' ) ] )( 'sgs/x', 's', 'width' ), false );
+	assert.equal( measuredReachFrom( [ rec( 'REFUTED', 1 ) ] )( 'sgs/x', 's', 'width' ), undefined, 'a skipped sheet may hold the cited rule' );
+	assert.equal( measuredReachFrom( [ rec( 'CONFIRMED' ) ] )( 'sgs/x', 's', 'width' ), undefined, 'not refuted is not proven' );
+	assert.equal( measuredReachFrom( [ rec( 'ABSENT' ) ] )( 'sgs/x', 's', 'width' ), undefined );
+	assert.equal( measuredReachFrom( [ rec( 'REFUTED' ) ] )( 'sgs/x', 's', 'height' ), undefined, 'keyed on block, setting AND property' );
+	assert.equal( measuredReachFrom( null )( 'sgs/x', 's', 'width' ), undefined );
+} );
+
+// A unit test cannot see a wiring gap: runTriage, the only production ctx builder, must pass the lookup in.
+test( 'MUST FAIL ON REVERT (wiring): triage.mjs::runTriage builds ctx.measuredReach from the client\'s canvas-confirm.json', () => {
+	const src = fs.readFileSync( new URL( '../triage.mjs', import.meta.url ), 'utf8' );
+	assert.match( src, /measuredReachFrom\(\s*fs\.existsSync\(\s*confirmFile\s*\)/ );
+	assert.match( src, /canvas-confirm\.json/ );
+	const ctxBody = src.slice( src.indexOf( 'const ctx = {' ), src.indexOf( 'const result = triage(' ) );
+	assert.match( ctxBody, /^\s*measuredReach,\s*$/m, 'the ctx object carries measuredReach' );
+} );

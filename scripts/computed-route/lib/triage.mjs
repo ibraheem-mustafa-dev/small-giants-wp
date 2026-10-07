@@ -379,15 +379,18 @@ export function emissionOf( cite, props, ctx ) {
 export function reachesElement( cite, issue, ctx ) {
 	const r = issue.rows[ 0 ];
 	const { short } = splitProperty( cssProp( r.key ) );
+	// A live measurement decides first (R-47-12): confirm-canvas.mjs enumerated every rule that could govern this
+	// property on this element, so a REFUTED or NO-RULE family is definitively unreachable whatever the source says.
+	const measured = ctx.measuredReach?.( cite.block, cite.setting, cssProp( r.key ) );
+	if ( 'boolean' === typeof measured ) {
+		return measured;
+	}
 	const em = emissionOf( cite, [ cssProp( r.key ), short ], ctx );
 	if ( ! em ) {
-		// FAILS OPEN, deliberately and visibly. The citation is accepted so the row is not called a framework gap
-		// on an unassessed claim, but it has NOT been tested, and R-47-12 requires that the citation be tested
-		// before the row is called resolved. Measured 2026-10-06: emissionOf returned null for 17 of 17 citations
-		// a live read then refuted, so the gate was asserting reachability rather than testing it, which is why
-		// every one of those rows read W. The caller records this through `reachabilityVerified` below, so the
-		// evidence says which citations were tested; the real repair is to supply ctx.emissionFor, which every
-		// caller currently leaves undefined. See CANVAS-SETTABLE-CONFIRMATION.md.
+		// FAILS OPEN, deliberately and visibly, for a citation neither measured nor readable from the source: it is
+		// accepted so the row is not called a framework gap on an unassessed claim. `reachabilityVerified` records
+		// that it was not tested. A source string search cannot name an emission written by a class method or a
+		// render.php, which is why measured verdicts come first (CANVAS-SETTABLE-CONFIRMATION.md).
 		return true;
 	}
 	const own = ctx.nodeFor( r.ref )?.name || '';
@@ -403,7 +406,24 @@ const citeReaches = ( cite, issue, ctx ) => reachesElement( { block: cite.block,
 export function reachabilityVerified( cite, issue, ctx ) {
 	const r = issue.rows[ 0 ];
 	const { short } = splitProperty( cssProp( r.key ) );
+	if ( 'boolean' === typeof ctx.measuredReach?.( cite.block, cite.setting, cssProp( r.key ) ) ) {
+		return true;
+	}
 	return !! emissionOf( { block: cite.block, ref: cite.ref ?? null, setting: cite.setting, property: cite.property }, [ cssProp( r.key ), short ], ctx );
+}
+
+// The ctx.measuredReach lookup from confirm-canvas.mjs's results (an array of { block, setting, property, verdict,
+// sheets }). REFUTED and NO-RULE are definitive: false. Anything else answers undefined, so the source gate and its
+// fail-open still decide: CONFIRMED and VAR-CHANNEL are "not refuted", not proven; ABSENT and NO-URL were never
+// read; and a read that skipped any stylesheet cannot refute, since the skipped sheet may hold the cited rule.
+export function measuredReachFrom( results ) {
+	const verdicts = new Map();
+	for ( const rec of Array.isArray( results ) ? results : [] ) {
+		if ( [ 'REFUTED', 'NO-RULE' ].includes( rec.verdict ) && 0 === ( rec.sheets?.skipped ?? -1 ) ) {
+			verdicts.set( `${ rec.block }|${ rec.setting }|${ rec.property }`, false );
+		}
+	}
+	return ( block, setting, property ) => verdicts.get( `${ block }|${ setting }|${ property }` );
 }
 
 // FR-47-8 (c). On a canvas surface the block that can hold a row's property need not be the attributed block or even

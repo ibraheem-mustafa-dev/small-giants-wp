@@ -16,7 +16,7 @@ import { BLOCKS_DIR } from './lib/resolve.mjs';
 import { readTree, walk as walkTree, refOf } from './lib/tree.mjs';
 import { detectReferences } from './lib/references.mjs';
 import { latestReport } from './lib/sweep.mjs';
-import { triage } from './lib/triage.mjs';
+import { triage, measuredReachFrom } from './lib/triage.mjs';
 import { helperIndex } from './lib/triage-source.mjs';
 import { calibrationFor } from './solve.mjs';
 
@@ -128,6 +128,11 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 	const db = openDb();
 	const rowsOf = new Map();
 	const supports = supportsIndex();
+	// The live reachability verdicts confirm-canvas.mjs measured for this client's canvas-settable citations
+	// (written by `confirm-canvas.mjs <triage dir> sites/<client>/build/qa/canvas-confirm.json <site url>`). With no
+	// file every citation falls to the source gate, as before.
+	const confirmFile = path.join( buildDir, 'qa', 'canvas-confirm.json' );
+	const measuredReach = measuredReachFrom( fs.existsSync( confirmFile ) ? JSON.parse( fs.readFileSync( confirmFile, 'utf8' ) ) : [] );
 	const ctx = {
 		db,
 		snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ),
@@ -148,6 +153,7 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 		roster: JSON.parse( fs.readFileSync( ROSTER, 'utf8' ) ).extensions || [],
 		supportsFor: ( block ) => supports[ block ] || {},
 		calFor: calibrationFor,
+		measuredReach,
 		refs: detectReferences(),
 		helpers: helperIndex( [ ...phpFiles( path.join( PLUGIN, 'includes' ) ), ...phpFiles( BLOCKS_DIR ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ) ] ),
 		blockPhp: ( slug ) => phpFiles( path.join( BLOCKS_DIR, slug ) ).filter( ( f ) => ! f.file.endsWith( '/render.php' ) ).map( ( f ) => f.text ),
