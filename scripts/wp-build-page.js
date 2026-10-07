@@ -111,20 +111,44 @@ async function waitForEditor( page, timeout ) {
  */
 async function buildTemplate( page, tree, route, slug, dryRun ) {
 	return page.evaluate( async ( { t, r, sl, dry } ) => {
-		const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
-		let serialised = window.wp.blocks.serialize( t.map( make ) );
-		if ( dry ) return { ok: true, dryRun: true, bytes: serialised.length };
-		const themes = await window.wp.apiFetch( { path: '/wp/v2/themes?status=active' } );
-		const id = `${ themes[ 0 ].stylesheet }//${ sl }`;
-		const restPath = `/wp/v2/${ r }/${ id }`;
+		// apiFetch rejects with a plain { code, message, data } object, which Playwright reports only as
+		// "page.evaluate: Object". Every step is named and a rejection comes back as a result carrying its fields.
+		let step = 'serialise';
+		// The host refuses a database connection under a burst of requests ("Error establishing a database connection",
+		// a 500 wp_die; CR25, 3 of 6 back-to-back shop template builds on 2026-10-07). Every call here is a read or an
+		// idempotent replace of the whole template, so a transient server error is retried with backoff.
+		const retried = [];
+		const apiFetch = async ( options ) => {
+			for ( let attempt = 0; ; attempt++ ) {
+				try {
+					return await window.wp.apiFetch( options );
+				} catch ( e ) {
+					const transient = e && ( 'wp_die' === e.code || 'fetch_error' === e.code || ( e.data && e.data.status >= 500 ) );
+					if ( ! transient || attempt >= 3 ) {
+						throw e;
+					}
+					retried.push( `${ step }: ${ e.code || e.data?.status }` );
+					await new Promise( ( done ) => setTimeout( done, 2000 * ( attempt + 1 ) ) );
+				}
+			}
+		};
 		try {
-			await window.wp.apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
+			const make = ( b ) => window.wp.blocks.createBlock( b.name, b.attributes || {}, ( b.innerBlocks || [] ).map( make ) );
+			let serialised = window.wp.blocks.serialize( t.map( make ) );
+			if ( dry ) return { ok: true, dryRun: true, bytes: serialised.length };
+			step = 'active theme';
+			const themes = await apiFetch( { path: '/wp/v2/themes?status=active' } );
+			const id = `${ themes[ 0 ].stylesheet }//${ sl }`;
+			const restPath = `/wp/v2/${ r }/${ id }`;
+			step = 'save';
+			try {
+				await apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
 		} catch ( e ) {
 			return { ok: false, code: 5, error: `save failed: ${ e.message || e.code }` };
 		}
 		// Read back: every block must parse valid and serialise to what was saved.
 		const readBack = async () => {
-			const saved = await window.wp.apiFetch( { path: `${ restPath }?context=edit` } );
+			const saved = await apiFetch( { path: `${ restPath }?context=edit` } );
 			const invalidNames = [];
 			const walk = ( bs ) => bs.forEach( ( b ) => {
 				if ( b.isValid === false ) invalidNames.push( b.name );
@@ -134,13 +158,16 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 			walk( parsed );
 			return { saved, invalidNames, text: window.wp.blocks.serialize( parsed ).trim() };
 		};
+		step = 'read back';
 		let back = await readBack();
 		// WordPress normalises on save (it adds "theme" to template-part blocks): save the settled
 		// text once more; content that then holds still is fine, content that keeps changing is a fault.
 		let normalised = false;
 		if ( ! back.invalidNames.length && back.text !== serialised.trim() ) {
 			const settled = back.text;
-			await window.wp.apiFetch( { path: restPath, method: 'POST', data: { content: settled } } );
+			step = 'normalising save';
+			await apiFetch( { path: restPath, method: 'POST', data: { content: settled } } );
+			step = 'normalising read back';
 			back = await readBack();
 			normalised = true;
 			serialised = settled;
@@ -156,7 +183,11 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 			while ( i < sent.length && sent[ i ] === reloaded[ i ] ) i++;
 			firstDiff = { at: i, sent: sent.slice( Math.max( 0, i - 80 ), i + 160 ), reloaded: reloaded.slice( Math.max( 0, i - 80 ), i + 160 ) };
 		}
-		return { ok: ! invalid.length && ! changed, id, source: saved.source, invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed, firstDiff, code: 6 };
+		return { ok: ! invalid.length && ! changed, id, source: saved.source, invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed, firstDiff, retried, code: 6 };
+		} catch ( e ) {
+			const fields = e && 'object' === typeof e ? { name: e.name, code: e.code, message: e.message, status: e.data && e.data.status, stack: e.stack } : { message: String( e ) };
+			return { ok: false, code: 7, step, retried, error: `${ step } failed: ${ fields.code || fields.name || 'error' }: ${ fields.message || '' }`, thrown: fields };
+		}
 	}, { t: tree, r: route, sl: slug, dry: dryRun } );
 }
 
@@ -452,4 +483,8 @@ async function main() {
 	}
 }
 
-main().catch( ( e ) => fail( 1, e.stack || e.message ) );
+if ( require.main === module ) {
+	main().catch( ( e ) => fail( 1, e.stack || e.message ) );
+}
+
+module.exports = { buildTemplate };

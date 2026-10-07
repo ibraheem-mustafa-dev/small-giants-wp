@@ -652,8 +652,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - **Route, open (2026-10-07):** (1) CR4: `sgs/nav-bar-menu`'s calibration page took 150 s to return its edit
        screen on the local mirror against `wp-build-page.js`'s 60 s limit; calibration now passes
        `--editor-timeout` 240 s (`lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`), and the block's re-calibration and
-       dead-set triage are the open part. (2) CR25: the shop template build fails
-       intermittently in Solve (`wp-build-page.js::buildTemplate`, "page.evaluate: Object"). Each is a register row.
+       dead-set triage are the open part. A register row.
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
        `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
