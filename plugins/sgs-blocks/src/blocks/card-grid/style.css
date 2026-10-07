@@ -521,6 +521,12 @@ a.sgs-card-grid__item:focus-visible {
 	margin-top: 40px;
 }
 
+/* Zero-specificity type defaults: the scoped paginationFont* rule wins. */
+:where(.sgs-card-grid__page-btn) {
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
 .sgs-card-grid__page-btn {
 	display: inline-flex;
 	align-items: center;
@@ -528,8 +534,6 @@ a.sgs-card-grid__item:focus-visible {
 	min-width: 44px;
 	min-height: 44px;
 	padding: 8px 14px;
-	font-size: 0.875rem;
-	font-weight: 600;
 	text-decoration: none;
 	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
 	border-radius: 4px;

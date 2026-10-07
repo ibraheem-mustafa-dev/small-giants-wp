@@ -463,6 +463,226 @@
 			"type": "string",
 			"default": ""
 		},
+		"cardDescFontSize": {
+			"type": "number"
+		},
+		"cardDescFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"cardDescFontSizeTablet": {
+			"type": "number"
+		},
+		"cardDescFontSizeMobile": {
+			"type": "number"
+		},
+		"cardDescFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescLineHeight": {
+			"type": "number"
+		},
+		"cardDescLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescLetterSpacing": {
+			"type": "number"
+		},
+		"cardDescLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"cardDescTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"chipFontSize": {
+			"type": "number"
+		},
+		"chipFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"chipFontSizeTablet": {
+			"type": "number"
+		},
+		"chipFontSizeMobile": {
+			"type": "number"
+		},
+		"chipFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"chipFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"chipFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"chipLineHeight": {
+			"type": "number"
+		},
+		"chipLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"chipLetterSpacing": {
+			"type": "number"
+		},
+		"chipLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"chipTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"chipTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"chipTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"chipTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepFontSize": {
+			"type": "number"
+		},
+		"progressStepFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"progressStepFontSizeTablet": {
+			"type": "number"
+		},
+		"progressStepFontSizeMobile": {
+			"type": "number"
+		},
+		"progressStepFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepLineHeight": {
+			"type": "number"
+		},
+		"progressStepLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepLetterSpacing": {
+			"type": "number"
+		},
+		"progressStepLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"progressStepTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"progressStepTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineFontSize": {
+			"type": "number"
+		},
+		"guestLineFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"guestLineFontSizeTablet": {
+			"type": "number"
+		},
+		"guestLineFontSizeMobile": {
+			"type": "number"
+		},
+		"guestLineFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineLineHeight": {
+			"type": "number"
+		},
+		"guestLineLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineLetterSpacing": {
+			"type": "number"
+		},
+		"guestLineLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guestLineTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLineTextWrap": {
+			"type": "string",
+			"default": ""
+		},
 		"navWidth": {
 			"type": "object",
 			"default": {}

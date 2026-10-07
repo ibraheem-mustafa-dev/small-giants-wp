@@ -5,7 +5,8 @@
  *
  * Mirrors the sgs/button block's preset-as-seed colour/border/typography
  * model (see src/blocks/button/render.php + presets.js) but scoped down to
- * the subset a built-in element needs: colour, border, font-weight, width.
+ * the subset a built-in element needs: colour, border, font-weight, line-height,
+ * width.
  * Reused by any block that renders its own button-like element from a
  * PREFIXED attribute set, so every such block shares ONE styling path
  * instead of hand-rolling its own CSS emitter.
@@ -22,6 +23,40 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-box.php';
+
+if ( ! function_exists( 'sgs_button_element_line_height' ) ) {
+
+	/**
+	 * Sanitise a button line-height: a unitless number or a CSS length.
+	 *
+	 * @param mixed $value Raw attribute value.
+	 * @return string Safe CSS value, or '' when empty or not a number/length.
+	 */
+	function sgs_button_element_line_height( $value ): string {
+		if ( ! is_string( $value ) && ! is_int( $value ) && ! is_float( $value ) ) {
+			return '';
+		}
+		$value = trim( (string) $value );
+		return 1 === preg_match( '/^(?:\d+|\d*\.\d+)(?:px|em|rem|%)?$/', $value ) ? $value : '';
+	}
+}
+
+if ( ! function_exists( 'sgs_button_element_text_align' ) ) {
+
+	/**
+	 * Allow-list a button text-align keyword. Used by blocks that emit a
+	 * `{prefix}TextAlign` rule for their own built-in CTA; the style helper
+	 * above deliberately does not read it, because blocks such as
+	 * google-reviews already own a `{prefix}TextAlign` through their typography
+	 * rule on the same element.
+	 *
+	 * @param mixed $value Raw attribute value.
+	 * @return string One of left|center|right|justify, or ''.
+	 */
+	function sgs_button_element_text_align( $value ): string {
+		return is_string( $value ) && in_array( $value, array( 'left', 'center', 'right', 'justify' ), true ) ? $value : '';
+	}
+}
 
 if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 
@@ -45,6 +80,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *   ctaBorderRadius           number  (px)
 	 *   ctaFontWeight             string  (100-900)
 	 *   ctaFontSize               number  (px)
+ *   ctaLineHeight             string  (unitless number, e.g. "1.4", or a CSS
+ *                                     length, e.g. "24px")
 	 *   ctaPadding                object  {top,right,bottom,left} box padding
 	 *                                     (box-object standard, FR-31-22 —
 	 *                                     shorthanded via the shared
@@ -107,6 +144,7 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
 		$colour_border_hover_gradient = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderHoverGradient' ) ) : '';
 		$font_weight                  = (string) $read( 'FontWeight' );
+		$line_height                  = sgs_button_element_line_height( $read( 'LineHeight' ) );
 		$width_type                   = (string) $read( 'WidthType' );
 
 		// '' (never picked, or the active option deselected) paints solid once a
@@ -204,6 +242,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		}
 		if ( null !== $font_size ) {
 			$base_decls[] = 'font-size:' . $font_size . 'px;';
+		}
+		if ( '' !== $line_height ) {
+			$base_decls[] = 'line-height:' . $line_height . ';';
 		}
 		// Padding — box-object standard (FR-31-22): a single {top,right,bottom,left}
 		// object attr, shorthanded via the shared sgs_box_object_shorthand() helper

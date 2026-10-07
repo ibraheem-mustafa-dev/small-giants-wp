@@ -84,9 +84,14 @@
 
 .sgs-buybox .buybox__stock {
 	margin: 0;
-	font-weight: 600;
 	/* 4.5:1 against white — token-overridable. */
 	color: var(--sgs-buybox-stock-colour, #b32d2e);
+}
+
+/* The stock line's typography default sits at zero specificity so the block's
+   own stock typography controls (render.php, prefix `stock`) win. */
+:where(.sgs-buybox .buybox__stock) {
+	font-weight: 600;
 }
 
 /* ── Stock status indicator (FR-Wave-B, showStockStatus attribute) ──────── */
@@ -95,6 +100,9 @@
 	display: flex;
 	align-items: center;
 	gap: 9px;
+}
+
+:where(.sgs-buybox .buybox__stock--status) {
 	font-size: 0.9rem;
 }
 
@@ -253,8 +261,11 @@
 	gap: 10px;
 }
 
+/* The price sits inside the add-to-cart button, so it takes its weight, size and
+   case from the button's own typography controls (prefix `addToCart`) by
+   inheritance. A declaration here would beat the inherited value and leave the
+   price unreachable from the inspector. */
 .sgs-buybox .buybox__cart-price {
-	font-weight: 700;
 	white-space: nowrap;
 }
 
@@ -515,6 +526,9 @@
 
 .sgs-buybox__notify-heading {
 	margin: 0;
+}
+
+:where(.sgs-buybox__notify-heading) {
 	font-weight: 700;
 	font-size: 1rem;
 }
@@ -532,7 +546,7 @@
 	gap: 4px;
 }
 
-.sgs-buybox__notify-label {
+:where(.sgs-buybox__notify-label) {
 	font-size: 0.9rem;
 	font-weight: 600;
 }
@@ -544,10 +558,13 @@
 	padding: 10px 12px;
 	border: 2px solid var(--sgs-buybox-notify-input-border, rgba(0, 0, 0, 0.3));
 	border-radius: 6px;
-	font-size: 1rem;
 	background: var(--sgs-buybox-notify-input-bg, #fff);
 	color: var(--sgs-buybox-notify-input-colour, inherit);
 	box-sizing: border-box;
+}
+
+:where(.sgs-buybox__notify-email) {
+	font-size: 1rem;
 }
 
 .sgs-buybox__notify-email:focus {
@@ -571,7 +588,6 @@
 }
 
 .sgs-buybox__notify-consent-label {
-	font-size: 0.9rem;
 	cursor: pointer;
 	/* 44px minimum touch height via min-height on the label. */
 	min-height: 44px;
@@ -579,11 +595,11 @@
 	align-items: center;
 }
 
-/* De-specified to (0,0,0) so a typography control added to this element
-   later outranks it without a second edit, and so it cannot defeat one
-   emitted from an ancestor. The notify form has no typography surface of its
-   own yet — tracked in reports/f3-e14-triage.md §5. */
+/* De-specified to (0,0,0) so the block's notify-label typography control
+   (render.php, prefix `notifyLabel`, shared with the email field label) outranks
+   it, and so it cannot defeat one emitted from an ancestor. */
 :where(.sgs-buybox__notify-consent-label) {
+	font-size: 0.9rem;
 	line-height: 1.5;
 }
 
@@ -601,9 +617,16 @@
 	width: 100%;
 	min-height: 44px;
 	padding: 10px 20px;
+	cursor: pointer;
+}
+
+/* `:root :where()` keeps the (0,1,0) the plain declarations had, so the theme's
+   `:root :where(.wp-element-button)` button typography still ties with it and
+   source order still decides; the block's notify-button control (prefix
+   `notifySubmit`) outranks both. */
+:root :where(.sgs-buybox__notify-submit) {
 	font-size: 1rem;
 	font-weight: 600;
-	cursor: pointer;
 }
 
 .sgs-buybox__notify-submit:focus-visible {
@@ -614,9 +637,12 @@
 /* Status region — empty by default; content written by notify-view.js.
    Colour is NEVER the sole indicator: success uses "checkmark + green",
    error uses "!" prefix + red tint, both visible in monochrome. */
+:where(.sgs-buybox__notify-status) {
+	font-size: 0.9rem;
+}
+
 .sgs-buybox__notify-status {
 	margin: 0;
-	font-size: 0.9rem;
 	min-height: 0;
 	/* Collapse when empty so it takes no vertical space. */
 }
@@ -695,12 +721,17 @@
 	z-index: 1;
 	background: var(--wp--preset--color--text, #141414);
 	color: var(--wp--preset--color--text-inverse, #fff);
+	padding: 8px 12px;
+	white-space: nowrap;
+}
+
+/* The badge's type default sits at zero specificity so the block's saving-badge
+   typography controls (render.php, prefix `savingBadge`) win. */
+:where(.sgs-buybox .sgs-buybox__saving-badge) {
 	font-size: 12px;
 	font-weight: 400;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	padding: 8px 12px;
-	white-space: nowrap;
 }
 
 .sgs-buybox .sgs-buybox__saving-badge--top-right {
@@ -951,9 +982,14 @@
 	border-radius: var(--wp--preset--spacing--10, 6px);
 	background: var(--wp--preset--color--surface, #fff);
 	color: var(--wp--preset--color--text-muted, #6b6459);
+	cursor: pointer;
+}
+
+/* Meter type defaults sit at zero specificity so the guided-meter typography
+   controls (render.php, prefix `guidedMeter`) win. */
+:where(.sgs-buybox-guided__meter-btn) {
 	font-size: 0.8125rem;
 	line-height: 1.2;
-	cursor: pointer;
 }
 
 .sgs-buybox-guided__meter-btn[aria-disabled='true'] {
@@ -1047,7 +1083,7 @@
 	text-align: center;
 }
 
-.sgs-buybox-guided__meter-index {
+:where(.sgs-buybox-guided__meter-index) {
 	font-weight: 600;
 }
 
@@ -1060,8 +1096,11 @@
 .sgs-buybox-guided__meter-compact {
 	display: none;
 	margin: 0;
-	font-size: 0.8125rem;
 	color: var(--wp--preset--color--text-muted, #6b6459);
+}
+
+:where(.sgs-buybox-guided__meter-compact) {
+	font-size: 0.8125rem;
 }
 
 /* Narrow container: dots (the meter buttons, shrunk and text-hidden) plus
@@ -1123,9 +1162,16 @@
 
 .sgs-buybox-guided__group-title {
 	margin: 0 0 8px;
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* An h3: the theme's heading rules (`:root :where(h1..h6)`) sit at (0,1,0), so a
+   bare `:where()` would lose to them. `:root :where()` keeps the (0,1,0) the plain
+   declarations had; the group-title control (prefix `guidedGroupTitle`)
+   outranks both. */
+:root :where(.sgs-buybox-guided__group-title) {
 	font-size: 1rem;
 	font-weight: 600;
-	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 .sgs-buybox-guided__nav {

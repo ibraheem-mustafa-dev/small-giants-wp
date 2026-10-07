@@ -21,6 +21,7 @@ import {
 	wrapperBorderPreview,
 	tierBoxLonghands,
 	typographyPreviewStyle,
+	typographyPreviewCss,
 } from '../../utils';
 
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
@@ -61,18 +62,43 @@ export function buyboxRootStyle( attributes, tier, palette ) {
 }
 
 /**
+ * Typography prefix and the sample elements it paints, as render.php's
+ * sgs_typography_css_rule() calls pair them (the stock line, the gallery saving
+ * badge, the back-in-stock notify form and the guided meter and group title).
+ */
+const SURFACE_TYPOGRAPHY = [
+	[ 'stock', '.buybox__stock' ],
+	[ 'savingBadge', '.sgs-buybox__saving-badge' ],
+	[ 'notifyHeading', '.sgs-buybox__notify-heading' ],
+	[ 'notifyLabel', '.sgs-buybox__notify-label' ],
+	[ 'notifyLabel', '.sgs-buybox__notify-consent-label' ],
+	[ 'notifyInput', '.sgs-buybox__notify-email' ],
+	[ 'notifySubmit', '.sgs-buybox__notify-submit' ],
+	[ 'notifyStatus', '.sgs-buybox__notify-status' ],
+	[ 'guidedMeter', '.sgs-buybox-guided__meter-btn' ],
+	[ 'guidedMeter', '.sgs-buybox-guided__meter-index' ],
+	[ 'guidedMeter', '.sgs-buybox-guided__meter-compact' ],
+	[ 'guidedGroupTitle', '.sgs-buybox-guided__group-title' ],
+];
+
+/**
  * The breakpoint-bound and state-bound rules, scoped to the editor instance:
- * the gallery column ratio/gap from the stack point up, and the three stock
- * status colours (the sample shows the in-stock state).
+ * the gallery column ratio/gap from the stack point up, the three stock
+ * status colours (the sample shows the in-stock state), and the typography of
+ * the elements the canvas draws as styled sample markup.
  *
  * @param {Object} attributes Block attributes.
  * @param {string} scope      Editor scope class on the root.
  * @param {Array}  palette    Theme colour palette.
+ * @param {string} [tier]     Previewed tier.
  * @return {string} CSS text.
  */
-export function buyboxMockCss( attributes, scope, palette ) {
+export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	const root = `.${ scope }.${ scope }`;
 	let css = '';
+	SURFACE_TYPOGRAPHY.forEach( ( [ prefix, selector ] ) => {
+		css += typographyPreviewCss( attributes, prefix, `${ root } ${ selector }`, tier );
+	} );
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
 	const gap = String( attributes.galleryColumnGap || '' ).trim();
 	const decls = [];
@@ -194,6 +220,35 @@ function SampleValueLadder( { attributes, tier } ) {
 }
 
 /**
+ * The sample back-in-stock form, in notify-form.php's markup, so its typography
+ * settings are visible in the editor. The real form shows only for an
+ * out-of-stock variation, so the canvas draws it only while the form is enabled.
+ *
+ * @param {Object} props
+ * @param {Object} props.attributes Block attributes.
+ * @return {JSX.Element} The notify panel.
+ */
+function SampleNotifyForm( { attributes } ) {
+	return (
+		<div className="sgs-buybox__notify" aria-hidden="true">
+			<p className="sgs-buybox__notify-heading">{ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) }</p>
+			<div className="sgs-buybox__notify-form">
+				<div className="sgs-buybox__notify-field">
+					<span className="sgs-buybox__notify-label">{ __( 'Email address', 'sgs-blocks' ) }</span>
+					<input type="email" className="sgs-buybox__notify-email" readOnly tabIndex={ -1 } placeholder={ __( 'your@email.com', 'sgs-blocks' ) } />
+				</div>
+				<div className="sgs-buybox__notify-consent-row">
+					<input type="checkbox" className="sgs-buybox__notify-consent" readOnly tabIndex={ -1 } />
+					<span className="sgs-buybox__notify-consent-label">{ __( 'Email me once when this is back in stock.', 'sgs-blocks' ) }</span>
+				</div>
+				<span className="wp-element-button sgs-buybox__notify-submit">{ attributes.notifyMeLabel || __( 'Notify me', 'sgs-blocks' ) }</span>
+				<p className="sgs-buybox__notify-status" data-status="success">{ __( 'Thanks, we will email you when it is back.', 'sgs-blocks' ) }</p>
+			</div>
+		</div>
+	);
+}
+
+/**
  * The sample configurator's two columns.
  *
  * @param {Object} props
@@ -281,7 +336,9 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 									</li>
 								) ) }
 							</ol>
+							<p className="sgs-buybox-guided__meter-compact">{ `1 ${ __( 'of', 'sgs-blocks' ) } 2 · ${ __( 'Colour', 'sgs-blocks' ) }` }</p>
 						</div>
+						<h3 className="sgs-buybox-guided__group-title">{ __( 'Colour', 'sgs-blocks' ) }</h3>
 						<SampleOptionGroup label={ __( 'Colour', 'sgs-blocks' ) } options={ SAMPLE.colours } pillStyle={ attributes.pickerSwatchStyle } showTick={ showTick } labelStyle={ labelStyle } valueStyle={ valueStyle } showSelectedValue={ showSelectedValue } />
 						<div className="sgs-buybox-guided__nav">
 							<span className="sgs-buybox-guided__nav-btn sgs-buybox-guided__nav-btn--back">{ attributes.guidedBackLabel || __( 'Back', 'sgs-blocks' ) }</span>
@@ -299,6 +356,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 						{ attributes.addToCartLabel || __( 'Add to Cart', 'sgs-blocks' ) }
 					</span>
 				</div>
+				{ false !== attributes.notifyEnabled && <SampleNotifyForm attributes={ attributes } /> }
 				{ extras }
 			</div>
 		</>

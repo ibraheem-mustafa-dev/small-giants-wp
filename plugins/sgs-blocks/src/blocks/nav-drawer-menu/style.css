@@ -553,16 +553,18 @@
 	color: inherit;
 	cursor: pointer;
 	display: flex;
-	font: inherit;
-	font-weight: 600;
 	min-height: 44px;
 	padding: 0 16px;
-	text-align: start;
 	width: 100%;
 }
 
+/* The font reset, weight and alignment sit at zero specificity so the Back button
+   typography target (drillBack*) always wins; `font` stays before the weight. */
 :where(.sgs-nav-drawer-menu__drill-back-btn) {
 	border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+	font: inherit;
+	font-weight: 600;
+	text-align: start;
 }
 
 .sgs-nav-drawer-menu__drill-back-btn__arrow {

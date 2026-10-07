@@ -903,6 +903,8 @@ if ( '' !== $sgs_grid_title_mb ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title:not(:last-child){margin-bottom:' . $sgs_grid_title_mb . ';}';
 }
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
+// Pagination page buttons (built by Grid_Pagination, shared with sgs/post-grid).
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'pagination', '.' . $sgs_grid_uid . ' .sgs-card-grid__page-btn' );
 if ( '' !== (string) ( $attributes['noImageLabelColour'] ?? '' ) ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label{color:' . sgs_colour_value( (string) $attributes['noImageLabelColour'] ) . ';}';
 }

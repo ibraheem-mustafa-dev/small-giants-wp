@@ -22,7 +22,7 @@ const ADD_TO_CART_STYLE_OPTIONS = [
  * Styles-tab (InspectorControls group="styles") extra panels for
  * sgs/buybox, picker pill-style forwarding (mirrors
  * sgs/option-picker's own pillStyle/showSelectedTick Styles-tab placement),
- * price typography, and the add-to-cart button's style preset. Split out for
+ * the block's typography panel, and the add-to-cart button's style preset. Split out for
  * the same file-budget reason as inspector-extra-2.js.
  *
  * @param {Object}   o
@@ -89,57 +89,18 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
-				title={ __( 'Picker label typography', 'sgs-blocks' ) }
+				title={ __( 'Picker labels', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				{ /* Font size/letter-spacing/case/colour forward to
-				     sgs/option-picker's OWN labelFontSize/labelLetterSpacing/
-				     labelTextTransform/labelColour when the toggle below is off
-				     (option-picker renders its usual visible legend). When the
-				     toggle is on, this block replaces that legend with its own
-				     label+value row and applies the SAME four settings to its
-				     own label text — see render.php's "picker-label typography"
-				     comment. showColour intentionally omitted from
-				     TypographyControls (it has no colour field); the colour
-				     row below is a plain SgsColourPanel-style control instead. */ }
-				<TypographyControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					targets={ [
-						{
-							key: 'pickerLabel',
-							label: __( 'Picker label', 'sgs-blocks' ),
-							prefix: 'pickerLabel',
-							showFontFamily: false,
-							showWeight: false,
-							showStyle: false,
-							showLineHeight: false,
-							showLetterSpacing: true,
-							showTransform: true,
-						},
-					] }
-				/>
-				{ /* The chosen value's own size and line height. A separate prefix
-				     from pickerLabel because this element exists only on the
-				     own-render path and forwards to nothing — see render.php's
-				     "chosen-value element" comment. */ }
-				<TypographyControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					targets={ [
-						{
-							key: 'pickerValue',
-							label: __( 'Chosen value', 'sgs-blocks' ),
-							prefix: 'pickerValue',
-							showFontFamily: false,
-							showWeight: false,
-							showStyle: false,
-							showLineHeight: true,
-							showLetterSpacing: false,
-							showTransform: false,
-						},
-					] }
-				/>
+				{ /* The picker label's and chosen value's type settings live in the
+				     Typography panel below. Font size/letter-spacing/case/colour
+				     forward to sgs/option-picker's OWN labelFontSize/
+				     labelLetterSpacing/labelTextTransform/labelColour when the toggle
+				     is off (option-picker renders its usual visible legend). When it
+				     is on, this block replaces that legend with its own label+value
+				     row and applies the SAME settings to its own label text, and the
+				     chosen value takes its own size and line height - see render.php's
+				     "picker-label typography" comment. */ }
 				<ToggleControl
 					label={ __(
 						'Show the chosen value beside the label',
@@ -158,9 +119,14 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 			</PanelBody>
 
 			<PanelBody
-				title={ __( 'Price typography', 'sgs-blocks' ) }
+				title={ __( 'Typography', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				{ /* One switcher for every typography-holding element of the block. The
+				     ladder saving text is sized absolutely by style.css and the picker
+				     value exists only on the own-render path, so each keeps its own
+				     prefix. The add-to-cart price sits inside the button and follows
+				     the button's settings by inheritance. */ }
 				<TypographyControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -173,20 +139,38 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							showStyle: false,
 							showLineHeight: true,
 						},
-					] }
-				/>
-			</PanelBody>
-
-			<PanelBody
-				title={ __( 'Value ladder typography', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				{ /* The ladder wrapper's settings cascade to the pack and per-unit text; the
-				     saving text is sized absolutely by style.css, so it has its own prefix. */ }
-				<TypographyControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					targets={ [
+						{
+							key: 'addToCart',
+							label: __( 'Button label and price', 'sgs-blocks' ),
+							prefix: 'addToCart',
+							showFontFamily: false,
+							showStyle: false,
+							showLineHeight: false,
+							showLetterSpacing: true,
+							showTransform: true,
+						},
+						{
+							key: 'pickerLabel',
+							label: __( 'Picker label', 'sgs-blocks' ),
+							prefix: 'pickerLabel',
+							showFontFamily: false,
+							showWeight: false,
+							showStyle: false,
+							showLineHeight: false,
+							showLetterSpacing: true,
+							showTransform: true,
+						},
+						{
+							key: 'pickerValue',
+							label: __( 'Chosen value', 'sgs-blocks' ),
+							prefix: 'pickerValue',
+							showFontFamily: false,
+							showWeight: false,
+							showStyle: false,
+							showLineHeight: true,
+							showLetterSpacing: false,
+							showTransform: false,
+						},
 						{
 							key: 'valueLadder',
 							label: __( 'Value ladder', 'sgs-blocks' ),
@@ -205,6 +189,132 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							key: 'valueLadderSaving',
 							label: __( 'Value ladder saving', 'sgs-blocks' ),
 							prefix: 'valueLadderSaving',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'stock',
+							label: __( 'Stock line', 'sgs-blocks' ),
+							prefix: 'stock',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'savingBadge',
+							label: __( 'Gallery saving badge', 'sgs-blocks' ),
+							prefix: 'savingBadge',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'guidedMeter',
+							label: __( 'Guided progress meter', 'sgs-blocks' ),
+							prefix: 'guidedMeter',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'guidedGroupTitle',
+							label: __( 'Guided group title', 'sgs-blocks' ),
+							prefix: 'guidedGroupTitle',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'notifyHeading',
+							label: __( 'Notify heading', 'sgs-blocks' ),
+							prefix: 'notifyHeading',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'notifyLabel',
+							label: __( 'Notify labels', 'sgs-blocks' ),
+							prefix: 'notifyLabel',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'notifyInput',
+							label: __( 'Notify email input', 'sgs-blocks' ),
+							prefix: 'notifyInput',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'notifySubmit',
+							label: __( 'Notify button', 'sgs-blocks' ),
+							prefix: 'notifySubmit',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'notifyStatus',
+							label: __( 'Notify status message', 'sgs-blocks' ),
+							prefix: 'notifyStatus',
 							fontSizePresets: true,
 							showFontFamily: true,
 							showDecoration: true,
@@ -281,22 +391,6 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					) }
 					__unstableInputWidth="100%"
 					__next40pxDefaultSize
-				/>
-				<TypographyControls
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					targets={ [
-						{
-							key: 'addToCart',
-							label: __( 'Button label', 'sgs-blocks' ),
-							prefix: 'addToCart',
-							showFontFamily: false,
-							showStyle: false,
-							showLineHeight: false,
-							showLetterSpacing: true,
-							showTransform: true,
-						},
-					] }
 				/>
 			</PanelBody>
 		</>

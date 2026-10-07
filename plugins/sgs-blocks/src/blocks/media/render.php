@@ -417,6 +417,14 @@ if ( '' !== $caption_typography_css ) {
 	$responsive_css .= $caption_typography_css;
 }
 
+// Video time read-out (`0:00 / 0:00`) in the control bar. view.js builds the bar
+// after load; a scoped rule still reaches JS-built markup. style.css keeps the
+// 12px size and line-height 1 inside :where() so this rule wins.
+$video_time_typography_css = sgs_typography_css_rule( $attributes, 'videoTime', $id_wrap . ' .sgs-video__time' );
+if ( '' !== $video_time_typography_css ) {
+	$responsive_css .= $video_time_typography_css;
+}
+
 // Colour (flat or gradient) — handled separately from typography (D636 gap-closure).
 // sgs_text_colour_decl() picks flat colour vs background-clip:text automatically
 // from a single resolved value; the fallback rule is the mandatory companion

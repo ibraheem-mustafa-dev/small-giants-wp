@@ -1371,10 +1371,57 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    also now expose weight/style, which native typography never offered
 				    here. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
+					{ /* One switcher: the post title, the numbered page buttons and the
+					     Load more button. The page buttons and Load more are built outside
+					     the editor canvas (PHP pagination, view.js), so only the title has
+					     a canvas preview. */ }
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="title"
+						targets={ [
+							{
+								key: 'title',
+								label: __( 'Title', 'sgs-blocks' ),
+								prefix: 'title',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'pagination',
+								label: __( 'Page buttons', 'sgs-blocks' ),
+								prefix: 'pagination',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'loadMore',
+								label: __( 'Load more button', 'sgs-blocks' ),
+								prefix: 'loadMore',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

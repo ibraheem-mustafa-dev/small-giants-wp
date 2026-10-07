@@ -280,7 +280,7 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 					<?php endif; ?>
 					<?php if ( '' !== $sgs_pcard_cta2 ) : ?>
 						<a
-							class="sgs-button sgs-button--<?php echo esc_attr( $sgs_pcard_cta2style ); ?>"
+							class="sgs-button sgs-button--<?php echo esc_attr( $sgs_pcard_cta2style ); ?> sgs-product-card__cta--secondary"
 							href="<?php echo '' !== $sgs_pcard_cta2url ? esc_url( $sgs_pcard_cta2url ) : '#'; ?>"
 						><?php echo esc_html( $sgs_pcard_cta2 ); ?></a>
 					<?php endif; ?>

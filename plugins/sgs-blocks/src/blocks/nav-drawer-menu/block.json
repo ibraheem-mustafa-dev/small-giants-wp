@@ -1512,6 +1512,64 @@
 			"type": "string",
 			"default": "text-muted",
 			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — text colour of a disabled item/sublink. Token slug or hex."
+		},
+		"drillBackFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"drillBackFontSizeUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackLineHeight": {
+			"type": "number"
+		},
+		"drillBackLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"drillBackLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"drillBackTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"drillBackTextColumns": {
+			"type": "number"
+		},
+		"drillBackWritingMode": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

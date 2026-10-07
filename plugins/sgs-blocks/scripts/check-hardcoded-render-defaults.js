@@ -1554,6 +1554,9 @@ const CONTROL_HELPERS = {
 			{ base: 'ColourText', prop: 'color', variants: [ '' ] },
 			{ base: 'FontWeight', prop: 'font-weight', variants: [ '' ] },
 			{ base: 'FontSize', prop: 'font-size', variants: [ '' ] },
+			// sgs_button_element_line_height() reads a scalar only: a tier-object
+			// attribute of the same name paints nothing through this helper.
+			{ base: 'LineHeight', prop: 'line-height', variants: [ '' ], scalarOnly: true },
 		],
 	},
 };
@@ -1578,9 +1581,10 @@ const E14_BLOCKS_BUILD = false;
 // - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
 //   intent).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 54: elements with no typography control at all (the
-//   CLASS 4 shape the gate cannot yet name), elements built from sprintf
-//   templates or class maps it cannot parse, and the CANNOT-TELL rows.
+// - CANNOT-RESOLVE 21: post-grid card parts and card-grid glyph/badge with
+//   no typography control yet, a control selector ending in a bare tag or
+//   built from a function parameter (triage §7 gaps 11, 12), a caption
+//   selector list with an unplaceable member, and the CANNOT-TELL rows.
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
@@ -1593,7 +1597,7 @@ const E14_BLOCKS_BUILD = false;
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        28,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 54,
+	'CANNOT-RESOLVE': 21,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
@@ -2036,7 +2040,8 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 				for ( const s of spec.suffixes ) {
 					const attrs = s.variants
 						.map( ( v ) => ( '' !== prefix ? prefix + s.base + v : s.base.charAt( 0 ).toLowerCase() + s.base.slice( 1 ) + v ) )
-						.filter( ( a ) => declaredAttrs.has( a ) );
+						.filter( ( a ) => declaredAttrs.has( a ) )
+						.filter( ( a ) => ! s.scalarOnly || 'object' !== ( ( meta.attributes || {} )[ a ] || {} ).type );
 					if ( 0 === attrs.length ) {
 						continue; // the call site does not correspond to a declared control
 					}
@@ -3581,8 +3586,10 @@ function runE14Fixture( attributes, renderPhp, styleCss, extraFiles = {}, siblin
 	try {
 		fs.mkdirSync( blockDir );
 		const attrs = {};
-		for ( const name of attributes ) {
-			attrs[ name ] = { type: 'string' };
+		for ( const entry of attributes ) {
+			// A name, or [ name, type ] for a non-string attribute.
+			const [ name, type ] = Array.isArray( entry ) ? entry : [ entry, 'string' ];
+			attrs[ name ] = { type };
 		}
 		fs.writeFileSync( path.join( blockDir, 'block.json' ), JSON.stringify( { name: 'sgs/x', attributes: attrs } ), 'utf8' );
 		fs.writeFileSync( path.join( blockDir, 'render.php' ), renderPhp, 'utf8' );
@@ -3815,6 +3822,21 @@ function selfTestE14( assert ) {
 		const fs2 = ( r ) => r.findings.filter( ( f ) => 'font-size' === f.property && '.sgs-x__headline' === f.selector ).map( ( f ) => f.class );
 		assert( 'inner-block child: a template child that paints font-size on its own root owns the element (not reported)', fs2( run( [ 'fontSize' ] ) ), [] );
 		assert( 'inner-block child: a template child with no font-size control does not (still CLASS-2)', fs2( run( [ 'textColour' ] ) ), [ 'CLASS-2' ] );
+	}
+
+	// CASE 14 — the button helper's LineHeight is a control only for a scalar
+	// attribute: sgs_button_element_line_height() rejects a tier object, so a
+	// tier-object attribute of that name must not register a control.
+	{
+		const run = ( attr ) => runE14Fixture(
+			[ attr ],
+			E14_FIXTURE_PHP_HEAD + "$css .= sgs_button_element_style_css( $attributes, 'cta', \"{$root_sel} .sgs-x__btn\" );\n" +
+				E14_FIXTURE_ROOT_OPEN + '<a class="sgs-x__btn">Buy</a>\n</div>\n',
+			'.sgs-x__btn {\n\tline-height: 1.4;\n}\n'
+		);
+		const owned = ( r ) => r.class1.some( ( c ) => '.sgs-x__btn' === c.selector );
+		assert( 'button helper: a string ctaLineHeight is a line-height control on its element (CLASS 1)', owned( run( 'ctaLineHeight' ) ), true );
+		assert( 'button helper: a tier-object ctaLineHeight is NOT a control', owned( run( [ 'ctaLineHeight', 'object' ] ) ), false );
 	}
 
 	// CASE 10 — ratchet: past a ceiling the exit code is 1, at or under it 0.

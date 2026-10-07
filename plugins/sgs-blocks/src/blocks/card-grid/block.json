@@ -936,6 +936,99 @@
       "type": "string",
       "default": "em"
     },
+    "paginationFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "paginationFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "paginationTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "paginationLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "paginationLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "paginationTextAlign": {
+      "type": "string",
+      "enum": [
+        "",
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "default": ""
+    },
+    "paginationTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "paginationTextColumns": {
+      "type": "number"
+    },
+    "paginationWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
     "textColourHoverGradient": {
       "type": "string",
       "default": "",

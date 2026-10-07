@@ -778,6 +778,192 @@
       ],
       "default": ""
     },
+    "paginationFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "paginationFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "paginationTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "paginationLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "paginationLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "paginationLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "paginationTextAlign": {
+      "type": "string",
+      "enum": [
+        "",
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "default": ""
+    },
+    "paginationTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "paginationTextColumns": {
+      "type": "number"
+    },
+    "paginationWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "loadMoreFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "loadMoreFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "loadMoreTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "loadMoreTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "loadMoreLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "loadMoreLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "loadMoreLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "loadMoreTextAlign": {
+      "type": "string",
+      "enum": [
+        "",
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "default": ""
+    },
+    "loadMoreTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "loadMoreTextColumns": {
+      "type": "number"
+    },
+    "loadMoreWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
     "categoryBadgeColourHover": {
       "type": "string",
       "description": "Category badge text colour on :hover/:focus-within (colour-conformance text-colour trio closeout, 2026-09-07). Emitted as a direct decl targeting .sgs-post-grid__badge and .sgs-post-grid__category (the two mutually-exclusive elements per cardStyle) via sgs_hover_state_rules() in render.php.",

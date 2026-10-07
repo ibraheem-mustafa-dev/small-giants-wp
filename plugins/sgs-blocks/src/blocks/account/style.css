@@ -211,6 +211,11 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 	background: var(--wp--preset--color--surface-alt, #eee);
 	color: var(--wp--preset--color--text, currentColor);
 	font-size: 0.85em;
+}
+
+/* The chip's weight default sits at zero specificity so chipFontWeight (the
+   Typography panel's Status chip target) always wins. */
+:where(.sgs-account__chip) {
 	font-weight: 600;
 }
 
@@ -225,10 +230,13 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 
 .sgs-account__progress-step {
 	flex: 1;
-	text-align: center;
 	font-size: 0.8em;
 	padding-block-start: 0.75rem;
 	border-top: 3px solid var(--wp--preset--color--border, #ddd);
+}
+
+:where(.sgs-account__progress-step) {
+	text-align: center;
 }
 
 .sgs-account__progress-step--done {
@@ -415,9 +423,12 @@ a.sgs-account__quick-card:focus-visible .sgs-account__card-title {
 }
 
 .sgs-account__guest-line {
-	text-align: center;
 	color: var(--wp--preset--color--text, currentColor);
 	margin-block-start: 1rem;
+}
+
+:where(.sgs-account__guest-line) {
+	text-align: center;
 }
 
 /* -- Motion -------------------------------------------------------------- */

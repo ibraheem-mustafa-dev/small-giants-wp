@@ -702,6 +702,99 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"videoTimeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"videoTimeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"videoTimeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"videoTimeFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"videoTimeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"videoTimeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"videoTimeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"videoTimeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"videoTimeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"videoTimeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"videoTimeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"videoTimeTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"videoTimeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"videoTimeTextColumns": {
+			"type": "number"
+		},
+		"videoTimeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

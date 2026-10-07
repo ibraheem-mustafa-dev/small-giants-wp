@@ -235,25 +235,52 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					blockSlug="sgs/media"
 					previewUrl={ isImage ? imageUrl : '' }
 				/>
-				<PanelBody title={ __( 'Caption typography', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* One switcher: the caption and the video player's time read-out.
+					     The read-out is built by view.js, so it has no canvas preview. */ }
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="caption"
-						showSize={ true }
-						fontSizePresets={ true }
-						showFontFamily={ true }
-						showWeight={ true }
-						showStyle={ true }
-						showLineHeight={ true }
-						showResponsive={ true }
-						showDecoration={ true }
-						showTransform={ true }
-						showLetterSpacing={ true }
-						showTextAlign={ true }
-						showTextWrap={ true }
-						showTextColumns={ true }
-						showWritingMode={ true }
+						targets={ [
+							{
+								key: 'caption',
+								label: __( 'Caption', 'sgs-blocks' ),
+								prefix: 'caption',
+								showSize: true,
+								fontSizePresets: true,
+								showFontFamily: true,
+								showWeight: true,
+								showStyle: true,
+								showLineHeight: true,
+								showResponsive: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'videoTime',
+								label: __( 'Video time', 'sgs-blocks' ),
+								prefix: 'videoTime',
+								showSize: true,
+								fontSizePresets: true,
+								showFontFamily: true,
+								showWeight: true,
+								showStyle: true,
+								showLineHeight: true,
+								showResponsive: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 			</InspectorControls>

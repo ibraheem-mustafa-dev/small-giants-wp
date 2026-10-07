@@ -246,6 +246,13 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_ca
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
+// Frame Card rating row, its star glyphs, the live-card RRP, the saving badge over the image and the
+// swatch row's "+N" count: each owns a surface, painted on the element the control names.
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rating', '.' . $sgs_card_uid . ' .sgs-product-card__rating' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'ratingStars', '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rrp', '.' . $sgs_card_uid . ' .sgs-product-card__rrp' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', '.' . $sgs_card_uid . ' .sgs-product-card__saving-badge' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'swatchMore', '.' . $sgs_card_uid . ' .sgs-product-card__swatch-more' );
 // Value ladder (bound mode): the wrapper, and the per-row saving text that style.css sizes absolutely.
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', '.' . $sgs_card_uid . ' .value-ladder__saving' );
@@ -727,6 +734,17 @@ if ( 'typed' === $source_mode ) {
 		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
 		true
 	);
+	// Text alignment of the typed primary and secondary CTAs (ctaTextAlign / cta2TextAlign). Empty keeps
+	// style.css's centred default.
+	foreach ( array(
+		'ctaTextAlign'  => '.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
+		'cta2TextAlign' => '.' . $sgs_card_uid . ' .sgs-product-card__cta--secondary',
+	) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
+		$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
+		if ( '' !== $sgs_cta_align ) {
+			$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';}';
+		}
+	}
 
 	// In-body TRIAL tag box (padding / background / radius / display) — rendered
 	// through the SHARED sgs_label_box_css_rule() helper, the SAME renderer
@@ -877,6 +895,16 @@ $sgs_card_typo_css .= sgs_button_element_style_css(
 	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
 	true
 );
+// Text alignment of the bound primary and secondary CTAs; empty keeps style.css's centred default.
+foreach ( array(
+	'ctaTextAlign'  => '.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
+	'cta2TextAlign' => '.' . $sgs_card_uid . ' .product-card__cta-secondary',
+) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
+	$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
+	if ( '' !== $sgs_cta_align ) {
+		$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';}';
+	}
+}
 $sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';

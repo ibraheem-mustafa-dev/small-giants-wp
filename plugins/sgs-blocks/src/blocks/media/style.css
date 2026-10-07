@@ -250,7 +250,6 @@
     align-items: center;
     gap: 10px;
     padding: 10px 12px;
-    line-height: 1;
     background: linear-gradient( to top, rgba( 0, 0, 0, 0.72 ), transparent );
     opacity: 0;
     transform: translateY( 8px );
@@ -285,9 +284,16 @@
 .sgs-video__btn:hover { background: rgba( 255, 255, 255, 0.16 ); }
 .sgs-video__btn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 
+/* The bar's only text is the time read-out (buttons and range inputs set their
+ * own box), so its line-height 1 lives here with the font size, in :where() so
+ * the scoped videoTime typography rule wins. */
+:where(.sgs-video__time) {
+    font-size: 12px;
+    line-height: 1;
+}
+
 .sgs-video__time {
     color: #fff;
-    font-size: 12px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     text-shadow: 0 1px 2px rgba( 0, 0, 0, 0.7 );

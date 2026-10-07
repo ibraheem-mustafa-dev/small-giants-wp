@@ -259,9 +259,9 @@
 	box-sizing: border-box;
 }
 
-/* Button text alignment default — :where() keeps this at specificity 0 so
-   titleTextAlign / descTextAlign / tagTextAlign attributes always win via
-   sgs_typography_css_rule() scoped rules (0,2,0). */
+/* Button text alignment default (every CTA, primary and secondary, typed and bound) —
+   :where() keeps this at specificity 0 so ctaTextAlign / cta2TextAlign, emitted by
+   render.php as a .{uid} rule (0,2,0), always win. */
 :where(.product-card) .sgs-button {
 	text-align: center;
 }
@@ -283,8 +283,9 @@
 	 * D314); removed so a cloned CTA matches the draft's standard `.sgs-button`
 	 * padding. A per-instance ctaPadding still wins via the helper (0,2,0). */
 	font-size: 15px;
-	/* ctaFontWeight (default 600) paints this element through the helper's scoped
-	 * rule (0,2,0); line-height has no CTA control. */
+	/* ctaFontWeight (default 600) and ctaLineHeight (default 1.4) paint the primary
+	 * CTA through the helper's scoped rule (0,2,0); this line-height is the
+	 * zero-specificity fallback for the secondary CTA, which has no line-height control. */
 	font-weight: 600;
 	line-height: 1.4;
 }
@@ -1263,7 +1264,6 @@
  */
 .product-card .sgs-product-card__cta-row .sgs-button {
 	flex: 1 1 auto;
-	text-align: center;
 }
 
 /*
@@ -1283,7 +1283,6 @@
  */
 .product-card .product-card__cta-secondary {
 	display: inline-block;
-	text-align: center;
 }
 
 /*
@@ -1433,7 +1432,6 @@
 .sgs-product-card__attribute-tag {
 	flex-shrink: 0;
 	display: inline-block;
-	text-transform: uppercase;
 	white-space: nowrap;
 	background: transparent;
 	/* Width 0: attributeTagBorderWidth is the only width; solid and the colour stand ready for it. */
@@ -1447,6 +1445,7 @@
 	font-size: 9.5px;
 	font-weight: 600;
 	letter-spacing: 0.12em;
+	text-transform: uppercase;
 }
 
 /* Rating row — star glyphs + numeric label/review-count, or the zero-review line. */
@@ -1454,12 +1453,20 @@
 	display: flex;
 	align-items: baseline;
 	gap: 6px;
+}
+
+/* Size defaults at specificity 0 so the Typography panel's "Rating" and "Rating stars"
+   targets (the scoped rules) always win. */
+:where(.sgs-product-card__rating) {
 	font-size: 13px;
+}
+
+:where(.sgs-product-card__rating-stars) {
+	letter-spacing: 0.12em;
 }
 
 .sgs-product-card__rating-stars {
 	color: var( --wp--preset--color--primary, #9c8b78 );
-	letter-spacing: 0.12em;
 }
 
 .sgs-product-card__rating-text {
@@ -1487,19 +1494,19 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	text-transform: uppercase;
 	color: var( --wp--preset--color--text, #141414 );
 	background: linear-gradient( 135deg, rgba( 255, 255, 255, 0.92 ) 0%, rgba( 255, 255, 255, 0.82 ) 62%, rgba( 255, 255, 255, 0 ) 100% );
 }
 
-/* Size, padding, weight and spacing defaults at specificity 0, so brandFontSize,
-   brandPadding, brandFontWeight and brandLetterSpacing (the scoped brand rules)
-   always win. */
+/* Size, padding, weight, spacing and case defaults at specificity 0, so brandFontSize,
+   brandPadding, brandFontWeight, brandLetterSpacing and brandTextTransform (the scoped
+   brand rules) always win. */
 :where(.sgs-product-card__brand) {
 	font-size: 11px;
 	padding: 10px 12px;
 	font-weight: 600;
 	letter-spacing: 0.12em;
+	text-transform: uppercase;
 }
 
 /* The logo form of the brand overlay. The text-only rules above (uppercase,
@@ -1523,10 +1530,6 @@
 .sgs-product-card__saving-badge {
 	position: absolute;
 	z-index: 1;
-	font-size: 11px;
-	font-weight: 400;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
 	background: var( --wp--preset--color--text, #141414 );
 	color: var( --wp--preset--color--text-inverse, #faf8f5 );
 }
@@ -1540,6 +1543,10 @@
  */
 :where(.sgs-product-card__saving-badge) {
 	padding: 6px 10px;
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
 }
 
 .sgs-product-card__saving-badge--top-left {
@@ -1695,10 +1702,11 @@
 	}
 }
 
-/* The '+N' overflow is a count, not a control: no handler, no tab stop. It has no
- * typography control of its own, so its size is an overridable default. */
+/* The '+N' overflow is a count, not a control: no handler, no tab stop. Its size and
+ * line height are overridable defaults for the "Swatch count" typography target. */
 :where(.sgs-product-card__swatch-more) {
 	font-size: 11px;
+	line-height: 1.3;
 }
 
 .sgs-product-card__swatch-more {
@@ -1707,7 +1715,6 @@
 	border: 1px solid rgba( 0, 0, 0, 0.15 );
 	border-radius: 999px;
 	padding: 2px 6px;
-	line-height: 1.3;
 	white-space: nowrap;
 }
 
@@ -1765,8 +1772,11 @@
 }
 
 /* The RRP, struck through beside the price (rrpMetaKey). */
-.sgs-product-card__rrp {
+:where(.sgs-product-card__rrp) {
 	font-size: 13px;
+}
+
+.sgs-product-card__rrp {
 	color: var( --wp--preset--color--text-muted, #77716a );
 }
 

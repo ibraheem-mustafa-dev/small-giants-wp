@@ -665,6 +665,20 @@ export default function Edit( { attributes, setAttributes } ) {
 								showLetterSpacing: true,
 								showTransform: true,
 							},
+							{
+								key: 'drillBack',
+								label: __( 'Back button (drill-down)', 'sgs-blocks' ),
+								prefix: 'drillBack',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
 							// No 'burger' target — the whole burger family is BAR-only;
 							// this block has no trigger button.
 						] }

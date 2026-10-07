@@ -635,6 +635,9 @@ $css .= sgs_nav_drawer_menu_extras_css( $attributes, '.sgs-nav-drawer-menu' . $u
 // Separators setting, emitted with the item border CSS.)
 $css .= sgs_nav_drawer_menu_row_layout_css( $attributes, $uid_sel );
 $css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
+// The drill-down Back button (injected by src/shared/effects/nav-drilldown.js, so it has no PHP
+// markup) is a text element of its own: the item and submenu typography do not reach it.
+$css .= sgs_typography_css_rule( $attributes, 'drillBack', $uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn' );
 // megaBodyPadding: the padding around a mega item's panel in its accordion
 // (style.css keeps 0 12px 12px as the unset default; (0,2,0) beats its (0,1,0)).
 if ( is_array( $attributes['megaBodyPadding'] ?? null ) ) {

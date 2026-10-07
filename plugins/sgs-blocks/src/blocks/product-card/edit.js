@@ -76,6 +76,15 @@ const CTA_STYLE_OPTIONS = [
 	{ value: 'outline', label: __( 'Outline', 'sgs-blocks' ) },
 ];
 
+/** CTA text alignment: empty keeps the stylesheet's centred default. */
+const CTA_TEXT_ALIGN_OPTIONS = [
+	{ value: '', label: __( 'Default (centred)', 'sgs-blocks' ) },
+	{ value: 'left', label: __( 'Left', 'sgs-blocks' ) },
+	{ value: 'center', label: __( 'Centre', 'sgs-blocks' ) },
+	{ value: 'right', label: __( 'Right', 'sgs-blocks' ) },
+	{ value: 'justify', label: __( 'Justify', 'sgs-blocks' ) },
+];
+
 /**
  * Product source panel — searchable picker that lists WooCommerce products
  * (wc/v3/products, when WC is active). Selecting one auto-sets productId +
@@ -735,6 +744,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		ctaBorderRadius,
 		ctaFontWeight,
 		ctaFontSize,
+		ctaLineHeight,
+		ctaTextAlign,
+		cta2TextAlign,
 		ctaPadding,
 		ctaWidthType,
 		cardPadding,
@@ -909,6 +921,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		color: resolvePcColour( ctaColourText ),
 		...sgsBorderPreview( { widthValues: ctaBorderWidth, styleValue: ctaBorderStyle, colourValue: ctaColourBorder, colourGradientValue: attributes.ctaColourBorderGradient, radiusValues: ctaBorderRadius } ),
 		fontWeight: ctaFontWeight || undefined,
+		lineHeight: ctaLineHeight || undefined,
+		textAlign: ctaTextAlign || undefined,
 		fontSize:
 			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
 				? `${ ctaFontSize }px`
@@ -989,6 +1003,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	const ladderSavingColour = isBound ? colourVar( attributes.valueLadderSavingColour ) : undefined;
 	const boundPreviewCss = isBound
 		? typographyPreviewCss( attributes, 'priceFromLabel', `#block-${ clientId } .price-from-label`, cardTier ) +
+			typographyPreviewCss( attributes, 'rrp', `#block-${ clientId } .sgs-product-card__rrp`, cardTier ) +
 			( ladderSavingColour ? `#block-${ clientId } .value-ladder__saving{color:${ ladderSavingColour };}` : '' )
 		: '';
 
@@ -2468,10 +2483,15 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									key: 'brand',
 									label: __( 'Brand overlay', 'sgs-blocks' ),
 									prefix: 'brand',
+									fontSizePresets: true,
 									showFontFamily: true,
-									showStyle: false,
-									showLineHeight: false,
+									showDecoration: true,
+									showTransform: true,
 									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
 								},
 								{
 									key: 'noImageLabel',
@@ -2515,9 +2535,86 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									key: 'attributeTag',
 									label: __( 'Attribute tag', 'sgs-blocks' ),
 									prefix: 'attributeTag',
-									showStyle: false,
-									showLineHeight: false,
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
 									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								attributes.showRating && {
+									key: 'rating',
+									label: __( 'Rating and reviews', 'sgs-blocks' ),
+									prefix: 'rating',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								attributes.showRating && {
+									key: 'ratingStars',
+									label: __( 'Rating stars', 'sgs-blocks' ),
+									prefix: 'ratingStars',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								/* Bound mode only: the RRP is a live-product element (rrpMetaKey). */
+								isBound && {
+									key: 'rrp',
+									label: __( 'RRP', 'sgs-blocks' ),
+									prefix: 'rrp',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								attributes.showSavingBadge && {
+									key: 'savingBadge',
+									label: __( 'Saving badge', 'sgs-blocks' ),
+									prefix: 'savingBadge',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
+								},
+								( isBound || ( attributes.colourSwatches || [] ).length > 0 ) && {
+									key: 'swatchMore',
+									label: __( 'Swatch count (+N)', 'sgs-blocks' ),
+									prefix: 'swatchMore',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showWritingMode: true,
 								},
 							].filter( ( target ) => target && ( isBound || 'priceFromLabel' !== target.key ) ) }
 						/>
@@ -2903,6 +3000,45 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
+							label={ __( 'Line height', 'sgs-blocks' ) }
+							hasValue={ () => '1.4' !== ( ctaLineHeight ?? '1.4' ) }
+							onDeselect={ () =>
+								setAttributes( { ctaLineHeight: '1.4' } )
+							}
+						>
+							<TextControl
+								label={ __( 'Line height', 'sgs-blocks' ) }
+								help={ __(
+									'A number (1.4) or a length (24px). Empty keeps the default.',
+									'sgs-blocks'
+								) }
+								value={ ctaLineHeight ?? '' }
+								onChange={ ( v ) =>
+									setAttributes( { ctaLineHeight: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Text alignment', 'sgs-blocks' ) }
+							hasValue={ () => !! ctaTextAlign }
+							onDeselect={ () =>
+								setAttributes( { ctaTextAlign: '' } )
+							}
+						>
+							<SelectControl
+								label={ __( 'Text alignment', 'sgs-blocks' ) }
+								value={ ctaTextAlign || '' }
+								options={ CTA_TEXT_ALIGN_OPTIONS }
+								onChange={ ( v ) =>
+									setAttributes( { ctaTextAlign: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Button padding', 'sgs-blocks' ) }
 							hasValue={ () =>
 								!! ctaPadding &&
@@ -2960,6 +3096,19 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								options={ CTA_STYLE_OPTIONS }
 								onChange={ ( v ) =>
 									setAttributes( { cta2Style: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<SelectControl
+								label={ __(
+									'Secondary button text alignment',
+									'sgs-blocks'
+								) }
+								value={ cta2TextAlign || '' }
+								options={ CTA_TEXT_ALIGN_OPTIONS }
+								onChange={ ( v ) =>
+									setAttributes( { cta2TextAlign: v } )
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
@@ -3462,8 +3611,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						     overrides render.php emits via
 						     sgs_button_element_style_css(). cta2 has no
 						     equivalent box attrs (block.json declares only
-						     cta2Text/cta2Url/cta2Style), so no inline style
-						     is needed there. */ }
+						     cta2Text/cta2Url/cta2Style/cta2TextAlign), so its
+						     only inline style is the text alignment. */ }
 						<div className="sgs-product-card__cta-row">
 							{ ( ctaText || '' ) !== '' && (
 								<span
@@ -3475,7 +3624,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							) }
 							{ ( cta2Text || '' ) !== '' && (
 								<span
-									className={ `sgs-button sgs-button--${ safeCta2Style }` }
+									className={ `sgs-button sgs-button--${ safeCta2Style } sgs-product-card__cta--secondary` }
+									style={ { textAlign: cta2TextAlign || undefined } }
 								>
 									{ cta2Text }
 								</span>

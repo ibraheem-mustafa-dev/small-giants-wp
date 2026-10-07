@@ -557,6 +557,12 @@ if ( ! empty( $post_grid_style_engine_args ) ) {
 // the 'title'-prefixed attrs and scopes the rule at the same selector the
 // native support used.
 $responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' .sgs-post-grid__title' );
+// Pagination page buttons (built by Grid_Pagination) and the load-more button
+// (Grid_Pagination in the page, rebuilt by view.js after a filter): each has its
+// own typography surface; style.css keeps the 0.875rem/600 and 1rem/600
+// defaults inside :where() so these scoped rules win.
+$responsive_css .= sgs_typography_css_rule( $attributes, 'pagination', $root_sel . ' .sgs-post-grid__page-btn' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more' );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

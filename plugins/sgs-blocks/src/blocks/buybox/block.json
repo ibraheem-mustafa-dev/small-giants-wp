@@ -156,6 +156,7 @@
 						"fill"
 					],
 					"attrMap": {
+						"css:width": "thumbSize",
 						"css:border-width": "thumbBorderWidth",
 						"css:border-color": "thumbBorderColour"
 					},
@@ -186,6 +187,87 @@
 					],
 					"prefix": "valueLadderSaving",
 					"_note": "The per-row \"save X%\" text (.value-ladder__saving). style.css sizes it absolutely, so the wrapper setting cannot reach it - it has its own prefix. No colour attribute exists for this element - an honest gap."
+				},
+				"notifyHeading": {
+					"label": "Notify heading",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyHeading",
+					"_note": "The back-in-stock form heading (.sgs-buybox__notify-heading)."
+				},
+				"notifyLabel": {
+					"label": "Notify labels",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyLabel",
+					"_note": "The email field label and the consent checkbox label of the back-in-stock form (.sgs-buybox__notify-label, .sgs-buybox__notify-consent-label): one role, the text that names a form control. No colour attribute exists for this element - an honest gap."
+				},
+				"notifyInput": {
+					"label": "Notify email input",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyInput",
+					"_note": "The typed text and placeholder of the back-in-stock email field (.sgs-buybox__notify-email)."
+				},
+				"notifySubmit": {
+					"label": "Notify button",
+					"order": 13,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifySubmit",
+					"_note": "The back-in-stock form submit button label (.sgs-buybox__notify-submit)."
+				},
+				"notifyStatus": {
+					"label": "Notify status message",
+					"order": 14,
+					"clusters": [
+						"text"
+					],
+					"prefix": "notifyStatus",
+					"_note": "The success or error message written under the back-in-stock form (.sgs-buybox__notify-status)."
+				},
+				"savingBadge": {
+					"label": "Gallery saving badge",
+					"order": 15,
+					"clusters": [
+						"text"
+					],
+					"prefix": "savingBadge",
+					"_note": "The saving badge over the gallery photo (.sgs-buybox__saving-badge)."
+				},
+				"stock": {
+					"label": "Stock line",
+					"order": 16,
+					"clusters": [
+						"text"
+					],
+					"prefix": "stock",
+					"_note": "The stock line (.buybox__stock), in both the always-on form and the status-dot form. Its colour comes from the three stock-status colour elements."
+				},
+				"guidedMeter": {
+					"label": "Guided progress meter",
+					"order": 17,
+					"clusters": [
+						"text"
+					],
+					"prefix": "guidedMeter",
+					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step."
+				},
+				"guidedGroupTitle": {
+					"label": "Guided group title",
+					"order": 18,
+					"clusters": [
+						"text"
+					],
+					"prefix": "guidedGroupTitle",
+					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title)."
 				}
 			},
 			"fx": {
@@ -669,6 +751,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"thumbSize": {
+			"type": "number",
+			"default": 64,
+			"description": "Width and height of each gallery thumbnail, in px. 64 is the stylesheet default; written as --sgs-buybox-thumb-size on the block. Never smaller than the 48px touch-target floor."
+		},
 		"thumbBorderWidth": {
 			"type": "string",
 			"default": "",
@@ -982,6 +1069,888 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Only applies when stockLinePosition is 'above'. Adds a 1px hairline rule (in the border colour) between the price row and the stock line."
+		},
+		"notifyHeadingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyHeadingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyHeadingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyHeadingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyHeadingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyHeadingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyHeadingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyHeadingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyHeadingTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"notifyHeadingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyHeadingTextColumns": {
+			"type": "number"
+		},
+		"notifyHeadingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyLabelTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"notifyLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyLabelTextColumns": {
+			"type": "number"
+		},
+		"notifyLabelWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyInputFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyInputFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyInputFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyInputTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyInputTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyInputLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyInputLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyInputLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyInputTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"notifyInputTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyInputTextColumns": {
+			"type": "number"
+		},
+		"notifyInputWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifySubmitFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifySubmitFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifySubmitFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifySubmitTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifySubmitTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifySubmitLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifySubmitLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifySubmitLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifySubmitTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"notifySubmitTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifySubmitTextColumns": {
+			"type": "number"
+		},
+		"notifySubmitWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"notifyStatusFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"notifyStatusFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"notifyStatusFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"notifyStatusTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"notifyStatusTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"notifyStatusLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyStatusLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"notifyStatusLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"notifyStatusTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"notifyStatusTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"notifyStatusTextColumns": {
+			"type": "number"
+		},
+		"notifyStatusWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"savingBadgeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"savingBadgeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"savingBadgeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"savingBadgeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"savingBadgeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"savingBadgeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"savingBadgeTextColumns": {
+			"type": "number"
+		},
+		"savingBadgeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"stockFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"stockFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"stockFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"stockFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"stockFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"stockTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"stockTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"stockLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"stockLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stockLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"stockLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stockTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"stockTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"stockTextColumns": {
+			"type": "number"
+		},
+		"stockWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"guidedMeterFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"guidedMeterFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"guidedMeterFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedMeterTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"guidedMeterTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"guidedMeterLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedMeterLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedMeterLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedMeterTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"guidedMeterTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"guidedMeterTextColumns": {
+			"type": "number"
+		},
+		"guidedMeterWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"guidedGroupTitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"guidedGroupTitleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedGroupTitleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"guidedGroupTitleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"guidedGroupTitleTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"guidedGroupTitleTextColumns": {
+			"type": "number"
+		},
+		"guidedGroupTitleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -189,6 +189,21 @@
 						"text"
 					],
 					"prefix": "rrp",
+					"attrMap": {
+						"css:color": "rrpColour",
+						"css:font-size": "rrpFontSize",
+						"css:font-weight": "rrpFontWeight",
+						"css:font-style": "rrpFontStyle",
+						"css:font-family": "rrpFontFamily",
+						"css:text-transform": "rrpTextTransform",
+						"css:text-decoration": "rrpTextDecoration",
+						"css:line-height": "rrpLineHeight",
+						"css:letter-spacing": "rrpLetterSpacing",
+						"css:text-align": "rrpTextAlign",
+						"css:text-wrap": "rrpTextWrap",
+						"css:column-count": "rrpTextColumns",
+						"css:writing-mode": "rrpWritingMode"
+					},
 					"_note": "The struck-through RRP beside a live card's price (rrpMetaKey): `.sgs-product-card__rrp`, markup from includes/product-card-live-fill.php::sgs_product_card_rrp_markup. rrpColour is emitted by includes/product-card-card-parts.php."
 				},
 				"desc": {
@@ -295,6 +310,21 @@
 						"text"
 					],
 					"prefix": "rating",
+					"attrMap": {
+						"css:color": "ratingColour",
+						"css:font-size": "ratingFontSize",
+						"css:font-weight": "ratingFontWeight",
+						"css:font-style": "ratingFontStyle",
+						"css:font-family": "ratingFontFamily",
+						"css:text-transform": "ratingTextTransform",
+						"css:text-decoration": "ratingTextDecoration",
+						"css:line-height": "ratingLineHeight",
+						"css:letter-spacing": "ratingLetterSpacing",
+						"css:text-align": "ratingTextAlign",
+						"css:text-wrap": "ratingTextWrap",
+						"css:column-count": "ratingTextColumns",
+						"css:writing-mode": "ratingWritingMode"
+					},
 					"_note": "Star row + review-count text (Frame Card component). Resolves css:color -> ratingColour via the default {prefix}Colour convention — no explicit attrMap needed (mirrors priceNote's own prefix-only declaration). Rendered by sgs_product_card_rating_markup() (product-card-builtin-render.php), called from every render branch (typed + all 3 bound branches) per R-31-9 — one control governs the element everywhere it can appear. No dedicated font-size attr exists for the review-count text — an honest gap, matching priceFromLabel's own precedent."
 				},
 				"brand": {
@@ -306,6 +336,18 @@
 					],
 					"prefix": "brand",
 					"attrMap": {
+						"css:font-size": "brandFontSize",
+						"css:font-weight": "brandFontWeight",
+						"css:font-style": "brandFontStyle",
+						"css:font-family": "brandFontFamily",
+						"css:text-transform": "brandTextTransform",
+						"css:text-decoration": "brandTextDecoration",
+						"css:line-height": "brandLineHeight",
+						"css:letter-spacing": "brandLetterSpacing",
+						"css:text-align": "brandTextAlign",
+						"css:text-wrap": "brandTextWrap",
+						"css:column-count": "brandTextColumns",
+						"css:writing-mode": "brandWritingMode",
 						"css:padding": "brandPadding"
 					},
 					"_note": "The brand overlaid top-left on the product image (Frame Card component) - the brand's LOGO when it has one and brandUseLogo is on, else the brand name as a wordmark. The typography and colour settings here style the wordmark form; the logo form is sized by .sgs-product-card__brand-logo in style.css. brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
@@ -320,6 +362,18 @@
 					],
 					"prefix": "savingBadge",
 					"attrMap": {
+						"css:font-size": "savingBadgeFontSize",
+						"css:font-weight": "savingBadgeFontWeight",
+						"css:font-style": "savingBadgeFontStyle",
+						"css:font-family": "savingBadgeFontFamily",
+						"css:text-transform": "savingBadgeTextTransform",
+						"css:text-decoration": "savingBadgeTextDecoration",
+						"css:line-height": "savingBadgeLineHeight",
+						"css:letter-spacing": "savingBadgeLetterSpacing",
+						"css:text-align": "savingBadgeTextAlign",
+						"css:text-wrap": "savingBadgeTextWrap",
+						"css:column-count": "savingBadgeTextColumns",
+						"css:writing-mode": "savingBadgeWritingMode",
 						"css:background-color": "savingBadgeBackgroundColour",
 						"css:padding": "savingBadgePadding"
 					},
@@ -355,6 +409,18 @@
 					],
 					"prefix": "attributeTag",
 					"attrMap": {
+						"css:font-size": "attributeTagFontSize",
+						"css:font-weight": "attributeTagFontWeight",
+						"css:font-style": "attributeTagFontStyle",
+						"css:font-family": "attributeTagFontFamily",
+						"css:text-transform": "attributeTagTextTransform",
+						"css:text-decoration": "attributeTagTextDecoration",
+						"css:line-height": "attributeTagLineHeight",
+						"css:letter-spacing": "attributeTagLetterSpacing",
+						"css:text-align": "attributeTagTextAlign",
+						"css:text-wrap": "attributeTagTextWrap",
+						"css:column-count": "attributeTagTextColumns",
+						"css:writing-mode": "attributeTagWritingMode",
 						"css:color": "attributeTagTextColour",
 						"css:background-color": "attributeTagBackgroundColour",
 						"css:border-color": "attributeTagBorderColour",
@@ -362,6 +428,64 @@
 						"css:padding": "attributeTagPadding"
 					},
 					"_note": "Frame Card component: generic tag next to the product title shown when the resolved product carries a chosen WooCommerce product-attribute term or product tag (attributeTagSource/attributeTagTaxonomy/attributeTagTerm) — never hardcoded to one client's vocabulary (e.g. an optician site's 'Polarised' lens attribute). Distinct from the existing 'tag' element (trial/featured, keyed to variantStyle) and 'savingBadge' (media-overlay, independent of variant): this one sits inline beside the title, matching Frame Card.dc.html's title-row markup. css:color needed an EXPLICIT attrMap entry (2026-09-24 compliance fix) — the default `{prefix}Colour` convention would look for `attributeTagColour`, which does not exist; the real attribute is `attributeTagTextColour`, so the prior note claiming the convention resolved it was wrong and the colour reached the DB with no css_property (check-colour-attr-css-property finding). `attributeTagBorderWidth` (2026-09-24, Spec 35 C1 compliance fix) is new — border colour now lives in `SgsBorderControl` alongside width/radius rather than as a sibling `SgsColourPanel` row (radius stays the block's existing scalar `SgsLengthControl`, outside the border-control pair, per Spec 32 §6.1's pill/tag/badge scalar-radius carve-out — `onRadiusChange` is deliberately not wired to `SgsBorderControl`). Rendered via sgs_product_card_attribute_tag_markup()/sgs_product_card_wrap_title_with_attribute_tag() (src/blocks/product-card/attribute-tag.php — a block-directory-private file, NOT includes/product-card-builtin-render.php, because the typed-mode title element is owned by that shared file and this task's touch-only-this-block-directory scope could not edit it; the typed branch is instead wired by post-processing the shared render's returned HTML — see that file's own docblock)."
+				},
+				"ratingStars": {
+					"label": "Rating stars",
+					"order": 22,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ratingStars",
+					"attrMap": {
+						"css:font-size": "ratingStarsFontSize",
+						"css:font-weight": "ratingStarsFontWeight",
+						"css:font-style": "ratingStarsFontStyle",
+						"css:font-family": "ratingStarsFontFamily",
+						"css:text-transform": "ratingStarsTextTransform",
+						"css:text-decoration": "ratingStarsTextDecoration",
+						"css:line-height": "ratingStarsLineHeight",
+						"css:letter-spacing": "ratingStarsLetterSpacing",
+						"css:text-align": "ratingStarsTextAlign",
+						"css:text-wrap": "ratingStarsTextWrap",
+						"css:column-count": "ratingStarsTextColumns",
+						"css:writing-mode": "ratingStarsWritingMode"
+					},
+					"_note": "The star glyphs inside the rating row (.sgs-product-card__rating-stars): its own surface so the letter spacing between stars is a control. Colour is the rating element's ratingColour."
+				},
+				"swatchMore": {
+					"label": "Colour swatch overflow count",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"prefix": "swatchMore",
+					"attrMap": {
+						"css:font-size": "swatchMoreFontSize",
+						"css:font-weight": "swatchMoreFontWeight",
+						"css:font-style": "swatchMoreFontStyle",
+						"css:font-family": "swatchMoreFontFamily",
+						"css:text-transform": "swatchMoreTextTransform",
+						"css:text-decoration": "swatchMoreTextDecoration",
+						"css:line-height": "swatchMoreLineHeight",
+						"css:letter-spacing": "swatchMoreLetterSpacing",
+						"css:text-align": "swatchMoreTextAlign",
+						"css:text-wrap": "swatchMoreTextWrap",
+						"css:column-count": "swatchMoreTextColumns",
+						"css:writing-mode": "swatchMoreWritingMode"
+					},
+					"_note": "The \"+N\" count after the colour dots (.sgs-product-card__swatch-more), emitted by includes/product-card-swatches.php::sgs_product_card_swatches_markup and mirrored in typed-canvas.js::TypedSwatches. A count, not a control: it owns a typography surface only."
+				},
+				"cta2": {
+					"label": "Secondary call to action",
+					"order": 24,
+					"clusters": [
+						"text"
+					],
+					"prefix": "cta2",
+					"attrMap": {
+						"css:text-align": "cta2TextAlign"
+					},
+					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align()."
 				},
 				"noImageLabel": {
 					"label": "No-photo label",
@@ -411,6 +535,8 @@
 					],
 					"prefix": "cta",
 					"attrMap": {
+						"css:line-height": "ctaLineHeight",
+						"css:text-align": "ctaTextAlign",
 						"css:background-color": "ctaColourBackground",
 						"css:background-image": "ctaColourBackgroundGradient",
 						"css:color": "ctaColourText",
@@ -1415,6 +1541,639 @@
 				"horizontal-tb",
 				"vertical-rl",
 				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ratingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ratingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ratingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ratingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"ratingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ratingTextColumns": {
+			"type": "number"
+		},
+		"ratingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ratingStarsFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ratingStarsFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingStarsTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ratingStarsTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ratingStarsLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingStarsLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ratingStarsLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ratingStarsTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"ratingStarsTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ratingStarsTextColumns": {
+			"type": "number"
+		},
+		"ratingStarsWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"rrpFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"rrpTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"rrpTextColumns": {
+			"type": "number"
+		},
+		"rrpWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"savingBadgeFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"savingBadgeFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"savingBadgeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"savingBadgeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"savingBadgeLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"savingBadgeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"savingBadgeTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"savingBadgeTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"savingBadgeTextColumns": {
+			"type": "number"
+		},
+		"savingBadgeWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"swatchMoreFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"swatchMoreFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"swatchMoreTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"swatchMoreTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"swatchMoreLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"swatchMoreLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"swatchMoreLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"swatchMoreTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"swatchMoreTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"swatchMoreTextColumns": {
+			"type": "number"
+		},
+		"swatchMoreWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"brandFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"brandTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"brandTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"brandLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"brandLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"brandTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"brandTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"brandTextColumns": {
+			"type": "number"
+		},
+		"brandWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"attributeTagFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"attributeTagTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"attributeTagTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"attributeTagLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"attributeTagLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"attributeTagTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"attributeTagTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"attributeTagTextColumns": {
+			"type": "number"
+		},
+		"attributeTagWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ctaLineHeight": {
+			"type": "string",
+			"default": "1.4"
+		},
+		"ctaTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"cta2TextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
 			],
 			"default": ""
 		},

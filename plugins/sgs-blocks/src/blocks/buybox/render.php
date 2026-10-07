@@ -850,6 +850,28 @@ if ( '' !== $sgs_bb_ladder_typo_css ) {
 	$scoped_css[] = $sgs_bb_ladder_typo_css;
 }
 
+// Typography for the stock line, the gallery saving badge, the back-in-stock
+// notify form and the guided-layout meter and group title. Each prefix paints
+// the one element role its selector names; style.css keeps only a zero-
+// specificity default for each, so an unset control leaves that default.
+// The rules match nothing when the element is not rendered (stock line off,
+// no badge, in-stock product, standard layout).
+$sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyHeading', $root_sel . ' .sgs-buybox__notify-heading' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-label' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-consent-label' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyInput', $root_sel . ' .sgs-buybox__notify-email' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifySubmit', $root_sel . ' .sgs-buybox__notify-submit' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyStatus', $root_sel . ' .sgs-buybox__notify-status' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-btn' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-index' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedGroupTitle', $root_sel . ' .sgs-buybox-guided__group-title' );
+if ( '' !== $sgs_bb_surface_typo_css ) {
+	$scoped_css[] = $sgs_bb_surface_typo_css;
+}
+
 // Optional hairline between the price row and an above-pickers
 // stock line (render.php §8a/§8c below decide WHERE the stock line renders;
 // this only decides whether the rule paints). 'border' is this theme's own

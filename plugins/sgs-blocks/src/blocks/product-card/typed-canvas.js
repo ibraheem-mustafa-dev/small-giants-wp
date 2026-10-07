@@ -93,6 +93,7 @@ export function typedCardPreview( attrs, tier ) {
 			color: colour( attrs.brandColour ),
 		},
 		savingBadge: {
+			...typographyPreviewStyle( attrs, 'savingBadge', tier ),
 			...labelBox( attrs.savingBadgePadding, attrs.savingBadgeBorderRadius, attrs.savingBadgeBackgroundColour, false ),
 			color: colour( attrs.savingBadgeTextColour ),
 		},
@@ -104,7 +105,10 @@ export function typedCardPreview( attrs, tier ) {
 			...sgsBorderPreview( { widthValues: attrs.attributeTagBorderWidth, colourValue: attrs.attributeTagBorderColour }, tier ),
 		},
 		rating: { color: colour( attrs.ratingColour ) },
+		ratingRow: typographyPreviewStyle( attrs, 'rating', tier ),
+		ratingStars: { ...typographyPreviewStyle( attrs, 'ratingStars', tier ), color: colour( attrs.ratingColour ) },
 		swatch: { borderColor: colour( attrs.swatchBorderColour ) },
+		swatchMore: typographyPreviewStyle( attrs, 'swatchMore', tier ),
 		// The picker forwards its settings to sgs/option-picker as the same custom properties.
 		picker: {
 			'--sgs-op-bg': colour( attrs.pickerPillBgColour ),
@@ -179,8 +183,8 @@ export function TypedRating( { attributes: attrs, styles } ) {
 	}
 	const value = Math.max( 0, Math.min( 5, Number( attrs.ratingValue ) || 0 ) );
 	return (
-		<div className="sgs-product-card__rating">
-			<span className="sgs-product-card__rating-stars" aria-hidden="true" style={ styles.rating }>
+		<div className="sgs-product-card__rating" style={ styles.ratingRow }>
+			<span className="sgs-product-card__rating-stars" aria-hidden="true" style={ styles.ratingStars }>
 				{ '★'.repeat( 5 ) }
 			</span>
 			<span className="sgs-product-card__rating-text" style={ styles.rating }>
@@ -225,6 +229,7 @@ export function TypedSwatches( { attributes: attrs, styles } ) {
 			{ hidden > 0 && (
 				<span
 					className="sgs-product-card__swatch-more"
+					style={ styles.swatchMore }
 					aria-label={ sprintf( __( '+%d more colours', 'sgs-blocks' ), hidden ) }
 				>
 					{ `+${ hidden }` }

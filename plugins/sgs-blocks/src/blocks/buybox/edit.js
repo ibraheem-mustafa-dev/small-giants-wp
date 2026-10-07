@@ -431,7 +431,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 
-			<style>{ buyboxMockCss( attributes, mockScope, palette ) }</style>
+			<style>{ buyboxMockCss( attributes, mockScope, palette, previewTier ) }</style>
 			<div { ...blockProps }>
 				<BuyboxCanvasMock
 					attributes={ attributes }
