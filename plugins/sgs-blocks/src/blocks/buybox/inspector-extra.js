@@ -38,6 +38,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		thumbsPerRow,
 		thumbGap,
 		thumbStripOffset,
+		thumbRadius,
 		thumbBorderWidth,
 		thumbSelectedScale,
 	} = attributes;
@@ -210,6 +211,18 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 					}
 					help={ __(
 						'Space between thumbnails. Empty keeps the default 0.5rem.',
+						'sgs-blocks'
+					) }
+				/>
+				<SgsLengthControl
+					label={ __( 'Thumbnail corner radius', 'sgs-blocks' ) }
+					value={ thumbRadius }
+					units={ THUMB_BORDER_UNITS }
+					onChange={ ( val ) =>
+						setAttributes( { thumbRadius: val ?? '' } )
+					}
+					help={ __(
+						'Rounding of every thumbnail corner. 0 is square. Empty follows the main image's radius.',
 						'sgs-blocks'
 					) }
 				/>

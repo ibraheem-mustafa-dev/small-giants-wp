@@ -248,6 +248,7 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		$thumbs_sel   = $root_sel . ' .product-card__thumbs:not([hidden])';
 		$thumb_gap    = sgs_css_length_value( $attributes['thumbGap'] ?? '' );
 		$thumb_offset = sgs_css_length_value( $attributes['thumbStripOffset'] ?? '' );
+		$thumb_radius = sgs_css_length_value( $attributes['thumbRadius'] ?? '' );
 		$thumbs_decls = '';
 		if ( '' !== $thumb_offset ) {
 			$thumbs_decls .= '--sgs-buybox-thumb-offset:' . $thumb_offset . ';';
@@ -257,6 +258,13 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		}
 		if ( '' !== $thumbs_decls ) {
 			$css[] = $thumbs_sel . '{' . $thumbs_decls . '}';
+		}
+
+		// Thumbnail corner radius: one length for every thumbnail. Empty emits nothing, so
+		// style.css keeps inheriting --sgs-buybox-img-radius. The selected thumbnail's
+		// border is on the same element, so it follows the radius.
+		if ( '' !== $thumb_radius ) {
+			$css[] = $root_sel . ' .product-card__thumb{border-radius:' . $thumb_radius . ';}';
 		}
 
 		$per_row_tiers = sgs_responsive_normalise_object( $attributes['thumbsPerRow'] ?? array() );

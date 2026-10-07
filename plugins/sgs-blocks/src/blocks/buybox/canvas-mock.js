@@ -141,6 +141,11 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	const rawOffset = String( attributes.thumbStripOffset || '' ).trim();
 	const thumbOffset = /^\d+(\.\d+)?$/.test( rawOffset ) ? `${ rawOffset }px` : rawOffset;
+	const rawRadius = String( attributes.thumbRadius || '' ).trim();
+	const thumbRadius = /^\d+(\.\d+)?$/.test( rawRadius ) ? `${ rawRadius }px` : rawRadius;
+	if ( thumbRadius && ! /[;{}<>]/.test( thumbRadius ) ) {
+		css += `${ root } .product-card__thumb{border-radius:${ thumbRadius };}`;
+	}
 	const railDecls = [];
 	if ( thumbOffset && ! /[;{}<>]/.test( thumbOffset ) ) {
 		railDecls.push( `--sgs-buybox-thumb-offset:${ thumbOffset }` );

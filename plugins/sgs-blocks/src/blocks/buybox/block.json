@@ -159,6 +159,7 @@
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
+						"css:border-radius": "thumbRadius",
 						"css:border-width": "thumbBorderWidth",
 						"css:border-color": "thumbBorderColour"
 					},
@@ -170,7 +171,7 @@
 							}
 						}
 					},
-					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
+					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap, thumbStripOffset and thumbRadius, resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
 				},
 				"valueLadder": {
 					"label": "Value ladder",
@@ -892,6 +893,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS length of the space between the main product image and the thumbnail strip (e.g. \"2px\"). Empty keeps the stylesheet's 0.75rem."
+		},
+		"thumbRadius": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length of the gallery thumbnails' corner radius (e.g. \"0px\" for square). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
 		},
 		"thumbBorderWidth": {
 			"type": "string",

@@ -88,6 +88,7 @@
               },
               "thumbGap": "2px",
               "thumbStripOffset": "2px",
+              "thumbRadius": "0px",
               "thumbBorderWidth": "1px",
               "thumbBorderColour": "border",
               "thumbSelectedBorderColour": "text",
