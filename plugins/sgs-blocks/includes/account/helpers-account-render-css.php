@@ -186,6 +186,20 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		// Typography — one prefix per text element, one helper each. Every selector is
 		// built INLINE in its call so the E14 gate can read which element the prefix paints.
 		$css[] = sgs_typography_css_rule( $attributes, 'menu', $root_sel . ' .woocommerce-MyAccount-navigation a' );
+		// A menu link is a flex row (icon + label), so text-align alone moves nothing in the
+		// sidebar layout where the row is wider than its label: justify-content places the
+		// icon and label along it.
+		$menu_justify = array(
+			'left'    => 'flex-start',
+			'start'   => 'flex-start',
+			'justify' => 'flex-start',
+			'center'  => 'center',
+			'right'   => 'flex-end',
+			'end'     => 'flex-end',
+		)[ is_string( $attributes['menuTextAlign'] ?? null ) ? $attributes['menuTextAlign'] : '' ] ?? '';
+		if ( '' !== $menu_justify ) {
+			$css[] = $root_sel . ' .woocommerce-MyAccount-navigation a{justify-content:' . $menu_justify . ';}';
+		}
 		$css[] = sgs_typography_css_rule( $attributes, 'heading', $root_sel . ' .sgs-account__heading' );
 		$css[] = sgs_typography_css_rule( $attributes, 'cardTitle', $root_sel . ' .sgs-account__card-title' );
 		$css[] = sgs_typography_css_rule( $attributes, 'cardDesc', $root_sel . ' .sgs-account__card-desc' );

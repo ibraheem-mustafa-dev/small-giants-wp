@@ -134,13 +134,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						targets={ [
-							{ key: 'menu', label: __( 'Menu', 'sgs-blocks' ), prefix: 'menu', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'heading', label: __( 'Headings', 'sgs-blocks' ), prefix: 'heading', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'cardTitle', label: __( 'Card titles', 'sgs-blocks' ), prefix: 'cardTitle', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'cardDesc', label: __( 'Card descriptions', 'sgs-blocks' ), prefix: 'cardDesc', showFontFamily: true, showDecoration: true, showTransform: true },
+							{ key: 'menu', label: __( 'Menu', 'sgs-blocks' ), prefix: 'menu', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
+							{ key: 'heading', label: __( 'Headings', 'sgs-blocks' ), prefix: 'heading', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
+							{ key: 'cardTitle', label: __( 'Card titles', 'sgs-blocks' ), prefix: 'cardTitle', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
+							{ key: 'cardDesc', label: __( 'Card descriptions', 'sgs-blocks' ), prefix: 'cardDesc', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
 							{ key: 'chip', label: __( 'Status chip', 'sgs-blocks' ), prefix: 'chip', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'progressStep', label: __( 'Progress steps', 'sgs-blocks' ), prefix: 'progressStep', showFontFamily: true, showDecoration: true, showTransform: true },
-							{ key: 'guestLine', label: __( 'Guest checkout line', 'sgs-blocks' ), prefix: 'guestLine', showFontFamily: true, showDecoration: true, showTransform: true },
+							{ key: 'progressStep', label: __( 'Progress steps', 'sgs-blocks' ), prefix: 'progressStep', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
+							{ key: 'guestLine', label: __( 'Guest checkout line', 'sgs-blocks' ), prefix: 'guestLine', showFontFamily: true, showDecoration: true, showTransform: true, showTextAlign: true },
 						] }
 					/>
 				</PanelBody>
