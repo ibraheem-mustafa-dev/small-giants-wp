@@ -32,15 +32,6 @@
     },
     {
       "slug": "sgs/accordion",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/accordion",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -2570,14 +2561,6 @@
         "role": "color",
         "css_element": "gallery-thumb",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "galleryThumbBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "gallery-thumb"
       }
     },
     {
@@ -5700,15 +5683,6 @@
       "fields": {
         "css_property": "border-color",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -12000,36 +11974,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "desktop",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadiusMobile",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaBorderRadiusTablet",
-      "fields": {
-        "css_property": "border-radius",
-        "css_tier": "tablet",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "splitMediaBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -12323,14 +12267,6 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
         "css_element": "wrapper"
       }
     },
@@ -19017,14 +18953,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -24922,6 +24850,14 @@
     },
     {
       "slug": "sgs/theme-toggle",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
       "attr": "labelFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -26606,6 +26542,15 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "contentPadding",
       "fields": {
         "css_property": "padding",
@@ -27578,6 +27523,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "galleryThumbBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -28199,6 +28152,15 @@
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -29923,6 +29885,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "splitMediaBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaObjectFit",
       "fields": {
         "css_property": "object-fit",
@@ -30000,6 +29971,14 @@
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
         "css_element": "wrapper"
       }
     },
@@ -33691,6 +33670,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
@@ -36036,6 +36023,26 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBorderRadiusMobile",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "mobile",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBorderRadiusTablet",
+      "fields": {
+        "css_property": "border-radius",
+        "css_tier": "tablet",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
       }
     },
     {

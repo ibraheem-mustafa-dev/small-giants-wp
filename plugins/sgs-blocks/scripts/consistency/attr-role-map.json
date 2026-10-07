@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "generated_from": "..\\..\\..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
+    "generated_from": "..\\..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13079,
+    "row_count": 13083,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1762,6 +1762,12 @@
     "sgs/buybox::gallerySavingBadge": "boolean-visibility",
     "sgs/buybox::gallerySavingBadgeFormat": "text-content",
     "sgs/buybox::gallerySavingBadgePosition": "select-from-enum",
+    "sgs/buybox::galleryThumbBorderColour": "color",
+    "sgs/buybox::galleryThumbBorderColourCurrent": "color",
+    "sgs/buybox::galleryThumbBorderColourHover": "color",
+    "sgs/buybox::galleryThumbBorderRadius": "visual",
+    "sgs/buybox::galleryThumbBorderStyle": "visual",
+    "sgs/buybox::galleryThumbBorderWidth": "visual",
     "sgs/buybox::guidedAnswerAttributes": "boolean-visibility",
     "sgs/buybox::guidedAutoAdvance": "boolean-visibility",
     "sgs/buybox::guidedBackLabel": null,
@@ -1987,10 +1993,7 @@
     "sgs/buybox::textColourGradient": "colour-gradient",
     "sgs/buybox::textColourHover": "color",
     "sgs/buybox::textColourHoverGradient": "colour-gradient",
-    "sgs/buybox::thumbBorderColour": "color",
-    "sgs/buybox::thumbBorderWidth": "visual",
     "sgs/buybox::thumbGap": "layout",
-    "sgs/buybox::thumbSelectedBorderColour": "color",
     "sgs/buybox::thumbSelectedScale": "select-from-enum",
     "sgs/buybox::thumbStripOffset": "styling",
     "sgs/buybox::thumbsPerRow": "styling",
@@ -11979,6 +11982,7 @@
     "sgs/theme-toggle::iconOnly": "boolean-visibility",
     "sgs/theme-toggle::iconOnlyMobile": "boolean-visibility",
     "sgs/theme-toggle::iconOnlyTablet": "boolean-visibility",
+    "sgs/theme-toggle::iconSize": "select-from-enum",
     "sgs/theme-toggle::label": "text-content",
     "sgs/theme-toggle::labelFontFamily": "typography",
     "sgs/theme-toggle::labelFontSize": "typography",
