@@ -94,9 +94,10 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
   (Spec 47 §5 "Route"): after any sweep, re-measure every canvas citation with `confirm-canvas.mjs --candidates`
-  (37 canvas-settable rows rest on 36 CONFIRMED families + 1 ABSENT, 2026-10-07). Open: register CR27 (eight
-  nav-bar-menu settings dead in calibration with their preconditions set). Route suite 624/625: the one failure,
-  `triage.test.mjs` bgHoverZoom transform, predates the route work and is register CR28.
+  (37 canvas-settable rows rest on 36 CONFIRMED families + 1 ABSENT, 2026-10-07). Open: register CR27's
+  last setting, `sgs/nav-bar-menu` `triggerDetachBackgroundHover` (the detached chip's hover state needs an
+  `is-detached` trigger the calibrator lacks). Route suite 634/635 while another session's deploy or reseed runs: the
+  one failure is the deploy-guard test, environmental.
   **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`** (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
   for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
