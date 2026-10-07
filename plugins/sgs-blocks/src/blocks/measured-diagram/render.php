@@ -33,6 +33,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // ── Drawing (media-element atoms, prefix `drawing`) ─────────────────────────
 $sgs_md_image_url  = isset( $attributes['drawingImageUrl'] ) ? (string) $attributes['drawingImageUrl'] : '';
 $sgs_md_decorative = ! empty( $attributes['drawingImageDecorative'] );

@@ -72,6 +72,18 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     "hover-transform", "hover-transition",
 })
 
+# Component roles (Spec 32 FR-32-9): a component whose painted parts are not a
+# box (a background, text and border) names its own parts here, and only that
+# namespace may use them; every other namespace keeps the fixed vocabulary.
+_COMPONENT_ROLES: dict[str, frozenset[str]] = {
+    # sgs/measured-diagram: the dimension line, its guide lines, and a label's
+    # value and caption, plus the two stroke widths
+    # (measured-diagram/style.css, diagram-dimension/style.css).
+    "measuredDiagramPresets": frozenset({
+        "line", "extension", "value", "caption", "line-width", "extension-width",
+    }),
+}
+
 # camelCase namespace ending in "Presets", e.g. "buttonPresets", "cardGridPresets"
 _NAMESPACE_RE = re.compile(r"^[a-z][a-zA-Z0-9]*Presets$")
 
@@ -186,7 +198,7 @@ def _scan_custom_settings(
                 continue
 
             for role_key in roles:
-                if role_key not in _ROLE_VOCABULARY:
+                if role_key not in _ROLE_VOCABULARY and role_key not in _COMPONENT_ROLES.get(key, frozenset()):
                     findings.append(Finding(
                         client=client, namespace=key, variant=variant_slug,
                         role=role_key, kind="role",

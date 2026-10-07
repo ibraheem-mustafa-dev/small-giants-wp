@@ -107,7 +107,7 @@ Each measurement is a child block with a real bindable `value`. So every binding
   - a per-child uid scoped rule. `labelX`/`labelY` are emitted as `left`/`top` % declarations; the tiers go through `sgs_resolve_tier` + `sgs_emit_tier_rules` at 768/1024, desktop base, inherit-down (Spec 35 D2/D3).
   - an `<svg>` with the context viewBox, carrying only coordinate attributes (`x1 y1 x2 y2`, `d`, `viewBox`; documented in the docblock);
   - stroke, colour, width, dash and `vector-effect: non-scaling-stroke` in `style.css`, with dash = `extensionStyle` × stroke width.
-- **Geometry:** one function, twinned in `src/blocks/measured-diagram/geometry.js` and `includes/helpers-diagram-geometry.php`. It maps % to viewBox units, computes the perpendicular extension and tick, and draws arrows. Both versions are tested against one shared fixture JSON that includes the Eye Care lens-width line.
+- **Geometry:** one function, twinned in `src/utils/diagram-geometry.js` and `includes/helpers-diagram-geometry.php`. It maps % to viewBox units, computes the perpendicular extension and tick, and draws arrows. Both versions are tested against one shared fixture JSON that includes the Eye Care lens-width line.
 - **Sanitising:** floats are cast and clamped to 0–100, and enums are checked with `in_array( …, true )`.
 
 **Editor (Spec 35)**
@@ -204,6 +204,7 @@ The main thread owns Wave 0's detectors, A, the geometry twin, C and all QC. A `
 - A conditional-visibility rule for product category or field, so one template can hold one diagram per product shape.
 - `decimals` and unit formatting, plus a shopper mm/inch toggle.
 - Stock text in the `sgs-variation-change` detail.
+- Mixed per-size values on a plain bound text. When only some sizes carry a value, switching to an empty size hides the `.sgs-bound` span, but the binding's after-text (" mm") outside it stays. The diagram child is unaffected, because it hides the whole measurement. Fix by wrapping before/after inside the span when the value can vary. Trigger: the first product whose sizes disagree on having a value. Today Q10's six frames lack a lens height on every size, and they paint the binding's fallback instead (77c9746c1).
 - Shared screen-reader-only class consolidation (4 duplicate definitions; not a settings shape), recorded in LEDGER Parked.
 
 ## Verification
