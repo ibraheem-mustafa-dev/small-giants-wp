@@ -573,6 +573,20 @@ foreach ( array(
 // own palette stays the default. A per-element colour above still wins on its own element.
 $gr_responsive_css .= $gr_colour_rule( $gr_root_sel, '--sgs-gr-ink-muted', $attributes['mutedTextColour'] ?? '' );
 $gr_responsive_css .= $gr_colour_rule( $gr_root_sel, '--sgs-gr-blue', $attributes['accentColour'] ?? '' );
+// An accent replaces Google's blue everywhere it shows, so its hover, pressed and on-accent shades are
+// derived from it on the same root rule instead of keeping Google's. Mixing towards the ink darkens it on
+// the light theme and lightens it on the dark one (Google's own direction); the tints mix into the surface.
+$gr_accent = sgs_colour_value( is_string( $attributes['accentColour'] ?? null ) ? $attributes['accentColour'] : '' );
+if ( '' !== $gr_accent ) {
+	$gr_accent_decls = '--sgs-gr-blue-dark:color-mix(in srgb,var(--sgs-gr-blue) 85%,var(--sgs-gr-ink));'
+		. '--sgs-gr-blue-tint:color-mix(in srgb,var(--sgs-gr-blue) 10%,var(--sgs-gr-surface));'
+		. '--sgs-gr-blue-tint-strong:color-mix(in srgb,var(--sgs-gr-blue) 20%,var(--sgs-gr-surface));';
+	$gr_accent_hex = sgs_colour_hex_for_contrast( (string) $attributes['accentColour'] );
+	if ( '' !== $gr_accent_hex ) {
+		$gr_accent_decls .= '--sgs-gr-on-blue:' . sgs_wcag_text_colour_for_bg( $gr_accent_hex ) . ';';
+	}
+	$gr_responsive_css .= $gr_root_sel . '{' . $gr_accent_decls . '}';
+}
 $gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__card-logo', $attributes['cardLogoSize'] ?? null, array( 'width', 'height' ) );
 
 // Text clamp: lines are written only once the author moved them off the default, and switching the clamp off
