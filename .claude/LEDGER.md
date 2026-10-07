@@ -105,13 +105,15 @@ a cosmetic path change re-keys rows wholesale.
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows** — register rows the Spec 47 walker cannot see (`reports/2026-10-06-eye-care-63/`
-  holds every verdict). **21 CLOSED** (built and live at `0cc773b19`): N26 makes the whole product card 99%
-  clickable and PERMANENT via `blockLinkAlways`; 58, 9, N33B, 17, 3, 19, 64, N24 verified live; N11, N25, N13,
-  152, 18, 59, 61, 91, 95 were already closed. The 4 content rows are WRITTEN and ours; all 40 brand intros
-  STAY (test catalogue). 14 CR are the route's (CR12 PARKED, CR6 a migration). **STILL OPEN:** S8, S7, 36, N38,
-  51, 96, N4, 14, 73, N37, D7, N30, N36S, N8, and verify aliases N2A, N10, N33A, N6. ⚠️ A plugin deploy does
-  NOT apply a tree fix: rebuild the page with `wp-build-page.js`.
+- **The walker-blind rows** — register rows the Spec 47 walker cannot see (verdicts and the closing pass:
+  `reports/2026-10-06-eye-care-63/CATEGORISATION.md`; each row's proof is in its register Fix cell). **All
+  closed and verified live on eye-care-test (`7cb60d4f4`) except two:** **14** (drawer stagger) is built
+  (`077f7dbec`, its CSS moved into `nav-drawer/style.css` because a drawer with no menu block never loaded it)
+  and rides small-giants-wp-bd's next eye-care-test deploy; it still needs its 375px check. **N36S** is blocked:
+  no product carries a lens-height value, and the diagram is the new D1 block. Two pre-existing finds are
+  parked as Q3 and Q4 in `plans/2026-10-05-eye-care-functionality-backlog.md`. ⚠️ A plugin deploy does NOT
+  apply a tree fix: rebuild the page with `wp-build-page.js` (pace one at a time; the host's edge challenge
+  refuses bursts).
 
 
 **Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate

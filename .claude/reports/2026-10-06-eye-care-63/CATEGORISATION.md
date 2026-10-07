@@ -1,6 +1,6 @@
 # The 63 rows the walker cannot see — categorised
 
-**2026-10-06, fixes verified 2026-10-07.** Fixes live at **`0cc773b19`** (`~/.sgs-deploy-marker-eye-care-test.json`).
+**2026-10-06; the open rows closed 2026-10-07.** Live at **`7cb60d4f4`** (`~/.sgs-deploy-marker-eye-care-test.json`); each row's proof is in its register Fix cell.
 Live `https://darkcyan-grouse-898606.hostingersite.com` · draft `https://mintcream-lyrebird-224487.hostingersite.com/`.
 Source of truth: `.claude/plans/2026-10-02-eye-care-fix-register.md`. Partition: `worksheet.md`.
 
@@ -11,8 +11,8 @@ then-live `578a8830b`. The **fixes** this session then made shipped in `4aa47750
 
 | Category | Rows |
 |---|---|
-| **Closed** — built and live, fixed, or already closed | **21** |
-| **Still open** — with a measured cause and fix shape | **14**, plus 4 aliases to verify |
+| **Closed** — built and live, fixed, or already closed | **33**, plus the 4 aliases verified |
+| **Still open** | **2**: 14 (built, deploy pending), N36S (blocked on data and D1) |
 | Content — written, ours to own | 4 |
 | Accepted divergence / beyond the draft | 2 |
 | Alias of a parent row | 12 |
@@ -39,19 +39,29 @@ Each verified against the running site tonight, not against its commit.
 | **S12** | Built and live | `8aa7274ef` is an ancestor of the live SHA. Not separately re-measured. |
 | **bag second unit** | Cooldown allows a second unit | `bag-second-unit` **PASS** — 2 units, second add 2,828 ms after the first. |
 
-## 2. Genuinely open — with its fix shape
+## 2. The open rows — closed 2026-10-07
 
-| Ref | Live reading | Draft reading | Fix shape | Size |
-|---|---|---|---|---|
-| **S8** (+N9, N34) | every whole-pound price shows `.00` — `£115.00`, `£109.00` | **zero** `.00`; 36 plain prices (`£129`, `£339`) | one filter on `wc_get_price_decimals` / `wc_price`; emails and admin keep pennies, D4 keeps checkout totals | **greenfield — no such filter exists anywhere in the plugin** |
-| **S7** (+N27, N31) | "No reviews yet" ×8 on home | **zero** | remove the card text, delete the product panel; D7 rehomes the Google rating | small, tree |
-| **36** | `644 Washwood Heath Rd, Birmingham B8 2HQ` on one line | `644 Washwood Heath Rd` / `B8 2HQ`, two `<br>` | store the Site Info address with a line break | **minutes, content only** |
-| **45** | `/privacy/` and `/terms/` both **404** under every slug tried, and the footer links to both → live broken links | draft has neither | create both pages | needs client copy |
-| **N38** | `lens-skip-to-bag` **FAIL** `skip-opens-extra-step` | — | `block.json` has no "skip adds to bag" setting; `flow-skip.js::handleSkipClick` routes to the add-to-bag ending | framework new + tree |
-| **51** | **confirmed: the hero paints nothing.** `@keyframes sgs-hero-ken-burns` exists, but only **1** element carries a ken-burns class and the hero's own `.sgs-hero__bg-img--parallax` computes `animation-name: none`, `duration: 0s`, `transform: none` | one-off 3s zoom, 108% → 100% | repair the paint, add a "zoom out once on load" mode | framework repair + new |
-| **96** | focus ring computes **`rgb(20,20,20)`** — black | draft taupe | focus rules read the client focus-ring token | framework repair |
-| **N26 / S10** | was clickable only on the name (1-2%) and image (73%); imageless cards 2-5% | the whole card is one link | **FIXED IN CODE 2026-10-06 (`3db77f090`)** - permanent, not a toggle; see §5(a) | awaiting live verify |
-| **N4** | no marquee markers found live | — | repair so "drop" and "scroll" coexist; pause button for WCAG 2.2.2 | framework repair |
+Every row below was built, deployed and measured live on eye-care-test (`7cb60d4f4`); the register's Fix cell
+carries each one's proof. Framework commits `111bcd98b`, `db97bed10`, `235d54de0`, `7d1173187`, `7cb60d4f4`;
+trees `7507ce0ae`, `473b42694`.
+
+| Ref | Closed by |
+|---|---|
+| **S8** (+N9, N34) | `includes/price-trim-zeros.php`: whole pounds everywhere the shop shows a price; checkout, emails, admin and order views keep pennies (D4) |
+| **S7** (+N27, N31) | `noReviewsText` removed from 11 card nodes; the product page's none-yet panel deleted |
+| **36** | the two-line address stored; `sanitise_address` keeps typed lines |
+| **N38** | `choice-flow` `skipAddsToBag`; `lens-skip-to-bag.mjs` PASS |
+| **51** | the ken-burns paint repaired on the hero's own `<img>`; zoom-out-once 3s from 108% |
+| **96** | `scripts/check-focus-ring-token.py` (a build gate): 93 focus rules in 32 files now read the client's ring token |
+| **N4** | trust-bar drop and scroll coexist; 44px pause toggle |
+| **N37, 73, D7, N30** | advance-on-pick with a step announcer; buybox photo entrance; the Google badge in the header's top row; plain size numbers |
+| **N2A, N33A** | measured as never applied on Eye Care, then fixed in the trees |
+| **N8** | not reproduced (wordmark stayed on 1 line while the bag opened) |
+
+Three defects surfaced while verifying and are fixed: every frame's add-to-bag was refused (two attributes
+labelled "Size"; `class-cart-proxy.php`), a set `sgs/media` size was ignored on every WooCommerce page
+(`media-atoms/box-shape.css`), and a drawer with no menu block never loaded its stagger CSS (`077f7dbec`, not
+yet deployed).
 
 ## 3. Content — written, ours to own
 
@@ -232,22 +242,11 @@ host was held by two peers). Each carries the one live measurement that would co
 N36S (whether real lens-height values exist), 14 (whether the live drawer uses the tree's `sgs/button` nav
 container), 19 (whether the bar transitions at all, a different cause from the duration).
 
-## What is left, grouped by shared mechanism
+## What is left
 
-**Quick:** `36` address line break (Site Info content) · `S8` (+N9, N34) one filter hides `.00` on whole-pound
-prices · `S7` (+N27, N31) remove the "No reviews yet" text and panel (tree).
-
-**Entrance motion, one shared keyframe convention:** `14` drawer stagger inside groups · `73` product photo
-fade · `51` hero zoom-out (the keyframes exist; nothing applies them) · `N4` top-bar marquee with a pause
-control for WCAG 2.2.2.
-
-**Lens flow (`choice-flow`):** `N37` advance on pick · `N38` skip adds to bag (the `lens-skip-to-bag` flow is
-the ready-made acceptance test).
-
-**Single fixes:** `96` focus ring reads the client token · `D7` Google rating in the header · `N30` bridge-size
-glyph (seeder + term meta) · `N36S` sizing tab (needs lens-height data; the diagram is a new block, D1) ·
-`N8` to prove.
-
-**Verify only:** aliases `N2A`, `N10`, `N33A`, `N6` inherit a built parent but were not measured individually.
+- **14** drawer stagger: deploy `077f7dbec` (blocks-only) to eye-care-test, then at 375 confirm the drawer's
+  links start at staggered times (`animationstart` listener installed before navigation).
+- **N36S** sizing tab: blocked. The 4th row needs a lens-height value no product carries, and the diagram is
+  the new D1 block. The note under the table is live.
 
 **Do not rebuild on:** the manifest-cache theory in §5(b). It was withdrawn.

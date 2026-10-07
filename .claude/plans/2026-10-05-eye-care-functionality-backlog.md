@@ -169,6 +169,13 @@ Full pass with evidence: `.claude/reports/2026-10-06-qc-eye-care-tier1/README.md
 Both are fix-shape proposals, so per `/qc`'s own rule they go through `/qc-council` before any
 implementer is dispatched.
 
+Found 2026-10-07 while closing the walker-blind rows (both pre-existing, neither built):
+
+| Ref | What is wrong | What to do first | Tier |
+|---|---|---|---|
+| **Q3** | The standard hero's "Zoom background on hover" probably paints nothing. `includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` targets the wrapper's own `.sgs-container__image-bg` or `::before`, but the standard hero paints a private `<img class="sgs-hero__bg-img">` and nulls its background attributes before the wrapper. The classifier regeneration in faf517bbe also dropped `sgs/hero::bgHoverZoomScale` (css_property transform), the only removal. **Hypothesis, not proven.** | Prove it live: a standard hero with `bgHoverZoom` on, hover it, read the `<img>`'s computed transform. If it stays `none`, aim the hover-zoom rule at `.sgs-hero__bg-img` as the ken-burns repair did (111bcd98b) | 3 |
+| **Q4** | `plugins/sgs-blocks/tests/php/run-u5-motion-standalone.php` fails 1 of 61: "the bar scrim fades with the panels", which reads `nav-bar-menu/render.php` (unchanged this session) | Read the assertion against `nav-bar-menu/render.php`; fix whichever side drifted | 4 |
+
 ## Tier 1 — a shopper cannot finish the job (build these first)
 
 > **Built and verified on the sandybrown canary, 2026-10-05** (`65573118c`, plus `c06f71ea6` for the
@@ -234,7 +241,7 @@ Each is already decided in the register. Grouped so one sitting can close a them
 | **59, 61** | **Card colour swatches become real buttons.** Today they cannot be focused or clicked. A swatch changes only its own card's photo, and clicking the card then opens the product with that colour already chosen | Baymard-standard behaviour, and an accessibility fix as much as a feature |
 | **S10** (N26, N2A) | **One shared "stretched link" piece.** The main link covers the whole card or logo row, while buttons inside it (wishlist, swatches) sit above and keep working | Used by product cards and the header logo. This is the piece 59/61 needs to not fight the card link **N26 DONE 2026-10-06 (`3db77f090`)** on product-card via a new `supports.sgs.blockLinkAlways` flag, which makes the whole-card link permanent (Bean: not switchable off); 99% clickable live. N2A still to verify. |
 | **S9** (N10, N27-brand, N33A) | **Brand logos instead of typed brand names.** One shared lookup prints the brand logo with the brand name as its text alternative, on product cards, the product page top and bag lines, falling back to the name when a brand has no logo | All 40 brands already have a logo saved. Pairs with **D8**: the logo above the product name, linking to the brand page |
-| **S8** (N9, N34) | **One switch hides ".00"** on whole-pound prices across the product page, cards, bag, lens pop-up and the shop's price text. Emails and admin keep pennies | Checkout total lines keep pennies per D4 |
+| **S8** (N9, N34) | **One switch hides ".00"** on whole-pound prices across the product page, cards, bag, lens pop-up and the shop's price text. Emails and admin keep pennies | Checkout total lines keep pennies per D4 **DONE 2026-10-07** (111bcd98b, 473b42694): `includes/price-trim-zeros.php`; live proof on register row S8. |
 | **17** | The bag count pop becomes **off / on change / on load and change** (today just on/off), and takes the draft's shape | Check it plays at 0 |
 | **65B** | **The shop goes to a single column below 400px.** Today its "narrow layout: grid" floors each column at 50%, so it can never reach one column | Also fixes 65A and 65C as a side effect |
 | **64** | **Pin the filter drawer's top bar**, like the bottom one already is | |
@@ -243,8 +250,8 @@ Each is already decided in the register. Grouped so one sitting can close a them
 
 | Ref | The feature |
 |---|---|
-| **N37** | **"Advance on pick, keep Continue" mode.** Picking an option moves to the next step (except the last); Back then Continue returns without re-picking; each step change is announced to screen readers |
-| **N38** | **"Skip adds to bag".** "Skip the lenses" adds the frame straight to the bag using the existing add-to-bag function, instead of opening an extra step |
+| **N37** | **"Advance on pick, keep Continue" mode.** Picking an option moves to the next step (except the last); Back then Continue returns without re-picking; each step change is announced to screen readers **DONE 2026-10-07** (111bcd98b): `advanceMode: pick` + step announcer; live proof on register row N37. |
+| **N38** | **"Skip adds to bag".** "Skip the lenses" adds the frame straight to the bag using the existing add-to-bag function, instead of opening an extra step **DONE 2026-10-07** (111bcd98b): `skipAddsToBag`; `lens-skip-to-bag.mjs` PASS. |
 
 ### Menus, header and drawer
 
@@ -252,8 +259,8 @@ Each is already decided in the register. Grouped so one sitting can close a them
 |---|---|
 | **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown already renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern, the button discreet and still 44px. Then add the page links to Sunglasses, Lenses and Help (Brands stays button-only) |
 | **N5** | **New mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
-| **N4** | **Top bar becomes a moving strip when its items no longer fit.** Below 768 the bar scrolls on a 30s loop; at 768 and above, items that do not fit are dropped. The scroll settings already exist; the repair is that turning scrolling on currently switches dropping off at every width. **Needs a visible pause button** — moving content over 5 seconds requires one (WCAG 2.2.2) — and pauses on hover and keyboard focus |
-| **14** | **New drawer setting: "stagger items inside groups".** CSS only, replays on every open. Draft movement: rise 18px, 0.5s ease |
+| **N4** | **Top bar becomes a moving strip when its items no longer fit.** Below 768 the bar scrolls on a 30s loop; at 768 and above, items that do not fit are dropped. The scroll settings already exist; the repair is that turning scrolling on currently switches dropping off at every width. **Needs a visible pause button** — moving content over 5 seconds requires one (WCAG 2.2.2) — and pauses on hover and keyboard focus **DONE 2026-10-07** (111bcd98b): drop and scroll coexist, pause toggle; live proof on register row N4. |
+| **14** | **New drawer setting: "stagger items inside groups".** CSS only, replays on every open. Draft movement: rise 18px, 0.5s ease **BUILT, NOT YET LIVE** (111bcd98b `staggerInsideGroups`; 077f7dbec moves the stagger CSS into `nav-drawer/style.css`, because a drawer with no menu block never loaded it). Needs a blocks-only deploy to eye-care-test and a 375px check; see register row 14. |
 | **N7** | Swap the drawer's three hand-styled social buttons for the same `sgs/social-icons` block the footer uses, with a **new "fill the row" option** to keep the full-width buttons |
 
 ### Motion on Home
@@ -261,7 +268,7 @@ Each is already decided in the register. Grouped so one sitting can close a them
 | Ref | The feature |
 |---|---|
 | **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the current fixed-background parallax where the photo stands still. **Off under reduced motion** |
-| **51** | **Hero "zoom out once on load" mode**, with duration and start size — a one-off 3s zoom from 108% to 100%. Two parts: the existing ken-burns effect **paints nothing at all** on the standard hero (a repair), and it is a 20s loop where the draft wants a single pass (the new mode) |
+| **51** | **Hero "zoom out once on load" mode**, with duration and start size — a one-off 3s zoom from 108% to 100%. Two parts: the existing ken-burns effect **paints nothing at all** on the standard hero (a repair), and it is a 20s loop where the draft wants a single pass (the new mode) **DONE 2026-10-07** (111bcd98b): `bgKenBurnsMode` zoom-out-once + `bgZoomStart`; the paint repaired; live proof on register row 51. |
 
 ### Footer and site furniture
 
@@ -317,7 +324,7 @@ Worth doing in one sitting together, since each is a single control plus a reade
 | Ref | The setting |
 |---|---|
 | **67** | Tabs gain a panel padding setting (Eye Care sets 0) |
-| **73** | A new entrance setting for the gallery photo on the product block (fade in on load) |
+| **73** | A new entrance setting for the gallery photo on the product block (fade in on load) **DONE 2026-10-07** (111bcd98b): `photoEntrance`; live proof on register row 73. |
 | **94** | The gallery photo joins the shared hover zoom |
 | **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
 | **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |

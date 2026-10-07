@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.12.0
+spec_version: 1.13.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -79,7 +79,11 @@ derived_from:
     ending), FR-43-5 and FR-43-7 built; FR-43-22 adds the buybox button that opens a popup.
   - **2026-09-26 (v1.8.0), owner review of the live journeys (Bean, 2026-09-26):**
     - Picking an option selects it; a footer Continue advances. The Continue button is muted with aria-disabled
-      until a choice is made. `advanceMode: tap` keeps tap-to-advance.
+      until a choice is made. `advanceMode: tap` keeps tap-to-advance (Continue hidden). `advanceMode: pick`
+      advances as soon as a single-choice option is picked, except into a result step or from a question whose
+      next step opens inline, and keeps Continue so Back then Continue moves on without a re-pick. Every step
+      change after the first is announced in a polite live region (`.sgs-choice-flow__announcer`, "Step N of M:
+      <question>") and focus moves to the new step's heading when the focused control has gone.
     - The final step's Add to basket and Buy now sit in the footer opposite Back.
     - Progress counts finished steps (v1.9.0: or the question on screen, `progressCounts`).
     - A summary stage shows the finished product.
@@ -381,8 +385,9 @@ to edge (the modal's own padding drops, and a full-screen modal fades in rather 
   counts answered questions, `current` the one on screen, so question 1 of 4 fills a quarter). In the middle, the
   body grid, the only part that scrolls. At the bottom, the footer bar on the raised background with a top border:
   Back left, the optional skip link on the first question ("Frame only? Skip the lenses": `skipPrompt`, `skipLabel`;
-  it takes the route of the flow's "no add-ons" option and shows only when one exists; wide containers only), the
-  step's actions right. Footer buttons share one small uppercase style at the theme button preset's height.
+  it takes the route of the flow's "no add-ons" option and shows only when one exists; with `skipAddsToBag` it
+  instead adds the bare frame through the shared `add-to-bag.js::addFlowToBag` and closes the pop-up; wide
+  containers only), the step's actions right. Footer buttons share one small uppercase style at the theme button preset's height.
 - **Body grid:** a sticky "stage" aside (`minmax(300px, .8fr)`; `minmax(250px, .7fr)` under a 1100px container)
   beside the step pane (`minmax(0, 1.55fr)`; `1.6fr` under 1100px).
   - The stage (FR-43-19) fills its column on the stage colour (`stageColour`, default surface-alt): a bordered square
