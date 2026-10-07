@@ -65,8 +65,8 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 - **Register items owed as tree values:**
   - 131: S3's tree half, the black hover colour in the trees.
   - The drawer link fade: 14 rows open, the rise is not sampled.
-  - 87's tree half: `single-product.tree.json` still has `showCurrentCrumb` false.
-  - The Eye Care card title weight: `cardTitleFontWeight` per site (from Session C2).
+  - 87's tree half: `single-product.tree.json` takes `showArchiveCrumb` and `showCurrentCrumb` true (2026-10-07), owed one
+    rebuild of the Single Product template and a live read of the trail (Home / Sunglasses / Gucci / <product>).
 - **Coverage still owed:**
   - Register rows 150, 152 and 155 need `surfaces.json` entries for checkout, bag and confirmation: each has a
     walker config but no tree and no target yet.

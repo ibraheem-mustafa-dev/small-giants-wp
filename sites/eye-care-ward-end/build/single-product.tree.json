@@ -45,8 +45,8 @@
             "name": "sgs/breadcrumbs",
             "attributes": {
               "productPageCrumbs": "both",
-              "showArchiveCrumb": false,
-              "showCurrentCrumb": false,
+              "showArchiveCrumb": true,
+              "showCurrentCrumb": true,
               "fontSize": {
                 "desktop": 12.5
               },
