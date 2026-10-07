@@ -30,6 +30,8 @@
  *   Site Editor saves, which overrides the theme file). The tree is validated in the Site Editor's block registry
  *   and the saved copy is read back and checked exactly like a page.
  *   --dry-run validates the tree in the editor and saves nothing.
+ *   --editor-timeout <ms> how long a page load, the editor boot and a save may each take (default 60000); a large
+ *   calibration page on a slow host needs longer.
  *
  * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
  *
@@ -49,7 +51,7 @@ const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs
 const { chromium } = pluginRequire( 'playwright' );
 
 function parseArgs( argv ) {
-	const args = { status: 'publish', dryRun: false };
+	const args = { status: 'publish', dryRun: false, editorTimeout: 60000 };
 	for ( let i = 2; i < argv.length; i++ ) {
 		const a = argv[ i ];
 		if ( a === '--env-file' ) args.envFile = argv[ ++i ];
@@ -63,6 +65,7 @@ function parseArgs( argv ) {
 		else if ( a === '--template-part' ) args.templatePart = argv[ ++i ];
 		else if ( a === '--template' ) args.template = argv[ ++i ];
 		else if ( a === '--dry-run' ) args.dryRun = true;
+		else if ( a === '--editor-timeout' ) args.editorTimeout = Math.max( 1, Number( argv[ ++i ] ) || 60000 );
 	}
 	return args;
 }
@@ -85,13 +88,13 @@ function readEnv( file, key ) {
 	return { url: url.replace( /\/+$/, '' ), user, pwd };
 }
 
-async function waitForEditor( page ) {
+async function waitForEditor( page, timeout ) {
 	await page.waitForFunction(
 		() => window.wp && window.wp.data && window.wp.blocks &&
 			window.wp.data.select( 'core/editor' ) &&
 			window.wp.data.select( 'core/editor' ).getCurrentPostId() &&
 			window.wp.blocks.getBlockTypes().length > 0,
-		{ timeout: 60000 }
+		{ timeout }
 	);
 }
 
@@ -271,7 +274,7 @@ async function main() {
 			try {
 				for ( let attempt = 0; ; attempt++ ) {
 					try {
-						await route.fulfill( { response: await route.fetch( { timeout: 60000, maxRedirects: 0 } ) } );
+						await route.fulfill( { response: await route.fetch( { timeout: args.editorTimeout, maxRedirects: 0 } ) } );
 						break;
 					} catch ( e ) {
 						if ( attempt >= 3 ) {
@@ -303,15 +306,15 @@ async function main() {
 		} else {
 			editorUrl = `${ url }/wp-admin/post.php?post=${ encodeURIComponent( args.postId ) }&action=edit`;
 		}
-		await page.goto( editorUrl, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+		await page.goto( editorUrl, { waitUntil: 'domcontentloaded', timeout: args.editorTimeout } );
 		try {
 			if ( templateSlug ) {
 				await page.waitForFunction(
 					() => window.wp && window.wp.blocks && window.wp.apiFetch && window.wp.blocks.getBlockTypes().length > 0,
-					{ timeout: 60000 }
+					{ timeout: args.editorTimeout }
 				);
 			} else {
-				await waitForEditor( page );
+				await waitForEditor( page, args.editorTimeout );
 			}
 		} catch ( e ) {
 			fail( 3, `editor did not load at ${ editorUrl }` );
@@ -394,7 +397,7 @@ async function main() {
 			await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
 			await page.waitForFunction(
 				() => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isAutosavingPost(),
-				{ timeout: 60000 }
+				{ timeout: args.editorTimeout }
 			);
 			return page.evaluate( () => {
 				const errs = ( window.wp.data.select( 'core/notices' ).getNotices() || [] ).filter( ( n ) => n.status === 'error' );
@@ -404,8 +407,8 @@ async function main() {
 		};
 		// Reload: every block must parse valid and serialise to what was saved.
 		const reload = async ( id ) => {
-			await page.goto( `${ url }/wp-admin/post.php?post=${ id }&action=edit`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-			await waitForEditor( page );
+			await page.goto( `${ url }/wp-admin/post.php?post=${ id }&action=edit`, { waitUntil: 'domcontentloaded', timeout: args.editorTimeout } );
+			await waitForEditor( page, args.editorTimeout );
 			await page.waitForTimeout( 1500 );
 			return page.evaluate( () => {
 				const invalid = [];

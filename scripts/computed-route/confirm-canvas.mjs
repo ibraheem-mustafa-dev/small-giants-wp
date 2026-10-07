@@ -28,9 +28,13 @@ import fs from 'fs';
 import { waitOutHostCheck } from '../parity/lib/helpers.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { cssProp } from './lib/solve-rows.mjs';
+import { canvasSettable, issueContext, issuesOf } from './lib/triage.mjs';
+import { surfaceContext } from './triage.mjs';
 
-// Usage: confirm-canvas.mjs <families.json | triage dir> <out.json> [base url] [only indices]
+// Usage: confirm-canvas.mjs [--candidates --client <slug>] <families.json | triage dir> <out.json> [base url] [only indices]
 //   node scripts/computed-route/confirm-canvas.mjs sites/eye-care-ward-end/build/qa/triage out.json http://localhost:8081
+//   node scripts/computed-route/confirm-canvas.mjs --candidates --client eye-care-ward-end sites/eye-care-ward-end/build/qa/triage sites/eye-care-ward-end/build/qa/canvas-confirm.json https://darkcyan-grouse-898606.hostingersite.com
 
 const URL_OF = {
 	footer: '/', header: '/', 'mobile-menu': '/', 'mega-lenses': '/', 'mega-brands': '/', 'mega-help': '/',
@@ -60,8 +64,11 @@ export function familiesFrom( triageDir ) {
 	for ( const { surface, row } of rows ) {
 		const ev = ( row.evidence || [] ).find( ( e ) => 'canvas-settable' === e.check );
 		if ( ! ev ) { continue; }
-		const k = `${ ev.block }|${ ev.setting }|${ row.property }`;
-		const f = fams.get( k ) || { block: ev.block, setting: ev.setting, property: row.property, claims: 0, surfaces: [], keys: [], citedRefs: [], where: [], cssProperty: [] };
+		// The CSS property the row stands for (painted-ground is background-color), which is both what a stylesheet
+		// declares and what lib/triage.mjs::measuredReachFrom is looked up with.
+		const property = cssProp( row.property );
+		const k = `${ ev.block }|${ ev.setting }|${ property }`;
+		const f = fams.get( k ) || { block: ev.block, setting: ev.setting, property, claims: 0, surfaces: [], keys: [], citedRefs: [], where: [], cssProperty: [] };
 		f.claims += 1;
 		f.surfaces.includes( surface ) || f.surfaces.push( surface );
 		f.keys.push( row.key );
@@ -75,17 +82,68 @@ export function familiesFrom( triageDir ) {
 	}
 	return [ ...fams.values() ].sort( ( a, b ) => b.claims - a.claims );
 }
+
+// Candidates mode. familiesFrom measures only the family each row cites NOW; once a measurement refutes it,
+// canvasSettable cites the next block declaring the property, which is unmeasured and fails open again. This asks
+// canvasSettable about every issue of every canvas surface with a measuredReach that records each (block, setting,
+// property) it would test and answers false, so it walks every candidate it could ever cite. Asking about every issue,
+// not only today's canvas-settable rows, makes the set independent of the confirm file it replaces: a row a refutation
+// moved off canvas-settable still has its candidates measured, so writing this set over the old file loses nothing.
+// The current citations (familiesFrom, which also holds resolver-hop cites canvasSettable never makes) are unioned in.
+// contextFor( surface, recorder ) returns { report, walkReport, ctx, close } (triage.mjs::surfaceContext by default).
+export function candidatesFrom( { client, triageDir, manifest, contextFor = null } ) {
+	const open = contextFor || ( ( surface, measuredReach ) => surfaceContext( { client, surface, measuredReach } ) );
+	const fams = new Map( familiesFrom( triageDir ).map( ( f ) => [ `${ f.block }|${ f.setting }|${ f.property }`, f ] ) );
+	for ( const [ surface, entry ] of Object.entries( manifest ) ) {
+		if ( ! entry.canvas ) {
+			continue;
+		}
+		let issue = null;
+		const recorder = ( block, setting, property, ref ) => {
+			const k = `${ block }|${ setting }|${ property }`;
+			const f = fams.get( k ) || { block, setting, property, claims: 0, surfaces: [], keys: [], citedRefs: [], where: [], cssProperty: [] };
+			if ( ! f.keys.includes( issue.key ) ) {
+				f.claims += 1;
+				f.keys.push( issue.key );
+			}
+			f.surfaces.includes( surface ) || f.surfaces.push( surface );
+			ref && ! f.citedRefs.includes( ref ) && f.citedRefs.push( ref );
+			const where = ( issue.rows[ 0 ].owners || [] ).some( ( o ) => o.ref === ref ) ? 'ancestor' : 'sibling';
+			f.where.includes( where ) || f.where.push( where );
+			fams.set( k, f );
+			return false;
+		};
+		const { report, walkReport, ctx, close } = open( surface, recorder );
+		const full = issueContext( report, walkReport, ctx );
+		for ( issue of issuesOf( report, surface ) ) {
+			canvasSettable( issue, full );
+		}
+		close();
+	}
+	return [ ...fams.values() ].sort( ( a, b ) => b.claims - a.claims );
+}
+
 // Everything below runs only when the file is invoked directly, so familiesFrom stays importable
 // (the route's own convention: scripts/computed-route/pairs.mjs, sweep.mjs, triage.mjs).
 async function main() {
-	const FAMILIES = process.argv[ 2 ];
-	const OUT = process.argv[ 3 ];
-	const BASE = process.argv[ 4 ] || 'http://localhost:8081';
-	const ONLY = process.argv[ 5 ] ? process.argv[ 5 ].split( ',' ) : null;
+	const argv = process.argv.slice( 2 );
+	const candidates = argv.includes( '--candidates' );
+	const ci = argv.indexOf( '--client' );
+	const client = -1 === ci ? null : argv[ ci + 1 ];
+	const pos = argv.filter( ( a, i ) => ! a.startsWith( '--' ) && ( -1 === ci || i !== ci + 1 ) );
+	const [ FAMILIES, OUT ] = pos;
+	const BASE = pos[ 2 ] || 'http://localhost:8081';
+	const ONLY = pos[ 3 ] ? pos[ 3 ].split( ',' ) : null;
+	if ( candidates && ! client ) {
+		throw new Error( '--candidates needs --client <slug> (it reads sites/<slug>/build/surfaces.json and each surface\'s Solve report)' );
+	}
+	const manifestFile = client && path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', 'sites', client, 'build', 'surfaces.json' );
 
-	const families = ( FAMILIES.endsWith( '.json' ) ? JSON.parse( fs.readFileSync( FAMILIES, 'utf8' ) ) : familiesFrom( FAMILIES ) )
+	const families = ( candidates ? candidatesFrom( { client, triageDir: FAMILIES, manifest: JSON.parse( fs.readFileSync( manifestFile, 'utf8' ) ) } )
+		: FAMILIES.endsWith( '.json' ) ? JSON.parse( fs.readFileSync( FAMILIES, 'utf8' ) ) : familiesFrom( FAMILIES ) )
 		.map( ( f, i ) => ( { ...f, idx: i } ) )
 		.filter( ( f ) => ! ONLY || ONLY.includes( String( f.idx ) ) );
+	console.error( `${ families.length } families to measure${ candidates ? ' (every canvasSettable candidate)' : '' }` );
 
 	const browser = await chromium.launch();
 	const pages = {};
@@ -117,7 +175,7 @@ async function main() {
 
 	const results = [];
 	for ( const fam of families ) {
-		const surface = fam.surfaces[ 0 ];
+		const surface = fam.surfaces.find( ( x ) => URL_OF[ x ] ) || fam.surfaces[ 0 ];
 		const url = URL_OF[ surface ];
 		const rec = { idx: fam.idx, block: fam.block, setting: fam.setting, property: fam.property, claims: fam.claims, surface, surfaces: fam.surfaces, url: url ?? null, where: fam.where, cssProperty: fam.cssProperty };
 		if ( ! url ) {

@@ -17,7 +17,7 @@ import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
-import { buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
@@ -46,7 +46,7 @@ async function build( target, treeFile, extra = [] ) {
 		const timer = setTimeout( () => {
 			timedOut = true;
 			child.kill();
-		}, 300000 );
+		}, CHILD_TIMEOUT_MS );
 		child.on( 'close', ( status ) => {
 			clearTimeout( timer );
 			resolve( { status, stdout, stderr, timedOut } );

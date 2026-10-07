@@ -4,8 +4,8 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-07T11-29-16/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 272,
-  "F": 27,
+  "W": 273,
+  "F": 26,
   "T": 47,
   "U": 8
  },
@@ -1039,6 +1039,14 @@
       ]
      },
      {
+      "block": "buybox",
+      "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+      "mentions": [],
+      "declares": [
+       "verflow-x:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0"
+      ]
+     },
+     {
       "block": "container",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
@@ -1104,6 +1112,14 @@
       "mentions": [],
       "declares": [
        "0;margin:-{$width};border-radius:inherit;padding:{$width};background:{$normal_paint};-webkit-mask:li"
+      ]
+     },
+     {
+      "block": "buybox",
+      "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+      "mentions": [],
+      "declares": [
+       "verflow-x:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0"
       ]
      },
      {
@@ -1175,6 +1191,14 @@
       ]
      },
      {
+      "block": "buybox",
+      "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+      "mentions": [],
+      "declares": [
+       "verflow-x:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0"
+      ]
+     },
+     {
       "block": "container",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
@@ -1243,6 +1267,14 @@
       ]
      },
      {
+      "block": "buybox",
+      "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+      "mentions": [],
+      "declares": [
+       "verflow-x:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0"
+      ]
+     },
+     {
       "block": "container",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
       "mentions": [],
@@ -1271,8 +1303,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -1288,6 +1320,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-10",
+     "block": "sgs/icon-list",
+     "setting": "gap",
+     "property": "gap",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": true
     }
    ],
    "source": {
@@ -1318,6 +1360,14 @@
      }
     ],
     "helpers": [
+     {
+      "block": "buybox",
+      "cite": "src/blocks/buybox/extras.php::sgs_buybox_extras_scoped_css",
+      "mentions": [],
+      "declares": [
+       "!== $thumb_gap ) { $thumbs_decls .= 'gap:' . $thumb_gap . ';'; } if ( $thumbs_per > 0 ) {"
+      ]
+     },
      {
       "block": "container",
       "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
@@ -1395,7 +1445,16 @@
       "declaration": "line-height:1.4"
      }
     ],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -1699,7 +1758,16 @@
       "declaration": "line-height:1.4"
      }
     ],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -3930,7 +3998,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3976,7 +4045,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4863,14 +4933,77 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/tab path \".sgs-tab__inner > div > p\" is not a calibrated element"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-109",
+     "block": "sgs/product-card",
+     "setting": "pickerLabelFontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "tab/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "tabs/render.php",
+      "mentions": [],
+      "absent": [
+       "fontSize"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "tab",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
+      ]
+     },
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-product-13|.sgs-tab__inner > div > p|style|line-height",
@@ -6747,7 +6880,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -6763,8 +6896,67 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-product-109",
+     "block": "sgs/product-card",
+     "setting": "pickerLabelFontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "tabs/render.php",
+      "mentions": [],
+      "absent": [
+       "tabFontSize",
+       "fontSize"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": [
+       "tabFontSize"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     },
+     {
+      "block": "tabs",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-product-12|.sgs-tabs__panels > .sgs-tabs__panel:nth-of-type(1) > .sgs-container > .sgs-tab__inner > div > p|style|line-height",
@@ -7590,8 +7782,8 @@
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/tabs has no setting for box-shadow"
+     "gap": "ambiguous",
+     "detail": "tabStyle=boxed, tabStyle=pills all give box-shadow on \".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)\""
     },
     {
      "check": "discovered",
@@ -12282,7 +12474,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -13240,7 +13441,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -13286,7 +13488,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -14176,9 +14379,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]

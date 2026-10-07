@@ -218,7 +218,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -264,7 +265,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",

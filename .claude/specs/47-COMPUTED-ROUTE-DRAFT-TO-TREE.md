@@ -478,9 +478,10 @@ designed.
   govern the property on the row's element, and its committed result (`sites/<client>/build/qa/canvas-confirm.json`)
   feeds `lib/triage.mjs::measuredReachFrom` -> `ctx.measuredReach`, which decides a citation before the source gate's
   deliberate fail-open. A refuted citation makes `canvasSettable` cite the NEXT block on the page that declares the
-  property, so a sweep is measured only when every candidate family is (Eye Care 2026-10-07: 1,243 families, 0
-  skipped stylesheets; the 16 remaining canvas rows rest on CONFIRMED families except one whose element exists only
-  in a filter state).
+  property, so after a sweep `confirm-canvas.mjs --candidates` measures every family `canvasSettable` could cite for
+  any issue of any canvas surface (`confirm-canvas.mjs::candidatesFrom`), in one pass (Eye Care 2026-10-07: 1,795
+  families, 13,715 claims, 0 skipped stylesheets; the 37 canvas-settable rows rest on CONFIRMED families except one
+  whose element exists only in a filter state, ABSENT).
 
 **Done when:** a draft padding row on an `sgs/mega-group` inside a mega-menu canvas whose `sgs/mega-panel` ancestor
 declares a padding box family classes `canvas-settable` citing that ancestor's attribute, and the same row classes a
@@ -648,12 +649,11 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
        literal, so the five CR6 classification overrides are gone). Open: P2-a corner radius, P2-b the `var()`
        holdouts, P2-c the media-padding atom and its JS twin, P2-e the Eye Care tier boxes holding an explicit zero.
-     - **Route, open (2026-10-07):** (1) `confirm-canvas.mjs` measures only the family each row CURRENTLY cites, so
-       after a fresh sweep the fallback citations are unmeasured again and fail open; the 2026-10-07 sweep was closed
-       by a one-off enumeration of every `lib/triage.mjs::canvasSettable` candidate (2,009 claims, 883 families,
-       one pass), not committed: build it into `confirm-canvas.mjs` as a candidates mode. (2) CR4: `sgs/nav-bar-menu`
-       cannot be re-calibrated on the local mirror (its first chunk times out loading the editor). (3) CR14: help's
-       FAQ answers pair only with a walker state that opens every answer. (4) CR25: the shop template build fails
+     - **Route, open (2026-10-07):** (1) CR4: `sgs/nav-bar-menu`'s calibration page took 150 s to return its edit
+       screen on the local mirror against `wp-build-page.js`'s 60 s limit; calibration now passes
+       `--editor-timeout` 240 s (`lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`), and the block's re-calibration and
+       dead-set triage are the open part. (2) CR14: help's
+       FAQ answers pair only with a walker state that opens every answer. (3) CR25: the shop template build fails
        intermittently in Solve (`wp-build-page.js::buildTemplate`, "page.evaluate: Object"). Each is a register row.
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when

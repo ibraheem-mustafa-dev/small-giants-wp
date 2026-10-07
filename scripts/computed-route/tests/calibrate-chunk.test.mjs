@@ -2,14 +2,28 @@
 // the child gets a bigger heap, a block may set its own chunk size, and a chunk whose build times out is halved and
 // retried instead of failing the block.
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { NODE_HEAP_FLAG, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK } from '../lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK } from '../lib/calibrate-chunk.mjs';
 
 test( 'MUST FAIL (the build child ran on the default heap and was killed at 300s): the spawn passes --max-old-space-size=8192 before the script', () => {
 	assert.equal( NODE_HEAP_FLAG, '--max-old-space-size=8192' );
 	const args = buildSpawnArgs( '/repo/scripts/wp-build-page.js', { envFile: 'e.env', envKey: 'K' }, '/t/tree.json', [ '--dry-run' ] );
 	assert.deepEqual( args.slice( 0, 2 ), [ NODE_HEAP_FLAG, '/repo/scripts/wp-build-page.js' ] );
-	assert.deepEqual( args.slice( 2 ), [ '--env-file', 'e.env', '--env-key', 'K', '--tree', '/t/tree.json', '--dry-run' ] );
+	assert.deepEqual( args.slice( 2 ), [ '--env-file', 'e.env', '--env-key', 'K', '--tree', '/t/tree.json', '--editor-timeout', String( EDITOR_TIMEOUT_MS ), '--dry-run' ] );
+} );
+
+// CR4: sgs/nav-bar-menu's 744-block calibration page took 150 s to return its edit screen on the local mirror, so every
+// attempt died at wp-build-page.js's 60 s default and the block could not be calibrated.
+test( 'MUST FAIL (CR4, a large calibration page timed out loading the editor at 60 s): the child gets the long editor limit and a whole-run limit that covers load, save and reload', () => {
+	const args = buildSpawnArgs( '/s.js', { envFile: 'e', envKey: 'K' }, '/t.json' );
+	assert.equal( args[ args.indexOf( '--editor-timeout' ) + 1 ], String( EDITOR_TIMEOUT_MS ) );
+	assert.ok( EDITOR_TIMEOUT_MS >= 150000 * 1.5, 'room above the measured 150 s load' );
+	assert.ok( CHILD_TIMEOUT_MS >= 2 * EDITOR_TIMEOUT_MS + 60000, 'the child limit covers two editor loads plus login and save' );
+	// Every editor wait in wp-build-page.js reads the flag: a literal 60 s left anywhere is the old ceiling back.
+	const src = fs.readFileSync( new URL( '../../wp-build-page.js', import.meta.url ), 'utf8' );
+	assert.equal( ( src.match( /timeout:\s*60000/g ) || [] ).length, 0, 'no editor wait keeps a hardcoded 60 s' );
+	assert.ok( ( src.match( /args\.editorTimeout/g ) || [] ).length >= 6 );
 } );
 
 test( 'a fixture names its own chunk size; a bad value falls back to the default', () => {

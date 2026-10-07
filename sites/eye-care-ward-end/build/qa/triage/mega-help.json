@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/mega-help/2026-10-07T04-10-00/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 26,
+  "W": 24,
   "F": 3,
-  "T": 29,
+  "T": 31,
   "U": 0
  },
  "verdicts": [
@@ -382,13 +382,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-help-5",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -397,7 +404,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -560,7 +568,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -629,7 +638,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -711,13 +721,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-help-20",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -726,7 +743,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -889,7 +907,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -958,7 +977,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -1618,7 +1638,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -1820,7 +1841,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -1889,7 +1911,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -1975,7 +1998,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -2086,7 +2110,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2155,7 +2180,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2241,7 +2267,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -2718,7 +2745,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2787,7 +2815,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2873,7 +2902,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -3075,7 +3105,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3144,7 +3175,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3230,7 +3262,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -3341,7 +3374,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3410,7 +3444,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3496,7 +3531,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -3818,7 +3854,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3887,7 +3924,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3973,7 +4011,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -4175,7 +4214,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4244,7 +4284,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4330,7 +4371,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",

@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/mega-lenses/2026-10-07T04-07-07/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 68,
+  "W": 55,
   "F": 24,
-  "T": 24,
+  "T": 37,
   "U": 0
  },
  "verdicts": [
@@ -794,7 +794,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1694,7 +1694,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1917,13 +1917,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-2",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -1942,7 +1949,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -1951,7 +1959,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -1960,7 +1969,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2071,8 +2081,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-2",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -2091,7 +2108,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2100,7 +2118,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2109,7 +2128,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2187,13 +2207,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-2",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -2212,7 +2239,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2221,7 +2249,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2230,7 +2259,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2419,13 +2449,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-2",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -2444,7 +2481,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -2453,7 +2491,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2462,7 +2501,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3263,7 +3303,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3309,7 +3350,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3608,13 +3650,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-7",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -3633,7 +3682,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3642,7 +3692,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3651,7 +3702,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3762,8 +3814,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-7",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -3782,7 +3841,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3791,7 +3851,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3800,7 +3861,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3878,13 +3940,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-7",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -3903,7 +3972,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3912,7 +3982,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3921,7 +3992,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4110,13 +4182,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-7",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -4135,7 +4214,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4144,7 +4224,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4153,7 +4234,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4950,7 +5032,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -5185,7 +5267,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5231,7 +5314,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5530,13 +5614,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-12",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -5555,7 +5646,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5564,7 +5656,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5573,7 +5666,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5684,8 +5778,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-12",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -5704,7 +5805,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5713,7 +5815,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5722,7 +5825,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5800,13 +5904,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-12",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -5825,7 +5936,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5834,7 +5946,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5843,7 +5956,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -6032,13 +6146,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-12",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -6057,7 +6178,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -6066,7 +6188,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -6075,7 +6198,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -6872,7 +6996,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -7107,7 +7231,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7153,7 +7278,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7452,13 +7578,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-17",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -7477,7 +7610,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7486,7 +7620,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -7495,7 +7630,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7606,8 +7742,15 @@
     },
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-17",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -7626,7 +7769,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7635,7 +7779,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -7644,7 +7789,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7773,13 +7919,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-17",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -7798,7 +7951,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7807,7 +7961,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -7816,7 +7971,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7843,13 +7999,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-17",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -7868,7 +8031,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7877,7 +8041,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -7886,7 +8051,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -8075,13 +8241,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-mega-lenses-17",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -8100,7 +8273,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -8109,7 +8283,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8118,7 +8293,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -8307,7 +8483,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -8353,7 +8530,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",

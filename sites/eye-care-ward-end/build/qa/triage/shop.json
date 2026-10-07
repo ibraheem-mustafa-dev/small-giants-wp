@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/shop/2026-10-07T10-59-41/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 204,
-  "F": 62,
-  "T": 28,
+  "W": 206,
+  "F": 56,
+  "T": 32,
   "U": 0
  },
  "verdicts": [
@@ -117,13 +117,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/catalog-sorting has no setting for max-width"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-7",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -227,13 +236,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-template has no setting for max-width"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-10",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -1465,6 +1483,15 @@
      "css_element": null,
      "css_state": null,
      "source": "sgs-ext"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/product-card",
+     "setting": "valueLadderSavingColour",
+     "css_property": "color",
+     "css_element": "valueLadderSaving",
+     "css_state": null,
+     "source": "sgs"
     },
     {
      "check": "extension",
@@ -2787,6 +2814,15 @@
      "source": "sgs-ext"
     },
     {
+     "check": "attribute",
+     "block": "sgs/product-card",
+     "setting": "valueLadderSavingColour",
+     "css_property": "color",
+     "css_element": "valueLadderSaving",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
      "check": "extension",
      "extension": "clickEffects",
      "setting": "sgsClickRippleColour",
@@ -2831,7 +2867,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -2850,13 +2895,23 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-template has no setting for letter-spacing"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "titleLetterSpacing",
+     "property": "letter-spacing",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -2922,13 +2977,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-template has no setting for max-width"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-10",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -4091,7 +4155,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4685,13 +4750,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-top-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-shop-11",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -4710,7 +4782,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4719,7 +4792,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4728,7 +4802,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4806,13 +4881,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-bottom-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-shop-11",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -4831,7 +4913,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4840,7 +4923,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4849,7 +4933,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5090,13 +5175,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-left-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-shop-11",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -5115,7 +5207,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5124,7 +5217,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5133,7 +5227,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5160,13 +5255,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no border-right-color setting on sgs/container paints \"\" (candidates: gridItemBorder, borderColour)"
+     "wouldWrite": [
+      "borderColour"
+     ],
+     "on": {
+      "ref": "cr-ref-shop-11",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -5185,7 +5287,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5194,7 +5297,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5203,7 +5307,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -5465,7 +5570,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_d"
       ]
      }
     ]
@@ -5778,7 +5883,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -5841,7 +5946,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "nsform;transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media (p"
+       "ty . ';transition-duration:' . $ms . 'ms;transition-timing-function:' . $ease . ';}' . '@media ("
       ]
      }
     ]
@@ -6007,7 +6112,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_d"
       ]
      }
     ]
@@ -6029,13 +6134,22 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/filter-search has no setting for max-width"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-11",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -6222,7 +6336,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_d"
       ]
      }
     ]
@@ -6451,7 +6565,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -6591,7 +6705,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -6886,7 +7009,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_decls"
+       "=== $width_type ) { $base_decls[] = 'width:100%;'; } $css = ''; if ( ! empty( $base_d"
       ]
      }
     ]
@@ -7558,7 +7681,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -7574,8 +7697,57 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "pickerLabelFontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-shop-10|div > ul > li:nth-of-type(1) > .sgs-has-hover > div:nth-of-type(1) > div > span|style|letter-spacing",
@@ -7592,7 +7764,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -7608,8 +7780,31 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "titleLetterSpacing",
+     "property": "letter-spacing",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-shop-10|div > ul > li:nth-of-type(1) > .sgs-has-hover > div:nth-of-type(1) > div > span|style|text-transform",
@@ -9111,7 +9306,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -9127,8 +9322,57 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "pickerLabelFontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "fontSize"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [],
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
+      "mentions": [],
+      "declares": [
+       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
+       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
+      "mentions": [],
+      "declares": [
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
+      ]
+     }
+    ]
+   }
   },
   {
    "key": "cr-ref-shop-10|.sgs-container > .sgs-shop-filters__header > .sgs-shop-filters__heading|style|font-weight",
@@ -9253,7 +9497,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -9462,7 +9707,8 @@
      "css_property": "background-size,object-fit",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -9755,7 +10001,7 @@
      "check": "attribute",
      "block": "sgs/container",
      "setting": "bgHoverZoomScale",
-     "css_property": "transform",
+     "css_property": null,
      "css_element": null,
      "css_state": null,
      "source": "sgs"
@@ -9847,8 +10093,8 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "radius_shorthand ) { $base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';",
-       "= $border_radius ) { $base_decls[] = 'border-radius:' . $border_radius . 'px;'; } if ( '' !==",
+       "adius_shorthand ) { $base_decls[] = 'border-radius:' . esc_attr( $border_radius_shorthand ) . ';",
+       "$border_radius ) { $base_decls[] = 'border-radius:' . $border_radius . 'px;'; } if ( '' !",
        "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\" . $bg_decl . ';"
       ]
      }
@@ -10186,7 +10432,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -10529,7 +10775,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -10919,7 +11166,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "consequence",
@@ -10956,8 +11203,31 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "titleLetterSpacing",
+     "property": "letter-spacing",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-shop-11|.sgs-shop-filters__header > .sgs-shop-filters__heading|style|text-transform",
@@ -11100,7 +11370,7 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "resolver-unmapped-element",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -11116,8 +11386,31 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "titleLetterSpacing",
+     "property": "letter-spacing",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "letterSpacing"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-shop-10|.sgs-container > .sgs-shop-filters__header > .sgs-shop-filters__heading|style|text-transform",
@@ -11443,13 +11736,23 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "woocommerce/product-filter-attribute has no setting for font-size"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-shop-50",
+     "block": "sgs/product-card",
+     "setting": "pickerLabelFontSize",
+     "property": "font-size",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -11486,7 +11789,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -11526,7 +11829,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -12112,14 +12424,6 @@
       "declares": [
        "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
        "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
       ]
      }
     ]

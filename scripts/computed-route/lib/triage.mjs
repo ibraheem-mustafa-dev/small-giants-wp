@@ -381,7 +381,7 @@ export function reachesElement( cite, issue, ctx ) {
 	const { short } = splitProperty( cssProp( r.key ) );
 	// A live measurement decides first (R-47-12): confirm-canvas.mjs enumerated every rule that could govern this
 	// property on this element, so a REFUTED or NO-RULE family is definitively unreachable whatever the source says.
-	const measured = ctx.measuredReach?.( cite.block, cite.setting, cssProp( r.key ) );
+	const measured = ctx.measuredReach?.( cite.block, cite.setting, cssProp( r.key ), cite.ref ?? null );
 	if ( 'boolean' === typeof measured ) {
 		return measured;
 	}
@@ -553,13 +553,20 @@ export function triageIssue( issue, ctx ) {
 	return verdict( 'W', `resolver-${ res.gap }`, 'hardcode' === issue.solveClass ? withSource() : {} );
 }
 
+// The per-issue ctx triageIssue and canvasSettable read: the surface ctx plus the walk, its open rows, its writable
+// groups and Solve's own gaps and writes. Exported so confirm-canvas.mjs's candidates mode asks canvasSettable exactly
+// what triage asks it.
+export function issueContext( report, walk, ctx ) {
+	return { ...ctx, walk, open: openRows( walk ).filter( isIssue ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
+}
+
 // Every issue of a Solve report: { verdicts, counts }. walk: the final walker report the Solve report classified.
 // ctx: { stateMap, nodeFor(ref), ancestorsOf(ref), attrRows(block), roster, supportsFor(block), calFor(block),
 // readSource(slug, file), helpers? and blockPhp?(slug) (lib/triage-source.mjs::sourcePass), refs?, resolver?(input, calibration) or db and snapshot, reportGaps?, reportWrites?,
 // canvas (FR-47-8: the surface's manifest flag) and canvasBlocks() (every block already in that canvas tree, as
 // [ { ref, name } ]), ancestorHop? (lib/resolve.mjs::resolveViaAncestor, replaceable in tests) }.
 export function triage( report, walk, surface, ctx ) {
-	const full = { ...ctx, walk, open: openRows( walk ).filter( isIssue ), groups: writableGroups( walk, ctx.stateMap ).groups, reportGaps: ctx.reportGaps ?? report.gaps, reportWrites: ctx.reportWrites ?? report.writes };
+	const full = issueContext( report, walk, ctx );
 	const verdicts = issuesOf( report, surface ).map( ( issue ) => triageIssue( issue, full ) );
 	const counts = Object.fromEntries( TRIAGE_CLASSES.map( ( c ) => [ c, verdicts.filter( ( v ) => v.class === c ).length ] ) );
 	return { verdicts, counts };

@@ -202,8 +202,8 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+       "width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "= $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !"
       ]
      }
     ]
@@ -1394,6 +1394,42 @@
      "css_element": null,
      "css_state": null,
      "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperActiveColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "progressBadgeColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "summaryNoteColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
     }
    ]
   },
@@ -2032,8 +2068,8 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "!== $colour_text ) { $base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';'; } if",
-       "lour_text_hover ) { $hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';'; }"
+       "== $colour_text ) { $base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';'; } i",
+       "our_text_hover ) { $hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';';"
       ]
      },
      {
@@ -2322,7 +2358,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      },
      {
@@ -2829,6 +2865,42 @@
      "check": "attribute",
      "block": "sgs/choice-flow",
      "setting": "infoToggleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "stepperActiveColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "progressBadgeColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/choice-flow",
+     "setting": "summaryNoteColour",
      "css_property": null,
      "css_element": null,
      "css_state": null,
@@ -3380,8 +3452,8 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "_width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
-       "== $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !=="
+       "width_shorthand ) { $base_decls[] = 'border-width:' . esc_attr( $border_width_shorthand ) . ';';",
+       "= $border_width ) { $base_decls[] = 'border-width:' . $border_width . 'px;'; } if ( null !"
       ]
      }
     ]

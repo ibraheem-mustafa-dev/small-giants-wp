@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-07T10-09-41/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 97,
+  "W": 96,
   "F": 46,
-  "T": 15,
+  "T": 16,
   "U": 0
  },
  "verdicts": [
@@ -677,9 +677,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -912,9 +912,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -1147,9 +1147,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -1382,9 +1382,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -1461,7 +1461,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1876,9 +1876,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -2111,9 +2111,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -2346,9 +2346,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -2581,9 +2581,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -2660,7 +2660,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -2955,9 +2955,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -3190,9 +3190,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -3425,9 +3425,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -3660,9 +3660,9 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "= $colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
-       "ur_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
-       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wid"
+       "$colour_border ) { $base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';",
+       "r_border_hover ) { $hover_decls[] = 'border-color:' . sgs_colour_value( $colour_border_hover ) .",
+       "// sgs_border_gradient_css() helper sets border-color:transparent on // the base rule itself). Wi"
       ]
      }
     ]
@@ -3739,7 +3739,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -4000,7 +4000,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4056,7 +4056,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4132,7 +4141,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4188,7 +4197,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4264,7 +4282,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4320,7 +4338,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4396,7 +4423,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4452,7 +4479,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4528,7 +4564,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4584,7 +4620,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4660,7 +4705,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4716,7 +4761,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -4792,7 +4846,7 @@
       "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
       "mentions": [],
       "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
+       "!== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } if ( '' !== $line"
       ]
      }
     ]
@@ -4848,7 +4902,16 @@
      }
     ],
     "rules": [],
-    "helpers": []
+    "helpers": [
+     {
+      "block": "container",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "== $line_height ) { $base_decls[] = 'line-height:' . $line_height . ';'; } // Padding — bo"
+      ]
+     }
+    ]
    }
   },
   {
@@ -5535,7 +5598,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5581,7 +5645,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5822,7 +5887,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -5868,7 +5934,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -6034,7 +6101,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -6613,14 +6681,6 @@
        "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
        "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
       ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
-      ]
      }
     ]
    }
@@ -7150,14 +7210,6 @@
        "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
        "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
       ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
-      ]
      }
     ]
    }
@@ -7679,14 +7731,6 @@
       "declares": [
        "// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover- // scale,1))}` in `asse",
        "sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}'; }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       ". sgs_hover_state_rules( '.' . $uid, 'transform:scale(' . $factor . ')', ':focus-within', $suffix"
       ]
      }
     ]
@@ -8308,7 +8352,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8354,7 +8399,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8690,7 +8736,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8736,7 +8783,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8894,7 +8942,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -8940,7 +8989,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -9027,7 +9077,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     }
    ]
   },
@@ -9046,13 +9097,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-footer-29",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -9071,7 +9129,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -9080,7 +9139,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -9089,7 +9149,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",

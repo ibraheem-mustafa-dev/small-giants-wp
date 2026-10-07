@@ -86,3 +86,51 @@ test( 'MUST FAIL: a named emission that cannot match the row is still refused', 
 	assert.equal( reachesElement( cite, issueFor( 'a|.sgs-social-icons__item|style|padding-top' ), ctx ), false,
 		'an emission naming no class of the row must NOT be credited as reaching it' );
 } );
+
+// --- Candidates mode: every block canvasSettable could cite, not only the one it cites now ------------------
+// After a refutation canvasSettable cites the NEXT block declaring the property, unmeasured, so the gate fails open
+// again. candidatesFrom asks canvasSettable with a recorder that answers false, so it walks every candidate.
+import { candidatesFrom } from '../confirm-canvas.mjs';
+import { canvasSettable } from '../lib/triage.mjs';
+
+const ccDir = fs.mkdtempSync( path.join( os.tmpdir(), 'cc-cand-' ) );
+fs.writeFileSync( path.join( ccDir, 'mega.json' ), JSON.stringify( { verdicts: [] } ) );
+const ccRow = { ref: 'cr-ref-mega-1', path: '.sgs-heading', kind: 'style', key: 'padding-top', state: 'opening', live: '4px', draft: '8px', owners: [] };
+const ccReport = { classes: { hardcode: [ ccRow ] } };
+const ccCtx = ( measuredReach ) => ( {
+	canvas: true, stateMap: { opening: null }, measuredReach,
+	nodeFor: ( ref ) => ( { 'cr-ref-mega-1': { name: 'sgs/heading' }, 'cr-ref-mega-2': { name: 'sgs/a' }, 'cr-ref-mega-3': { name: 'sgs/b' } }[ ref ] || null ),
+	canvasBlocks: () => [ { ref: 'cr-ref-mega-1', name: 'sgs/heading' }, { ref: 'cr-ref-mega-2', name: 'sgs/a' }, { ref: 'cr-ref-mega-3', name: 'sgs/b' } ],
+	attrRows: ( b ) => ( { 'sgs/a': [ { attr_name: 'aPad', css_property: 'padding', css_state: null } ], 'sgs/b': [ { attr_name: 'bPad', css_property: 'padding', css_state: null } ] }[ b ] || [] ),
+} );
+const ccContext = ( reach ) => ( _surface, recorder ) => ( { report: ccReport, walkReport: { runs: [] }, ctx: ccCtx( reach || recorder ), close: () => {} } );
+
+test( 'MUST FAIL: candidates mode yields EVERY declaring block, and the current-citation path yields only the first', () => {
+	const fams = candidatesFrom( { triageDir: ccDir, manifest: { mega: { canvas: true } }, contextFor: ccContext() } );
+	assert.deepEqual( fams.map( ( f ) => f.block ).sort(), [ 'sgs/a', 'sgs/b' ], 'both siblings declaring padding are candidates' );
+	const b = fams.find( ( f ) => 'sgs/b' === f.block );
+	assert.equal( b.property, 'padding-top' );
+	assert.deepEqual( b.citedRefs, [ 'cr-ref-mega-3' ] );
+	assert.deepEqual( b.where, [ 'sibling' ] );
+	// Negative control: the old behaviour (nothing measured, every lookup undefined) cites sgs/a and stops, so sgs/b
+	// is never measured. That is the gap the recorder closes.
+	const issue = { key: 'k', rows: [ ccRow ] };
+	assert.equal( canvasSettable( issue, ccCtx( () => undefined ) ).block, 'sgs/a' );
+	// A refutation of sgs/a moves the citation to sgs/b: the family candidates mode measured in advance.
+	assert.equal( canvasSettable( issue, ccCtx( ( blk ) => ( 'sgs/a' === blk ? false : undefined ) ) ).block, 'sgs/b' );
+} );
+
+test( 'MUST FAIL: a non-canvas surface contributes no candidates', () => {
+	const fams = candidatesFrom( { triageDir: ccDir, manifest: { mega: { canvas: false } }, contextFor: ccContext() } );
+	assert.equal( fams.length, 0 );
+} );
+
+test( 'MUST FAIL: a family is keyed and measured on the CSS property the row stands for, not the walker key', () => {
+	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cc-prop-' ) );
+	fs.writeFileSync( path.join( d, 'header.json' ), JSON.stringify( { verdicts: [
+		{ key: 'cr-ref-header-4||style|painted-ground', property: 'painted-ground', decidedBy: 'canvas-settable', evidence: [ { check: 'canvas-settable', ref: 'cr-ref-header-1', block: 'sgs/site-header', setting: 'bg', property: 'background-color', where: 'ancestor' } ] },
+	] } ) );
+	// Red on revert: the raw walker key would make measuredReachFrom's background-color lookup miss, and the live
+	// read would ask the stylesheet for a property named painted-ground.
+	assert.equal( familiesFrom( d )[ 0 ].property, 'background-color' );
+} );

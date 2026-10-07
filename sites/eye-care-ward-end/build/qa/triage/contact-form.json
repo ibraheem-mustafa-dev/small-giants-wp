@@ -4,8 +4,8 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-07T10-11-23/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 32,
-  "F": 10,
+  "W": 33,
+  "F": 9,
   "T": 45,
   "U": 0
  },
@@ -368,7 +368,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -732,7 +732,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1096,7 +1096,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1460,7 +1460,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1694,7 +1694,7 @@
       "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
       "mentions": [],
       "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
+       "'{transition-property:' . $property . ';transition-duration:' . $ms . 'ms;transition-timing-functio"
       ]
      }
     ]
@@ -1716,13 +1716,23 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for margin-top"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "contentBandMargin",
+     "property": "margin-bottom,margin-left,margin-right,margin-top",
+     "via": "declared",
+     "where": "ancestor",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -1914,6 +1924,60 @@
      "setting": "submitLineHeight",
      "css_property": "line-height",
      "css_element": "submit-button",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "helpTextLineHeight",
+     "css_property": "line-height",
+     "css_element": "help-text",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "errorTextLineHeight",
+     "css_property": "line-height",
+     "css_element": "error-text",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "fileStatusLineHeight",
+     "css_property": "line-height",
+     "css_element": "file-status",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "reviewHeadingLineHeight",
+     "css_property": "line-height",
+     "css_element": "review-heading",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "reviewDetailLineHeight",
+     "css_property": "line-height",
+     "css_element": "review-detail",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/form",
+     "setting": "stepLabelLineHeight",
+     "css_property": "line-height",
+     "css_element": "step-label",
      "css_state": null,
      "source": "sgs"
     }

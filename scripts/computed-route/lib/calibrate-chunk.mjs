@@ -5,10 +5,16 @@
 // at the 300-second limit for a block with several hundred instances (sgs/business-info plans 343).
 export const NODE_HEAP_FLAG = '--max-old-space-size=8192';
 export const MIN_CHUNK = 1;
+// How long each page load, editor boot and save of a calibration page may take, and the whole child's limit (login,
+// the editor load, the save and the reload that reads the save back). A chunk is a large page by design: on the local
+// mirror a 744-block page took 150 s to return its edit screen, then 1.3 s to boot (2026-10-07), against
+// wp-build-page.js's 60 s default.
+export const EDITOR_TIMEOUT_MS = 240000;
+export const CHILD_TIMEOUT_MS = 3 * EDITOR_TIMEOUT_MS;
 
 // The argument list for `node` running wp-build-page.js against one calibration tree.
 export function buildSpawnArgs( script, target, treeFile, extra = [] ) {
-	return [ NODE_HEAP_FLAG, script, '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, ...extra ];
+	return [ NODE_HEAP_FLAG, script, '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, '--editor-timeout', String( EDITOR_TIMEOUT_MS ), ...extra ];
 }
 
 // The most instances one page of this block holds: the fixture's own `chunk` (a block whose page times out on the host

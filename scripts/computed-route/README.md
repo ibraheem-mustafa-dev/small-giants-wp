@@ -86,9 +86,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused; a landmark exclusion holding the surface is lifted. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
-| `tests/confirm-canvas.test.mjs` | Grouping the canvas-settable claims into families of (cited block, cited setting, row property): a family spanning two surfaces stays one family, a different setting on the same block and property is its own family, a row not decided by `canvas-settable` is not a claim, and a resolver-hop citation (no `where` key) stays distinguishable from a canvas-roster one. |
+| `tests/confirm-canvas.test.mjs` | Grouping the canvas-settable claims into families of (cited block, cited setting, row property): a family spanning two surfaces stays one family, a different setting on the same block and property is its own family, a row not decided by `canvas-settable` is not a claim, and a resolver-hop citation (no `where` key) stays distinguishable from a canvas-roster one; a family is keyed on the CSS property the row stands for; candidates mode yields every block `canvasSettable` could cite (negative control: the unmeasured lookup cites only the first) and nothing for a non-canvas surface. |
 | `tests/register-alias.test.mjs` | A register row whose Fix cell is NOTHING BUT a pointer at another row (`See 17`, `Same as 59`, `Same as N2B`) is that row's alias and feeds `covers`, so it stops being counted as independent work; a Fix cell that merely MENTIONS another row inside prose is real work and must not alias; and an explicit `Covers` column still wins, read comma-separated with a `;` or `(` cutting trailing prose. |
-| `tests/calibrate-chunk.test.mjs` | FR-47-2: the build child gets the bigger heap, a fixture names its own chunk size, and a timed-out chunk is halved with every default kept. |
+| `tests/calibrate-chunk.test.mjs` | FR-47-2: the build child gets the bigger heap and the long editor limit (CR4: no editor wait in `wp-build-page.js` keeps a hardcoded 60 s), a fixture names its own chunk size, and a timed-out chunk is halved with every default kept. |
 | `tests/calibrate-container.test.mjs` | FR-47-2: a block that emits `@container` rules at render time is not read as a one-width hardcode; a comment naming the flag, a false flag or a variable does not count. |
 | `tests/calibrate-fixtures.test.mjs` | FR-47-2: each planned fixture variant, parent chain and `<p>` text variant traces to the render source that needs it. |
 | `tests/calibrate-partners.test.mjs` | FR-47-2: the background-image, hover shadow-shape and hover border-gradient partners a marker needs to paint; a marker no read equals is reached wherever its element changed. |
@@ -270,6 +270,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 
 ### `lib/calibrate-chunk.mjs`
 - `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.
+- `EDITOR_TIMEOUT_MS`, `CHILD_TIMEOUT_MS`: the `--editor-timeout` each page load, editor boot and save of a calibration page gets (240 s; `wp-build-page.js` defaults to 60 s), and the whole child's limit (three times that: login, load, save and the read-back reload). CR4: a 744-block `sgs/nav-bar-menu` page took 150 s to return its edit screen on the local mirror.
 - `buildSpawnArgs(script, args)` → the child's argv with the heap flag, so a large block's build is not killed for memory.
 - `chunkSizeFor(block, fixture, env)` → the fixture's own `chunk`, else `SGS_CAL_CHUNK`, else `CHUNK` (150).
 - `halveChunk(size)` → the next size down, floored at `MIN_CHUNK`.
@@ -375,8 +376,12 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 Live confirmation of the `canvas-settable` claims, read-only: it writes no tree, setting, page or stylesheet.
 
 ```
-node scripts/computed-route/confirm-canvas.mjs <triage dir | families.json> <out.json> [base url] [only indices]
+node scripts/computed-route/confirm-canvas.mjs [--candidates --client <slug>] <triage dir | families.json> <out.json> [base url] [only indices]
 ```
+
+After a sweep, run it in candidates mode and write the result to `sites/<client>/build/qa/canvas-confirm.json`:
+it measures every family `canvasSettable` could ever cite, so a refuted citation's fallback is already measured and
+never fails open (Eye Care 2026-10-07: 1,795 families, 13,715 claims, 0 skipped stylesheets, one pass).
 
 A claim classes a row W because another block declares a setting whose `css_property` covers the row's property
 and the reachability gate judged its emission to reach the row's element. Confirming that needs a
@@ -392,7 +397,14 @@ framework sets on the cited block), `REFUTED` (rules govern the row but none is 
   read from the triage reports so there is no separate hand step to go stale. A family is the unit the claim is
   made in: 168 rows collapse to 63 families, and surface is the wrong axis because a family spans surfaces.
   A resolver-hop citation has no `where` key and a canvas-roster citation has `ancestor` or `sibling`; the two
-  are the same claim reached from two directions and are reported apart.
+  are the same claim reached from two directions and are reported apart. `property` is the CSS property the row
+  stands for (`lib/solve-rows.mjs::cssProp`: `painted-ground` is `background-color`), the key
+  `measuredReachFrom` is looked up with and the property the stylesheet walk reads.
+- `candidatesFrom({ client, triageDir, manifest, contextFor? })` → every family `canvasSettable` would consider for any
+  issue of any `canvas: true` surface, found by calling it with a `ctx.measuredReach` that records each
+  (block, setting, property, cited ref) and answers false, unioned with `familiesFrom`. Asking about every issue,
+  not only today's canvas-settable rows, keeps the set independent of the confirm file it replaces.
+  `contextFor(surface, recorder)` defaults to `triage.mjs::surfaceContext`.
 
 Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md`.
 
@@ -584,6 +596,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `fittingSettings(issue, ctx)` → attribute, discovered, extension and enclosing evidence (`reaches: false` where calibration shows a setting not reaching the element).
 - `triageIssue(issue, ctx)` → `{ key, class, decidedBy, evidence, source? }`.
 - `canvasSettable(issue, ctx)` → FR-47-8 (c): the citation for the nearest block already in the canvas that declares the row's property **in the row's state** — enclosing blocks first, then `ctx.canvasBlocks()` — or null. A declaration is a `css_property` match or a modifier of it, never a name that merely reads like the property. A classification only: the route cannot decide which sibling should own the value, so it refuses F and hands the row on with its citation.
+- `issueContext(report, walk, ctx)` → the per-issue ctx `triageIssue` and `canvasSettable` read (the walk, its open rows and writable groups, Solve's gaps and writes); `triage` and `confirm-canvas.mjs::candidatesFrom` both build it here.
 - `triage(report, walk, surface, ctx)` → `{ verdicts, counts }`.
 
 ### `lib/triage-source.mjs`
@@ -597,6 +610,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `phpFiles(dir)` → every PHP file under a folder as `{ file, text }` (plugin-relative paths).
 - `finalWalk(reportFile)` → the highest `round-N/report.json` beside a Solve report, or null.
 - `treeIndex(buildDir, manifest)` → `{ nodes, ancestors }` for every ref in every surface tree.
+- `surfaceContext({ client, surface, report?, measuredReach? })` → `{ buildDir, reportFile, walkFile, report, walkReport, ctx, close }`: one surface's Solve report, final walk and triage ctx; `measuredReach` replaces the canvas-confirm.json lookup.
 - `runTriage({ client, surface, report?, out? })` → `{ verdicts, counts, file }`.
 - `surfaceBlocks(buildDir, entry)` → every block in one surface's own tree as `[ { ref, name } ]`: the sibling roster R-47-12 (c) checks for a block that can hold the row.
 

@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/mobile-menu/2026-10-07T10-16-30/round-1/report.json",
  "date": "2026-10-07",
  "counts": {
-  "W": 69,
-  "F": 7,
-  "T": 13,
+  "W": 65,
+  "F": 6,
+  "T": 18,
   "U": 0
  },
  "verdicts": [
@@ -239,6 +239,14 @@
      "css_element": "chromeButton",
      "css_state": "hover",
      "source": "sgs"
+    },
+    {
+     "check": "discovered",
+     "block": "sgs/nav-drawer",
+     "setting": "chromeSlotType",
+     "values": [
+      "heading"
+     ]
     }
    ]
   },
@@ -783,8 +791,8 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
+   "class": "W",
+   "decidedBy": "canvas-settable",
    "evidence": [
     {
      "check": "resolver",
@@ -800,6 +808,16 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-mobile-menu-1",
+     "block": "sgs/container",
+     "setting": "maxWidth",
+     "property": "max-width",
+     "via": "declared",
+     "where": "sibling",
+     "reachabilityVerified": false
     }
    ],
    "source": {
@@ -1260,7 +1278,6 @@
      "block": "sgs/nav-drawer",
      "setting": "chromeSlotPlacement",
      "values": [
-      "centre",
       "end"
      ]
     }
@@ -1356,13 +1373,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-2",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -1371,7 +1395,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -1447,13 +1472,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-4",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -1462,7 +1494,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -1644,13 +1677,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-11",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -1659,7 +1699,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -1769,13 +1810,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no transition-duration setting on sgs/button paints \"\" (candidates: transitionDuration)"
+     "wouldWrite": [
+      "transitionDuration"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-15",
+      "block": "sgs/button",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -1784,7 +1832,8 @@
      "css_property": "transition-duration",
      "css_element": null,
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     }
    ]
   },
@@ -2324,7 +2373,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2393,7 +2443,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2574,7 +2625,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -2643,7 +2695,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3182,7 +3235,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3251,7 +3305,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3352,7 +3407,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3475,7 +3531,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -3582,7 +3639,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -3692,7 +3750,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3761,7 +3820,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -3846,7 +3906,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -3959,7 +4020,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -4072,7 +4134,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "discovered",
@@ -4171,7 +4234,8 @@
      "css_property": "box-shadow-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4337,13 +4401,20 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
+   "class": "T",
+   "decidedBy": "resolver-writes",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "uncalibrated",
-     "detail": "sgs/container borderColourHover (hover) not calibrated"
+     "wouldWrite": [
+      "borderColourHover"
+     ],
+     "on": {
+      "ref": "cr-ref-mobile-menu-10",
+      "block": "sgs/container",
+      "path": ""
+     },
+     "holds": false
     },
     {
      "check": "attribute",
@@ -4362,7 +4433,8 @@
      "css_property": "border-color",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -4371,7 +4443,8 @@
      "css_property": "border-color-gradient",
      "css_element": "wrapper",
      "css_state": null,
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": false
     },
     {
      "check": "attribute",
@@ -4380,7 +4453,8 @@
      "css_property": "border-color",
      "css_element": null,
      "css_state": "hover",
-     "source": "sgs"
+     "source": "sgs",
+     "reaches": true
     },
     {
      "check": "attribute",

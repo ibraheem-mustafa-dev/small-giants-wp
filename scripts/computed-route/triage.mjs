@@ -105,7 +105,10 @@ function supportsIndex() {
 	return out;
 }
 
-export function runTriage( { client, surface, report: reportArg = null, out = null } ) {
+// One surface's Solve report, its final walk and the surface ctx lib/triage.mjs::triage reads. measuredReach replaces
+// the client's canvas-confirm.json lookup (confirm-canvas.mjs's candidates mode passes a recorder). close() releases
+// the DB.
+export function surfaceContext( { client, surface, report: reportArg = null, measuredReach: reachOverride = null } ) {
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const manifest = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
 	const s = manifest[ surface ];
@@ -132,7 +135,7 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 	// (written by `confirm-canvas.mjs <triage dir> sites/<client>/build/qa/canvas-confirm.json <site url>`). With no
 	// file every citation falls to the source gate, as before.
 	const confirmFile = path.join( buildDir, 'qa', 'canvas-confirm.json' );
-	const measuredReach = measuredReachFrom( fs.existsSync( confirmFile ) ? JSON.parse( fs.readFileSync( confirmFile, 'utf8' ) ) : [] );
+	const measuredReach = reachOverride || measuredReachFrom( fs.existsSync( confirmFile ) ? JSON.parse( fs.readFileSync( confirmFile, 'utf8' ) ) : [] );
 	const ctx = {
 		db,
 		snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ),
@@ -162,8 +165,13 @@ export function runTriage( { client, surface, report: reportArg = null, out = nu
 			return fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ) : null;
 		},
 	};
+	return { buildDir, reportFile, walkFile, report, walkReport, ctx, close: () => db.close() };
+}
+
+export function runTriage( { client, surface, report: reportArg = null, out = null } ) {
+	const { buildDir, reportFile, walkFile, report, walkReport, ctx, close } = surfaceContext( { client, surface, report: reportArg } );
 	const result = triage( report, walkReport, surface, ctx );
-	db.close();
+	close();
 	const rel = ( f ) => path.relative( REPO, f ).split( path.sep ).join( '/' );
 	const file = path.resolve( out || path.join( buildDir, 'qa', 'triage', `${ surface }.json` ) );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
