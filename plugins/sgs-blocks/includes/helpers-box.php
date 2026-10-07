@@ -188,6 +188,59 @@ if ( ! function_exists( 'sgs_box_object_shorthand' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_box_object_longhand_list' ) ) {
+	/**
+	 * Build one longhand declaration per SET side of a padding or margin box
+	 * object ("padding-top:12px"), in top, right, bottom, left order. An unset
+	 * side emits nothing, so it keeps what a wider @media tier or the block's own
+	 * stylesheet gives it; a shorthand would force it to 0 instead.
+	 *
+	 * Padding and margin only. A border width keeps sgs_box_object_shorthand():
+	 * there an unset side SHOULD be 0, because border-style is written for all
+	 * four sides and a width longhand would leave the others at the browser's
+	 * `medium`, painting borders the client never set.
+	 *
+	 * The side order is written out here rather than read from
+	 * sgs_responsive_side_order(), so this file still loads on its own (the
+	 * standalone tests require helpers-box.php without helpers-responsive.php).
+	 *
+	 * @param mixed  $box    Box object with optional top/right/bottom/left keys; anything
+	 *                       else yields no declarations.
+	 * @param string $family 'padding' or 'margin'.
+	 * @return string[] Declarations without a trailing semicolon; empty when no side is set.
+	 */
+	function sgs_box_object_longhand_list( $box, string $family ): array {
+		if ( ! is_array( $box ) || ! in_array( $family, array( 'padding', 'margin' ), true ) ) {
+			return array();
+		}
+		$decls = array();
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			$value = sgs_css_length_value( $box[ $side ] ?? '' );
+			if ( '' !== $value ) {
+				$decls[] = $family . '-' . $side . ':' . $value;
+			}
+		}
+		return $decls;
+	}
+}
+
+if ( ! function_exists( 'sgs_box_object_longhands' ) ) {
+	/**
+	 * The set sides of a padding or margin box as one declaration block
+	 * ("padding-top:12px;padding-left:24px"), or null when no side is set, so a
+	 * caller guarding with `null !==` skips the rule exactly as it does for
+	 * sgs_box_object_shorthand().
+	 *
+	 * @param mixed  $box    Box object with optional top/right/bottom/left keys.
+	 * @param string $family 'padding' or 'margin'.
+	 * @return string|null Declarations joined with ';', or null when the box is empty.
+	 */
+	function sgs_box_object_longhands( $box, string $family ): ?string {
+		$decls = sgs_box_object_longhand_list( $box, $family );
+		return $decls ? implode( ';', $decls ) : null;
+	}
+}
+
 if ( ! function_exists( 'sgs_corner_object_shorthand' ) ) {
 	/**
 	 * Build a 4-CORNER CSS shorthand ("top-left top-right bottom-right bottom-left")
