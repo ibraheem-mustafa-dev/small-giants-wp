@@ -26,8 +26,15 @@ const [ PX_TOL, FONT_TOL ] = [ 2, 0.5 ]; // px: boxes and insets; font sizes and
 // In-page: finds each item and reads its painted values.
 export function readPage( list ) {
 	const N = ( t ) => String( t ).toLowerCase().replace( /[^\p{L}\p{N}]+/gu, ' ' ).trim();
-	// Page chrome only: a <header> or <nav> inside <main> is part of the content (a card's or section's heading).
+	// Page chrome. On a page with a <main>, everything outside it is chrome: the header and footer, and the trust bar, drawers,
+	// modals and floating buttons a site places beside them (a trust-bar badge repeating a page heading's words came first in
+	// document order and was measured as that heading, 2026-10-07). Without a <main>, a <header>, <nav> or <footer> is chrome
+	// unless it sits inside <main> (a card's or section's heading).
+	const main = document.querySelector( 'main' );
 	const skip = ( el ) => {
+		if ( main && ! main.contains( el ) ) {
+			return true;
+		}
 		const c = el.closest( 'header, nav, footer, [role="navigation"], [role="banner"], [role="contentinfo"], script, style, noscript, template' );
 		return !! c && ( /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test( c.tagName ) || ! c.closest( 'main' ) );
 	};

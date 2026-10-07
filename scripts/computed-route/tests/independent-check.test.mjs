@@ -65,3 +65,22 @@ test( 'MUST FAIL (PA-4): text that exists only in a screen-reader-only box is no
 		await browser.close();
 	}
 } );
+
+test( 'MUST FAIL (Lenses eyebrow, 2026-10-07): text repeated in a trust bar outside main resolves to the page block in main', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 375, height: 700 } } );
+		// The trust bar sits beside the header in the site's block wrapper, before <main> in document order.
+		await page.setContent( `<div class="wp-site-blocks"><div class="trust-bar" style="display:flex;gap:8px;font-size:14px;white-space:nowrap">
+				<span>100% genuine</span><span id="badge" style="margin-left:150px">Prescription lenses</span></div>
+			<header><nav>Menu</nav></header>
+			<main><p id="eyebrow" style="font-size:12.5px;margin:0">Prescription lenses</p></main></div>` );
+		const rows = await page.evaluate( readPage, [ { ref: 'eyebrow', block: 'sgs/text', own: 'prescription lenses', texts: [], field: null } ] );
+		assert.equal( rows[ 0 ].found, true );
+		assert.equal( rows[ 0 ].font.size, 12.5, 'the match is the eyebrow in main, not the trust bar badge' );
+	} finally {
+		await browser.close();
+	}
+} );
