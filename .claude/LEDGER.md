@@ -84,14 +84,15 @@ panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, not
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — every gate gap the triage could fix in-session is closed, and every element it found with no control has one.**
-  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 5** (self-test 60/60; main `223bec72a`; eye-care-test runs it all,
-  deployed `73cdb64ca`). The gate reads InnerBlocks template children (gap 9), bounds the writer set to reachable
-  helpers (gap 10b) and closes three council-found false exemptions; every element on product-card, buybox, post-grid,
-  card-grid, media, account and nav-drawer-menu that the gate found uncontrolled gained a control, defaults unchanged, live-verified D/S/C
-  (`reports/2026-10-07-f3-e14-live-verification.md` round 3). **Open:** live coverage owed on sites with the data
-  (card-grid collection, buybox RRP/guided, bound product-card, account, drawer); account `*TextAlign` attributes
-  with no control; gate gaps 2-8, 10(a,c,d), 11, 12. Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+- **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gap 12 is built.**
+  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 5** (self-test 74/74; main `e70dbb45f`; sandybrown runs it all,
+  deployed through `562282619`; eye-care-test deployed `73cdb64ca`). The gate reads InnerBlocks template children (gap 9),
+  bounds the writer set to reachable helpers (gap 10b) and binds PHP function parameters to their callers' literals
+  per scope (gap 12). Every `sgs/account` `*TextAlign` attribute has a control (the menu one moves the label only in the
+  sidebar layout). Round 4 of `reports/2026-10-07-f3-e14-live-verification.md` read 351 rows on sandybrown and found and fixed
+  two defects (card-grid `pageButton` never reached a cpt-collection grid; the account active-link bold out-ranked the
+  menu weight control). **Open:** gate gap 13 (markup assembled in a variable, which keeps the `nav-drawer-menu` ornament
+  row CANNOT-RESOLVE), gaps 2-8, 10(a,c,d), 11 (moves no count today). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
