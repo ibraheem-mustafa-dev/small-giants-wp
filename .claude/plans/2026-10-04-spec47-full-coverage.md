@@ -105,8 +105,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     `sgsChildSizing:{desktop:fill}` emits the `sgs-child-sizing` scope classes), the editor registration
     (`extensions/child-sizing.js` adds the attributes to every block opting in), the comparison
     (`lib/calibrate.mjs::discoverEffects` found flex-grow and flex-basis on container, text and seven others) and a panel
-    rule overriding the flex (none). Cause still unproven; the direct test is `calibrate.mjs --site local-eye-care --blocks
-    sgs/mega-group --recalibrate` (cache measured 2026-10-05; blocked on 2026-10-07 by R-47-11).
+    rule overriding the flex (none). Recalibrated on local-eye-care 2026-10-07: **worse** (0 settings, the three
+    hide-on settings dead, child-sizing "effects" on `.sgs-nav-bar-menu__bar > …__item:nth-of-type(4) > …__link`): the
+    measured root held a nav-bar-menu, where the 2026-10-05 run's root held the group's own children
+    (`.sgs-container`). `lib/calibrate.mjs::buildTree` puts the instance class on the mega-group and wraps it in the
+    fixture's `parents` (sgs/mega-panel), so the root should be the group: why `.cr-ref-cal-<n>` resolved to an element
+    holding a nav-bar-menu is unproven (the mega panel rendering its groups elsewhere, or a stray instance class on the
+    mirror's header, are the suspects; read the calibration page's DOM in a browser before the page is emptied). The
+    2026-10-05 cache was restored (the bad one would steer Solve into nav-bar-menu writes); the bad file is kept in the
+    session scratchpad only.
 
 - [x] Pairing built: `scripts/computed-route/pairs.mjs` (command), `lib/pairs.mjs` (decisions: `PAIRING_LIMITS`,
   `judgePairing`, `paddedPartner`, `twinPlan`, `choosePartner`, `chooseControlPartner`, `chooseGroupPartner`,
