@@ -17,10 +17,9 @@ defined( 'ABSPATH' ) || exit;
 if ( ! function_exists( 'sgs_buybox_picker_term_label_map' ) ) {
 	/**
 	 * Build a { taxonomy: { slug: label } } map from the product manifest's
-	 * axes, for the client-side "show the chosen value" text (picker-label-
-	 * view.js reads sgs/product-card's `sgs-variation-change` event, which
-	 * carries only slugs — this map turns a slug back into its display
-	 * label without a second server round-trip).
+	 * axes, for the server-rendered "show the chosen value" text. The shared
+	 * @sgs/bound-sync module updates that text on a size change from the same
+	 * labels (includes/class-product-field-variations.php).
 	 *
 	 * @param array $axes The manifest's 'axes' entry (each {taxonomy, terms: [{slug, label}, ...]}).
 	 * @return array<string, array<string, string>> Taxonomy => slug => label.

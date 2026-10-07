@@ -11,6 +11,12 @@
  *   sku                       the product's SKU
  *   attribute.<taxonomy>      the product's terms for that attribute (e.g. attribute.pa_material)
  *   meta.<meta_key>           a scalar product meta value (e.g. meta._sgs_frame_eye)
+ *   dimensions.<length|width|height>  WooCommerce's shipping dimension (unit: the
+ *                             store's dimension unit setting)
+ *   weight                    WooCommerce's weight (unit: the store's weight unit)
+ *
+ * On a variable product these follow the variation the shopper picks
+ * (includes/class-product-field-variations.php).
  *
  * Meta is limited to public keys and keys starting `_sgs_` (filter
  * `sgs_product_field_meta_allowed`), so WooCommerce's internal meta never
@@ -83,6 +89,19 @@ if ( ! function_exists( 'sgs_product_field_value' ) ) {
 				}
 				$value = get_post_meta( $product->get_id(), $name, true );
 				return is_scalar( $value ) ? (string) $value : '';
+
+			// WooCommerce's own shipping dimensions, through its getters, so a
+			// variation without its own value inherits the parent's.
+			case 'dimensions':
+				$getters = array(
+					'length' => 'get_length',
+					'width'  => 'get_width',
+					'height' => 'get_height',
+				);
+				return isset( $getters[ $name ] ) ? (string) $product->{$getters[ $name ]}() : '';
+
+			case 'weight':
+				return (string) $product->get_weight();
 		}
 		return '';
 	}
@@ -104,6 +123,10 @@ if ( ! function_exists( 'sgs_product_field_list' ) ) {
 			'sku'               => array( 'label' => __( 'SKU', 'sgs-blocks' ) ),
 			'short_description' => array( 'label' => __( 'Short description', 'sgs-blocks' ) ),
 			'stock_status'      => array( 'label' => __( 'Stock status', 'sgs-blocks' ) ),
+			'dimensions.length' => array( 'label' => __( 'Length', 'sgs-blocks' ) ),
+			'dimensions.width'  => array( 'label' => __( 'Width', 'sgs-blocks' ) ),
+			'dimensions.height' => array( 'label' => __( 'Height', 'sgs-blocks' ) ),
+			'weight'            => array( 'label' => __( 'Weight', 'sgs-blocks' ) ),
 		);
 		if ( function_exists( 'wc_get_attribute_taxonomies' ) ) {
 			foreach ( wc_get_attribute_taxonomies() as $tax ) {
@@ -117,8 +140,10 @@ if ( ! function_exists( 'sgs_product_field_list' ) ) {
 		global $wpdb;
 		$keys = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- editor-only, once per editor load.
 			$wpdb->prepare(
-				"SELECT DISTINCT pm.meta_key FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE p.post_type = %s ORDER BY pm.meta_key LIMIT 300",
-				'product'
+				// Variations too: a value stored per size only (a lens height) must still be offered.
+				"SELECT DISTINCT pm.meta_key FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE p.post_type IN ( %s, %s ) ORDER BY pm.meta_key LIMIT 300",
+				'product',
+				'product_variation'
 			)
 		);
 		foreach ( (array) $keys as $meta_key ) {

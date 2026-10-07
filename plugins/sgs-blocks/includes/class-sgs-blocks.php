@@ -160,6 +160,7 @@ final class SGS_Blocks {
 		// sgs/product-card Bound mode with WooCommerce or sgs_product CPT data.
 		require_once SGS_BLOCKS_PATH . 'includes/class-product-bindings.php';
 		Product_Bindings::register();
+		Product_Field_Variations::register();
 
 		// Cart proxy (POST /sgs/v1/cart/add-item) — validates (CSRF + IDOR +
 		// attribute-match + stock + qty-cap + rate-limit) then adds in-process

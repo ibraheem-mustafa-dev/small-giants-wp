@@ -196,6 +196,17 @@ if ( moduleConfig ) {
 				'smooth-scroll.js'
 			),
 			/*
+			 * Bound values follow the picked variation. Registered as
+			 * `@sgs/bound-sync` by includes/class-product-field-variations.php
+			 * and enqueued only on a page that binds a varying product field.
+			 */
+			'shared/bound-sync': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'bound-sync.js'
+			),
+			/*
 			 * Cursor field (FR-38-25) — Tier V, so it sits HERE beside
 			 * smooth-scroll rather than in the `gsap/fx-*` list below. Both
 			 * shipped field types paint in pure CSS and the only JS is one

@@ -989,7 +989,6 @@
 	"render": "file:./render.php",
 	"viewScriptModule": [
 		"file:./notify-view.js",
-		"file:./guided.js",
-		"file:./picker-label-view.js"
+		"file:./guided.js"
 	]
 }

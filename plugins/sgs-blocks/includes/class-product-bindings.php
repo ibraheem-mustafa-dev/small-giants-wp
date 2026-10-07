@@ -21,6 +21,7 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/product-field-values.php';
+require_once __DIR__ . '/class-product-field-variations.php';
 
 /**
  * Class Product_Bindings
@@ -82,26 +83,13 @@ final class Product_Bindings {
 	 *     sku, attribute.<taxonomy>, meta.<key>).
 	 *     Optional: source ('wc'|'cpt'|'auto'), product_id.
 	 * @param \WP_Block $block       Block instance providing context.
-	 * @param string    $attribute   The bound attribute name (unused; for signature compat).
+	 * @param string    $attribute   The bound attribute name; decides whether the value follows the size picker.
 	 * @return mixed Resolved value, or empty string on failure.
 	 */
-	public static function get_value( array $source_args, $block, $attribute ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		// Dot notation (attribute.pa_material, meta._sgs_frame_eye): keep the dot.
-		$key        = isset( $source_args['key'] ) ? \preg_replace( '/[^a-z0-9_.\-]/', '', \strtolower( (string) $source_args['key'] ) ) : '';
+	public static function get_value( array $source_args, $block, $attribute ) {
+		$key        = self::sanitise_key( $source_args );
 		$source     = isset( $source_args['source'] ) ? \sanitize_key( $source_args['source'] ) : 'auto';
-		$product_id = isset( $source_args['product_id'] )
-			? \absint( $source_args['product_id'] )
-			: 0;
-
-		// Fall back to the block's context postId if no explicit product_id.
-		if ( 0 === $product_id && ! empty( $block->context['postId'] ) ) {
-			$product_id = \absint( $block->context['postId'] );
-		}
-
-		// A block placed straight in the single-product template has no loop context: use the page's product.
-		if ( 0 === $product_id && \is_singular( 'product' ) ) {
-			$product_id = \absint( \get_queried_object_id() );
-		}
+		$product_id = self::resolve_product_id( $source_args, $block );
 
 		if ( 0 === $product_id || '' === $key ) {
 			return '';
@@ -112,9 +100,17 @@ final class Product_Bindings {
 			|| ( 'auto' === $source && \function_exists( 'wc_get_product' ) );
 
 		if ( $use_wc ) {
-			$value = self::resolve_wc_field( $product_id, $key );
+			// A variable product paints the selected variation's value; every
+			// other key and product resolves the parent as before.
+			$selected = Product_Field_Variations::selected_value( $product_id, $key );
+			$value    = null !== $selected ? \esc_html( $selected ) : self::resolve_wc_field( $product_id, $key );
 			if ( '' === $value ) {
 				return '';
+			}
+			// A text value follows the size picker: only the value is wrapped, never the block's own markup.
+			if ( Product_Field_Variations::follows( $block, (string) $attribute ) && Product_Field_Variations::varies( $key ) ) {
+				Product_Field_Variations::request( $product_id, $key );
+				$value = Product_Field_Variations::wrap( $value, $product_id, $key );
 			}
 			// Optional text around the value ("More from " + brand, "58" + " mm"). An empty value stays empty.
 			$before = isset( $source_args['before'] ) ? \esc_html( (string) $source_args['before'] ) : '';
@@ -123,6 +119,40 @@ final class Product_Bindings {
 		}
 
 		return self::resolve_cpt_field( $product_id, $key );
+	}
+
+	/**
+	 * The binding's field key. Dot notation (attribute.pa_material,
+	 * meta._sgs_frame_eye) keeps the dot.
+	 *
+	 * @param array $source_args Binding arguments.
+	 * @return string
+	 */
+	public static function sanitise_key( array $source_args ): string {
+		return isset( $source_args['key'] ) ? (string) \preg_replace( '/[^a-z0-9_.\-]/', '', \strtolower( (string) $source_args['key'] ) ) : '';
+	}
+
+	/**
+	 * The product a binding reads: `args.product_id`, else the block's
+	 * `postId` context, else the single product page's own product.
+	 *
+	 * @param array $source_args Binding arguments.
+	 * @param mixed $block       Block instance (\WP_Block) or null.
+	 * @return int Product ID, or 0.
+	 */
+	public static function resolve_product_id( array $source_args, $block ): int {
+		$product_id = isset( $source_args['product_id'] ) ? \absint( $source_args['product_id'] ) : 0;
+
+		if ( 0 === $product_id && $block instanceof \WP_Block && ! empty( $block->context['postId'] ) ) {
+			$product_id = \absint( $block->context['postId'] );
+		}
+
+		// A block placed straight in the single-product template has no loop context: use the page's product.
+		if ( 0 === $product_id && \is_singular( 'product' ) ) {
+			$product_id = \absint( \get_queried_object_id() );
+		}
+
+		return $product_id;
 	}
 
 	// ── WooCommerce branch ────────────────────────────────────────────────────

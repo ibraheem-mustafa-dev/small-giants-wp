@@ -1417,5 +1417,14 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 156
+  },
+  {
+    "id": "diagram-geometry-twin",
+    "cmd": "node --no-warnings tests/js/diagram-geometry.test.js && php tests/php/diagram-geometry.php",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 800,
+    "order": 157
   }
 ]

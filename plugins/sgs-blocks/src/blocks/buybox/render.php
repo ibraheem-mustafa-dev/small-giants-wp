@@ -671,17 +671,8 @@ if ( in_array( $buybox_photo_entrance, array( 'fade', 'rise' ), true ) ) {
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;
-// every declaration lives in the scoped <style> below). When
-// pickerShowSelectedValue is on, the product id + slug->label map ride as
-// data attributes so picker-label-view.js can match this instance against
-// sgs/product-card's window-level `sgs-variation-change` event (which
-// carries a productId + slugs, never labels) without a second REST call.
-$buybox_wrapper_extra_attrs = array( 'class' => $buybox_wrapper_classes );
-if ( $buybox_picker_show_selected_value && ! empty( $buybox_picker_term_label_map ) ) {
-	$buybox_wrapper_extra_attrs['data-sgs-bb-product']     = (string) $buybox_post_id;
-	$buybox_wrapper_extra_attrs['data-sgs-bb-term-labels'] = wp_json_encode( $buybox_picker_term_label_map );
-}
-$wrapper_attrs = get_block_wrapper_attributes( $buybox_wrapper_extra_attrs );
+// every declaration lives in the scoped <style> below).
+$wrapper_attrs = get_block_wrapper_attributes( array( 'class' => $buybox_wrapper_classes ) );
 
 ob_start();
 ?>
@@ -1217,10 +1208,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 				} else {
 					$buybox_axis_default_slug  = (string) ( $manifest['defaultAxes'][ $buybox_axis_taxonomy ] ?? '' );
 					$buybox_axis_default_label = $buybox_picker_term_label_map[ $buybox_axis_taxonomy ][ $buybox_axis_default_slug ] ?? '';
+					// The chosen value is a bound span, so the shared @sgs/bound-sync
+					// module swaps it when the shopper picks another pill.
+					\SGS\Blocks\Product_Field_Variations::request( (int) $buybox_post_id, 'attribute.' . $buybox_axis_taxonomy );
 					printf(
-						'<div class="sgs-buybox__picker-label-row"><span class="sgs-buybox__picker-label-text">%s</span><span class="sgs-buybox__picker-selected-value" data-sgs-bb-axis="%s">%s</span></div>',
+						'<div class="sgs-buybox__picker-label-row"><span class="sgs-buybox__picker-label-text">%s</span><span class="sgs-buybox__picker-selected-value sgs-bound"%s>%s</span></div>',
 						esc_html( $axis['label'] ),
-						esc_attr( $buybox_axis_taxonomy ),
+						\SGS\Blocks\Product_Field_Variations::marker_attrs( (int) $buybox_post_id, 'attribute.' . $buybox_axis_taxonomy ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside marker_attrs().
 						esc_html( $buybox_axis_default_label )
 					);
 				}

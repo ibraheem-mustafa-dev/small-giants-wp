@@ -904,7 +904,14 @@ $label_html = '<span class="sgs-button__label">' . wp_kses(
 		'b'      => array(),
 		'em'     => array(),
 		'i'      => array(),
-		'span'   => array( 'class' => true ),
+		// The data-sgs-bound-* markers let a bound product value follow the
+		// size picker (includes/class-product-field-variations.php).
+		'span'   => array(
+			'class'                 => true,
+			'data-sgs-bound-source' => true,
+			'data-sgs-bound-scope'  => true,
+			'data-sgs-bound-key'    => true,
+		),
 		'code'   => array(),
 	)
 ) . '</span>' . sgs_button_note_html( $attributes ); // The optional note ("from +£59") follows the label.

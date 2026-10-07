@@ -1,0 +1,181 @@
+[
+	{
+		"name": "eye-care lens width (front 680x300)",
+		"width": 680,
+		"height": 300,
+		"dim": {
+			"startX": 17.647058823529413,
+			"startY": 79.33333333333333,
+			"endX": 42.64705882352941,
+			"endY": 79.33333333333333,
+			"extReach": 5,
+			"extOvershoot": 0.8823529411764706,
+			"tickLength": 1.7647058823529411,
+			"endStyle": "tick"
+		},
+		"expected": {
+			"line": "M120 238L290 238",
+			"guides": "M120 204L120 244M290 204L290 244",
+			"ends": "M120 232L120 244M290 232L290 244",
+			"dots": []
+		}
+	},
+	{
+		"name": "eye-care bridge, reach below",
+		"width": 680,
+		"height": 300,
+		"dim": {
+			"startX": 42.64705882352941,
+			"startY": 19.333333333333332,
+			"endX": 51.470588235294116,
+			"endY": 19.333333333333332,
+			"extReach": -5.588235294117648,
+			"extOvershoot": 0.8823529411764706,
+			"tickLength": 1.7647058823529411
+		},
+		"expected": {
+			"line": "M290 58L350 58",
+			"guides": "M290 96L290 52M350 96L350 52",
+			"ends": "M290 52L290 64M350 52L350 64",
+			"dots": []
+		}
+	},
+	{
+		"name": "eye-care lens height, vertical",
+		"width": 680,
+		"height": 300,
+		"dim": {
+			"startX": 83.82352941176471,
+			"startY": 26.666666666666668,
+			"endX": 83.82352941176471,
+			"endY": 66.66666666666667,
+			"extReach": -6.764705882352941,
+			"extOvershoot": 0.8823529411764706,
+			"tickLength": 1.7647058823529411
+		},
+		"expected": {
+			"line": "M570 80L570 200",
+			"guides": "M524 80L576 80M524 200L576 200",
+			"ends": "M576 80L564 80M576 200L564 200",
+			"dots": []
+		}
+	},
+	{
+		"name": "eye-care temple, uneven reach (side 680x230)",
+		"width": 680,
+		"height": 230,
+		"dim": {
+			"startX": 13.529411764705882,
+			"startY": 82.60869565217392,
+			"endX": 81.76470588235294,
+			"endY": 82.60869565217392,
+			"extReach": 17.647058823529413,
+			"extReachEnd": 7.647058823529412,
+			"extOvershoot": 0.8823529411764706,
+			"tickLength": 1.7647058823529411
+		},
+		"expected": {
+			"line": "M92 190L556 190",
+			"guides": "M92 70L92 196M556 138L556 196",
+			"ends": "M92 184L92 196M556 184L556 196",
+			"dots": []
+		}
+	},
+	{
+		"name": "diagonal with arrows",
+		"width": 400,
+		"height": 400,
+		"dim": {
+			"startX": 10,
+			"startY": 10,
+			"endX": 90,
+			"endY": 90,
+			"endStyle": "arrow",
+			"tickLength": 3
+		},
+		"expected": {
+			"line": "M40 40L360 360",
+			"guides": "",
+			"ends": "M43.11 51.59L40 40L51.59 43.11M348.41 356.89L360 360L356.89 348.41",
+			"dots": []
+		}
+	},
+	{
+		"name": "leader with dot, no guides",
+		"width": 500,
+		"height": 250,
+		"dim": {
+			"kind": "leader",
+			"startX": 20,
+			"startY": 30,
+			"endX": 60,
+			"endY": 10,
+			"endStyle": "dot",
+			"extReach": 5
+		},
+		"expected": {
+			"line": "M100 75L300 25",
+			"guides": "",
+			"ends": "",
+			"dots": [
+				{
+					"cx": "100",
+					"cy": "75"
+				}
+			]
+		}
+	},
+	{
+		"name": "junk input clamps and falls back",
+		"width": 100,
+		"height": 100,
+		"dim": {
+			"startX": "abc",
+			"startY": -20,
+			"endX": 150,
+			"endY": null,
+			"endStyle": "bogus",
+			"tickLength": ""
+		},
+		"expected": {
+			"line": "M0 0L100 0",
+			"guides": "",
+			"ends": "M0 -0.88L0 0.88M100 -0.88L100 0.88",
+			"dots": []
+		}
+	},
+	{
+		"name": "zero-length line draws nothing",
+		"width": 100,
+		"height": 100,
+		"dim": {
+			"startX": 50,
+			"startY": 50,
+			"endX": 50,
+			"endY": 50
+		},
+		"expected": {
+			"line": "",
+			"guides": "",
+			"ends": "",
+			"dots": []
+		}
+	},
+	{
+		"name": "no drawing size draws nothing",
+		"width": 0,
+		"height": 0,
+		"dim": {
+			"startX": 0,
+			"startY": 0,
+			"endX": 100,
+			"endY": 100
+		},
+		"expected": {
+			"line": "",
+			"guides": "",
+			"ends": "",
+			"dots": []
+		}
+	}
+]
