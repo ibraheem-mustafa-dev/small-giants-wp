@@ -258,6 +258,10 @@ if ( ! empty( $cg_typography_args ) ) {
 		$card_grid_native_css .= $cg_typography_scoped['css'];
 	}
 }
+// Pagination page buttons (built by Grid_Pagination, shared with sgs/post-grid). Only the
+// cpt-collection branch paginates and it returns before the typography built further down, so
+// the rule rides with the early native CSS that every branch echoes.
+$card_grid_native_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-card-grid__page-btn' );
 if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
 	// The overlay caption is a flex column: align its items with the title, so
@@ -903,8 +907,6 @@ if ( '' !== $sgs_grid_title_mb ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title:not(:last-child){margin-bottom:' . $sgs_grid_title_mb . ';}';
 }
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
-// Pagination page buttons (built by Grid_Pagination, shared with sgs/post-grid).
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'pageButton', '.' . $sgs_grid_uid . ' .sgs-card-grid__page-btn' );
 // Fallback-tile initial letter and the card badge: own typography surfaces; the
 // style.css defaults sit in :where() so these scoped rules win.
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'glyphInitial', '.' . $sgs_grid_uid . ' .sgs-card-grid__glyph-initial' );

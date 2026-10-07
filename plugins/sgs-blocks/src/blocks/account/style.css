@@ -91,8 +91,13 @@
 /* Active item — sidebar (desktop tier only): a surface-alt ground, an accent
    BAR (a ground, never a bare dot) and bold text, never colour alone. */
 @container sgs-account (min-width: 1024px) {
-	.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
+	/* The bold default is kept at (0,2,1): above a theme's bare `a` rule, below the
+	   Menu weight control's (0,3,1), so a client's weight wins. */
+	:where(.sgs-account--desktop-sidebar) .woocommerce-MyAccount-navigation-link.is-active > a {
 		font-weight: 700;
+	}
+
+	.sgs-account--desktop-sidebar nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
 		color: var(--wp--preset--color--text);
 		background: var(--wp--preset--color--surface-alt, transparent);
 	}
@@ -134,9 +139,11 @@
 		background: var(--wp--preset--color--surface-alt, #f0f0f0);
 		white-space: nowrap;
 	}
+	:where(.sgs-account--tablet-tabs, .sgs-account--mobile-tabs) .woocommerce-MyAccount-navigation-link.is-active > a {
+		font-weight: 700;
+	}
 	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a,
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a {
-		font-weight: 700;
 		/* Inverted palette ink: text on surface is the one pair every client
 		   palette guarantees for contrast (a brand accent fill with inverse
 		   text can fail, e.g. a yellow accent). The Active item colours
