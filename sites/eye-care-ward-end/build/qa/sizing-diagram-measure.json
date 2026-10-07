@@ -1,0 +1,53 @@
+{
+	"source": "computed-route/lib/fill-diagram.mjs::diagramGeometry on the hosted draft, product Sizing tab (Oversized Cat-Eye), read at 1440/768/375 on 2026-10-07; identical at every width",
+	"dimensions": {
+		"eye": {
+			"startX": 17.647,
+			"startY": 79.333,
+			"endX": 42.647,
+			"endY": 79.333,
+			"extReach": 5,
+			"extReachEnd": null,
+			"extOvershoot": 0.882,
+			"tickLength": 1.765,
+			"labelX": 30.099,
+			"labelY": 81.996
+		},
+		"bridge": {
+			"startX": 42.647,
+			"startY": 19.333,
+			"endX": 51.471,
+			"endY": 19.333,
+			"extReach": -5.588,
+			"extReachEnd": null,
+			"extOvershoot": 0.882,
+			"tickLength": 1.765,
+			"labelX": 47.099,
+			"labelY": 1
+		},
+		"height": {
+			"startX": 83.824,
+			"startY": 26.667,
+			"endX": 83.824,
+			"endY": 66.667,
+			"extReach": -6.765,
+			"extReachEnd": null,
+			"extOvershoot": 0.882,
+			"tickLength": 1.765,
+			"labelX": 86.5,
+			"labelY": 36.997
+		},
+		"temple": {
+			"startX": 13.529,
+			"startY": 82.609,
+			"endX": 81.765,
+			"endY": 82.609,
+			"extReach": 17.647,
+			"extReachEnd": 7.641,
+			"extOvershoot": 0.882,
+			"tickLength": 1.765,
+			"labelX": 47.6,
+			"labelY": 61.995
+		}
+	}
+}
