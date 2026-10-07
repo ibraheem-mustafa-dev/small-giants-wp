@@ -11,13 +11,18 @@ Checks:
   3. no-dangling-links  every .md link out of a session-start doc resolves.
   4. memory-size        the auto-memory MEMORY.md index stays under MEMORY_CAP_BYTES — past
                         Claude Code's load limit the bottom entries silently stop loading.
+  5. plans-folder       plans/ holds only live plans: none with a finished `status:`, none whose
+                        checkboxes are all ticked, and no plans/<name>.md reference that points at
+                        a missing file (LEDGER, specs and live plans).
 
 It never edits a file: detection only (a hook that rewrites a doc the agent just wrote
 fights the agent). Each failure names the file, the measured value and the fix.
 `--self-test` is two-sided: every check must reject a synthetic violation AND accept clean input.
 """
 import argparse
+import re
 import sys
+import tempfile
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -147,7 +152,91 @@ def check_memory_size(sizes: dict[str, int] | None = None) -> Result:
     )
 
 
-CHECKS = (check_ledger_size, check_no_tombstones, check_no_dangling_links, check_memory_size)
+FINISHED_STATUS_RE = re.compile(r"^[\s\"']*(complete|done|closed|superseded)", re.IGNORECASE)
+CHECKBOX_RE = re.compile(r"^[ \t]*[-*][ \t]+\[([ xX])\]", re.MULTILINE)
+_PLAN_PATH_RE = r"(?:\.claude/)?plans/(?:archive/)?"
+_WHOLE_PATH_RE = re.compile(r"^(?:\.{1,2}/)*" + _PLAN_PATH_RE + r"[^/]+\.md$")
+_BACKTICK_RE = re.compile(r"`([^`\n]*plans/[^`\n]*\.md[^`\n]*)`")
+_LINK_RE = re.compile(r"\]\(([^)\n]*plans/[^)\n]*\.md[^)\n]*)\)")
+_BARE_RE = re.compile(r"(?<![\w./-])(" + _PLAN_PATH_RE + r"[^\s`()\[\]<>*\"'#/]+\.md)")
+
+
+def _front_matter_status(text: str) -> str | None:
+    if not text.startswith("---"):
+        return None
+    end = text.find("\n---", 3)
+    if end == -1:
+        return None
+    m = re.search(r"^status:[ \t]*(.*)$", text[3:end], re.MULTILINE)
+    return m.group(1) if m else None
+
+
+def _plan_refs(text: str) -> set[str]:
+    """Every plans/<name>.md reference in `text`, as a path relative to .claude/ (spaces are
+    kept only inside backticks or a link target)."""
+    refs: set[str] = set()
+    for pattern in (_BACKTICK_RE, _LINK_RE):
+        for m in pattern.finditer(text):
+            cand = m.group(1).split("#")[0].strip()
+            if "<" in cand or "*" in cand:
+                continue
+            if _WHOLE_PATH_RE.match(cand):
+                refs.add(cand)
+            else:
+                refs.update(b.group(1) for b in _BARE_RE.finditer(cand))
+    refs.update(b.group(1) for b in _BARE_RE.finditer(text))
+    out = set()
+    for r in refs:
+        r = re.sub(r"^(?:\.{1,2}/)*(?:\.claude/)?", "", r)
+        out.add(r)
+    return out
+
+
+def check_plans_folder(claude_dir: Path | None = None) -> Result:
+    root = claude_dir if claude_dir is not None else _CLAUDE
+    plans = root / "plans"
+    problems: list[str] = []
+    plan_files = sorted(plans.glob("*.md")) if plans.is_dir() else []
+    for f in plan_files:
+        text = f.read_text(encoding="utf-8", errors="replace")
+        status = _front_matter_status(text)
+        if status is not None and FINISHED_STATUS_RE.match(status):
+            problems.append(f"plans/{f.name}: status '{status.strip()[:30]}' is finished (move to plans/archive/)")
+        boxes = CHECKBOX_RE.findall(text)
+        if boxes and " " not in boxes:
+            problems.append(f"plans/{f.name}: all {len(boxes)} checkbox(es) ticked (move to plans/archive/)")
+    sources = [root / "LEDGER.md"]
+    sources += sorted((root / "specs").glob("*.md")) if (root / "specs").is_dir() else []
+    sources += plan_files
+    for src in sources:
+        if not src.is_file():
+            continue
+        text = src.read_text(encoding="utf-8", errors="replace")
+        for ref in sorted(_plan_refs(text)):
+            if not (root / ref).exists():
+                problems.append(f"{src.relative_to(root).as_posix()} -> {ref} (missing)")
+    if not problems:
+        return Result("plans-folder", True, f"{len(plan_files)} live plan(s), none finished, no dangling plan reference")
+    return Result(
+        "plans-folder", False,
+        f"{len(problems)} problem(s): " + "; ".join(problems),
+        "Move finished plans to plans/archive/ (git mv) and repoint or remove every reference "
+        "to a plan file that no longer exists.",
+    )
+
+
+CHECKS = (check_ledger_size, check_no_tombstones, check_no_dangling_links, check_memory_size,
+          check_plans_folder)
+
+
+def _plans_case(files: dict[str, str]) -> Result:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        for rel, body in files.items():
+            target = root / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(body, encoding="utf-8")
+        return check_plans_folder(root)
 
 
 def self_test() -> int:
@@ -164,6 +253,17 @@ def self_test() -> int:
         ("memory-size",
          lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES + 1}),
          lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES - 1})),
+        ("plans-folder: finished status",
+         lambda: _plans_case({"plans/a.md": "---\nstatus: COMPLETE\n---\n- [ ] open\n"}),
+         lambda: _plans_case({"plans/a.md": "---\nstatus: phase 1 shipped\n---\n- [ ] open\n",
+                              "plans/b.md": "---\nstatus: BUILD IN PROGRESS\n---\n- [x] a\n- [ ] b\n"})),
+        ("plans-folder: all ticked",
+         lambda: _plans_case({"plans/a.md": "- [x] one\n* [X] two\n"}),
+         lambda: _plans_case({"plans/a.md": "no checkboxes here\n"})),
+        ("plans-folder: missing reference",
+         lambda: _plans_case({"LEDGER.md": "see `plans/missing-plan.md`\n"}),
+         lambda: _plans_case({"LEDGER.md": "see `.claude/plans/a.md`, [x](plans/archive/z.md#top) and plans/<name>.md\n",
+                              "plans/a.md": "- [ ] open\n", "plans/archive/z.md": "- [x] done\n"})),
     ]
     failures = 0
     for name, bad_fn, good_fn in cases:
