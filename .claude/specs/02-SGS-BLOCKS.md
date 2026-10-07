@@ -60,6 +60,8 @@ sgs-blocks/
 │   │   ├── notice-banner/        # Inline banner; `displayMode=bar` a full-width strip, `announcement` the fixed announcement bar
 │   │   ├── notice-message/       # One self-changing message with its own colour pair (parent: sgs/notice-banner)
 │   │   ├── local-time/           # Live clock for one IANA time zone (label, 12/24-hour, seconds)
+│   │   ├── measured-diagram/     # A drawing with labelled measurement lines (any binding source fills the values). See §26.
+│   │   ├── diagram-dimension/    # One measurement: line geometry, caption, bindable value, label position (parent: sgs/measured-diagram)
 │   │   ├── language-switch/      # Hand-set language links: inline, single link or disclosure; PHP intl names and hreflang
 │   │   ├── store-selector/       # Disclosure of store/country links with optional flags; current store by URL
 │   │   ├── theme-toggle/         # Dark-mode switch or light/dark/system radio group; renders only when the site has a dark palette
@@ -1037,6 +1039,25 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 9. Insert the block anywhere with `dataSource: synced`.
 
 **Visual proof:** Live on sandybrown at `/trustpilot-smoke-test-2/`. Mama's 4 reviews (TrustScore 4.0 "Great") render via the synced path. Visual diff reports: `reports/visual-diff/trustpilot-reviews-2026-05-11.md` (block) + `reports/visual-diff/trustpilot-sync-2026-05-11.md` (sync infrastructure).
+
+### 26. Measured Diagram (`sgs/measured-diagram` + `sgs/diagram-dimension`)
+
+**Purpose:** a drawing with labelled measurement lines: a product's dimensions, a floor plan's room sizes, a size chart, an engineering part. Plan: `.claude/plans/2026-10-07-measured-diagram-block.md`.
+
+**Shape:**
+- The parent holds the drawing. It uses the media-element atoms with prefix `drawing`, and its URL, ID and alt are bindable, so a template can carry a per-product drawing.
+- The parent also holds the line, guide and label styles (one `SgsColourPanel`, one `TypographyControls` with `value` and `caption` targets) and `labelMode` per tier (`onDrawing` | `numbered`). Numbered places a marker at each line's midpoint and lists the labels under the drawing.
+- Each `sgs/diagram-dimension` child has:
+  - a caption and a bindable `value`, so any binding source fills it (`sgs-product/field`, `sgs/site-info`, a registered post meta, or typed text);
+  - line geometry in % of the drawing (`startX`/`startY`/`endX`/`endY`, role `position`, no `css_property`);
+  - guide reach and overshoot, `kind` (`dimension` | `leader`) and `endStyle` (`tick` | `arrow` | `dot` | `none`);
+  - `labelX`/`labelY` tier objects routed to `left`/`top`.
+
+**Rendering:**
+- Lines come from one geometry function twinned in `src/utils/diagram-geometry.js` and `includes/helpers-diagram-geometry.php` (gate `diagram-geometry-twin`, fixtures proven against a real draft's SVG). The SVG carries geometry attributes only; every stroke, width and dash is in the stylesheets.
+- The labels are the accessible text (caption then value in reading order, `aria-live` for a size change).
+- A product value follows the size picker through `@sgs/bound-sync` (`includes/class-product-field-variations.php`).
+- Colours default through `--wp--custom--measured-diagram-presets--default--<role>` (Spec 32 FR-32-9 component roles).
 
 ---
 

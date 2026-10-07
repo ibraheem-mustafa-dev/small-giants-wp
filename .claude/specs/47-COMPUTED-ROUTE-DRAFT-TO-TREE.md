@@ -431,6 +431,10 @@ before it counts (GAP-CHECKLIST §11).
 12. **Motion timings:** transition and animation duration, delay and easing as ordinary rows, compared as their sets of
     distinct values and skipped where nothing runs.
 13. **Text-run rows:** a text run's rows are compared by the space between their line boxes (a `row-gap` row).
+14. **Diagram reads (built 2026-10-07, GAP-CHECKLIST §27):**
+    - A drawn line's `icon-stroke-width` and `icon-stroke-dasharray` are read from the same painted shape as `icon-stroke`.
+    - `left`/`top` are read on absolutely or fixed positioned elements only. They are declared values (`DECLARED_PROPS`) that Solve writes only as declared (`solve.mjs::USED_VALUES`).
+    - A rendered draft's dimension diagram is measured into `sgs/diagram-dimension` settings by `lib/fill-diagram.mjs::diagramGeometry`. Its line geometry has no `css_property`, so a Fill skeleton may carry it (R-47-10).
 Items 10 to 13 and the built parts of 1 and 3: GAP-CHECKLIST §19, proven in headless Chromium on local pages
 (`tests/walker-devtools.test.mjs`) and on About (measure-only on the local mirror, 2026-10-05: no false rows after the
 animation-timing rule; 1 real open issue).

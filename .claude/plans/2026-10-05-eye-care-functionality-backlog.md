@@ -190,12 +190,21 @@ Found 2026-10-07 while building N36S and judging the register (none built):
 
 ## D1 measured-diagram block (parallel session, 2026-10-07)
 
-Decision D1 (register): a general "measured diagram" block. The drawing is an uploaded image; labels are bound to
-product measurements (`meta._sgs_frame_eye`, `_sgs_frame_bridge`, `_sgs_frame_height`, `_sgs_frame_temple`), placed on
-the drawing, and follow the size picker (`sgs-variation-change`). Eye Care's Sizing tab takes the draft's front and side
-drawings above the measurement table (register N36S). Built in its own session, which owns this section, the new
-block's files and its insertion into `sites/eye-care-ward-end/build/single-product.tree.json`. The measurement data
-and the four-row table it sits above are live.
+Decision D1 (register): a general "measured diagram" block. Plan and current state:
+`plans/2026-10-07-measured-diagram-block.md`, which this section summarises.
+
+- **Built and on origin/main:**
+  - `sgs/measured-diagram` + `sgs/diagram-dimension` (28e8ef1db, gate fixes fa98de877 and 9422a8ad8), reseeded (4ae959e16);
+  - bound product values that follow the size picker (203213357, live on eye-care-test since f89b016f9: the table reads 62/14/54/140 after picking 62-14-140);
+  - the Wave 0 shape fixes (3042900e6);
+  - the walker and route reads for diagrams (28f968250, 345d8982c).
+- **Eye Care:**
+  - the drawings are uploaded (attachments 1293, 1294);
+  - the diagram card is in `single-product.tree.json` above the table, bound to `meta._sgs_frame_eye/bridge/height/temple`, from geometry measured off the draft (`build/insert_sizing_diagram.py`, ed5af2458);
+  - the colours are in the snapshot's `measuredDiagramPresets`.
+- **Still to do:**
+  - the canary deploy and live check (it waits on another session's reseed of ea574379a, which every HEAD build needs);
+  - then the eye-care-test deploy, snapshot push and page rebuild, checked at 375/768/1440 across sizes.
 
 ## Open items with no other home
 
@@ -336,7 +345,7 @@ own checkout template. Nothing here changes the checkout every other SGS client 
 
 | Ref | The feature |
 |---|---|
-| **D1** | **A general "measured diagram" block**: a drawing uploaded as media, labels bound to product measurements, a table and a note, following the size picker. Decided on 2026-10-03. The interim table and note go in first with existing blocks (**N36S**), so this block is not blocking anything — build it when the rest is calmer |
+| **D1** | **A general "measured diagram" block**: a drawing uploaded as media, labels bound to product measurements, following the size picker. Built 2026-10-07; live rollout in progress, see the "D1 measured-diagram block" section above |
 
 ---
 
