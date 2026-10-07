@@ -375,23 +375,31 @@
  * blub.db 304). WCAG 2.2 AA contrast verified against #ffffff card background.
  */
 
-/* Current / selected variation price — inherits .price serif weight */
-.product-card--live .price--current {
-	font-family: 'Fraunces', serif;
+/* Current / selected variation price. The typography defaults sit at (0,1,0)
+ * so the uid-scoped price controls (0,2,0) strictly win; the family is the
+ * theme's display token, as on every other price. */
+:where(.product-card--live) .price--current {
+	font-family: var(--wp--preset--font-family--display);
 	font-size: 28px;
 	font-weight: 700;
-	color: var(--wp--preset--color--text, #3a2e26);
 	line-height: 1;
+}
+
+.product-card--live .price--current {
+	color: var(--wp--preset--color--text, #3a2e26);
 }
 
 /*
  * Struck-through regular price (hidden when not on sale via context.hideSale).
  * Muted text; contrast against #ffffff = 4.55:1 ✓ WCAG AA.
  */
-.product-card--live .price--regular {
-	font-family: 'Fraunces', serif;
+:where(.product-card--live) .price--regular {
+	font-family: var(--wp--preset--font-family--display);
 	font-size: 20px;
 	font-weight: 400;
+}
+
+.product-card--live .price--regular {
 	color: var(--wp--preset--color--text-muted, #6b5c50);
 	text-decoration: line-through;
 	line-height: 1;
