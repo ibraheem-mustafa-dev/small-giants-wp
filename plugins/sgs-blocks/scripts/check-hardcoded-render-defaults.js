@@ -1572,40 +1572,24 @@ const VOID_TAGS = new Set( [ 'img', 'br', 'hr', 'input', 'meta', 'link', 'source
 // to be LOWERED as the findings are triaged and fixed, never raised to absorb
 // new debt. Legacy (non-E14) findings are unaffected and remain blocking.
 const E14_BLOCKS_BUILD = false;
-// LOWERED 2026-10-07, CLASS-2 56 -> 48 and CLASS-3 3 -> 2, measured not
-// predicted: `node scripts/check-hardcoded-render-defaults.js --check` reports
-// `CLASS-2 48/56, CLASS-3 2/3` after this session's work, and
-// `--survey --verbose` lists zero findings for the three blocks it touched
-// (positive control: sgs/form still lists 21, sgs/cta-section 8).
-//
-
-// The nine declarations that went: sgs/product-faq's question font-weight,
-// font-size and line-height; sgs/countdown-timer's number font-weight and
-// line-height, label text-transform and letter-spacing, and expired
-// font-weight (8 CLASS-2); and sgs/process-steps's step text-align, whose
-// centring leaked into the icon, number and description (1 CLASS-3). Each
-// element now owns a TypographyControls target on its block's one Typography
-// panel, and each literal sits inside :where() so the control outranks it
-// while the default still paints.
-//
-//
-// CANNOT-RESOLVE LOWERED 64 -> 61, measured not predicted: `node
-// scripts/check-hardcoded-render-defaults.js --check` reports
-// `CLASS-2 56/56, CLASS-3 3/3, CANNOT-RESOLVE 61/64` once readBlockPhpFiles()
-// follows a block's `require` / `require_once` ONE hop into shared PHP (markup
-// extracted into includes/ is part of the block's element model). The 61 is a
-// net of two moves: post-grid's 12 findings now resolve, because
-// includes/class-post-grid-rest.php carries its card markup, and 9 findings
-// appear that were previously invisible (account 6, nav-drawer-menu 3), because
-// the required includes/ files hold the typography control calls whose
-// selectors the gate cannot yet resolve. The hop is deliberately not
-// transitive: includes/render-helpers.php requires the whole helper tree and
-// almost every block requires it, so a transitive follower would put every
-// helper's markup into every block's model.
+// The ceilings are the counts `--check` MEASURES on a clean HEAD, lowered in the
+// same commit that removes findings. What remains (plugins/sgs-blocks/reports/
+// f3-e14-triage.md §6 holds the full accounting):
+// - CLASS-2 35: findings the triage rates DEFENSIBLE (UI chrome, documented
+//   intent, and the cta-section headline pair, held by the theme's global
+//   heading styles and owned by its own sgs/heading controls) or DEAD (no
+//   current markup emits the class).
+// - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
+// - CANNOT-RESOLVE 55: elements with no typography control at all (the
+//   CLASS 4 shape the gate cannot yet name), elements built from sprintf
+//   templates or class maps it cannot parse, and the CANNOT-TELL rows.
+// Shared PHP is read one hop from a block's require (readBlockPhpFiles): not
+// transitively, because includes/render-helpers.php requires the whole helper
+// tree and almost every block requires it.
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        48,
-	'CLASS-3':        2,
-	'CANNOT-RESOLVE': 61,
+	'CLASS-2':        35,
+	'CLASS-3':        1,
+	'CANNOT-RESOLVE': 55,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
