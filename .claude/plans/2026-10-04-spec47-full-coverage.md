@@ -73,7 +73,11 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     three together.
   - Product's 2 lost pairs.
 - **Carried from Session C (found open by the 2026-10-07 completion check; each needs a decision or a proof):**
-  - `sgs/product-card` throws a TypeError in the block editor ("Me is not a function" in `edit()`): never diagnosed.
+  - [x] `sgs/product-card`'s editor TypeError ("Me is not a function" in `edit()`): the same defect as "Re is not a
+    function" in `plugins/sgs-blocks/reports/2026-10-07-f3-e14-live-verification.md` (the letter is the minifier's name).
+    Cause proven there: `product-card/edit.js::Edit` destructured the attribute `attributeTagText`, shadowing the imported
+    function of that name; fixed in `cd004d31a`, an ancestor of the deployed `d358e1026`. Re-read 2026-10-07: the shop
+    archive template (one product-card) opens in the eye-care-test Site Editor with no product-card error.
   - 13 calibration rows with `css_state` NULL (`DB_STATE_MISSING_HOVER` and `STATE_FOCUS_UNROUTED`). This is a
     different set from the 31 held rows the routing deliberately leaves NULL.
   - 106 calibration rows judged dead and unexplained, plus the `oneWidth` probe list (multi-button 8,
