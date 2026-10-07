@@ -35,6 +35,7 @@ import {
 	typographyPreviewStyle,
 	usePreviewTier,
 	textIndentPreviewCss,
+	typographyPreviewCss,
 	boxPreview,
 } from '../../utils';
 
@@ -119,6 +120,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const previewTier = usePreviewTier();
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `#block-${ clientId }`, previewTier );
+	// The `question` family paints every sgs/product-faq-item <summary>, which the
+	// CHILD block's canvas renders, not this one. An inline style cannot reach
+	// another block's element, so the canvas gets a scoped rule instead - the same
+	// reason the text-indent preview above is a rule. Mirrors render.php's own
+	// `question` descendant selector.
+	const questionPreviewCss = typographyPreviewCss( attributes, 'question', `#block-${ clientId } .sgs-product-faq-item__question`, previewTier );
 	const [ palette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-faq',
@@ -331,6 +338,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<section { ...blockProps }>
 				{ indentPreviewCss && <style>{ indentPreviewCss }</style> }
+				{ questionPreviewCss && <style>{ questionPreviewCss }</style> }
 				<RichText
 					tagName={ HeadingTag }
 					className="sgs-product-faq__heading"

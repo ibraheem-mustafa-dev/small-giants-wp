@@ -149,6 +149,39 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 	return style;
 }
 
+/**
+ * typographyPreviewCss — the same declarations typographyPreviewStyle() returns,
+ * emitted as a CSS RULE for an editor <style> element instead of an inline
+ * `style` object.
+ *
+ * Needed when the element a block's control paints is NOT rendered by that
+ * block's own canvas: a parent that hosts editable InnerBlocks paints a
+ * descendant the CHILD renders (sgs/product-faq's `question` family paints
+ * every sgs/product-faq-item `<summary class="sgs-product-faq-item__question">`),
+ * and an inline style cannot reach another block's element any more than it can
+ * reach a sibling — the same reason textIndentPreviewCss() exists.
+ *
+ * The rule is scoped to the block's own editor wrapper, so it reaches that
+ * instance's descendants and nothing else on the canvas.
+ *
+ * @param {Object} attributes    Block attributes.
+ * @param {string} prefix        Attribute prefix, '' for the root family.
+ * @param {string} scopeSelector Editor selector the rule is scoped to, e.g.
+ *   `#block-${ clientId } .sgs-product-faq-item__question`.
+ * @param {string} [tier='desktop'] 'desktop' | 'tablet' | 'mobile'.
+ * @return {string} The CSS rule, or '' when nothing is set or unscoped.
+ */
+export function typographyPreviewCss( attributes, prefix, scopeSelector, tier = 'desktop' ) {
+	if ( ! scopeSelector ) {
+		return '';
+	}
+	const style = typographyPreviewStyle( attributes, prefix, tier );
+	const decls = Object.keys( style )
+		.map( ( key ) => `${ key.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ style[ key ] }` )
+		.join( ';' );
+	return decls ? `${ scopeSelector }{${ decls };}` : '';
+}
+
 // JS twin of sgs_css_length_value() for an editor <style> rule: a bare number
 // is px; a value carrying CSS-breakout characters or a url()/expression()/
 // @import is rejected (''), every other length passes through trimmed.

@@ -90,6 +90,20 @@
 						"text"
 					],
 					"prefix": "question",
+					"attrMap": {
+						"css:font-size": "questionFontSize",
+						"css:font-weight": "questionFontWeight",
+						"css:font-style": "questionFontStyle",
+						"css:font-family": "questionFontFamily",
+						"css:text-transform": "questionTextTransform",
+						"css:text-decoration": "questionTextDecoration",
+						"css:line-height": "questionLineHeight",
+						"css:letter-spacing": "questionLetterSpacing",
+						"css:text-align": "questionTextAlign",
+						"css:text-wrap": "questionTextWrap",
+						"css:column-count": "questionTextColumns",
+						"css:writing-mode": "questionWritingMode"
+					},
 					"_note": "Typography only (questionFontSize/questionFontWeight/questionFontStyle/questionLineHeight and the rest of the question family). Painted by render.php on every sgs/product-faq-item summary (.sgs-product-faq-item__question) inside this FAQ instance through a descendant selector on the parent uid class, so one control styles every question uniformly. The child block declares no typography attributes. Question colour follows the wrapper's text colour and the hover/open treatment in style.css."
 				}
 			}
