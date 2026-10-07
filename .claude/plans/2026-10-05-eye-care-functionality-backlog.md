@@ -126,9 +126,10 @@ files**.
   property read as `padding: var(--x)`, where a longhand cannot work at any price (the accordion-item
   pair, `nav-menu-submenu-css.php`, `multi-button`, `trust-bar`, `--sgs-gi-padding`).
 - **A JS consumer encodes the zero-fill deliberately**: `scripts/computed-route/lib/resolve.mjs::seedSides`,
-  with a test named **"MUST FAIL TO ZERO"** asserting the current behaviour. ⛔ **That directory is
-  another session's owned, frozen territory — so CR6 has a cross-session dependency and cannot be
-  built without coordinating with the Spec 47 route work.**
+  with a test named **"MUST FAIL TO ZERO"** asserting the current behaviour. ✅ **That cross-session dependency is DISCHARGED
+  (2026-10-07): the Spec 47 route cleanup is complete and CR6 is owned by that same route track, so the
+  `seedSides` deletion and the helper change can now land together in one session. The "MUST FAIL TO ZERO"
+  test goes with them.**
 - **Four sibling helpers share the identical defect** and would be left inconsistent:
   `sgs_corner_object_shorthand`, `helpers-container.php::sgs_serialise_box_corners`, and the two media
   atoms in `includes/media/atoms/` (one with a JS twin, `sidesToShorthand()`).
@@ -147,8 +148,12 @@ the 157 sites migrate deliberately rather than all at once.
 old function is byte-identical, and `scripts/computed-route/` has been coordinated with its owning
 session.
 
-**Re-tiering:** CR6 is no longer "build this first". Its cross-session dependency puts it behind the
-Spec 47 route work. Build N11(a), 75/82/158, 91 and 52 first.
+**Re-tiering:** CR6 sat behind the Spec 47 route work for its cross-session dependency. **That work is now
+COMPLETE (2026-10-07) and CR6 is owned by the route track, so the dependency no longer defers it** — it is
+buildable as soon as its `/strategic-plan` is written and the behavioural decision above is taken. The validated
+shape in this section is the design to follow; a later, shallower scoping that proposed swapping the existing
+helper's return type is superseded by it, because 157 sites interpolate after the property name and the `var()`
+consumers cannot take a longhand at all.
 
 ## Found by the QC pass, 2026-10-06 (not yet built)
 

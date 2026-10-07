@@ -1116,7 +1116,12 @@ an explicit pathspec.
 **Wave 3's deploy order is agreed with it and must not be rearranged:**
 
 
-#### ⚠️ Register CR6 is coupled to this lane's code, and cannot be fixed without it
+#### ✅ Register CR6 is coupled to this lane's code — and that coupling is now DISCHARGED (2026-10-07)
+
+The Spec 47 route cleanup is complete and CR6 is owned by the route track, so the helper change, the
+`seedSides` deletion and the `tests/resolve.test.mjs` "MUST FAIL TO ZERO" case now land together in one
+session. The validated design is in `plans/2026-10-05-eye-care-functionality-backlog.md` §"CR6". The coupling
+itself, verified below, is still exactly why they must land together.
 
 Found by the other track's `/qc-council` gate and **verified here against the files themselves**:
 `lib/resolve.mjs::seedSides` **deliberately models** the defect CR6 wants removed, and

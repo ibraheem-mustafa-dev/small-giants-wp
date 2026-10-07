@@ -104,23 +104,45 @@ forces the other three sides to **zero**, wiping the block's own defaults. The A
   prints 0, CR6". Fixing the PHP makes `seedSides` actively harmful, freezing sides the client never chose, so
   **the two must land in the same change**.
 
-**The agreed approach (Bean, 2026-10-07) — follow it rather than inventing one:**
-1. Add a per-side helper (e.g. `sgs_box_object_declarations()`) that emits longhands for **only the sides set**.
-   New function, so nothing breaks while converting.
-2. **Build the detector FIRST** per `.claude/THE-MIGRATION-METHOD.md` — it flags any surviving shorthand use for
-   padding/margin, so "all converted" is proven rather than asserted. Read that file before the fourth edit.
-3. **Script the 112 boilerplate sites.** Deterministic: one known four-line assignment plus one known three-line
-   consume idiom.
-4. **Batch the ~45 same-shape-different-name assignments to Haiku subagents** (`/delegate` picks the model),
-   grouped by block, each batch verified by the detector.
-5. Keep the **~10 bespoke sites and the `seedSides` deletion in the main thread.**
+⛔ **READ `.claude/plans/2026-10-05-eye-care-functionality-backlog.md` §"CR6" BEFORE PLANNING.** It holds a
+VALIDATED design from a deeper scoping, and it supersedes any "just change the helper's return type" approach —
+including one written earlier in this prompt's own history. Two findings there make a naive return-type swap
+actively harmful:
+- **157 call sites interpolate the value AFTER the property name** (`"padding:" . $v`). A longhand return emits
+  `padding:padding-top:12px` — invalid CSS the browser drops entirely.
+- **6 sites plus `includes/helpers-container.php::sgs_serialise_box_sides` store it in a CSS custom property**
+  read as `padding: var(--x)`, where **a longhand cannot work at any price** (the accordion-item pair,
+  `nav-menu-submenu-css.php`, `multi-button`, `trust-bar`, `--sgs-gi-padding`).
+- **`sgs_box_object_shorthand` has NO test coverage at all**, so the first change must bring its own.
+- **Four sibling helpers share the identical defect** and would be left inconsistent:
+  `sgs_corner_object_shorthand`, `helpers-container.php::sgs_serialise_box_corners`, and two media atoms in
+  `includes/media/atoms/` (one with a JS twin, `sidesToShorthand()`).
+- **A precedent exists, so this is reuse not invention:** `includes/class-sgs-container-wrapper.php` ~2711-2736
+  and ~2856-2928 already emit per-side longhands for set sides only, and
+  `includes/helpers-responsive.php::sgs_responsive_side_order()` gives the canonical side order.
 
-**Negative controls, both halves:** a PHP test proving that setting one side now emits ONLY that side (red
-against the old shorthand), AND one proving that setting all four still emits all four, so the fix does not
-over-suppress. Plus the detector going red on a planted un-converted call site.
+**The validated shape:** a NEW sibling function returning a declaration list (or an array keyed by property),
+with **the old function retained byte-identical** for the `var()` consumers until they get per-side variables, so
+the 157 sites migrate deliberately rather than all at once. Detector first per
+`.claude/THE-MIGRATION-METHOD.md`; script the 112 boilerplate assignments; batch the same-shape variants to Haiku
+subagents via `/delegate`; keep the bespoke sites and the `seedSides` deletion in the main thread.
 
-DONE when the detector reports zero remaining shorthand uses for padding/margin, `seedSides` is gone, and both
-halves of the control pass. ~90 min with the scripting, more if the bespoke sites fight.
+⚠️ **ONE BEHAVIOURAL DECISION IS OWED FROM BEAN BEFORE ANY BLOCK MIGRATES.** Today a mobile tier that sets one
+side RESETS the others, so it wipes a tablet tier's values. Longhands would let them inherit instead. That is
+arguably better, but it is a SILENT change for any block relying on the reset. Ask before migrating, not after.
+
+✅ **The cross-session blocker is DISCHARGED.** That plan said CR6 could not be built without coordinating with
+the Spec 47 route work because `lib/resolve.mjs::seedSides` encodes the zero-fill deliberately, with a test named
+**"MUST FAIL TO ZERO"** asserting it. The route cleanup is complete and CR6 is owned by the route track, so the
+helper change, the `seedSides` deletion and that test now land together in one session.
+
+**Commit gate for CR6:** do not commit until the new function has a standalone test with a negative control, the
+old function is byte-identical, and the `seedSides` deletion lands in the same change.
+
+DONE when the detector reports zero remaining shorthand uses for padding/margin **on the migrated sites**,
+`seedSides` is gone, the `var()` consumers are either migrated to per-side variables or explicitly left on the
+retained old function with that recorded, and both halves of the control pass. Do NOT treat "zero shorthand uses
+anywhere" as the done condition — the retained function is deliberate.
 
 TASK 4 — still to prove: CR1 with CR9, then CR2, CR4, CR5 (~30 min to triage)
 
@@ -224,7 +246,7 @@ GUARDRAILS
 - **A generated artefact a gate reads can live only in the working tree.** `handScope` was absent at HEAD for 16
   of 17 surfaces while every local signal said the gate covered all 17. Run
   `git status --porcelain -- <the artefact>` before claiming a gate covers anything.
-- `.claude/LEDGER.md` has **~283 bytes** against its 24,576 cap. Cut a finished item before adding, and run
+- `.claude/LEDGER.md` sits close to its 24,576-byte cap and peer sessions change it, so **measure it, never trust a figure written here**: `wc -c .claude/LEDGER.md`. Cut a finished item before adding, and run
   `python .claude/hooks/handoff-preflight.py --check` BEFORE pushing, not after.
 - Serialise host work and message peers first. Peers `small-giants-wp-e6` and `small-giants-wp-d8` are closed;
   `small-giants-wp-23` owns the client-visible register rows and was completing a deploy. A reseed rewrites the

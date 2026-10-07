@@ -119,7 +119,7 @@ a cosmetic path change re-keys rows wholesale.
   **SEVEN more VERIFIED LIVE at `0cc773b19`:** `58` `9` `N33B` `17`/`3` `19` `64` `N24`; `152` BUILT, `N13`
   closed unchanged. ⚠️ **A plugin deploy does NOT apply a tree fix:** 58/9/N33B/17 needed `wp-build-page.js`
   on posts 208/176/199 + the `single-product` template. **CR: none of the 14 closed by
-  the cleanup; **`CR12` is the remaining ORPHAN** needing an owner (`CR6` is now owned, see below).**
+  the cleanup; **`CR12` PARKED pending Bean; `CR6` owned, see below.**
 
 
 **Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate

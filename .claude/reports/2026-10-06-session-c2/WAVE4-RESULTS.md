@@ -53,7 +53,7 @@ gallery div and filter inputs — never on the background layer
 `container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` paints, since it emits only to
 `.<uid> > .sgs-container__image-bg` and `.<uid>::before`. They are no longer classed `W/canvas-settable`.
 
-**168 claims across 63 families were unconfirmed against the live DOM at the time of this sweep; 17 families (82 claims) have since been confirmed and ALL REFUTED, leaving 46 families owed on the REMOTE site (`CANVAS-SETTABLE-CONFIRMATION.md`)** — still owed, and still best
+**168 claims across 63 families were unconfirmed against the live DOM at the time of this sweep. ALL 63 have since been confirmed on one SHA (2026-10-07): 59 refuted, 4 not-refuted-but-not-proven, 0 absent. Only the W-to-F reclassification remains owed (`CANVAS-SETTABLE-CONFIRMATION.md`)** — still owed, and still best
 tested by family rather than by row (2 reads per family is 126 readings against 168). Families span
 surfaces, so surface is the wrong sampling axis. Table: `WAVE4-CANVAS-FAMILIES.md` (regenerate it; the
 counts there are the pre-R1 69/209).

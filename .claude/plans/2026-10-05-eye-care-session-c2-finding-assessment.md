@@ -70,7 +70,9 @@ stale-report failure mode and the `canvasSettable` masking.
    now records which citations were actually assessed; **no row was reclassified.** The real repair is to supply
    `ctx.emissionFor`, read in `emissionOf` but set by no caller.
 
-   **STILL OWED: the remaining 46 families need the REMOTE site**, because the local WSL mirror carries no
+   **SUPERSEDED 2026-10-07: all 63 families are now confirmed on ONE SHA** (59 refuted, 4 not-refuted-but-not-proven,
+   0 absent, 3,907 stylesheets read and 0 skipped), so only the W-to-F reclassification is owed and it needs NO
+   host. The note below was written when 46 were still unread: the local WSL mirror carries no
    `cr-ref` instrumentation for `header`, `mega-*`, `shop`, `product`, `lens` or `size-guide` (its header layout
    and WooCommerce templates predate the instrumented ones) — measured, with all 46 failing as "ref missing
    entirely" and **zero** as state-gated. The **W-to-F reclassification is deliberately NOT applied** until all 63
