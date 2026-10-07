@@ -3,15 +3,17 @@
  * check-import-shadowing.js
  *
  * Fails when an editor file destructures a block attribute whose name is also a
- * module-level import in the same file. The destructured attribute value then
- * shadows the imported binding for the rest of that scope, so a call to the
- * import calls the attribute instead ("TypeError: x is not a function"), and
- * the block's editor shows "This block has encountered an error".
+ * module-level binding in the same file: an import, or a top-level function,
+ * class or variable. The destructured attribute value then shadows that binding
+ * for the rest of its scope, so a call to the helper calls the attribute instead
+ * ("TypeError: x is not a function"), and the block's editor shows "This block
+ * has encountered an error".
  *
  * A binding counts as destructured from attributes when it comes from:
  *   const { name } = attributes;
  *   const { name } = props.attributes;
  *   function Edit( { attributes: { name } } ) { ... }
+ *   function Edit( { attributes: attrs } ) { const { name } = attrs; }
  * Renamed bindings (`{ name: other }`) are judged by the local name `other`.
  *
  * Usage:
@@ -50,13 +52,13 @@ function parseSource( source ) {
 	} );
 }
 
-// Is this expression `attributes` or `<anything>.attributes`?
-function isAttributesExpression( node ) {
+// Is this expression `attributes` (or a local renamed from it) or `<anything>.attributes`?
+function isAttributesExpression( node, aliases ) {
 	if ( ! node ) {
 		return false;
 	}
 	if ( 'Identifier' === node.type ) {
-		return 'attributes' === node.name;
+		return 'attributes' === node.name || aliases.has( node.name );
 	}
 	return 'MemberExpression' === node.type && ! node.computed &&
 		'Identifier' === node.property.type && 'attributes' === node.property.name;
@@ -81,57 +83,102 @@ function patternBindings( pattern, out ) {
 	return out;
 }
 
-// Every ObjectPattern that destructures attributes, wherever it sits.
-function attributeDestructurings( node, out ) {
+function walk( node, visit ) {
 	if ( ! node || 'object' !== typeof node ) {
-		return out;
+		return;
 	}
 	if ( Array.isArray( node ) ) {
-		node.forEach( ( n ) => attributeDestructurings( n, out ) );
-		return out;
+		node.forEach( ( n ) => walk( n, visit ) );
+		return;
 	}
-	if ( 'VariableDeclarator' === node.type && node.id && 'ObjectPattern' === node.id.type && isAttributesExpression( node.init ) ) {
-		out.push( node.id );
-	}
-	// `{ attributes: { a, b } }` inside a parameter or any other pattern.
-	if ( 'ObjectProperty' === node.type && ! node.computed && node.key &&
-		( ( 'Identifier' === node.key.type && 'attributes' === node.key.name ) ||
-			( 'StringLiteral' === node.key.type && 'attributes' === node.key.value ) ) ) {
-		const value = 'AssignmentPattern' === node.value?.type ? node.value.left : node.value;
-		if ( value && 'ObjectPattern' === value.type ) {
-			out.push( value );
-		}
-	}
+	visit( node );
 	for ( const key of Object.keys( node ) ) {
 		if ( 'loc' === key || 'start' === key || 'end' === key || 'leadingComments' === key || 'trailingComments' === key ) {
 			continue;
 		}
 		const child = node[ key ];
 		if ( child && 'object' === typeof child ) {
-			attributeDestructurings( child, out );
+			walk( child, visit );
 		}
 	}
+}
+
+const isAttributesKey = ( node ) => 'ObjectProperty' === node.type && ! node.computed && node.key &&
+	( ( 'Identifier' === node.key.type && 'attributes' === node.key.name ) ||
+		( 'StringLiteral' === node.key.type && 'attributes' === node.key.value ) );
+
+const propertyValue = ( node ) => ( 'AssignmentPattern' === node.value?.type ? node.value.left : node.value );
+
+// Locals the attributes object is renamed to: `{ attributes: attrs }`.
+function attributeAliases( program ) {
+	const aliases = new Set();
+	walk( program, ( node ) => {
+		if ( isAttributesKey( node ) ) {
+			const value = propertyValue( node );
+			if ( value && 'Identifier' === value.type && 'attributes' !== value.name ) {
+				aliases.add( value.name );
+			}
+		}
+	} );
+	return aliases;
+}
+
+// Every ObjectPattern that destructures attributes, wherever it sits.
+function attributeDestructurings( program, aliases ) {
+	const out = [];
+	walk( program, ( node ) => {
+		if ( 'VariableDeclarator' === node.type && node.id && 'ObjectPattern' === node.id.type && isAttributesExpression( node.init, aliases ) ) {
+			out.push( node.id );
+		}
+		// `{ attributes: { a, b } }` inside a parameter or any other pattern.
+		if ( isAttributesKey( node ) ) {
+			const value = propertyValue( node );
+			if ( value && 'ObjectPattern' === value.type ) {
+				out.push( value );
+			}
+		}
+	} );
 	return out;
+}
+
+// Module-level names a destructured attribute can shadow: imports, and top-level
+// function, class and variable declarations (exported or not).
+function moduleBindings( program ) {
+	const names = new Map();
+	for ( let stmt of program.body ) {
+		if ( 'ImportDeclaration' === stmt.type ) {
+			for ( const spec of stmt.specifiers ) {
+				names.set( spec.local.name, `imported from '${ stmt.source.value }'` );
+			}
+			continue;
+		}
+		if ( ( 'ExportNamedDeclaration' === stmt.type || 'ExportDefaultDeclaration' === stmt.type ) && stmt.declaration ) {
+			stmt = stmt.declaration;
+		}
+		if ( ( 'FunctionDeclaration' === stmt.type || 'ClassDeclaration' === stmt.type ) && stmt.id ) {
+			names.set( stmt.id.name, 'declared at module level' );
+		} else if ( 'VariableDeclaration' === stmt.type ) {
+			for ( const decl of stmt.declarations ) {
+				for ( const b of patternBindings( decl.id, [] ) ) {
+					names.set( b.name, 'declared at module level' );
+				}
+			}
+		}
+	}
+	return names;
 }
 
 function scanSource( source ) {
 	const ast = parseSource( source );
-	const imports = new Map();
-	for ( const stmt of ast.program.body ) {
-		if ( 'ImportDeclaration' === stmt.type ) {
-			for ( const spec of stmt.specifiers ) {
-				imports.set( spec.local.name, stmt.source.value );
-			}
-		}
-	}
-	if ( ! imports.size ) {
+	const bindings = moduleBindings( ast.program );
+	if ( ! bindings.size ) {
 		return [];
 	}
 	const violations = [];
-	for ( const pattern of attributeDestructurings( ast.program, [] ) ) {
+	for ( const pattern of attributeDestructurings( ast.program, attributeAliases( ast.program ) ) ) {
 		for ( const binding of patternBindings( pattern, [] ) ) {
-			if ( imports.has( binding.name ) ) {
-				violations.push( { name: binding.name, line: binding.line, from: imports.get( binding.name ) } );
+			if ( bindings.has( binding.name ) ) {
+				violations.push( { name: binding.name, line: binding.line, from: bindings.get( binding.name ) } );
 			}
 		}
 	}
@@ -140,7 +187,7 @@ function scanSource( source ) {
 
 function report( file, violations ) {
 	for ( const v of violations ) {
-		console.log( `  ${ file }:${ v.line }  '${ v.name }' is destructured from attributes and also imported from '${ v.from }'; read it as attributes.${ v.name } or rename the import` );
+		console.log( `  ${ file }:${ v.line }  '${ v.name }' is destructured from attributes and also ${ v.from }; read it as attributes.${ v.name } or rename the other binding` );
 	}
 }
 
@@ -155,10 +202,10 @@ function runCheck() {
 		}
 	}
 	if ( total ) {
-		console.log( `[check-import-shadowing] FAIL: ${ total } attribute binding(s) shadow an import (${ files.length } files scanned).` );
+		console.log( `[check-import-shadowing] FAIL: ${ total } attribute binding(s) shadow a module-level binding (${ files.length } files scanned).` );
 		return 1;
 	}
-	console.log( `[check-import-shadowing] OK: no attribute binding shadows an import (${ files.length } files scanned).` );
+	console.log( `[check-import-shadowing] OK: no attribute binding shadows a module-level binding (${ files.length } files scanned).` );
 	return 0;
 }
 
@@ -177,6 +224,16 @@ const FIXTURES = [
 		name: 'props.attributes destructure with a rename fires on the local name',
 		src: "import { pick } from './p';\nfunction Edit( props ) { const { choice: pick } = props.attributes; return pick; }",
 		expect: [ 'pick' ],
+	},
+	{
+		name: 'a renamed attributes object is followed',
+		src: "import { pick } from './p';\nfunction Edit( { attributes: attrs } ) { const { pick } = attrs; return pick; }",
+		expect: [ 'pick' ],
+	},
+	{
+		name: 'shadowing a module-level function fires',
+		src: "function formatPrice( v ) { return v; }\nexport default function Edit( { attributes } ) { const { formatPrice } = attributes; return formatPrice( 1 ); }",
+		expect: [ 'formatPrice' ],
 	},
 	{
 		name: 'reading attributes.name does not fire',
