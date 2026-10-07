@@ -39,7 +39,13 @@ export function divergenceFor( entries, ctx, diff ) {
 // expected value when a value entry does not hold. Every covered row carries `decided: { id, value }`, the value a
 // settings writer must hold there: a value entry's decided value, or for a rule entry what live shows (accepted as it
 // is). The draft side stays a plain value, so anything parsing it reads the decided value.
-export function judgeDivergence( entries, ctx, diff, pxTol ) {
+// A box row's decided value is a number of pixels (a size or a position), compared within the box tolerance; every
+// other row's is a CSS value string, compared as the walker compares styles.
+const holds = ( diff, expected, pxTol, boxTol ) => ( 'number' === typeof expected || 'number' === typeof diff.live
+	? Math.abs( Number( expected ) - Number( diff.live ) ) <= boxTol
+	: sameValue( diff.key, expected, diff.live, pxTol ) );
+
+export function judgeDivergence( entries, ctx, diff, pxTol, boxTol = 2 ) {
 	const e = divergenceFor( entries, ctx, diff );
 	if ( ! e ) {
 		return null;
@@ -49,7 +55,7 @@ export function judgeDivergence( entries, ctx, diff, pxTol ) {
 		return `${ e.id } (${ e.expected.rule }): ${ e.reason }`;
 	}
 	diff.decided = { id: e.id, value: e.expected.value };
-	if ( sameValue( diff.key, e.expected.value, diff.live, pxTol ) ) {
+	if ( holds( diff, e.expected.value, pxTol, boxTol ) ) {
 		return `${ e.id } (value ${ e.expected.value }): ${ e.reason }`;
 	}
 	diff.draft = e.expected.value;

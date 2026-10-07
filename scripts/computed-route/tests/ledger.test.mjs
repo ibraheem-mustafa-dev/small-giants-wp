@@ -86,3 +86,13 @@ test( 'MUST FAIL TO HIDE A DRIFT: a value entry accepts only while live shows th
 	assert.match( judgeIndependent( [ value ], idiff( { live: 1 } ), { state: 'opening' } ).accepted, /value 0px/ );
 	assert.ok( holdsValue( 'rgb(0, 0, 0)', 'rgb(0,0,0)' ) && ! holdsValue( 'uppercase', 'none' ) );
 } );
+
+test( 'MUST FAIL (Lenses D-72, 2026-10-07): a value entry on a box row compares pixels within the box tolerance, and a moved box is reported', () => {
+	const e = { id: 'D-72', scope: 'lenses', node: 'cr-ref-lenses-23', state: 'opening', property: 'y-from-lens-grid', widths: [ 375 ], expected: { value: 785 }, reason: 'the draft reveal never fires below 1440' };
+	const ctx = { state: 'opening', width: 375 };
+	const row = ( live ) => ( { kind: 'box', key: 'y-from-lens-grid', ref: 'cr-ref-lenses-23', draft: 811, live } );
+	assert.equal( judgeDivergence( [ e ], ctx, row( 786 ), 0.5, 2 ), `D-72 (value 785): ${ e.reason }` );
+	const moved = row( 800 );
+	assert.equal( judgeDivergence( [ e ], ctx, moved, 0.5, 2 ), null );
+	assert.equal( moved.draft, 785, 'a drifted box reports the decided value as its draft side' );
+} );

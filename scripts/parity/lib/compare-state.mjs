@@ -40,7 +40,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 	// Box differences are judged first: a notPainted accept holds only while every
 	// box difference on the pair is itself accepted (a 44px touch target, say).
 	// The config's accepts first, then the divergence ledger.
-	const verdict = ( ctx, diff ) => isAccepted( accept, ctx, diff )?.reason || judgeDivergence( divergences, ctx, diff, tol.px ) || null;
+	const verdict = ( ctx, diff ) => isAccepted( accept, ctx, diff )?.reason || judgeDivergence( divergences, ctx, diff, tol.px, tol.box ) || null;
 	const judge = ( name, diffs ) => {
 		const ctx = { pair: name, state: state.name, width, boxMatches: false };
 		const boxes = diffs.filter( ( x ) => 'box' === x.kind );
