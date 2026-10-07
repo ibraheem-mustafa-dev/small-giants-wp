@@ -647,8 +647,13 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
        **Phase 2** (plan table): P2-d done (`google-reviews` padding prints set sides; `sgs_border_box_decls` holds no
        padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
-       literal, so the five CR6 classification overrides are gone). Open: P2-a corner radius, P2-b the `var()`
-       holdouts, P2-c the media-padding atom and its JS twin, P2-e the Eye Care tier boxes holding an explicit zero.
+       literal, so the five CR6 classification overrides are gone). **P2-a and P2-c done and verified live
+       2026-10-07:** corner radius prints only the corners a client set (`sgs_corner_object_longhands`), page and
+       editor, across every block that wires the shared border panel's radius, and the media atoms emit one property
+       per side or corner (`check-box-corners-blocks-live.mjs` 42/42). The route needs no change for corners:
+       `lib/resolve.mjs::radiusWrite` already writes all four corners per tier. No block reads WordPress's native
+       `style.border` any more (P2-g step 0). Open: P2-b the `var()` holdouts, P2-e the Eye Care tier boxes holding an
+       explicit zero, and P2-g's shared border function.
      - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
        calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
        the bigger heap; `sgs/nav-bar-menu` 71 settings, 46 of its 54 dead are states the calibration page cannot show),
