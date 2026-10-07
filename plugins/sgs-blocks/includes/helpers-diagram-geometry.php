@@ -1,7 +1,7 @@
 <?php
 /**
  * Measured diagram geometry — the page-side twin of
- * src/blocks/measured-diagram/geometry.js::dimensionPaths().
+ * src/utils/diagram-geometry.js::dimensionPaths().
  *
  * Both sides read one shared fixture set
  * (tests/fixtures/diagram-geometry-fixtures.json) and must produce identical

@@ -12,7 +12,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 
-const { dimensionPaths } = require( '../../src/blocks/measured-diagram/geometry.js' );
+const { dimensionPaths } = require( '../../src/utils/diagram-geometry.js' );
 
 const cases = JSON.parse(
 	fs.readFileSync(
