@@ -581,14 +581,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "chipTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "chip"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "chipTextColour",
       "fields": {
         "css_property": "color",
@@ -2712,6 +2704,7 @@
       "attr": "guidedMeterTextAlign",
       "fields": {
         "css_property": "text-align",
+        "css_layer": "GRID",
         "css_element": "guidedMeter"
       }
     },
@@ -3387,14 +3380,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "savingBadgeTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "savingBadgeTextColumns",
       "fields": {
         "css_property": "column-count",
@@ -3493,6 +3478,7 @@
       "attr": "stockTextAlign",
       "fields": {
         "css_property": "text-align",
+        "css_layer": "GRID",
         "css_element": "stock"
       }
     },
@@ -4261,7 +4247,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationFontFamily",
+      "attr": "pageButtonFontFamily",
       "fields": {
         "css_property": "font-family",
         "css_element": "page-btn"
@@ -4269,7 +4255,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationFontSize",
+      "attr": "pageButtonFontSize",
       "fields": {
         "css_property": "font-size",
         "css_element": "page-btn"
@@ -4277,7 +4263,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationFontStyle",
+      "attr": "pageButtonFontStyle",
       "fields": {
         "css_property": "font-style",
         "css_element": "page-btn"
@@ -4285,7 +4271,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationFontWeight",
+      "attr": "pageButtonFontWeight",
       "fields": {
         "css_property": "font-weight",
         "css_element": "page-btn"
@@ -4293,7 +4279,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationLetterSpacing",
+      "attr": "pageButtonLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
         "css_element": "page-btn"
@@ -4301,7 +4287,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationLineHeight",
+      "attr": "pageButtonLineHeight",
       "fields": {
         "css_property": "line-height",
         "css_element": "page-btn"
@@ -4309,15 +4295,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "page-btn"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "paginationTextColumns",
+      "attr": "pageButtonTextColumns",
       "fields": {
         "css_property": "column-count",
         "css_element": "page-btn"
@@ -4325,7 +4303,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationTextDecoration",
+      "attr": "pageButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
         "css_element": "page-btn"
@@ -4333,7 +4311,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationTextTransform",
+      "attr": "pageButtonTextTransform",
       "fields": {
         "css_property": "text-transform",
         "css_element": "page-btn"
@@ -4341,7 +4319,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationTextWrap",
+      "attr": "pageButtonTextWrap",
       "fields": {
         "css_property": "text-wrap",
         "css_element": "page-btn"
@@ -4349,7 +4327,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "paginationWritingMode",
+      "attr": "pageButtonWritingMode",
       "fields": {
         "css_property": "writing-mode",
         "css_element": "page-btn"
@@ -13894,13 +13872,6 @@
     },
     {
       "slug": "sgs/media",
-      "attr": "videoTimeTextAlign",
-      "fields": {
-        "css_property": "text-align"
-      }
-    },
-    {
-      "slug": "sgs/media",
       "attr": "videoTimeTextColumns",
       "fields": {
         "css_property": "column-count"
@@ -17174,14 +17145,6 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "loadMoreTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "load-more"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
       "attr": "loadMoreTextColumns",
       "fields": {
         "css_property": "column-count",
@@ -17327,7 +17290,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationFontFamily",
+      "attr": "pageButtonFontFamily",
       "fields": {
         "css_property": "font-family",
         "css_element": "page-btn"
@@ -17335,7 +17298,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationFontSize",
+      "attr": "pageButtonFontSize",
       "fields": {
         "css_property": "font-size",
         "css_element": "page-btn"
@@ -17343,7 +17306,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationFontStyle",
+      "attr": "pageButtonFontStyle",
       "fields": {
         "css_property": "font-style",
         "css_element": "page-btn"
@@ -17351,7 +17314,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationFontWeight",
+      "attr": "pageButtonFontWeight",
       "fields": {
         "css_property": "font-weight",
         "css_element": "page-btn"
@@ -17359,7 +17322,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationLetterSpacing",
+      "attr": "pageButtonLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
         "css_element": "page-btn"
@@ -17367,7 +17330,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationLineHeight",
+      "attr": "pageButtonLineHeight",
       "fields": {
         "css_property": "line-height",
         "css_element": "page-btn"
@@ -17375,15 +17338,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "page-btn"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "paginationTextColumns",
+      "attr": "pageButtonTextColumns",
       "fields": {
         "css_property": "column-count",
         "css_element": "page-btn"
@@ -17391,7 +17346,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationTextDecoration",
+      "attr": "pageButtonTextDecoration",
       "fields": {
         "css_property": "text-decoration",
         "css_element": "page-btn"
@@ -17399,7 +17354,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationTextTransform",
+      "attr": "pageButtonTextTransform",
       "fields": {
         "css_property": "text-transform",
         "css_element": "page-btn"
@@ -17407,7 +17362,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationTextWrap",
+      "attr": "pageButtonTextWrap",
       "fields": {
         "css_property": "text-wrap",
         "css_element": "page-btn"
@@ -17415,7 +17370,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "paginationWritingMode",
+      "attr": "pageButtonWritingMode",
       "fields": {
         "css_property": "writing-mode",
         "css_element": "page-btn"
@@ -19125,14 +19080,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "brandTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "brand"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "brandTextColumns",
       "fields": {
         "css_property": "column-count",
@@ -19988,14 +19935,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "rrpTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "rrp"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "rrpTextColumns",
       "fields": {
         "css_property": "column-count",
@@ -20079,14 +20018,6 @@
       "attr": "savingBadgeLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "savingBadgeTextAlign",
-      "fields": {
-        "css_property": "text-align",
         "css_element": "savingBadge"
       }
     },
@@ -20201,14 +20132,6 @@
       "attr": "swatchMoreLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "swatchMore"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "swatchMoreTextAlign",
-      "fields": {
-        "css_property": "text-align",
         "css_element": "swatchMore"
       }
     },
@@ -27714,14 +27637,6 @@
         "role": "color",
         "css_element": "gallery-thumb",
         "css_state": "current"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbSize",
-      "fields": {
-        "css_property": "width",
-        "css_element": "gallery-thumb"
       }
     },
     {
