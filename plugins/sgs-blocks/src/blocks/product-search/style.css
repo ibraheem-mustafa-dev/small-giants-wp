@@ -46,7 +46,7 @@
 }
 
 .sgs-product-search__input:focus-visible {
-	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary)) );
+	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
 	outline-offset: 2px;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .sgs-product-search__submit:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -319,7 +319,7 @@
 
 /* Visible focus ring — matches the pattern used on __submit and __input. */
 .sgs-product-search--icon summary.sgs-product-search__icon-toggle:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -397,7 +397,7 @@
 
 .sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible,
 .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle:focus-visible {
-	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary)) );
+	outline: 2px solid var( --sgs-ps-focus-ring, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)) );
 	outline-offset: 2px;
 }
 
@@ -448,7 +448,7 @@
 }
 
 .sgs-product-search__dialog .sgs-product-search__close:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 

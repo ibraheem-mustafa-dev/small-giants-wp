@@ -189,7 +189,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 		 * fallback. The submenu link's own three-state fill covers the hover
 		 * state.
 		 */
-		$css .= $uid_sel . ' .' . $bem_root . '__sublink:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary, currentColor));outline-offset:-2px;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__sublink:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent, currentColor));outline-offset:-2px;}';
 
 		/*
 		 * The toggle is a real button next to a real link when the parent has its own

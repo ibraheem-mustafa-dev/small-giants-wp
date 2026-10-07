@@ -218,6 +218,6 @@
 
 /* Never remove a focus ring without replacing it (visual-standards.md). */
 .sgs-device-cue__dismiss:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--primary));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 1px;
 }

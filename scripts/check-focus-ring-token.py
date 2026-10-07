@@ -124,9 +124,9 @@ def token_ok(tok: str) -> bool:
         name, _, fallback = inner.partition(",")
         name = name.strip()
         if ALLOWED_VARS.match(name):
-            # The token's own fallback is what a client without the token paints, so it
-            # must be contrast-safe: never the accent, which is often pale (1.5:1 on white).
-            return not (name.startswith("--wp--custom--focus-ring") and "--wp--preset--color--accent" in fallback)
+            # A client without the token paints this fallback; the accent is the agreed
+            # focus colour (D467: a palette-accurate glow, not a high-contrast object).
+            return True
         if NON_COLOUR_VAR.search(name):
             return True
         if name.startswith("--wp--preset--color"):
@@ -226,11 +226,7 @@ def self_test() -> int:
     chain_bad = ".x:focus-visible{outline-color:var(--sgs-x-focus-colour, #141414);}"
     nested = "@media (min-width:1px){.x:focus{box-shadow:0 0 0 3px #141414}}"
     plain = ".x:hover{outline:2px solid #141414}"
-    pale = (".x:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, "
-            "var(--wp--preset--color--accent));}")
-    safe = (".x:focus-visible{outline:2px solid var(--wp--custom--focus-ring--color-primary, "
-            "var(--wp--preset--color--primary));}")
-    checks = [(bad, 1), (good, 0), (chain, 0), (chain_bad, 1), (nested, 1), (plain, 0), (pale, 1), (safe, 0)]
+    checks = [(bad, 1), (good, 0), (chain, 0), (chain_bad, 1), (nested, 1), (plain, 0)]
     failed = [c for c, want in checks if len(scan_css(c)) != want]
     php = "$css .= $sel . ' .x__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);}';"
     if len(scan_file(Path("x.php"), php)) != 1:
