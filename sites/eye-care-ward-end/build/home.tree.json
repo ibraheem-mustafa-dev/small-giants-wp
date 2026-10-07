@@ -2606,6 +2606,7 @@
           },
           "writeReviewFontWeight": "500",
           "writeReviewLabel": "Write a review",
+          "buttonHoverLift": 3,
           "writeReviewMinHeight": {
             "desktop": "40px",
             "mobile": "40px",

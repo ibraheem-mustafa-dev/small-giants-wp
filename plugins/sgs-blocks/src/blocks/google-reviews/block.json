@@ -1366,6 +1366,11 @@
 			"type": "object",
 			"default": {}
 		},
+		"buttonHoverLift": {
+			"type": "number",
+			"default": 0,
+			"description": "How far (px) the 'See all reviews' and 'Write a review' buttons rise on hover. 0 keeps them still, as Google's own UI does; a site that lifts its buttons sets it here."
+		},
 		"fontSize": {
 			"type": "object",
 			"default": {}

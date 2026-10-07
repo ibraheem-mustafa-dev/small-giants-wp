@@ -11,7 +11,7 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { TextControl } from '@wordpress/components';
+import { TextControl, RangeControl } from '@wordpress/components';
 import { Section, Row, typographyAttrs, isDeclared } from './panel-kit';
 import { TierBox, TierLength, BorderField, TypographyRow, typoTarget } from './panel-fields';
 
@@ -36,7 +36,7 @@ export function buttonAttrs( prefix ) {
 const PREFIXES = [ 'seeAll', 'writeReview' ];
 
 /** Every attribute this section owns (drives "Reset all"). */
-export const BUTTONS_ATTRS = PREFIXES.flatMap( buttonAttrs );
+export const BUTTONS_ATTRS = [ ...PREFIXES.flatMap( buttonAttrs ), 'buttonHoverLift' ].filter( isDeclared );
 
 /**
  * One button's fields.
@@ -112,6 +112,18 @@ export default function ButtonsPanel( { attributes, setAttributes } ) {
 		<Section title={ __( 'Buttons', 'sgs-blocks' ) } attrs={ BUTTONS_ATTRS } setAttributes={ setAttributes }>
 			<ButtonFields prefix="seeAll" name={ __( 'See all reviews button', 'sgs-blocks' ) } { ...shared } />
 			<ButtonFields prefix="writeReview" name={ __( 'Write a review button', 'sgs-blocks' ) } { ...shared } />
+			<Row label={ __( 'Both buttons: lift on hover', 'sgs-blocks' ) } attrs={ [ 'buttonHoverLift' ] } { ...shared }>
+				<RangeControl
+					label={ __( 'Lift on hover (px)', 'sgs-blocks' ) }
+					value={ attributes.buttonHoverLift ?? 0 }
+					onChange={ ( value ) => setAttributes( { buttonHoverLift: value ?? 0 } ) }
+					min={ 0 }
+					max={ 8 }
+					step={ 1 }
+					help={ __( 'How far both buttons rise when hovered. 0 keeps them still, as Google does.', 'sgs-blocks' ) }
+					__next40pxDefaultSize
+				/>
+			</Row>
 		</Section>
 	);
 }

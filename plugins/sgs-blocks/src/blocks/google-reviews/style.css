@@ -731,16 +731,13 @@ a.sgs-google-reviews__author:hover {
 	outline-offset: 2px;
 }
 
-/* Site-wide button hover (buttonPresets.default): the lift and its timing. With no
-   site setting the buttons do not move and keep the 150ms colour fade. */
+/* Hover timing follows the site's button timing (buttonPresets.default, else 150ms). The
+   buttons stay still by default, as Google's do; the block's buttonHoverLift setting
+   (render.php) adds a lift for a site that wants one. */
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-google-reviews__write-review,
 	.sgs-google-reviews__see-all {
-		transition: background-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, box-shadow var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, transform var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease;
-	}
-
-	:where( .sgs-google-reviews__write-review:hover, .sgs-google-reviews__see-all:hover ) {
-		transform: var( --wp--custom--button-presets--default--hover-transform, none );
+		transition: background-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, border-color var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, box-shadow var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease, transform var( --wp--custom--button-presets--default--hover-transition, 150ms ) ease;
 	}
 }
 

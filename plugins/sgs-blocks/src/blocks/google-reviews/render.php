@@ -331,6 +331,19 @@ $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'writeReview'
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'seeAll' ), 'seeAll', $gr_root_sel . ' .sgs-google-reviews__see-all', true, false );
 $gr_responsive_css .= sgs_button_element_style_css( $gr_btn_attrs( 'arrow' ), 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow', true, true );
 
+// Lift on hover for the two header buttons: off by default (Google's own buttons stay still); a site that
+// lifts its buttons sets buttonHoverLift. Touch-guarded and skipped under reduced motion.
+$gr_button_lift = isset( $attributes['buttonHoverLift'] ) && is_numeric( $attributes['buttonHoverLift'] )
+	? max( 0, min( 8, (float) $attributes['buttonHoverLift'] ) )
+	: 0;
+if ( $gr_button_lift > 0 ) {
+	$gr_lift_decl = 'transform:translateY(-' . rtrim( rtrim( number_format( $gr_button_lift, 2, '.', '' ), '0' ), '.' ) . 'px)';
+	$gr_responsive_css .= '@media (prefers-reduced-motion: no-preference){'
+		. sgs_hover_state_rules( $gr_root_sel . ' .sgs-google-reviews__write-review', $gr_lift_decl )
+		. sgs_hover_state_rules( $gr_root_sel . ' .sgs-google-reviews__see-all', $gr_lift_decl )
+		. '}';
+}
+
 // Review-dot indicator — not button-shaped (background-colour/fill only),
 // uses the lighter state-colour emitter instead of the button helper.
 // Fill gradient wins over the flat colour when set (same shared primitive as
