@@ -549,11 +549,11 @@ The descent this section predicted was 33 / 1 / 54. The two differences are meas
 
 The 36 DEFENSIBLE findings (35 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay in the count unless a mechanism removes them. Three options, none implemented: (i) leave them counted (the ceiling stays 35 and 1; no new mechanism); (ii) add a per-declaration marker comment the gate honours (new gate capability, needs a decision on what the marker must say); (iii) record them as `by-design` baseline entries, which conflicts with the standing rule against baselining a finding to silence it, so it needs Bean's explicit decision. I recommend (i) now.
 
-**Shipped 2026-10-07 (`0feec30c9`..`6c1f55708`): the four small items this section listed.**
+**Shipped 2026-10-07 (`0feec30c9`..`94755870d`): the four small items this section listed.**
 
 - `sgs/product-card` has one Typography switcher in both modes (`0feec30c9`). The bound-only "Brand overlay typography" panel is gone; the `brand` target shows in both modes and offers size, family, weight and letter spacing, which typed cards lacked.
 - `sgs/form` `fieldFontWeight` and `fieldFontStyle` name `css_element: field-input` (`cc144ca96`). Before, `db_lookup.py::attr_for_property('sgs/form', 'font-weight'|'font-style')` raised `AmbiguousCssPropAttrError`, because `_root_domain_element_clause` counts a NULL element as root, so a cloned form's root weight or italic could not be written. A sweep of all 2,071 block/property pairs found these two as the only typography collisions; the other 30 (max-width, background, padding, min-height) belong to the cloning track.
-- `scripts/check-import-shadowing.js` (fast tier, `fbc62f399`, `6c1f55708`) fails an attribute destructured under the name of an import or a top-level function, class or variable, including through a renamed attributes object. `cd004d31a^`'s `product-card/edit.js` gives exactly its 1 violation; HEAD gives 0.
+- `scripts/check-import-shadowing.js` (fast tier, `fbc62f399`, `6c1f55708`, `94755870d`) fails an attribute destructured under the name of an import or a top-level function, class or variable, including through a renamed attributes object, which counts only inside the function that renames it. A reassignment (`let attrs = attributes;`) is not followed. `cd004d31a^`'s `product-card/edit.js` gives exactly its 1 violation; HEAD gives 0.
 - The `var()` admission was measured and planned (section 7 gap 1).
 
 **Still open on this track, outside the gate gaps of section 7** (each resumable cold):

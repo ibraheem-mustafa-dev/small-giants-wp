@@ -14,7 +14,10 @@
  *   const { name } = props.attributes;
  *   function Edit( { attributes: { name } } ) { ... }
  *   function Edit( { attributes: attrs } ) { const { name } = attrs; }
- * Renamed bindings (`{ name: other }`) are judged by the local name `other`.
+ * Renamed bindings (`{ name: other }`) are judged by the local name `other`. A
+ * renamed attributes object counts only inside the function that renames it (and
+ * the functions nested in it); a reassignment (`let attrs = attributes;`) is not
+ * followed.
  *
  * Usage:
  *   node scripts/check-import-shadowing.js --check         exit 1 on any violation
