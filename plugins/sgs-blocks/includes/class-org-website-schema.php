@@ -112,6 +112,11 @@ final class Org_Website_Schema {
 		}
 		if ( null === $address ) {
 			$address = self::build_address_from_site_info();
+			// A Site Info address rarely names its country; the store's country
+			// (when WooCommerce is active) completes it.
+			if ( null !== $address && \function_exists( 'WC' ) ) {
+				$address = self::with_default_country( $address, self::store_country_code() );
+			}
 		}
 		if ( null !== $address ) {
 			$org['address'] = $address;
@@ -290,27 +295,23 @@ final class Org_Website_Schema {
 	}
 
 	/**
-	 * Build a PostalAddress array from WooCommerce store options, or null if all empty.
+	 * Build a PostalAddress array from WooCommerce store options.
 	 *
-	 * Called only when function_exists('WC') is true.
+	 * Called only when function_exists('WC') is true. A usable address needs a
+	 * street (address line 1 or 2) or a locality (city); a country or postcode
+	 * on its own is not an address, so the result is null and the caller falls
+	 * back to the Site Info address.
 	 *
-	 * @return array|null PostalAddress array, or null when every sub-field is empty.
+	 * @return array|null PostalAddress array, or null when there is no street and no city.
 	 */
 	private static function build_address(): ?array {
 		$line1    = \sanitize_text_field( (string) \get_option( 'woocommerce_store_address', '' ) );
 		$line2    = \sanitize_text_field( (string) \get_option( 'woocommerce_store_address_2', '' ) );
 		$city     = \sanitize_text_field( (string) \get_option( 'woocommerce_store_city', '' ) );
 		$postcode = \sanitize_text_field( (string) \get_option( 'woocommerce_store_postcode', '' ) );
+		$country  = self::store_country_code();
 
-		// Country: strip region suffix to get the ISO-3166-1 alpha-2 code (e.g. GB from GB:ENG).
-		$raw_cc  = (string) \get_option( 'woocommerce_default_country', '' );
-		$country = \strtoupper( \strtok( $raw_cc, ':' ) );
-		if ( ! \preg_match( '/^[A-Z]{2}$/', $country ) ) {
-			$country = '';
-		}
-
-		// If every sub-field is empty, omit the address block entirely.
-		if ( '' === $line1 && '' === $line2 && '' === $city && '' === $postcode && '' === $country ) {
+		if ( '' === $line1 && '' === $line2 && '' === $city ) {
 			return null;
 		}
 
@@ -340,9 +341,37 @@ final class Org_Website_Schema {
 	}
 
 	/**
+	 * The store's ISO-3166-1 alpha-2 country code from woocommerce_default_country.
+	 *
+	 * The region suffix is stripped (GB from GB:ENG).
+	 *
+	 * @return string Two-letter upper-case code, or '' when unset or malformed.
+	 */
+	private static function store_country_code(): string {
+		$raw_cc  = (string) \get_option( 'woocommerce_default_country', '' );
+		$country = \strtoupper( (string) \strtok( $raw_cc, ':' ) );
+		return \preg_match( '/^[A-Z]{2}$/', $country ) ? $country : '';
+	}
+
+	/**
+	 * Add a country to a PostalAddress that does not already carry one.
+	 *
+	 * @param array  $address PostalAddress array.
+	 * @param string $country ISO-3166-1 alpha-2 code ('' leaves the address unchanged).
+	 * @return array The address, with addressCountry set when it was missing.
+	 */
+	private static function with_default_country( array $address, string $country ): array {
+		if ( '' !== $country && empty( $address['addressCountry'] ) ) {
+			$address['addressCountry'] = $country;
+		}
+		return $address;
+	}
+
+	/**
 	 * Build a PostalAddress fallback from the Sgs_Site_Info 'address' field.
 	 *
-	 * Only called when build_address() (WC store settings) resolved to null.
+	 * Only called when build_address() (WC store settings) resolved to null, i.e.
+	 * the store settings hold neither a street nor a city.
 	 * Guarded by class_exists() so the emitter never fatals when the Site
 	 * Info store isn't loaded.
 	 *
@@ -369,9 +398,14 @@ final class Org_Website_Schema {
 	/**
 	 * Parse a <br>/newline-separated address blob into a PostalAddress.
 	 *
-	 * A recognised UK country name (last line) and a UK-format postcode line are
-	 * detected and stripped; the remaining last line becomes the locality — but
-	 * ONLY when a postcode or country was confidently identified AND a street
+	 * A recognised UK country name (last line) is detected and stripped. The
+	 * last remaining line is then read as one of:
+	 * - a UK postcode on its own line (postalCode; the line before it is the
+	 *   locality); or
+	 * - text followed by a UK postcode, "Birmingham B8 2HQ" or
+	 *   "Birmingham, B8 2HQ" (locality "Birmingham", postalCode "B8 2HQ").
+	 * Postcodes are upper-cased with a single internal space. A locality is only
+	 * assigned when a postcode or country was confidently identified AND a street
 	 * line precedes it, so a non-UK or unstructured value never has a line
 	 * guessed as its town. When no locality can be identified the whole value is
 	 * kept as a single streetAddress (node stays Organization). Returns null
@@ -405,15 +439,24 @@ final class Org_Website_Schema {
 			\array_pop( $lines );
 		}
 
-		// Postcode: last remaining line, only when it matches the UK postcode shape.
-		if ( \count( $lines ) > 1 && \preg_match( '/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i', $lines[ \count( $lines ) - 1 ] ) ) {
-			$postcode = \strtoupper( \trim( $lines[ \count( $lines ) - 1 ] ) );
-			\array_pop( $lines );
+		// Postcode: last remaining line, only when it matches the UK postcode shape,
+		// either alone ("B8 2HQ") or after the town ("Birmingham B8 2HQ").
+		$postcode_shape = '[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}';
+		if ( \count( $lines ) > 1 ) {
+			$last = $lines[ \count( $lines ) - 1 ];
+			if ( \preg_match( '/^' . $postcode_shape . '$/i', $last ) ) {
+				$postcode = self::normalise_uk_postcode( $last );
+				\array_pop( $lines );
+			} elseif ( \preg_match( '/^(.*?\S)[\s,]+(' . $postcode_shape . ')$/i', $last, $m ) ) {
+				$postcode = self::normalise_uk_postcode( $m[2] );
+				$locality = \trim( $m[1], " \t," );
+				\array_pop( $lines );
+			}
 		}
 
 		// Locality: the last remaining line, but ONLY when a postcode/country was
 		// confidently identified AND a street line precedes it (never guess a town).
-		if ( \count( $lines ) >= 2 && ( '' !== $postcode || '' !== $country ) ) {
+		if ( '' === $locality && \count( $lines ) >= 2 && ( '' !== $postcode || '' !== $country ) ) {
 			$locality = \array_pop( $lines );
 		}
 
@@ -439,6 +482,17 @@ final class Org_Website_Schema {
 		}
 
 		return $address;
+	}
+
+	/**
+	 * Upper-case a UK postcode and set a single space before the inward code.
+	 *
+	 * @param string $postcode A string already matched as a UK postcode.
+	 * @return string Normalised postcode, e.g. "B8 2HQ".
+	 */
+	private static function normalise_uk_postcode( string $postcode ): string {
+		$compact = \strtoupper( (string) \preg_replace( '/\s+/', '', $postcode ) );
+		return \substr( $compact, 0, -3 ) . ' ' . \substr( $compact, -3 );
 	}
 
 	/**

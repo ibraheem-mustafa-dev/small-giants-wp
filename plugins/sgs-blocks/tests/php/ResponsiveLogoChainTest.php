@@ -433,4 +433,112 @@ class ResponsiveLogoChainTest extends TestCase {
 		$this->assertStringContainsString( 'alt="Test Site home"', $html );
 		$this->assertStringNotContainsString( 'Ignored', $html );
 	}
+
+	// ── Organization JSON-LD address: parsing and the WooCommerce fallback ───
+
+	/**
+	 * Call a private static method of Org_Website_Schema.
+	 *
+	 * @param string $method Method name.
+	 * @param mixed  ...$args Arguments.
+	 * @return mixed
+	 */
+	private function call_schema( string $method, ...$args ) {
+		$ref = new \ReflectionMethod( Org_Website_Schema::class, $method );
+		return $ref->invoke( null, ...$args );
+	}
+
+	/**
+	 * A street line plus "Town POSTCODE" splits into street, locality and postcode.
+	 */
+	public function test_address_splits_a_town_and_postcode_line(): void {
+		$address = $this->call_schema( 'parse_multiline_address', '644 Washwood Heath Rd<br>Birmingham B8 2HQ' );
+
+		$this->assertSame( '644 Washwood Heath Rd', $address['streetAddress'] );
+		$this->assertSame( 'Birmingham', $address['addressLocality'] );
+		$this->assertSame( 'B8 2HQ', $address['postalCode'] );
+		$this->assertArrayNotHasKey( 'addressCountry', $address );
+	}
+
+	/**
+	 * A trailing United Kingdom line sets the country and the town line still splits.
+	 */
+	public function test_address_splits_a_town_and_postcode_line_before_a_country_line(): void {
+		$address = $this->call_schema( 'parse_multiline_address', '644 Washwood Heath Rd<br>Birmingham B8 2HQ<br>United Kingdom' );
+
+		$this->assertSame( '644 Washwood Heath Rd', $address['streetAddress'] );
+		$this->assertSame( 'Birmingham', $address['addressLocality'] );
+		$this->assertSame( 'B8 2HQ', $address['postalCode'] );
+		$this->assertSame( 'GB', $address['addressCountry'] );
+	}
+
+	/**
+	 * A comma before the postcode and a lower-case, unspaced postcode normalise.
+	 */
+	public function test_address_normalises_comma_and_postcode_case(): void {
+		$address = $this->call_schema( 'parse_multiline_address', "1 High St\nBirmingham, b82hq" );
+
+		$this->assertSame( 'Birmingham', $address['addressLocality'] );
+		$this->assertSame( 'B8 2HQ', $address['postalCode'] );
+	}
+
+	/**
+	 * A postcode on its own line keeps working: the line before it is the town.
+	 */
+	public function test_address_postcode_only_line_still_works(): void {
+		$address = $this->call_schema( 'parse_multiline_address', '644 Washwood Heath Rd<br>Birmingham<br>B8 2HQ' );
+
+		$this->assertSame( '644 Washwood Heath Rd', $address['streetAddress'] );
+		$this->assertSame( 'Birmingham', $address['addressLocality'] );
+		$this->assertSame( 'B8 2HQ', $address['postalCode'] );
+	}
+
+	/**
+	 * Unstructured input never has a town guessed from it.
+	 */
+	public function test_address_never_guesses_a_town(): void {
+		$address = $this->call_schema( 'parse_multiline_address', 'Somewhere Lane<br>Some Town' );
+
+		$this->assertArrayNotHasKey( 'addressLocality', $address );
+		$this->assertSame( 'Somewhere Lane, Some Town', $address['streetAddress'] );
+	}
+
+	/**
+	 * WooCommerce options holding only a country are not an address.
+	 */
+	public function test_build_address_is_null_for_a_country_only_store(): void {
+		\Wp_Options_Stub::update( 'woocommerce_default_country', 'GB:ENG' );
+
+		$this->assertNull( $this->call_schema( 'build_address' ) );
+
+		\Wp_Options_Stub::update( 'woocommerce_store_postcode', 'B8 2HQ' );
+		$this->assertNull( $this->call_schema( 'build_address' ) );
+	}
+
+	/**
+	 * WooCommerce options with a street or a city still build an address, with the country.
+	 */
+	public function test_build_address_keeps_a_street_or_city_store(): void {
+		\Wp_Options_Stub::update( 'woocommerce_default_country', 'GB:ENG' );
+		\Wp_Options_Stub::update( 'woocommerce_store_city', 'Leeds' );
+
+		$address = $this->call_schema( 'build_address' );
+
+		$this->assertSame( 'Leeds', $address['addressLocality'] );
+		$this->assertSame( 'GB', $address['addressCountry'] );
+	}
+
+	/**
+	 * A Site Info address without a country takes the store's; one with a country keeps its own.
+	 */
+	public function test_default_country_fills_only_a_missing_country(): void {
+		$bare = array( '@type' => 'PostalAddress', 'addressLocality' => 'Birmingham' );
+
+		$this->assertSame( 'GB', $this->call_schema( 'with_default_country', $bare, 'GB' )['addressCountry'] );
+		$this->assertArrayNotHasKey( 'addressCountry', $this->call_schema( 'with_default_country', $bare, '' ) );
+		$this->assertSame(
+			'IE',
+			$this->call_schema( 'with_default_country', $bare + array( 'addressCountry' => 'IE' ), 'GB' )['addressCountry']
+		);
+	}
 }
