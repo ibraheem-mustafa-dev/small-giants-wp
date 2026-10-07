@@ -63769,5 +63769,124 @@
   "varReads": [],
   "verdict": "NO-RULE",
   "why": "no rule in any loaded stylesheet declares justify-content for this element, so the cited sgs/button setting cannot paint it either"
+ },
+ {
+  "idx": 1241,
+  "block": "sgs/button",
+  "setting": "boxShadowHover",
+  "property": "box-shadow",
+  "claims": 2,
+  "surface": "product",
+  "surfaces": [
+   "product"
+  ],
+  "url": "/product/gucci-oversized-cat-eye/",
+  "where": [
+   "sibling"
+  ],
+  "cssProperty": [
+   "box-shadow"
+  ],
+  "ref": "cr-ref-product-114",
+  "path": null,
+  "rowPresent": true,
+  "refPresent": true,
+  "surfaceRefs": 105,
+  "rowTag": "DIV",
+  "rowClasses": "sgs-container-a8c3cd8d sgs-has-hover sgs-has-hover-shadow sgs-has-hover-lift sgs-has-block-link sgs-container product-card product-card--flat product-card--image-ratio sgs-pc-5 product-card--live cr-ref-product-114 wp-block-sgs-product-card",
+  "citedPresent": true,
+  "citedClasses": "sgs-button sgs-button--primary sgs-button--full sgs-btn-11f5e92d cr-ref-product-8 wp-block-sgs-button",
+  "depthFromCited": -1,
+  "ownNames": [
+   "sgs-button",
+   "sgs-button--primary",
+   "sgs-button--full",
+   "sgs-btn-11f5e92d",
+   "cr-ref-product-8",
+   "wp-block-sgs-button",
+   "sgs-button"
+  ],
+  "sheets": {
+   "total": 70,
+   "read": 70,
+   "skipped": 0,
+   "skippedHrefs": []
+  },
+  "matching": [
+   {
+    "selector": ".product-card",
+    "value": "var(--sgs-product-card-shadow,0 2px 12px color-mix(in srgb,var(--wp--custom--shadow-colour) 10%,transparent))"
+   }
+  ],
+  "matchingCount": 1,
+  "citedOwned": [],
+  "varReads": [
+   {
+    "selector": ".product-card",
+    "value": "var(--sgs-product-card-shadow,0 2px 12px color-mix(in srgb,var(--wp--custom--shadow-colour) 10%,transparent))",
+    "vars": [
+     {
+      "name": "--sgs-product-card-shadow",
+      "setOn": [
+       ":root",
+       ".product-card.product-card--flat"
+      ]
+     },
+     {
+      "name": "--wp--custom--shadow-colour",
+      "setOn": [
+       ".sgs-on-dark > *",
+       ".sgs-on-light > *",
+       ":root"
+      ]
+     }
+    ]
+   }
+  ],
+  "verdict": "REFUTED",
+  "why": "1 rule(s) govern box-shadow on this row and none is the cited sgs/button: .product-card. The row sits at depth -1 from the cited block, so no value on that setting would move it."
+ },
+ {
+  "idx": 1242,
+  "block": "sgs/choice-flow",
+  "setting": "backColourBorderHover",
+  "property": "border-top-color",
+  "claims": 1,
+  "surface": "product",
+  "surfaces": [
+   "product"
+  ],
+  "url": "/product/gucci-oversized-cat-eye/",
+  "where": [
+   "sibling"
+  ],
+  "cssProperty": [
+   "border-color"
+  ],
+  "ref": "cr-ref-product-112",
+  "path": null,
+  "rowPresent": true,
+  "refPresent": true,
+  "surfaceRefs": 105,
+  "rowTag": "DIV",
+  "rowClasses": "wp-block-woocommerce-product-collection cr-ref-product-112 is-layout-flow wp-block-woocommerce-product-collection-is-layout-flow",
+  "citedPresent": false,
+  "citedClasses": "",
+  "depthFromCited": -1,
+  "ownNames": [
+   "sgs-choice-flow"
+  ],
+  "sheets": {
+   "total": 70,
+   "read": 70,
+   "skipped": 0,
+   "skippedHrefs": []
+  },
+  "matching": [],
+  "matchingCount": 0,
+  "citedOwned": [],
+  "varReads": [],
+  "verdict": "NO-RULE",
+  "why": "no rule in any loaded stylesheet declares border-top-color for this element, so the cited sgs/choice-flow setting cannot paint it either"
  }
 ]
