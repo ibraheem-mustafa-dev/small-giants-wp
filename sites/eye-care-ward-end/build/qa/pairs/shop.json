@@ -1,17 +1,17 @@
 {
  "surface": "shop",
- "when": "2026-10-06T16:45:06.702Z",
+ "when": "2026-10-07T10:59:01.605Z",
  "width": 1440,
  "recheck": [
-  375,
-  768
+  1920
  ],
  "lifted": [],
  "blocks": 48,
- "kept": 4,
+ "kept": 21,
  "coveredByHand": [
   "cr-ref-shop-9",
-  "cr-ref-shop-31"
+  "cr-ref-shop-31",
+  "cr-ref-shop-49"
  ],
  "handMeasured": [
   "cr-ref-shop-5",
@@ -330,24 +330,6 @@
    "last": "frames"
   },
   {
-   "ref": "cr-ref-shop-2",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
-   "why": "only 77% of its words matched the draft",
-   "words": 242,
-   "matched": 187,
-   "first": "shop",
-   "last": "them."
-  },
-  {
-   "ref": "cr-ref-shop-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
-   "why": "only 77% of its words matched the draft",
-   "words": 242,
-   "matched": 187,
-   "first": "shop",
-   "last": "them."
-  },
-  {
    "ref": "cr-ref-shop-8",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)",
    "why": "only 50% of its words matched the draft",
@@ -364,15 +346,6 @@
    "matched": 1,
    "first": "frames",
    "last": "frames"
-  },
-  {
-   "ref": "cr-ref-shop-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
-   "why": "only 77% of its words matched the draft",
-   "words": 238,
-   "matched": 184,
-   "first": "gender",
-   "last": "them."
   },
   {
    "ref": "cr-ref-shop-28",
@@ -395,29 +368,11 @@
   {
    "ref": "cr-ref-shop-50",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 178,
-   "matched": 130,
+   "why": "its width is 1026px on the draft against 330px live",
+   "words": 130,
+   "matched": 124,
    "first": "photo",
    "last": "come"
-  },
-  {
-   "ref": "cr-ref-shop-49",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)",
-   "why": "only 73% of its words matched the draft",
-   "words": 178,
-   "matched": 130,
-   "first": "photo",
-   "last": "come"
-  },
-  {
-   "ref": "cr-ref-shop-48",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
-   "why": "only 75% of its words matched the draft",
-   "words": 210,
-   "matched": 158,
-   "first": "photo",
-   "last": "them."
   },
   {
    "ref": "cr-ref-shop-53",
@@ -497,137 +452,6 @@
    "last": null
   },
   {
-   "ref": "cr-ref-shop-12",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 26,
-   "matched": 24,
-   "first": null,
-   "last": null,
-   "group": {
-    "paths": [
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(9) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(10) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)"
-    ]
-   }
-  },
-  {
-   "ref": "cr-ref-shop-45",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(10) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 2,
-   "matched": 2,
-   "first": "nose",
-   "last": "pads"
-  },
-  {
-   "ref": "cr-ref-shop-42",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(9) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "hinge",
-   "last": "hinge"
-  },
-  {
-   "ref": "cr-ref-shop-39",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 2,
-   "matched": 2,
-   "first": "frame",
-   "last": "type"
-  },
-  {
-   "ref": "cr-ref-shop-36",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "material",
-   "last": "material"
-  },
-  {
-   "ref": "cr-ref-shop-34",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 9,
-   "matched": 9,
-   "first": "pilot",
-   "last": "shield"
-  },
-  {
-   "ref": "cr-ref-shop-35",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 9,
-   "matched": 9,
-   "first": "pilot",
-   "last": "shield"
-  },
-  {
-   "ref": "cr-ref-shop-33",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "style",
-   "last": "style"
-  },
-  {
-   "ref": "cr-ref-shop-26",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "price",
-   "last": "price"
-  },
-  {
-   "ref": "cr-ref-shop-23",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "colour",
-   "last": "colour"
-  },
-  {
-   "ref": "cr-ref-shop-20",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "size",
-   "last": "size"
-  },
-  {
-   "ref": "cr-ref-shop-11",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 28,
-   "matched": 26,
-   "first": "gender",
-   "last": "only"
-  },
-  {
-   "ref": "cr-ref-shop-17",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
-   "words": 1,
-   "matched": 1,
-   "first": "gender",
-   "last": "gender"
-  },
-  {
    "ref": "cr-ref-shop-21",
    "why": "no painted words (an image, an icon or an empty wrapper)"
   },
@@ -692,6 +516,24 @@
    "last": "sunglasses"
   },
   {
+   "ref": "cr-ref-shop-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 194,
+   "matched": 181,
+   "first": "shop",
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3)",
+   "why": null,
+   "words": 194,
+   "matched": 181,
+   "first": "shop",
+   "last": "them."
+  },
+  {
    "ref": "cr-ref-shop-6",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(1) > div:nth-child(1) > h1:nth-child(2) > span:nth-child(1)",
    "why": null,
@@ -701,17 +543,161 @@
    "last": "sunglasses"
   },
   {
+   "ref": "cr-ref-shop-17",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "gender",
+   "last": "gender"
+  },
+  {
+   "ref": "cr-ref-shop-11",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 28,
+   "matched": 26,
+   "first": "gender",
+   "last": "only"
+  },
+  {
+   "ref": "cr-ref-shop-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2)",
+   "why": null,
+   "words": 190,
+   "matched": 178,
+   "first": "gender",
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-20",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "size",
+   "last": "size"
+  },
+  {
+   "ref": "cr-ref-shop-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "colour",
+   "last": "colour"
+  },
+  {
+   "ref": "cr-ref-shop-26",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "price",
+   "last": "price"
+  },
+  {
+   "ref": "cr-ref-shop-33",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "style",
+   "last": "style"
+  },
+  {
+   "ref": "cr-ref-shop-35",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "pilot",
+   "last": "shield"
+  },
+  {
+   "ref": "cr-ref-shop-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
+   "why": null,
+   "words": 9,
+   "matched": 9,
+   "first": "pilot",
+   "last": "shield"
+  },
+  {
+   "ref": "cr-ref-shop-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "material",
+   "last": "material"
+  },
+  {
+   "ref": "cr-ref-shop-39",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "frame",
+   "last": "type"
+  },
+  {
+   "ref": "cr-ref-shop-42",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(9) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 1,
+   "matched": 1,
+   "first": "hinge",
+   "last": "hinge"
+  },
+  {
+   "ref": "cr-ref-shop-45",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(10) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+   "why": null,
+   "words": 2,
+   "matched": 2,
+   "first": "nose",
+   "last": "pads"
+  },
+  {
+   "ref": "cr-ref-shop-48",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2)",
+   "why": null,
+   "words": 162,
+   "matched": 152,
+   "first": "photo",
+   "last": "them."
+  },
+  {
    "ref": "cr-ref-shop-57",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(2)",
    "why": null,
    "words": 28,
    "matched": 28,
    "first": "every",
-   "last": "them.",
-   "drafts": {
-    "375": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)",
-    "768": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)",
-    "1440": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > div:nth-child(2) > p:nth-child(2)"
+   "last": "them."
+  },
+  {
+   "ref": "cr-ref-shop-12",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1)",
+   "why": null,
+   "words": 26,
+   "matched": 24,
+   "first": null,
+   "last": null,
+   "group": {
+    "paths": [
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(2) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(3) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(7) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(8) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(9) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > main:nth-child(3) > div:nth-child(2) > aside:nth-child(1) > div:nth-child(1) > div:nth-child(10) > button:nth-child(1) > span:nth-child(1) > span:nth-child(1)"
+    ]
    }
   }
  ]

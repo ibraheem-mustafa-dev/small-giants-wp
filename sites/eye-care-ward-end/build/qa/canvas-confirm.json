@@ -63726,5 +63726,48 @@
   "varReads": [],
   "verdict": "REFUTED",
   "why": "1 rule(s) govern min-height on this row and none is the cited sgs/button: .sgs-shop-filters button.wc-block-product-filter-chips__item, .sgs-shop-filters button.wc-block-components-product-filter-chips__item, .sgs-shop-filters .wc-block-components-product-filter-chips__item button, .sgs-shop-filters .wc-block-product-filter-chips__item button, .sgs-shop-filters .wc-block-components-product-filter-chips__button. The row sits at depth -1 from the cited block, so no value on that setting would move it."
+ },
+ {
+  "idx": 1240,
+  "block": "sgs/button",
+  "setting": "contentAlign",
+  "property": "justify-content",
+  "claims": 1,
+  "surface": "shop",
+  "surfaces": [
+   "shop"
+  ],
+  "url": "/shop/",
+  "where": [
+   "sibling"
+  ],
+  "cssProperty": [
+   "justify-content"
+  ],
+  "ref": "cr-ref-shop-11",
+  "path": null,
+  "rowPresent": true,
+  "refPresent": true,
+  "surfaceRefs": 67,
+  "rowTag": "DIALOG",
+  "rowClasses": "sgs-container has-global-padding sgs-cst-5946d3bf sgs-container-49c4089c sgs-shop-filters cr-ref-shop-11 wp-block-sgs-container",
+  "citedPresent": false,
+  "citedClasses": "",
+  "depthFromCited": -1,
+  "ownNames": [
+   "sgs-button"
+  ],
+  "sheets": {
+   "total": 66,
+   "read": 66,
+   "skipped": 0,
+   "skippedHrefs": []
+  },
+  "matching": [],
+  "matchingCount": 0,
+  "citedOwned": [],
+  "varReads": [],
+  "verdict": "NO-RULE",
+  "why": "no rule in any loaded stylesheet declares justify-content for this element, so the cited sgs/button setting cannot paint it either"
  }
 ]
