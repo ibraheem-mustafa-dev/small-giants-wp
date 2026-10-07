@@ -222,7 +222,7 @@ if ( ! function_exists( 'sgs_choice_flow_product_details' ) ) {
 
 if ( ! function_exists( 'sgs_choice_flow_stage_note_html' ) ) {
 	/**
-	 * The stage's optional help note (`stageNote`, `stageNoteLink`). With a
+	 * The stage's optional help note (`stageNote`, `stageNoteLink`: `{url,text,source}`). With a
 	 * link the whole note is the link: an optional round icon badge
 	 * (`stageNoteIcon`), then the note as a title line and the link text as
 	 * the line under it. Rendered twice in showcase — in the stage aside
@@ -241,6 +241,12 @@ if ( ! function_exists( 'sgs_choice_flow_stage_note_html' ) ) {
 		$link      = isset( $attributes['stageNoteLink'] ) && is_array( $attributes['stageNoteLink'] ) ? $attributes['stageNoteLink'] : array();
 		$url       = isset( $link['url'] ) ? (string) $link['url'] : '';
 		$link_text = isset( $link['text'] ) ? (string) $link['text'] : '';
+		// A Site Info source (phone, email, WhatsApp) reads the live value, falling back to the typed URL.
+		$source = isset( $link['source'] ) ? (string) $link['source'] : 'url';
+		if ( 'url' !== $source ) {
+			require_once __DIR__ . '/helpers-link-source.php';
+			$url = sgs_resolve_link_source( $source, $url )['url'];
+		}
 		$icon      = isset( $attributes['stageNoteIcon'] ) ? (string) $attributes['stageNoteIcon'] : 'none';
 		$class     = 'sgs-choice-flow__summary-note sgs-choice-flow__summary-note--' . ( 'pane' === $placement ? 'pane' : 'stage' );
 

@@ -189,7 +189,7 @@
 		"stageNoteLink": {
 			"type": "object",
 			"default": {},
-			"description": "FR-43-24 (v1.8.0): the note's optional link, {url,text}. Shown only when stageNote is also set and both url and text are non-empty."
+			"description": "FR-43-24 (v1.8.0): the note's optional link, {url,text,source}. `source` is url (default, the typed url), phone, email or whatsapp (read live from Site Info, falling back to the typed url). Shown only when stageNote is also set and the link resolves to a non-empty url."
 		},
 		"progressColour": {
 			"type": "string",

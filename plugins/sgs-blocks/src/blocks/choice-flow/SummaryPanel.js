@@ -18,6 +18,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, SelectControl, TextControl } from '@wordpress/components';
 import { SgsColourPanel } from '../../components';
+import { SITE_INFO_LINK_SOURCE_OPTIONS, LINK_SOURCE_HELP } from '../../shared/link-source-options';
 import textRow from '../../components/colour-variants/textRow';
 
 /**
@@ -27,7 +28,7 @@ import textRow from '../../components/colour-variants/textRow';
  * @param {string}   props.summaryPosition  Current `summaryPosition` attribute ('start'|'end').
  * @param {string}   props.summaryBaseLabel Current `summaryBaseLabel` attribute (FIXES item 4).
  * @param {string}   props.stageNote        Current `stageNote` attribute.
- * @param {Object}   props.stageNoteLink    Current `stageNoteLink` attribute ({url,text}).
+ * @param {Object}   props.stageNoteLink    Current `stageNoteLink` attribute ({url,text,source}).
  * @param {Object}   props.attributes       Block attributes (the colour row reads and writes `summaryNoteColour`).
  * @param {Function} props.setAttributes    Block attribute setter.
  */
@@ -105,11 +106,24 @@ export default function SummaryPanel( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<SelectControl
+						label={ __( 'Note link source', 'sgs-blocks' ) }
+						value={ link.source || 'url' }
+						options={ SITE_INFO_LINK_SOURCE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { stageNoteLink: { ...link, source: val } } ) }
+						help={ 'url' === ( link.source || 'url' ) ? undefined : LINK_SOURCE_HELP[ link.source ] }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Note link URL', 'sgs-blocks' ) }
 						value={ link.url || '' }
 						onChange={ ( val ) => setAttributes( { stageNoteLink: { ...link, url: val } } ) }
-						help={ __( 'Both text and URL are needed for the link to show.', 'sgs-blocks' ) }
+						help={
+							'url' === ( link.source || 'url' )
+								? __( 'Both text and URL are needed for the link to show.', 'sgs-blocks' )
+								: __( 'Used only as a fallback while the Site Info field is empty.', 'sgs-blocks' )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

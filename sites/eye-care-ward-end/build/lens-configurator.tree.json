@@ -33,6 +33,7 @@
       "summaryPendingText": "not chosen yet",
       "stageNote": "Not sure which to pick?",
       "stageNoteLink": {
+        "source": "whatsapp",
         "url": "https://wa.me/447960597847",
         "text": "Happy to talk it through — message me and we'll choose together."
       },
