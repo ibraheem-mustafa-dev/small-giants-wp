@@ -2149,7 +2149,77 @@ function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypograph
 		wildcardProps,
 		rootClasses,
 		instances: buildMarkupModel( files, rootClasses ),
+		isEditorOnlyClass: ( cls ) => isEditorOnlyClass( cls, blockDir, files ),
 	};
+}
+
+// ── Editor-only classes ───────────────────────────────────────────────────
+
+const FRONT_END_SRC_CACHE = new Map();
+
+/** Every file under `dir` with one of `exts`, skipping node_modules and build. */
+function listSourceFiles( dir, exts ) {
+	const out = [];
+	let entries;
+	try {
+		entries = fs.readdirSync( dir, { withFileTypes: true } );
+	} catch ( err ) {
+		return out;
+	}
+	for ( const e of entries ) {
+		const p = path.join( dir, e.name );
+		if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
+			out.push( ...listSourceFiles( p, exts ) );
+		} else if ( e.isFile() && exts.includes( path.extname( e.name ).toLowerCase() ) ) {
+			out.push( p );
+		}
+	}
+	return out;
+}
+
+/** The plugin's shared `includes/` PHP, read once per run. */
+function readSharedIncludesSrc( blockDir ) {
+	const incDir = path.resolve( blockDir, '..', '..', '..', 'includes' );
+	if ( ! FRONT_END_SRC_CACHE.has( incDir ) ) {
+		FRONT_END_SRC_CACHE.set(
+			incDir,
+			listSourceFiles( incDir, [ '.php' ] ).map( ( f ) => fs.readFileSync( f, 'utf8' ) ).join( '\n' )
+		);
+	}
+	return FRONT_END_SRC_CACHE.get( incDir );
+}
+
+const escapeRegExp = ( t ) => t.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+
+/**
+ * True when `cls` is rendered ONLY by the editor canvas: its literal appears in
+ * the block's edit.js, and neither the class nor its `__element` stem (a class
+ * built as `$prefix . '__stem'`) appears in any front-end emitter: the block's
+ * PHP (own and one-hop required), its other JS (view.js, save.js, helpers) or
+ * the plugin's shared includes/ PHP. A declaration on such a class can never
+ * block a front-end control.
+ */
+function isEditorOnlyClass( cls, blockDir, phpFiles ) {
+	let editSrc = '';
+	try {
+		editSrc = fs.readFileSync( path.join( blockDir, 'edit.js' ), 'utf8' );
+	} catch ( err ) {
+		return false;
+	}
+	const token = new RegExp( '(?<![\\w-])' + escapeRegExp( cls ) + '(?![\\w-])' );
+	if ( ! token.test( editSrc ) ) {
+		return false;
+	}
+	const stemAt = cls.indexOf( '__' );
+	const stem   = new RegExp( '[\'"]' + escapeRegExp( stemAt > 0 ? cls.slice( stemAt ) : cls ) + '(?![\\w-])' );
+	const frontEnd = [
+		...phpFiles.map( ( f ) => f.src ),
+		...listSourceFiles( blockDir, [ '.js' ] )
+			.filter( ( f ) => 'edit.js' !== path.basename( f ) )
+			.map( ( f ) => fs.readFileSync( f, 'utf8' ) ),
+		readSharedIncludesSrc( blockDir ),
+	];
+	return ! frontEnd.some( ( src ) => token.test( src ) || ( stemAt > 0 && stem.test( src ) ) );
 }
 
 // ── Relations ─────────────────────────────────────────────────────────────
@@ -2261,6 +2331,30 @@ function relateElements( a, bChain, model ) {
 	return 'unknown';
 }
 
+/**
+ * Specificity of a selector chain as [classes, tags]: the per-instance marker
+ * counts as a class. Null when any compound is not statically resolvable.
+ */
+function chainSpecificity( chain ) {
+	let classes = 0;
+	let tags    = 0;
+	for ( const c of chain ) {
+		if ( c.unknown ) {
+			return null;
+		}
+		classes += c.classes.length + ( c.inst ? 1 : 0 );
+		tags    += c.tag && 0 === c.classes.length && ! c.inst ? 1 : 0;
+	}
+	return [ classes, tags ];
+}
+
+/** True when control chain `a` has strictly higher specificity than declaration chain `b`. */
+function chainBeatsChain( a, b ) {
+	const sa = chainSpecificity( a );
+	const sb = chainSpecificity( b );
+	return !! sa && !! sb && ( sa[ 0 ] > sb[ 0 ] || ( sa[ 0 ] === sb[ 0 ] && sa[ 1 ] > sb[ 1 ] ) );
+}
+
 /** Does a CSS compound target the markup instance `inst` (non-root compounds only)? */
 const compoundMatchesInstance = ( c, inst ) => c.classes.length > 0 && c.classes.every( ( cl ) => inst.classes.has( cl ) );
 
@@ -2324,6 +2418,10 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 			worst = worst || { cls: 'CANNOT-RESOLVE', attrs: attrsOf( controls ), note: 'the declaring selector is not statically resolvable' };
 			continue;
 		}
+		if ( b.classes.length > 0 && b.classes.some( ( cl ) => model.isEditorOnlyClass( cl ) ) ) {
+			// Rendered by the editor canvas only: no front-end control can be blocked.
+			continue;
+		}
 		const rels = controls.map( ( c ) => {
 			if ( ! c.members ) {
 				return { c, rel: 'unknown' };
@@ -2335,6 +2433,16 @@ function classifyInheritedHardcode( cand, model, declLog ) {
 			const pick = [ 'same', 'control-above', 'control-below', 'unrelated' ].find( ( r ) => set.includes( r ) );
 			return { c, rel: pick || 'unknown' };
 		} );
+		if ( controls.some( ( c ) => c.members && c.members.some( ( cm ) =>
+			chainBeatsChain( cm, chain ) && 'same' === relateElements( lastCompound( cm ), chain, model )
+		) ) ) {
+			// A resolved control on the declaring element itself that strictly outranks
+			// the literal ((0,2,0) against (0,1,0)) wins whatever ancestors or
+			// unplaceable controls elsewhere do. A tie is decided by source order, so
+			// it falls through to the ordinary resolution below.
+			sawSame = true;
+			continue;
+		}
 		const above = rels.filter( ( r ) => 'control-above' === r.rel ).map( ( r ) => r.c );
 		if ( above.length ) {
 			return {
@@ -3159,9 +3267,10 @@ function selfTestE12() {
 /**
  * Write a synthetic one-block tree (block.json, render.php, style.css) into a
  * fresh temp directory named `x` (so the block slug is `x`) and run the real
- * checkBlock() over it. The tree is removed afterwards.
+ * checkBlock() over it. `extraFiles` ({ name: contents }) adds files beside them
+ * (edit.js, view.js). The tree is removed afterwards.
  */
-function runE14Fixture( attributes, renderPhp, styleCss ) {
+function runE14Fixture( attributes, renderPhp, styleCss, extraFiles = {} ) {
 	const tmp      = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-e14-selftest-' ) );
 	const blockDir = path.join( tmp, 'x' );
 	try {
@@ -3173,6 +3282,9 @@ function runE14Fixture( attributes, renderPhp, styleCss ) {
 		fs.writeFileSync( path.join( blockDir, 'block.json' ), JSON.stringify( { name: 'sgs/x', attributes: attrs } ), 'utf8' );
 		fs.writeFileSync( path.join( blockDir, 'render.php' ), renderPhp, 'utf8' );
 		fs.writeFileSync( path.join( blockDir, 'style.css' ), styleCss, 'utf8' );
+		for ( const [ name, body ] of Object.entries( extraFiles ) ) {
+			fs.writeFileSync( path.join( blockDir, name ), body, 'utf8' );
+		}
 		ELEMENT_MODEL_STATS.class1.length = 0;
 		const findings = checkBlock( blockDir );
 		return { findings, class1: ELEMENT_MODEL_STATS.class1.slice() };
@@ -3310,6 +3422,62 @@ function selfTestE14( assert ) {
 			r.findings.filter( ( f ) => ( 'gap' === f.property || 'padding' === f.property ) && ( 'CLASS-2' === f.class || 'CLASS-3' === f.class ) ).length,
 			0
 		);
+	}
+
+	// CASE 11 — editor-only classes. A declaration on a class that only edit.js
+	// emits can never block a front-end control. The unplaceable control selector
+	// and the `.sgs-x__notice` class (in no markup) give CANNOT-RESOLVE without
+	// the rule, so the negative is load-bearing.
+	{
+		const php = E14_FIXTURE_PHP_HEAD +
+			"$css .= sgs_typography_css_rule( $attributes, 'heading', sgs_x_unplaceable_selector() );\n" +
+			E14_FIXTURE_ROOT_OPEN + '<p class="sgs-x__body">Body</p>\n</div>\n';
+		const css        = '.sgs-x__notice {\n\tline-height: 1.4;\n}\n';
+		const noticeRows = ( r ) => r.findings.filter( ( f ) => '.sgs-x__notice' === f.selector ).map( ( f ) => f.class );
+		const editJs     = 'export default () => <div className="sgs-x__notice">Empty</div>;\n';
+
+		assert(
+			'editor-only: a class only edit.js emits is NOT reported',
+			noticeRows( runE14Fixture( [ 'headingLineHeight' ], php, css, { 'edit.js': editJs } ) ),
+			[]
+		);
+		assert(
+			'editor-only: the same class also built in view.js (a front-end emitter) IS still CANNOT-RESOLVE',
+			noticeRows( runE14Fixture( [ 'headingLineHeight' ], php, css, {
+				'edit.js': editJs,
+				'view.js': "el.className = 'sgs-x__notice';\n",
+			} ) ),
+			[ 'CANNOT-RESOLVE' ]
+		);
+		assert(
+			'editor-only: a class in no edit.js (no editor evidence) IS still CANNOT-RESOLVE',
+			noticeRows( runE14Fixture( [ 'headingLineHeight' ], php, css ) ),
+			[ 'CANNOT-RESOLVE' ]
+		);
+	}
+
+	// CASE 12 — own control wins by resolution order. The heading control is on
+	// the declaring element at (0,2,0) against a (0,1,0) literal; a root control
+	// above it must not turn that into CLASS 2.
+	{
+		const head = E14_FIXTURE_PHP_HEAD + "$css .= sgs_typography_css_rule( $attributes, '', $root_sel );\n";
+		const body = E14_FIXTURE_ROOT_OPEN + '<h3 class="sgs-x__title">Title</h3>\n</div>\n';
+		const run  = ( headingCall, css ) => runE14Fixture( [ 'lineHeight', 'headingLineHeight' ], head + headingCall + body, css );
+		const lh   = ( r, sel ) => r.findings.filter( ( f ) => 'line-height' === f.property && sel === f.selector ).map( ( f ) => f.class );
+		const ownCall = "$heading_sel = '.' . $uid . ' .sgs-x__title';\n$css .= sgs_typography_css_rule( $attributes, 'heading', $heading_sel );\n";
+
+		const own = run( ownCall, '.sgs-x__title {\n\tline-height: 1.4;\n}\n' );
+		assert( 'own control: a resolved (0,2,0) control on the declaring element beats the root control above it (not reported)', lh( own, '.sgs-x__title' ), [] );
+		assert( 'own control: that silence is a CLASS 1 verdict', own.class1.map( ( c ) => c.selector ), [ '.sgs-x__title' ] );
+
+		const tie = run( ownCall, '.sgs-x .sgs-x__title {\n\tline-height: 1.4;\n}\n' );
+		assert( 'own control: a specificity TIE (0,2,0) vs (0,2,0) is not an early CLASS 1: the root control above still reports CLASS-2', lh( tie, '.sgs-x .sgs-x__title' ), [ 'CLASS-2' ] );
+
+		const unresolved = run(
+			"$css .= sgs_typography_css_rule( $attributes, 'heading', sgs_x_unplaceable_selector() );\n",
+			'.sgs-x__title {\n\tline-height: 1.4;\n}\n'
+		);
+		assert( 'own control: an UNRESOLVABLE control selector is not treated as an own control (still CLASS-2)', lh( unresolved, '.sgs-x__title' ), [ 'CLASS-2' ] );
 	}
 
 	// CASE 10 — ratchet: past a ceiling the exit code is 1, at or under it 0.
