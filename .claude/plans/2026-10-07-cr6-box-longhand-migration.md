@@ -2,7 +2,7 @@
 title: CR6 — migrate the padding and margin shorthand that zero-fills unset sides
 project: small-giants-wp
 created: 2026-10-07
-status: draft
+status: phase 1 shipped
 authors: Bean, Claude (small-giants-wp-cd)
 governs: register CR6 (.claude/plans/2026-10-02-eye-care-fix-register.md), Spec 47 §5 Residual (CR6)
 ---
@@ -186,6 +186,26 @@ byte-identical. **Fail:** an unexplained difference → fix the recogniser; neve
 **PASSED 2026-10-07** (sandybrown, deploy of `53172f1d5`): `node plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs` 18/18 rows, front end and editor, at 1440/768/375. The same read before the deploy failed 6 rows (e.g. case A at 768 `40 0 0 0`; case C at 375 `50 0 0 0`, the mobile tier wiping the tablet's left), so the check is proven able to fail.
 **Pass:** every VERIFY value above, front end and editor. **Fail:** any side 0 or editor/front-end
 disagreement → stop; the helper, the cascade or the preview is wrong.
+
+### Progress (2026-10-07)
+
+**U1–U7 DONE**, committed as `1130757e1` (U1), `746fd5f2e` (U2), `5c3763ab3` (U3), `53172f1d5` + `83f3a5ae5` (U4,
+GATE 2 passed live 18/18) and `7851261e5` (U5–U7 in one commit, per the commit rule). What the run changed from the
+text below, all recorded here because a later session would otherwise rediscover it:
+
+- **The batch is 143 sites in 39 files** (the census, reconciled per file); `--fix` refuses to change a file without a
+  migratable site, after the first run leaked a whole-file tidy-up into 4 unrelated files (undone, fixed, rerun).
+- **The editor half was 52 previews, not 13 flag sites**: 36 by three Haiku subagents (every diff read), 16 by hand.
+  The editor arm missed camelCase names (`contentPadding`) until fixed; cart's panel and form's wrapper previews
+  were wrong before CR6 (their emitters are per-side), so P2-d closes for them. A subagent dropped an import hero
+  still used; a used-but-not-imported scan across all 30 changed JS files caught it (the JS linter is broken repo-wide).
+- **GATE 3 result: narrow.** `zeroFillPairs` in the census holds 11 pairs (4 padding: `sgs/accordion` header and
+  content padding via block context, `sgs/container::gridItemPadding`, `sgs/label::padding`; 7 border widths); the
+  route also seeds every border width. `sgs/container::padding` had been over-seeded (its wrapper always printed
+  per side) and no longer is.
+- **U8 DONE 2026-10-07:** sandybrown deploy of `7851261e5` (141 fast + 6 full gates, 95/95 payload), then `check-box-longhands-blocks-live.mjs` 30/30 rows, front end and editor, at 1440/768/375. Before the deploy it `node plugins/sgs-blocks/scripts/qa/check-box-longhands-blocks-live.mjs`
+  read 40 0 0 0 at 768 and 375 for all five blocks (text, heading, button, label, info-box). The Eye Care
+  re-measure rides on the next measure-only sweep (Task 1). **CR6 phase 1 is complete; phase 2 is below.**
 
 ### U5 — the batch, PHP and editor together — 40 min
 **Files:** the 30 boilerplate `render.php`; the local triples (`hero`, `card-grid`, `theme-toggle`,

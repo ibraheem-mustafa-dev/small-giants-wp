@@ -623,23 +623,19 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - F5 whole-page score in the solve report: built.
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
-     - **CR6 — setting one side of a padding or margin box zeroes the other three. PROVEN, and a MIGRATION.**
-       Owned here. **Scope measured 2026-10-07, replacing the earlier "awkward rather than large" framing.** The
-       defect is one helper's CONTRACT: `plugins/sgs-blocks/includes/helpers-box.php::sgs_box_object_shorthand`
-       returns a four-value CSS shorthand, and a shorthand inherently sets all four sides, which is what forces
-       its `'0'` fill for unset sides (its lines 184-187). `sgs_corner_object_shorthand` has the same defect for
-       border-radius corners. `lib/resolve.mjs::seedSides` is the route's WORKAROUND for it — its own comment
-       says "an unset side there prints 0, CR6" — so fixing the PHP makes `seedSides` actively harmful, freezing
-       values the client never chose, and **the two must land together**.
-       **178 call sites across 56 files**, and all of them already call the one helper, so nothing is scattered.
-       **156 (88%) are a plain assignment**, and **112 are the same four variable names** (`$padding_tab_val`,
-       `$padding_mob_val`, `$margin_tab_val`, `$margin_mob_val`) repeated as an identical four-line block across
-       ~30 blocks, consumed by a single three-line idiom that appears 112 times. 11 hits are comments naming the
-       helper; roughly 10 are genuinely bespoke.
-       **Agreed approach (Bean, 2026-10-07):** add a per-side helper that emits only the sides actually set, build
-       the detector FIRST per `.claude/THE-MIGRATION-METHOD.md`, script the 112 boilerplate conversions, batch the
-       ~45 same-shape-different-name assignments to Haiku subagents, and keep the ~10 bespoke sites and the
-       `seedSides` deletion in the main thread. **Needs `/strategic-plan` before any edit.**
+     - **CR6 — setting one side of a padding or margin box zeroed the other three. FIXED and verified live
+       2026-10-07** (plan `.claude/plans/2026-10-07-cr6-box-longhand-migration.md`). Padding and margin now print
+       only the sides a client set (`includes/helpers-box.php::sgs_box_object_longhands`), across 41 blocks, in the
+       editor canvas too (`src/utils/spacing-preview.js::tierBoxLonghands`); a mobile tier that sets one side keeps
+       the tablet tier's other sides (Bean). Kept on purpose: `sgs_box_object_shorthand` stays byte-identical for
+       border WIDTH (where an unset side SHOULD be 0) and for the `var()` holdouts. The gate is
+       `plugins/sgs-blocks/scripts/migrate-box-longhands.py --check` (in `gates.json`, a baseline ratchet, now 0).
+       **The route's half:** `lib/resolve.mjs::seedSides` now seeds unset sides only where a box still zero-fills —
+       every border width, and the census's `zeroFillPairs` (`reports/migrations/box-longhands-census.json`); with no
+       census it seeds everywhere, the safe direction. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
+       (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
+       **Phase 2, named in the plan:** corner radius, the `var()` holdouts, the media-padding atom and its JS twin,
+       and two zero-fill copies outside the helper (`google-reviews`, `helpers-border-style.php::sgs_border_box_decls`).
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
        `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into

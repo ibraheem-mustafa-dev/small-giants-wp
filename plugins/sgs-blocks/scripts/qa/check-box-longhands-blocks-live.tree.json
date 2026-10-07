@@ -1,0 +1,12 @@
+[
+  { "name": "sgs/text", "attributes": { "className": "cr6-text-a", "text": "Control" } },
+  { "name": "sgs/text", "attributes": { "className": "cr6-text-b", "text": "Test", "padding": { "desktop": { "right": "20px", "bottom": "20px", "left": "20px" }, "tablet": { "top": "40px" } } } },
+  { "name": "sgs/heading", "attributes": { "className": "cr6-heading-a", "content": "Control" } },
+  { "name": "sgs/heading", "attributes": { "className": "cr6-heading-b", "content": "Test", "padding": { "desktop": { "right": "20px", "bottom": "20px", "left": "20px" }, "tablet": { "top": "40px" } } } },
+  { "name": "sgs/button", "attributes": { "className": "cr6-button-a", "label": "Control", "url": "#" } },
+  { "name": "sgs/button", "attributes": { "className": "cr6-button-b", "label": "Test", "url": "#", "padding": { "desktop": { "right": "20px", "bottom": "20px", "left": "20px" }, "tablet": { "top": "40px" } } } },
+  { "name": "sgs/label", "attributes": { "className": "cr6-label-a", "text": "Control" } },
+  { "name": "sgs/label", "attributes": { "className": "cr6-label-b", "text": "Test", "padding": { "desktop": { "right": "20px", "bottom": "20px", "left": "20px" }, "tablet": { "top": "40px" } } } },
+  { "name": "sgs/info-box", "attributes": { "className": "cr6-info-box-a", "heading": "Control" } },
+  { "name": "sgs/info-box", "attributes": { "className": "cr6-info-box-b", "heading": "Test", "padding": { "desktop": { "right": "20px", "bottom": "20px", "left": "20px" }, "tablet": { "top": "40px" } } } }
+]
