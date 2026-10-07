@@ -116,14 +116,25 @@ def check_mega_panel_transitions(css_text: str | None = None) -> list[str]:
 # ---------------------------------------------------------------------------
 
 _SH_INVERTED_ANCHOR = "'background:transparent !important;'"
-_SH_SCROLLED_ANCHOR_PREFIX = "$sh_scrolled_decls .= 'background:' . ( '' !== $sh_scrolled_bg"
+# The scrolled-state background statements live in the helper render.php calls
+# (sgs_header_scrolled_colour_css): the client's scrolled background, and the surface
+# fallback a Transparent tier paints when none is set. Each must carry `!important`.
+SITE_HEADER_SCROLL_HELPER = PLUGIN_ROOT / "includes" / "sgs-header-scroll-trigger.php"
+_SH_SCROLLED_ANCHORS = (
+    "$explicit_decls .= 'background:' . $bg_value",
+    "'background:var(--wp--preset--color--surface,#ffffff)",
+)
 
 
-def check_site_header_important(php_text: str | None = None) -> list[str]:
+def check_site_header_important(php_text: str | None = None, helper_text: str | None = None) -> list[str]:
     if php_text is None:
         if not SITE_HEADER_RENDER.exists():
             return [f"B. site-header — ANCHOR NOT FOUND — {SITE_HEADER_RENDER} does not exist"]
         php_text = SITE_HEADER_RENDER.read_text(encoding="utf-8")
+    if helper_text is None:
+        if not SITE_HEADER_SCROLL_HELPER.exists():
+            return [f"B. site-header — ANCHOR NOT FOUND — {SITE_HEADER_SCROLL_HELPER} does not exist"]
+        helper_text = SITE_HEADER_SCROLL_HELPER.read_text(encoding="utf-8")
 
     violations: list[str] = []
 
@@ -142,21 +153,21 @@ def check_site_header_important(php_text: str | None = None) -> list[str]:
             "'background:transparent' literal was not found; update this gate"
         )
 
-    # Sub-anchor 2: the else-branch scrolled-background concatenation.
-    idx = php_text.find(_SH_SCROLLED_ANCHOR_PREFIX)
-    if idx == -1:
-        violations.append(
-            "B. site-header — ANCHOR NOT FOUND — the "
-            "'$sh_scrolled_decls .= ...background...' anchor was not found; "
-            "update this gate"
-        )
-    else:
-        # The statement runs until the next top-level `;` after the anchor.
-        end = php_text.find(";", idx)
-        statement = php_text[idx : end + 1] if end != -1 else php_text[idx : idx + 300]
+    # Sub-anchors 2 and 3: the helper's scrolled-background statements.
+    for anchor in _SH_SCROLLED_ANCHORS:
+        idx = helper_text.find(anchor)
+        if idx == -1:
+            violations.append(
+                f"B. site-header — ANCHOR NOT FOUND — {anchor!r} was not found in "
+                f"{SITE_HEADER_SCROLL_HELPER.name}; update this gate"
+            )
+            continue
+        # The declaration's PHP string literal runs to the first `;'` after the anchor.
+        end = helper_text.find(";'", idx)
+        statement = helper_text[idx : end + 2] if end != -1 else helper_text[idx : idx + 300]
         if "!important" not in statement:
             violations.append(
-                "B. site-header — the scrolled-state background statement is missing "
+                "B. site-header — a scrolled-state background declaration is missing "
                 "'!important' (root-cause: P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING): "
                 + statement.strip().replace("\n", " ")[:120]
             )
@@ -312,6 +323,17 @@ def _self_test_b() -> bool:
         print("[single-instance-invariants B --self-test] FAIL — dropped !important not reported.")
         return False
     print("[single-instance-invariants B --self-test] positive control reported — " + corrupted_violations[0])
+    helper = SITE_HEADER_SCROLL_HELPER.read_text(encoding="utf-8")
+    for anchor in _SH_SCROLLED_ANCHORS:
+        idx = helper.find(anchor)
+        end = helper.find(" !important;'", idx)
+        if idx == -1 or end == -1:
+            print("[single-instance-invariants B --self-test] FAIL — helper anchor not found for corruption.")
+            return False
+        dropped = helper[:end] + ";'" + helper[end + len(" !important;'"):]
+        if not check_site_header_important(original, dropped):
+            print(f"[single-instance-invariants B --self-test] FAIL — dropped !important after {anchor!r} not reported.")
+            return False
     if check_site_header_important(original):
         print("[single-instance-invariants B --self-test] FAIL — restored text still flags.")
         return False
