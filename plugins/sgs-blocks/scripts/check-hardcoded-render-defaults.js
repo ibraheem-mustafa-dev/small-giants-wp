@@ -111,6 +111,8 @@ const fs   = require( 'fs' );
 const path = require( 'path' );
 const os   = require( 'os' );
 
+const { spliceFragments } = require( './lib/e14-markup-splice' );
+
 const ROOT      = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
 const BASELINE_FILE = path.join( __dirname, 'hardcoded-render-defaults-baseline.json' );
@@ -1581,23 +1583,25 @@ const E14_BLOCKS_BUILD = false;
 // - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
 //   intent).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 5: the cart badge (its trigger markup is unseen,
-//   CANNOT-TELL), the media caption list's bare `figcaption` member, the
-//   nav-drawer ornament (a control selector built from a function parameter,
-//   triage §7 gap 12) and the theme-toggle icon's svg glyph size.
+// - CANNOT-RESOLVE 4: the cart badge (two rows; its trigger markup is unseen,
+//   CANNOT-TELL), the media caption list's bare `figcaption` member and the
+//   theme-toggle icon's svg glyph size.
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
 // Shared PHP is read one hop from a block's require (readBlockPhpFiles): not
 // transitively, because includes/render-helpers.php requires the whole helper
-// tree and almost every block requires it.
+// tree and almost every block requires it. A file named for the block
+// (`<slug>-*.php`) is its own code and is followed at any depth.
+// Markup a function returns is placed under the element its caller puts it in
+// (lib/e14-markup-splice.js).
 // An element an InnerBlocks template child renders (a `className` in the
 // block's editor template) is a front-end element, and the child's own root
 // controls own it (collectTemplateChildOwners).
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        28,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 5,
+	'CANNOT-RESOLVE': 4,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
@@ -2081,17 +2085,28 @@ function readBlockPhpFiles( blockDir ) {
 		}
 	};
 	walk( blockDir );
-	for ( const f of files.slice() ) {
+	// A file named for the block (`<slug>-*.php`) is the block's own code wherever it is
+	// required from, so it is followed at any depth; any other file only one hop.
+	const slugPrefix = path.basename( blockDir ) + '-';
+	const queue      = files.slice();
+	for ( let hop = 0; hop < queue.length; hop++ ) {
+		const f = queue[ hop ];
+		const isFirstHop = ! f.followed; // a file of the block's own directory
 		for ( const m of f.src.matchAll( /(?<![\w$>:])require(?:_once)?\b\s*([^;]+);/g ) ) {
 			const target = resolveRequirePath( m[ 1 ], f.file );
 			if ( ! target || seen.has( target ) ) {
 				continue;
 			}
+			const isOwn = path.basename( target ).startsWith( slugPrefix );
+			if ( ! isFirstHop && ! isOwn ) {
+				continue;
+			}
 			try {
 				if ( fs.statSync( target ).isFile() ) {
-					const src = maskPhpComments( fs.readFileSync( target, 'utf8' ) );
+					const entry = { file: target, src: maskPhpComments( fs.readFileSync( target, 'utf8' ) ), followed: true };
 					seen.add( target );
-					files.push( { file: target, src } );
+					files.push( entry );
+					queue.push( entry );
 				}
 			} catch ( err ) {
 				// Missing or unreadable target: skip it, the gate never fails on a require.
@@ -2215,7 +2230,7 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 function buildMarkupModel( files, rootClasses ) {
 	const instances = [];
 	const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*)\b((?:"[^"]*"|'[^']*'|<\?[\s\S]*?\?>|[^<>"'])*?)(\/?)>/g;
-	for ( const f of files ) {
+	for ( const [ fileIdx, f ] of files.entries() ) {
 		const stack = [];
 		let m;
 		tagRe.lastIndex = 0;
@@ -2224,6 +2239,10 @@ function buildMarkupModel( files, rootClasses ) {
 			if ( '/' === m[ 1 ] ) {
 				for ( let k = stack.length - 1; k >= 0; k-- ) {
 					if ( instances[ stack[ k ] ].tag === tag ) {
+						// The element, and any unclosed one it implicitly ends, closes here.
+						for ( let j = k; j < stack.length; j++ ) {
+							instances[ stack[ j ] ].closePos = m.index;
+						}
 						stack.length = k;
 						break;
 					}
@@ -2233,7 +2252,9 @@ function buildMarkupModel( files, rootClasses ) {
 			const attrText = m[ 3 ];
 			const cm       = /class\s*=\s*\\?(["'])([\s\S]*?)\\?\1/.exec( attrText );
 			const classes  = new Set(
-				cm ? cm[ 2 ].replace( /<\?[\s\S]*?\?>/g, ' ' ).split( /\s+/ ).filter( ( c ) => /^[A-Za-z_][\w-]*$/.test( c ) && ! /[-_]$/.test( c ) ) : []
+				// A token that touches a PHP string quote (`'sgs-x__orn' . ( … ) . '`) is the literal
+				// piece of a concatenated class value; its quote is not part of the class.
+				cm ? cm[ 2 ].replace( /<\?[\s\S]*?\?>/g, ' ' ).split( /\s+/ ).map( ( c ) => c.replace( /^'+|'+$/g, '' ) ).filter( ( c ) => /^[A-Za-z_][\w-]*$/.test( c ) && ! /[-_]$/.test( c ) ) : []
 			);
 			let root = /wrapper_attr|get_block_wrapper/i.test( attrText );
 			for ( const c of classes ) {
@@ -2256,9 +2277,14 @@ function buildMarkupModel( files, rootClasses ) {
 				dynamic,
 				mainFile: /(?:^|[\\/])render\.php$/.test( f.file ),
 				parent:   stack.length ? stack[ stack.length - 1 ] : -1,
+				fileIdx,
+				pos:      m.index,
+				closePos: Infinity, // set where the matching close tag sits; a void or self-closed tag ends where it starts
 			} );
 			if ( ! VOID_TAGS.has( tag ) && '/' !== m[ 4 ] ) {
 				stack.push( instances.length - 1 );
+			} else {
+				instances[ instances.length - 1 ].closePos = m.index;
 			}
 		}
 	}
@@ -2283,13 +2309,15 @@ function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypograph
 		}
 	}
 	const rootClasses = collectRootClasses( files, slug, meta );
-	const props = new Set( [ ...controls.map( ( c ) => c.prop ), ...wildcardProps ] );
+	const props     = new Set( [ ...controls.map( ( c ) => c.prop ), ...wildcardProps ] );
+	const instances = buildMarkupModel( files, rootClasses );
+	spliceFragments( instances, files, { collectPhpFunctionParams, collectPhpCallSites, splitTopLevel, matchBracket, skipQuoted } );
 	return {
 		props,
 		controls,
 		wildcardProps,
 		rootClasses,
-		instances: buildMarkupModel( files, rootClasses ),
+		instances,
 		childOwners: withChildren ? collectTemplateChildOwners( blockDir ) : new Map(),
 		isEditorOnlyClass: ( cls ) => isEditorOnlyClass( cls, blockDir, files ),
 	};
@@ -3727,6 +3755,7 @@ function selfTestE12() {
 	selfTestE14( assert );
 	selfTestRequireHop( assert );
 	selfTestParamBinding( assert );
+	selfTestMarkupSplice( assert );
 
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
@@ -4161,7 +4190,10 @@ function selfTestRequireHop( assert ) {
 		const blockDir = path.join( tmp, 'blocks', 'x' );
 		fs.mkdirSync( inc );
 		fs.mkdirSync( blockDir, { recursive: true } );
-		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
+		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\nrequire_once __DIR__ . '/x-part.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
+		// Files named for the block (`x-*.php`) are followed at any depth: they are the block's own.
+		fs.writeFileSync( path.join( inc, 'x-part.php' ), "<?php\nrequire_once __DIR__ . '/x-deeper.php';\n?>\n<i class=\"sgs-hop-xpart\"></i>\n", 'utf8' );
+		fs.writeFileSync( path.join( inc, 'x-deeper.php' ), '<?php ?>\n<u class="sgs-hop-xdeeper"></u>\n', 'utf8' );
 		fs.writeFileSync(
 			path.join( inc, 'c.php' ),
 			"<?php $css = '--sgs-hop-deep:' . $v; $hover = 'var(--sgs-hop-read)';\n" +
@@ -4218,10 +4250,11 @@ function selfTestRequireHop( assert ) {
 		assert( 'one hop: markup in B (required by the block) IS in the model (hop 1 followed)', classes.has( 'sgs-hop-b' ), true );
 		assert( 'one hop: markup in C (required by B, not by the block) is NOT in the model (hop 2 not followed)', classes.has( 'sgs-hop-c' ), false );
 		assert( 'one hop: C is never even read', names.includes( 'c.php' ), false );
+		assert( 'block-named files: x-part.php (hop 2) and x-deeper.php (hop 3), both named for the block, are in the model', [ classes.has( 'sgs-hop-xpart' ), classes.has( 'sgs-hop-xdeeper' ) ], [ true, true ] );
 		assert( 'require forms: parenthesised require_once and bare require are both followed', [ classes.has( 'sgs-hop-paren' ), classes.has( 'sgs-hop-plain' ) ], [ true, true ] );
 		assert( 'require forms: a require inside a // or /* */ comment is not followed', classes.has( 'sgs-hop-commented' ), false );
 		assert( 'require forms: a non-.php target is not read', classes.has( 'sgs-hop-txt' ), false );
-		assert( 'require forms: a missing target is skipped and a repeated require is read once', names, [ 'b.php', 'paren.php', 'plain.php', 'render.php' ] );
+		assert( 'require forms: a missing target is skipped and a repeated require is read once', names, [ 'b.php', 'paren.php', 'plain.php', 'render.php', 'x-deeper.php', 'x-part.php' ] );
 		const written = collectWrittenCustomProps( blockDir );
 		assert( 'writer set: a property written two hops out (C) IS written (the writer set is transitive)', written.has( '--sgs-hop-deep' ), true );
 		assert( 'writer set: a property written in the block\'s edit.js IS written', written.has( '--sgs-hop-js' ), true );
@@ -4294,6 +4327,70 @@ function selfTestParamBinding( assert ) {
 	assert( 'param binding: a parameter the parser cannot read keeps its slot, so later parameters bind to their own argument', attr( 0, 'return $u' )( 'u' ), 'sgs-pb-second' );
 	const reassigned = build( "function sgs_pb_re( $root ) { $root = 'sgs-pb-inner'; return $root; }\n$x = sgs_pb_re( 'sgs-pb-arg' );\n" );
 	assert( 'param binding: a parameter the function reassigns reads its own assignment', reassigned( 0, 'return $root' )( 'root' ), 'sgs-pb-inner' );
+}
+
+/**
+ * Gap 13: markup a function returns is a child of the element its caller puts it
+ * in. Every fixture paints `itemLineHeight` onto `.sgs-x__link` and declares
+ * `line-height: 1` on `.sgs-x__orn`, an element only `sgs_x_label()` builds. The
+ * verdict is CLASS-2 once the model places `.sgs-x__orn` under the link, and
+ * CANNOT-RESOLVE while it cannot place it.
+ */
+function selfTestMarkupSplice( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] markup a function returns is placed in its caller\'s element\n\n' );
+	const label =
+		"<?php\nfunction sgs_x_label() {\n\t$o = '<span class=\"sgs-x__orn' . ( empty( $GLOBALS['sgs_x_swap'] ) ? '' : ' sgs-x__orn--swap' ) . '\" aria-hidden=\"true\">*</span>';\n\treturn $o . '<span class=\"sgs-x__txt\">T</span>';\n}\n";
+	const control = "$css .= sgs_typography_css_rule( $attributes, 'item', \"{$root_sel} .sgs-x__link\" );\n";
+	const css     = '.sgs-x__orn {\n\tline-height: 1;\n}\n';
+	const verdict = ( render, inc ) => {
+		const r = runE14Fixture( [ 'itemLineHeight' ], E14_FIXTURE_PHP_HEAD + control + E14_FIXTURE_ROOT_OPEN + render + '</div>\n', css, { 'inc.php': inc } );
+		return r.findings.filter( ( f ) => 'line-height' === f.property && '.sgs-x__orn' === f.selector ).map( ( f ) => f.class );
+	};
+
+	assert(
+		'splice: a call passed to sprintf() lands in the element holding its %N$s slot',
+		verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\" href=\"%1$s\">%2$s</a>', '#', sgs_x_label() ); ?>\n", label ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'splice: a plain %s slot is counted in order',
+		verdict( "<?php echo sprintf( '<a class=\"sgs-x__link\" href=\"%s\">%s</a>', '#', sgs_x_label() ); ?>\n", label ),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'splice: a call passed to a wrapper function lands where the wrapper puts its parameter',
+		verdict(
+			"<?php echo sgs_x_wrap( 'a', sgs_x_label() ); ?>\n",
+			label + "function sgs_x_wrap( $li, $inner ) {\n\treturn sprintf( '<li><span class=\"sgs-x__link\">%2$s</span></li>', $li, $inner );\n}\n"
+		),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'splice: a variable assigned from the call, copied and concatenated into a literal element',
+		verdict(
+			"<?php echo sgs_x_row(); ?>\n",
+			label + "function sgs_x_row() {\n\t$inner = sgs_x_label() . '';\n\t$copy = $inner;\n\treturn '<summary class=\"sgs-x__link\">' . $copy . '</summary>';\n}\n"
+		),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'splice: a function returning the call hands it on to its own caller\'s element',
+		verdict(
+			"<?php echo sprintf( '<a class=\"sgs-x__link\">%1$s</a>', sgs_x_pass() ); ?>\n",
+			label + 'function sgs_x_pass() {\n\treturn sgs_x_label();\n}\n'
+		),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'splice: a call whose result lands in no element stays unplaced (negative control)',
+		verdict( '<?php echo sgs_x_label(); ?>\n', label ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'splice: a tag opened in an earlier statement is not the element a later call lands in (negative control: no CLASS-2)',
+		verdict( "<?php $a = '<p class=\"sgs-x__link\">'; $b = sgs_x_label(); $c = '</p>'; ?>\n", label ),
+		[]
+	);
 }
 
 // ---------------------------------------------------------------------------
