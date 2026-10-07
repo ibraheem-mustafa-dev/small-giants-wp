@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13080,
+    "row_count": 13079,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1990,7 +1990,6 @@
     "sgs/buybox::thumbBorderColour": "color",
     "sgs/buybox::thumbBorderWidth": "visual",
     "sgs/buybox::thumbGap": "layout",
-    "sgs/buybox::thumbPixelSize": "select-from-enum",
     "sgs/buybox::thumbSelectedBorderColour": "color",
     "sgs/buybox::thumbSelectedScale": "select-from-enum",
     "sgs/buybox::thumbStripOffset": "styling",
