@@ -1,4 +1,4 @@
-// A measured diagram (plan 2026-10-07-measured-diagram-block.md §C) in a real browser (headless Chromium on local HTML,
+// A measured diagram (plan archive/2026-10-07-measured-diagram-block.md §C) in a real browser (headless Chromium on local HTML,
 // never a site): the walker reads a drawn line's weight and dash, and where a positioned label sits, and Solve writes a
 // label position only from the draft's declared value. Without these reads a diagram's line style and label positions
 // produce no row at all, so the route could neither compare nor fill them.

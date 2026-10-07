@@ -1,5 +1,22 @@
 # D1 measured-diagram blocks + bound product values that follow the picked size (v3)
 
+**Status (2026-10-07): built and live; every section A to E is done.**
+- Wave 0 (3042900e6).
+- A, size-following (203213357): live on eye-care-test.
+- B, the blocks (28e8ef1db, fixes fa98de877, 9422a8ad8, 1fb542564).
+- C, the route reads (28f968250, 345d8982c).
+- D, Eye Care (ed5af2458, cea62c3ff; snapshot pushed; template rebuilt).
+
+Verified live on canary page 4971 and on eye-care-test's Ray-Ban Sizing tab:
+- the values follow the picked size: 14/62/54/140 after 62-14-140;
+- axe is clean at 1440 and 375;
+- phones show numbered labels, with no reflow overflow;
+- the fade is off under reduced motion.
+
+Open items are only §G's deferrals. One known difference from the draft: the guide dash rhythm is 4px/3px, derived from the stroke width, against the draft's 4/4.
+
+The plan is ready to move to `plans/archive/`.
+
 ## Context
 
 Eye Care's product page Sizing tab should show the draft's front and side frame drawings, with labelled measurements (lens width, bridge, lens height, temple, in mm) that change when the shopper picks a size. This is register row N36S, decision D1.

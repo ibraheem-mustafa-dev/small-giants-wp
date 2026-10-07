@@ -57,10 +57,14 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 **Now (2026-10-07).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
-No blockers. **eye-care-test runs `f89b016f9`** (deploy marker). The backlog's QC finds Q3 to Q8 and Q11 are closed
-with live proof in their rows; N36S's real frame measurements and the draft's four-row Sizing table are live and follow
-the picked size, and its diagram is the D1 session's (`plans/2026-10-07-measured-diagram-block.md`). Still open in the
-backlog: Q1, Q9, Q10 (built, `77c9746c1`, not yet deployed: one edge left, see its row) and Q12.
+No blockers. **eye-care-test and the sandybrown canary both run `d358e1026`** (deploy markers). The backlog's QC finds Q3 to Q8 and Q11 are closed
+with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
+the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
+backlog's "D1 measured-diagram block" section). Q10 (the empty-field "Ask us" whole-cell button, linked to the Site Info WhatsApp number) and Q12 (the gallery's four-up grid and
+the thumbnails on the shared border panel) are closed with live proof at 375, 768 and 1440 (Q12 still owes one batched editor-canvas and inspector pass, in its row). Still open in the backlog: Q9, and one edge
+inside a closed row: the lens flow's note link cannot read Site Info (Q10 row). On the six frames with no lens height the
+diagram's lens-height dimension is hidden at 375, 768 and 1440 (`display:none`, so no bare "mm" shows and screen readers skip it;
+read live on /product/prada-symbole/). Q1 is decided, not building.
 
 **Spec 47 (v0.15.2): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
@@ -73,7 +77,7 @@ real, so every surface's page is rebuilt from its tree file. It writes no solver
 **The live Eye Care plans (one job each):** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, what is owed);
 the fix register (fixes; its Sweep column re-judged on the 2026-10-07 measure-only sweep); `plans/2026-10-04-spec47-full-coverage.md`
 (Session D: route and per-surface Solve work, including the register's owed tree values); `plans/2026-10-05-eye-care-functionality-backlog.md`
-(features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2); `plans/2026-10-07-measured-diagram-block.md` (the D1 diagram block, its own session).
+(features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2).
 **Measured state:** read the counts from `qa/triage/*.json` (all 17 surfaces), never a cached figure. The W-to-F reclassification is
 applied (`ffac809ce`, `844ee7bf2`) with every canvas citation read live (`canvas-confirm.json`), and the mega
 panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, nothing stale or unmeasured). ⚠️ Never compare a raw triage count with an
@@ -96,7 +100,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`** (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
   for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
-- **The walker-blind rows** are all closed and verified live on eye-care-test except **N36S** (see its register row).
+- **The walker-blind rows** are all closed and verified live on eye-care-test, N36S included.
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
 - **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2: P2-d and P2-f done; P2-a (corner radius) is

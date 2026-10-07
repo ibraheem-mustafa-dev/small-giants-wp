@@ -1,5 +1,5 @@
 // Measure a rendered draft's dimension diagram into sgs/diagram-dimension settings (plan
-// 2026-10-07-measured-diagram-block.md §C). R-47-4: every number comes from the rendered page in a real browser: path
+// archive/2026-10-07-measured-diagram-block.md §C). R-47-4: every number comes from the rendered page in a real browser: path
 // points from the SVG geometry API (getTotalLength / getPointAtLength in the svg's own user units, i.e. its viewBox),
 // label anchors from getBoundingClientRect against the drawing's box. Draft source text is never parsed. Line
 // geometry has no css_property, so a Fill skeleton may carry it (R-47-10); the label position is the declared offset the

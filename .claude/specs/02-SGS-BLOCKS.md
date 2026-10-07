@@ -335,7 +335,7 @@ tier-migration upgrade lands.
 - `variant` — standard | split | video | svg-animated
 - `headline` — RichText
 - `subHeadline` — RichText
-- `alignment` — left | centre
+- `alignment` — left | center
 - `backgroundImage` — media object
 - `backgroundVideo` — media object (MP4/WebM)
 - `svgContent` — SVG markup string (for animated backgrounds)
@@ -871,8 +871,9 @@ The `<img>` is the block root (no wrapper element). It is produced by `plugins/s
 - `data-parallax="{parallaxStrength}"` when `parallaxStrength > 0`; `data-fade-on-scroll="true"` when `fadeOnScroll` is on.
 - `data-sgs-path-draw="true"` with `data-sgs-path-draw-duration`, `data-sgs-path-draw-offset` and `data-sgs-path-draw-easing` when `pathDrawOnScroll` is on. `plugins/sgs-blocks/assets/js/animation-observer.js` reads these and `plugins/sgs-blocks/assets/css/extensions.css` styles the stroke.
 - `data-hide-tablet="true"` / `data-hide-mobile="true"` when the matching toggle is on.
-- `data-position-x-tablet`, `data-position-y-tablet`, `data-width-tablet`, `data-rotation-tablet` and the four `-mobile` equivalents when the tier value is set. No stylesheet or script reads these eight attributes, so tablet and mobile values of `positionX`, `positionY`, `width` and `rotation` have no visual effect.
 - With `imageDecorative` off, `alt` carries `imageAlt` and `aria-hidden` / `role` are omitted.
+
+**Per-device position, size and rotation:** the tablet and mobile tiers of `positionX`, `positionY`, `width` and `rotation` are scoped `@media` rules on the block's own uid class (`decorative-image/render.php`, through `sgs_responsive_css_rule`). The whole `transform` is rebuilt per tier, so a tier's rotation keeps the centring, flip and parallax parts.
 
 **Art-direction tiers (image only):** when `imageUrlTablet`/`imageIdTablet` or `imageUrlMobile`/`imageIdMobile` is set, the block prints sibling `<img>` elements after the base one. Each carries the same `uid`, base classes and data attributes, plus a tier class: the base image gets `sgs-decorative-image--desktop` and the siblings get `sgs-decorative-image--tablet` / `sgs-decorative-image--mobile`. Compound selectors in the scoped `<style>` element (never descendant selectors, because there is no ancestor) toggle them with `display: none`:
 
@@ -1042,7 +1043,7 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 
 ### 26. Measured Diagram (`sgs/measured-diagram` + `sgs/diagram-dimension`)
 
-**Purpose:** a drawing with labelled measurement lines: a product's dimensions, a floor plan's room sizes, a size chart, an engineering part. Plan: `.claude/plans/2026-10-07-measured-diagram-block.md`.
+**Purpose:** a drawing with labelled measurement lines: a product's dimensions, a floor plan's room sizes, a size chart, an engineering part. Plan: `.claude/plans/archive/2026-10-07-measured-diagram-block.md`.
 
 **Shape:**
 - The parent holds the drawing. It uses the media-element atoms with prefix `drawing`, and its URL, ID and alt are bindable, so a template can carry a per-product drawing.

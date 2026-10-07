@@ -552,7 +552,7 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
 - **Falsified by:** a drawer item that enters later on one side with no `entrance` row, or an `entrance` row of a ref-traced
   walk with no `ref`.
 
-## 27. A drawn line's weight and dash, and where a positioned element sits (Spec 47 FR-47-6, measured-diagram plan §C)
+## 27. A drawn line's weight and dash, and where a positioned element sits (Spec 47 FR-47-6, measured-diagram plan (`.claude/plans/archive/2026-10-07-measured-diagram-block.md`) §C)
 
 - **Gap:** a measured diagram's dimension line (an svg stroke) was read for its colour only (`icon-stroke`), so a thicker or
   dashed line on one side produced no row; and `left`/`top` were never read, so a label placed at a different spot on a

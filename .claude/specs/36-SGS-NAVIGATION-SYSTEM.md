@@ -486,7 +486,7 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
   per-tier scalar pattern) in a `<picture>`, `chromeLogoAlt`, `chromeLogoLink` (home; named "<site name> home"
   without alt text), `chromeLogoWidth` and `chromeLogoShow` (tier objects).
 - **One free slot:** `chromeSlotType` heading | label | text | button, `chromeSlotText`, `chromeSlotHeadingLevel`
-  (h2 | h3 | h4 | p), `chromeSlotPlacement` after-logo | centre | end, `chromeSlotShow`, the `chromeSlot`
+  (h2 | h3 | h4 | p), `chromeSlotPlacement` after-logo | center | end, `chromeSlotShow`, the `chromeSlot`
   typography set and `chromeSlotColour`/`…Gradient`. The button type is a link (`chromeSlotUrl`,
   `chromeSlotNewTab`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix.
 - **Close box:** `closeBorderWidth` (one box for every device, the border-control rule), `closeBorderStyle`,
