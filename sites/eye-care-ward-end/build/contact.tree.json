@@ -324,7 +324,7 @@
                         "desktop": "15px"
                       },
                       "className": "cr-ref-contact-9",
-                      "textColourHover": "accent-text",
+                      "textColourHover": "text",
                       "iconGap": {
                         "mobile": "0px",
                         "tablet": "0px",
@@ -388,6 +388,7 @@
                     "name": "sgs/business-info",
                     "attributes": {
                       "displayType": "email",
+                      "textColourHover": "text",
                       "showIcon": false,
                       "labelCollapse": "none",
                       "fontSize": {
