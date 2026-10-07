@@ -565,7 +565,8 @@ select.sgs-form-field__input {
 /* Rule 43 (WCAG 1.4.1): the 'background' style's selected state has no
  * differentiator beyond colour (unlike 'checkmark', which already gets a
  * border-width bump above). Bump the label to bold as the non-colour
- * signal — base label weight is 500, below. */
+ * signal. It outranks tileLabelFontWeight in that one state, so a client's
+ * chosen label weight applies to every other state and style. */
 .sgs-form-field--tiles-style-background .sgs-form-tile--selected .sgs-form-tile__label,
 .sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) .sgs-form-tile__label {
 	font-weight: 700;
@@ -577,12 +578,12 @@ select.sgs-form-field__input {
 	pointer-events: none;
 }
 
-.sgs-form-tile__icon {
+:where(.sgs-form-tile__icon) {
 	font-size: 1.5rem;
 	line-height: 1;
 }
 
-.sgs-form-tile__label {
+:where(.sgs-form-tile__label) {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	font-weight: 500;
 }
@@ -762,7 +763,7 @@ select.sgs-form-field__input {
 	cursor: pointer;
 }
 
-.sgs-form-field__consent-text {
+:where(.sgs-form-field__consent-text) {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	line-height: 1.5;
 }
@@ -909,13 +910,18 @@ select.sgs-form-field__input {
 	padding: 0.75rem 2rem;
 	border: none;
 	border-radius: var(--wp--custom--border-radius--small, 4px);
-	font-size: var(--wp--preset--font-size--small, 0.9375rem);
-	font-weight: 600;
 	font-family: inherit;
 	cursor: pointer;
 	min-height: 44px;
 	min-width: 44px;
 	transition: background-color 0.2s, opacity 0.2s;
+}
+
+/* Button typography is a zero-specificity default; the submit button's own
+ * controls (submit* attributes, render.php) outrank it. */
+:where(.sgs-form__button) {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 600;
 	line-height: 1.5;
 }
 
@@ -1022,8 +1028,11 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-review__term {
-	font-weight: 600;
 	color: var(--wp--preset--color--text-muted, #555);
+}
+
+:where(.sgs-form-review__term) {
+	font-weight: 600;
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 }
 

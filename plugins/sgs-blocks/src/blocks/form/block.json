@@ -120,12 +120,20 @@
 					"prefix": "submit",
 					"attrMap": {
 						"css:background-image": "submitBackgroundGradient",
-						"css:font-weight": "submitFontWeight",
-						"css:font-size": "submitFontSize",
-						"css:text-transform": "submitTextTransform",
-						"css:letter-spacing": "submitLetterSpacing",
 						"css:padding": "submitPadding",
-						"css:min-height": "submitMinHeight"
+						"css:min-height": "submitMinHeight",
+						"css:font-size": "submitFontSize",
+						"css:font-weight": "submitFontWeight",
+						"css:font-style": "submitFontStyle",
+						"css:font-family": "submitFontFamily",
+						"css:text-transform": "submitTextTransform",
+						"css:text-decoration": "submitTextDecoration",
+						"css:line-height": "submitLineHeight",
+						"css:letter-spacing": "submitLetterSpacing",
+						"css:text-align": "submitTextAlign",
+						"css:text-wrap": "submitTextWrap",
+						"css:column-count": "submitTextColumns",
+						"css:writing-mode": "submitWritingMode"
 					},
 					"states": {
 						"hover": {
@@ -137,7 +145,7 @@
 							}
 						}
 					},
-					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline. submitBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). submitBackgroundHover/submitBackgroundHoverGradient (Case C fill-helper adoption, 2026-09-06) migrated the hand-rolled background-color:transparent-cancellation paint onto sgs_fill_decls()/sgs_emit_state_colour_css() so a hover sibling came free -- explicit hover attrMap because, same as the normal state's gradient, the default convention has no Hover-suffix awareness. submitFontWeight/submitFontSize/submitTextTransform/submitLetterSpacing (added to override `.sgs-form__button`'s fixed font-weight:600/font-size:small so the submit button can go uppercase or tracked) are explicit attrMap entries because the default convention has no FontWeight/FontSize/TextTransform/LetterSpacing-suffix awareness — each emits nothing when unset, so the stylesheet's own values are unchanged."
+					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php, contract §A) — not inline. submitBackgroundGradient's attrMap entry exists because the default convention has no Gradient-suffix awareness, so the gradient sibling would otherwise float as an unclaimed orphan. submitBackgroundHover/submitBackgroundHoverGradient are painted through sgs_fill_decls()/sgs_emit_state_colour_css(), with an explicit hover attrMap for the same reason. The submit* typography family (size, weight, style, family, transform, decoration, line-height, letter-spacing, alignment, wrap, columns, writing mode) is painted on `.sgs-form__button--submit` by sgs_typography_css_rule( $attributes, 'submit', … ) in render.php. The stylesheet's own button typography is a :where() default on `.sgs-form__button`, so an unset control leaves the look unchanged. Previous-step and Next buttons keep that default; they have no typography controls."
 				},
 				"prev-button": {
 					"label": "Previous-step button",
@@ -256,6 +264,111 @@
 						"css:box-shadow-color": "formFocusRingOpacity"
 					},
 					"_note": "formFocusRingColour/Width/Opacity/Offset (render.php:82-86,237-243) drive :focus-visible custom-property values on form inputs — a distinct focus-ring control surface outside the Text/Fill/Layout/Position/Motion clusters (no 'outline colour'/'ring width' member exists), so this element declares no CLUSTER members and its attributes surface as ORPHANs (FR-35-4), same treatment as sgs/button's icon element. It DOES declare an explicit attrMap (2026-08-02): these four drive custom-property VALUES rather than being real declarations, so each is mapped to the property it semantically controls — the same treatment progressBarColour gets above, and for the same reason. Opacity is mapped to `css:opacity`, NOT to `css:box-shadow`: style.css:211-217 composes TWO --sgs-* vars (colour + opacity) into ONE box-shadow via color-mix, so no single attr owns that property, and declaring this one as the box-shadow would assert something untrue. Without the attrMap the emission tracer resolved formFocusRingOpacity to box-shadow with css_element NULL, which the F6 reseed-survival check correctly flagged as an undeclared sub-element paint that would misroute on a clone."
+				},
+				"tile-icon": {
+					"label": "Tile icon",
+					"order": 11,
+					"clusters": [ "text" ],
+					"prefix": "tileIcon",
+					"attrMap": {
+						"css:font-size": "tileIconFontSize",
+						"css:font-weight": "tileIconFontWeight",
+						"css:font-style": "tileIconFontStyle",
+						"css:font-family": "tileIconFontFamily",
+						"css:text-transform": "tileIconTextTransform",
+						"css:text-decoration": "tileIconTextDecoration",
+						"css:line-height": "tileIconLineHeight",
+						"css:letter-spacing": "tileIconLetterSpacing",
+						"css:text-align": "tileIconTextAlign",
+						"css:text-wrap": "tileIconTextWrap",
+						"css:column-count": "tileIconTextColumns",
+						"css:writing-mode": "tileIconWritingMode"
+					},
+					"_note": "Typography only (tileIcon* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__icon). The class is emitted by the child sgs/form-field-tiles block, which declares no typography attributes of its own; the parent's uid class is an ancestor of every tile, so the scoped rule reaches it."
+				},
+				"tile-label": {
+					"label": "Tile label",
+					"order": 12,
+					"clusters": [ "text" ],
+					"prefix": "tileLabel",
+					"attrMap": {
+						"css:font-size": "tileLabelFontSize",
+						"css:font-weight": "tileLabelFontWeight",
+						"css:font-style": "tileLabelFontStyle",
+						"css:font-family": "tileLabelFontFamily",
+						"css:text-transform": "tileLabelTextTransform",
+						"css:text-decoration": "tileLabelTextDecoration",
+						"css:line-height": "tileLabelLineHeight",
+						"css:letter-spacing": "tileLabelLetterSpacing",
+						"css:text-align": "tileLabelTextAlign",
+						"css:text-wrap": "tileLabelTextWrap",
+						"css:column-count": "tileLabelTextColumns",
+						"css:writing-mode": "tileLabelWritingMode"
+					},
+					"_note": "Typography only (tileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-tile__label). The class is emitted by the child sgs/form-field-tiles block. The selected-state bold in style.css stays a higher-specificity rule on the 'background' tile style: it is the non-colour selected cue (WCAG 1.4.1), so it outranks tileLabelFontWeight in that one state."
+				},
+				"consent-text": {
+					"label": "Consent text",
+					"order": 13,
+					"clusters": [ "text" ],
+					"prefix": "consent",
+					"attrMap": {
+						"css:font-size": "consentFontSize",
+						"css:font-weight": "consentFontWeight",
+						"css:font-style": "consentFontStyle",
+						"css:font-family": "consentFontFamily",
+						"css:text-transform": "consentTextTransform",
+						"css:text-decoration": "consentTextDecoration",
+						"css:line-height": "consentLineHeight",
+						"css:letter-spacing": "consentLetterSpacing",
+						"css:text-align": "consentTextAlign",
+						"css:text-wrap": "consentTextWrap",
+						"css:column-count": "consentTextColumns",
+						"css:writing-mode": "consentWritingMode"
+					},
+					"_note": "Typography only (consent* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own."
+				},
+				"review-term": {
+					"label": "Review term",
+					"order": 14,
+					"clusters": [ "text" ],
+					"prefix": "reviewTerm",
+					"attrMap": {
+						"css:font-size": "reviewTermFontSize",
+						"css:font-weight": "reviewTermFontWeight",
+						"css:font-style": "reviewTermFontStyle",
+						"css:font-family": "reviewTermFontFamily",
+						"css:text-transform": "reviewTermTextTransform",
+						"css:text-decoration": "reviewTermTextDecoration",
+						"css:line-height": "reviewTermLineHeight",
+						"css:letter-spacing": "reviewTermLetterSpacing",
+						"css:text-align": "reviewTermTextAlign",
+						"css:text-wrap": "reviewTermTextWrap",
+						"css:column-count": "reviewTermTextColumns",
+						"css:writing-mode": "reviewTermWritingMode"
+					},
+					"_note": "Typography only (reviewTerm* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-review__term). The <dt> is created by view.js inside the sgs/form-review list, which sits inside the form wrapper that carries the uid class, so the scoped rule reaches it."
+				},
+				"nav-button": {
+					"label": "Step buttons",
+					"order": 15,
+					"clusters": [ "text" ],
+					"prefix": "navButton",
+					"attrMap": {
+						"css:font-size": "navButtonFontSize",
+						"css:font-weight": "navButtonFontWeight",
+						"css:font-style": "navButtonFontStyle",
+						"css:font-family": "navButtonFontFamily",
+						"css:text-transform": "navButtonTextTransform",
+						"css:text-decoration": "navButtonTextDecoration",
+						"css:line-height": "navButtonLineHeight",
+						"css:letter-spacing": "navButtonLetterSpacing",
+						"css:text-align": "navButtonTextAlign",
+						"css:text-wrap": "navButtonTextWrap",
+						"css:column-count": "navButtonTextColumns",
+						"css:writing-mode": "navButtonWritingMode"
+					},
+					"_note": "Typography of the multi-step Previous and Next buttons (.sgs-form__button--prev, .sgs-form__button--next). The submit button has its own submit* surface."
 				}
 			}
 		}
@@ -345,23 +458,20 @@
 		},
 		"submitFontWeight": {
 			"type": "string",
-			"default": "",
-			"description": "Submit button font-weight, one of 100-900 in steps of 100. Empty = the stylesheet's own 600 (.sgs-form__button, style.css)."
+			"default": ""
 		},
 		"submitFontSize": {
-			"type": "number",
-			"default": 0,
-			"description": "Submit button font-size in px. 0 = unset, so the stylesheet's own var(--wp--preset--font-size--small) (.sgs-form__button, style.css) is unchanged."
+			"type": "object",
+			"default": {}
 		},
 		"submitTextTransform": {
 			"type": "string",
-			"default": "",
-			"description": "Submit button text-transform: none, uppercase, lowercase or capitalize. Empty = unset, no transform applied."
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
 		},
 		"submitLetterSpacing": {
-			"type": "string",
-			"default": "",
-			"description": "Submit button letter-spacing as a CSS length (e.g. \"0.1em\", \"2px\"). Empty = unset."
+			"type": "object",
+			"default": {}
 		},
 		"submitPadding": {
 			"type": "object",
@@ -1012,6 +1122,373 @@
 				"vertical-rl",
 				"vertical-lr"
 			],
+			"default": ""
+		},
+		"tileIconFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileIconFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileIconFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileIconFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"tileIconFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileIconTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"tileIconTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"tileIconLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileIconLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileIconLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileIconLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileIconTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"tileIconTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"tileIconTextColumns": {
+			"type": "number"
+		},
+		"tileIconWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"tileLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"tileLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tileLabelTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"tileLabelTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"tileLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tileLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tileLabelTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"tileLabelTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"tileLabelTextColumns": {
+			"type": "number"
+		},
+		"tileLabelWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"reviewTermFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewTermFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"reviewTermFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewTermFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewTermFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewTermTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"reviewTermTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"reviewTermLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewTermLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewTermLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"reviewTermLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"reviewTermTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"reviewTermTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"reviewTermTextColumns": {
+			"type": "number"
+		},
+		"reviewTermWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"consentFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"consentFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"consentFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"consentFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"consentFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"consentTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"consentTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"consentLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"consentLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"consentLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"consentLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"consentTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"consentTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"consentTextColumns": {
+			"type": "number"
+		},
+		"consentWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"navButtonFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"navButtonFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"navButtonFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"navButtonFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"navButtonFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"navButtonTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"navButtonTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"navButtonLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"navButtonLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"navButtonLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"navButtonLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"navButtonTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"navButtonTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"navButtonTextColumns": {
+			"type": "number"
+		},
+		"navButtonWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"submitFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"submitFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"submitFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"submitTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"submitLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"submitLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"submitLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"submitTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"submitTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"submitTextColumns": {
+			"type": "number"
+		},
+		"submitWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
 		}
 	},

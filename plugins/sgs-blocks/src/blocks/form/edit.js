@@ -24,6 +24,7 @@ import {
 	borderBoxPreview,
 	spacingPreview,
 	typographyPreviewStyle,
+	typographyPreviewCss as typographyPreviewCssFor,
 	textIndentPreviewCss,
 	usePreviewTier,
 	BandWrap,
@@ -52,27 +53,6 @@ const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
 	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
-];
-
-const SUBMIT_FONT_WEIGHT_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( '100 — Thin', 'sgs-blocks' ), value: '100' },
-	{ label: __( '200 — Extra Light', 'sgs-blocks' ), value: '200' },
-	{ label: __( '300 — Light', 'sgs-blocks' ), value: '300' },
-	{ label: __( '400 — Regular', 'sgs-blocks' ), value: '400' },
-	{ label: __( '500 — Medium', 'sgs-blocks' ), value: '500' },
-	{ label: __( '600 — Semibold', 'sgs-blocks' ), value: '600' },
-	{ label: __( '700 — Bold', 'sgs-blocks' ), value: '700' },
-	{ label: __( '800 — Extra Bold', 'sgs-blocks' ), value: '800' },
-	{ label: __( '900 — Black', 'sgs-blocks' ), value: '900' },
-];
-
-const SUBMIT_TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalize', 'sgs-blocks' ), value: 'capitalize' },
 ];
 
 /**
@@ -114,10 +94,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		submitBackground,
 		submitBackgroundHover,
 		submitBackgroundHoverGradient,
-		submitFontWeight,
-		submitFontSize,
-		submitTextTransform,
-		submitLetterSpacing,
 		submitPadding,
 		submitMinHeight,
 		submitAlign,
@@ -191,10 +167,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const submitButtonStyle = {
 		...submitTextPreviewStyle,
 		...backgroundPaintPreview( submitBackground, attributes.submitBackgroundGradient, palette ),
-		fontWeight: submitFontWeight || undefined,
-		fontSize: submitFontSize ? `${ submitFontSize }px` : undefined,
-		textTransform: submitTextTransform || undefined,
-		letterSpacing: submitLetterSpacing || undefined,
 		padding:
 			submitPadding && Object.values( submitPadding ).some( Boolean )
 				? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => submitPadding[ side ] || '0' ).join( ' ' )
@@ -410,9 +382,18 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			.join( '' );
 	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
 	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
+	// Tile icon, tile label, consent text and review term are emitted by child
+	// blocks or by view.js, and the submit button is the canvas-only preview
+	// below, so each gets a scoped rule through typographyPreviewCss().
 	const typographyPreviewCss = [
 		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
 		fieldTypographyDecls && `${ fieldSel }{${ fieldTypographyDecls }}`,
+		typographyPreviewCssFor( attributes, 'tileIcon', `.${ formPreviewScope } .sgs-form-tile__icon`, previewTier ),
+		typographyPreviewCssFor( attributes, 'tileLabel', `.${ formPreviewScope } .sgs-form-tile__label`, previewTier ),
+		typographyPreviewCssFor( attributes, 'consent', `.${ formPreviewScope } .sgs-form-field__consent-text`, previewTier ),
+		typographyPreviewCssFor( attributes, 'reviewTerm', `.${ formPreviewScope } .sgs-form-review__term`, previewTier ),
+		typographyPreviewCssFor( attributes, 'submit', `.${ formPreviewScope } .sgs-form__button--submit`, previewTier ),
+		typographyPreviewCssFor( attributes, 'navButton', `.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`, previewTier ),
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -833,64 +814,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ /* Typography overrides for the submit button only — the shared
-					   TypographyControls above (prefix "") targets the whole form
-					   root, not `.sgs-form__button--submit`, which style.css fixes
-					   at font-weight:600/font-size:small. Each control defaults to
-					   "unset" so an existing form's rendered button is unchanged
-					   until an operator picks a value. */ }
-					<SelectControl
-						label={ __( 'Button Font Weight', 'sgs-blocks' ) }
-						value={ submitFontWeight || '' }
-						options={ SUBMIT_FONT_WEIGHT_OPTIONS }
-						onChange={ ( value ) =>
-							setAttributes( { submitFontWeight: value } )
-						}
-						help={ __(
-							'Default follows the button style (600).',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<NumberControl
-						label={ __( 'Button Font Size (px)', 'sgs-blocks' ) }
-						value={ submitFontSize || '' }
-						min={ 0 }
-						onChange={ ( value ) =>
-							setAttributes( {
-								submitFontSize: parseInt( value, 10 ) || 0,
-							} )
-						}
-						help={ __(
-							'0 keeps the theme default size.',
-							'sgs-blocks'
-						) }
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Button Text Transform', 'sgs-blocks' ) }
-						value={ submitTextTransform || '' }
-						options={ SUBMIT_TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( value ) =>
-							setAttributes( { submitTextTransform: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<TextControl
-						label={ __( 'Button Letter Spacing', 'sgs-blocks' ) }
-						value={ submitLetterSpacing || '' }
-						onChange={ ( value ) =>
-							setAttributes( { submitLetterSpacing: value } )
-						}
-						help={ __(
-							'A CSS length, e.g. 0.1em or 2px. Leave blank for none.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<SgsBoxControl
 						label={ __( 'Button Padding', 'sgs-blocks' ) }
 						values={ submitPadding && typeof submitPadding === 'object' ? submitPadding : {} }
@@ -922,12 +845,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* Typography — replaces the old WP-native supports.typography
-					(fontSize/lineHeight only) with the shared TypographyControls
-					component + sgs_typography_css_rule() render.php helper (D971/D972
-					full-replacement track). Root prefix "" since this is a
-					single-target block; defaults also expose weight/style, which
-					native typography never offered here. */ }
 				<PanelBody title={ __( 'Field style', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ fieldBorderWidth ?? {} }
@@ -998,21 +915,34 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-					/>
-				</PanelBody>
-				<PanelBody title={ __( 'Label and field typography', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Both surfaces are painted by the child field blocks: label is
-					   `.sgs-form-field__label` (a <label>, or a <legend> on checkbox, radio and
-					   tiles), field is `.sgs-form-field__input` (input, select, textarea).
-					   render.php emits both through sgs_typography_css_rule(). */ }
+					{ /* One Typography panel, one target per surface. 'All text' (prefix '')
+					   paints the form root and is inherited by anything the other targets
+					   do not style. The rest each own an element: label is
+					   `.sgs-form-field__label` (a <label>, or a <legend> on checkbox, radio
+					   and tiles); field is `.sgs-form-field__input` (input, select,
+					   textarea); tile icon, tile label and consent text are emitted by the
+					   child field blocks; review term is a <dt> view.js creates; submit is
+					   `.sgs-form__button--submit`. render.php emits every target through
+					   sgs_typography_css_rule(). */ }
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						targets={ [
+							{
+								key: 'root',
+								label: __( 'All text', 'sgs-blocks' ),
+								prefix: '',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
 							{
 								key: 'label',
 								label: __( 'Label', 'sgs-blocks' ),
@@ -1031,6 +961,90 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'field',
 								label: __( 'Field', 'sgs-blocks' ),
 								prefix: 'field',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'tileIcon',
+								label: __( 'Tile icon', 'sgs-blocks' ),
+								prefix: 'tileIcon',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'tileLabel',
+								label: __( 'Tile label', 'sgs-blocks' ),
+								prefix: 'tileLabel',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'consent',
+								label: __( 'Consent text', 'sgs-blocks' ),
+								prefix: 'consent',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'reviewTerm',
+								label: __( 'Review term', 'sgs-blocks' ),
+								prefix: 'reviewTerm',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'submit',
+								label: __( 'Submit button', 'sgs-blocks' ),
+								prefix: 'submit',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'navButton',
+								label: __( 'Step buttons', 'sgs-blocks' ),
+								prefix: 'navButton',
 								fontSizePresets: true,
 								showFontFamily: true,
 								showDecoration: true,

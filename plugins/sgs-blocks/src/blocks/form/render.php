@@ -370,53 +370,26 @@ if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_
 	);
 }
 
-// Submit button typography (font-weight/font-size/text-transform/letter-
-// spacing) — `.sgs-form__button` (style.css) fixes font-weight:600 and
-// font-size:var(--wp--preset--font-size--small); these are independent
-// overrides on the SAME scoped rule as the colour block above so the
-// submit button can go uppercase / tracked without a new stylesheet class.
-// Each is its own gate: unset emits nothing, so an existing form with none
-// of these set keeps the stylesheet's own values unchanged.
-$submit_font_weight_raw      = (string) ( $attributes['submitFontWeight'] ?? '' );
-$submit_allowed_font_weights = array( '100', '200', '300', '400', '500', '600', '700', '800', '900' );
-$submit_font_weight          = in_array( $submit_font_weight_raw, $submit_allowed_font_weights, true ) ? $submit_font_weight_raw : '';
-
-$submit_font_size_raw = $attributes['submitFontSize'] ?? '';
-$submit_font_size     = ( '' !== $submit_font_size_raw && null !== $submit_font_size_raw ) ? absint( $submit_font_size_raw ) : 0;
-
-$submit_text_transform_raw       = (string) ( $attributes['submitTextTransform'] ?? '' );
-$submit_allowed_text_transforms  = array( 'none', 'uppercase', 'lowercase', 'capitalize' );
-$submit_text_transform           = in_array( $submit_text_transform_raw, $submit_allowed_text_transforms, true ) ? $submit_text_transform_raw : '';
-
-$submit_letter_spacing = sgs_css_length_value( (string) ( $attributes['submitLetterSpacing'] ?? '' ) );
-
-$submit_typography_decls = array();
-if ( '' !== $submit_font_weight ) {
-	$submit_typography_decls[] = 'font-weight:' . $submit_font_weight;
-}
-if ( 0 !== $submit_font_size ) {
-	$submit_typography_decls[] = 'font-size:' . $submit_font_size . 'px';
-}
-if ( '' !== $submit_text_transform ) {
-	$submit_typography_decls[] = 'text-transform:' . $submit_text_transform;
-}
-if ( '' !== $submit_letter_spacing ) {
-	$submit_typography_decls[] = 'letter-spacing:' . $submit_letter_spacing;
-}
+// Submit button padding and minimum height — independent overrides on the
+// SAME scoped rule shape as the colour block above. The submit button's
+// typography is emitted by sgs_typography_css_rule() further down, beside the
+// field and label surfaces. Each override is its own gate: unset emits
+// nothing, so an untouched form keeps the stylesheet's own values.
+$submit_box_decls = array();
 $submit_padding_box = is_array( $attributes['submitPadding'] ?? null ) ? $attributes['submitPadding'] : array();
 $submit_padding     = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $submit_padding_box ) : null;
 if ( null !== $submit_padding ) {
-	$submit_typography_decls[] = 'padding:' . $submit_padding;
+	$submit_box_decls[] = 'padding:' . $submit_padding;
 }
 $submit_min_height = absint( $attributes['submitMinHeight'] ?? 0 );
 if ( 0 !== $submit_min_height ) {
-	$submit_typography_decls[] = 'min-height:' . $submit_min_height . 'px';
+	$submit_box_decls[] = 'min-height:' . $submit_min_height . 'px';
 }
-if ( ! empty( $submit_typography_decls ) ) {
+if ( ! empty( $submit_box_decls ) ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
-	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_typography_decls ) . '}';
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_box_decls ) . '}';
 }
 
 // ---------------------------------------------------------------------------
@@ -532,6 +505,21 @@ foreach ( $sgs_field_tier_specs as $sgs_field_spec ) {
 // flags every selector sharing a BEM token. Matches product-card's call shape.
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'field', '.' . $sgs_form_uid . ' .sgs-form-field__input' );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'label', '.' . $sgs_form_uid . ' .sgs-form-field__label' );
+// The remaining surfaces sit on elements emitted by child blocks (tile icon and
+// label, consent text), by view.js (review term) or by this file (the submit
+// button). The uid class is an ancestor of every one, and the stylesheet's own
+// typography for each is a :where() default, so an unset control leaves the look
+// unchanged. Selectors are built inline for the same governance reason as above.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileIcon', '.' . $sgs_form_uid . ' .sgs-form-tile__icon' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_form_uid . ' .sgs-form-tile__label' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewTerm', '.' . $sgs_form_uid . ' .sgs-form-review__term' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'consent', '.' . $sgs_form_uid . ' .sgs-form-field__consent-text' );
+// A blank family needs no fifth argument: .sgs-form__button declares
+// font-family:inherit in style.css, so the button follows the form's own font.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'submit', '.' . $sgs_form_uid . ' .sgs-form__button--submit' );
+// The multi-step Previous and Next buttons share one surface, separate from the
+// submit button's, so step navigation can be styled without restyling the submit.
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_form_uid . ' .sgs-form__button--prev, .' . $sgs_form_uid . ' .sgs-form__button--next' );
 
 // Submit button row alignment (the stylesheet's own value is flex-end). Narrow
 // containers still stack the button full width (style.css @container rule).
