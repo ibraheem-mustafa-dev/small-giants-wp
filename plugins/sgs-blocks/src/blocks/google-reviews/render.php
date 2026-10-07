@@ -420,33 +420,65 @@ $gr_len_rule = static function ( string $selector, $raw, array $props ): string 
 	return sgs_emit_responsive_css( $selector, $specs );
 };
 
-// A four-sided box value (padding, border width, radius corners) as one shorthand per device tier. A tier
-// inherits the tier above it side by side and writes a rule only when its shorthand differs, exactly like the
-// shared tier engine. An unset side of a set box is 0, as in sgs_box_object_shorthand().
+// A four-sided box value (padding, border width, radius corners) per device tier.
+//
+// Border width and radius corners print one shorthand per tier: a tier inherits the tier above it side by side
+// and writes a rule only when its shorthand differs, exactly like the shared tier engine, and an unset side of a
+// set box is 0, as in sgs_box_object_shorthand(). A width stays on the shorthand because its border-style is
+// written for all four sides, so a width longhand would leave the other sides at the browser's `medium`.
+//
+// Padding prints longhands for the sides a tier ITSELF sets, so an unset side keeps the stylesheet's value and a
+// narrower tier setting one side no longer wipes the wider tier's other sides. The cascade does the inheriting
+// (the desktop rule, then the tablet and mobile @media rules, narrowest last); a side is skipped when its
+// resolved value already equals what the tier above gives it. The whole declaration is built here, so no caller
+// can join a property name to a longhand block.
 $gr_box_rule = static function ( string $selector, $raw, string $prop, array $keys ): string {
-	$obj    = sgs_responsive_normalise_object( $raw, true );
-	$chains = array(
+	$obj      = sgs_responsive_normalise_object( $raw, true );
+	$chains   = array(
 		'desktop' => array( 'desktop' ),
 		'tablet'  => array( 'tablet', 'desktop' ),
 		'mobile'  => array( 'mobile', 'tablet', 'desktop' ),
 	);
-	$rules  = array();
-	$prev   = '';
+	$longhand = 'padding' === $prop;
+	$rules    = array();
+	$prev     = '';
+	$prev_eff = array();
 	foreach ( $chains as $tier => $sources ) {
 		$vals = array();
 		$any  = false;
+		$eff  = array();
+		$own  = array();
 		foreach ( $keys as $key ) {
-			$val = null;
+			$val       = null;
+			$own_value = null;
 			foreach ( $sources as $source ) {
 				if ( is_array( $obj[ $source ] ) && isset( $obj[ $source ][ $key ] ) ) {
 					$val = sgs_responsive_format_atom_value( $obj[ $source ][ $key ], 'px', 'float', null );
 					if ( null !== $val ) {
+						if ( $source === $tier ) {
+							$own_value = $val;
+						}
 						break;
 					}
 				}
 			}
-			$any    = $any || null !== $val;
-			$vals[] = $val ?? '0';
+			$any         = $any || null !== $val;
+			$vals[]      = $val ?? '0';
+			$eff[ $key ] = $val;
+			$own[ $key ] = $own_value;
+		}
+		if ( $longhand ) {
+			$decls = '';
+			foreach ( $keys as $key ) {
+				if ( null !== $own[ $key ] && ( $prev_eff[ $key ] ?? null ) !== $own[ $key ] ) {
+					$decls .= $prop . '-' . $key . ':' . $own[ $key ] . ';';
+				}
+			}
+			if ( '' !== $decls ) {
+				$rules[ $tier ] = $decls;
+			}
+			$prev_eff = $eff;
+			continue;
 		}
 		$decl = $any ? $prop . ':' . implode( ' ', $vals ) . ';' : '';
 		if ( '' !== $decl && $decl !== $prev ) {
