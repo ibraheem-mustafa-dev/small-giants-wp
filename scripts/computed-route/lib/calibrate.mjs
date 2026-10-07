@@ -127,6 +127,8 @@ export function mergeSetting( prev, s, { state = null, form = null, variant = 0 
 		reachedAt: s.reachedAt,
 		effects: union( prev?.effects, s.effects ),
 		variants: union( prev?.variants, [ variant ?? 0 ] ),
+		// A container-query tier reaching fewer page widths by design (slotFor) keeps saying so in the cache.
+		...( s.containerTier || prev?.containerTier ? { containerTier: true } : {} ),
 	};
 }
 

@@ -77,3 +77,11 @@ test( 'mergeSetting unions overriddenBy across a setting markers and omits it wh
 	assert.ok( ! Object.hasOwn( none, 'overriddenBy' ) );
 	assert.ok( ! Object.hasOwn( none, 'reaches' ) );
 } );
+
+test( 'MUST FAIL ON REVERT: a container-query tier keeps its containerTier flag through the merge into the cache', () => {
+	const ctx = { state: null, form: null, variant: 0 };
+	const tier = mergeSetting( undefined, { slot: '', slots: [ '' ], property: 'gap', transform: null, reachedAt: [ 375, 1440 ], effects: [], containerTier: true }, ctx );
+	assert.equal( tier.containerTier, true );
+	assert.equal( mergeSetting( tier, { slot: '', slots: [ '' ], property: 'gap', transform: null, reachedAt: [ 375, 1440 ], effects: [] }, ctx ).containerTier, true );
+	assert.equal( 'containerTier' in mergeSetting( undefined, { slot: '', slots: [ '' ], property: 'gap', transform: null, reachedAt: WIDTHS, effects: [] }, ctx ), false );
+} );
