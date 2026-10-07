@@ -110,22 +110,26 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			css += `${ root } .buybox__stock--${ status }{color:${ resolved };}${ root } .buybox__stock--${ status } .buybox__stock-dot{background-color:${ resolved };}`;
 		}
 	} );
-	// Gallery thumbnails: the same five settings extras.php::sgs_buybox_extras_scoped_css writes.
+	// Gallery thumbnails: the same settings extras.php::sgs_buybox_extras_scoped_css writes.
 	const colourOf = ( value ) => {
 		const resolved = value ? resolveColourToken( value, palette ) || value : '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
-	// Thumbnail size: 64 is style.css's default, so only another size writes the property.
-	const rawSize = Number( attributes.thumbPixelSize );
-	const thumbSize = Number.isFinite( rawSize ) && rawSize > 0 ? Math.min( 240, Math.max( 48, rawSize ) ) : 64;
-	if ( 64 !== thumbSize ) {
-		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSize }px;}`;
-	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
 	const rawGap = String( attributes.thumbGap || '' ).trim();
 	const thumbGap = /^\d+(\.\d+)?$/.test( rawGap ) ? `${ rawGap }px` : rawGap;
-	const rawPerRow = Number( attributes.thumbsPerRow );
-	const perRow = Number.isFinite( rawPerRow ) ? Math.min( 8, Math.max( 0, Math.trunc( rawPerRow ) ) ) : 0;
+	// thumbsPerRow is a tier object; an unset tablet or mobile tier follows the next larger one.
+	const perRowTiers = attributes.thumbsPerRow && 'object' === typeof attributes.thumbsPerRow ? attributes.thumbsPerRow : {};
+	let perRow = 0;
+	for ( const name of [ 'desktop', 'tablet', 'mobile' ] ) {
+		const rawPerRow = perRowTiers[ name ];
+		if ( null !== rawPerRow && undefined !== rawPerRow && '' !== rawPerRow && Number.isFinite( Number( rawPerRow ) ) ) {
+			perRow = Math.min( 8, Math.max( 0, Math.trunc( Number( rawPerRow ) ) ) );
+		}
+		if ( name === tier ) {
+			break;
+		}
+	}
 	const rawOffset = String( attributes.thumbStripOffset || '' ).trim();
 	const thumbOffset = /^\d+(\.\d+)?$/.test( rawOffset ) ? `${ rawOffset }px` : rawOffset;
 	const railDecls = [];

@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl } from '../../components';
+import { fillRow, textRow, SgsLengthControl, ResponsiveControl } from '../../components';
+import { patchTier } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
@@ -34,7 +35,6 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		rrpSavingFormat,
 		showStockStatus,
 		extrasBeforeCount,
-		thumbPixelSize,
 		thumbsPerRow,
 		thumbGap,
 		thumbStripOffset,
@@ -180,39 +180,27 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<RangeControl
-					label={ __( 'Thumbnail size (px)', 'sgs-blocks' ) }
-					help={ __(
-						'Width and height of each thumbnail. 64 is the default; never below 48 so every thumbnail stays an easy tap target.',
-						'sgs-blocks'
+				<ResponsiveControl label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }>
+					{ ( bp ) => (
+						<RangeControl
+							label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
+							hideLabelFromVision
+							help={ __(
+								'0 keeps the fixed-size, scrolling strip on this device. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px. An unset tablet or mobile value follows the next larger device.',
+								'sgs-blocks'
+							) }
+							value={ thumbsPerRow?.[ bp ] ?? 0 }
+							min={ 0 }
+							max={ 8 }
+							step={ 1 }
+							onChange={ ( val ) =>
+								patchTier( attributes, setAttributes, 'thumbsPerRow', bp, val ?? 0 )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					) }
-					value={ thumbPixelSize ?? 64 }
-					min={ 48 }
-					max={ 240 }
-					allowReset
-					resetFallbackValue={ 64 }
-					onChange={ ( val ) =>
-						setAttributes( { thumbPixelSize: val ?? 64 } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				<RangeControl
-					label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
-					help={ __(
-						'0 keeps the fixed-size, scrolling strip. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px; the strip scrolls sideways instead.',
-						'sgs-blocks'
-					) }
-					value={ thumbsPerRow ?? 0 }
-					min={ 0 }
-					max={ 8 }
-					step={ 1 }
-					onChange={ ( val ) =>
-						setAttributes( { thumbsPerRow: val ?? 0 } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				</ResponsiveControl>
 				<SgsLengthControl
 					label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
 					value={ thumbGap }

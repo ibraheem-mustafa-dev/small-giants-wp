@@ -156,7 +156,6 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:height": "thumbPixelSize",
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
@@ -171,7 +170,7 @@
 							}
 						}
 					},
-					"_note": "The thumbnail rail buttons (.product-card__thumb). Size (--sgs-buybox-thumb-size) or a thumbsPerRow fluid grid with thumbGap, resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Size 64, empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
+					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
 				},
 				"valueLadder": {
 					"label": "Value ladder",
@@ -879,15 +878,10 @@
 			"type": "string",
 			"default": ""
 		},
-		"thumbPixelSize": {
-			"type": "number",
-			"default": 64,
-			"description": "Width and height of each gallery thumbnail, in px. 64 is the stylesheet default; written as --sgs-buybox-thumb-size on the block. Never smaller than the 48px touch-target floor."
-		},
 		"thumbsPerRow": {
-			"type": "integer",
-			"default": 0,
-			"description": "Thumbnails per row, 0 to 8. 0 (default) keeps the fixed-size strip (thumbPixelSize, one scrolling row). 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor (the strip scrolls sideways instead)."
+			"type": "object",
+			"default": {},
+			"description": "Thumbnails per row at each device tier, {desktop, tablet, mobile}, each 0 to 8. 0 (or unset on desktop) keeps the fixed-size scrolling strip at that tier. 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor. An unset tablet or mobile tier inherits the next larger one."
 		},
 		"thumbGap": {
 			"type": "string",

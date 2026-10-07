@@ -81,7 +81,11 @@
               "stockInStockColour": "success",
               "stickyEnabled": true,
               "stickyOffset": "24px",
-              "thumbsPerRow": 4,
+              "thumbsPerRow": {
+                "desktop": 4,
+                "tablet": 4,
+                "mobile": 4
+              },
               "thumbGap": "2px",
               "thumbStripOffset": "2px",
               "thumbBorderWidth": "1px",
