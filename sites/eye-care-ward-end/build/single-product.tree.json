@@ -239,7 +239,7 @@
                   "label": "Add my prescription",
                   "url": "#lens-configurator",
                   "inheritStyle": "primary",
-                  "note": "from +£59.00",
+                  "note": "from +£59",
                   "minHeight": {
                     "desktop": 56
                   },

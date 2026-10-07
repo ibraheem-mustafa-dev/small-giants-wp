@@ -208,7 +208,7 @@ tree = [
                 btxt("short_description", fontSize={"desktop": 13.5}, fontSizeUnit="px", textColour="text-muted"),
                 B("sgs/button", dict(label="Add my prescription", url="#lens-configurator", inheritStyle="primary",
                                      # The draft's price hint at the button's far end (pennies, Bean 2026-09-25).
-                                     note="from +£59.00", minHeight={"desktop": 56}, minHeightUnit="px",
+                                     note="from +£59", minHeight={"desktop": 56}, minHeightUnit="px",
                                      transitionDuration=250,
                                      widthType={"desktop": "full"}, textTransform="uppercase",
                                      letterSpacing={"desktop": 0.12}, letterSpacingUnit="em",
