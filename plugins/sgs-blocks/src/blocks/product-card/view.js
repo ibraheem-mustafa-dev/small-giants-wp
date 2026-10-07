@@ -938,8 +938,9 @@ store( 'sgs/product-card', {
 		 *   POST /sgs/v1/cart/add-item
 		 *   Header: X-WP-Nonce: <wp_rest nonce seeded into ctx.restNonce>
 		 *   Body:   { id: <variationId|productId>, quantity: 1,
-		 *             variation: [{ attribute: "Size", value: "12-pack" }, …] }
-		 *   `attribute` = WC display name (axis.label); `value` = term slug.
+		 *             variation: [{ attribute: "pa_size", value: "12-pack" }, …] }
+		 *   `attribute` = the WC attribute taxonomy (axis.taxonomy), never the
+		 *                 display label; `value` = term slug.
 		 *   `id`        = selected variation ID for variable products; parent
 		 *                 product ID for simple / CPT products.
 		 *   No price is ever sent — the proxy is the sole authority.
@@ -987,14 +988,14 @@ store( 'sgs/product-card', {
 			ctx.pending = true;
 
 			try {
-				// Build the variation array using WC display names + term slugs
-				// (M-C2 wire format). Only populated for variable products.
+				// Build the variation array using WC attribute taxonomies + term
+				// slugs (M-C2 wire format). Only populated for variable products.
 				const variation = [];
 				if ( variationId > 0 && Array.isArray( ctx.axes ) && ctx.selectedAxes ) {
 					for ( const axis of ctx.axes ) {
 						const slug = ctx.selectedAxes[ axis.taxonomy ];
 						if ( slug ) {
-							variation.push( { attribute: axis.label, value: slug } );
+							variation.push( { attribute: axis.taxonomy, value: slug } );
 						}
 					}
 				}

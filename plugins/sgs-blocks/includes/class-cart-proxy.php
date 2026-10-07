@@ -490,15 +490,15 @@ final class Cart_Proxy {
 
 		// ── Step 4: Attribute-match ───────────────────────────────────────────
 		//
-		// The client sends display names + term slugs:
-		// variation: [ { attribute: "Size", value: "12-pack" }, ... ]
+		// The client sends attribute taxonomies + term slugs:
+		// variation: [ { attribute: "pa_size", value: "12-pack" }, ... ]
 		//
 		// WC variation->get_attributes() returns taxonomy form:
 		// [ 'pa_size' => '12-pack', 'pa_flavour' => 'vanilla' ]
 		// An empty string value means "Any" — it matches any submitted value.
 		//
-		// The parent's get_attributes() carries the display-name↔taxonomy map.
-		// We use wc_attribute_taxonomy_name() to translate display name → taxonomy.
+		// The parent's get_attributes() carries the attribute set; the client key
+		// is resolved against it by taxonomy slug.
 		//
 		// $variation_attributes_for_wc is built in taxonomy form for add_to_cart().
 		$client_variation            = (array) $request->get_param( 'variation' );
@@ -530,56 +530,22 @@ final class Cart_Proxy {
 			 */
 			$wc_attrs = $variation->get_attributes();
 
-			// Build a map of display_name (lowercase) to taxonomy slug, using the
-			// parent product's registered attributes.
-			$parent_product = \wc_get_product( $parent_id );
-
-			/*
-			 * Display-name to taxonomy map, e.g. 'size' => 'pa_size', 'flavour' => 'pa_flavour'.
-			 */
-			$display_to_tax   = array();
-			$label_candidates = array();
+			// Map of lowercase attribute key to taxonomy slug, built from the parent
+			// product's registered attributes. The key is the slug, never the display
+			// label (labels are filtered and cached): 'pa_frame-size' resolves, and so
+			// do the slug's own bare forms 'frame-size' and 'frame size'.
+			$parent_product  = \wc_get_product( $parent_id );
+			$attr_key_to_tax = array();
 
 			if ( $parent_product ) {
-				foreach ( $parent_product->get_attributes() as $tax_slug => $attr_obj ) {
-					// $tax_slug is already the taxonomy slug (e.g. 'pa_size') for global attrs,
-					// or the raw slug for product-local attrs.
-					if ( \is_object( $attr_obj ) && \method_exists( $attr_obj, 'get_name' ) ) {
-						$display_name = \wc_attribute_label( $attr_obj->get_name() );
-					} else {
-						$display_name = (string) $tax_slug;
-					}
-					$display_to_tax[ \strtolower( $display_name ) ] = $tax_slug;
-					// Every attribute behind a label, so two attributes sharing one label
-					// (a "Size" axis and a hidden "Size" filter attribute) still resolve.
-					$label_candidates[ \strtolower( $display_name ) ][] = $tax_slug;
-					// Also index by the raw taxonomy slug so the client can use either form.
-					$display_to_tax[ \strtolower( $tax_slug ) ] = $tax_slug;
+				foreach ( \array_keys( $parent_product->get_attributes() ) as $tax_slug ) {
+					$attr_key_to_tax[ \strtolower( (string) $tax_slug ) ] = $tax_slug;
 
-					/*
-					 * And by forms derived from the SLUG, which no setting can move.
-					 *
-					 * $display_name above comes from wc_attribute_label(), i.e.
-					 * through the `woocommerce_attribute_label` filter, so a client
-					 * that renames an attribute for shoppers ("Frame size" to
-					 * "Size") silently re-keys this map. The client meanwhile posts
-					 * the label it was rendered with, which it reads from a CACHED
-					 * product manifest — so the two sides resolve the same
-					 * attribute at different times and stop matching, and every
-					 * add-to-bag is rejected as "Unrecognised attribute"
-					 * until the manifest transient expires. Proven live on
-					 * 2026-10-06: wc_attribute_label('pa_frame-size') returned
-					 * "Size" while the cached manifest axis label was "Frame size".
-					 *
-					 * Indexing the slug's own forms ("pa_frame-size",
-					 * "frame-size", "frame size") makes the lookup independent of
-					 * any label wording, so BOTH the old and the new label resolve.
-					 */
 					$bare = \preg_replace( '/^pa_/', '', (string) $tax_slug );
 					if ( \is_string( $bare ) && '' !== $bare ) {
-						$display_to_tax[ \strtolower( $bare ) ]                             = $tax_slug;
-						$display_to_tax[ \strtolower( \str_replace( '-', ' ', $bare ) ) ]   = $tax_slug;
-						$display_to_tax[ \strtolower( \str_replace( '_', ' ', $bare ) ) ]   = $tax_slug;
+						$attr_key_to_tax[ \strtolower( $bare ) ]                            = $tax_slug;
+						$attr_key_to_tax[ \strtolower( \str_replace( '-', ' ', $bare ) ) ] = $tax_slug;
+						$attr_key_to_tax[ \strtolower( \str_replace( '_', ' ', $bare ) ) ] = $tax_slug;
 					}
 				}
 			}
@@ -592,20 +558,10 @@ final class Cart_Proxy {
 				$client_attr  = \sanitize_text_field( (string) $pair['attribute'] );
 				$client_value = \sanitize_text_field( (string) $pair['value'] );
 
-				// Translate display name → taxonomy slug.
+				// Translate the client's attribute key → taxonomy slug.
 				$lower_attr = \strtolower( $client_attr );
-				if ( isset( $display_to_tax[ $lower_attr ] ) ) {
-					$tax_slug = $display_to_tax[ $lower_attr ];
-					// A label shared by several attributes resolves to the one this
-					// variation is built on (the later attribute won the map above).
-					if ( ! \array_key_exists( $tax_slug, $wc_attrs ) ) {
-						foreach ( $label_candidates[ $lower_attr ] ?? array() as $candidate ) {
-							if ( \array_key_exists( $candidate, $wc_attrs ) ) {
-								$tax_slug = $candidate;
-								break;
-							}
-						}
-					}
+				if ( isset( $attr_key_to_tax[ $lower_attr ] ) ) {
+					$tax_slug = $attr_key_to_tax[ $lower_attr ];
 				} else {
 					// Unrecognised attribute key — reject.
 					return new \WP_Error(
