@@ -80,31 +80,33 @@ approved fixes are in that plan. ⚠️ **eye-care-test now runs `6f1963c28`** (
 future sweep and compare on a **normalised** path — a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 typography surfaces — SHIPPED, VERIFIED, CLOSED 2026-10-06** (`6f1963c28`, live on eye-care-test).
-  E14 ceilings now **CLASS-2 56, CLASS-3 3, CANNOT-RESOLVE 64**, measured.
-  **Next:** the 22 open FIX declarations by reach (4 of 26 closed) and the 52 no-control findings —
-  `plugins/sgs-blocks/reports/f3-e14-triage.md` §3.1 and §5. Highest reach left: `sgs/process-steps`
-  `__step` text-align, `sgs/product-faq` `__question`, `sgs/countdown-timer` number/label/expired,
-  `sgs/form`'s tile icon/label, review term and consent text.
-  ⚠️ Installing a surface costs four gate fixes (inline selector literal, `:where()` the literal,
-  `css_element` overrides, shared-include blindness) and `scripts/add-control.js` cannot scaffold it:
-  auto memory `installing-a-typography-surface-trips-four-gates`, and `plugins/sgs-blocks/CLAUDE.md`.
+- **F3/E14 — 9 more SHIPPED 2026-10-07** (`75a583e23`..`fdceca53f`), deployed `0cc773b19`. Ceilings
+  **CLASS-2 48, CLASS-3 2, CANNOT-RESOLVE 61**, measured; self-test 24/24; db-consistency 38→0.
+  **13 of 26 FIX closed, 13 open** (triage §3.1/§5): `sgs/form` tile icon/label, review term,
+  consent text; `option-picker` pill text. Surface rules + 4 gate costs: auto memory
+  `installing-a-typography-surface-trips-four-gates` (ONE panel via `targets`, inline selector,
+  `:where()`, and a parent painting a CHILD block needs `typographyPreviewCss` or L3 gaps block
+  EVERY deploy). Shared-include blindness FIXED.
+  ⚠️ **VERIFY INCOMPLETE.** Live-proved only: process-steps defaults at 1440+375, sham
+  controls, 0 sheets skipped. `countdown-timer`/`product-faq` have **0 live instances** (fixture
+  needed); set-a-control + editor halves UNRUN. Script ready, never run:
+  `scratchpad/verify-f3-e14-surfaces.mjs`.
+  **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror — not
+  now (§6).
 - **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
   `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 589. **F 193 → 173**, measure-only,
   inside the 155-175 band committed BEFORE the sweep. All four owed items closed or named.
-  **`--noise` DONE** (`BENCHMARK-NOISE-RESULT.md`): 10 runs, quiet host, **5 of 5 scored cases caught** (case a
-  unscorable, the draft shares the gap). **Noise 5 rows, not 0, all PHASE, not host load or flakiness**: a draft
-  view-swap fade (accepted at `shop.mjs`:286), the trust-bar marquee, and a shadow read at t≈0.999 (same colour;
-  alpha/blur/spread each an identical 0.0950% short). C's 13-and-9 superseded.
-  **`mobile-menu` pairs** (`7255be68d`): all 17 surfaces carry `handScope`.
-  **Canvas: ALL 63 families confirmed live on one SHA** (`confirm-canvas.mjs`,
-  `CANVAS-SETTABLE-CONFIRMATION.md`): **59 refuted, 4 not-refuted-but-not-proven**, 0 absent, 3,907 sheets read
-  and 0 skipped. Cause MEASURED: `reachesElement` **fails open** — `emissionOf` null for every refuted one, so
-  each row read W untested (`reachabilityVerified` records which; no row moved).
-  **OWED: the W→F reclassification, over all 63 at once so F keeps one meaning. Needs NO host.**
-  **`sgs/hero`'s 3 undetermined closed** (`353b9b4ed`, `HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap,
-  proven live — **never remove `section.sgs-hero{max-width:none}`** (D725, 24px off-screen); and a tier background
-  with no base image paints nothing, a **candidate live gap** needing a built instance.
+  **`--noise` DONE** (`BENCHMARK-NOISE-RESULT.md`): **5 of 5 scored caught; noise 5 rows, all PHASE — host load
+  and flakiness both EXCLUDED.** **Canvas: ALL 63 families confirmed on one SHA** (`confirm-canvas.mjs`,
+  `CANVAS-SETTABLE-CONFIRMATION.md`): 59 refuted, 4 not-refuted-but-not-proven, 0 absent. Cause MEASURED:
+  `reachesElement` **fails open** — `emissionOf` null for every refuted one, so each row read W untested.
+  **`mobile-menu` pairs** (`7255be68d`), `handScope` in git for all 17.
+  **`sgs/hero`'s 3 closed** (`HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap — **never remove
+  `section.sgs-hero{max-width:none}`** (D725, 24px off-screen).
+  **OWED, no host needed:** (1) the W→F reclassification over all 63 at once so F keeps one meaning; (2) **CR6 is
+  a MIGRATION** — 178 call sites / 56 files through ONE helper whose contract is the defect, 112 identical
+  boilerplate, needs `/strategic-plan` first (spec 47 §5). **CR12 is PARKED pending Bean**: the deriver
+  hard-refuses Eye Care on contrast, 3 design options on its register row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) are fast but carry
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
@@ -123,8 +125,10 @@ future sweep and compare on a **normalised** path — a cosmetic path change re-
   the cleanup; **`CR12` is the remaining ORPHAN** needing an owner (`CR6` is now owned, see below).**
 
 
-**Routing:** the 31 held rows must stay NULL (the extension roster's policy is deliberate). `markersFor` has no
-`transition,*` branch, so no such row calibrates — fix proposed and gated behind the `formatValue` time branch.
+**Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate
+(`calibrate-markers.mjs::transitionMarker`); the gap is the marker gating on the attr NAME
+`/(^|[a-z])Transition(Duration)$/`, so 36 of 63 transition attrs in 12 blocks read dead. Fix: key on
+`css_property`, which it already checks.
 
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
 five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own hash. `brandUseLogo` ships

@@ -1,28 +1,30 @@
 # F3 gate: E14 triage and baseline retriage
 
 Subject: `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` (Gate B), baseline `plugins/sgs-blocks/scripts/hardcoded-render-defaults-baseline.json`.
-Status: the analysis stands; its highest-reach recommendations shipped 2026-10-06 in `6f1963c28` (see section 6). Originally: The one file changed besides this report is the baseline (section 2.3). No block `.php`, `.css` or `block.json` and no gate script was edited. Date: 2026-10-06.
+Status: the analysis stands. Its highest-reach recommendations shipped in `6f1963c28` (2026-10-06), `75a583e23` and `53ba85750` (2026-10-07); section 6 carries the measured ceilings. The triage itself (sections 1 to 3 and the section 4.3 listing) was written 2026-10-06 against a 137-finding survey; the baseline edits of section 2.3 were the only repository change it made. Last updated 2026-10-07.
 
 ## 0. Method, and what the numbers rest on
 
-- Reproduced the survey with `node scripts/check-hardcoded-render-defaults.js --survey --verbose`: 137 net-new E14 findings (68 CLASS-2, 5 CLASS-3, 64 CANNOT-RESOLVE), 20 classified CLASS 1, 17 legacy findings accepted by the baseline.
+- Reproduced the survey with `node scripts/check-hardcoded-render-defaults.js --survey --verbose`. At triage (2026-10-06) it reported 137 net-new E14 findings (68 CLASS-2, 5 CLASS-3, 64 CANNOT-RESOLVE), 20 classified CLASS 1, 17 legacy findings accepted by the baseline. The same command on 2026-10-07 reports 111 net-new (48 CLASS-2, 2 CLASS-3, 61 CANNOT-RESOLVE), 20 CLASS 1, 17 accepted.
 - To see what the gate saw for each finding (the control selectors it resolved, how many markup instances matched each side) I ran a scratch copy of the gate from the session scratchpad with one extra logging hook. Nothing under the repo was touched by that copy; it reproduced the same 137 (68 / 5 / 64).
 - Reach is read from each block's own markup (`render.php`, sibling PHP, `includes/` helpers, `edit.js` and `view.js`). Every "no markup emits this class" claim comes from a search of all `.php` and `.js` files under `src/` and `includes/`, plus `theme/`; one such claim was wrong on first pass (the form table headings are built from a class map in `includes/forms/field-render-helpers.php::field_headings`) and was corrected, so the DEAD rows carry the search scope.
 - Specificity is computed from the emitted selector strings (`.{uid}` stands for the per-instance class). An inherited property reaches a descendant only through inheritance, so specificity does not rescue a control that targets an ancestor: a declaration on the descendant wins at any specificity. Specificity matters only for same-element pairs (CLASS 1).
 
-Headline numbers:
+Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 2026-10-06; the CANNOT-RESOLVE rows count the 61 the gate reports now (section 4.2 gives the arithmetic):
 
 | | Count |
 |---|---|
-| E14 findings triaged | 137 |
-| CLASS 2 + CLASS 3 (73) judged FIX | 26 (22 CLASS 2, 4 CLASS 3) — **4 closed 2026-10-06, 22 open** |
+| CLASS 2 + CLASS 3 findings triaged | 73 |
+| ... judged FIX | 26 declarations (22 CLASS 2, 4 CLASS 3) — **13 closed (4 in `6f1963c28`, 9 in `75a583e23`), 13 open** |
 | ... DEFENSIBLE (documented intent or UI chrome) | 34 (33 CLASS 2, 1 CLASS 3) |
-| ... DEAD (no markup emits the class) | 10 |
+| ... DEAD (no markup emits the class) | 10, deleted in `6f1963c28` |
 | ... EDITOR-ONLY | 3 |
-| CANNOT-RESOLVE (64), CLASS 4 shaped | 52 |
-| CANNOT-RESOLVE, editor-only | 5 |
-| CANNOT-RESOLVE, own control already exists (CLASS 1 in effect) | 2 |
-| CANNOT-RESOLVE, CANNOT-TELL from source | 5 |
+| CANNOT-RESOLVE now | 61 |
+| ... CLASS 4 shaped (carried from the triage) | 40 |
+| ... newly visible since `53ba85750`, not yet classified | 9 |
+| ... editor-only | 5 |
+| ... own control already exists (CLASS 1 in effect) | 2 |
+| ... CANNOT-TELL from source | 5 |
 | Baseline entries | 18 before, 17 after (one stale entry removed) |
 
 ## 1. Item 1: E11 versus E14 on `button/style.css::.sgs-button { line-height: 1.2 }`
@@ -116,9 +118,9 @@ Two kinds of edit only, both in `plugins/sgs-blocks/scripts/hardcoded-render-def
 
 Not touched: the four contested colour entries and both `sgs/nav-drawer` entries. No entry added, no other entry removed; the file round-trips through a JSON parser with the same formatting.
 
-Proof (run after the edit): `node scripts/check-hardcoded-render-defaults.js --check` exited **0** ("OK - 0 net-new legacy F3 violations across 95 blocks (17 known debt item(s) in baseline)"); `node scripts/check-hardcoded-render-defaults.js --self-test` printed **16/16 checks passed** and exited 0. The E14 line still reads `CLASS-2 68/68, CLASS-3 5/5, CANNOT-RESOLVE 64/64`, so no ceiling moved.
+The baseline edit moved no E14 ceiling. Proof (run 2026-10-07 from `plugins/sgs-blocks`): `node scripts/check-hardcoded-render-defaults.js --check` exits **0** ("OK — 0 net-new legacy F3 violations across 95 blocks (17 known debt item(s) in baseline)") and its E14 line reads `CLASS-2 48/48, CLASS-3 2/2, CANNOT-RESOLVE 61/61`; `node scripts/check-hardcoded-render-defaults.js --self-test` prints **24/24 checks passed**.
 
-## 3. Item 3a: CLASS 2 and CLASS 3 (73 findings)
+## 3. Item 3a: CLASS 2 and CLASS 3 (73 findings triaged)
 
 CLASS 2: the declaration is on a descendant of the element a control paints, so the control can never reach it. CLASS 3: a wrapper class declares a value that leaks into text children. Reach is the ranking key, so a rule nothing renders sits at the bottom whatever its class.
 
@@ -126,25 +128,25 @@ CLASS 2: the declaration is on a descendant of the element a control paints, so 
 
 Reach is the number of live elements one block instance affects, read from the block's own markup. Where a count depends on a loop, the figure assumes 4 loop items (4 rows, 4 steps, 4 options, 4 reviews) or 6 form fields, and says so. Instances per page and pages per site are content, not code: CANNOT-TELL from source, so the ranking is per instance.
 
-Verdict key: **FIX** a control cannot reach a live element. **DEFENSIBLE** documented intent, or UI chrome read as intended (marked "documented" only where the source says so). **EDITOR** only the editor renders it. **DEAD** no markup emits the class.
+Verdict key: **FIX** a control cannot reach a live element (13 of the 26 FIX declarations are closed; the rows still marked FIX are the 13 open ones). **CLOSED** the commit named shipped the control. **DEFENSIBLE** documented intent, or UI chrome read as intended (marked "documented" only where the source says so). **EDITOR** only the editor renders it. **DEAD** no markup emits the class.
 
 | Rank | Block | Element (declaring class) | Decls | Class | Verdict | Elements per instance | Leak |
 |---|---|---|---|---|---|---|---|
 | 1 | `sgs/buybox` | `.buybox__value-ladder` | 1 | CLASS-3 | **CLOSED `6f1963c28`** | 12 | was: permanent. Now `valueLadder` + `valueLadderSaving` surfaces; the literal sits in `:where()` |
-| 2 | `sgs/process-steps` | `.sgs-process-steps__step` | 1 | CLASS-3 | FIX | 12 | icon, number and description: permanent (no `text-align` control). Title: default-state only (`titleTextAlign`) |
+| 2 | `sgs/process-steps` | `.sgs-process-steps__step` | 1 | CLASS-3 | **CLOSED `75a583e23`** | 12 | was: icon, number and description permanent. Now each owns its alignment through an `icon`, `number` or `description` typography surface; the step's literal sits in `:where()`, and no `step` prefix is needed |
 | 3 | `sgs/product-card` | `.product-card__value-ladder` | 1 | CLASS-3 | **CLOSED `6f1963c28`** | 12 | was: permanent. Now `valueLadder` + `valueLadderSaving` surfaces; the literal sits in `:where()` |
 | 4 | `sgs/form` | `.sgs-form-field__label` | 1 | CLASS-2 | **CLOSED `6f1963c28`** | 6 | was: permanent. Now a `label` surface on `sgs/form`; the literal and the floated state's size/weight sit in `:where()` |
 | 5 | `sgs/form` | `.sgs-form-field__input` | 1 | CLASS-2 | **CLOSED `6f1963c28`** | 5 | was: no field line-height control. Now the full `field` surface; `fieldFontSize` moved onto the shared helper |
-| 6 | `sgs/product-faq` | `.sgs-product-faq-item__question` | 3 | CLASS-2 | FIX | 4 | permanent (no question typography control anywhere) |
-| 7 | `sgs/countdown-timer` | `.sgs-countdown__number` | 2 | CLASS-2 | FIX | 4 | permanent (the block has root controls only; none per element) |
-| 8 | `sgs/countdown-timer` | `.sgs-countdown__label` | 2 | CLASS-2 | FIX | 4 | permanent |
+| 6 | `sgs/product-faq` | `.sgs-product-faq-item__question` | 3 | CLASS-2 | **CLOSED `75a583e23`** | 4 | was: permanent. Now a `question` surface on `sgs/product-faq`; the three literals sit in `:where()` and the open-state weight step is removed (section 3.2) |
+| 7 | `sgs/countdown-timer` | `.sgs-countdown__number` | 2 | CLASS-2 | **CLOSED `75a583e23`** | 4 | was: permanent. Now a `number` surface; the literals and the `font-size` `var()` sit in `:where()` |
+| 8 | `sgs/countdown-timer` | `.sgs-countdown__label` | 2 | CLASS-2 | **CLOSED `75a583e23`** | 4 | was: permanent. Now a `label` surface; the literals and the `font-size` `var()` sit in `:where()` |
 | 9 | `sgs/form` | `.sgs-form-tile__icon` | 2 | CLASS-2 | FIX | 4 | permanent |
 | 10 | `sgs/form` | `.sgs-form-tile__label` | 1 | CLASS-2 | FIX | 4 | permanent |
 | 11 | `sgs/form` | `.sgs-form-review__term` | 1 | CLASS-2 | FIX | 4 | permanent |
 | 12 | `sgs/option-picker` | `.sgs-option-picker__pill-text` | 1 | CLASS-3 | FIX | 4 | permanent for icon-less labels: `pillLineHeight` and `labelLineHeight` never reach the pill text |
 | 13 | `sgs/form` | `.sgs-form__button` | 2 | CLASS-2 | FIX | 3 | weight: default-state only (`submitFontWeight` overrides it); line-height: permanent (no submit line-height control) |
 | 14 | `sgs/cta-section` | `.sgs-cta-section__headline` | 2 | CLASS-2 | FIX | 1 | default-state only for the child block's own controls; permanent for the cta-section root controls |
-| 15 | `sgs/countdown-timer` | `.sgs-countdown__expired` | 1 | CLASS-2 | FIX | 1 | permanent |
+| 15 | `sgs/countdown-timer` | `.sgs-countdown__expired` | 1 | CLASS-2 | **CLOSED `75a583e23`** | 1 | was: permanent. Now an `expired` surface; the literal sits in `:where()` |
 | 16 | `sgs/cta-section` | `.sgs-cta-section__body` | 1 | CLASS-2 | FIX | 1 | as the headline |
 | 17 | `sgs/form` | `.sgs-form-field__consent-text` | 1 | CLASS-2 | FIX | 1 | permanent |
 | 18 | `sgs/product-card` | `.price-from-label` | 1 | CLASS-2 | FIX | 1 | permanent (`priceFromLabelFontSize` exists; no font-family control for the label) |
@@ -205,23 +207,24 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `buybox/style.css::.sgs-buybox .buybox__value-ladder` | `font-size: 0.92em` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid}.wp-block-sgs-buybox .buybox__price--current` (0,3,0); `.{uid}.wp-block-sgs-buybox .buybox__add-to-cart` (0,3,0); +2 more | (0,2,0) | FIX |
+| `buybox/style.css::.sgs-buybox .buybox__value-ladder` | `font-size: 0.92em` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid}.wp-block-sgs-buybox .buybox__price--current` (0,3,0); `.{uid}.wp-block-sgs-buybox .buybox__add-to-cart` (0,3,0); +2 more | (0,2,0) | CLOSED `6f1963c28` |
 
-- `.buybox__value-ladder` (FIX). **Reach:** `buybox/render.php`: `<ul class="buybox__value-ladder">` once, then per pack-size row `<li class="value-ladder__row">` holding `value-ladder__pack`, `value-ladder__per-unit`, optionally `value-ladder__saving` and a badge: about 3 to 4 text spans x rows (12 at 4 rows). Shown when `showLadder` is on and the ladder is not hidden. **Leak:** permanent (no ladder font-size control). **CLASS 4 element:** element-level: the block calls `sgs_typography_css_rule` 6 times, none for the ladder. **Evidence:** Same literal, byte for byte, as `product-card/style.css::.product-card__value-ladder` (the file says the two are intentionally identical). One fix serves both blocks.
+- `.buybox__value-ladder` (CLOSED `6f1963c28`). **Reach:** `buybox/render.php`: `<ul class="buybox__value-ladder">` once, then per pack-size row `<li class="value-ladder__row">` holding `value-ladder__pack`, `value-ladder__per-unit`, optionally `value-ladder__saving` and a badge: about 3 to 4 text spans x rows (12 at 4 rows). Shown when `showLadder` is on and the ladder is not hidden. **Leak:** permanent (no ladder font-size control). **CLASS 4 element:** element-level: the block calls `sgs_typography_css_rule` 6 times, none for the ladder. **Evidence:** Same literal, byte for byte, as `product-card/style.css::.product-card__value-ladder` (the file says the two are intentionally identical). One fix serves both blocks.
 
 #### sgs/countdown-timer
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `countdown-timer/style.css::.sgs-countdown__number` | `font-weight: 700` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | FIX |
-| `countdown-timer/style.css::.sgs-countdown__number` | `line-height: 1.1` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | FIX |
-| `countdown-timer/style.css::.sgs-countdown__label` | `text-transform: uppercase` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | FIX |
-| `countdown-timer/style.css::.sgs-countdown__label` | `letter-spacing: 0.05em` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | FIX |
-| `countdown-timer/style.css::.sgs-countdown__expired` | `font-weight: 600` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | FIX |
+| `countdown-timer/style.css::.sgs-countdown__number` | `font-weight: 700` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `countdown-timer/style.css::.sgs-countdown__number` | `line-height: 1.1` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `countdown-timer/style.css::.sgs-countdown__label` | `text-transform: uppercase` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `countdown-timer/style.css::.sgs-countdown__label` | `letter-spacing: 0.05em` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `countdown-timer/style.css::.sgs-countdown__expired` | `font-weight: 600` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
 
-- `.sgs-countdown__number` (FIX). **Reach:** `countdown-timer/render.php`: `<span class="sgs-countdown__number ...">` once per unit in `$units` (days, hours, minutes, seconds, each optional): up to 4. **Leak:** permanent (the block has root controls only; none per element). **CLASS 4 element:** element-level: one helper call, root prefix only. **Evidence:** `block.json` says root typography is "an inherited default on the wrapper rather than a per-digit or per-label control". The number declares its own weight and line-height, so root `fontWeight` and `lineHeight` change nothing on the numbers. The same rule also declares `font-size: var(--wp--preset--font-size--xx-large, 3rem)`, a `var()` value this gate does not examine, so root `fontSize` is blocked the same way.
-- `.sgs-countdown__label` (FIX). **Reach:** `<span class="sgs-countdown__label">` once per unit: up to 4. Root `textTransform` and `letterSpacing` cannot reach it (it declares `uppercase` and `0.05em`). **Leak:** permanent. **CLASS 4 element:** element-level (as above). **Evidence:** As the number rule. `font-size: var(--wp--preset--font-size--small, 0.875rem)` also blocks root `fontSize` (not examined by the gate).
-- `.sgs-countdown__expired` (FIX). **Reach:** `<div class="sgs-countdown__expired">` once per timer, hidden until the timer ends (`$expired_hidden`). **Leak:** permanent. **CLASS 4 element:** element-level (as above). **Evidence:** Root `fontWeight` cannot reach the expired message.
+- `.sgs-countdown__number` (CLOSED `75a583e23`). **Reach:** `countdown-timer/render.php`: `<span class="sgs-countdown__number ...">` once per unit in `$units` (days, hours, minutes, seconds, each optional): up to 4. **Fix:** a `number` typography prefix, so the element has its own full `TypographyControls` surface. The rule also declared `font-size: var(--wp--preset--font-size--xx-large, 3rem)`, a `var()` value this gate does not examine (section 7, gap 1) that blocked a font-size control exactly as a literal does; it was de-specified into `:where()` with the literals, so the control reaches it.
+- `.sgs-countdown__label` (CLOSED `75a583e23`). **Reach:** `<span class="sgs-countdown__label">` once per unit: up to 4. **Fix:** a `label` prefix; `text-transform`, `letter-spacing` and the `font-size: var(--wp--preset--font-size--small, 0.875rem)` sit in `:where()`.
+- `.sgs-countdown__expired` (CLOSED `75a583e23`). **Reach:** `<div class="sgs-countdown__expired">` once per timer, hidden until the timer ends (`$expired_hidden`). **Fix:** an `expired` prefix; the weight literal and its `font-size` `var()` sit in `:where()`.
+- The three prefixes mount as targets of one Typography panel through `src/components/TypographyControls.js::TypographyTargetSwitcher`, section 6.
 
 #### sgs/cta-section
 
@@ -254,8 +257,8 @@ Each table row is one declaration. "Competing control" is the control the gate r
 | `form/style.css::.sgs-form-field__column-heading` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
 | `form/style.css::.sgs-form-field__row-heading` | `font-size: 13px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
 | `form/style.css::.sgs-form-field__row-heading` | `font-weight: 500` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__input` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | FIX |
-| `form/style.css::.sgs-form-field__label` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | FIX |
+| `form/style.css::.sgs-form-field__input` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `6f1963c28` |
+| `form/style.css::.sgs-form-field__label` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `6f1963c28` |
 | `form/style.css::.sgs-form-tile__icon` | `font-size: 1.5rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | FIX |
 | `form/style.css::.sgs-form-tile__icon` | `line-height: 1` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | FIX |
 | `form/style.css::.sgs-form-tile__label` | `font-weight: 500` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | FIX |
@@ -274,8 +277,8 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 - `.sgs-form-field__column-heading` (DEFENSIBLE). **Reach:** LIVE, built from a class map: `includes/forms/field-render-helpers.php::field_headings` (`'columnHeading' => 'sgs-form-field__column-heading'`), one `<span aria-hidden="true">` per field that sets `columnHeading`. A literal search for the class finds only the map, so reach depends on content. **Leak:** permanent. **CLASS 4 element:** element-level: the form has no heading-typography control. **Evidence:** Visual micro-label ("SPH") above a box, 11px uppercase tracked. Reading from source: a table-heading look; intent not documented. Reach per field is 1; count per form depends on how many fields set it (CANNOT-TELL without content).
 - `.sgs-form-field__row-heading` (DEFENSIBLE). **Reach:** LIVE, same map: `'rowHeading' => 'sgs-form-field__row-heading'`, one `<span aria-hidden="true">` per field that sets `rowHeading`. **Leak:** permanent. **CLASS 4 element:** element-level (as above). **Evidence:** As the column heading.
-- `.sgs-form-field__input` (FIX). **Reach:** Every text-entry control: `class="sgs-form-field__input"` in `form-field-address/render.php` and the other `form-field-*` blocks (text, email, phone, number, date, select, textarea). 1 per input, select and textarea. **Leak:** permanent (`fieldFontSize` exists, no field line-height control). **CLASS 4 element:** element-level: no field line-height control. **Evidence:** Root `lineHeight` cannot reach the inputs (`.sgs-form-field__input { line-height: 1.5 }`).
-- `.sgs-form-field__label` (FIX). **Reach:** `includes/forms/field-render-helpers.php::field_label`: `'<label for="%s" class="sgs-form-field__label%s">'`, called from 9 field blocks, plus `<legend class="sgs-form-field__label">` in `form-field-checkbox`, `form-field-radio` and `form-field-tiles`. 1 per labelled field. **Leak:** permanent (no label typography control). **CLASS 4 element:** element-level: no label typography control at all. **Evidence:** Root `fontWeight` cannot reach field labels (`font-weight: 600`); the same rule also hardcodes `font-size: var(--wp--preset--font-size--small, 0.9375rem)`, which this gate does not examine.
+- `.sgs-form-field__input` (CLOSED `6f1963c28`). **Reach:** Every text-entry control: `class="sgs-form-field__input"` in `form-field-address/render.php` and the other `form-field-*` blocks (text, email, phone, number, date, select, textarea). 1 per input, select and textarea. **Leak:** permanent (`fieldFontSize` exists, no field line-height control). **CLASS 4 element:** element-level: no field line-height control. **Evidence:** Root `lineHeight` cannot reach the inputs (`.sgs-form-field__input { line-height: 1.5 }`).
+- `.sgs-form-field__label` (CLOSED `6f1963c28`). **Reach:** `includes/forms/field-render-helpers.php::field_label`: `'<label for="%s" class="sgs-form-field__label%s">'`, called from 9 field blocks, plus `<legend class="sgs-form-field__label">` in `form-field-checkbox`, `form-field-radio` and `form-field-tiles`. 1 per labelled field. **Leak:** permanent (no label typography control). **CLASS 4 element:** element-level: no label typography control at all. **Evidence:** Root `fontWeight` cannot reach field labels (`font-weight: 600`); the same rule also hardcodes `font-size: var(--wp--preset--font-size--small, 0.9375rem)`, which this gate does not examine.
 - `.sgs-form-tile__icon` (FIX). **Reach:** `form-field-tiles/render.php`: `echo '<span class="sgs-form-tile__icon" aria-hidden="true">'` once per tile that has an icon. **Leak:** permanent. **CLASS 4 element:** element-level. **Evidence:** Tiles field only.
 - `.sgs-form-tile__label` (FIX). **Reach:** `form-field-tiles/render.php`: `echo '<span class="sgs-form-tile__label">' . esc_html( $tile['label'] ?? '' ) . '</span>';` once per tile. **Leak:** permanent. **CLASS 4 element:** element-level. **Evidence:** Tiles field only.
 - `.sgs-form-field__file-label` (DEFENSIBLE). **Reach:** `form-field-file/render.php`: `echo '<div class="sgs-form-field__file-label">'` once per file field. **Leak:** permanent. **Evidence:** Centred upload-panel caption. Reading from source: a panel layout choice; intent not documented.
@@ -339,29 +342,30 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `process-steps/style.css::.sgs-process-steps__step` | `text-align: center` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid}.sgs-process-steps .sgs-process-steps__title` (0,3,0) | (0,1,0) | FIX |
+| `process-steps/style.css::.sgs-process-steps__step` | `text-align: center` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid}.sgs-process-steps .sgs-process-steps__title` (0,3,0) | (0,1,0) | CLOSED `75a583e23` |
 
-- `.sgs-process-steps__step` (FIX). **Reach:** `process-steps/render.php`: each step holds `__icon` (optional), `__number`, `<hN class="sgs-process-steps__title">` and `__description` (optional). 3 permanent leak targets per step: 12 at 4 steps. The `--layout-list` variant resets the step to `text-align: left`; every other layout is centred. **Leak:** icon, number and description: permanent (no `text-align` control). Title: default-state only (`titleTextAlign`). **CLASS 4 element:** icon, number, description have no text-align control. **Evidence:** The block exposes `align` and `titleTextAlign` only, so a client cannot left-align a step's description or number. Confirmed real in the brief.
+- `.sgs-process-steps__step` (CLOSED `75a583e23`). **Reach:** `process-steps/render.php`: each step holds `__icon` (optional), `__number`, `<hN class="sgs-process-steps__title">` and `__description` (optional). 3 leak targets per step: 12 at 4 steps. The `--layout-list` variant resets the step to `text-align: left`; every other layout is centred. **Fix:** each leak target owns its alignment: `icon` and `description` are new prefixes and the existing `number` family is completed, so no `step` prefix is needed. The title keeps `titleTextAlign`. The step's `text-align: center` is wrapped in `:where()` and remains the default.
 
 #### sgs/product-card
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
 | `product-card/style.css::.product-card .price-from-label` | `font-family: 'Inter', sans-serif` | CLASS-2 | `.{uid} .sgs-product-card__price, .{uid} .price, .{uid} .price-from-amount` (0,2,0) | (0,2,0) | FIX |
-| `product-card/style.css::.product-card__value-ladder` | `font-size: 0.92em` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid} .sgs-product-card__title, .{uid} h3` (0,2,0); `.{uid} .sgs-product-card__price, .{uid} .price, .{uid} .price-from-amount` (0,2,0); +10 more | (0,1,0) | FIX |
+| `product-card/style.css::.product-card__value-ladder` | `font-size: 0.92em` | CLASS-3 | none on the leak targets named in the note; other controls for this property in the block: `.{uid} .sgs-product-card__title, .{uid} h3` (0,2,0); `.{uid} .sgs-product-card__price, .{uid} .price, .{uid} .price-from-amount` (0,2,0); +10 more | (0,1,0) | CLOSED `6f1963c28` |
 
 - `.price-from-label` (FIX). **Reach:** `product-card/render.php`: `<span class="price-from-label">` at two template sites, once per card that shows a "From" price. **Leak:** permanent (`priceFromLabelFontSize` exists; no font-family control for the label). **CLASS 4 element:** element-level: no `priceFromLabelFontFamily`. **Evidence:** `font-family: 'Inter', sans-serif` is a literal font name in plugin CSS, which also conflicts with the project rule that client typography lives in `sites/<client>/`. `priceFontFamily` paints `.price` and `.price-from-amount`, so setting a price font leaves "From" in Inter.
-- `.product-card__value-ladder` (FIX). **Reach:** `product-card/render.php`: `class="product-card__value-ladder"` once per card that shows a ladder, then `value-ladder__row` x rows holding 3 to 4 spans: 12 text spans at 4 rows, on every such card of a shop grid. **Leak:** permanent (no ladder font-size control). **CLASS 4 element:** element-level: product-card calls the helper 12 times, none for the ladder. **Evidence:** Identical declaration to `buybox/style.css::.sgs-buybox .buybox__value-ladder`; named in the brief as a known real finding.
+- `.product-card__value-ladder` (CLOSED `6f1963c28`). **Reach:** `product-card/render.php`: `class="product-card__value-ladder"` once per card that shows a ladder, then `value-ladder__row` x rows holding 3 to 4 spans: 12 text spans at 4 rows, on every such card of a shop grid. **Leak:** permanent (no ladder font-size control). **CLASS 4 element:** element-level: product-card calls the helper 12 times, none for the ladder. **Evidence:** Identical declaration to `buybox/style.css::.sgs-buybox .buybox__value-ladder`; named in the brief as a known real finding.
 
 #### sgs/product-faq
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `product-faq/style.css::.sgs-product-faq-item__question` | `font-weight: 600` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | FIX |
-| `product-faq/style.css::.sgs-product-faq-item__question` | `font-size: 1rem` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | FIX |
-| `product-faq/style.css::.sgs-product-faq-item__question` | `line-height: 1.4` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | FIX |
+| `product-faq/style.css::.sgs-product-faq-item__question` | `font-weight: 600` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `product-faq/style.css::.sgs-product-faq-item__question` | `font-size: 1rem` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
+| `product-faq/style.css::.sgs-product-faq-item__question` | `line-height: 1.4` | CLASS-2 | `.{uid}.wp-block-sgs-product-faq` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
 
-- `.sgs-product-faq-item__question` (FIX). **Reach:** `product-faq-item/render.php`: `<summary class="sgs-product-faq-item__question" ...>` once per FAQ item. 3 declarations: weight, size, line-height. **Leak:** permanent (no question typography control anywhere). **CLASS 4 element:** element-level: neither product-faq nor product-faq-item exposes question typography. **Evidence:** The three product-faq root controls (`fontWeight`, `fontSize`, `lineHeight`) cannot change a single question, which is the main text of the block. `product-faq-item/block.json` has `question` (the string) but no typography attribute.
+- `.sgs-product-faq-item__question` (CLOSED `75a583e23`). **Reach:** `product-faq-item/render.php`: `<summary class="sgs-product-faq-item__question" ...>` once per FAQ item. 3 declarations: weight, size, line-height. **Fix:** a `question` prefix on the PARENT `sgs/product-faq`. Its uid class is a genuine ancestor of every child `<summary>`, and `product-faq-item` declares no typography attributes, no `text` cluster and no stylesheet, so one parent surface reaches every question. The three literals sit in `:where()`.
+- **Open-state weight removed.** The rule's open-state `font-weight: 700` was removed, not kept. Its comment had claimed WCAG SC 1.4.1 (Use of Colour) required it as the non-colour cue for the open state. The Understanding document for 1.4.1 says the criterion "does not apply to situations where color has not been used to convey information", and the open state is carried by the revealed answer panel and the chevron's 180 degree rotation. Technique G182 lists bold as one sufficient technique, and W3C states that techniques "are not required to meet WCAG". GOV.UK Frontend's Details and Accordion, USWDS's Accordion and the WordPress core Details block all ship with no open-state weight step. Confidence: medium-high. No W3C document says in so many words that a disclosure state sits outside 1.4.1.
 
 #### sgs/store-selector
 
@@ -399,34 +403,46 @@ Each table row is one declaration. "Competing control" is the control the gate r
 - `.sgs-testimonial-slider__empty` (DEAD). **Reach:** No markup emits `sgs-testimonial-slider__empty` (absent from `render.php`, `view.js`, `edit.js`, `includes/`). 2 declarations. **Leak:** n/a. **Evidence:** Nothing renders it.
 
 
-## 4. Item 3b: CANNOT-RESOLVE (64 findings)
+## 4. Item 3b: CANNOT-RESOLVE (61 findings)
 
-The gate reports CANNOT-RESOLVE when it could not tell which element a control paints, or how the declaring element relates to it, and it will not guess. Section 4.1 groups the 64 by why. Section 4.2 says what they are once the cause is removed.
+The gate reports CANNOT-RESOLVE when it could not tell which element a control paints, or how the declaring element relates to it, and it will not guess. Section 4.1 groups the 61 by why. Section 4.2 says what they are once the cause is removed. Section 4.3 lists every one, as `node scripts/check-hardcoded-render-defaults.js --survey --verbose` prints them.
 
 ### 4.1 Causes, with counts
 
 | Cause | Findings | Why the control or markup could not be resolved | What the gate would need |
 |---|---|---|---|
 | **A. Editor-only markup** | 5 | The declaring class exists only in `edit.js` (the editor canvas). Nothing renders on the front end, so there is nothing to resolve. | Nothing: these should be dropped from the count as unreachable. The gate would need to know which classes the front end emits (any `.php` emitter), which it can already read. |
-| **B. Markup built outside the block directory** | 31 | The class is emitted by a shared PHP builder in `includes/` (`class-post-grid-rest.php`, `class-grid-pagination.php`, `buybox-guided.php`, `product-card-*.php`), or built at run time from a prefix argument (`$base_class . '__page-btn'`). `readBlockPhpFiles` reads only the block directory. | Read the PHP files a block `require`s from `includes/`, and resolve a class built as `$prefix . '__x'` from the call site's prefix argument. |
+| **B. Markup built outside the block directory** | 19 | The class is emitted by a shared PHP builder in `includes/` (`class-grid-pagination.php`, `buybox-guided.php`, `product-card-*.php`), or built at run time from a prefix argument (`$base_class . '__page-btn'`). `readBlockPhpFiles` now follows a block's `require` / `require_once` one hop (`53ba85750`), which resolved the 12 `sgs/post-grid` card-part findings. The hop is not transitive, deliberately: `includes/render-helpers.php` requires the whole helper tree and almost every block requires it, so a transitive follower would put every helper's markup into every block's element model and manufacture false findings. The 19 rows that remain carry the original B label (`buybox` guided 6, `card-grid` 2, `post-grid` page buttons 2, `product-card` 9). Which of the 19 are caused by a missing `require` and which by a class built from a prefix argument is **not re-counted**: the original 31 was attributed by reading the markup, and only the 12 resolved rows are measured. | Resolve a class built as `$prefix . '__x'` from the call site's prefix argument (the hop stays non-transitive). |
 | **C. JavaScript-built markup** | 4 | The element is created in `view.js` / `guided.js` (`el.className = '...'`), so no PHP tag carries it. | Parse `className = '...'` assignments and `createElement` chains in the block's front-end scripts into the markup tree. |
 | **D. A control's target element is not a parseable literal tag** | 20 | The declaring element IS found, but at least one control for the same property targets an element whose class is assembled in a PHP variable (`buybox/render.php`: `$add_to_cart_button_classes = 'wp-element-button buybox__add-to-cart'`) or inside a sprintf template (`cart/render.php`: `'<span class="sgs-cart__badge%2$s" ...'`). One unplaceable control makes every declaration of that property in the block unresolvable, even when that control is on an unrelated element (a notify-form label against an add-to-cart button). | Resolve a class held in a `$classes` variable and a class glued to a sprintf placeholder. Separately, decide a declaration against only the controls that could plausibly be its ancestors, so an unplaceable control on a sibling leaf does not poison it. |
 | **E. A bare-tag declaring selector** | 2 | The declaring selector ends in a tag (`.product-card h3`, `.sgs-theme-toggle__icon svg`), which has no class for `matchInstances` to match. | Match a tag compound through its nearest classed ancestor and the tags present in that subtree. |
 | **F. A printf placeholder as the tag name** | 1 | `media/render.php`: `'<%1$s class="sgs-media__caption">%2$s</%1$s>'`. The tag scanner requires a letter after `<`, so the element is never added to the markup tree. The control selector also starts with an unresolved `$id_wrap`. | Treat `<%N$s` as an element of unknown tag and keep its class list; evaluate `$id_wrap = '.' . $scope_esc`. |
 | **G. A printf placeholder glued to a class token** | 1 | `option-picker/render.php`: `'<span class="sgs-option-picker__pill%s">%s</span>'`. The class token `sgs-option-picker__pill%s` fails the class-name test and the whole class is dropped, so the pill (the control's element) is missing from the model. This also turns the neighbouring CLASS 3 finding into a mislabelled one. | Strip a trailing `%s` / `%N$s` from a class token and keep the stem. |
-| Total | 64 | | |
+| **H. A control selector in a required `includes/` file cannot be resolved** | 9 | Newly visible after `53ba85750`: the gate now reads `sgs/account` (6) and `sgs/nav-drawer-menu` (3) required `includes/` files, which hold typography calls whose selectors it cannot resolve to a class (survey reason: "a control selector in the PHP could not be resolved to a class"). The cause inside those selectors is not yet diagnosed. | Diagnose per call; likely the same variable-built selectors as cause D. |
+| Total | 61 | | |
 
-### 4.2 What the 64 are really, one level down
+Net effect of the `require` hop on the CANNOT-RESOLVE count is -3 (64 to 61): 12 `sgs/post-grid` findings resolved and 9 findings that were invisible appeared (H). Most rows labelled B in the original triage were never require-caused: `sgs/buybox`'s notify-heading rows come from `notify-form.php`, which was always inside the block directory, and fail on dynamic class markup (cause D) instead. The original count of 31 for cause B overstated what a `require` follower could fix.
 
-- **CLASS 4 shaped: 52 of 64.** For these the block has controls for the property but none on, or above, the declaring element (the only controls are on sibling leaf elements such as a title, a price or a label), so the real question is "this element has no control", not "the gate could not place it". This is a reading of the controls list and the markup, not gate output; the gate cannot prove it.
+### 4.2 What the 61 are really, one level down
+
+- **CLASS 4 shaped: 40 of 61** (52 at triage, less the 12 `sgs/post-grid` card parts that now resolve and are no longer findings, though those elements still have no control). For these the block has controls for the property but none on, or above, the declaring element (the only controls are on sibling leaf elements such as a title, a price or a label), so the real question is "this element has no control", not "the gate could not place it". This is a reading of the controls list and the markup, not gate output; the gate cannot prove it.
 - **Own control already exists: 2** (`option-picker` pill line-height, `media` figcaption font-size). The gate reports CANNOT-RESOLVE because `classifyInheritedHardcode` returns as soon as any control for the property is unresolved, before it looks at the `same` verdicts. These are CLASS 1 in effect.
 - **CANNOT-TELL from source: 5** (`product-card` `h3` specificity tie; `cart` badge x2; `buybox` cart-price; `theme-toggle` icon glyph, which is not text).
 - **Editor-only: 5** (cause A).
+- **Newly visible, not classified: 9** (cause H: `sgs/account` 6, `sgs/nav-drawer-menu` 3). Whether they are CLASS 4 shaped has not been read.
+
+40 + 2 + 5 + 5 + 9 = 61.
 
 ### 4.3 Every finding
 
 | Block | Finding (`file::selector`) | Declaration | Cause | CLASS 4 shaped | Note |
 |---|---|---|---|---|---|
+| `sgs/account` | `account/style.css::.sgs-account__card-desc` | `font-size: 0.9em` | H | not assessed |  |
+| `sgs/account` | `account/style.css::.sgs-account__chip` | `font-size: 0.85em` | H | not assessed |  |
+| `sgs/account` | `account/style.css::.sgs-account__chip` | `font-weight: 600` | H | not assessed |  |
+| `sgs/account` | `account/style.css::.sgs-account__progress-step` | `text-align: center` | H | not assessed |  |
+| `sgs/account` | `account/style.css::.sgs-account__progress-step` | `font-size: 0.8em` | H | not assessed |  |
+| `sgs/account` | `account/style.css::.sgs-account__guest-line` | `text-align: center` | H | not assessed |  |
 | `sgs/brand-strip` | `brand-strip/style.css::.sgs-brand-strip__empty` | `text-align: center` | A | editor-only |  |
 | `sgs/brand-strip` | `brand-strip/style.css::.sgs-brand-strip__empty` | `font-style: italic` | A | editor-only |  |
 | `sgs/buybox` | `buybox/style.css::.sgs-buybox .buybox__stock` | `font-weight: 600` | D | yes |  |
@@ -457,20 +473,11 @@ The gate reports CANNOT-RESOLVE when it could not tell which element a control p
 | `sgs/media` | `media/style.css::.wp-block-sgs-media figcaption, .wp-block-sgs-media .sgs-media__cap...` | `font-size: 0.9em` | F | see note | own control exists: `captionFontSize` on `.sgs-media__caption`; the selector prefix `$id_wrap` did not resolve: probably CLASS 1 |
 | `sgs/media` | `media/style.css::.sgs-video__bar` | `line-height: 1` | C | yes |  |
 | `sgs/media` | `media/style.css::.sgs-video__time` | `font-size: 12px` | C | yes |  |
+| `sgs/nav-drawer-menu` | `nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament` | `line-height: 1` | H | not assessed |  |
+| `sgs/nav-drawer-menu` | `nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn` | `font-weight: 600` | H | not assessed |  |
+| `sgs/nav-drawer-menu` | `nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn` | `text-align: start` | H | not assessed |  |
 | `sgs/option-picker` | `option-picker/style.css::.sgs-option-picker__pill` | `line-height: 1` | G | see note | own control exists: `pillLineHeight` at `.{uid}.wp-block-sgs-option-picker .sgs-option-picker__pill` (0,3,0) beats this (0,1,0): effectively CLASS 1, hidden by the gate's resolution order |
 | `sgs/option-picker` | `option-picker/style.css::.sgs-option-picker__empty-notice` | `font-style: italic` | A | editor-only |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__meta` | `font-size: 0.8125rem` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__badge` | `font-size: 0.75rem` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__badge` | `font-weight: 600` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__badge` | `line-height: 1.4` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__category` | `font-size: 0.75rem` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__category` | `font-weight: 700` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__category` | `text-transform: uppercase` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__category` | `letter-spacing: 0.06em` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__excerpt` | `font-size: 0.9375rem` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__excerpt` | `line-height: 1.6` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__readmore` | `font-size: 0.875rem` | B | yes |  |
-| `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__readmore` | `font-weight: 600` | B | yes |  |
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__page-btn` | `font-size: 0.875rem` | B | yes |  |
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__page-btn` | `font-weight: 600` | B | yes |  |
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__load-more` | `font-size: 1rem` | C | yes |  |
@@ -496,20 +503,17 @@ The gate reports CANNOT-RESOLVE when it could not tell which element a control p
 
 Two scales, kept apart.
 
-**Whole blocks (E14 is blind to them).** E14 builds a model only for blocks whose PHP calls `sgs_typography_css_rule` or `sgs_button_element_style_css` with a prefix that matches a declared attribute. 47 of 95 blocks have no model, so none of the 137 findings can come from them (`--survey`: "Blocks with a resolvable control: 48"). The brief's measured context (46 never call the helper; `choice-flow` and `choice-flow-question` 0 calls, `cart` 1, `product-card` 12) is consistent with that; I did not recount helper calls. As a rough size of the unmeasured pool, a throwaway regex walker (not gate output, nested at-rules approximated) found 86 literal declarations of inherited typography properties outside hover, media and modifier selectors in those 47 blocks' `style.css`: `trustpilot-reviews` 19, `choice-flow-question` 11, `gallery` 9, `hero` 8, `account` 6, `audio` 6, `wishlist-panel` 6, `choice-flow-result` 5, the rest 1 to 4 each. Treat 86 as an indicator, not a finding count.
+**Whole blocks (E14 is blind to them).** E14 builds a model only for blocks whose PHP calls `sgs_typography_css_rule` or `sgs_button_element_style_css` with a prefix that matches a declared attribute. 44 of 95 blocks have no model, so none of the findings can come from them (`--survey`: "Blocks with a resolvable control: 51"). The 86-declaration indicator below was measured at triage over 47 blocks. The brief's measured context (46 never call the helper; `choice-flow` and `choice-flow-question` 0 calls, `cart` 1, `product-card` 12) is consistent with that; I did not recount helper calls. As a rough size of the unmeasured pool, a throwaway regex walker (not gate output, nested at-rules approximated) found 86 literal declarations of inherited typography properties outside hover, media and modifier selectors in the triage's 47 unmodelled blocks' `style.css`: `trustpilot-reviews` 19, `choice-flow-question` 11, `gallery` 9, `hero` 8, `account` 6 (now modelled; its 6 findings are cause H), `audio` 6, `wishlist-panel` 6, `choice-flow-result` 5, the rest 1 to 4 each. Treat 86 as an indicator, not a finding count.
 
 **Elements inside blocks that do call the helper.** These are CLASS 4 shaped: the block has controls for the property, none on the leaked-into or declaring element.
 
 | Block | Elements with no control | Source of the flag |
 |---|---|---|
-| `sgs/post-grid` | meta, badge, category, excerpt, readmore, page buttons, load-more (16 CANNOT-RESOLVE findings): the only typography attributes are `title*` | `block.json` attribute list |
+| `sgs/post-grid` | meta, badge, category, excerpt, readmore, page buttons, load-more: the only typography attributes are `title*`. The gate now resolves the 12 card-part rows through `53ba85750` and reports no finding for them; 4 CANNOT-RESOLVE rows remain (page buttons, load-more) | `block.json` attribute list |
 | `sgs/buybox` | notify form (9), saving badge (4), stock line (1), guided steps (6), value ladder (1, CLASS 3): the only controls are `price*`, `pickerLabel*`, `pickerValue*`, `addToCart*` | `block.json` attribute list |
 | `sgs/product-card` | attribute-tag text-transform, brand text-transform, rating, rating stars, saving badge (4), swatch-more, RRP, CTA text-align, value ladder, "From" label font-family | `block.json` attribute list |
 | `sgs/card-grid` | pagination buttons (2): controls cover `title`, `subtitle`, `noImageLabel` only | `block.json` attribute list |
 | `sgs/form` | label, input line-height, tile icon and label, consent text, review term, column and row headings | `block.json` of `form` and the `form-field-*` blocks has no label or heading typography attribute |
-| `sgs/countdown-timer` | number, label, expired message (root controls only; one helper call) | `block.json` `_note` and `render.php` |
-| `sgs/product-faq` | the question (neither `product-faq` nor `product-faq-item` has it) | `block.json` of both |
-| `sgs/process-steps` | icon, number, description text-align | `block.json` |
 | `sgs/option-picker` | sub-label, term badge, term description | `block.json` |
 | `sgs/google-reviews` | maps link, breakdown row, badge text (12 element controls exist, none for these) | `block.json` |
 | `sgs/media` | video bar and time (2 CANNOT-RESOLVE findings) | `block.json` |
@@ -518,47 +522,48 @@ Two scales, kept apart.
 
 ## 6. What this lets a later task lower, and what it cannot
 
-`E14_OPEN_BACKLOG` is `CLASS-2: 68`, `CLASS-3: 5`, `CANNOT-RESOLVE: 64`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
+`E14_OPEN_BACKLOG` is `CLASS-2: 48`, `CLASS-3: 2`, `CANNOT-RESOLVE: 61`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
-**Shipped 2026-10-06 (`6f1963c28`): the ceilings now stand at CLASS-2 56, CLASS-3 3,
-CANNOT-RESOLVE 64**, measured by `--check` and lowered in the commit that earned them. What landed:
-the 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field`
-typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with
-their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`.
-Every literal on an element that now owns a control sits inside `:where()` (Fix option 3), which
-also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control
-could beat, and the ladder row weights, which blocked the ladder's own font-weight control.
+Measured 2026-10-07 from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 48/48, CLASS-3 2/2, CANNOT-RESOLVE 61/61`, and `--self-test` reports `24/24 checks passed`.
 
-CANNOT-RESOLVE did not fall, and the composition changed: unifying the ladder markup put it outside
-`readBlockPhpFiles`'s block-directory walk (cause B below), which cost 4 rows, and buybox's first
-`line-height` control made one pre-existing literal visible. Both were absorbed by de-specifying
-those literals, so the number held at 64 rather than being raised.
+**Shipped in `6f1963c28` (2026-10-06).** The 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field` typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`. Every literal on an element that now owns a control sits inside `:where()`, which also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control could beat, and the ladder row weights, which blocked the ladder's own font-weight control. Unifying the ladder markup put it outside the block-directory walk, which cost 4 CANNOT-RESOLVE rows, and buybox's first `line-height` control made one pre-existing literal visible; both were absorbed by de-specifying those literals.
 
-24 `sgs/product-card::valueLadder*::L3` gaps were accepted into `scripts/wiring-fingerprint-baseline.json`, which has no per-entry reason field: the justification is in `6f1963c28`'s commit message under `[gates-ok]`, which is the form that gate's own output asks for. In short, the gate credits `ServerSideRender` only when it is unconditional, and product-card's is gated to bound mode with a real typed-mode branch; the ladder exists only in bound mode and its inspector targets are gated to it too, so the canvas shows render.php's own output wherever a client can set these. The fixed `sgs/cart::hideOnCartCheckoutPages::L3` entry was removed in the same pass.
+**Shipped in `75a583e23` (2026-10-07): nine unreachable typography literals became client controls on three blocks.**
+
+- `sgs/product-faq` gained a `question` prefix on the parent, `sgs/countdown-timer` gained `number`, `label` and `expired`, and `sgs/process-steps` gained `icon` and `description` with its existing `number` family completed.
+- **Each block has ONE Typography panel**, built with the `targets` array of `src/components/TypographyControls.js::TypographyTargetSwitcher` (2 to 3 targets render as segmented buttons, 4 or more as a dropdown), not a panel per element. `src/blocks/trust-bar/edit.js` is the reference mount. Existing single-prefix mounts were folded into the one panel.
+- Every literal was wrapped in `:where()` rather than deleted, so the default still paints while the control outranks it; layout declarations keep their own specificity. `sgs/process-steps` needed no `step` prefix, because each leak target owns its alignment.
+- Every helper call builds its selector inline, which is what registers element governance.
+- This closed 9 FIX declarations; with the 4 closed in `6f1963c28`, 13 of the 26 FIX declarations are closed and 13 are open.
+
+**Shipped in `53ba85750` (2026-10-07): the gate follows a block's `require` one hop into shared PHP.** `readBlockPhpFiles` resolves `require` and `require_once` one hop from the block's own PHP files; section 4.1 gives the effect and why the hop is not transitive. The behaviour carries its own negative control: `selfTestRequireHop` asserts that a file required BY THE BLOCK is in the model and that a file required by THAT file is not, because a test of the positive alone passes identically for a transitive follower. Making the follower transitive on purpose drops the suite to 21/24.
+
+24 `sgs/product-card::valueLadder*::L3` gaps were accepted into `scripts/wiring-fingerprint-baseline.json`, which has no per-entry reason field: the justification lives only in `6f1963c28`'s commit message under `[gates-ok]`, which is the form that gate's own output asks for. In short, the gate credits `ServerSideRender` only when it is unconditional, and product-card's is gated to bound mode with a real typed-mode branch; the ladder exists only in bound mode and its inspector targets are gated to it too, so the canvas shows render.php's own output wherever a client can set these. The fixed `sgs/cart::hideOnCartCheckoutPages::L3` entry was removed in the same pass. **Deferred by Bean's explicit decision (2026-10-07): building a bound-mode canvas mirror so those 24 clear on merit is needed, but not a priority now.** Nothing in the baseline was moved or re-baselined.
 
 | Step | Where | CLASS-2 | CLASS-3 | CANNOT-RESOLVE |
 |---|---|---|---|---|
 | Before this work | | 68 | 5 | 64 |
-| **Now (shipped)** | | **56** | **3** | **64** |
-| Move the 3 EDITOR-only declarations (`business-info` `__placeholder` x2, `table-of-contents` `__empty`) into each block's `editor.css`, which the gate excludes by design. | 3.2 | 55 | 5 | 64 |
-| Fix the 26 FIX declarations (22 CLASS-2, 4 CLASS-3) | 3.1 | 33 | 1 | 64 |
-| Gate: drop editor-only classes (cause A, 5) and let an own control win (2) | 4.1 | 33 | 1 | 57 |
-| Remaining floor | | 33 | 1 | the CLASS 4 shaped 52 plus the 5 CANNOT-TELL, until the gate gains a CLASS 4 category and the five causes of section 4 are modelled | 
+| After `6f1963c28` | | 56 | 3 | 64 |
+| **Now (shipped: `75a583e23`, `53ba85750`)** | | **48** | **2** | **61** |
+| Move the 3 EDITOR-only declarations (`business-info` `__placeholder` x2, `table-of-contents` `__empty`) into each block's `editor.css`, which the gate excludes by design. | 3.2 | 45 | 2 | 61 |
+| Fix the 13 open FIX declarations (12 CLASS-2, 1 CLASS-3: `sgs/form` 7, `sgs/cta-section` 3, `sgs/option-picker` 1 CLASS-3, `sgs/product-card` 1, `sgs/table-of-contents` 1: the rows of 3.1 still marked FIX) | 3.1 | 33 | 1 | 61 |
+| Gate: drop editor-only classes (cause A, 5) and let an own control win (2) | 4.1 | 33 | 1 | 54 |
+| Remaining floor | | 33 | 1 | the CLASS 4 shaped 40, the 9 unclassified (cause H) and the 5 CANNOT-TELL, until the gate gains a CLASS 4 category and the causes of section 4 are modelled |
 
 The 34 DEFENSIBLE findings (33 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay in the count unless a mechanism removes them. Three options, none implemented: (i) leave them counted (the ceiling stays 33 and 1; no new mechanism); (ii) add a per-declaration marker comment the gate honours (new gate capability, needs a decision on what the marker must say); (iii) record them as `by-design` baseline entries, which conflicts with the standing rule against baselining a finding to silence it, so it needs Bean's explicit decision. I recommend (i) now.
 
 ## 7. Capability gaps in the gate that this triage exposed
 
-Each is evidence for a later gate task; none was changed here.
+Each is evidence for a later gate task and is still open. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
 
-1. **`var()`-valued declarations are invisible to E14.** `isLiteralConstant` rejects them, but a `var(--wp--preset--font-size--x-large)` on a descendant blocks an ancestor control exactly as a literal does. Measured with a scratch copy of the gate that admits `var(` values for inherited properties: +48 findings (27 CLASS-2, 21 CANNOT-RESOLVE) in 11 blocks (`form` 15, `choice-flow` 12, `cta-section` 5, `product-card` 4, `countdown-timer` 3, `option-picker` 3, `google-reviews` 2, and one each in `notice-banner`, `process-steps`, `table-of-contents`, `team-member`). Example: `countdown-timer/style.css::.sgs-countdown__number { font-size: var(--wp--preset--font-size--xx-large, 3rem) }` makes the root `fontSize` control do nothing on the numbers, and the gate says nothing.
+1. **`var()`-valued declarations are invisible to E14.** `isLiteralConstant` rejects them, but a `var(--wp--preset--font-size--x-large)` on a descendant blocks an ancestor control exactly as a literal does. Measured with a scratch copy of the gate that admits `var(` values for inherited properties: +48 findings (27 CLASS-2, 21 CANNOT-RESOLVE) in 11 blocks (`form` 15, `choice-flow` 12, `cta-section` 5, `product-card` 4, `countdown-timer` 3, `option-picker` 3, `google-reviews` 2, and one each in `notice-banner`, `process-steps`, `table-of-contents`, `team-member`). Example: `countdown-timer/style.css::.sgs-countdown__number { font-size: var(--wp--preset--font-size--xx-large, 3rem) }` made the root `fontSize` control do nothing on the numbers, and the gate said nothing. Direct evidence from closing the countdown-timer rows (`75a583e23`): `__number`, `__label` and `__expired` each also declared `font-size: var(--wp--preset--font-size--...)`, which blocked the root control exactly as a literal does while the gate reported nothing for it. Those were de-specified into `:where()` alongside the literals, so the control now reaches them, but the gate still cannot see that class of defect.
 2. **Own-control verdicts are overridden by resolution order.** `classifyInheritedHardcode` returns CLASS-2 as soon as any control is above, and CANNOT-RESOLVE as soon as any is unresolved, before it considers a `same` control. Two CANNOT-RESOLVE rows are CLASS 1 in effect (`option-picker` pill `line-height`, `media` caption `font-size`).
 3. **One unplaceable control poisons the whole property.** Cause D: 20 findings are CANNOT-RESOLVE because one control for the property targets an element built from a variable or sprintf template, even where that control is on an unrelated element.
 4. **sprintf placeholders drop elements.** `'<span class="sgs-option-picker__pill%s">'` loses the class token and `'<%1$s class="sgs-media__caption">'` is not parsed as a tag. The former also mislabels the `option-picker` pill-text finding as CLASS 3; it is a CLASS 2 for `pillLineHeight`. Dynamic tags (`<<?php echo esc_attr( $heading_level ); ?> class="sgs-process-steps__title">`) are not parsed either, which is why the process-steps note lists three leak targets and not the title.
 5. **Class maps are not followed.** `includes/forms/field-render-helpers.php::field_headings` builds two live classes from a PHP array; a literal search finds only the map.
 6. **State selectors are not exempt.** `[aria-current="true"]` (`store-selector`) is a state, like the `:hover` and `:focus` that E3 already exempts.
-7. **No CLASS 4 category.** 52 of the 64 CANNOT-RESOLVE findings, and the largest real gaps (post-grid card parts, buybox notify form), are "this element has no control". The gate has no way to say so.
-8. **47 blocks have no E14 model**, so the gate reports nothing for them (section 5).
+7. **No CLASS 4 category.** 40 of the 61 CANNOT-RESOLVE findings, and the largest real gaps (post-grid card parts, which the gate no longer reports at all, and the buybox notify form), are "this element has no control". The gate has no way to say so.
+8. **44 blocks have no E14 model**, so the gate reports nothing for them (section 5).
 
 ## 8. Scope limits and CANNOT-TELL
 
@@ -585,6 +590,6 @@ positive control with a live proof already attached.
 - **DEFENSIBLE is a reading, not a ruling.** Where I wrote "documented", the source says so (`business-hours__time` comment, `helpers-button-note.php` docblock, the `google-reviews` style header). For UI chrome (arrows, pause buttons, ribbons, the upload chip, progress bubbles) the intent is not recorded anywhere I could find: CANNOT-TELL whether the owner wants those reachable from typography controls.
 - **DEAD means "no current emitter in code".** I searched `src/`, `includes/` and `theme/` (and the `plugins/` tree for `__btn`). I did not and cannot search stored post content in a database, which could still carry a legacy class (the `notice-banner` conformance fixture carries `sgs-notice-banner__text`). CANNOT-TELL for stored content.
 - **No browser, no computed styles.** Specificity is computed from selector strings with a simple parser; "wins" and "cannot reach" follow from CSS inheritance and specificity rules, not from a measured page. The `.product-card h3` pair is an exact tie, decided by source order: CANNOT-TELL.
-- **Scratch tooling.** The survey detail (control selectors, matched-instance counts) and the `var()` experiment (+48) came from scratch copies of the gate in the session scratchpad; the repo gate is unchanged and its output is the same as before.
+- **Scratch tooling.** The survey detail (control selectors, matched-instance counts) and the `var()` experiment (+48) came from scratch copies of the gate in the session scratchpad; the repo gate at triage time is the one reported in section 0; its later change is `53ba85750`.
 - **The crude 86 (section 5) is an indicator only.**
 - **Not checked:** `editor.css` and the editor canvas, `theme/` stylesheets, `includes/` helpers that hardcode typography, and `scripts/computed-route/` and `scripts/parity/` (out of scope by instruction).
