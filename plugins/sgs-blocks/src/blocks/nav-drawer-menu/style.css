@@ -851,34 +851,164 @@
 	}
 }
 
+/* ── Stagger inside groups (staggerInsideGroups). With `.sgs-nav-drawer--stagger-groups` the
+   direct children of each body-level sgs/container arrive one after another instead of
+   the container arriving whole. --sgs-gi counts a child from 0 (--sgs-gri from the end for
+   the closing reverse); children past the 20th share the 20th delay, and sibling-index()
+   replaces the table where supported. The group starts after the menu items. ── */
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(1),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(1) {
+	--sgs-gi: 0;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(2),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(2) {
+	--sgs-gi: 1;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(3),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(3) {
+	--sgs-gi: 2;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(4),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(4) {
+	--sgs-gi: 3;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(5),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(5) {
+	--sgs-gi: 4;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(6),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(6) {
+	--sgs-gi: 5;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(7),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(7) {
+	--sgs-gi: 6;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(8),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(8) {
+	--sgs-gi: 7;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(9),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(9) {
+	--sgs-gi: 8;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(10),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(10) {
+	--sgs-gi: 9;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(11),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(11) {
+	--sgs-gi: 10;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(12),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(12) {
+	--sgs-gi: 11;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(13),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(13) {
+	--sgs-gi: 12;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(14),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(14) {
+	--sgs-gi: 13;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(15),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(15) {
+	--sgs-gi: 14;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(16),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(16) {
+	--sgs-gi: 15;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(17),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(17) {
+	--sgs-gi: 16;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(18),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(18) {
+	--sgs-gi: 17;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(19),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(19) {
+	--sgs-gi: 18;
+}
+
+.sgs-nav-drawer__body > .wp-block-sgs-container > :nth-child(n + 20),
+.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > :nth-child(n + 20) {
+	--sgs-gi: 19;
+}
+
+@supports (transition-delay: calc(sibling-index() * 1ms)) {
+	.sgs-nav-drawer__body > .wp-block-sgs-container > *,
+	.sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > * {
+		--sgs-gi: calc(sibling-index() - 1);
+		--sgs-gri: calc(sibling-count() - sibling-index());
+	}
+}
+
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
-		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) both;
+		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) both;
 		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}
 
 	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer__body > :not(.wp-block-sgs-nav-drawer-menu) {
-		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) both;
+		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) both;
 		animation-delay: min(calc(var(--sgs-nd-last-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}
 
 	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
-		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-ease, ease-out) forwards;
+		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) forwards;
 		animation-delay: min(calc(var(--sgs-ri, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
+	}
+
+	/* The container itself no longer arrives whole; its children do. */
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger.sgs-nav-drawer--stagger-groups[open]:not(.is-closing) .sgs-nav-drawer__body > .wp-block-sgs-container:not(.wp-block-sgs-nav-drawer-menu) {
+		animation: none;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger.sgs-nav-drawer--stagger-groups[open]:not(.is-closing) .sgs-nav-drawer__body > .wp-block-sgs-container > *:where(:not(.sgs-container__image-bg, .sgs-container__video-bg, .sgs-container__overlay, .sgs-container__svg-bg, .sgs-container__lottie-bg)),
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger.sgs-nav-drawer--stagger-groups[open]:not(.is-closing) .sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > *:where(:not(.sgs-container__image-bg, .sgs-container__video-bg, .sgs-container__overlay, .sgs-container__svg-bg, .sgs-container__lottie-bg)) {
+		animation: sgs-nav-drawer-menu-item-in var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) both;
+		animation-delay: min(calc((var(--sgs-nd-last-i, -1) + 1 + var(--sgs-gi, 0)) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger.sgs-nav-drawer--stagger-groups.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer__body > .wp-block-sgs-container > *:where(:not(.sgs-container__image-bg, .sgs-container__video-bg, .sgs-container__overlay, .sgs-container__svg-bg, .sgs-container__lottie-bg)),
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger.sgs-nav-drawer--stagger-groups.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > *:where(:not(.sgs-container__image-bg, .sgs-container__video-bg, .sgs-container__overlay, .sgs-container__svg-bg, .sgs-container__lottie-bg)) {
+		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) forwards;
+		animation-delay: min(calc(var(--sgs-gri, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}
 }
 
 @keyframes sgs-nav-drawer-menu-item-in {
 	from {
 		opacity: 0;
-		translate: 0 var(--sgs-nd-stagger-dist, 16px);
+		translate: 0 var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px));
 	}
 }
 
 @keyframes sgs-nav-drawer-menu-item-out {
 	to {
 		opacity: 0;
-		translate: 0 var(--sgs-nd-stagger-dist, 16px);
+		translate: 0 var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px));
 	}
 }
 

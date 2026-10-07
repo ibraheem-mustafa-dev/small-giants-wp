@@ -13,9 +13,12 @@
  * badges share the FIRST badge's row (same `top`) and hides everything that
  * landed on a later row — i.e. everything that would have wrapped.
  *
- * Ignored while auto-scroll is on (see `badgesFor()` below): the marquee
- * already keeps a single row by scrolling, so drop mode would have nothing
- * to do there.
+ * Coexists with the auto-scroll marquee: while the marquee runs (auto-scroll on,
+ * viewport below `autoScrollBelow`, motion allowed — see marquee-mode.js) nothing is
+ * hidden, every badge is in the scrolling track. Once the marquee is inert (at or above
+ * the breakpoint) the badges sit in the original track, which is `display: contents`
+ * there, and this script drops the ones that do not fit. Crossing the breakpoint in
+ * either direction restores hidden badges first and re-measures.
  *
  * Re-measures on resize via ResizeObserver so narrowing the viewport drops
  * more badges and widening it brings previously-dropped badges back.
@@ -24,22 +27,34 @@
  * block editor); imported from view.js.
  */
 
+import { isMarqueeActive, marqueeRangeQuery } from './marquee-mode.js';
+
 /** Marks a badge this script hid, so a later re-measure knows to un-hide it first. */
 const DROP_ATTR = 'data-sgs-overflow-dropped';
 
 /**
- * The badges to measure for one trust-bar wrapper, or an empty list when drop
- * mode does not apply (auto-scroll wraps badges in `.sgs-trust-bar__track`
- * and handles overflow itself).
+ * The badges to measure for one trust-bar wrapper: the original badges only
+ * (inside the original track when auto-scroll is on, never the marquee clones).
  *
  * @param {HTMLElement} wrapper The `.sgs-trust-bar[data-overflow-mode="drop"]` root.
  * @return {HTMLElement[]} Badge elements in document order.
  */
 function badgesFor( wrapper ) {
-	if ( wrapper.dataset.autoScroll === 'true' ) {
-		return [];
-	}
-	return Array.from( wrapper.querySelectorAll( ':scope > .sgs-trust-bar__badge' ) );
+	const track = wrapper.querySelector( '.sgs-trust-bar__track:not([data-sgs-marquee-clone])' );
+	const scope = track || wrapper;
+	return Array.from( scope.querySelectorAll( ':scope > .sgs-trust-bar__badge' ) );
+}
+
+/**
+ * Bring back every badge this script hid.
+ *
+ * @param {HTMLElement} wrapper The trust-bar wrapper.
+ */
+export function restoreDropped( wrapper ) {
+	wrapper.querySelectorAll( `[${ DROP_ATTR }]` ).forEach( ( badge ) => {
+		badge.removeAttribute( 'hidden' );
+		badge.removeAttribute( DROP_ATTR );
+	} );
 }
 
 /**
@@ -49,6 +64,12 @@ function badgesFor( wrapper ) {
  * @param {HTMLElement} wrapper The trust-bar wrapper being laid out.
  */
 function layOutDrop( wrapper ) {
+	// The marquee shows every badge; drop only applies once it is inert.
+	if ( isMarqueeActive( wrapper ) ) {
+		restoreDropped( wrapper );
+		return;
+	}
+
 	const badges = badgesFor( wrapper );
 	if ( badges.length === 0 ) {
 		return;
@@ -57,12 +78,7 @@ function layOutDrop( wrapper ) {
 	// Reset before measuring — otherwise a widened viewport could never bring
 	// a previously-dropped badge back, since a hidden badge takes no layout
 	// space and can't be re-measured into row one.
-	badges.forEach( ( badge ) => {
-		if ( badge.hasAttribute( DROP_ATTR ) ) {
-			badge.removeAttribute( 'hidden' );
-			badge.removeAttribute( DROP_ATTR );
-		}
-	} );
+	restoreDropped( wrapper );
 
 	// Always keep at least the first badge, however narrow the row is.
 	const firstTop = Math.round( badges[ 0 ].getBoundingClientRect().top );
@@ -83,6 +99,13 @@ const dropWrappers = document.querySelectorAll( '.sgs-trust-bar[data-overflow-mo
 
 dropWrappers.forEach( ( wrapper ) => {
 	layOutDrop( wrapper );
+
+	// Crossing the marquee breakpoint changes the layout without always changing
+	// the wrapper's size, so re-run explicitly on the media query.
+	const rangeQuery = marqueeRangeQuery( wrapper );
+	if ( rangeQuery ) {
+		rangeQuery.addEventListener( 'change', () => layOutDrop( wrapper ) );
+	}
 
 	if ( 'ResizeObserver' in window ) {
 		const observer = new ResizeObserver( () => layOutDrop( wrapper ) );

@@ -359,6 +359,17 @@
 		animation-name: sgs-nav-drawer-item-shaped-in;
 	}
 
+	/* Group children (staggerInsideGroups) take the same shaped entrance and exit. */
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-groups[open]:not(.is-closing) .sgs-nav-drawer__body > .wp-block-sgs-container > *:not([class*="sgs-container__"]),
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-groups[open]:not(.is-closing) .sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > *:not([class*="sgs-container__"]) {
+		animation-name: sgs-nav-drawer-item-shaped-in;
+	}
+
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-groups.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer__body > .wp-block-sgs-container > *:not([class*="sgs-container__"]),
+	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-groups.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer__body > .wp-block-sgs-container > .sgs-container__inner > *:not([class*="sgs-container__"]) {
+		animation-name: sgs-nav-drawer-item-shaped-out;
+	}
+
 	.wp-block-sgs-nav-drawer.sgs-nav-drawer--stagger-shaped.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
 		animation-name: sgs-nav-drawer-item-shaped-out;
 	}
@@ -396,7 +407,7 @@
 @keyframes sgs-nav-drawer-item-shaped-in {
 	from {
 		opacity: var(--sgs-nd-stagger-from-opacity, 0);
-		translate: calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ay, 1));
+		translate: calc(var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px)) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px)) * var(--sgs-nd-stagger-ay, 1));
 		clip-path: var(--sgs-nd-stagger-clip, none);
 	}
 
@@ -420,7 +431,7 @@
 
 	to {
 		opacity: var(--sgs-nd-stagger-from-opacity, 0);
-		translate: calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, 16px) * var(--sgs-nd-stagger-ay, 1));
+		translate: calc(var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px)) * var(--sgs-nd-stagger-ax, 0) * var(--sgs-nd-dir, 1)) calc(var(--sgs-nd-stagger-dist, var(--wp--custom--entrance--distance, 16px)) * var(--sgs-nd-stagger-ay, 1));
 		clip-path: var(--sgs-nd-stagger-clip, none);
 	}
 }

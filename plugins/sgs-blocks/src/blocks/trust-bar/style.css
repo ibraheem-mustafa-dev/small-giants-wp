@@ -286,6 +286,52 @@ a.sgs-trust-bar__badge:focus-visible {
 	animation-play-state: paused;
 }
 
+/* Pause / play button (WCAG 2.2.2). Hidden by the `hidden` attribute until view.js
+   starts a marquee; overlaid at the end edge of the bar so it takes no place in the
+   badge row. 44px target, visible focus ring from the design tokens. */
+.sgs-trust-bar__pause {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-end: 0;
+	transform: translateY(-50%);
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	margin: 0;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	background-color: var(--wp--preset--color--surface, Canvas);
+	color: var(--wp--preset--color--text, CanvasText);
+	cursor: pointer;
+}
+
+.sgs-trust-bar__pause[hidden] {
+	display: none;
+}
+
+.sgs-trust-bar__pause:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, currentColor);
+	outline-offset: 2px;
+}
+
+.sgs-trust-bar__pause-icon {
+	display: block;
+}
+
+.sgs-trust-bar__pause-icon--play,
+.sgs-trust-bar__pause[aria-pressed="true"] .sgs-trust-bar__pause-icon--pause {
+	display: none;
+}
+
+.sgs-trust-bar__pause[aria-pressed="true"] .sgs-trust-bar__pause-icon--play {
+	display: block;
+}
+
 @keyframes sgs-trust-bar-scroll {
 	0%   { transform: translateX(0); }
 	100% { transform: translateX(calc(-1 * var(--sgs-scroll-distance))); }
@@ -334,5 +380,10 @@ a.sgs-trust-bar__badge:focus-visible {
 
 	.sgs-trust-bar__track--ready {
 		animation: none;
+	}
+
+	/* Nothing moves, so there is nothing to pause. */
+	.sgs-trust-bar__pause {
+		display: none;
 	}
 }

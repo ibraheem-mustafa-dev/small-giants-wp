@@ -228,9 +228,9 @@
 		},
 		"advanceMode": {
 			"type": "string",
-			"enum": [ "continue", "tap" ],
+			"enum": [ "continue", "tap", "pick" ],
 			"default": "continue",
-			"description": "D1 (Bean's 2026-09-26 review): 'continue' (default) — picking an option selects it and records the answer but does not advance; the footer's Continue button moves on. 'tap' keeps the original advance-on-click behaviour, for quick quizzes."
+			"description": "D1 (Bean's 2026-09-26 review): 'continue' (default) — picking an option selects it and records the answer but does not advance; the footer's Continue button moves on. 'tap' keeps the original advance-on-click behaviour, for quick quizzes (Continue is hidden). 'pick' (N37) advances as soon as a single-choice option is picked, except into a result step or from an inline-next question, and keeps Continue visible so Back can return and move on without re-picking."
 		},
 		"continueLabel": {
 			"type": "string",
@@ -318,6 +318,11 @@
 			"type": "string",
 			"default": "",
 			"description": "FR-43-24: the footer's skip link on the first question, e.g. 'Skip the lenses'. It takes the same route as the flow's 'no add-ons' option. Empty shows no link."
+		},
+		"skipAddsToBag": {
+			"type": "boolean",
+			"default": false,
+			"description": "N38: when on, the footer's skip link adds the bare frame (the product and its chosen variation, no add-ons) to the bag, then closes the pop-up if the flow is in one. When off, the skip link routes to the 'no add-ons' option's ending as before."
 		}
 	},
 	"providesContext": {

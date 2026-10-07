@@ -1856,6 +1856,35 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
 
+				{ attributes.bgKenBurns && (
+					<PanelBody title={ __( 'Ken-burns style', 'sgs-blocks' ) } initialOpen={ false }>
+						<SelectControl
+							label={ __( 'Ken-burns style', 'sgs-blocks' ) }
+							help={ __( 'Loop drifts back and forth for ever. Zoom out once starts zoomed in and settles to full size, one time, as the page loads. Its length is the animation duration in the Background panel.', 'sgs-blocks' ) }
+							value={ attributes.bgKenBurnsMode || 'loop' }
+							options={ [
+								{ label: __( 'Loop', 'sgs-blocks' ), value: 'loop' },
+								{ label: __( 'Zoom out once', 'sgs-blocks' ), value: 'zoom-out-once' },
+							] }
+							onChange={ ( val ) => setAttributes( { bgKenBurnsMode: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						{ 'zoom-out-once' === attributes.bgKenBurnsMode && (
+							<RangeControl
+								label={ __( 'Starting zoom (%)', 'sgs-blocks' ) }
+								value={ attributes.bgZoomStart ?? 108 }
+								onChange={ ( val ) => setAttributes( { bgZoomStart: val ?? 108 } ) }
+								min={ 100 }
+								max={ 150 }
+								step={ 1 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</PanelBody>
+				) }
+
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()
 					(Spec 35 T2.2b). */ }

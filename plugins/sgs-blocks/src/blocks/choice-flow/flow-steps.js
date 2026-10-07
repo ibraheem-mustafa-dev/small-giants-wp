@@ -30,6 +30,7 @@ import { markStepReached } from './flow-reached.js';
 import { refreshPricePanel } from './pricing.js';
 import { updateSkipVisibility } from './flow-skip.js';
 import { flowState } from './flow-persistence.js';
+import { announceStep, moveFocusToStep } from './flow-a11y.js';
 
 /**
  * Get this flow's `.sgs-form-step` children in DOM order.
@@ -42,14 +43,17 @@ export function getSteps( flowRoot ) {
 }
 
 /**
- * This flow's advanceMode — 'continue' (default) or 'tap' —
- * (`choice-flow/render.php`'s `data-advance-mode`).
+ * This flow's advanceMode — 'continue' (default), 'tap' or 'pick' —
+ * (`choice-flow/render.php`'s `data-advance-mode`). 'continue' and 'pick'
+ * both use the select-then-Continue model; 'pick' also advances on a
+ * single-choice pick (`flow-options.js::handleOptionClick`).
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
- * @return {'continue'|'tap'} The flow's advance mode.
+ * @return {'continue'|'tap'|'pick'} The flow's advance mode.
  */
 export function advanceModeOf( flowRoot ) {
-	return 'tap' === flowRoot.getAttribute( 'data-advance-mode' ) ? 'tap' : 'continue';
+	const mode = flowRoot.getAttribute( 'data-advance-mode' );
+	return 'tap' === mode || 'pick' === mode ? mode : 'continue';
 }
 
 /**
@@ -67,6 +71,7 @@ export function getActiveResultEl( flowRoot ) {
  * Continue (a question step, 'continue' advanceMode only), Add to basket/
  * Buy now (an `add-to-bag` result step, per its own data-* attributes), or
  * nothing (a recommendation/email result, or any step in 'tap' advanceMode).
+ * 'pick' keeps Continue, like 'continue'.
  *
  * @param {HTMLElement}      flowRoot    Flow wrapper element.
  * @param {HTMLElement|null} targetStepEl The step now shown.
@@ -219,6 +224,17 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 
 	updateBackButtonVisibility( flowRoot );
 	updateFooterActions( flowRoot, targetStepEl || null );
+
+	// The first reveal is the flow's own start-up: announcing it, or taking
+	// focus, would interrupt the page. Every later reveal is the shopper's.
+	if ( ! flowRoot.dataset.stepRevealed ) {
+		flowRoot.dataset.stepRevealed = '1';
+		return;
+	}
+	announceStep( flowRoot, steps, targetIndex );
+	if ( targetStepEl ) {
+		moveFocusToStep( targetStepEl );
+	}
 }
 
 /**

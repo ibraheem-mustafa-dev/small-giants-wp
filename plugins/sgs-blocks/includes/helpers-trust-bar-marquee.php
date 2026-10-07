@@ -15,6 +15,11 @@
  * animates. Everything is a media query in the block's scoped stylesheet; the
  * runtime only clones the track.
  *
+ * The marquee coexists with the "drop" overflow mode: below the breakpoint every badge
+ * is in the scrolling track (nothing hidden); at and above it the track is inert
+ * (`display: contents`, clones hidden, pause button hidden) and overflow-drop.js hides
+ * the badges that do not fit.
+ *
  * @package SGS\Blocks
  */
 
@@ -114,6 +119,7 @@ if ( ! function_exists( 'sgs_trust_bar_marquee_css' ) ) {
 			. $root . '[data-auto-scroll="true"]{overflow:visible;}'
 			. $track . '{display:contents;}'
 			. $track . '[aria-hidden="true"]{display:none;}'
+			. $root . ' .sgs-trust-bar__pause{display:none;}'
 			. '}';
 
 		// Below the breakpoint: one nowrap row (the track plus its clones side by

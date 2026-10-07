@@ -451,6 +451,11 @@
         "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "linear": "linear"
       },
+      "entrance": {
+        "distance": "30px",
+        "duration": "500ms",
+        "easing": "cubic-bezier(0.16,1,0.3,1)"
+      },
       "focus-ring": {
         "width": "3px",
         "offset": "2px",

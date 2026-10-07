@@ -1136,6 +1136,24 @@ if ( $bg_parallax ) {
 }
 if ( $bg_ken_burns ) {
 	$classes[] = 'sgs-hero--ken-burns';
+	// Ken-burns style and its per-instance values reach CSS as scoped custom
+	// properties on the root (never inline). The wrapper emits
+	// --sgs-ken-burns-duration itself only for a wrapper-painted background;
+	// the standard variant paints a private <img>, so the duration is set here.
+	$hero_kb_decls = '';
+	if ( $has_standard_bg_image ) {
+		$hero_kb_duration = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+		$hero_kb_decls   .= '--sgs-ken-burns-duration:' . ( $hero_kb_duration > 0 ? $hero_kb_duration : 20 ) . 's;';
+	}
+	if ( 'zoom-out-once' === ( $attributes['bgKenBurnsMode'] ?? 'loop' ) ) {
+		$classes[]         = 'sgs-hero--ken-burns-once';
+		$hero_kb_zoom      = isset( $attributes['bgZoomStart'] ) ? (float) $attributes['bgZoomStart'] : 108.0;
+		$hero_kb_zoom      = max( 100.0, min( 150.0, $hero_kb_zoom ) );
+		$hero_kb_decls    .= '--sgs-ken-burns-zoom-start:' . rtrim( rtrim( number_format( $hero_kb_zoom / 100, 3, '.', '' ), '0' ), '.' ) . ';';
+	}
+	if ( '' !== $hero_kb_decls ) {
+		$responsive_css .= '.' . $uid . '{' . $hero_kb_decls . '}';
+	}
 }
 
 // NO-INLINE: this block emits zero inline style property declarations.

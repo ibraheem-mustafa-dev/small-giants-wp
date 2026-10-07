@@ -449,7 +449,10 @@ final class Sgs_Site_Info {
 	 * @return string Sanitised address string.
 	 */
 	private static function sanitise_address( $raw ): string {
-		return \wp_kses( (string) $raw, array( 'br' => array() ) );
+		// A line typed in the textarea is a line on the page: newlines become <br>.
+		$lines = \preg_split( '/\r\n|\r|\n/', \trim( (string) $raw ) );
+		$lines = \array_values( \array_filter( \array_map( 'trim', $lines ), 'strlen' ) );
+		return \wp_kses( \implode( '<br>', $lines ), array( 'br' => array() ) );
 	}
 
 	/**

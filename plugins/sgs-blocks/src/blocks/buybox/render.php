@@ -664,6 +664,10 @@ if ( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ) {
 if ( $buybox_is_guided ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--guided';
 }
+$buybox_photo_entrance = (string) ( $attributes['photoEntrance'] ?? 'none' );
+if ( in_array( $buybox_photo_entrance, array( 'fade', 'rise' ), true ) ) {
+	$buybox_wrapper_classes .= ' sgs-buybox--photo-' . $buybox_photo_entrance;
+}
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;

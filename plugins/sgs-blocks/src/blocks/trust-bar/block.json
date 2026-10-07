@@ -685,6 +685,11 @@
 			"type": "boolean",
 			"default": true
 		},
+		"autoScrollPauseButton": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show a visible pause / play button while the marquee is running (WCAG 2.2.2: moving content longer than 5 seconds needs a way to stop it). Needs autoScroll on; never shown when nothing moves."
+		},
 		"autoScrollBelow": {
 			"type": "number",
 			"default": 0,

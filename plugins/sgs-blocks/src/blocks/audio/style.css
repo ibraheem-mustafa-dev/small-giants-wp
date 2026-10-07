@@ -109,7 +109,7 @@
 	cursor: pointer;
 }
 .sgs-audio__seek:focus-visible {
-	outline: 2px solid var( --sgs-audio-accent );
+	outline: 2px solid var(--sgs-audio-accent, var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent)));
 	outline-offset: 3px;
 }
 

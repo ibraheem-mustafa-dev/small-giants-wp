@@ -248,6 +248,29 @@
 		return Number.isFinite( custom ) ? Math.max( 0, Math.min( 400, custom ) ) : undefined;
 	}
 
+	/**
+	 * The shared entrance distance token (--wp--custom--entrance--distance,
+	 * theme.json settings.custom.entrance) in px, or undefined when absent or
+	 * not a pixel length. Read once; the fade-* presets use it as their
+	 * default distance when the block sets none of its own.
+	 *
+	 * @return {number|undefined} Distance in px.
+	 */
+	var entranceDistance;
+	var entranceDistanceRead = false;
+	function tokenDistance() {
+		if ( ! entranceDistanceRead ) {
+			entranceDistanceRead = true;
+			var raw = globalThis.getComputedStyle( document.documentElement )
+				.getPropertyValue( '--wp--custom--entrance--distance' ).trim();
+			var match = raw.match( /^(\d+(?:\.\d+)?)px$/ );
+			if ( match ) {
+				entranceDistance = parseFloat( match[ 1 ] );
+			}
+		}
+		return entranceDistance;
+	}
+
 	var createdAnimations = [];
 	var animations        = new WeakMap();
 
@@ -270,7 +293,14 @@
 			return null;
 		}
 
-		var kf      = keyframes( effect, resolveDistance( el ) );
+		var distance = resolveDistance( el );
+		// The fade-* presets (opacity plus a move) follow the shared entrance
+		// distance token when the block sets no distance of its own; slide-*
+		// keep their own 100px.
+		if ( undefined === distance && effect.axis && 'opacity' in effect ) {
+			distance = tokenDistance();
+		}
+		var kf      = keyframes( effect, distance );
 		var t       = timing( el, effect, loadIndex );
 		var options = { duration: t.duration, easing: t.easing, delay: t.delay, fill: t.fill };
 

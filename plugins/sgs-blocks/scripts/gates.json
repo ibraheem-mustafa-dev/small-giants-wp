@@ -1381,5 +1381,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 152
+  },
+  {
+    "id": "check-focus-ring-token",
+    "cmd": "python ../../scripts/check-focus-ring-token.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 153
   }
 ]

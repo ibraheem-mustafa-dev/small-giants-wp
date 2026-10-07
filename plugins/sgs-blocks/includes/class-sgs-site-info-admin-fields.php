@@ -140,7 +140,7 @@ final class Sgs_Site_Info_Admin_Fields {
 			\esc_attr( $name ),
 			\esc_textarea( $value )
 		);
-		echo '<p class="description">' . \esc_html__( 'Plain text plus <br> tags only. Other HTML is stripped on save.', 'sgs-blocks' ) . '</p>';
+		echo '<p class="description">' . \esc_html__( 'One line per address line (each becomes a line break). Plain text only; other HTML is stripped on save.', 'sgs-blocks' ) . '</p>';
 	}
 
 	/**

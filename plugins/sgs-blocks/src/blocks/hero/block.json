@@ -577,6 +577,20 @@
 			"type": "boolean",
 			"default": false
 		},
+		"bgKenBurnsMode": {
+			"type": "string",
+			"default": "loop",
+			"enum": [
+				"loop",
+				"zoom-out-once"
+			],
+			"description": "Ken-burns style: loop drifts back and forth for ever; zoom-out-once starts at bgZoomStart percent and settles to full size one time (duration from bgAnimationDuration, easing from the theme entrance token)."
+		},
+		"bgZoomStart": {
+			"type": "number",
+			"default": 108,
+			"description": "Starting zoom, in percent, for the zoom-out-once ken-burns style."
+		},
 		"bgVideo": {
 			"type": "object"
 		},

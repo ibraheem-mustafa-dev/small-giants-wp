@@ -18,11 +18,11 @@ import { openInlineStep, showStep } from './flow-inline.js';
 import { refreshPricePanel } from './pricing.js';
 import { getSteps, updateContinueState, showContinueHint, hideContinueHint, advanceModeOf } from './flow-steps.js';
 import { flowState, ensureNavigationState, persistFlowState } from './flow-persistence.js';
-import { recordOptionAnswer, commitStepRouting } from './flow-routing.js';
+import { recordOptionAnswer, commitStepRouting, routesToQuestionStep } from './flow-routing.js';
 
 /**
  * D1 — visually select an option and deselect its siblings in the same
- * options group (continue advanceMode only).
+ * options group (continue and pick advanceModes).
  *
  * @param {HTMLElement} buttonEl The clicked option.
  */
@@ -75,6 +75,13 @@ export function handleOptionClick( buttonEl ) {
 	// A plain answer's stage line follows the pick (priced answers refresh as they record).
 	refreshPricePanel( flowRoot );
 	openInlineStep( flowRoot, currentStepEl );
+
+	// 'pick' advanceMode: a click (which Enter and Space also deliver on a
+	// button; arrow keys never do) on a single-choice question moves on at
+	// once, by the same routing Continue commits. Continue stays for Back.
+	if ( 'pick' === advanceModeOf( flowRoot ) && routesToQuestionStep( flowRoot, buttonEl, currentIndex ) ) {
+		commitStepRouting( flowRoot, buttonEl, currentIndex );
+	}
 }
 
 /**

@@ -57,6 +57,7 @@ export default function MotionPanel( { attributes, setAttributes, anchorDesktop 
 		itemStaggerDuration,
 		itemStaggerMax,
 		itemStaggerOnClose,
+		staggerInsideGroups,
 		scrimFadeDuration,
 	} = attributes;
 
@@ -203,6 +204,13 @@ export default function MotionPanel( { attributes, setAttributes, anchorDesktop 
 						__next40pxDefaultSize
 					/>
 					<ItemEntranceControls attributes={ attributes } setAttributes={ setAttributes } />
+					<ToggleControl
+						label={ __( 'Stagger items inside groups', 'sgs-blocks' ) }
+						help={ __( 'Also staggers the items inside each container in the drawer body, after the menu items.', 'sgs-blocks' ) }
+						checked={ !! staggerInsideGroups }
+						onChange={ ( value ) => setAttributes( { staggerInsideGroups: value } ) }
+						__nextHasNoMarginBottom
+					/>
 					<ToggleControl
 						label={ __( 'Items leave one after another on close', 'sgs-blocks' ) }
 						checked={ !! itemStaggerOnClose }

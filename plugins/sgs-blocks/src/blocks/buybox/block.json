@@ -590,6 +590,16 @@
 			],
 			"description": "Where the gallery and configurator sit side by side: 'mobile' = from 768px up (stacked on phones), 'tablet' = from 1024px up (stacked on phones and tablets)."
 		},
+		"photoEntrance": {
+			"type": "string",
+			"default": "none",
+			"enum": [
+				"none",
+				"fade",
+				"rise"
+			],
+			"description": "How the main product photo arrives once when the page loads: none, fade (opacity only) or rise (fades in while moving up by the theme entrance distance). Timing and easing follow the theme entrance settings; off under reduced motion."
+		},
 		"galleryColumnRatio": {
 			"type": "number",
 			"default": 0,

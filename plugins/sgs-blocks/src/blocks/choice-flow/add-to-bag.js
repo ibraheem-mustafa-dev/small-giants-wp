@@ -21,7 +21,7 @@
  */
 
 import { toastActions } from '../../shared/toast/store.js';
-import { getAddonSummary } from './pricing.js';
+import { getAddonSummary, resetAddonAnswers } from './pricing.js';
 import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
 import { getResolvedVariation } from './variation.js';
 import { FLOW_SELECTOR, getActiveResultEl } from './navigation.js';
@@ -40,40 +40,42 @@ function flowHasVariationSteps( flowRoot ) {
 }
 
 /**
- * D3 — shared implementation for both footer buttons: validates the
- * terminal's own fields, resolves what's being bought, POSTs to the SGS
- * secure proxy exactly as `sgs/product-card`'s own `addToCart` action does,
- * then (for "Buy now" only) redirects to checkout on success.
+ * The one add-to-bag request, shared by the footer buttons and the skip link
+ * (N38): resolves what is being bought, POSTs to the SGS secure proxy exactly
+ * as `sgs/product-card`'s own `addToCart` action does, reports the outcome
+ * to the shared toast, and (for "Buy now" only) redirects to checkout on
+ * success.
  *
- * @param {HTMLElement} buttonEl           The clicked footer button.
- * @param {boolean}     redirectToCheckout True for "Buy now", false for "Add to basket".
+ * `bareFrame` is the skip link's add: the product and its chosen variation
+ * with no add-ons, no purchase-step fields, and no demand that the flow's own
+ * variation steps have resolved (the first question is all the shopper has
+ * seen). Its problems go to the toast, since the result step's status region
+ * is on a step that is not showing.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {HTMLElement} resultEl The `add-to-bag` result carrying the endpoint, nonce and checkout URL.
+ * @param {Object}      options
+ * @param {HTMLElement} options.buttonEl           The control that was pressed (disabled while the request runs).
+ * @param {boolean}     options.redirectToCheckout True for "Buy now".
+ * @param {boolean}     options.bareFrame          True for the skip link's frame-only add.
+ * @return {Promise<boolean>} True when the item was added.
  */
-async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
-	if ( buttonEl.disabled ) {
-		return;
-	}
-
-	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
-	if ( ! flowRoot ) {
-		return;
-	}
-	const resultEl = getActiveResultEl( flowRoot );
-	if ( ! resultEl ) {
-		return;
-	}
-
-	// FR-43-21: the purchase step's own fields must be complete first.
-	if ( ! validateTerminalFields( resultEl ) ) {
-		return;
-	}
-
-	// This region is now VALIDATION ONLY. The outcome of the add request
-	// itself goes to the one shared toast; a "you haven't finished choosing"
-	// message has to stay next to the controls that are unfinished (WCAG
-	// 3.3.1), and a toast that clears itself after 5s cannot do that. It is
-	// the same in-context treatment validateTerminalFields() already gives a
-	// required field via reportValidity().
+async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame } ) {
+	// In the normal path this region is VALIDATION ONLY. The outcome of the
+	// add request itself goes to the one shared toast; a "you haven't
+	// finished choosing" message has to stay next to the controls that are
+	// unfinished (WCAG 3.3.1), and a toast that clears itself after 5s cannot
+	// do that. It is the same in-context treatment validateTerminalFields()
+	// already gives a required field via reportValidity().
 	const statusEl = resultEl.querySelector( '.sgs-choice-flow-result__cart-status' );
+	const reportProblem = ( message ) => {
+		if ( bareFrame ) {
+			toastActions.showError( message );
+		} else if ( statusEl ) {
+			statusEl.dataset.state = 'error';
+			statusEl.textContent = message;
+		}
+	};
 	const endpoint = resultEl.getAttribute( 'data-endpoint' );
 	const nonce = resultEl.getAttribute( 'data-nonce' );
 	const checkoutUrl = resultEl.getAttribute( 'data-checkout-url' ) || '';
@@ -85,12 +87,9 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 	const resolvedVariation = getResolvedVariation( flowRoot );
 	const { productId, variationId, attributes, addons } = getAddonSummary( flowRoot );
 
-	if ( flowHasVariationSteps( flowRoot ) && ! resolvedVariation ) {
-		if ( statusEl ) {
-			statusEl.dataset.state = 'error';
-			statusEl.textContent = 'Please choose every option above before adding this to your bag.';
-		}
-		return;
+	if ( ! bareFrame && flowHasVariationSteps( flowRoot ) && ! resolvedVariation ) {
+		reportProblem( 'Please choose every option above before adding this to your bag.' );
+		return false;
 	}
 
 	const finalProductId = resolvedVariation ? resolvedVariation.productId : productId;
@@ -98,11 +97,8 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 	const finalAttributes = resolvedVariation ? resolvedVariation.attributes : attributes;
 
 	if ( ! finalProductId && ! finalVariationId ) {
-		if ( statusEl ) {
-			statusEl.dataset.state = 'error';
-			statusEl.textContent = 'No product to add — please start again from the product page.';
-		}
-		return;
+		reportProblem( 'No product to add — please start again from the product page.' );
+		return false;
 	}
 
 	const id = finalVariationId > 0 ? finalVariationId : finalProductId;
@@ -114,8 +110,8 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 		value,
 	} ) );
 
-	const body = { id, quantity: 1, addons };
-	const fields = collectFlowFields( flowRoot, resultEl );
+	const body = { id, quantity: 1, addons: bareFrame ? [] : addons };
+	const fields = bareFrame ? [] : collectFlowFields( flowRoot, resultEl );
 	if ( fields.length ) {
 		body.fields = fields;
 	}
@@ -152,7 +148,7 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 				// Ignore parse errors — use the default message above.
 			}
 			toastActions.showError( message );
-			return;
+			return false;
 		}
 
 		toastActions.showSuccess(
@@ -170,14 +166,68 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 
 		if ( redirectToCheckout && checkoutUrl ) {
 			window.location.assign( checkoutUrl );
-			return; // Navigating away — no point re-enabling the button below.
 		}
+		return true;
 	} catch ( _e ) {
 		toastActions.showError( 'Sorry, something went wrong adding this item.' );
+		return false;
 	} finally {
 		buttonEl.disabled = false;
 		buttonEl.removeAttribute( 'aria-busy' );
 	}
+}
+
+/**
+ * D3 — shared implementation for both footer buttons: validates the
+ * terminal's own fields, then adds via `addFlowToBag()`.
+ *
+ * @param {HTMLElement} buttonEl           The clicked footer button.
+ * @param {boolean}     redirectToCheckout True for "Buy now", false for "Add to basket".
+ */
+async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
+	if ( buttonEl.disabled ) {
+		return;
+	}
+
+	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
+	if ( ! flowRoot ) {
+		return;
+	}
+	const resultEl = getActiveResultEl( flowRoot );
+	if ( ! resultEl ) {
+		return;
+	}
+
+	// FR-43-21: the purchase step's own fields must be complete first.
+	if ( ! validateTerminalFields( resultEl ) ) {
+		return;
+	}
+
+	await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame: false } );
+}
+
+/**
+ * N38 — the skip link's add: the bare frame (product and chosen variation,
+ * no add-ons) goes to the bag through the same request the footer's "Add to
+ * basket" sends.
+ *
+ * @param {HTMLElement} buttonEl The clicked `.sgs-choice-flow__skip-button`.
+ * @return {Promise<boolean>} True when the frame was added; false when it could not be (an error toast has been shown).
+ */
+export async function addFrameToBag( buttonEl ) {
+	if ( buttonEl.disabled ) {
+		return false;
+	}
+	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
+	const resultEl = flowRoot ? flowRoot.querySelector( '[data-action="add-to-bag"][data-endpoint]' ) : null;
+	if ( ! resultEl ) {
+		toastActions.showError( 'Sorry, this item could not be added to your bag.' );
+		return false;
+	}
+	// The frame alone: any add-on the shopper had picked is dropped, as the
+	// "no add-ons" route drops it (`flow-routing.js::commitStepRouting`).
+	resetAddonAnswers( flowRoot );
+	return addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout: false, bareFrame: true } );
 }
 
 /**

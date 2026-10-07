@@ -359,6 +359,13 @@
       "attr": "decoyEnabled",
       "disposition": "by-design",
       "reason": "Product-data and stock-state content (2026-10-05): the buybox canvas is a static mock with no product, so a sold-out or unavailable label, the notify-me form, the per-unit price, the price ladder and the framing/decoy price modes only exist once a real product in that state renders. The editor showed none of them before either: the previous placeholder carried a no-preview notice (CHECK A signal 3) that the mock replaced. Pre-existing, unpreviewable without product data, not a new desync."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/hero",
+      "attr": "bgZoomStart",
+      "disposition": "by-design",
+      "reason": "Register row 51 (2026-10-07): the starting zoom of the hero's one-off 'zoom out once' load animation. The hero canvas deliberately previews no ken-burns motion at all (hero/edit.js comment above backgroundPreview(): a second animated background would mount), and an entrance that plays once on page load has nothing to show in a static editor canvas."
     }
   ]
 }

@@ -9,7 +9,7 @@
  * "Add to bag" with the running total and hides Continue. Add to bag reads the
  * visible result (`getActiveResultEl()`), so it validates and sends the opened
  * step's own fields exactly as when that step is shown on its own.
- * 'continue' advanceMode only; 'tap' advances on the click as always.
+ * 'continue' and 'pick' advanceModes only; 'tap' advances on the click as always.
  *
  * @package SGS\Blocks
  */
@@ -41,7 +41,7 @@ export function showStep( flowRoot, targetIndex ) {
  * @param {HTMLElement|null} stepEl   The question's step (currently shown).
  */
 export function openInlineStep( flowRoot, stepEl ) {
-	if ( ! stepEl || 'continue' !== advanceModeOf( flowRoot ) ) {
+	if ( ! stepEl || 'tap' === advanceModeOf( flowRoot ) ) {
 		return;
 	}
 	const questionEl = stepEl.querySelector( INLINE_QUESTION_SELECTOR );

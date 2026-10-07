@@ -155,7 +155,7 @@ $progress_style  = isset( $attributes['progressStyle'] ) && in_array( $attribute
 	: 'bar';
 // D1 (v1.8.0) — the footer's Continue button; navigation.js reads this off
 // the wrapper to decide whether a question step shows Continue at all.
-$advance_mode    = isset( $attributes['advanceMode'] ) && 'tap' === $attributes['advanceMode'] ? 'tap' : 'continue';
+$advance_mode    = isset( $attributes['advanceMode'] ) && in_array( $attributes['advanceMode'], array( 'tap', 'pick' ), true ) ? $attributes['advanceMode'] : 'continue';
 $max_width       = isset( $attributes['maxWidth'] ) ? (string) $attributes['maxWidth'] : '';
 $padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $padding_desktop = is_array( $padding_tiers['desktop'] ?? null ) ? $padding_tiers['desktop'] : array();
@@ -219,6 +219,10 @@ $wrapper_args = array(
 	'data-flow-trim-zeros'  => apply_filters( 'woocommerce_price_trim_zeros', false ) ? '1' : '0',
 	// D1: read by navigation.js's advanceModeOf().
 	'data-advance-mode'     => $advance_mode,
+	// N38: read by flow-skip.js — the skip link adds the bare frame to the bag.
+	'data-skip-adds-to-bag' => ! empty( $attributes['skipAddsToBag'] ) ? '1' : '0',
+	// Task 2: read by flow-a11y.js — the live-region sentence on every step change.
+	'data-step-announce-template' => __( 'Step %1$s of %2$s: %3$s', 'sgs-blocks' ),
 	// FR-43-24: read by flow-steps.js (progress formula, "Question 1 of 3").
 	'data-progress-counts'  => isset( $attributes['progressCounts'] ) && 'current' === $attributes['progressCounts'] ? 'current' : 'finished',
 	'data-step-count-label' => isset( $attributes['stepCountLabel'] ) && '' !== trim( (string) $attributes['stepCountLabel'] ) ? trim( (string) $attributes['stepCountLabel'] ) : __( 'Step', 'sgs-blocks' ),
@@ -236,6 +240,9 @@ if ( $scoped_css ) {
 }
 
 echo '<div ' . $wrapper_attributes . sgs_choice_flow_variation_seed_attr( $inner_parsed, $resolved_product_id ) . ' data-progress-style="' . esc_attr( $progress_style ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() and the seed helper return pre-escaped markup.
+
+// Visually hidden live region: flow-a11y.js writes "Step N of M: <question>" here on every step change.
+echo '<div class="sgs-choice-flow__announcer" role="status" aria-live="polite" aria-atomic="true"></div>';
 
 // Questions only, as view.js counts them: a step holding a result is not numbered.
 $step_total = count( array_filter( $inner_parsed, static fn( $b ) => 'sgs/form-step' === ( $b['blockName'] ?? '' ) && false === strpos( (string) wp_json_encode( $b['innerBlocks'] ?? array() ), 'sgs\/choice-flow-result' ) ) );

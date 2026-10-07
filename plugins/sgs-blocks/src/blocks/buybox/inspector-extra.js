@@ -23,6 +23,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 	const {
 		stickyEnabled,
 		stackBelow,
+		photoEntrance,
 		stickyOffset,
 		rrpMetaKey,
 		rrpSavingFormat,
@@ -32,6 +33,24 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			<PanelBody
+				title={ __( 'Photo entrance', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<SelectControl
+					label={ __( 'Main photo entrance', 'sgs-blocks' ) }
+					help={ __( 'Plays once when the page loads. Off for visitors who prefer reduced motion. Timing and distance follow the theme entrance settings.', 'sgs-blocks' ) }
+					value={ photoEntrance || 'none' }
+					options={ [
+						{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+						{ label: __( 'Fade in', 'sgs-blocks' ), value: 'fade' },
+						{ label: __( 'Rise and fade in', 'sgs-blocks' ), value: 'rise' },
+					] }
+					onChange={ ( val ) => setAttributes( { photoEntrance: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</PanelBody>
 			<PanelBody
 				title={ __( 'Sticky column', 'sgs-blocks' ) }
 				initialOpen={ false }

@@ -1280,7 +1280,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 			'productId'           => (string) $data['id'],
 			'addToCartId'         => absint( $data['wc_id'] ),
 			'decimals'            => $decimals,
-			'trimZeros'           => sgs_card_price_trim_zeros_enabled(),
+			'trimZeros'           => sgs_price_trim_zeros_applies(),
 			'currencySymbol'      => $manifest['currencySymbol'],
 			'combos'              => $seed_combos,
 			'axes'                => $manifest['axes'],

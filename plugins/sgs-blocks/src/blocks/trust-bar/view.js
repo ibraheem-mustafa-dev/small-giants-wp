@@ -22,13 +22,20 @@
  * block's scoped stylesheet (includes/helpers-trust-bar-marquee.php), this script only clones
  * the track. Without the attribute (or 0) the scroll runs at every width, as before.
  *
+ * Marquee and drop coexist: while the marquee runs every badge is in the scrolling track
+ * (restoreDropped() runs before cloning, so no clone inherits a hidden badge). Leaving the
+ * range removes the clones and the row class, and overflow-drop.js then drops what does not
+ * fit. A visible pause/play button (WCAG 2.2.2) is un-hidden only while the scroll runs; a
+ * user pause persists over hover-out and focus-out.
+ *
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).
  */
 
 // "drop" overflow mode (overflowMode="drop") is a separate concern — kept in
 // its own file to stay under the 250-line budget for this one; it self-runs
 // on import.
-import './overflow-drop.js';
+import { restoreDropped } from './overflow-drop.js';
+import { marqueeRangeQuery } from './marquee-mode.js';
 
 const wrappers = document.querySelectorAll( '.sgs-trust-bar[data-auto-scroll="true"]' );
 
@@ -46,9 +53,10 @@ wrappers.forEach( ( wrapper ) => {
 
 	const pauseOnHover = wrapper.dataset.autoScrollPause !== 'false';
 
-	// 0 = scroll at every width. 768 / 1024 = scroll only below that width.
-	const below = parseInt( wrapper.dataset.autoScrollBelow || '0', 10 ) || 0;
-	const marqueeQuery = below > 0 ? window.matchMedia( `(max-width: ${ below - 1 }px)` ) : null;
+	// null = scroll at every width. Otherwise scroll only while the viewport matches.
+	const marqueeQuery = marqueeRangeQuery( wrapper );
+	const inRange = () => ! marqueeQuery || marqueeQuery.matches;
+	const pauseButton = wrapper.querySelector( '.sgs-trust-bar__pause' );
 
 	// The clones sit beside the track inside its own parent (the wrapper, or the content band
 	// when there is one) so the copies form one row, at every width and below a breakpoint alike.
@@ -88,6 +96,11 @@ wrappers.forEach( ( wrapper ) => {
 	 * If they fit, leave the layout static — no unnecessary animation.
 	 */
 	function measure() {
+		// The viewport may have left the marquee range while images were loading.
+		if ( ! inRange() ) {
+			return;
+		}
+
 		// Lay the track and its clones out as one non-shrinking nowrap row BEFORE
 		// measuring, so the track is as wide as its badges. Without this the track is a
 		// shrinkable flex item that is never wider than the bar, and the overflow test
@@ -106,6 +119,7 @@ wrappers.forEach( ( wrapper ) => {
 		// Only activate scroll if items genuinely overflow the visible container.
 		if ( trackWidth === 0 || containerWidth === 0 || trackWidth <= containerWidth ) {
 			cloneParent.classList.remove( 'sgs-trust-bar__marquee-row' );
+			setPauseButtonVisible( false );
 			// Nothing scrolls, so allow a later resize into range to measure again.
 			started = false;
 			return;
@@ -139,16 +153,46 @@ wrappers.forEach( ( wrapper ) => {
 
 		// Start animation only after clones are in the DOM.
 		track.classList.add( 'sgs-trust-bar__track--ready' );
+		setPauseButtonVisible( true );
+		syncPause();
 	}
 
-	// Pause on hover (controllable via block attribute) and on keyboard focus (always).
-	// D298 pattern: toggle a class instead of writing the property inline — the
-	// declaration lives in style.css (`.sgs-trust-bar__track.is-paused`), never on the
-	// element. Hover and focus are tracked separately so leaving one does not resume a
-	// bar the other is still holding.
+	/**
+	 * Leave marquee mode: remove the clones and row layout so the badges are the
+	 * plain static row again (overflow-drop.js then measures it).
+	 */
+	function stop() {
+		started = false;
+		cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).forEach( ( old ) => old.remove() );
+		cloneParent.classList.remove( 'sgs-trust-bar__marquee-row' );
+		track.classList.remove( 'sgs-trust-bar__track--ready', 'is-paused' );
+		track.style.removeProperty( '--sgs-scroll-distance' );
+		setPauseButtonVisible( false );
+	}
+
+	// Pause on hover (controllable via block attribute), on keyboard focus (always) and
+	// on the visible pause button (user choice, persists). D298 pattern: toggle a class
+	// instead of writing the property inline — the declaration lives in style.css
+	// (`.sgs-trust-bar__track.is-paused`), never on the element. Each cause is tracked
+	// separately so leaving one does not resume a bar another is still holding.
 	let hovered = false;
 	let focused = false;
-	const syncPause = () => track.classList.toggle( 'is-paused', hovered || focused );
+	let userPaused = false;
+	const syncPause = () => track.classList.toggle( 'is-paused', userPaused || hovered || focused );
+
+	function setPauseButtonVisible( visible ) {
+		if ( pauseButton ) {
+			pauseButton.hidden = ! visible;
+		}
+	}
+
+	if ( pauseButton ) {
+		pauseButton.addEventListener( 'click', () => {
+			userPaused = ! userPaused;
+			pauseButton.setAttribute( 'aria-pressed', userPaused ? 'true' : 'false' );
+			syncPause();
+		} );
+	}
 
 	if ( pauseOnHover ) {
 		wrapper.addEventListener( 'mouseenter', () => {
@@ -173,17 +217,28 @@ wrappers.forEach( ( wrapper ) => {
 		syncPause();
 	} );
 
-	// Start now, or (below-breakpoint mode) as soon as the viewport is in range.
+	// Start now, or as soon as the viewport is in range; stop when it leaves it.
 	function start() {
-		if ( started || ( marqueeQuery && ! marqueeQuery.matches ) ) {
+		if ( started || ! inRange() ) {
 			return;
 		}
 		started = true;
+		// Every badge must be in the scrolling track: bring back any the drop mode hid
+		// before the track is measured and cloned.
+		restoreDropped( wrapper );
 		init();
 	}
 
-	start();
+	function sync() {
+		if ( inRange() ) {
+			start();
+		} else {
+			stop();
+		}
+	}
+
+	sync();
 	if ( marqueeQuery ) {
-		marqueeQuery.addEventListener( 'change', start );
+		marqueeQuery.addEventListener( 'change', sync );
 	}
 } );

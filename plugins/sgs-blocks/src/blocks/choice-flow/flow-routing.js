@@ -14,7 +14,7 @@
 import { recordAddonAnswer, resetAddonAnswers } from './pricing.js';
 import { recordPlainAnswer } from './flow-fields.js';
 import { handleProductOptionClick } from './variation.js';
-import { STEP_SELECTOR, RESULT_SELECTOR, OPTIONS_GROUP_SELECTOR, DEFAULT_OPTION_SELECTOR, TERMINAL_SENTINEL } from './flow-constants.js';
+import { STEP_SELECTOR, RESULT_SELECTOR, OPTIONS_GROUP_SELECTOR, DEFAULT_OPTION_SELECTOR, TERMINAL_SENTINEL, QUESTION_SELECTOR } from './flow-constants.js';
 import { getSteps, advanceModeOf } from './flow-steps.js';
 import { showStep } from './flow-inline.js';
 import { ensureNavigationState, persistFlowState } from './flow-persistence.js';
@@ -66,6 +66,52 @@ function resolveTerminalStepIndex( flowRoot, accumulatedTags ) {
 	} );
 
 	return bestIndex;
+}
+
+/**
+ * The step index an option's `data-next-step-id` leads to, other than the
+ * terminal sentinel: empty means the next step in flow order, a number means
+ * that step.
+ *
+ * @param {HTMLElement[]} steps        Every step, in DOM order.
+ * @param {string}        nextStepId   The option's `data-next-step-id`.
+ * @param {number}        currentIndex The step the option sits in.
+ * @return {number} Target index (may be past the last step).
+ */
+function stepIndexAfter( steps, nextStepId, currentIndex ) {
+	if ( '' === nextStepId ) {
+		return currentIndex + 1;
+	}
+	const parsedIndex = parseInt( nextStepId, 10 );
+	return Number.isInteger( parsedIndex ) && parsedIndex >= 0 && parsedIndex < steps.length
+		? parsedIndex
+		: currentIndex + 1; // Defensive fallback — malformed/legacy data, never fatal.
+}
+
+/**
+ * 'pick' advanceMode — whether picking this option should move on at once:
+ * only when it leads to another question step. An option that ends the flow
+ * (the terminal sentinel, "add to bag now", the last question's fall-through
+ * to a result) or that opens its next step inline stays on the step, where
+ * Continue commits it.
+ *
+ * @param {HTMLElement} flowRoot     Flow wrapper element.
+ * @param {HTMLElement} buttonEl     The picked option.
+ * @param {number}      currentIndex The option's step index.
+ * @return {boolean} True when the pick should advance.
+ */
+export function routesToQuestionStep( flowRoot, buttonEl, currentIndex ) {
+	const nextStepId = buttonEl.getAttribute( 'data-next-step-id' ) || '';
+	if ( TERMINAL_SENTINEL === nextStepId || buttonEl.hasAttribute( 'data-add-to-bag-now' ) ) {
+		return false;
+	}
+	const questionEl = buttonEl.closest( QUESTION_SELECTOR );
+	if ( questionEl && '1' === questionEl.getAttribute( 'data-inline-next' ) ) {
+		return false;
+	}
+	const steps = getSteps( flowRoot );
+	const targetStepEl = steps[ stepIndexAfter( steps, nextStepId, currentIndex ) ];
+	return !! targetStepEl && targetStepEl !== steps[ currentIndex ] && ! targetStepEl.querySelector( RESULT_SELECTOR );
 }
 
 /**
@@ -134,18 +180,9 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 
 	const nextStepId = buttonEl.getAttribute( 'data-next-step-id' ) || '';
 
-	let targetIndex;
-	if ( '' === nextStepId ) {
-		targetIndex = currentIndex + 1;
-	} else if ( TERMINAL_SENTINEL === nextStepId ) {
-		targetIndex = resolveTerminalStepIndex( flowRoot, instanceState.tags );
-	} else {
-		const parsedIndex = parseInt( nextStepId, 10 );
-		targetIndex =
-			Number.isInteger( parsedIndex ) && parsedIndex >= 0 && parsedIndex < steps.length
-				? parsedIndex
-				: currentIndex + 1; // Defensive fallback — malformed/legacy data, never fatal.
-	}
+	const targetIndex = TERMINAL_SENTINEL === nextStepId
+		? resolveTerminalStepIndex( flowRoot, instanceState.tags )
+		: stepIndexAfter( steps, nextStepId, currentIndex );
 
 	if ( targetIndex < 0 || targetIndex >= steps.length ) {
 		return;
@@ -161,7 +198,7 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
 /**
  * D1/D2 — a default-preselected option (`data-default="1"`,
  * `defaults.js`'s own selector) already carries the visual selected state;
- * this also records its answer, in 'continue' advanceMode only, so the
+ * this also records its answer, in 'continue' and 'pick' advanceModes, so the
  * Continue button is active immediately rather than muted for an answer the
  * shopper never had to actively choose. A no-op in 'tap' advanceMode — a
  * default there stays exactly as it always has (visual only).
@@ -169,7 +206,7 @@ export function commitStepRouting( flowRoot, buttonEl, currentIndex ) {
  * @param {HTMLElement} flowRoot Flow wrapper element.
  */
 export function applyDefaultAnswers( flowRoot ) {
-	if ( 'continue' !== advanceModeOf( flowRoot ) ) {
+	if ( 'tap' === advanceModeOf( flowRoot ) ) {
 		return;
 	}
 	const steps = getSteps( flowRoot );

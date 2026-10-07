@@ -15,7 +15,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
 import {
 	IconPreview,
 	ResponsiveOverride,
@@ -171,7 +171,7 @@ export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
 		<>
 			<SelectControl
 				label={ __( 'Scroll only on', 'sgs-blocks' ) }
-				help={ __( 'Above the chosen width the badges show as a normal static row.', 'sgs-blocks' ) }
+				help={ __( 'Above the chosen width the badges show as a normal static row, and the "When items do not fit" choice applies.', 'sgs-blocks' ) }
 				value={ String( attributes.autoScrollBelow ?? 0 ) }
 				options={ AUTO_SCROLL_BELOW_OPTIONS }
 				onChange={ ( val ) => setAttributes( { autoScrollBelow: parseInt( val, 10 ) || 0 } ) }
@@ -188,6 +188,13 @@ export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
 				step={ 1 }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+			<ToggleControl
+				label={ __( 'Show pause button', 'sgs-blocks' ) }
+				help={ __( 'A visible pause / play button on the scrolling row, so visitors can stop the movement (accessibility). It only appears while the row is actually scrolling.', 'sgs-blocks' ) }
+				checked={ attributes.autoScrollPauseButton ?? true }
+				onChange={ ( val ) => setAttributes( { autoScrollPauseButton: val } ) }
+				__nextHasNoMarginBottom
 			/>
 		</>
 	);

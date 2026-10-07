@@ -34,3 +34,4 @@ export const SKIP_SELECTOR = '.sgs-choice-flow__skip';
 export const SKIP_BUTTON_SELECTOR = '.sgs-choice-flow__skip-button';
 export const NO_ADDONS_OPTION_SELECTOR = '[data-add-to-bag-now]';
 export const QUESTION_SELECTOR = '.sgs-choice-flow-question';
+export const ANNOUNCER_SELECTOR = '.sgs-choice-flow__announcer';

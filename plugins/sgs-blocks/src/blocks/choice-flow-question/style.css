@@ -182,8 +182,8 @@
 }
 
 .sgs-choice-flow-question__option-button:focus-visible {
-	border-color: var( --wp--preset--color--text, #1a202c );
-	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
+	border-color: var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 

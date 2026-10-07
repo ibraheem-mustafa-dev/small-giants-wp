@@ -121,7 +121,7 @@
 }
 
 .sgs-choice-flow__nav-back:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -164,7 +164,7 @@
 }
 
 .sgs-choice-flow__continue:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -244,7 +244,7 @@
 
 .sgs-choice-flow__add-to-basket:focus-visible,
 .sgs-choice-flow__buy-now:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -809,7 +809,7 @@
 }
 
 .sgs-choice-flow__summary-toggle > summary:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #1e293b);
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -1420,7 +1420,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--text, #1A202C);
+	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
 	outline-offset: 2px;
 }
 
@@ -1592,4 +1592,17 @@
 	.sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value) {
 		animation: none;
 	}
+}
+
+/* Visually hidden live region for step changes (same clip technique as the Close label). */
+.sgs-choice-flow__announcer {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }

@@ -13,7 +13,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, RangeControl, SelectControl, TextControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import { SgsColourPanel } from '../../components';
 import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
@@ -26,7 +26,7 @@ import OptionCardsPanel from './OptionCardsPanel';
  * @return {JSX.Element} The panels, mounted inside their own InspectorControls.
  */
 export default function ShowcasePanel( { attributes, setAttributes } ) {
-	const { progressCounts, headerLogoHeight, summaryPendingLabel, stageNoteIcon } = attributes;
+	const { progressCounts, headerLogoHeight, summaryPendingLabel, stageNoteIcon, skipAddsToBag } = attributes;
 	const text = ( key, label, help ) => (
 		<TextControl
 			label={ label }
@@ -77,6 +77,13 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 					__( 'Skip link', 'sgs-blocks' ),
 					__( 'e.g. "Skip the lenses". It takes the route of the option set to add to the bag with no add-ons; with no such option it does not show. Leave blank for none.', 'sgs-blocks' )
 				) }
+				<ToggleControl
+					label={ __( 'Skip adds the frame to the bag', 'sgs-blocks' ) }
+					checked={ !! skipAddsToBag }
+					onChange={ ( val ) => setAttributes( { skipAddsToBag: val } ) }
+					help={ __( 'The skip link adds the product, with its chosen variation and no add-ons, to the bag, then closes the pop-up. Off: it goes to the ending of the no add-ons option.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+				/>
 			</PanelBody>
 
 			<PanelBody title={ __( 'Stage', 'sgs-blocks' ) } initialOpen={ false }>

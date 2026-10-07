@@ -511,9 +511,31 @@ section.sgs-hero {
 	will-change: transform;
 }
 
+@keyframes sgs-hero-zoom-out-once {
+	from { transform: scale(var(--sgs-ken-burns-zoom-start, 1.08)); }
+	to   { transform: scale(1); }
+}
+
+/* The standard variant paints a real <img class="sgs-hero__bg-img">, so the
+   motion lands on it (mirrors container/style.css's `> .sgs-container__image-bg`
+   rule). It runs on a parallax image too: a transform on the fixed <img>
+   itself scales it in place without breaking its fixed positioning (only a
+   transformed ancestor would), and the parallax root's clip-path, like the
+   standard root's overflow:hidden, clips the zoom. */
 @media (prefers-reduced-motion: no-preference) {
 	.sgs-hero--ken-burns.sgs-container--has-bg-image::before {
-		animation: sgs-hero-ken-burns 20s ease-in-out infinite alternate;
+		animation: sgs-hero-ken-burns var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
+	}
+
+	.sgs-hero--ken-burns .sgs-hero__bg-img {
+		animation: sgs-hero-ken-burns var(--sgs-ken-burns-duration, 20s) ease-in-out infinite alternate;
+		transform-origin: center center;
+		will-change: transform;
+	}
+
+	.sgs-hero--ken-burns-once.sgs-hero--ken-burns.sgs-container--has-bg-image::before,
+	.sgs-hero--ken-burns-once.sgs-hero--ken-burns .sgs-hero__bg-img {
+		animation: sgs-hero-zoom-out-once var(--sgs-ken-burns-duration, 3s) var(--wp--custom--entrance--easing, cubic-bezier(0.16, 1, 0.3, 1)) both;
 	}
 }
 

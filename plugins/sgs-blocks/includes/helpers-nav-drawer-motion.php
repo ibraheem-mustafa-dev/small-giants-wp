@@ -178,6 +178,15 @@ if ( ! function_exists( 'sgs_nav_drawer_motion' ) ) {
 			if ( ! empty( $attributes['itemStaggerOnClose'] ) ) {
 				$classes[] = 'sgs-nav-drawer--stagger-close';
 			}
+			if ( ! empty( $attributes['staggerInsideGroups'] ) ) {
+				$classes[] = 'sgs-nav-drawer--stagger-groups';
+			}
+			// An explicitly chosen opening easing drives the items too; left at
+			// its default, the items follow the shared entrance easing token
+			// (nav-drawer-menu/style.css reads --sgs-nd-stagger-ease first).
+			if ( 'ease-out-css' !== (string) ( $attributes['entryEasing'] ?? 'ease-out-css' ) ) {
+				$base .= '--sgs-nd-stagger-ease:' . $easing . ';';
+			}
 		}
 
 		if ( isset( $used['curtain'] ) ) {

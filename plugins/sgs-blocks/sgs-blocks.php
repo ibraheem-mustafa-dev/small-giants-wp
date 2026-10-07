@@ -147,9 +147,9 @@ require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
 // handler + register_post_meta(). No-op without WooCommerce.
 require_once SGS_BLOCKS_PATH . 'includes/product-choice-flow-link.php';
 
-// Whole-pound product-card prices ("£139", not "£139.00") behind the
-// `sgs_card_price_trim_zeros` filter; scoped to each card's render.
-require_once SGS_BLOCKS_PATH . 'includes/product-card-price-trim.php';
+// Whole-pound prices ("£139", not "£139.00") on the shop's own pages behind
+// the `sgs_price_trim_zeros` filter; order records keep their pennies.
+require_once SGS_BLOCKS_PATH . 'includes/price-trim-zeros.php';
 require_once SGS_BLOCKS_PATH . 'includes/product-card-no-photo.php';
 
 // Demand Analytics — privacy-safe aggregate counter for unbuyable combos

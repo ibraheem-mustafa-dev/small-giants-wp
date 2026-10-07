@@ -736,6 +736,11 @@
 			"default": false,
 			"description": "Items leave one after another, last first, when the drawer closes."
 		},
+		"staggerInsideGroups": {
+			"type": "boolean",
+			"default": false,
+			"description": "With the item stagger on, the direct children of each container placed in the drawer body also arrive one after another, after the menu items, instead of the whole container arriving at once."
+		},
 		"itemStaggerAxis": {
 			"type": "object",
 			"default": {},

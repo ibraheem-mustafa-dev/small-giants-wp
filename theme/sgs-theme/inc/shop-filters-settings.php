@@ -113,7 +113,7 @@ function register_shop_filter_customizer_settings( \WP_Customize_Manager $wp_cus
 		'sgs_shop_hide_zero_decimals'       => array(
 			'type'    => 'checkbox',
 			'default' => false,
-			'label'   => __( 'Hide ".00" on whole-pound savings and product-card prices (e.g. "Save £32", "£139"; £59.50 keeps its pennies, and the product page, cart and checkout always show them)', 'sgs-theme' ),
+			'label'   => __( 'Hide ".00" on whole-pound prices and savings across the shop (e.g. "£139", "Save £32"; £59.50 keeps its pennies, and emails, checkout and order views always show them)', 'sgs-theme' ),
 		),
 	);
 
@@ -281,12 +281,12 @@ function output_shop_columns_wide_style(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\output_shop_columns_wide_style', 20 );
 
 /**
- * Drop ".00" from whole-pound savings ("Save £32") and product-card prices and
- * RRPs ("£139") when the setting is on, through the plugin's
- * `sgs_saving_trim_zeros` (`includes/product-rrp.php`) and
- * `sgs_card_price_trim_zeros` (`includes/product-card-price-trim.php`) filters.
- * A price with pennies keeps them; the product page, cart and checkout always
- * show pennies (Bean, 2026-09-25 and 2026-09-27).
+ * Drop ".00" from whole-pound savings ("Save £32") and from every price the shop
+ * shows on its own pages ("£139": product page, cards, bag, lens pop-up) when the
+ * setting is on, through the plugin's `sgs_saving_trim_zeros`
+ * (`includes/product-rrp.php`) and `sgs_price_trim_zeros`
+ * (`includes/price-trim-zeros.php`) filters. A price with pennies keeps them;
+ * emails, admin, checkout and order views always show pennies (register S8, D4).
  *
  * @return bool
  */
@@ -294,4 +294,4 @@ function is_zero_saving_decimals_hidden(): bool {
 	return (bool) get_theme_mod( 'sgs_shop_hide_zero_decimals', false );
 }
 add_filter( 'sgs_saving_trim_zeros', __NAMESPACE__ . '\is_zero_saving_decimals_hidden' );
-add_filter( 'sgs_card_price_trim_zeros', __NAMESPACE__ . '\is_zero_saving_decimals_hidden' );
+add_filter( 'sgs_price_trim_zeros', __NAMESPACE__ . '\is_zero_saving_decimals_hidden' );

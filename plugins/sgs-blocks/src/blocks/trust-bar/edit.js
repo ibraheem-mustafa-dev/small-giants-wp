@@ -11,6 +11,7 @@ import {
 	RangeControl,
 	Notice,
 } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { EditorIconBare, TrustBarIconPanel, TrustBarItemSpacingPanel, TrustBarMarqueeControls } from './edit-panels';
@@ -129,11 +130,6 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 	{ label: __( 'Slow (40s)', 'sgs-blocks' ),   value: 'slow' },
 	{ label: __( 'Medium (25s)', 'sgs-blocks' ),  value: 'medium' },
 	{ label: __( 'Fast (15s)', 'sgs-blocks' ),    value: 'fast' },
-];
-
-const OVERFLOW_MODE_OPTIONS = [
-	{ label: __( 'Wrap to a new line (default)', 'sgs-blocks' ), value: 'wrap' },
-	{ label: __( 'Hide extra items', 'sgs-blocks' ), value: 'drop' },
 ];
 
 // ─── Editor sub-components ────────────────────────────────────────────────────
@@ -826,16 +822,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Auto-scroll (behaviour) ───────────────────────────────── */ }
 				<PanelBody title={ __( 'Auto-scroll', 'sgs-blocks' ) } initialOpen={ false }>
-					{ ! autoScroll && (
-						<SelectControl
+					{ ( ! autoScroll || ( attributes.autoScrollBelow ?? 0 ) > 0 ) && (
+						<ToggleGroupControl
 							label={ __( "When items don't fit", 'sgs-blocks' ) }
-							help={ __( "What happens when the badges don't all fit on one line. Hidden items are removed from the tab order and from screen readers too. Only visible once published — the editor canvas always shows every badge.", 'sgs-blocks' ) }
+							help={ autoScroll
+								? __( "Applies at and above the width where scrolling stops: items that don't fit on one line are hidden. Below it the row scrolls and shows every item. Hidden items are removed from the tab order and from screen readers too. Only visible once published.", 'sgs-blocks' )
+								: __( "What happens when the badges don't all fit on one line. Hidden items are removed from the tab order and from screen readers too. Only visible once published — the editor canvas always shows every badge.", 'sgs-blocks' ) }
 							value={ overflowMode ?? 'wrap' }
-							options={ OVERFLOW_MODE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { overflowMode: val } ) }
+							onChange={ ( val ) => setAttributes( { overflowMode: val || 'wrap' } ) }
+							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
+						>
+							<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="drop" label={ __( 'Hide extras', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
 					) }
 					<ToggleControl
 						label={ __( 'Enable auto-scroll', 'sgs-blocks' ) }

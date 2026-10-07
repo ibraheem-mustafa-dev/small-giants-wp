@@ -105,15 +105,19 @@ $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHov
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
 $auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
 $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
+$auto_scroll_btn   = isset( $attributes['autoScrollPauseButton'] ) ? (bool) $attributes['autoScrollPauseButton'] : true;
+$tb_marquee_below  = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
 
 // --- Overflow mode ('wrap' default / 'drop') ----------------------------------
 // 'drop' keeps a single row and lets view.js hide whichever trailing badges do
-// not fit (see overflow-drop.js). Meaningless once auto-scroll is on — the
-// marquee already guarantees a single row by scrolling — so it never applies
-// there; $tb_overflow_mode is read again just below the auto-scroll branch.
+// not fit (see overflow-drop.js). It coexists with auto-scroll when the marquee
+// is limited to a width range (autoScrollBelow > 0): the marquee runs below the
+// breakpoint (every badge in the scrolling track) and drop applies at and above
+// it. A marquee at every width (autoScrollBelow 0) never leaves a static row to
+// drop from, so drop is not emitted there.
 $tb_overflow_mode_raw = isset( $attributes['overflowMode'] ) ? sanitize_key( (string) $attributes['overflowMode'] ) : 'wrap';
 $tb_overflow_mode     = in_array( $tb_overflow_mode_raw, array( 'wrap', 'drop' ), true ) ? $tb_overflow_mode_raw : 'wrap';
-$tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ! $auto_scroll );
+$tb_overflow_drop     = ( 'drop' === $tb_overflow_mode && ( ! $auto_scroll || $tb_marquee_below > 0 ) );
 
 // Clamp circle size.
 $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
@@ -330,7 +334,6 @@ if ( $auto_scroll ) {
 
 	// Marquee only below a device-tier breakpoint (autoScrollBelow: 0 / 768 / 1024) and an
 	// optional custom duration in seconds. Both default to "off", which emits nothing extra.
-	$tb_marquee_below    = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
 	$tb_marquee_duration = sgs_trust_bar_marquee_duration( $attributes['autoScrollDuration'] ?? 0 );
 	if ( $tb_marquee_below > 0 ) {
 		$tb_extra_attrs['data-auto-scroll-below'] = (string) $tb_marquee_below;
@@ -801,6 +804,22 @@ foreach ( $items as $tb_item_index => $item ) {
 $badges_html = $auto_scroll
 	? '<div class="sgs-trust-bar__track">' . $items_html . '</div>'
 	: $items_html;
+
+// Pause / play button (WCAG 2.2.2). Rendered hidden: view.js un-hides it only while the
+// marquee is actually running, so a bar that does not scroll never shows a dead control.
+// Placed after the track (a sibling of it) so it adds no badge before the track's
+// :nth-child-scoped rules.
+if ( $auto_scroll && $auto_scroll_btn ) {
+	// A toggle button keeps one name; aria-pressed="true" says it is paused.
+	$tb_label_pause = __( 'Pause scrolling', 'sgs-blocks' );
+	$badges_html   .= sprintf(
+		'<button type="button" class="sgs-trust-bar__pause" aria-pressed="false" aria-label="%1$s" hidden>'
+		. '<svg class="sgs-trust-bar__pause-icon sgs-trust-bar__pause-icon--pause" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>'
+		. '<svg class="sgs-trust-bar__pause-icon sgs-trust-bar__pause-icon--play" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>'
+		. '</button>',
+		esc_attr( $tb_label_pause )
+	);
+}
 
 // --- Scoped typography <style> ------------------------------------------------
 // Label selector covers both variants:

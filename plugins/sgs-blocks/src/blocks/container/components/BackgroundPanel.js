@@ -105,6 +105,10 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 		return null;
 	}
 
+	// A block that registers the ken-burns style (the hero, whose own panel holds
+	// it) runs ken-burns with parallax and allows a short one-off zoom.
+	const hasKenBurnsMode = !! getBlockType( name )?.attributes?.bgKenBurnsMode;
+
 	const {
 		backgroundImage,
 		backgroundImageTablet,
@@ -782,14 +786,16 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 			    technique as the Overlay colour/gradient row above the tabs. */ }
 			<hr style={ { margin: '16px 0' } } />
 			<p className="components-base-control__help">
-				{ __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
+				{ hasKenBurnsMode
+					? __( 'Requires a background image. Ken-burns and parallax can run together: the photo zooms while the page scrolls past it.', 'sgs-blocks' )
+					: __( 'Requires a background image. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.', 'sgs-blocks' ) }
 			</p>
 			<ToggleControl
 				label={ __( 'Ken-burns zoom', 'sgs-blocks' ) }
 				help={ __( 'Slow zoom animation on the background image.', 'sgs-blocks' ) }
 				checked={ bgKenBurns }
 				onChange={ ( val ) =>
-					setAttributes( { bgKenBurns: val, bgParallax: val ? false : bgParallax, bgHoverZoom: val ? false : bgHoverZoom } )
+					setAttributes( { bgKenBurns: val, bgParallax: val && ! hasKenBurnsMode ? false : bgParallax, bgHoverZoom: val ? false : bgHoverZoom } )
 				}
 				__nextHasNoMarginBottom
 			/>
@@ -798,7 +804,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 				help={ __( 'Fixed background-attachment parallax effect. Disabled on touch devices.', 'sgs-blocks' ) }
 				checked={ bgParallax }
 				onChange={ ( val ) =>
-					setAttributes( { bgParallax: val, bgKenBurns: val ? false : bgKenBurns, bgHoverZoom: val ? false : bgHoverZoom } )
+					setAttributes( { bgParallax: val, bgKenBurns: val && ! hasKenBurnsMode ? false : bgKenBurns, bgHoverZoom: val ? false : bgHoverZoom } )
 				}
 				__nextHasNoMarginBottom
 			/>
@@ -807,7 +813,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 					label={ __( 'Animation duration (seconds)', 'sgs-blocks' ) }
 					value={ bgAnimationDuration }
 					onChange={ ( val ) => setAttributes( { bgAnimationDuration: val } ) }
-					min={ 5 }
+					min={ hasKenBurnsMode ? 1 : 5 }
 					max={ 60 }
 					step={ 1 }
 					__nextHasNoMarginBottom
