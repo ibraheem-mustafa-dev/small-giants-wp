@@ -814,6 +814,13 @@
 		animation-delay: min(calc(var(--sgs-i, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
 	}
 
+	/* Drill mode: an entrance that holds its end state keeps `translate: 0` on the
+	   item, and any transform makes the item the containing block of the sliding
+	   panel (so only one row showed). The entrance fill stops at its delay. */
+	.sgs-nav-drawer--stagger[open]:not(.is-closing) .sgs-nav-drawer-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-drawer-menu__item {
+		animation-fill-mode: backwards;
+	}
+
 	.sgs-nav-drawer--stagger-close.is-closing .sgs-nav-drawer-menu__bar--drawer > .sgs-nav-drawer-menu__item {
 		animation: sgs-nav-drawer-menu-item-out var(--sgs-nd-stagger-dur, 250ms) var(--sgs-nd-stagger-ease, var(--wp--custom--entrance--easing, var(--sgs-nd-ease, ease-out))) forwards;
 		animation-delay: min(calc(var(--sgs-ri, 0) * var(--sgs-nd-stagger-step, 0ms)), var(--sgs-nd-stagger-max, 100000ms));
