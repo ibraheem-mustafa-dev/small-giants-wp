@@ -89,3 +89,27 @@ held by its own (0,1,0) default over the theme's heading styles, as measured and
 **Final editor run (deployed `235d54de`, `2026-10-07-f3-e14-editor-final.json`): `ED-form`, `ED-table-of-contents`
 and `ED-product-card` all PASS** (each block's new targets on the Styles tab, a pre-existing control panel present,
 the sham label absent), and a bound product-card loads in the editor with 0 JavaScript errors.
+
+## Round 3: the element controls from gap 7 (deployed `f1527a858`, editor-mock follow-up `73cdb64ca`)
+
+Same method: one private fixture page (`sgs-e14-live`, 4 product-cards, 8 post-grids, 2 media, 2 buybox bound through `core/query` to product 136), D / S / C at 375 / 768 / 1440, phase marker confirmed in all 9 reads, a sham read on the same element of an unset sibling instance. S set desktop-only tier values (33px, 300, 47px, 7px, capitalize, right). 0 console errors, 0 HTTP 403. Fixture deleted (`DELETE /wp/v2/pages/1317?force=true` 200; the search returned `[]`; the page 404s).
+
+| Block | Check | D | S | Sham |
+|---|---|---|---|---|
+| product-card | CTA line-height | 21px | 47px | 21px |
+| product-card | CTA `justify-content` (ctaTextAlign right) | center | flex-end | center |
+| product-card | rating row size / weight / line-height / spacing / transform | 13px / 400 / 19.5px / normal / none | 33 / 300 / 47 / 7px / capitalize | unchanged |
+| product-card | rating row `justify-content` | normal | flex-end | normal |
+| product-card | rating stars size and spacing | 13px, 1.56px | 29px, 9px | unchanged |
+| product-card | saving badge (all five) | 11px / 400 / 16.5px / 1.1px / uppercase | set values | unchanged |
+| product-card | zero-review text | 12px | 30.46px at a 33px row (`calc(12em / 13)`, follows the rating size by design) | 12px |
+| post-grid | page buttons (all five) | 14px / 600 | set values | 14px / 600 |
+| post-grid | load more (all five) | 16px / 600 | set values | 16px / 600 |
+| post-grid | meta, excerpt, read more (all five and text-align); badge; category (flat style) | the stylesheet defaults | set values | unchanged |
+| media | video time (all five) | 12px, line-height 12px | set values | 12px |
+| buybox | stock row (all five) and `justify-content` (center) | 14.4px / 600, normal | set values, center | unchanged |
+| buybox | notify heading and submit | 16px / 700 and 16px / 600 | set values | unchanged (computed on hidden elements: no product is out of stock) |
+
+375 and 768 PASS in every row; C equals D in every row. Editor: all 18 blocks valid, the product-card Typography switcher lists Rating and reviews, Rating stars and Saving badge beside the pre-existing Title.
+
+Not coverable on eye-care-test: card-grid (its paginating `cpt-collection` mode has no registered post type there), buybox saving badge (product 136 has no RRP) and the guided layout, product-card bound-mode RRP and swatch count, account (needs a signed-in customer) and nav-drawer-menu (drawer context). The site's media library has no video; an external MP4 drove the player.
