@@ -148,14 +148,20 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	let read = null;
 	if ( mark?.visible ) {
 		const loc = page.locator( '[data-cr-target]' ).first();
-		if ( 'focus' === inst.trigger ) {
-			await loc.evaluate( ( el ) => el.focus( { focusVisible: true } ) );
-		} else {
-			await loc.scrollIntoViewIfNeeded();
-			await loc.hover( { force: true } );
+		try {
+			if ( 'focus' === inst.trigger ) {
+				await loc.evaluate( ( el ) => el.focus( { focusVisible: true } ) );
+			} else {
+				await loc.scrollIntoViewIfNeeded();
+				await loc.hover( { force: true } );
+			}
+			await page.waitForTimeout( 500 );
+			read = await one();
+		} catch {
+			// An element Playwright cannot scroll to or reach (it reported visible but sits where no scroll brings it into
+			// view) leaves this instance unread, listed as missed, instead of failing the whole block's run.
+			read = null;
 		}
-		await page.waitForTimeout( 500 );
-		read = await one();
 		await page.mouse.move( 0, 0 );
 		await page.evaluate( () => document.activeElement?.blur() );
 	}
