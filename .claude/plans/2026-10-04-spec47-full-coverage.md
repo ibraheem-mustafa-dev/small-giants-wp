@@ -63,16 +63,12 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
   Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
-  - 131 / S3's tree half: phone and email hover black (`textColourHover: text`) on footer cr-ref-footer-24 and contact
-    cr-ref-contact-9 and -12 (2026-10-07; the header phone already held it). contact-9 had `accent-text` from Solve's
-    2026-10-04 draft reading, a taupe S2 rules out, so Contact's next Solve run needs a ledger entry holding `text` against the
-    draft, or it writes the taupe back. Owed: rebuild the footer part and the Contact page, then a live hover read. The S2
-    underline sweep on the contact pair waits for S2's framework half.
+  - 131 / S3: the hover colour is in the trees and live (no fade; the links rest at #141414, so hover shows no colour
+    change). Contact's next Solve run needs a ledger entry holding `text` on contact-9 against the draft's taupe, or it writes
+    the taupe back. The visible hover cue waits for S2's underline sweep (framework).
   - The mobile drawer's links (mobile-menu surface): the draft fades and rises each link in when the drawer opens, live
     shows them at once; 14 rows open (2026-10-05 sweep), but the walker does not sample the rise, so they cannot be judged.
     Taken with the mobile-menu surface's Solve pass: first make the walker sample an entrance inside the `drawer-open` state.
-  - 87's tree half: `single-product.tree.json` takes `showArchiveCrumb` and `showCurrentCrumb` true (2026-10-07), owed one
-    rebuild of the Single Product template and a live read of the trail (Home / Sunglasses / Gucci / <product>).
 - **Coverage still owed:**
   - Register rows 150, 152 and 155 need `surfaces.json` entries for checkout, bag and confirmation: each has a
     walker config but no tree and no target yet.
