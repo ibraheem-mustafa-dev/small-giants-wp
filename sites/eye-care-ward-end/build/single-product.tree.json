@@ -88,10 +88,21 @@
               },
               "thumbGap": "2px",
               "thumbStripOffset": "2px",
-              "thumbRadius": "0px",
-              "thumbBorderWidth": "1px",
-              "thumbBorderColour": "border",
-              "thumbSelectedBorderColour": "text",
+              "galleryThumbBorderWidth": {
+                "top": "1px",
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px"
+              },
+              "galleryThumbBorderStyle": "solid",
+              "galleryThumbBorderColour": "border",
+              "galleryThumbBorderColourCurrent": "text",
+              "galleryThumbBorderRadius": {
+                "topLeft": "0px",
+                "topRight": "0px",
+                "bottomRight": "0px",
+                "bottomLeft": "0px"
+              },
               "thumbSelectedScale": 100,
               "showLadder": false,
               "priceFontFamily": "heading",

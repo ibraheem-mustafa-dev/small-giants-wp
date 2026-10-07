@@ -20,6 +20,7 @@ import {
 	textPaintPreview,
 	wrapperBorderPreview,
 	tierBoxLonghands,
+	sgsBorderPreview,
 	typographyPreviewStyle,
 	typographyPreviewCss,
 } from '../../utils';
@@ -141,11 +142,6 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	const rawOffset = String( attributes.thumbStripOffset || '' ).trim();
 	const thumbOffset = /^\d+(\.\d+)?$/.test( rawOffset ) ? `${ rawOffset }px` : rawOffset;
-	const rawRadius = String( attributes.thumbRadius || '' ).trim();
-	const thumbRadius = /^\d+(\.\d+)?$/.test( rawRadius ) ? `${ rawRadius }px` : rawRadius;
-	if ( thumbRadius && ! /[;{}<>]/.test( thumbRadius ) ) {
-		css += `${ root } .product-card__thumb{border-radius:${ thumbRadius };}`;
-	}
 	const railDecls = [];
 	if ( thumbOffset && ! /[;{}<>]/.test( thumbOffset ) ) {
 		railDecls.push( `--sgs-buybox-thumb-offset:${ thumbOffset }` );
@@ -163,24 +159,34 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		css += `@supports(overflow-clip-margin:1px){${ root } .product-card__thumbs{overflow:clip;overflow-clip-margin:24px;padding:0;margin:var(--sgs-buybox-thumb-offset,0.75rem) 0 0;}}`;
 		css += `${ root } .product-card__thumb{width:100%;height:auto;aspect-ratio:1;}`;
 	}
-	const rawWidth = String( attributes.thumbBorderWidth || '' ).trim();
-	// A bare number is pixels, as sgs_css_length_value() reads it on the front end.
-	const thumbWidth = /^\d+(\.\d+)?$/.test( rawWidth ) ? `${ rawWidth }px` : rawWidth;
-	const thumbColour = colourOf( attributes.thumbBorderColour );
-	const thumbSelected = colourOf( attributes.thumbSelectedBorderColour );
+	// The thumbnails' border is the shared border panel's twin: width, style, normal colour
+	// and corner radius, with the stylesheet's own 2px transparent border underneath.
+	const thumbBorder = sgsBorderPreview(
+		{
+			widthValues: attributes.galleryThumbBorderWidth,
+			styleValue: attributes.galleryThumbBorderStyle,
+			colourValue: attributes.galleryThumbBorderColour,
+			radiusValues: { base: attributes.galleryThumbBorderRadius },
+		},
+		tier,
+		palette,
+		{ defaultBorder: true }
+	);
+	const thumbColour = colourOf( attributes.galleryThumbBorderColour );
+	const thumbHover = colourOf( attributes.galleryThumbBorderColourHover );
+	const thumbSelected = colourOf( attributes.galleryThumbBorderColourCurrent );
 	const rawScale = attributes.thumbSelectedScale;
 	const thumbScale = null === rawScale || undefined === rawScale || '' === rawScale || ! Number.isFinite( Number( rawScale ) )
 		? 105
 		: Math.min( 150, Math.max( 50, Number( rawScale ) ) );
-	const thumbDecls = [];
-	if ( thumbWidth && ! /[;{}<>]/.test( thumbWidth ) ) {
-		thumbDecls.push( `border-width:${ thumbWidth }` );
-	}
-	if ( thumbColour ) {
-		thumbDecls.push( `border-color:${ thumbColour }` );
-	}
+	const thumbDecls = Object.entries( thumbBorder )
+		.filter( ( [ , value ] ) => 'string' === typeof value && value && ! /[;{}<>]/.test( value ) )
+		.map( ( [ property, value ] ) => `${ property.replace( /[A-Z]/g, ( letter ) => `-${ letter.toLowerCase() }` ) }:${ value }` );
 	if ( thumbDecls.length ) {
 		css += `${ root } .product-card__thumb{${ thumbDecls.join( ';' ) };}`;
+	}
+	if ( thumbHover ) {
+		css += `${ root } .product-card__thumb:hover{border-color:${ thumbHover };}`;
 	}
 	const selectedDecls = [];
 	if ( thumbSelected ) {

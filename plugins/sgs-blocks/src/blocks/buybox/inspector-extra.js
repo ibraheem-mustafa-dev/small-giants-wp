@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl, ResponsiveControl } from '../../components';
+import { fillRow, textRow, SgsLengthControl, ResponsiveControl, SgsBorderControl } from '../../components';
 import { patchTier } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -38,10 +38,20 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		thumbsPerRow,
 		thumbGap,
 		thumbStripOffset,
-		thumbRadius,
-		thumbBorderWidth,
 		thumbSelectedScale,
+		galleryThumbBorderWidth,
+		galleryThumbBorderStyle,
+		galleryThumbBorderColour,
+		galleryThumbBorderColourHover,
+		galleryThumbBorderColourCurrent,
+		galleryThumbBorderRadius,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+
+	// The thumbnails sit on the buybox's own background; with a gradient there is no
+	// single colour to check the border against.
+	const thumbContrastAgainst = backgroundColour && ! backgroundColourGradient ? backgroundColour : '';
 
 	return (
 		<>
@@ -215,18 +225,6 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 					) }
 				/>
 				<SgsLengthControl
-					label={ __( 'Thumbnail corner radius', 'sgs-blocks' ) }
-					value={ thumbRadius }
-					units={ THUMB_BORDER_UNITS }
-					onChange={ ( val ) =>
-						setAttributes( { thumbRadius: val ?? '' } )
-					}
-					help={ __(
-						'Rounding of every thumbnail corner. 0 is square. Empty follows the main image’s radius.',
-						'sgs-blocks'
-					) }
-				/>
-				<SgsLengthControl
 					label={ __( 'Space above thumbnails', 'sgs-blocks' ) }
 					value={ thumbStripOffset }
 					units={ THUMB_BORDER_UNITS }
@@ -238,18 +236,48 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 				/>
-				<SgsLengthControl
-					label={ __( 'Border width', 'sgs-blocks' ) }
-					value={ thumbBorderWidth }
-					units={ THUMB_BORDER_UNITS }
-					onChange={ ( val ) =>
-						setAttributes( { thumbBorderWidth: val ?? '' } )
-					}
-					help={ __(
-						'Width of the border around every thumbnail. Empty keeps the default 2px. Border colours are in the Colours panel.',
+				<SgsBorderControl
+					label={ __( 'Thumbnail border width', 'sgs-blocks' ) }
+					widthValues={ galleryThumbBorderWidth ?? {} }
+					onWidthChange={ ( next ) => setAttributes( { galleryThumbBorderWidth: next } ) }
+					styleValue={ galleryThumbBorderStyle }
+					onStyleChange={ ( val ) => setAttributes( { galleryThumbBorderStyle: val } ) }
+					colourLabel={ __( 'Thumbnail border colour', 'sgs-blocks' ) }
+					colourStates={ [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: galleryThumbBorderColour,
+							onChange: ( val ) => setAttributes( { galleryThumbBorderColour: val ?? '' } ),
+							linked: true,
+						},
+						{
+							key: 'hover',
+							label: __( 'Hover', 'sgs-blocks' ),
+							value: galleryThumbBorderColourHover,
+							onChange: ( val ) => setAttributes( { galleryThumbBorderColourHover: val ?? '' } ),
+							linked: true,
+						},
+						{
+							key: 'current',
+							label: __( 'Selected', 'sgs-blocks' ),
+							value: galleryThumbBorderColourCurrent,
+							onChange: ( val ) => setAttributes( { galleryThumbBorderColourCurrent: val ?? '' } ),
+							linked: true,
+						},
+					] }
+					contrastAgainst={ thumbContrastAgainst }
+					radiusLabel={ __( 'Thumbnail corner radius', 'sgs-blocks' ) }
+					radiusValues={ { base: galleryThumbBorderRadius ?? {} } }
+					showRadiusResponsive={ false }
+					onRadiusChange={ ( _tier, next ) => setAttributes( { galleryThumbBorderRadius: next } ) }
+				/>
+				<p className="components-base-control__help">
+					{ __(
+						'Empty width keeps the default 2px transparent border; an empty selected colour keeps the theme primary colour; an empty radius follows the main image.',
 						'sgs-blocks'
 					) }
-				/>
+				</p>
 				<RangeControl
 					label={ __( 'Selected thumbnail scale (%)', 'sgs-blocks' ) }
 					help={ __(
@@ -356,20 +384,6 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			key: 'add-to-cart-border',
 			label: __( 'Add to cart border', 'sgs-blocks' ),
 			attrs: { base: 'addToCartBorderColour' },
-			attributes,
-			setAttributes,
-		} ),
-		fillRow( {
-			key: 'thumb-border',
-			label: __( 'Thumbnail border', 'sgs-blocks' ),
-			attrs: { base: 'thumbBorderColour' },
-			attributes,
-			setAttributes,
-		} ),
-		fillRow( {
-			key: 'thumb-selected-border',
-			label: __( 'Selected thumbnail border', 'sgs-blocks' ),
-			attrs: { base: 'thumbSelectedBorderColour' },
 			attributes,
 			setAttributes,
 		} ),

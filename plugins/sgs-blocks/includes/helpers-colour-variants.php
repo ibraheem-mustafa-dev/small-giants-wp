@@ -313,7 +313,11 @@ function sgs_text_states_css( string $selector, array $attributes, array $map ):
  *                           `[aria-current="page"]` state, FLAT-PATH ONLY: it is
  *                           gradient-exempt at the ring level, because
  *                           sgs_border_gradient_css() composes exactly two paints and
- *                           has no slot for a third), and 'suppress_edges' (Spec 41
+ *                           has no slot for a third), 'current_aria' (optional,
+ *                           `'page'` default or `'true'`: which `aria-current` value
+ *                           marks the Current element, `true` for the selected item
+ *                           of a set such as sgs/buybox's gallery thumbnails), and
+ *                           'suppress_edges' (Spec 41
  *                           FR-41-8, v0.4.7 — a box object
  *                           `[ 'top' => bool, 'right' => bool, 'bottom' => bool,
  *                           'left' => bool ]`, absent key/edge = false). FLAT-PATH
@@ -448,7 +452,11 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		if ( '' !== $current_paint ) {
 			$current_decl = $non_resting_decl( $current_paint );
 			if ( '' !== $current_decl ) {
-				$css .= $selector . '[aria-current="page"]{' . $current_decl . '}';
+				// The Current marker is `aria-current="page"` unless the caller names
+				// the other value an element legitimately carries (`true`, a selected
+				// item in a set); anything else falls back to `page`.
+				$current_marker = ( isset( $map['current_aria'] ) && 'true' === $map['current_aria'] ) ? 'true' : 'page';
+				$css           .= $selector . '[aria-current="' . $current_marker . '"]{' . $current_decl . '}';
 			}
 		}
 		if ( '' !== $hover_paint && $hover_paint !== $normal_paint ) {

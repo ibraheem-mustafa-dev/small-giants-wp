@@ -54,6 +54,12 @@
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"galleryThumbBorderWidth": [
+					"galleryThumbBorderWidth"
+				],
+				"galleryThumbBorderRadius": [
+					"galleryThumbBorderRadius"
 				]
 			},
 			"elements": {
@@ -159,19 +165,25 @@
 						"css:grid-template-columns": "thumbsPerRow",
 						"css:gap": "thumbGap",
 						"css:margin-top": "thumbStripOffset",
-						"css:border-radius": "thumbRadius",
-						"css:border-width": "thumbBorderWidth",
-						"css:border-color": "thumbBorderColour"
+						"css:border-radius": "galleryThumbBorderRadius",
+						"css:border-width": "galleryThumbBorderWidth",
+						"css:border-style": "galleryThumbBorderStyle",
+						"css:border-color": "galleryThumbBorderColour"
 					},
 					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "galleryThumbBorderColourHover"
+							}
+						},
 						"current": {
 							"attrMap": {
-								"css:border-color": "thumbSelectedBorderColour",
+								"css:border-color": "galleryThumbBorderColourCurrent",
 								"css:transform": "thumbSelectedScale"
 							}
 						}
 					},
-					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap, thumbStripOffset and thumbRadius, resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
+					"_note": "The thumbnail rail buttons (.product-card__thumb). A per-device thumbsPerRow fluid grid (0 = the fixed 64px scrolling rail) with thumbGap and thumbStripOffset, plus the shared border pair on SgsBorderControl: galleryThumbBorderWidth (box), galleryThumbBorderStyle, galleryThumbBorderColour / Hover / Current (Current is the selected [aria-current=true] thumbnail) and galleryThumbBorderRadius (a flat corner object, single tier), and the selected thumbnail's scale. Emitted per instance by extras.php::sgs_buybox_extras_scoped_css through sgs_border_states_css(). Empty width, colours and radius, and scale 105, keep the stylesheet defaults (2px transparent border, primary-token selected border, the main image's radius, scale 1.05); scale 100 turns the selected scale off."
 				},
 				"valueLadder": {
 					"label": "Value ladder",
@@ -894,25 +906,46 @@
 			"default": "",
 			"description": "CSS length of the space between the main product image and the thumbnail strip (e.g. \"2px\"). Empty keeps the stylesheet's 0.75rem."
 		},
-		"thumbRadius": {
-			"type": "string",
-			"default": "",
-			"description": "CSS length of the gallery thumbnails' corner radius (e.g. \"0px\" for square). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
+		"galleryThumbBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of every gallery thumbnail, a {top, right, bottom, left} box of CSS lengths (e.g. \"1px\" on each side). Empty keeps the stylesheet's 2px."
 		},
-		"thumbBorderWidth": {
+		"galleryThumbBorderStyle": {
 			"type": "string",
-			"default": "",
-			"description": "CSS length of the gallery thumbnails' border (e.g. \"1px\"). Empty keeps the stylesheet's 2px."
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of every gallery thumbnail. Read only when a width is set."
 		},
-		"thumbBorderColour": {
+		"galleryThumbBorderColour": {
 			"type": "string",
 			"default": "",
 			"description": "Resting border colour of the gallery thumbnails (palette slug or colour). Empty keeps the stylesheet's transparent border."
 		},
-		"thumbSelectedBorderColour": {
+		"galleryThumbBorderColourHover": {
 			"type": "string",
 			"default": "",
-			"description": "Border colour of the selected gallery thumbnail (palette slug or colour). Empty keeps the primary-token colour."
+			"description": "Border colour of a gallery thumbnail on hover or keyboard focus (palette slug or colour). Empty leaves the border unchanged."
+		},
+		"galleryThumbBorderColourCurrent": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the selected gallery thumbnail, the one carrying aria-current=true (palette slug or colour). Empty keeps the primary-token colour."
+		},
+		"galleryThumbBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_shorthand(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
 		},
 		"thumbSelectedScale": {
 			"type": "number",
