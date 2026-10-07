@@ -210,10 +210,50 @@ ok( '' === $off_none['css'], 'NEGATIVE CONTROL: Transparent off + nothing set em
 ok( false === $off_none['explicit'], 'NEGATIVE CONTROL: nothing set leaves the scroll script off' );
 
 // Mixed tiers: the tablet tier (Transparent off) gets the explicit-only rule in
-// its own media block while desktop/mobile keep the full set.
-$mixed_set = sgs_header_scrolled_colour_css( $root_sel, array( 'textColourScrolled' => '#ffffff' ), $mixed_tiers );
-ok( 0 === strpos( $mixed_set['css'], $scrolled_sel . '{background:' . $surface_fb . ' !important;color:#ffffff !important;}' ), 'mixed tiers: the Transparent-on desktop rule keeps the surface fallback' );
-ok( false !== strpos( $mixed_set['css'], '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $scrolled_sel . '{color:#ffffff !important;}}' ), 'mixed tiers: the Transparent-off tablet rule has the text colour and no surface fallback' );
+// its own media block while desktop/mobile keep the full set, each rule inside
+// its own non-overlapping range.
+$desk_media   = '@media (min-width:' . ( SGS_Breakpoints::TABLET_MAX + 1 ) . 'px)';
+$tab_media    = '@media (min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px) and (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)';
+$mob_media    = '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)';
+$full_decls   = 'background:' . $surface_fb . ' !important;color:#ffffff !important;';
+$mixed_set    = sgs_header_scrolled_colour_css( $root_sel, array( 'textColourScrolled' => '#ffffff' ), $mixed_tiers );
+ok( false !== strpos( $mixed_set['css'], $desk_media . '{' . $scrolled_sel . '{' . $full_decls . '}}' ), 'mixed tiers: the Transparent-on desktop rule keeps the surface fallback, inside the desktop range' );
+ok( false !== strpos( $mixed_set['css'], $tab_media . '{' . $scrolled_sel . '{color:#ffffff !important;}}' ), 'mixed tiers: the Transparent-off tablet rule has the text colour and no surface fallback' );
+ok( false !== strpos( $mixed_set['css'], $mob_media . '{' . $scrolled_sel . '{' . $full_decls . '}}' ), 'mixed tiers: the Transparent-on mobile rule keeps the surface fallback, inside the mobile range' );
+
+// CR26 (a): Transparent on at desktop only, off at tablet + mobile, only the
+// scrolled text colour set: the surface background applies at desktop only.
+$desk_only = array(
+	'desktop' => 'on',
+	'tablet'  => 'off',
+	'mobile'  => 'off',
+);
+/**
+ * True when a `background:` declaration for the scrolled selector sits outside
+ * every desktop-range media block (i.e. it can apply at tablet or mobile).
+ */
+function bg_applies_outside_desktop( string $css, string $scrolled_sel, string $desk_media ): bool {
+	// Drop the desktop-range blocks, then look for any remaining background decl.
+	$rest = str_replace( $desk_media, '@@DESK@@', $css );
+	$rest = preg_replace( '/@@DESK@@\{' . preg_quote( $scrolled_sel, '/' ) . '\{[^}]*\}\}/', '', $rest );
+	return 1 === preg_match( '/' . preg_quote( $scrolled_sel, '/' ) . '\{[^}]*background:/', (string) $rest );
+}
+$cr26 = sgs_header_scrolled_colour_css( $root_sel, array( 'textColourScrolled' => '#ffffff' ), $desk_only );
+ok( false === bg_applies_outside_desktop( $cr26['css'], $scrolled_sel, $desk_media ), 'CR26: desktop-on / narrower-off emits no scrolled background outside the desktop range' );
+ok( false !== strpos( $cr26['css'], $desk_media . '{' . $scrolled_sel . '{' . $full_decls . '}}' ), 'CR26: the desktop range still carries the surface fallback' );
+ok( false !== strpos( $cr26['css'], $tab_media . '{' . $scrolled_sel . '{color:#ffffff !important;}}' ), 'CR26: the tablet range carries the text colour only' );
+ok( false !== strpos( $cr26['css'], $mob_media . '{' . $scrolled_sel . '{color:#ffffff !important;}}' ), 'CR26: the mobile range carries the text colour only' );
+
+// CR26 (b): Transparent on at every tier keeps the fallback on every tier
+// (one unwrapped rule, applying everywhere).
+$cr26_all = sgs_header_scrolled_colour_css( $root_sel, array( 'textColourScrolled' => '#ffffff' ), $all_on );
+ok( $scrolled_sel . '{' . $full_decls . '}' === $cr26_all['css'], 'CR26: Transparent on at all tiers still emits the surface fallback on every tier (single unwrapped rule)' );
+
+// CR26 (c): NEGATIVE CONTROL — the pre-fix output (desktop rule unwrapped, the
+// tablet override in a max-width block) must trip assertion (a).
+$old_output = $scrolled_sel . '{' . $full_decls . '}'
+	. '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $scrolled_sel . '{color:#ffffff !important;}}';
+ok( true === bg_applies_outside_desktop( $old_output, $scrolled_sel, $desk_media ), 'NEGATIVE CONTROL: the old unwrapped output is caught by the CR26 assertion' );
 
 echo "\n" . $pass . '/' . ( $pass + $fail ) . " passed\n";
 if ( $fail > 0 ) {

@@ -231,14 +231,40 @@ if ( ! function_exists( 'sgs_header_scrolled_colour_css' ) ) {
 			? ''
 			: 'background:var(--wp--preset--color--surface,#ffffff) !important;' ) . $explicit_decls;
 
+		$decls_by_tier = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			$decls_by_tier[ $tier ] = isset( $transparent_effective[ $tier ] ) && 'on' === $transparent_effective[ $tier ]
+				? $transparent_decls
+				: $explicit_decls;
+		}
+
+		$scrolled_sel = $root_sel . '.is-header-scrolled';
+		$css          = '';
+
+		if ( 1 === count( array_unique( $decls_by_tier ) ) ) {
+			// Every tier resolves to the same declarations: one unwrapped rule.
+			if ( '' !== $decls_by_tier['desktop'] ) {
+				$css = $scrolled_sel . '{' . $decls_by_tier['desktop'] . '}';
+			}
+		} else {
+			// The tiers differ. Each rule gets its own non-overlapping range, so the
+			// surface fallback of a Transparent-on tier never cascades into a
+			// narrower Transparent-off tier (an unwrapped or max-width-only rule
+			// would apply below its own breakpoint as well).
+			$media_by_tier = array(
+				'desktop' => '@media (min-width:' . ( SGS_Breakpoints::TABLET_MAX + 1 ) . 'px)',
+				'tablet'  => '@media (min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px) and (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)',
+				'mobile'  => '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)',
+			);
+			foreach ( $media_by_tier as $tier => $media ) {
+				if ( '' !== $decls_by_tier[ $tier ] ) {
+					$css .= $media . '{' . $scrolled_sel . '{' . $decls_by_tier[ $tier ] . '}}';
+				}
+			}
+		}
+
 		return array(
-			'css'      => sgs_emit_tier_rules_map(
-				$root_sel . '.is-header-scrolled',
-				$transparent_effective,
-				array( 'on' => $transparent_decls ),
-				$explicit_decls,
-				'off'
-			),
+			'css'      => $css,
 			'explicit' => '' !== $explicit_decls,
 		);
 	}
