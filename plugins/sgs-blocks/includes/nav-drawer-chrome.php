@@ -150,7 +150,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 		}
 
 		$placement = (string) ( $attributes['chromeSlotPlacement'] ?? 'after-logo' );
-		$placement = in_array( $placement, array( 'after-logo', 'centre', 'end' ), true ) ? $placement : 'after-logo';
+		$placement = in_array( $placement, array( 'after-logo', 'center', 'end' ), true ) ? $placement : 'after-logo';
 		$class     = 'sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--' . $type . ' sgs-nav-drawer__chrome-slot--at-' . $placement;
 
 		if ( 'button' === $type ) {

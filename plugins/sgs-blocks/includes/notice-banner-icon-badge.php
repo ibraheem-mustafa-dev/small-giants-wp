@@ -65,11 +65,9 @@ if ( ! function_exists( 'sgs_notice_banner_clamp_icon_circle_size' ) ) {
 
 if ( ! function_exists( 'sgs_notice_banner_icon_circle_border_style' ) ) {
 	/**
-	 * Sanitise the badge border-style allow-list — mirrors trust-bar's
-	 * iconCircleBorderStyle exactly (render.php:188-191): unset (empty string)
-	 * stays empty so style.css's own framework-default fallback (solid) keeps
-	 * painting; a non-empty off-enum value falls back to 'solid' rather than
-	 * being dropped or fatalling.
+	 * Resolve the badge border style through the shared keyword helper. Unset
+	 * (empty string) stays empty so style.css's own framework-default fallback
+	 * (solid) keeps painting; a non-empty off-enum value resolves to 'solid'.
 	 *
 	 * @param mixed $value Raw attribute value.
 	 * @return string Allow-listed border-style keyword, or '' when unset.
@@ -79,8 +77,7 @@ if ( ! function_exists( 'sgs_notice_banner_icon_circle_border_style' ) ) {
 		if ( '' === $value ) {
 			return '';
 		}
-		$allowed = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-		return in_array( $value, $allowed, true ) ? $value : 'solid';
+		return sgs_border_style_keyword( $value );
 	}
 }
 

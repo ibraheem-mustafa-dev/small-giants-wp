@@ -72,9 +72,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 // 2. Extract + validate attributes.
 // ---------------------------------------------------------------------------
 
-$allowed_line_styles = array( 'solid', 'dashed', 'dotted', 'double', 'none' );
-$line_style_raw      = $attributes['lineStyle'] ?? 'solid';
-$line_style          = in_array( $line_style_raw, $allowed_line_styles, true ) ? $line_style_raw : 'solid';
+$line_style = sgs_border_style_keyword( $attributes['lineStyle'] ?? 'solid' );
 
 $width_unit_raw = $attributes['widthUnit'] ?? '%';
 $width_unit     = in_array( $width_unit_raw, array( 'px', '%' ), true ) ? $width_unit_raw : '%';

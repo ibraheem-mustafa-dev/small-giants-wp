@@ -188,9 +188,7 @@ if ( 'icon-circle' === $badge_style ) {
 		$styles[] = '--sgs-trust-badge-circle-border-width: ' . $icon_circle_border_width_val;
 	}
 	if ( '' !== $icon_circle_border_style ) {
-		$allowed_icon_circle_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
-		$safe_icon_circle_border_style     = in_array( $icon_circle_border_style, $allowed_icon_circle_border_styles, true ) ? $icon_circle_border_style : 'solid';
-		$styles[]                          = '--sgs-trust-badge-circle-border-style: ' . $safe_icon_circle_border_style;
+		$styles[] = '--sgs-trust-badge-circle-border-style: ' . sgs_border_style_keyword( $icon_circle_border_style );
 	}
 	if ( '' !== $icon_circle_border_colour ) {
 		$styles[] = '--sgs-trust-badge-circle-border-color: ' . sgs_colour_value( $icon_circle_border_colour );

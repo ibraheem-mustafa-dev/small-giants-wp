@@ -34,7 +34,7 @@ const LEVEL_OPTIONS = [ 'h2', 'h3', 'h4', 'p' ].map( ( level ) => ( {
 
 const PLACEMENT_OPTIONS = [
 	{ label: __( 'After the logo', 'sgs-blocks' ), value: 'after-logo' },
-	{ label: __( 'Centre of the row', 'sgs-blocks' ), value: 'centre' },
+	{ label: __( 'Centre of the row', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'At the end, beside the close button', 'sgs-blocks' ), value: 'end' },
 ];
 

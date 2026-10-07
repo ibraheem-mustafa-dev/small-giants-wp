@@ -52,11 +52,11 @@ function sgs_whatsapp_cta_card_css( array $attributes, string $uid, string $root
 		$css[] = "{$root_sel}{border-width:{$border_width_val};}";
 	}
 
-	// Border style — allow-listed against the block.json enum; a free-text
-	// value never reaches CSS unfiltered (S5).
-	$border_style_raw = sanitize_key( (string) ( $attributes['cardBorderStyle'] ?? '' ) );
-	if ( in_array( $border_style_raw, array( 'solid', 'dashed', 'dotted' ), true ) ) {
-		$css[] = "{$root_sel}{border-style:{$border_style_raw};}";
+	// Border style — resolved through the shared keyword helper; unset leaves
+	// style.css's own default in place.
+	$border_style_raw = (string) ( $attributes['cardBorderStyle'] ?? '' );
+	if ( '' !== $border_style_raw ) {
+		$css[] = "{$root_sel}{border-style:" . sgs_border_style_keyword( $border_style_raw ) . ';}';
 	}
 
 	return array_filter(

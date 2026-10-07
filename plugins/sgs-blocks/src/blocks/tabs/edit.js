@@ -41,7 +41,7 @@ const ORIENTATION_OPTIONS = [
 
 const ALIGNMENT_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];

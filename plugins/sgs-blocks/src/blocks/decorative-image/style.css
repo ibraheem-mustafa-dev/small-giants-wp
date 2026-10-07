@@ -28,9 +28,8 @@
 		display: none;
 	}
 
-	/* positionXTablet / positionYTablet / widthTablet / rotationTablet are
-	   NOT wired to any CSS/JS consumer (pre-existing gap, out of scope of
-	   this inline-styling migration — see block report). */
+	/* The tablet and mobile position, width and rotation tiers are scoped
+	   per-instance rules emitted by render.php. */
 }
 
 /* ─── Responsive Overrides (Mobile) ───

@@ -536,7 +536,7 @@
 			"default": "after-logo",
 			"enum": [
 				"after-logo",
-				"centre",
+				"center",
 				"end"
 			],
 			"description": "Where the slot sits in the row: straight after the logo, centred in the row, or at the end beside the close button."

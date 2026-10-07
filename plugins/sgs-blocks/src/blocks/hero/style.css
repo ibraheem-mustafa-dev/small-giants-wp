@@ -219,7 +219,7 @@ section.sgs-hero {
 }
 
 /* Text alignment */
-.sgs-hero--align-centre .sgs-hero__content {
+.sgs-hero--align-center .sgs-hero__content {
 	text-align: center;
 	align-items: center;
 }

@@ -70,13 +70,10 @@ if ( empty( $image_url ) && ! empty( $decor_media['url'] ) && 'image' === ( $dec
 	$image_id  = isset( $decor_media['id'] ) ? absint( $decor_media['id'] ) : 0;
 	$image_alt = isset( $decor_media['alt'] ) ? (string) $decor_media['alt'] : '';
 }
-// `positionX`/`positionY`/`rotation` are TIER OBJECTS (Spec 35 pass,
-// {desktop,tablet,mobile}) — normalise before reading any tier. The base
-// desktop-tier value drives the always-on scoped CSS rule below; tablet/
-// mobile tiers feed the `data-*` attrs further down (a pre-existing,
-// documented gap — see style.css:31 — those attrs have never had a CSS/JS
-// consumer, so this migration preserves that exact behaviour rather than
-// wiring a new one in as a side effect).
+// `positionX`/`positionY`/`width`/`rotation` are TIER OBJECTS (Spec 35,
+// {desktop,tablet,mobile}) — normalise before reading any tier. The desktop
+// tier drives the base scoped rule below; the tablet and mobile tiers become
+// scoped @media rules on the same selector (768/1024 device tiers).
 $position_x_obj      = sgs_responsive_normalise_object( $attributes['positionX'] ?? null );
 $position_y_obj      = sgs_responsive_normalise_object( $attributes['positionY'] ?? null );
 $rotation_obj        = sgs_responsive_normalise_object( $attributes['rotation'] ?? null );
@@ -145,16 +142,22 @@ $width_css        = $sgs_css_num( $width, 2 );
 $max_width_css    = $sgs_css_num( $max_width_percent, 2 );
 $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
-$rotation_css     = $sgs_css_num( $rotation, 2 );
 
-$transform_parts   = array( 'translate(-50%, -50%)' );
-if ( 0.0 !== $rotation_css ) {
-	$transform_parts[] = 'rotate(' . $rotation_css . 'deg)';
-}
-if ( $flip_x ) {
-	$transform_parts[] = 'scaleX(-1)';
-}
-$transform_parts[] = 'translateY(var(--sgs-di-py, 0px))';
+// The whole transform is rebuilt per tier: rotation shares the one
+// `transform` property with the centring translate, the flip and the
+// parallax offset, so a tier rule must carry every part.
+$sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
+	$parts   = array( 'translate(-50%, -50%)' );
+	$deg_css = $sgs_css_num( $rotation_deg, 2 );
+	if ( 0.0 !== $deg_css ) {
+		$parts[] = 'rotate(' . $deg_css . 'deg)';
+	}
+	if ( $flip_x ) {
+		$parts[] = 'scaleX(-1)';
+	}
+	$parts[] = 'translateY(var(--sgs-di-py, 0px))';
+	return implode( ' ', $parts );
+};
 
 $root_decls = array(
 	'position:absolute',
@@ -164,12 +167,65 @@ $root_decls = array(
 	'max-width:' . $max_width_css . '%',
 	'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
 	'z-index:' . $z_index_css,
-	'transform:' . implode( ' ', $transform_parts ),
+	'transform:' . $sgs_di_transform( $rotation ),
 	'overflow:' . $overflow,
 );
 
 $scoped_css   = array();
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+
+// Tablet and mobile tiers. The desktop values are already in the base rule
+// above, so only the two lower tiers are passed to the shared emitter (its
+// base `attr` key is deliberately absent from the synthetic array).
+$sgs_di_tier_attrs = array(
+	'positionXTablet' => $position_x_tablet,
+	'positionXMobile' => $position_x_mobile,
+	'positionYTablet' => $position_y_tablet,
+	'positionYMobile' => $position_y_mobile,
+	'widthTablet'     => $width_tablet,
+	'widthMobile'     => $width_mobile,
+	'rotationTablet'  => $rotation_tablet,
+	'rotationMobile'  => $rotation_mobile,
+);
+$sgs_di_tier_css   = sgs_responsive_css_rule(
+	$sgs_di_tier_attrs,
+	array(
+		array(
+			'attr'         => 'positionXDesktop',
+			'css'          => 'left',
+			'unit_default' => '%',
+			'tablet_attr'  => 'positionXTablet',
+			'mobile_attr'  => 'positionXMobile',
+		),
+		array(
+			'attr'         => 'positionYDesktop',
+			'css'          => 'top',
+			'unit_default' => '%',
+			'tablet_attr'  => 'positionYTablet',
+			'mobile_attr'  => 'positionYMobile',
+		),
+		array(
+			'attr'         => 'widthDesktop',
+			'css'          => 'width',
+			'unit_default' => 'px',
+			'tablet_attr'  => 'widthTablet',
+			'mobile_attr'  => 'widthMobile',
+		),
+		array(
+			'attr'        => 'rotationDesktop',
+			'css'         => 'transform',
+			'tablet_attr' => 'rotationTablet',
+			'mobile_attr' => 'rotationMobile',
+			'transform'   => function ( $deg ) use ( $sgs_di_transform ) {
+				return is_numeric( $deg ) ? $sgs_di_transform( $deg ) : $sgs_di_transform( 0 );
+			},
+		),
+	),
+	$root_sel
+);
+if ( '' !== $sgs_di_tier_css ) {
+	$scoped_css[] = $sgs_di_tier_css;
+}
 
 // ---------------------------------------------------------------------------
 // Media-atom layer (Wave 6, 2026-09-02) — object-fit / focal-point (element
@@ -241,33 +297,6 @@ if ( $hide_on_tablet ) {
 }
 if ( $hide_on_mobile ) {
 	$img_attrs['data-hide-mobile'] = 'true';
-}
-
-// Responsive overrides via data attributes (consumed by view.js).
-if ( null !== $position_x_tablet ) {
-	$img_attrs['data-position-x-tablet'] = esc_attr( $position_x_tablet );
-}
-if ( null !== $position_y_tablet ) {
-	$img_attrs['data-position-y-tablet'] = esc_attr( $position_y_tablet );
-}
-if ( null !== $width_tablet ) {
-	$img_attrs['data-width-tablet'] = esc_attr( $width_tablet );
-}
-if ( null !== $rotation_tablet ) {
-	$img_attrs['data-rotation-tablet'] = esc_attr( $rotation_tablet );
-}
-
-if ( null !== $position_x_mobile ) {
-	$img_attrs['data-position-x-mobile'] = esc_attr( $position_x_mobile );
-}
-if ( null !== $position_y_mobile ) {
-	$img_attrs['data-position-y-mobile'] = esc_attr( $position_y_mobile );
-}
-if ( null !== $width_mobile ) {
-	$img_attrs['data-width-mobile'] = esc_attr( $width_mobile );
-}
-if ( null !== $rotation_mobile ) {
-	$img_attrs['data-rotation-mobile'] = esc_attr( $rotation_mobile );
 }
 
 // Video branch: when decorMedia is a video, defer to sgs_render_media() and

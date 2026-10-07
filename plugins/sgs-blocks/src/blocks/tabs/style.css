@@ -54,7 +54,7 @@
 
 /* ─── Alignment modifiers ───────────────────────────────────────────────────── */
 
-.sgs-tabs--align-centre .sgs-tabs__nav {
+.sgs-tabs--align-center .sgs-tabs__nav {
 	justify-content: center;
 }
 

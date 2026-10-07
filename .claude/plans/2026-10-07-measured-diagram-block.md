@@ -28,11 +28,10 @@ Each item is re-proven before any edit, against the DB and the attributes added 
 - **W0.2 Line styles go through one helper.**
   - Five settings hand-roll their own allow-list instead of calling `helpers-border-style.php::sgs_border_style_keyword`: `cart.pillBorderStyle`, `whatsapp-cta.cardBorderStyle`, `separator.lineStyle`, `trust-bar.iconCircleBorderStyle` and `notice-banner.iconCircleBorderStyle`. Route them through it.
   - Keep each block's enum where a subset is physically right. Record the rule: border-style settings declare the helper's keyword list or a documented subset.
-- **W0.3 Enum spelling and box alignment.**
-  - `centre` → `center` in `nav-bar-menu.submenuAlign` (keeping `page-centred` as a mode name if it is one), `nav-drawer.chromeSlotPlacement` and `tabs.tabAlignment`.
-  - Box alignment settings (`icon.iconAlign`, `media.alignment`, `separator.alignment`, `nav-drawer.drawerAlign`, `tabs.tabAlignment`) move to the logical `start|center|end` that `form.submitAlign` already uses.
-  - Text alignment stays `left|center|right|justify`, since that is a CSS `text-align` keyword list.
-  - Update the trees and patterns that store the old values: grep `sites/*/build/*.tree.json` and `theme/sgs-theme/patterns`.
+- **W0.3 Enum spelling. DONE (code-only).** `centre` → `center` in `tabs.tabAlignment`, `nav-drawer.chromeSlotPlacement` and `hero.alignment`. This covers the enum, the editor option, the PHP allow-list (`nav-drawer-chrome.php`), the CSS modifier class, and the one stored value (`theme/sgs-theme/patterns/hero-centred.php`).
+  - `nav-bar-menu.submenuAlign`'s `page-centred` is a mode name, not a CSS keyword, so it stays.
+  - The `hover-guard/test-fixtures` copies are frozen snapshots and also stay.
+  - **Split out, not built here: box alignment left/right → start/end.** The settings are `icon.iconAlign`, `media.alignment`, `separator.alignment`, `nav-drawer.drawerAlign` and `tabs.tabAlignment`. It is a client-visible enum migration with stored values in Indus pages, theme patterns and Eye Care trees, so THE-MIGRATION-METHOD needs a detector, a census of stored content on 3 sites, and Bean settling the shape first (Step 3). The new blocks gain nothing from it, since they declare `start|center|end` themselves. It is recorded in §G.
 - **W0.4 One size-change listener.** Fold `buybox/picker-label-view.js` into the new `@sgs/bound-sync` (§A). The buybox's `data-sgs-bb-axis` label becomes a bound span, leaving one listener and one label map. `choice-flow/pricing.js` stays separate, because it reprices a flow rather than displaying a bound value.
 
 Verify each item before Wave A:
@@ -59,8 +58,9 @@ The binding wraps its own value in a span, and the browser swaps only that span'
    - `sgs_product_field_list` also scans `product_variation`.
    - Product-level fields never vary (documented).
 4. **Fallback.** Once any variation carries a key (`metadata_exists`), the variations decide. Only when none does is the parent's value used.
-   - An empty value whose siblings differ renders with `data-sgs-bound-empty`.
-   - One shared rule hides it, and the module toggles it.
+   - An empty value still renders nothing, exactly as today. Backlog Q10 (a `fallback` argument or hide-when-empty on the binding) is Bean's open choice, so the binding's empty behaviour is not changed here (table session, 2026-10-07).
+   - Only a non-empty value is wrapped. When a wrapped value's selected variation is empty, the module sets the span's `data-sgs-bound-empty`, which one shared rule hides.
+   - `sgs/diagram-dimension` renders its own value container carrying the `data-sgs-bound-*` marker even when the first-paint value is empty, so a size that has the value can fill it later. `hideWhenEmpty` hides that child meanwhile.
 5. **Data and module.**
    - Variation IDs come from the cached manifest combos, then one `update_meta_cache` call per product.
    - The data is delivered through the core `script_module_data_@sgs/bound-sync` filter, and `wp_enqueue_script_module` runs at render time, front end only (`sgs_is_frontend_render()`).
@@ -199,6 +199,7 @@ The main thread owns Wave 0's detectors, A, the geometry twin, C and all QC. A `
 
 ## G. Deferred (recorded in the repo plan)
 
+- Box alignment `left|center|right` → logical `start|center|end` on five settings (W0.3's split-out item). Run it through THE-MIGRATION-METHOD with its own detector, once Bean confirms the logical shape.
 - An angle `kind` (an arc plus degrees). Trigger: the first client needing angles.
 - A conditional-visibility rule for product category or field, so one template can hold one diagram per product shape.
 - `decimals` and unit formatting, plus a shopper mm/inch toggle.

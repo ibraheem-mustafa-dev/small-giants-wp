@@ -179,7 +179,7 @@
 			"default": "left",
 			"enum": [
 				"left",
-				"centre",
+				"center",
 				"right",
 				"stretch"
 			]

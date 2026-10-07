@@ -177,7 +177,7 @@ const VARIANT_OPTIONS = [
 
 const ALIGN_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 ];
 
 // HC2: per-breakpoint content text-align. Values are raw CSS text-align values

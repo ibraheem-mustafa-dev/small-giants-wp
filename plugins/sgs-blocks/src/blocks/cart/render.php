@@ -375,10 +375,10 @@ if ( 'pill' === $trigger_style ) {
 		$scoped_css[] = $pill_sel . '{border-width:' . $pill_border_width_val . ';}';
 	}
 
-	// Border style — allow-listed against the block.json enum; a free-text
-	// value never reaches CSS unfiltered (S5).
-	if ( in_array( $pill_border_style_raw, array( 'solid', 'dashed', 'dotted' ), true ) ) {
-		$scoped_css[] = $pill_sel . '{border-style:' . $pill_border_style_raw . ';}';
+	// Border style — resolved through the shared keyword helper; unset leaves
+	// style.css's own default in place.
+	if ( '' !== (string) $pill_border_style_raw ) {
+		$scoped_css[] = $pill_sel . '{border-style:' . sgs_border_style_keyword( $pill_border_style_raw ) . ';}';
 	}
 
 	// Scalar length (Spec 32 S7): sgs_css_length_value() sanitises and passes
