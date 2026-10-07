@@ -68,16 +68,15 @@ is built.** Route defects with owners are in §5 Residual. Run host tools with `
 real, so every surface's page is rebuilt from its tree file. It writes no solver setting; it does rewrite the page.
 
 **Sessions A, B and C — COMPLETE** (`plans/2026-10-04-eye-care-sweep-audit-fix.md`,
-`plans/2026-10-04-spec47-full-coverage.md`, `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`;
-C at `b0492a5af`, no block code touched, raw F 338 to 176). ⚠️ **B's audited 163 is never comparable to any
-RAW triage count.** Gate 3's stripped-control figure of 338 is **refuted** — C2 measured 345 then 346 — though
-its zero-movement-on-non-canvas half is confirmed.
+`plans/2026-10-04-spec47-full-coverage.md`, `plans/2026-10-05-eye-care-session-c-spec47-route-fixes.md`).
+⚠️ **B's audited 163 is never comparable to any RAW triage count**, and Gate 3's stripped-control 338 is
+**refuted** (C2 measured 345 then 346), though its zero-movement-on-non-canvas half holds.
 
-**Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`, evidence in
-`reports/2026-10-06-session-c2/`). Raw **F 193 at block code `94122e326`**; the row-by-row judgement and the 5
-approved fixes are in that plan. ⚠️ **eye-care-test now runs `6f1963c28`** (deploy marker
-`~/.sgs-deploy-marker-eye-care-test.json`, 2026-10-06 23:45). F 193 stays comparable, but record the SHA on any
-future sweep and compare on a **normalised** path — a cosmetic path change re-keys rows wholesale.
+**Session C2 — COMPLETE 2026-10-06** (`plans/2026-10-05-eye-care-session-c2-finding-assessment.md`; all
+evidence in `reports/2026-10-06-session-c2/`). Raw **F 193 at `94122e326`**. Of 178 judged F rows: 30 real,
+22 settable or accepted, 11 wrong block, 90 artefacts, 25 register-decided; 14 Google Reviews excluded as
+accepted differences. Bean approved 5 of the 7 candidate fixes. ⚠️ Compare sweeps on a **normalised** path:
+a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
 - **F3/E14 — 9 more SHIPPED 2026-10-07** (`75a583e23`..`fdceca53f`), deployed `0cc773b19`. Ceilings
@@ -111,17 +110,15 @@ future sweep and compare on a **normalised** path — a cosmetic path change re-
   **no `cr-ref` for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`
   (SearXNG).**
 
-- **The 63 walker-blind rows — ALL CLASSIFIED 2026-10-06** (`reports/2026-10-06-eye-care-63/`).
-  **N11 and N25 CLOSED live, not unbuilt**; 18 verified by a new flow. 11 built, 20 open, 4 content
-  (drafted in `sites/eye-care-ward-end/content/`, 59 `[CONFIRM]`s for Fatima), 2 divergences, 12 aliases, 14 CR,
-  **0 left to measure**.
-  **N26 FIXED AND VERIFIED LIVE** (`3db77f090`, deployed `6f1963c28`): every card is now **99% clickable**,
-  imageless ones included, against 1-2% on the name and
-  73% on the image. `blockLinkAlways` makes it PERMANENT (Bean: not switchable off) and the hover underline is
-  gone; `sgsBlockLinkAuto` is deliberately no longer a product-card attribute (gone, not lost). The URL field
-  STAYS for typed cards. The 12 imageless cards are CONTENT (4 products have photos).
-  **Next, ~5 min on one build:** `58` multi-button has no `sgsAnimation` · `N33B` `gallerySavingBadge: true`
-  against a `false` default · `9` a brand tile duplicates its alt. `152` BUILT. **CR: none of the 14 closed by
+- **The 63 walker-blind rows — ALL CLASSIFIED, 18 NOW FIXED** (`reports/2026-10-06-eye-care-63/` has every
+  verdict and its evidence). 11 built, 20 open, 4 content (drafted in `sites/eye-care-ward-end/content/`),
+  2 divergences, 12 aliases, 14 CR, **0 left to measure**. `N11`, `N25`, `N13` were already closed, not unbuilt.
+  **N26 VERIFIED LIVE** (`3db77f090`): every card is **99% clickable** against 1-2% before; `blockLinkAlways`
+  makes it PERMANENT (Bean), the hover underline is gone, and `sgsBlockLinkAuto` is deliberately no longer a
+  product-card attribute (gone, not lost) while the URL field STAYS for typed cards.
+  **SEVEN more VERIFIED LIVE at `0cc773b19`:** `58` `9` `N33B` `17`/`3` `19` `64` `N24`; `152` BUILT, `N13`
+  closed unchanged. ⚠️ **A plugin deploy does NOT apply a tree fix:** 58/9/N33B/17 needed `wp-build-page.js`
+  on posts 208/176/199 + the `single-product` template. **CR: none of the 14 closed by
   the cleanup; **`CR12` is the remaining ORPHAN** needing an owner (`CR6` is now owned, see below).**
 
 
@@ -133,11 +130,10 @@ future sweep and compare on a **normalised** path — a cosmetic path change re-
 **Register repairs, backlog Tier 1, and Tier 2's shop-journey group — all built, verified, pushed.** Tier 2's
 five: 18 (closing 93), 20+23, 59/61, S10 and S9 — each row carries its own hash. `brandUseLogo` ships
 `true` (a cross-client default).
-**All four open items CLOSED, with a `/qc-council` pass and Bean's live-breakage finds all fixed and verified
-(2026-10-06).** Causes and negative controls are in register rows S10, 59 and 20+23; the generalising lessons
-are in auto-memory. The one still load-bearing: the stretched link was rebuilt so a block's OWN visible link
-owns the surface, which is exactly why the product card read as dead outside its name and image (report §5a).
-Both sites live at `578a8830b` by marker. CR6 is owned by Spec 47 §5 Residual (`c0d45ec20`).
+**All four open items CLOSED**, with a `/qc-council` pass and Bean's live-breakage finds fixed and verified.
+Causes and negative controls are in register rows S10, 59 and 20+23; the lessons are in auto-memory. The one
+still load-bearing: the stretched link was rebuilt so a block's OWN visible link owns the surface, which is
+why the product card read as dead outside its name and image (report §5a).
 
 The wiring gate blocks new gaps only (count: read `scripts/wiring-fingerprint-baseline.json`); Session 0's P0-3 to P0-10 are parked in the sweep plan.
 

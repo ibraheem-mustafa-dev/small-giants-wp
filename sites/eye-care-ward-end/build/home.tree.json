@@ -148,10 +148,10 @@
           },
           "className": "cr-ref-home-4",
           "sgsAnimation": "fade-up",
-          "sgsAnimationDistance": 18,
-          "sgsAnimationDuration": 900,
+          "sgsAnimationDistance": "18",
+          "sgsAnimationDuration": "900",
           "sgsAnimationEasing": "ease",
-          "sgsAnimationDelay": 560
+          "sgsAnimationDelay": "560"
         },
         "innerBlocks": [
           {
