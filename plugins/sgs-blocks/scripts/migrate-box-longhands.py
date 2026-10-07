@@ -1,0 +1,549 @@
+#!/usr/bin/env python3
+"""CR6: move padding and margin boxes off the shorthand that zero-fills unset sides.
+
+THE DEFECT. includes/helpers-box.php::sgs_box_object_shorthand returns a four-value shorthand, and a
+shorthand sets every side, so an unset side prints as 0 and wipes the block's own default or a wider
+@media tier's value. Its sibling sgs_box_object_longhands( $box, $family ) prints only the set sides.
+
+THE SHAPE (coupled, two statements). A site is a variable assigned from the helper whose every other
+use is one of:
+    (a) a guard           null !== $v   /   $v !== null
+    (b) an interpolation  "padding:{$v}"     (also inside a whole rule: "{$sel}{margin:{$v};}}")
+    (c) a concatenation   'padding:' . $v   (the family ends a quoted segment)
+The transform rewrites the assignment to sgs_box_object_longhands( <expr>, '<family>' ) AND every (b)/(c)
+use to drop the "<family>:" prefix, in one pass. Changing only the call would print
+"padding:padding-top:12px", which the browser drops whole, so a variable with ANY other use is refused
+and left untouched.
+
+FAMILIES. padding and margin only. A border width keeps the shorthand on purpose: border-style is
+written for all four sides, so an unset width SHOULD be 0; a longhand would leave it at the browser's
+`medium` and paint phantom borders (G5, tests/php/run-border-default-style-standalone.php).
+
+Plan: .claude/plans/2026-10-07-cr6-box-longhand-migration.md (U2). Method: .claude/THE-MIGRATION-METHOD.md.
+
+Usage (from plugins/sgs-blocks):
+    python scripts/migrate-box-longhands.py --survey            census to stdout
+    python scripts/migrate-box-longhands.py --survey --json     also writes reports/migrations/box-longhands-census.json
+    python scripts/migrate-box-longhands.py --fix [--only slug,slug]          unified diff, no writes
+    python scripts/migrate-box-longhands.py --fix --apply [--only slug,slug]  writes
+    python scripts/migrate-box-longhands.py --write-baseline    pins today's migratable sites
+    python scripts/migrate-box-longhands.py --check             gate: exit 1 on a new site, a stale baseline
+                                                                 entry, a corpus gap or an editor mismatch
+    python scripts/migrate-box-longhands.py --self-test
+"""
+import argparse
+import difflib
+import io
+import json
+import os
+import re
+import sys
+from datetime import datetime, timezone
+
+if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        pass
+
+PLUGIN = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _repo_root():
+    """The repo root, found by a file that exists only there (never CLAUDE.md, which every package has)."""
+    d = PLUGIN
+    while True:
+        if os.path.isfile(os.path.join(d, '.claude', 'THE-MIGRATION-METHOD.md')):
+            return d
+        parent = os.path.dirname(d)
+        if parent == d:
+            raise SystemExit('repo root not found: no .claude/THE-MIGRATION-METHOD.md above ' + PLUGIN)
+        d = parent
+
+
+REPO = _repo_root()
+CENSUS = os.path.join(REPO, 'reports', 'migrations', 'box-longhands-census.json')
+BASELINE = os.path.join(PLUGIN, 'scripts', 'migrate-box-longhands-baseline.json')
+
+OLD = 'sgs_box_object_shorthand'
+NEW = 'sgs_box_object_longhands'
+FAMILIES = ('padding', 'margin')
+CALL = re.compile(r'\b' + OLD + r'\s*\(')
+ASSIGN = re.compile(r'(?P<var>\$[A-Za-z_]\w*)\s*=\s*(?P<rhs>[^;]*?)\b' + OLD + r'\s*\(')
+
+# Sites that stay on the shorthand, by (relpath, variable), each with its reason. Added by hand.
+EXCLUDE = {
+    ('src/blocks/accordion-item/render.php', '$short'):
+        'var() holdout: stored in --sgs-accordion-header-pad / --sgs-accordion-content-pad, read as padding: var(), where a longhand cannot go',
+    ('src/blocks/label/render.php', '$base_padding_shorthand'):
+        'double use: also a presence test in $box_present',
+    ('includes/helpers-button-style.php', '$border_width_shorthand'):
+        'border width (zero-fill is correct) and double use: also feeds sgs_border_gradient_css()',
+}
+
+# Files allowed to name the helper without calling it, with the count pinned and the reason.
+GUARD = ('function_exists() guard on a ternary assignment migrated by hand (U6): LOAD-BEARING, '
+         'move the guard to sgs_box_object_longhands with the call or it tests one function and calls another')
+BARE_OK = {
+    'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
+    'includes/render-helpers.php': (1, 'docblock listing which helper file provides what'),
+    'src/blocks/form/render.php': (1, GUARD),
+    'src/blocks/tabs/render.php': (1, GUARD),
+    'src/blocks/mega-aside/render.php': (1, 'function_exists() guard on a border-width ternary, which stays on the shorthand'),
+    'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, a var() holdout that stays on the shorthand'),
+}
+
+# Files outside the corpus that still contain the old name, each with its reason.
+WIDTH_OK = {
+    'scripts/tests/test-mega-aside-border-render.php': 'standalone render-test harness; loads the helper chain, not deployed',
+    'tests/php/BoxLonghandTest.php': 'phpunit pin: calls the old function on purpose to prove its output never moves',
+}
+
+
+def rel(path):
+    return os.path.relpath(path, PLUGIN).replace('\\', '/')
+
+
+def targets():
+    out = []
+    for base in ('src/blocks', 'includes'):
+        for dirpath, dirnames, filenames in os.walk(os.path.join(PLUGIN, base)):
+            dirnames[:] = sorted(d for d in dirnames if 'fixture' not in d.lower())
+            out += [os.path.join(dirpath, f) for f in sorted(filenames) if f.endswith('.php')]
+    return out
+
+
+def broad_enumeration():
+    """A second, dumb, wide list of every PHP file holding the old name. Shares no code with targets()."""
+    prune = {'.git', 'node_modules', 'build', 'vendor', 'worktrees', '.claude'}
+    found = set()
+    for dirpath, dirnames, filenames in os.walk(PLUGIN):
+        dirnames[:] = [d for d in dirnames if d not in prune and 'fixture' not in d.lower()]
+        for fn in filenames:
+            if fn.endswith('.php'):
+                p = os.path.join(dirpath, fn)
+                try:
+                    with io.open(p, encoding='utf-8', newline='') as f:
+                        if OLD in f.read():
+                            found.add(rel(p))
+                except (UnicodeDecodeError, OSError):
+                    continue
+    return found
+
+
+def read(path):
+    with io.open(path, encoding='utf-8', newline='') as f:
+        return f.read()
+
+
+def close_paren(text, open_idx):
+    """Index of the parenthesis closing the one at open_idx, skipping quoted strings."""
+    depth, i, quote = 0, open_idx, None
+    while i < len(text):
+        c = text[i]
+        if quote:
+            if c == '\\':
+                i += 2
+                continue
+            if c == quote:
+                quote = None
+        elif c in ('"', "'"):
+            quote = c
+        elif c == '(':
+            depth += 1
+        elif c == ')':
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    return -1
+
+
+def line_of(text, idx):
+    return text.count('\n', 0, idx) + 1
+
+
+def in_comment(text, idx):
+    """True when idx sits in a comment: a docblock line, or after //, # or /* outside a string on its line."""
+    start = text.rfind('\n', 0, idx) + 1
+    head = text[start:idx]
+    if head.lstrip().startswith(('*', '/*')):
+        return True
+    quote = None
+    i = 0
+    while i < len(head):
+        c = head[i]
+        if quote:
+            if c == '\\':
+                i += 2
+                continue
+            if c == quote:
+                quote = None
+        elif c in ('"', "'"):
+            quote = c
+        elif c == '#' or head.startswith(('//', '/*'), i):
+            return True
+        i += 1
+    return False
+
+
+def tier_of(var):
+    v = var.lower()
+    if re.search(r'_(tab|tablet)(_|$)', v):
+        return 'tablet'
+    if re.search(r'_(mob|mobile)(_|$)', v):
+        return 'mobile'
+    if re.search(r'_(base|desktop)(_|$)', v):
+        return 'desktop'
+    return 'n/a'
+
+
+def attr_of(text, expr):
+    """The block attribute a box expression is built from, followed through up to five assignments.
+
+    A box usually arrives in steps, e.g. $attributes['padding'] → $tiers (normalised) → $padding_tablet_obj
+    (is_array( $tiers['tablet'] ) ? … : array()), so each hop follows the first variable found anywhere in
+    the expression, not only at its start. Returns None when the chain leaves the file or loops.
+    """
+    seen = set()
+    for _ in range(6):
+        m = re.search(r"\$attributes\[\s*'([^']+)'", expr)
+        if m:
+            return m.group(1)
+        nxt = next((v for v in re.findall(r'\$(?!attributes\b)\w+', expr) if v not in seen), None)
+        if not nxt:
+            return None
+        seen.add(nxt)
+        a = re.search(re.escape(nxt) + r'\s*=(?!=)\s*([^;]+);', text)
+        if not a:
+            return None
+        expr = a.group(1)
+    return None
+
+
+def uses_of(text, var, skip):
+    """(start, end, kind, family) for every use of var outside the assignment span `skip` and comments."""
+    name = re.escape(var)
+    found = []
+    for m in re.finditer(name + r'(?![\w\[])', text):
+        if skip[0] <= m.start() < skip[1] or in_comment(text, m.start()):
+            continue
+        s, e = m.start(), m.end()
+        before, after = text[max(0, s - 40):s], text[e:e + 40]
+        if re.search(r'null\s*!==\s*$', before) or re.match(r'\s*!==\s*null\b', after):
+            found.append((s, e, 'guard', None))
+            continue
+        b = re.search(r'([a-z-]+):\{$', before)
+        if b and after.startswith('}'):
+            found.append((s - len(b.group(1)) - 2, e + 1, 'interp', b.group(1)))
+            continue
+        c = re.search(r"([a-z-]+):(['\"])\s*\.\s*$", before)
+        if c:
+            found.append((s - len(c.group(0)), e, 'concat', c.group(1)))
+            continue
+        found.append((s, e, 'other', None))
+    return found
+
+
+def analyse(text, relpath):
+    """Every helper call in one file, classified. Returns a list of site dicts."""
+    sites = []
+    block = relpath.split('/')[2] if relpath.startswith('src/blocks/') else None
+    for call in CALL.finditer(text):
+        idx = call.start()
+        if in_comment(text, idx):
+            continue
+        site = {'file': relpath, 'line': line_of(text, idx), 'block': block, 'variable': None,
+                'family': None, 'tier': 'n/a', 'attr': None, 'category': None, 'reason': None}
+        sites.append(site)
+        if re.match(r'\s*function\b', text[text.rfind('\n', 0, idx) + 1:idx]) or text[max(0, idx - 9):idx] == 'function ':
+            site.update(category='definition', reason='the definition')
+            continue
+        stmt_start = text.rfind(';', 0, idx)
+        stmt_start = max(stmt_start, text.rfind('{', 0, idx), text.rfind('}', 0, idx)) + 1
+        a = ASSIGN.search(text, stmt_start, idx + len(call.group(0)))
+        if not a or a.end() != idx + len(call.group(0)):
+            site.update(category='refused', reason='not a plain assignment (passed inline or in an expression)')
+            continue
+        var = a.group('var')
+        site['variable'] = var
+        site['tier'] = tier_of(var)
+        open_idx = call.end() - 1
+        close = close_paren(text, open_idx)
+        semi = text.find(';', close)
+        expr = text[open_idx + 1:close]
+        site['attr'] = attr_of(text, expr)
+        if a.group('rhs').strip():
+            site.update(category='refused', reason='ternary or expression assignment; migrate by hand')
+            continue
+        if (relpath, var) in EXCLUDE:
+            site.update(category='excluded', reason=EXCLUDE[(relpath, var)])
+            continue
+        if len(re.findall(re.escape(var) + r'\s*=(?!=)', text)) > 1:
+            site.update(category='refused', reason='variable assigned more than once in the file')
+            continue
+        uses = uses_of(text, var, (a.start(), semi + 1))
+        decls = [u for u in uses if u[2] in ('interp', 'concat')]
+        others = [u for u in uses if u[2] == 'other']
+        fams = {u[3] for u in decls}
+        if others:
+            site.update(category='refused', reason=f'{len(others)} use(s) that are not a guard or a declaration (line {line_of(text, others[0][0])})')
+        elif not decls:
+            site.update(category='refused', reason='no declaration use found')
+        elif len(fams) != 1:
+            site.update(category='refused', reason='declarations name different families: ' + ', '.join(sorted(fams)))
+        elif next(iter(fams)) not in FAMILIES:
+            site.update(category='refused', family=next(iter(fams)),
+                        reason=f'family {next(iter(fams))}: zero-fill is correct there, it stays on the shorthand')
+        else:
+            site.update(category='migratable', family=next(iter(fams)))
+            site['_edit'] = (call.start(), open_idx, close, decls)
+    return sites
+
+
+def transform(text, relpath, only=None):
+    """Rewrite every migratable site in one file. Pure and idempotent."""
+    edits = []
+    for site in analyse(text, relpath):
+        if site['category'] != 'migratable' or (only and site['block'] not in only):
+            continue
+        name_start, open_idx, close, decls = site.pop('_edit')
+        inner = text[open_idx + 1:close]
+        body = inner.rstrip()
+        edits.append((name_start, close + 1, NEW + '(' + body + ", '" + site['family'] + "'" + inner[len(body):] + ')'))
+        for s, e, kind, fam in decls:
+            if kind == 'interp':
+                edits.append((s, e, '{' + site['variable'] + '}'))
+            else:
+                q = text[s + len(fam) + 1]
+                edits.append((s, e, q + ' . ' + site['variable']))
+    for s, e, new in sorted(edits, reverse=True):
+        text = text[:s] + new + text[e:]
+    # An empty literal joined to the value reads as noise: '' . $v and "" . $v become $v.
+    return re.sub(r"(?<![\w'\"])(['\"])\1\s*\.\s*(\$\w+)", r'\2', text)
+
+
+def survey(only=None):
+    sites = []
+    for p in targets():
+        sites += analyse(read(p), rel(p))
+    for s in sites:
+        s.pop('_edit', None)
+    if only:
+        sites = [s for s in sites if s['block'] in only]
+    return sites
+
+
+def site_key(s):
+    return f"{s['file']}::{s['variable']}::{s['line']}"
+
+
+def baseline_keys(sites):
+    """Line numbers move with every edit, so the baseline keys a site by file and variable."""
+    return sorted({f"{s['file']}::{s['variable']}" for s in sites if s['category'] == 'migratable'})
+
+
+def editor_mismatches(sites):
+    """A migrated block whose editor still previews padding/margin through a 0-filling helper."""
+    migrated = set()
+    for p in targets():
+        r = rel(p)
+        if r.startswith('src/blocks/') and NEW + '(' in read(p):
+            migrated.add(r.split('/')[2])
+    out = []
+    for slug in sorted(migrated):
+        d = os.path.join(PLUGIN, 'src', 'blocks', slug)
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith('.js'):
+                continue
+            t = read(os.path.join(d, fn))
+            for m in re.finditer(r'\b(tierBoxShorthand|spacingPreview)\s*\(', t):
+                seg = t[m.start():t.find(')', m.start()) + 40]
+                if 'Radius' in seg or 'radius' in seg or 'border' in seg.lower():
+                    continue
+                out.append(f'src/blocks/{slug}/{fn}:{line_of(t, m.start())} {m.group(1)}() previews a migrated block\'s padding/margin with 0 for unset sides; use tierBoxLonghands()')
+    return out
+
+
+def crosscheck(bare_counts):
+    fails = []
+    narrow = {rel(p) for p in targets()}
+    broad = broad_enumeration()
+    for f in sorted(broad - narrow - set(WIDTH_OK)):
+        fails.append(f'CORPUS TOO NARROW: {f} contains {OLD} but is outside targets(); widen targets() or name it in WIDTH_OK')
+    for f in sorted(set(WIDTH_OK) - broad):
+        fails.append(f'STALE WIDTH_OK entry {f}: it no longer contains {OLD}')
+    for (f, v) in sorted(EXCLUDE):
+        if not os.path.isfile(os.path.join(PLUGIN, f)):
+            fails.append(f'STALE EXCLUDE entry {f} ({v}): the file does not exist')
+    for f, n in sorted(bare_counts.items()):
+        if f not in BARE_OK:
+            fails.append(f'UNJUSTIFIED bare mention x{n} of {OLD} in {f}: a function_exists() guard or a dispatch string is load-bearing; read it and add it to BARE_OK')
+        elif BARE_OK[f][0] != n:
+            fails.append(f'bare-mention COUNT CHANGED in {f}: BARE_OK pins {BARE_OK[f][0]}, found {n}; re-read them and update the pin')
+    for f in sorted(set(BARE_OK) - set(bare_counts)):
+        fails.append(f'STALE BARE_OK entry {f}: no bare mention left (on a hand migration, the guard moved with the call); remove it')
+    return fails
+
+
+def bare_mentions():
+    out = {}
+    for p in targets():
+        t = read(p)
+        n = len(re.findall(r'\b' + OLD + r'\b(?!\s*\()', t))
+        if n:
+            out[rel(p)] = n
+    return out
+
+
+def write_census(sites):
+    totals = {}
+    for s in sites:
+        totals[s['category']] = totals.get(s['category'], 0) + 1
+    os.makedirs(os.path.dirname(CENSUS), exist_ok=True)
+    with io.open(CENSUS, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump({'generated': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                   'tool': 'plugins/sgs-blocks/scripts/migrate-box-longhands.py',
+                   'totals': totals, 'sites': sites, 'bareMentions': bare_mentions(),
+                   'editorMismatches': editor_mismatches(sites)}, f, indent=1)
+        f.write('\n')
+
+
+def check():
+    sites = survey()
+    fails = crosscheck(bare_mentions())
+    fails += editor_mismatches(sites)
+    if not os.path.isfile(BASELINE):
+        fails.append('no baseline: run --write-baseline once, then commit it')
+    else:
+        pinned = set(json.load(io.open(BASELINE, encoding='utf-8'))['migratable'])
+        now = set(baseline_keys(sites))
+        for k in sorted(now - pinned):
+            fails.append(f'NEW zero-fill padding/margin site {k}: use {NEW}( $box, \'<family>\' ) instead')
+        for k in sorted(pinned - now):
+            fails.append(f'STALE baseline entry {k}: it is migrated or gone; run --write-baseline so the ratchet shrinks')
+    for f in fails:
+        print('FAIL ' + f)
+    print(f'box-longhands --check: {len(fails)} failure(s); {len(baseline_keys(sites))} migratable site(s) on the baseline')
+    return 1 if fails else 0
+
+
+SELF_TEST = {
+    'interp': ('<?php\n$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );\n'
+               'if ( null !== $padding_tab_val ) {\n\t$decls[] = "padding:{$padding_tab_val}";\n}\n',
+               '<?php\n$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, \'padding\' );\n'
+               'if ( null !== $padding_tab_val ) {\n\t$decls[] = "{$padding_tab_val}";\n}\n'),
+    'whole rule': ('<?php\n$margin_mob_val = sgs_box_object_shorthand( $m );\nif ( null !== $margin_mob_val ) {\n'
+                   '\t$css[] = "@media(max-width:767px){{$sel}{margin:{$margin_mob_val};}}";\n}\n',
+                   '<?php\n$margin_mob_val = sgs_box_object_longhands( $m, \'margin\' );\nif ( null !== $margin_mob_val ) {\n'
+                   '\t$css[] = "@media(max-width:767px){{$sel}{{$margin_mob_val};}}";\n}\n'),
+    'concat': ("<?php\n$pad = sgs_box_object_shorthand( $p );\nif ( null !== $pad ) {\n"
+               "\t$css .= '.x{padding:' . $pad . '}';\n\t$decls[] = 'padding:' . $pad;\n}\n",
+               "<?php\n$pad = sgs_box_object_longhands( $p, 'padding' );\nif ( null !== $pad ) {\n"
+               "\t$css .= '.x{' . $pad . '}';\n\t$decls[] = $pad;\n}\n"),
+    'multi-line call': ("<?php\n$pad = sgs_box_object_shorthand(\n\t$attributes['cardPadding'] ?? array()\n);\n"
+                        "if ( null !== $pad ) {\n\t$d[] = \"padding:{$pad}\";\n}\n",
+                        "<?php\n$pad = sgs_box_object_longhands(\n\t$attributes['cardPadding'] ?? array(), 'padding'\n);\n"
+                        "if ( null !== $pad ) {\n\t$d[] = \"{$pad}\";\n}\n"),
+}
+SELF_TEST_REFUSED = {
+    'double use': "<?php\n$pad = sgs_box_object_shorthand( $p );\n$present = $pad;\n$d[] = \"padding:{$pad}\";\n",
+    'border width': "<?php\n$bw = sgs_box_object_shorthand( $b );\nif ( null !== $bw ) {\n\t$d[] = \"border-width:{$bw}\";\n}\n",
+    'ternary': "<?php\n$s = function_exists( 'x' ) ? sgs_box_object_shorthand( $b ) : null;\n$d[] = \"padding:{$s}\";\n",
+    'mixed families': "<?php\n$v = sgs_box_object_shorthand( $b );\n$d[] = \"padding:{$v}\";\n$e[] = \"margin:{$v}\";\n",
+    'custom property': "<?php\n$v = sgs_box_object_shorthand( $b );\n$d[] = '--sgs-x-pad:' . $v;\n",
+}
+SELF_TEST_INERT = ("<?php\ndefined( 'ABSPATH' ) || exit;\n$x = 1;\n// sgs_box_object_shorthand( $y ) in a comment\n"
+                   "echo $x; // phpcs:ignore -- sgs_box_object_shorthand( $z ) named in a trailing comment\n"
+                   "$s = 'a # sign and // in a string'; $t = 1;\n")
+
+
+def self_test():
+    fails = []
+    for name, (src, want) in SELF_TEST.items():
+        got = transform(src, 'src/blocks/x/render.php')
+        if got != want:
+            fails.append(f'positive "{name}":\n' + ''.join(difflib.unified_diff(want.splitlines(True), got.splitlines(True), 'want', 'got')))
+        if transform(got, 'src/blocks/x/render.php') != got:
+            fails.append(f'idempotence "{name}": a second pass changed the output')
+    for name, src in SELF_TEST_REFUSED.items():
+        cats = [s['category'] for s in analyse(src, 'src/blocks/x/render.php')]
+        if cats != ['refused'] or transform(src, 'src/blocks/x/render.php') != src:
+            fails.append(f'refusal "{name}": classified {cats} or rewritten; it must be refused and byte-identical')
+    if transform(SELF_TEST_INERT, 'src/blocks/x/render.php') != SELF_TEST_INERT:
+        fails.append('negative control: a file with no live call was changed')
+    if analyse(SELF_TEST_INERT, 'src/blocks/x/render.php'):
+        fails.append('negative control: a commented call was counted as a site')
+    only = transform(SELF_TEST['interp'][0], 'src/blocks/x/render.php', only={'other-block'})
+    if only != SELF_TEST['interp'][0]:
+        fails.append('--only: a block outside the scope was rewritten')
+    for f in fails:
+        print('SELF-TEST FAIL ' + f)
+    print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check; {len(fails)} failure(s)')
+    return 1 if fails else 0
+
+
+def fix(apply_changes, only):
+    changed = 0
+    for p in targets():
+        r = rel(p)
+        if only and not (r.startswith('src/blocks/') and r.split('/')[2] in only):
+            continue
+        old = read(p)
+        new = transform(old, r, only=only)
+        if new == old:
+            continue
+        changed += 1
+        if apply_changes:
+            tmp = p + '.tmp'
+            with io.open(tmp, 'w', encoding='utf-8', newline='') as f:
+                f.write(new)
+            os.replace(tmp, p)
+            print('WROTE ' + r)
+        else:
+            sys.stdout.writelines(difflib.unified_diff(old.splitlines(True), new.splitlines(True), 'a/' + r, 'b/' + r))
+    print(f'{"applied" if apply_changes else "would change"}: {changed} file(s)')
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
+    ap.add_argument('--survey', action='store_true')
+    ap.add_argument('--json', action='store_true')
+    ap.add_argument('--fix', action='store_true')
+    ap.add_argument('--apply', action='store_true')
+    ap.add_argument('--only', default='')
+    ap.add_argument('--check', action='store_true')
+    ap.add_argument('--write-baseline', action='store_true')
+    ap.add_argument('--self-test', action='store_true')
+    a = ap.parse_args()
+    only = {s.strip() for s in a.only.split(',') if s.strip()} or None
+    if a.self_test:
+        return self_test()
+    if a.check:
+        return check()
+    if a.write_baseline:
+        keys = baseline_keys(survey())
+        with io.open(BASELINE, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump({'note': 'CR6 ratchet: padding/margin sites still on the zero-filling shorthand. It only shrinks; regenerate after each --apply.', 'migratable': keys}, f, indent=1)
+            f.write('\n')
+        print(f'baseline: {len(keys)} migratable site(s) pinned')
+        return 0
+    if a.fix:
+        return fix(a.apply, only)
+    sites = survey(only)
+    totals = {}
+    for s in sites:
+        totals[s['category']] = totals.get(s['category'], 0) + 1
+    print('box-longhands census:', json.dumps(totals))
+    for s in sites:
+        if s['category'] in ('refused', 'excluded'):
+            print(f"  {s['category']:9} {s['file']}:{s['line']} {s['variable'] or ''} - {s['reason']}")
+    if a.json:
+        write_census(sites)
+        print('census written: ' + os.path.relpath(CENSUS, REPO).replace('\\', '/'))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
