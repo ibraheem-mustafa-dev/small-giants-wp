@@ -46,6 +46,7 @@ import {
 	SGS_LENGTH_UNITS,
 	sgsNormaliseLength,
 	usePreviewTier,
+	typographyPreviewCss,
 	BandWrap,
 	wrapperPreview,
 } from '../../utils';
@@ -385,7 +386,7 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		variant,
 		headingLevel,
@@ -496,6 +497,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	].filter( Boolean ).join( ' ' );
 
 	const previewTier = usePreviewTier();
+	// Collection mode shows render.php's own output, whose page-button rule
+	// refreshes only when the server render does. This scoped rule paints the real
+	// page buttons from the current attributes at once; #block-{clientId} keeps it
+	// to this instance and outranks the server render's .{uid} rule while editing.
+	const pageButtonPreviewCss = isCptCollectionMode
+		? typographyPreviewCss( attributes, 'pageButton', `#block-${ clientId } .sgs-card-grid__page-btn`, previewTier )
+		: '';
 	const [ palette ] = useSettings( 'color.palette' );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 	const cardPreview = cardGridPreview( attributes, previewTier, palette );
@@ -1598,6 +1606,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			     the same pattern sgs/content-collection used before the fold. */ }
 			{ isWcProductMode || isCptCollectionMode ? (
 				<div { ...blockProps }>
+					{ pageButtonPreviewCss && <style>{ pageButtonPreviewCss }</style> }
 					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/card-grid"
