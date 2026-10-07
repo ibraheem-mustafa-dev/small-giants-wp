@@ -34,6 +34,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		rrpSavingFormat,
 		showStockStatus,
 		extrasBeforeCount,
+		thumbSize,
 		thumbBorderWidth,
 		thumbSelectedScale,
 	} = attributes;
@@ -176,6 +177,23 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
+				<RangeControl
+					label={ __( 'Thumbnail size (px)', 'sgs-blocks' ) }
+					help={ __(
+						'Width and height of each thumbnail. 64 is the default; never below 48 so every thumbnail stays an easy tap target.',
+						'sgs-blocks'
+					) }
+					value={ thumbSize ?? 64 }
+					min={ 48 }
+					max={ 240 }
+					allowReset
+					resetFallbackValue={ 64 }
+					onChange={ ( val ) =>
+						setAttributes( { thumbSize: val ?? 64 } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 				<SgsLengthControl
 					label={ __( 'Border width', 'sgs-blocks' ) }
 					value={ thumbBorderWidth }

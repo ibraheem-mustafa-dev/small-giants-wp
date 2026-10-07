@@ -833,12 +833,24 @@
  * rule) AND a scale transform — colour is never the sole indicator (WCAG 1.4.1).
  */
 
+/*
+ * A scroll container clips everything outside its padding box, and overflow-x:auto
+ * forces overflow-y to auto as well. The selected thumbnail's scale lift and every
+ * thumbnail's focus ring (2px + 2px offset) paint outside the thumbnail's own box, so
+ * a strip with no padding clipped them on three sides and scrolled vertically by the
+ * lift. The gutter pads the strip by the largest paint overflow (the 120% scale cap
+ * is 10% of the thumbnail size per side, plus the 4px ring); the equal negative
+ * margin gives the room back, so the thumbnails sit where they always did.
+ */
 .sgs-buybox .product-card__thumbs {
+	--sgs-buybox-thumb-gutter: calc(4px + var(--sgs-buybox-thumb-size, 64px) * 0.1);
 	display: flex;
 	flex-wrap: nowrap;
 	gap: 0.5rem;
-	margin-top: 0.75rem;
+	margin: calc(0.75rem - var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter)) calc(-1 * var(--sgs-buybox-thumb-gutter));
+	padding: var(--sgs-buybox-thumb-gutter);
 	overflow-x: auto;
+	scroll-padding-inline: var(--sgs-buybox-thumb-gutter);
 	scroll-snap-type: x mandatory;
 	-webkit-overflow-scrolling: touch;
 }

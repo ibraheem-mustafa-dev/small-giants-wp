@@ -168,7 +168,7 @@
 							}
 						}
 					},
-					"_note": "The thumbnail rail buttons (.product-card__thumb). Resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
+					"_note": "The thumbnail rail buttons (.product-card__thumb). Size (--sgs-buybox-thumb-size), resting border width and colour, plus the selected ([aria-current=true]) border colour and scale, emitted per instance by extras.php::sgs_buybox_extras_scoped_css. Size 64, empty width/colours and scale 105 keep the stylesheet defaults (2px transparent, primary-token selected border, scale 1.05); scale 100 turns the selected scale off."
 				},
 				"valueLadder": {
 					"label": "Value ladder",

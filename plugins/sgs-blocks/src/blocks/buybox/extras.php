@@ -224,12 +224,22 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			$css[]      = $status_sel . '{color:' . $resolved . ';}' . $status_sel . ' .buybox__stock-dot{background-color:' . $resolved . ';}';
 		}
 
-		// --- Gallery thumbnails. Defaults (empty width/colours, scale 105) emit
+		// --- Gallery thumbnails. Defaults (size 64, empty width/colours, scale 105) emit
 		// nothing, so style.css's 2px transparent border, primary-token selected
 		// border and 1.05 scale paint exactly as before. Accessibility: with
 		// scale 100 and only a colour change, selection is still conveyed by
 		// aria-current (announced to assistive tech) and the border's luminance
 		// change; the default keeps scale + border so colour is never the sole cue. ---
+		// Thumbnail size: 64 (the stylesheet default) emits nothing; anything else
+		// sets the custom property style.css reads for the thumbnail's width, height
+		// and the strip's clip gutter. Clamped to the 48px touch-target floor.
+		$thumb_size = isset( $attributes['thumbSize'] ) && is_numeric( $attributes['thumbSize'] )
+			? max( 48.0, min( 240.0, (float) $attributes['thumbSize'] ) )
+			: 64.0;
+		if ( 64.0 !== $thumb_size ) {
+			$css[] = $root_sel . '{--sgs-buybox-thumb-size:' . rtrim( rtrim( number_format( $thumb_size, 2, '.', '' ), '0' ), '.' ) . 'px;}';
+		}
+
 		$thumb_sel    = $root_sel . ' .product-card__thumb';
 		$thumb_width  = sgs_css_length_value( $attributes['thumbBorderWidth'] ?? '' );
 		$thumb_colour = sgs_colour_value( (string) ( $attributes['thumbBorderColour'] ?? '' ) );

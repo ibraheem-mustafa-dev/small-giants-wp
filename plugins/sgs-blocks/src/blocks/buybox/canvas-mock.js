@@ -118,11 +118,17 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			css += `${ root } .buybox__stock--${ status }{color:${ resolved };}${ root } .buybox__stock--${ status } .buybox__stock-dot{background-color:${ resolved };}`;
 		}
 	} );
-	// Gallery thumbnails: the same four settings extras.php::sgs_buybox_extras_scoped_css writes.
+	// Gallery thumbnails: the same five settings extras.php::sgs_buybox_extras_scoped_css writes.
 	const colourOf = ( value ) => {
 		const resolved = value ? resolveColourToken( value, palette ) || value : '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
+	// Thumbnail size: 64 is style.css's default, so only another size writes the property.
+	const rawSize = Number( attributes.thumbSize );
+	const thumbSize = Number.isFinite( rawSize ) && rawSize > 0 ? Math.min( 240, Math.max( 48, rawSize ) ) : 64;
+	if ( 64 !== thumbSize ) {
+		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSize }px;}`;
+	}
 	const rawWidth = String( attributes.thumbBorderWidth || '' ).trim();
 	// A bare number is pixels, as sgs_css_length_value() reads it on the front end.
 	const thumbWidth = /^\d+(\.\d+)?$/.test( rawWidth ) ? `${ rawWidth }px` : rawWidth;
