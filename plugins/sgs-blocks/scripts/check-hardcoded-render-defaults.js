@@ -2604,14 +2604,80 @@ function classifyInheritedHardcode( cand, model, declLog ) {
  *                               the E14 classifier (blocks with selectors.typography).
  */
 /**
+ * Index just after the bracket that closes the one opening at src[ open ]
+ * (`(` or `{`), skipping quoted strings. -1 when it never closes.
+ */
+function matchBracket( src, open ) {
+	const pair  = { '(': ')', '{': '}' };
+	const close = pair[ src[ open ] ];
+	let depth   = 0;
+	for ( let i = open; i < src.length; i++ ) {
+		const c = src[ i ];
+		if ( '"' === c || "'" === c ) {
+			i = skipQuoted( src, i ) - 1;
+		} else if ( c === src[ open ] ) {
+			depth++;
+		} else if ( c === close && 0 === --depth ) {
+			return i + 1;
+		}
+	}
+	return -1;
+}
+
+/**
+ * Named PHP function bodies in `src` (comments already masked):
+ * [{ name, start, end }] where start..end spans the body braces. A function
+ * without a body (abstract, interface) is skipped.
+ */
+function phpFunctionBodies( src ) {
+	const out = [];
+	const re  = /\bfunction\s+&?\s*([A-Za-z_]\w*)\s*\(/g;
+	let m;
+	while ( ( m = re.exec( src ) ) !== null ) {
+		const paramsEnd = matchBracket( src, m.index + m[ 0 ].length - 1 );
+		if ( -1 === paramsEnd ) {
+			continue;
+		}
+		const brace = src.slice( paramsEnd ).search( /[{;]/ );
+		if ( -1 === brace || ';' === src[ paramsEnd + brace ] ) {
+			continue;
+		}
+		const start = paramsEnd + brace;
+		const end   = matchBracket( src, start );
+		if ( -1 !== end ) {
+			out.push( { name: m[ 1 ].toLowerCase(), start, end } );
+			re.lastIndex = end;
+		}
+	}
+	return out;
+}
+
+/** Lower-cased names `src` calls (`name(`, `->name(`, `::name(`) or quotes whole (a callback). */
+function phpNamesReferenced( src ) {
+	const names = new Set();
+	for ( const m of src.matchAll( /(?<!\bfunction\s+&?\s*)\b([A-Za-z_]\w*)\s*\(/g ) ) {
+		names.add( m[ 1 ].toLowerCase() );
+	}
+	for ( const m of src.matchAll( /['"]([A-Za-z_]\w*)['"]/g ) ) {
+		names.add( m[ 1 ].toLowerCase() );
+	}
+	return names;
+}
+
+/**
  * Custom properties the block WRITES from a control: an assignment (`--x:` or
  * `'--x' =>`) or a whole quoted `'--x'` string (a property map entry handed to
- * an emitter) in the block's own PHP and JS, or in any PHP its files reach by
+ * an emitter) in the block's own PHP and JS, or in PHP its files reach by
  * `require`. Unlike the element model (readBlockPhpFiles, one hop), the writer
  * set follows requires transitively: a writer is often a helper several hops
  * down (nav-drawer-menu's render.php reaches the file that writes
  * --sgs-ndm-orn-size three hops out), and a write cannot pollute the element
- * model. A `'var(--x)'` string is a read, and a stylesheet is never searched:
+ * model. In a required file, top-level code counts (it runs on require), but a
+ * write inside a named function counts only when the block can reach that
+ * function: called or named as a callback by the block's own PHP, or by
+ * top-level code or a reachable function in the required files. Otherwise every
+ * block that requires render-helpers.php would hold the whole helper tree's
+ * writes. A `'var(--x)'` string is a read, and a stylesheet is never searched:
  * a property defined only in CSS is a default, not a control channel.
  */
 function collectWrittenCustomProps( blockDir ) {
@@ -2632,7 +2698,42 @@ function collectWrittenCustomProps( blockDir ) {
 			}
 		}
 	}
-	const sources = files.map( ( f ) => f.src );
+	const ownDir    = path.resolve( blockDir ) + path.sep;
+	const sources   = [];
+	const functions = new Map(); // name → [ body source ] in required files
+	const reachable = new Set();
+	const queue     = [];
+	const reach     = ( names ) => {
+		for ( const n of names ) {
+			if ( ! reachable.has( n ) ) {
+				reachable.add( n );
+				queue.push( n );
+			}
+		}
+	};
+	for ( const f of files ) {
+		if ( path.resolve( f.file ).startsWith( ownDir ) ) {
+			sources.push( f.src );
+			reach( phpNamesReferenced( f.src ) );
+			continue;
+		}
+		let top  = '';
+		let from = 0;
+		for ( const b of phpFunctionBodies( f.src ) ) {
+			top += f.src.slice( from, b.start );
+			from = b.end;
+			functions.set( b.name, [ ...( functions.get( b.name ) || [] ), f.src.slice( b.start, b.end ) ] );
+		}
+		top += f.src.slice( from );
+		sources.push( top );
+		reach( phpNamesReferenced( top ) );
+	}
+	while ( queue.length ) {
+		for ( const body of functions.get( queue.shift() ) || [] ) {
+			sources.push( body );
+			reach( phpNamesReferenced( body ) );
+		}
+	}
 	const walkJs  = ( dir ) => {
 		for ( const e of fs.readdirSync( dir, { withFileTypes: true } ) ) {
 			const p = path.join( dir, e.name );
@@ -3851,7 +3952,12 @@ function selfTestRequireHop( assert ) {
 			path.join( inc, 'c.php' ),
 			"<?php $css = '--sgs-hop-deep:' . $v; $hover = 'var(--sgs-hop-read)';\n" +
 				"$map = array( 'css' => '--sgs-hop-map' );\n" +
-				"// --sgs-hop-phpcomment: 1;\n?>\n<aside class=\"sgs-hop-c\"></aside>\n",
+				"// --sgs-hop-phpcomment: 1;\n" +
+				"function sgs_hop_called( $a ) { $w = '--sgs-hop-fn-called:1'; return sgs_hop_chain( $a ); }\n" +
+				"function sgs_hop_chain( $a ) { return '--sgs-hop-fn-chain:1'; }\n" +
+				"function sgs_hop_callback() { return array( '--sgs-hop-fn-cb' => 1 ); }\n" +
+				"function sgs_hop_uncalled() { $s = '}'; $w = '--sgs-hop-fn-uncalled:1'; }\n" +
+				"?>\n<aside class=\"sgs-hop-c\"></aside>\n",
 			'utf8'
 		);
 		fs.writeFileSync(
@@ -3879,6 +3985,7 @@ function selfTestRequireHop( assert ) {
 				"require_once dirname( __DIR__, 2 ) . '/includes/notphp.txt';\n" + // not .php: skipped
 				"// require_once dirname( __DIR__, 2 ) . '/includes/commented.php';\n" + // comment: not followed
 				"/* require_once dirname( __DIR__, 2 ) . '/includes/commented.php'; */\n" +
+				"$css = sgs_hop_called( $attributes );\nadd_filter( 'sgs_hop', 'sgs_hop_callback' );\n" +
 				"?>\n<div class=\"sgs-hop-own\"></div>\n",
 			'utf8'
 		);
@@ -3910,6 +4017,12 @@ function selfTestRequireHop( assert ) {
 		assert( 'writer set: a *.test.js file is not a writer', written.has( '--sgs-hop-test' ), false );
 		assert( 'writer set: a `//` comment holding `/*` does not swallow a later JS writer', written.has( '--sgs-hop-afterslash' ), true );
 		assert( 'writer set: `//` inside a JS string does not hide a writer later on the line', written.has( '--sgs-hop-sameline' ), true );
+		assert(
+			'writer set: a helper function the block calls, one it calls in turn, and one it names as a callback ARE writers',
+			[ written.has( '--sgs-hop-fn-called' ), written.has( '--sgs-hop-fn-chain' ), written.has( '--sgs-hop-fn-cb' ) ],
+			[ true, true, true ]
+		);
+		assert( 'writer set: a helper function nothing in the block reaches is NOT a writer (a `}` in a string does not end its body)', written.has( '--sgs-hop-fn-uncalled' ), false );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
