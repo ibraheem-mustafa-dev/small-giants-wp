@@ -2064,8 +2064,9 @@ function resolveRequirePath( expr, fromFile ) {
 }
 
 /**
- * The block's own PHP files, plus the files they `require` ONE HOP out.
- * The hop is deliberately not transitive: includes/render-helpers.php requires
+ * The block's own PHP files, plus the files they `require` ONE HOP out, plus any
+ * file named `<slug>-*.php` (not a longer-named sibling block's) at any depth.
+ * Other requires are deliberately not transitive: includes/render-helpers.php requires
  * the whole helper tree and almost every block requires it, so following
  * requires found inside required files would pull every helper's markup into
  * every block's element model.
@@ -2900,7 +2901,7 @@ function phpNamesReferenced( src ) {
  * Custom properties the block WRITES from a control: an assignment (`--x:` or
  * `'--x' =>`) or a whole quoted `'--x'` string (a property map entry handed to
  * an emitter) in the block's own PHP and JS, or in PHP its files reach by
- * `require`. Unlike the element model (readBlockPhpFiles, one hop), the writer
+ * `require`. Unlike the element model (readBlockPhpFiles, one hop plus block-named files), the writer
  * set follows requires transitively: a writer is often a helper several hops
  * down (nav-drawer-menu's render.php reaches the file that writes
  * --sgs-ndm-orn-size three hops out), and a write cannot pollute the element
@@ -4212,7 +4213,7 @@ function selfTestE14( assert ) {
 }
 
 // ---------------------------------------------------------------------------
-// SELF-TEST — readBlockPhpFiles() follows a require exactly ONE hop
+// SELF-TEST — readBlockPhpFiles() follows a require exactly ONE hop (and block-named files at any depth)
 //
 // The hop must not be transitive: includes/render-helpers.php requires the whole
 // helper tree and almost every block requires it, so a transitive follower would

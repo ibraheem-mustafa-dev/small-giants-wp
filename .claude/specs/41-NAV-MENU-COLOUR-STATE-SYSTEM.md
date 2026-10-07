@@ -1497,12 +1497,12 @@ shorthand, on any selector a Sweep can paint.
   written**, with no hardcoded `primary` fallback and `background-color:` in place of the
   shorthand; there is no featured sub-item hover rule with a hardcoded background.
 - **Structural chrome is kept and named so it is not swept up:** the drawer's resting sub-item indent
-  (`border-left`, measured against the marker icon's padding), and the drill-down Back row's
-  `border-bottom` (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn`,
-  JS-injected chrome that is not a menu link, so the item border never paints on it). Each returns to
-  the census the day the item-border mechanism is extended to that element.
+  (`border-left`, measured against the marker icon's padding). It returns to the census the day the
+  item-border mechanism is extended to that element.
 - **Button resets are not paints** — `background:none;border:0` on the mega-trigger and sub-toggle
-  buttons. They return to the census the moment a stateful colour row (FR-41-23) targets that
+  buttons, and `border:0` on the drill-down Back button
+  (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn`; the line
+  between the Back row and the first row is the submenu separator's, not the button's). They return to the census the moment a stateful colour row (FR-41-23) targets that
   element, because a `background:none` shorthand would then destroy a Sweep gradient exactly as the
   defect above does. The sub-toggle is the closer case: an icon-colour row with Sweep scoped to it
   puts its reset straight in the census.

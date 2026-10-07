@@ -84,15 +84,16 @@ panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, not
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gap 12 is built.**
-  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 5** (self-test 74/74; main `e70dbb45f`; sandybrown runs it all,
-  deployed through `562282619`; eye-care-test deployed `73cdb64ca`). The gate reads InnerBlocks template children (gap 9),
-  bounds the writer set to reachable helpers (gap 10b) and binds PHP function parameters to their callers' literals
-  per scope (gap 12). Every `sgs/account` `*TextAlign` attribute has a control (the menu one moves the label only in the
-  sidebar layout). Round 4 of `reports/2026-10-07-f3-e14-live-verification.md` read 351 rows on sandybrown and found and fixed
-  two defects (card-grid `pageButton` never reached a cpt-collection grid; the account active-link bold out-ranked the
-  menu weight control). **Open:** gate gap 13 (markup assembled in a variable, which keeps the `nav-drawer-menu` ornament
-  row CANNOT-RESOLVE), gaps 2-8, 10(a,c,d), 11 (moves no count today). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+- **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 9, 10b, 12 and 13 are built.**
+  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 4** (self-test 105/105; main `ffc018276`; sandybrown deployed through
+  `6ca8fdb8a`, which carries the nav-drawer-menu CSS; eye-care-test deployed `73cdb64ca`). The gate reads InnerBlocks template
+  children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
+  literals (gap 12) and places markup a function returns in the element its caller puts it in (gap 13,
+  `scripts/lib/e14-markup-splice.js`; 30 mutations pinned, checked against every block). The `nav-drawer-menu` ornament
+  `line-height` sits in `:where()` and the drill-back button draws no border (the submenu separator draws that line;
+  sandybrown's drawer is in accordion mode, so the Back row was only checked built in-page against the deployed CSS).
+  Round 4 of `reports/2026-10-07-f3-e14-live-verification.md` read 351 rows on sandybrown. **Open:** gaps 2-8, 10(a,c,d),
+  11 (moves no count today). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
