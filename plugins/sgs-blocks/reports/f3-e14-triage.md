@@ -571,7 +571,6 @@ The 29 DEFENSIBLE findings (28 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 **Still open on this track, outside the gate gaps of section 7** (each resumable cold):
 
-- **`sgs/card-grid` pagination sample in the editor.** The canvas shows a non-interactive page-button sample (`7381435cc`) so the `pagination*` typography is visible while editing. In `cpt-collection` mode the canvas also shows the server-rendered preview, which carries the real page buttons when the collection spans several pages, so both rows can appear together. The fix is to show the sample only when the server preview has no pagination (or to drop it in that mode once the wiring fingerprint credits that conditional server render).
 - **`sgs/product-card::valueLadder*::L3`** (24 baselined wiring-fingerprint gaps) need a bound-mode canvas mirror. **Parked by Bean (2026-10-07).** The `#block-{clientId}` scoped `typographyPreviewCss` rule that cleared `priceFromLabel*` (`02e259b33`) is the mechanism that would clear these too.
 
 ## 7. Capability gaps in the gate that this triage exposed

@@ -867,6 +867,24 @@ $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyStatus'
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-btn' );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-index' );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact' );
+// The status stock line and each meter step are flex rows as wide as their cell, so text-align
+// alone moves nothing there: justify-content places their content (a plain line follows text-align).
+$sgs_bb_justify_map = array(
+	'left'    => 'flex-start',
+	'start'   => 'flex-start',
+	'justify' => 'flex-start',
+	'center'  => 'center',
+	'right'   => 'flex-end',
+	'end'     => 'flex-end',
+);
+$sgs_bb_stock_align = is_string( $attributes['stockTextAlign'] ?? null ) ? $attributes['stockTextAlign'] : '';
+if ( isset( $sgs_bb_justify_map[ $sgs_bb_stock_align ] ) ) {
+	$sgs_bb_surface_typo_css .= $root_sel . ' .buybox__stock--status{justify-content:' . $sgs_bb_justify_map[ $sgs_bb_stock_align ] . ';}';
+}
+$sgs_bb_meter_align = is_string( $attributes['guidedMeterTextAlign'] ?? null ) ? $attributes['guidedMeterTextAlign'] : '';
+if ( isset( $sgs_bb_justify_map[ $sgs_bb_meter_align ] ) ) {
+	$sgs_bb_surface_typo_css .= $root_sel . ' .sgs-buybox-guided__meter-btn{justify-content:' . $sgs_bb_justify_map[ $sgs_bb_meter_align ] . ';}';
+}
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedGroupTitle', $root_sel . ' .sgs-buybox-guided__group-title' );
 if ( '' !== $sgs_bb_surface_typo_css ) {
 	$scoped_css[] = $sgs_bb_surface_typo_css;

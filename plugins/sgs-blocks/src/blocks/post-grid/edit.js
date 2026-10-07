@@ -1394,15 +1394,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showWritingMode: true,
 							},
 							{
-								key: 'pagination',
+								key: 'pageButton',
 								label: __( 'Page buttons', 'sgs-blocks' ),
-								prefix: 'pagination',
+								prefix: 'pageButton',
 								fontSizePresets: true,
 								showFontFamily: true,
 								showDecoration: true,
 								showTransform: true,
 								showLetterSpacing: true,
-								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
 								showWritingMode: true,
@@ -1416,7 +1415,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showDecoration: true,
 								showTransform: true,
 								showLetterSpacing: true,
-								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
 								showWritingMode: true,
@@ -1570,8 +1568,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<span
 								key={ n }
 								className={ 1 === n ? 'sgs-post-grid__page-btn sgs-post-grid__page-btn--current' : 'sgs-post-grid__page-btn' }
-								aria-current={ 1 === n ? 'page' : undefined }
-								style={ typographyPreviewStyle( attributes, 'pagination', previewTier ) }
+								style={ typographyPreviewStyle( attributes, 'pageButton', previewTier ) }
 							>
 								{ n }
 							</span>

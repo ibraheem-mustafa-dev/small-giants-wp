@@ -1456,20 +1456,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								showLetterSpacing: true,
 								showTransform: true,
 							},
-							{
-								key: 'pagination',
+							// Page buttons exist only in collection mode, where the
+							// canvas is render.php's own output (ServerSideRender).
+							...( isCptCollectionMode ? [ {
+								key: 'pageButton',
 								label: __( 'Page buttons', 'sgs-blocks' ),
-								prefix: 'pagination',
+								prefix: 'pageButton',
 								fontSizePresets: true,
 								showFontFamily: true,
 								showDecoration: true,
 								showTransform: true,
 								showLetterSpacing: true,
-								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
 								showWritingMode: true,
-							},
+							} ] : [] ),
 							{
 								key: 'glyphInitial',
 								label: __( 'Fallback initial letter', 'sgs-blocks' ),
@@ -1611,23 +1612,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 						/>
 					</SsrPreviewGuard>
-					{ /* The numbered page buttons are built by PHP on the front end; a
-					     static sample wears the same classes so the canvas shows the
-					     client's page-button typography. */ }
-					{ isCptCollectionMode && 'none' !== attributes.pagination && (
-						<div className="sgs-card-grid__pagination" aria-hidden="true">
-							{ [ 1, 2, 3 ].map( ( n ) => (
-								<span
-									key={ n }
-									className={ 1 === n ? 'sgs-card-grid__page-btn sgs-card-grid__page-btn--current' : 'sgs-card-grid__page-btn' }
-									aria-current={ 1 === n ? 'page' : undefined }
-									style={ cardPreview.paginationTypography }
-								>
-									{ n }
-								</span>
-							) ) }
-						</div>
-					) }
 				</div>
 			) : (
 				<div { ...blockProps } style={ { ...blockProps.style, ...wrapper.style, ...gridStyle } }>

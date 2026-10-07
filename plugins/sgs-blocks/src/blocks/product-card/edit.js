@@ -85,6 +85,15 @@ const CTA_TEXT_ALIGN_OPTIONS = [
 	{ value: 'justify', label: __( 'Justify', 'sgs-blocks' ) },
 ];
 
+// The CTA is an inline-flex box wider than its label, so the label is placed by
+// justify-content (render.php emits the same pair); text-align covers wrapped lines.
+const CTA_JUSTIFY_CONTENT = {
+	left: 'flex-start',
+	center: 'center',
+	right: 'flex-end',
+	justify: 'flex-start',
+};
+
 /**
  * Product source panel — searchable picker that lists WooCommerce products
  * (wc/v3/products, when WC is active). Selecting one auto-sets productId +
@@ -923,6 +932,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		fontWeight: ctaFontWeight || undefined,
 		lineHeight: ctaLineHeight || undefined,
 		textAlign: ctaTextAlign || undefined,
+		justifyContent: CTA_JUSTIFY_CONTENT[ ctaTextAlign ] || undefined,
 		fontSize:
 			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
 				? `${ ctaFontSize }px`
@@ -2488,7 +2498,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showDecoration: true,
 									showTransform: true,
 									showLetterSpacing: true,
-									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
 									showWritingMode: true,
@@ -2583,7 +2592,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showDecoration: true,
 									showTransform: true,
 									showLetterSpacing: true,
-									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
 									showWritingMode: true,
@@ -2597,7 +2605,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showDecoration: true,
 									showTransform: true,
 									showLetterSpacing: true,
-									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
 									showWritingMode: true,
@@ -2611,7 +2618,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showDecoration: true,
 									showTransform: true,
 									showLetterSpacing: true,
-									showTextAlign: true,
 									showTextWrap: true,
 									showTextColumns: true,
 									showWritingMode: true,
@@ -3625,7 +3631,10 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 							{ ( cta2Text || '' ) !== '' && (
 								<span
 									className={ `sgs-button sgs-button--${ safeCta2Style } sgs-product-card__cta--secondary` }
-									style={ { textAlign: cta2TextAlign || undefined } }
+									style={ {
+										textAlign: cta2TextAlign || undefined,
+										justifyContent: CTA_JUSTIFY_CONTENT[ cta2TextAlign ] || undefined,
+									} }
 								>
 									{ cta2Text }
 								</span>

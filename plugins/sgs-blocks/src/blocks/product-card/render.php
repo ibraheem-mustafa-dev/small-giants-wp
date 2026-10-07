@@ -282,6 +282,19 @@ $sgs_rating_colour = sgs_colour_value( $attributes['ratingColour'] ?? '' );
 if ( '' !== $sgs_rating_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars,.' . $sgs_card_uid . ' .sgs-product-card__rating-text{color:' . $sgs_rating_colour . ';}';
 }
+// The rating row is a block-level flex box as wide as the card body (style.css), so text-align alone
+// moves nothing: justify-content places the stars and count along it.
+$sgs_rating_justify = array(
+	'left'    => 'flex-start',
+	'start'   => 'flex-start',
+	'justify' => 'flex-start',
+	'center'  => 'center',
+	'right'   => 'flex-end',
+	'end'     => 'flex-end',
+)[ is_string( $attributes['ratingTextAlign'] ?? null ) ? $attributes['ratingTextAlign'] : '' ] ?? '';
+if ( '' !== $sgs_rating_justify ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__rating{justify-content:' . $sgs_rating_justify . ';}';
+}
 $sgs_brand_colour = sgs_colour_value( $attributes['brandColour'] ?? '' );
 if ( '' !== $sgs_brand_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__brand{color:' . $sgs_brand_colour . ';}';
@@ -742,7 +755,15 @@ if ( 'typed' === $source_mode ) {
 	) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
 		$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
 		if ( '' !== $sgs_cta_align ) {
-			$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';}';
+			// The CTA is an inline-flex box wider than its label in the CTA row, so text-align alone
+			// moves nothing: justify-content places the label (wrapped lines still follow text-align).
+			$sgs_cta_justify    = array(
+				'left'    => 'flex-start',
+				'center'  => 'center',
+				'right'   => 'flex-end',
+				'justify' => 'flex-start',
+			)[ $sgs_cta_align ];
+			$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';justify-content:' . $sgs_cta_justify . ';}';
 		}
 	}
 
@@ -902,7 +923,14 @@ foreach ( array(
 ) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
 	$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
 	if ( '' !== $sgs_cta_align ) {
-		$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';}';
+		// Inline-flex CTA wider than its label: justify-content places the label, text-align covers wrapped lines.
+		$sgs_cta_justify    = array(
+			'left'    => 'flex-start',
+			'center'  => 'center',
+			'right'   => 'flex-end',
+			'justify' => 'flex-start',
+		)[ $sgs_cta_align ];
+		$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';justify-content:' . $sgs_cta_justify . ';}';
 	}
 }
 $sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';

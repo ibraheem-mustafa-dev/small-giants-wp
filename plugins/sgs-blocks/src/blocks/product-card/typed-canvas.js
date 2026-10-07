@@ -105,7 +105,12 @@ export function typedCardPreview( attrs, tier ) {
 			...sgsBorderPreview( { widthValues: attrs.attributeTagBorderWidth, colourValue: attrs.attributeTagBorderColour }, tier ),
 		},
 		rating: { color: colour( attrs.ratingColour ) },
-		ratingRow: typographyPreviewStyle( attrs, 'rating', tier ),
+		ratingRow: {
+			...typographyPreviewStyle( attrs, 'rating', tier ),
+			// render.php maps the row's alignment to justify-content: the row is a
+			// flex box as wide as the card body, so text-align alone moves nothing.
+			justifyContent: { left: 'flex-start', start: 'flex-start', justify: 'flex-start', center: 'center', right: 'flex-end', end: 'flex-end' }[ attrs.ratingTextAlign ],
+		},
 		ratingStars: { ...typographyPreviewStyle( attrs, 'ratingStars', tier ), color: colour( attrs.ratingColour ) },
 		swatch: { borderColor: colour( attrs.swatchBorderColour ) },
 		swatchMore: typographyPreviewStyle( attrs, 'swatchMore', tier ),
@@ -176,7 +181,7 @@ export function TypedRating( { attributes: attrs, styles } ) {
 	if ( 0 === count ) {
 		const none = String( attrs.noReviewsText || '' ).trim();
 		return none ? (
-			<div className="sgs-product-card__rating sgs-product-card__rating--empty">
+			<div className="sgs-product-card__rating sgs-product-card__rating--empty" style={ styles.ratingRow }>
 				<span className="sgs-product-card__rating-empty-text">{ none }</span>
 			</div>
 		) : null;

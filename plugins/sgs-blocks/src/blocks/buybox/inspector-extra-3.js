@@ -222,7 +222,6 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							showDecoration: true,
 							showTransform: true,
 							showLetterSpacing: true,
-							showTextAlign: true,
 							showTextWrap: true,
 							showTextColumns: true,
 							showWritingMode: true,

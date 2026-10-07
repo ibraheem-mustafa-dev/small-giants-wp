@@ -904,7 +904,7 @@ if ( '' !== $sgs_grid_title_mb ) {
 }
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
 // Pagination page buttons (built by Grid_Pagination, shared with sgs/post-grid).
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'pagination', '.' . $sgs_grid_uid . ' .sgs-card-grid__page-btn' );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'pageButton', '.' . $sgs_grid_uid . ' .sgs-card-grid__page-btn' );
 // Fallback-tile initial letter and the card badge: own typography surfaces; the
 // style.css defaults sit in :where() so these scoped rules win.
 $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'glyphInitial', '.' . $sgs_grid_uid . ' .sgs-card-grid__glyph-initial' );

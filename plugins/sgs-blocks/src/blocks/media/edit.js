@@ -275,7 +275,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showDecoration: true,
 								showTransform: true,
 								showLetterSpacing: true,
-								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
 								showWritingMode: true,

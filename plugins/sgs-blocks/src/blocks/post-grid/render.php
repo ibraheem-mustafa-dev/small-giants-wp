@@ -561,7 +561,7 @@ $responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' 
 // (Grid_Pagination in the page, rebuilt by view.js after a filter): each has its
 // own typography surface; style.css keeps the 0.875rem/600 and 1rem/600
 // defaults inside :where() so these scoped rules win.
-$responsive_css .= sgs_typography_css_rule( $attributes, 'pagination', $root_sel . ' .sgs-post-grid__page-btn' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-post-grid__page-btn' );
 $responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more' );
 // Card text elements (built by Post_Grid_REST::render_card, and by the editor
 // preview): meta line, image badge, plain category label, excerpt, read-more link.

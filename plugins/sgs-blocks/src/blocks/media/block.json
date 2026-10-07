@@ -760,17 +760,6 @@
 			"type": "string",
 			"default": "em"
 		},
-		"videoTimeTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
-		},
 		"videoTimeTextWrap": {
 			"type": "string",
 			"enum": [

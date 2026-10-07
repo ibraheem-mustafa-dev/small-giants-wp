@@ -566,10 +566,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"chipTextAlign": {
-			"type": "string",
-			"default": ""
-		},
 		"chipTextWrap": {
 			"type": "string",
 			"default": ""

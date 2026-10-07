@@ -948,27 +948,27 @@
       "type": "string",
       "default": "em"
     },
-    "paginationFontSize": {
+    "pageButtonFontSize": {
       "type": "object",
       "default": {}
     },
-    "paginationFontSizeUnit": {
+    "pageButtonFontSizeUnit": {
       "type": "string",
       "default": "px"
     },
-    "paginationFontWeight": {
+    "pageButtonFontWeight": {
       "type": "string",
       "default": ""
     },
-    "paginationFontStyle": {
+    "pageButtonFontStyle": {
       "type": "string",
       "default": ""
     },
-    "paginationFontFamily": {
+    "pageButtonFontFamily": {
       "type": "string",
       "default": ""
     },
-    "paginationTextTransform": {
+    "pageButtonTextTransform": {
       "type": "string",
       "enum": [
         "",
@@ -979,7 +979,7 @@
       ],
       "default": ""
     },
-    "paginationTextDecoration": {
+    "pageButtonTextDecoration": {
       "type": "string",
       "enum": [
         "",
@@ -989,34 +989,23 @@
       ],
       "default": ""
     },
-    "paginationLineHeight": {
+    "pageButtonLineHeight": {
       "type": "object",
       "default": {}
     },
-    "paginationLineHeightUnit": {
+    "pageButtonLineHeightUnit": {
       "type": "string",
       "default": "em"
     },
-    "paginationLetterSpacing": {
+    "pageButtonLetterSpacing": {
       "type": "object",
       "default": {}
     },
-    "paginationLetterSpacingUnit": {
+    "pageButtonLetterSpacingUnit": {
       "type": "string",
       "default": "em"
     },
-    "paginationTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
-    },
-    "paginationTextWrap": {
+    "pageButtonTextWrap": {
       "type": "string",
       "enum": [
         "",
@@ -1028,10 +1017,10 @@
       ],
       "default": ""
     },
-    "paginationTextColumns": {
+    "pageButtonTextColumns": {
       "type": "number"
     },
-    "paginationWritingMode": {
+    "pageButtonWritingMode": {
       "type": "string",
       "enum": [
         "",

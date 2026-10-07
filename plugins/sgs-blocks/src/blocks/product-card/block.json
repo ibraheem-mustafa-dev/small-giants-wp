@@ -199,7 +199,6 @@
 						"css:text-decoration": "rrpTextDecoration",
 						"css:line-height": "rrpLineHeight",
 						"css:letter-spacing": "rrpLetterSpacing",
-						"css:text-align": "rrpTextAlign",
 						"css:text-wrap": "rrpTextWrap",
 						"css:column-count": "rrpTextColumns",
 						"css:writing-mode": "rrpWritingMode"
@@ -344,7 +343,6 @@
 						"css:text-decoration": "brandTextDecoration",
 						"css:line-height": "brandLineHeight",
 						"css:letter-spacing": "brandLetterSpacing",
-						"css:text-align": "brandTextAlign",
 						"css:text-wrap": "brandTextWrap",
 						"css:column-count": "brandTextColumns",
 						"css:writing-mode": "brandWritingMode",
@@ -370,7 +368,6 @@
 						"css:text-decoration": "savingBadgeTextDecoration",
 						"css:line-height": "savingBadgeLineHeight",
 						"css:letter-spacing": "savingBadgeLetterSpacing",
-						"css:text-align": "savingBadgeTextAlign",
 						"css:text-wrap": "savingBadgeTextWrap",
 						"css:column-count": "savingBadgeTextColumns",
 						"css:writing-mode": "savingBadgeWritingMode",
@@ -468,7 +465,6 @@
 						"css:text-decoration": "swatchMoreTextDecoration",
 						"css:line-height": "swatchMoreLineHeight",
 						"css:letter-spacing": "swatchMoreLetterSpacing",
-						"css:text-align": "swatchMoreTextAlign",
 						"css:text-wrap": "swatchMoreTextWrap",
 						"css:column-count": "swatchMoreTextColumns",
 						"css:writing-mode": "swatchMoreWritingMode"
@@ -1787,17 +1783,6 @@
 			"type": "string",
 			"default": "em"
 		},
-		"rrpTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
-		},
 		"rrpTextWrap": {
 			"type": "string",
 			"enum": [
@@ -1879,17 +1864,6 @@
 		"savingBadgeLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"savingBadgeTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
 		},
 		"savingBadgeTextWrap": {
 			"type": "string",
@@ -1973,17 +1947,6 @@
 			"type": "string",
 			"default": "em"
 		},
-		"swatchMoreTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
-		},
 		"swatchMoreTextWrap": {
 			"type": "string",
 			"enum": [
@@ -2041,17 +2004,6 @@
 		"brandLineHeightUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"brandTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
 		},
 		"brandTextWrap": {
 			"type": "string",

@@ -323,7 +323,6 @@
 						"css:text-decoration": "savingBadgeTextDecoration",
 						"css:line-height": "savingBadgeLineHeight",
 						"css:letter-spacing": "savingBadgeLetterSpacing",
-						"css:text-align": "savingBadgeTextAlign",
 						"css:text-wrap": "savingBadgeTextWrap",
 						"css:column-count": "savingBadgeTextColumns",
 						"css:writing-mode": "savingBadgeWritingMode"
@@ -1766,17 +1765,6 @@
 		"savingBadgeLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
-		},
-		"savingBadgeTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
 		},
 		"savingBadgeTextWrap": {
 			"type": "string",
