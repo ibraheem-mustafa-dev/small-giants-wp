@@ -76,11 +76,16 @@ applied (`ffac809ce`, `844ee7bf2`) and the mega panels are paired again. ⚠️ 
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — every FIX declaration resolved and live; the gate's `var()` blind spot measured, not yet closed.**
-  Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55** (self-test 31/31). **Next:** the 40 `var()` rows
-  (Bean: fix all, then admit `var()` with no new counter), 6 of them DEFENSIBLE and **awaiting Bean's choice**
-  of a gate marker or a one-time ceiling rise at admission. Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md`
-  §7 gap 1 and §6 "Still open". Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
+- **F3/E14 — `var()` values admitted; every row fixed and live-verified on eye-care-test.** Ceilings
+  **CLASS-2 31, CLASS-3 1, CANNOT-RESOLVE 54** (self-test 49/49; main `51a67c791`; eye-care-test runs every
+  block change, through `4fa8c204f`; the later gate-only commit needs no deploy). Each var() row got its own control or a
+  default its control strictly beats (form, product-card, choice-flow, google-reviews, team-member,
+  table-of-contents, cta-section); defaults unchanged live except the bound price's hard-coded `'Fraunces'`,
+  now the display token. **Next (each open, none started):** the gate gaps of triage §7 (gap 9: an inner
+  block's controls are invisible, holding the cta-section headline's 3 rows; gap 10: the writer set's limits;
+  gap 7: no CLASS 4 category); a CTA line-height control and a swatch "+N" control on product-card (both
+  have defaults but no control). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6–§7.
+  google-reviews' accent hover shades: owned by the google-reviews session (handed over 2026-10-07).
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route:** a register check (2026-10-07) found ~60 of the 164 canvas rows are NOT framework gaps: route them by
   category after a `/qc-council` (`reports/2026-10-07-route/canvas-register-crosscheck.json`). `reachesElement`

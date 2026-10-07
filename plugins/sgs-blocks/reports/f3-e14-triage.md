@@ -5,25 +5,25 @@ Status: the analysis stands. Its highest-reach recommendations shipped in `6f196
 
 ## 0. Method, and what the numbers rest on
 
-- Reproduced the survey with `node scripts/check-hardcoded-render-defaults.js --survey --verbose`. At triage (2026-10-06) it reported 137 net-new E14 findings (68 CLASS-2, 5 CLASS-3, 64 CANNOT-RESOLVE), 20 classified CLASS 1, 17 legacy findings accepted by the baseline. The same command now (2026-10-07, after `c70b7eb54`) reports 91 net-new (35 CLASS-2, 1 CLASS-3, 55 CANNOT-RESOLVE), 20 CLASS 1, 17 accepted.
+- Reproduced the survey with `node scripts/check-hardcoded-render-defaults.js --survey --verbose`. At triage (2026-10-06) it reported 137 net-new E14 findings (68 CLASS-2, 5 CLASS-3, 64 CANNOT-RESOLVE), 20 classified CLASS 1, 17 legacy findings accepted by the baseline. The same command now (2026-10-07, after `51a67c791`, with `var()` values admitted) reports CLASS-2 31, CLASS-3 1, CANNOT-RESOLVE 54, 17 accepted.
 - To see what the gate saw for each finding (the control selectors it resolved, how many markup instances matched each side) I ran a scratch copy of the gate from the session scratchpad with one extra logging hook. Nothing under the repo was touched by that copy; it reproduced the same 137 (68 / 5 / 64).
 - Reach is read from each block's own markup (`render.php`, sibling PHP, `includes/` helpers, `edit.js` and `view.js`). Every "no markup emits this class" claim comes from a search of all `.php` and `.js` files under `src/` and `includes/`, plus `theme/`; one such claim was wrong on first pass (the form table headings are built from a class map in `includes/forms/field-render-helpers.php::field_headings`) and was corrected, so the DEAD rows carry the search scope.
 - Specificity is computed from the emitted selector strings (`.{uid}` stands for the per-instance class). An inherited property reaches a descendant only through inheritance, so specificity does not rescue a control that targets an ancestor: a declaration on the descendant wins at any specificity. Specificity matters only for same-element pairs (CLASS 1).
 
-Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 2026-10-06; the CANNOT-RESOLVE rows count the 55 the gate reports now (section 4.2 gives the arithmetic):
+Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 2026-10-06; the CANNOT-RESOLVE rows count the 54 the gate reports now (section 4.2 gives the arithmetic):
 
 | | Count |
 |---|---|
 | CLASS 2 + CLASS 3 findings triaged | 73 |
 | ... judged FIX | 26 declarations (22 CLASS 2, 4 CLASS 3): **all resolved**. 24 closed by a control (4 in `6f1963c28`, 9 in `75a583e23`, 11 in `4a4d442fd`..`4289311a9`), 2 (`cta-section` headline) re-verdicted DEFENSIBLE on a live measurement |
-| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 36 (35 CLASS 2, 1 CLASS 3) |
+| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 32 remain (31 CLASS 2, 1 CLASS 3); the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline adds its `var()` size (section 7 gap 9) |
 | ... DEAD (no markup emits the class) | 10, deleted in `6f1963c28` |
 | ... EDITOR-ONLY | 3, moved to `editor.css` in `6d30835bd` |
-| CANNOT-RESOLVE now | 55 |
+| CANNOT-RESOLVE now | 54 |
 | ... CLASS 4 shaped (carried from the triage) | 40 |
 | ... newly visible since `53ba85750`, not yet classified | 9 |
 | ... own control already exists (CLASS 1 in effect) | 1 (`media` caption; the bare `figcaption` member keeps it unresolved) |
-| ... CANNOT-TELL from source | 5 |
+| ... CANNOT-TELL from source | 4 |
 | Baseline entries | 18 before, 17 after (one stale entry removed) |
 
 ## 1. Item 1: E11 versus E14 on `button/style.css::.sgs-button { line-height: 1.2 }`
@@ -219,7 +219,7 @@ Each table row is one declaration. "Competing control" is the control the gate r
 | `countdown-timer/style.css::.sgs-countdown__label` | `letter-spacing: 0.05em` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
 | `countdown-timer/style.css::.sgs-countdown__expired` | `font-weight: 600` | CLASS-2 | `.{uid}.wp-block-sgs-countdown-timer` (0,2,0) | (0,1,0) | CLOSED `75a583e23` |
 
-- `.sgs-countdown__number` (CLOSED `75a583e23`). **Reach:** `countdown-timer/render.php`: `<span class="sgs-countdown__number ...">` once per unit in `$units` (days, hours, minutes, seconds, each optional): up to 4. **Fix:** a `number` typography prefix, so the element has its own full `TypographyControls` surface. The rule also declared `font-size: var(--wp--preset--font-size--xx-large, 3rem)`, a `var()` value this gate does not examine (section 7, gap 1) that blocked a font-size control exactly as a literal does; it was de-specified into `:where()` with the literals, so the control reaches it.
+- `.sgs-countdown__number` (CLOSED `75a583e23`). **Reach:** `countdown-timer/render.php`: `<span class="sgs-countdown__number ...">` once per unit in `$units` (days, hours, minutes, seconds, each optional): up to 4. **Fix:** a `number` typography prefix, so the element has its own full `TypographyControls` surface. The rule also declared `font-size: var(--wp--preset--font-size--xx-large, 3rem)`, a `var()` value, which blocked a font-size control exactly as a literal does; it was de-specified into `:where()` with the literals, so the control reaches it.
 - `.sgs-countdown__label` (CLOSED `75a583e23`). **Reach:** `<span class="sgs-countdown__label">` once per unit: up to 4. **Fix:** a `label` prefix; `text-transform`, `letter-spacing` and the `font-size: var(--wp--preset--font-size--small, 0.875rem)` sit in `:where()`.
 - `.sgs-countdown__expired` (CLOSED `75a583e23`). **Reach:** `<div class="sgs-countdown__expired">` once per timer, hidden until the timer ends (`$expired_hidden`). **Fix:** an `expired` prefix; the weight literal and its `font-size` `var()` sit in `:where()`.
 - The three prefixes mount as targets of one Typography panel through `src/components/TypographyControls.js::TypographyTargetSwitcher`, section 6.
@@ -400,9 +400,9 @@ Each table row is one declaration. "Competing control" is the control the gate r
 - `.sgs-testimonial-slider__empty` (DEAD). **Reach:** No markup emits `sgs-testimonial-slider__empty` (absent from `render.php`, `view.js`, `edit.js`, `includes/`). 2 declarations. **Leak:** n/a. **Evidence:** Nothing renders it.
 
 
-## 4. Item 3b: CANNOT-RESOLVE (55 findings)
+## 4. Item 3b: CANNOT-RESOLVE (54 findings)
 
-The gate reports CANNOT-RESOLVE when it could not tell which element a control paints, or how the declaring element relates to it, and it will not guess. Section 4.1 groups the 55 by why. Section 4.2 says what they are once the cause is removed. Section 4.3 lists every one, as `node scripts/check-hardcoded-render-defaults.js --survey --verbose` prints them.
+The gate reports CANNOT-RESOLVE when it could not tell which element a control paints, or how the declaring element relates to it, and it will not guess. Section 4.1 groups the 54 by why. Section 4.2 says what they are once the cause is removed. Section 4.3 lists every one, as `node scripts/check-hardcoded-render-defaults.js --survey --verbose` prints them.
 
 ### 4.1 Causes, with counts
 
@@ -412,22 +412,22 @@ The gate reports CANNOT-RESOLVE when it could not tell which element a control p
 | **B. Markup built outside the block directory** | 19 | The class is emitted by a shared PHP builder in `includes/` (`class-grid-pagination.php`, `buybox-guided.php`, `product-card-*.php`), or built at run time from a prefix argument (`$base_class . '__page-btn'`). `readBlockPhpFiles` now follows a block's `require` / `require_once` one hop (`53ba85750`), which resolved the 12 `sgs/post-grid` card-part findings. The hop is not transitive, deliberately: `includes/render-helpers.php` requires the whole helper tree and almost every block requires it, so a transitive follower would put every helper's markup into every block's element model and manufacture false findings. The 19 rows that remain carry the original B label (`buybox` guided 6, `card-grid` 2, `post-grid` page buttons 2, `product-card` 9). Which of the 19 are caused by a missing `require` and which by a class built from a prefix argument is **not re-counted**: the original 31 was attributed by reading the markup, and only the 12 resolved rows are measured. | Resolve a class built as `$prefix . '__x'` from the call site's prefix argument (the hop stays non-transitive). |
 | **C. JavaScript-built markup** | 4 | The element is created in `view.js` / `guided.js` (`el.className = '...'`), so no PHP tag carries it. | Parse `className = '...'` assignments and `createElement` chains in the block's front-end scripts into the markup tree. |
 | **D. A control's target element is not a parseable literal tag** | 20 | The declaring element IS found, but at least one control for the same property targets an element whose class is assembled in a PHP variable (`buybox/render.php`: `$add_to_cart_button_classes = 'wp-element-button buybox__add-to-cart'`) or inside a sprintf template (`cart/render.php`: `'<span class="sgs-cart__badge%2$s" ...'`). One unplaceable control makes every declaration of that property in the block unresolvable, even when that control is on an unrelated element (a notify-form label against an add-to-cart button). | Resolve a class held in a `$classes` variable and a class glued to a sprintf placeholder. Separately, decide a declaration against only the controls that could plausibly be its ancestors, so an unplaceable control on a sibling leaf does not poison it. |
-| **E. A bare-tag declaring selector** | 2 | The declaring selector ends in a tag (`.product-card h3`, `.sgs-theme-toggle__icon svg`), which has no class for `matchInstances` to match. | Match a tag compound through its nearest classed ancestor and the tags present in that subtree. |
+| **E. A bare-tag declaring selector** | 1 | The declaring selector ends in a tag (`.sgs-theme-toggle__icon svg`), which has no class for `matchInstances` to match. | Match a tag compound through its nearest classed ancestor and the tags present in that subtree. |
 | **F. A printf placeholder as the tag name** | 1 | `media/render.php`: `'<%1$s class="sgs-media__caption">%2$s</%1$s>'`. The tag scanner requires a letter after `<`, so the element is never added to the markup tree. The control selector also starts with an unresolved `$id_wrap`. | Treat `<%N$s` as an element of unknown tag and keep its class list; evaluate `$id_wrap = '.' . $scope_esc`. |
 | **G. A printf placeholder glued to a class token** | 0 | `option-picker/render.php`: `'<span class="sgs-option-picker__pill%s">%s</span>'`. The class token `sgs-option-picker__pill%s` fails the class-name test and the whole class is dropped, so the pill (the control's element) is missing from the model. Its one finding, the pill's own `line-height: 1`, is gone: the declaration was dead (a flex or grid container whose only text overrode it) and was removed in `4a4d442fd`. The gap itself is still open for any future declaration on a sprintf-glued class. | Strip a trailing `%s` / `%N$s` from a class token and keep the stem. |
 | **H. A control selector in a required `includes/` file cannot be resolved** | 9 | Newly visible after `53ba85750`: the gate now reads `sgs/account` (6) and `sgs/nav-drawer-menu` (3) required `includes/` files, which hold typography calls whose selectors it cannot resolve to a class (survey reason: "a control selector in the PHP could not be resolved to a class"). The cause inside those selectors is not yet diagnosed. | Diagnose per call; likely the same variable-built selectors as cause D. |
-| Total | 55 | | |
+| Total | 54 | | |
 
 Net effect of the `require` hop on the CANNOT-RESOLVE count is -3 (64 to 61): 12 `sgs/post-grid` findings resolved and 9 findings that were invisible appeared (H). Most rows labelled B in the original triage were never require-caused: `sgs/buybox`'s notify-heading rows come from `notify-form.php`, which was always inside the block directory, and fail on dynamic class markup (cause D) instead. The original count of 31 for cause B overstated what a `require` follower could fix.
 
-### 4.2 What the 55 are really, one level down
+### 4.2 What the 54 are really, one level down
 
-- **CLASS 4 shaped: 40 of 61** (52 at triage, less the 12 `sgs/post-grid` card parts that now resolve and are no longer findings, though those elements still have no control). For these the block has controls for the property but none on, or above, the declaring element (the only controls are on sibling leaf elements such as a title, a price or a label), so the real question is "this element has no control", not "the gate could not place it". This is a reading of the controls list and the markup, not gate output; the gate cannot prove it.
+- **CLASS 4 shaped: 40** (52 at triage, less the 12 `sgs/post-grid` card parts that now resolve and are no longer findings, though those elements still have no control). For these the block has controls for the property but none on, or above, the declaring element (the only controls are on sibling leaf elements such as a title, a price or a label), so the real question is "this element has no control", not "the gate could not place it". This is a reading of the controls list and the markup, not gate output; the gate cannot prove it.
 - **Own control already exists: 1** (`media` figcaption font-size). The gate now checks a resolved own control first (`87eb25957`), but this selector list also holds a bare `figcaption` the gate cannot place (section 7 gap 4), so the row stays CANNOT-RESOLVE. CLASS 1 in effect.
-- **CANNOT-TELL from source: 5** (`product-card` `h3` specificity tie; `cart` badge x2; `buybox` cart-price; `theme-toggle` icon glyph, which is not text).
+- **CANNOT-TELL from source: 4** (`cart` badge x2; `buybox` cart-price; `theme-toggle` icon glyph, which is not text).
 - **Newly visible, not classified: 9** (cause H: `sgs/account` 6, `sgs/nav-drawer-menu` 3). Whether they are CLASS 4 shaped has not been read.
 
-40 + 1 + 5 + 9 = 55.
+40 + 1 + 4 + 9 = 54.
 
 ### 4.3 Every finding
 
@@ -474,7 +474,6 @@ Net effect of the `require` hop on the CANNOT-RESOLVE count is -3 (64 to 61): 12
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__page-btn` | `font-weight: 600` | B | yes |  |
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__load-more` | `font-size: 1rem` | C | yes |  |
 | `sgs/post-grid` | `post-grid/style.css::.sgs-post-grid__load-more` | `font-weight: 600` | C | yes |  |
-| `sgs/product-card` | `product-card/style.css::.product-card h3` | `font-weight: 500` | E | see note | `titleFontWeight` is emitted on `.{uid} h3` (0,1,1), the same specificity as `.product-card h3` (0,1,1): a tie decided by source order, CANNOT-TELL from source |
 | `sgs/product-card` | `product-card/style.css::.product-card .sgs-product-card__cta-row .sgs-button` | `text-align: center` | D | yes |  |
 | `sgs/product-card` | `product-card/style.css::.product-card .product-card__cta-secondary` | `text-align: center` | D | yes |  |
 | `sgs/product-card` | `product-card/style.css::.sgs-product-card__attribute-tag` | `text-transform: uppercase` | D | yes |  |
@@ -514,7 +513,7 @@ Two scales, kept apart.
 
 `E14_OPEN_BACKLOG` is `CLASS-2: 31`, `CLASS-3: 1`, `CANNOT-RESOLVE: 54`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
-Measured 2026-10-07 on a clean detached worktree at `4289311a9` (no other session's uncommitted files), from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 35/35, CLASS-3 1/1, CANNOT-RESOLVE 55/55` and 0 net-new legacy violations, and `--self-test` reports `31/31 checks passed`.
+Measured 2026-10-07 on a clean detached worktree at `4fa63cfb1` plus the admission (`043e2e457`), from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 31/31, CLASS-3 1/1, CANNOT-RESOLVE 54/54` and 0 net-new legacy violations; `--self-test` reports `49/49 checks passed` at `51a67c791`.
 
 **Shipped in `6f1963c28` (2026-10-06).** The 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field` typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`. Every literal on an element that now owns a control sits inside `:where()`, which also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control could beat, and the ladder row weights, which blocked the ladder's own font-weight control. Unifying the ladder markup put it outside the block-directory walk, which cost 4 CANNOT-RESOLVE rows, and buybox's first `line-height` control made one pre-existing literal visible; both were absorbed by de-specifying those literals.
 
@@ -544,11 +543,11 @@ Measured 2026-10-07 on a clean detached worktree at `4289311a9` (no other sessio
 | After `75a583e23`, `53ba85750` | | 48 | 2 | 61 |
 | After `87eb25957`..`c70b7eb54` | 3.1, 3.2, 4.1 | 35 | 1 | 55 |
 | **Now: var() fixed and admitted (`00994a40d`..this commit)** | 7 gap 1 | **31** | **1** | **54** |
-| Remaining floor | | 35 | 1 | the CLASS 4 shaped rows, the unclassified (cause H) and the CANNOT-TELL, until the gate gains a CLASS 4 category and the causes of section 4 are modelled |
+| Remaining floor | | 31 | 1 | the CLASS 4 shaped rows, the unclassified (cause H) and the CANNOT-TELL, until the gate gains a CLASS 4 category and the causes of section 4 are modelled |
 
 The descent this section predicted was 33 / 1 / 54. The two differences are measured, not missed: the `cta-section` headline pair is DEFENSIBLE (2 CLASS-2), and the own-control reorder clears only one of its two named rows, because `media`'s caption selector list also contains a bare `figcaption` that the gate cannot place (causes E and F), so 1 CANNOT-RESOLVE remains. The option-picker pill's row went with its dead `line-height: 1`.
 
-The 36 DEFENSIBLE findings (35 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay in the count unless a mechanism removes them. Three options, none implemented: (i) leave them counted (the ceiling stays 35 and 1; no new mechanism); (ii) add a per-declaration marker comment the gate honours (new gate capability, needs a decision on what the marker must say); (iii) record them as `by-design` baseline entries, which conflicts with the standing rule against baselining a finding to silence it, so it needs Bean's explicit decision. I recommend (i) now.
+The 32 DEFENSIBLE findings (31 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows would clear if the gate could see an inner block's controls (section 7 gap 9).
 
 **Shipped 2026-10-07 (`00994a40d`..the admission commit): every `var()` row fixed, then `var()` admitted.**
 
@@ -573,7 +572,7 @@ The 36 DEFENSIBLE findings (35 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 
 
 ## 7. Capability gaps in the gate that this triage exposed
 
-Each is evidence for a later gate task and is still open. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
+Gap 1 is built; gaps 2 to 10 are open, each evidence for a later gate task. Shared `includes/` PHP is read one hop from a block's `require` by `readBlockPhpFiles` (section 4.1), so it is not on this list.
 
 1. **`var()`-valued declarations: built (2026-10-07).** The record below is how it was designed and measured.
 
@@ -581,7 +580,7 @@ Each is evidence for a later gate task and is still open. Shared `includes/` PHP
 
    **Admission rule (built).** A `var()` value counts as a literal on the E14 path (`modelEligible`, never the legacy path) unless the block WRITES one of the custom properties it reads: an assignment (`--x:` or `'--x' =>`) or a whole quoted `'--x'` map entry in the block's own PHP or JS, or in any PHP its files reach by `require`. The writer set follows requires transitively, unlike the element model: `nav-drawer-menu` writes `--sgs-ndm-orn-size` three hops out (render.php, nav-menu-markup, nav-drawer-menu-items, nav-drawer-menu-extras-css), and a write cannot pollute the element model. A bare mention is not a write (`google-reviews/render.php` passes the string `'var(--sgs-gr-blue)'` as a hover value, which is a read), and a property defined only in a stylesheet is a default, never a control channel. A preset token (`--wp--preset--*`) is never written by a block, so it always counts. Measured with a scratch copy of the gate (`isLiteralConstant` bypassed for `modelEligible` values matching `CSS_VAR_RE`, legacy owners left untouched), diffed against `--survey --verbose` from the real gate on `95b21c01f`: +45 findings, of which 7 use a property some block file writes (`--sgs-gr-blue` x2, `--sgs-ndm-orn-size`, `--sgs-ndm-trail-size`, `--sgs-pc-badge-fg`, `--sgs-card-title-colour`, `--sgs-whatsapp-cta-card-text-wrap`) and were taken as exempt; a /qc-council rater then showed `--sgs-gr-blue` is only read, so 6 fall out under the rule and 2 more google-reviews rows (`a.sgs-google-reviews__maps-link`, `.sgs-google-reviews .sgs-google-reviews__review-link`, `color: var( --sgs-gr-blue )`, CANNOT-RESOLVE) join the table below, which therefore lists 38 of the 40. 12 of product-card's own properties have no writer anywhere in `src/` or `includes/`, so they are literals that only look like hooks.
 
-   **The 40 the rule admits (13 CLASS-2, 27 CANNOT-RESOLVE).** Bean's decision (2026-10-07): fix them all first, then admit `var()` into the existing categories at zero ceiling cost; no separate counter.
+   **The 40 rows the rule admitted (13 CLASS-2, 27 CANNOT-RESOLVE), all fixed before admission except the `cta-section` headline size (gap 9).** Bean's decision (2026-10-07): fix them all first, then admit `var()` into the existing categories at zero ceiling cost; no separate counter.
 
    **The six "DEFENSIBLE" rows get controls (Bean, 2026-10-07).** The 5 google-reviews colours (Google's own palette) and the `cta-section` headline `font-size` are not exempted: each gets an inspector control whose default is today's exact value, so the rendered default is unchanged and a client may still override it. No marker comment and no ceiling rise. Outcome: the 5 google-reviews colours got two block-wide controls; the headline already had one, its own `sgs/heading` child's (gap 9), so its row stays counted inside the lowered ceiling.
 
@@ -635,7 +634,7 @@ Each is evidence for a later gate task and is still open. Shared `includes/` PHP
 4. **sprintf placeholders drop elements.** `'<span class="sgs-option-picker__pill%s">'` loses the class token and `'<%1$s class="sgs-media__caption">'` is not parsed as a tag. The former hid the pill from the element model; its findings are gone (`4a4d442fd`), but any future declaration on a sprintf-glued class hits the same gap. Dynamic tags (`<<?php echo esc_attr( $heading_level ); ?> class="sgs-process-steps__title">`) are not parsed either, which is why the process-steps note lists three leak targets and not the title.
 5. **Class maps are not followed.** `includes/forms/field-render-helpers.php::field_headings` builds two live classes from a PHP array; a literal search finds only the map.
 6. **State selectors are not exempt.** `[aria-current="true"]` (`store-selector`) is a state, like the `:hover` and `:focus` that E3 already exempts.
-7. **No CLASS 4 category.** 40 of the 55 CANNOT-RESOLVE findings, and the largest real gaps (post-grid card parts, which the gate no longer reports at all, and the buybox notify form), are "this element has no control". The gate has no way to say so.
+7. **No CLASS 4 category.** 40 of the 54 CANNOT-RESOLVE findings, and the largest real gaps (post-grid card parts, which the gate no longer reports at all, and the buybox notify form), are "this element has no control". The gate has no way to say so.
 8. **44 blocks have no E14 model**, so the gate reports nothing for them (section 5).
 9. **An InnerBlocks child's controls are invisible.** The `cta-section` headline is an `sgs/heading` placed by the editor template with `className: sgs-cta-section__headline`; its own controls own it, but the gate models only PHP markup and the parent's controls, so its size, weight and line-height count as CLASS-2 (3 of the 31).
 10. **The writer set is block-wide and cannot tell a control from a computed write** (qc-council, 2026-10-07; none mis-exempts a row today, all 25 exempted rows have a real writer). (a) A computed write counts: `product-card/render.php` writes `--sgs-pc-badge-fg` from `sgs_wcag_text_colour_for_bg()`, an auto-contrast value, which exempts its three `color: var(--sgs-pc-badge-fg, …)` rows. (b) The transitive follow gives every block that requires `render-helpers.php` the whole helper tree's writes (median 94 properties, e.g. `--sgs-gi-color`), so the first block to READ one of those names without writing it would be exempted. (c) A CSS default inside a PHP string (`'.x{--x:1.4}'`) and a PHP `#` comment still count as writes. (d) Computed names (`sprintf('--%s', …)`, `'--sgs-' . $n`, a JS template literal) are missed, which errs safe: the row is reported. JS comments, `getPropertyValue`/`removeProperty` reads and `*.test.js` files are excluded and self-tested.
@@ -664,7 +663,7 @@ positive control with a live proof already attached.
 - **Reach is per block instance.** Instances per page and pages per site are content; I cannot derive them from code. Counts that depend on a loop assume 4 items (6 for form fields) and say so. Where a count is a range from the markup ("at most 7 rows", "up to 4 units") the bound is stated.
 - **DEFENSIBLE is a reading, not a ruling.** Where I wrote "documented", the source says so (`business-hours__time` comment, `helpers-button-note.php` docblock, the `google-reviews` style header). For UI chrome (arrows, pause buttons, ribbons, the upload chip, progress bubbles) the intent is not recorded anywhere I could find: CANNOT-TELL whether the owner wants those reachable from typography controls.
 - **DEAD means "no current emitter in code".** I searched `src/`, `includes/` and `theme/` (and the `plugins/` tree for `__btn`). I did not and cannot search stored post content in a database, which could still carry a legacy class (the `notice-banner` conformance fixture carries `sgs-notice-banner__text`). CANNOT-TELL for stored content.
-- **No browser, no computed styles.** Specificity is computed from selector strings with a simple parser; "wins" and "cannot reach" follow from CSS inheritance and specificity rules, not from a measured page. The `.product-card h3` pair is an exact tie, decided by source order: CANNOT-TELL.
+- **No browser, no computed styles.** Specificity is computed from selector strings with a simple parser; "wins" and "cannot reach" follow from CSS inheritance and specificity rules, not from a measured page.
 - **Scratch tooling.** The survey detail (control selectors, matched-instance counts) and the `var()` experiment (+48) came from scratch copies of the gate in the session scratchpad; the repo gate at triage time is the one reported in section 0; its later change is `53ba85750`.
 - **The crude 86 (section 5) is an indicator only.**
 - **Not checked:** `editor.css` and the editor canvas, `theme/` stylesheets, `includes/` helpers that hardcode typography, and `scripts/computed-route/` and `scripts/parity/` (out of scope by instruction).

@@ -223,7 +223,8 @@ total or label is ever used.
 - a placeholder row until the first priced choice (`summaryPendingLabel`, `summaryPendingText`: "Lenses · not
   chosen yet")
 - the total
-- an optional help note (`stageNote`, `stageNoteLink`, `stageNoteIcon`)
+- an optional help note (`stageNote`, `stageNoteLink`, `stageNoteIcon`; its text and sub-line colour is
+  `summaryNoteColour`)
 
 A pre-selected default (`isDefault`) counts as an answer from the start (Continue is live and the purchase carries
 it), but its row appears only once the shopper has reached its question.
