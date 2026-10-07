@@ -2538,8 +2538,7 @@ function collectWrittenCustomProps( blockDir ) {
 			if ( e.isDirectory() && 'node_modules' !== e.name && 'build' !== e.name ) {
 				walkJs( p );
 			} else if ( e.isFile() && /\.js$/i.test( e.name ) && ! /\.test\.js$/i.test( e.name ) ) {
-				// JS comments share PHP's `//` and `/* */` forms.
-				sources.push( maskPhpComments( fs.readFileSync( p, 'utf8' ) ) );
+				sources.push( maskJsComments( fs.readFileSync( p, 'utf8' ) ) );
 			}
 		}
 	};
@@ -2555,6 +2554,44 @@ function collectWrittenCustomProps( blockDir ) {
 		}
 	}
 	return written;
+}
+
+/**
+ * Blank JS `//` and `/* *\/` comments in one left-to-right pass that skips
+ * string and template literals, so a `//` inside a string is kept and a `/*`
+ * inside a `//` comment opens nothing. Line breaks are kept.
+ */
+function maskJsComments( src ) {
+	let out   = '';
+	let quote = '';
+	for ( let i = 0; i < src.length; i++ ) {
+		const c = src[ i ];
+		if ( quote ) {
+			out += c;
+			if ( '\\' === c && i + 1 < src.length ) {
+				out += src[ ++i ];
+			} else if ( c === quote ) {
+				quote = '';
+			}
+		} else if ( '"' === c || "'" === c || '`' === c ) {
+			quote = c;
+			out  += c;
+		} else if ( '/' === c && '/' === src[ i + 1 ] ) {
+			while ( i < src.length && '\n' !== src[ i ] ) {
+				out += ' ';
+				i++;
+			}
+			out += i < src.length ? '\n' : '';
+		} else if ( '/' === c && '*' === src[ i + 1 ] ) {
+			const end = src.indexOf( '*/', i + 2 );
+			const stop = -1 === end ? src.length : end + 2;
+			out += src.slice( i, stop ).replace( /[^\n]/g, ' ' );
+			i = stop - 1;
+		} else {
+			out += c;
+		}
+	}
+	return out;
 }
 
 /**
@@ -3685,7 +3722,9 @@ function selfTestRequireHop( assert ) {
 		fs.writeFileSync(
 			path.join( blockDir, 'edit.js' ),
 			"const s = { '--sgs-hop-js': size };\n// --sgs-hop-jscomment: 1\n/* '--sgs-hop-jsblock' */\n" +
-				"const v = el.style.getPropertyValue( '--sgs-hop-jsread' );\n",
+				"const v = el.style.getPropertyValue( '--sgs-hop-jsread' );\n" +
+				"// the *Tablet/*Mobile siblings\nw[ '--sgs-hop-afterslash' ] = v;\n" +
+				"const u = 'a // b'; el.style.setProperty( '--sgs-hop-sameline', 1 );\n/* a later block comment */\n",
 			'utf8'
 		);
 		fs.writeFileSync( path.join( blockDir, 'edit.test.js' ), "const t = { '--sgs-hop-test': 1 };\n", 'utf8' );
@@ -3734,6 +3773,8 @@ function selfTestRequireHop( assert ) {
 		assert( 'writer set: a property in a JS // or /* */ comment is NOT written', [ written.has( '--sgs-hop-jscomment' ), written.has( '--sgs-hop-jsblock' ) ], [ false, false ] );
 		assert( 'writer set: a name passed to getPropertyValue is a read, NOT a write', written.has( '--sgs-hop-jsread' ), false );
 		assert( 'writer set: a *.test.js file is not a writer', written.has( '--sgs-hop-test' ), false );
+		assert( 'writer set: a `//` comment holding `/*` does not swallow a later JS writer', written.has( '--sgs-hop-afterslash' ), true );
+		assert( 'writer set: `//` inside a JS string does not hide a writer later on the line', written.has( '--sgs-hop-sameline' ), true );
 	} finally {
 		fs.rmSync( tmp, { recursive: true, force: true } );
 	}
