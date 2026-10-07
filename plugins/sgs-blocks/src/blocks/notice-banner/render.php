@@ -187,6 +187,23 @@ if ( isset( $style_obj['spacing']['margin'] ) && is_array( $style_obj['spacing']
 		}
 	}
 }
+// The desktop tier of the block's own padding and margin controls is the base value; a legacy native
+// style.spacing value stays only for a side the desktop tier leaves unset.
+$sgs_tor_desktop_boxes = array(
+	'padding' => $sgs_tor_padding_desktop,
+	'margin'  => $sgs_tor_margin_desktop,
+);
+foreach ( $sgs_tor_desktop_boxes as $sgs_tor_family => $sgs_tor_sides ) {
+	foreach ( $sgs_tor_sides as $side => $val ) {
+		if ( is_scalar( $val ) && '' !== (string) $val ) {
+			if ( 'padding' === $sgs_tor_family ) {
+				$base_padding_obj[ $side ] = (string) $val;
+			} else {
+				$base_margin_obj[ $side ] = (string) $val;
+			}
+		}
+	}
+}
 
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
