@@ -13,6 +13,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	IconPicker,
+	SgsLengthControl,
 	BooleanResponsiveControl,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
@@ -182,6 +183,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes={ setAttributes }
 						prefix="label"
 					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveOverride
+						label={ __( 'Icon size', 'sgs-blocks' ) }
+						value={ attributes.iconSize }
+						onChange={ ( obj ) => setAttributes( { iconSize: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Icon size', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __( 'Empty keeps the icons at 20px.', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue : '20px' }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>

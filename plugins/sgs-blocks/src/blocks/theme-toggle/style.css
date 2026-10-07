@@ -29,10 +29,10 @@ and never touches the icon's own size (that stays 1em/20px, set below). */
 	line-height: 0;
 }
 
-.sgs-theme-toggle__icon svg {
-	width: 1em;
-	height: 1em;
-	font-size: 20px;
+/* The default icon size sits in :where() so the Icon size control outranks it. */
+:where(.sgs-theme-toggle__icon svg) {
+	width: 20px;
+	height: 20px;
 }
 
 .sgs-theme-toggle__label {

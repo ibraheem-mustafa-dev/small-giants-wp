@@ -63,7 +63,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:width": "iconSize"
 					},
 					"states": {
 						"hover": {
@@ -183,6 +184,11 @@
 		"iconColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"iconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size (CSS length) of the light and dark icons. Tier object {desktop,tablet,mobile}; empty keeps 20px."
 		},
 		"backgroundColour": {
 			"type": "string",

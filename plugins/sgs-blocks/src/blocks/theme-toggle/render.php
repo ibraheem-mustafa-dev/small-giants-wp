@@ -164,6 +164,29 @@ $scoped_css[] = sgs_text_states_css(
 	)
 );
 
+// Icon size — a tier object; unset keeps style.css's 20px default.
+$sgs_tt_icon_size = $attributes['iconSize'] ?? null;
+if ( is_array( $sgs_tt_icon_size ) && array() !== $sgs_tt_icon_size ) {
+	$sgs_tt_icon_size_css = sgs_emit_responsive_css(
+		$icon_sel . ' svg',
+		array(
+			array(
+				'value'        => $sgs_tt_icon_size,
+				'css'          => 'width',
+				'unit_default' => 'px',
+			),
+			array(
+				'value'        => $sgs_tt_icon_size,
+				'css'          => 'height',
+				'unit_default' => 'px',
+			),
+		)
+	);
+	if ( '' !== $sgs_tt_icon_size_css ) {
+		$scoped_css[] = $sgs_tt_icon_size_css;
+	}
+}
+
 // Background (button fill) — base/hover.
 $scoped_css[] = sgs_fill_states_css(
 	$root_sel,
