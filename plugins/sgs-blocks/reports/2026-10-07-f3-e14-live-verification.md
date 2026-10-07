@@ -113,3 +113,29 @@ Same method: one private fixture page (`sgs-e14-live`, 4 product-cards, 8 post-g
 375 and 768 PASS in every row; C equals D in every row. Editor: all 18 blocks valid, the product-card Typography switcher lists Rating and reviews, Rating stars and Saving badge beside the pre-existing Title.
 
 Not coverable on eye-care-test: card-grid (its paginating `cpt-collection` mode has no registered post type there), buybox saving badge (product 136 has no RRP) and the guided layout, product-card bound-mode RRP and swatch count, account (needs a signed-in customer) and nav-drawer-menu (drawer context). The site's media library has no video; an external MP4 drove the player.
+
+## Round 4: the surfaces eye-care-test could not reach (sandybrown, deployed through `562282619`)
+
+Same method on sandybrown, which has the data: one password-protected fixture page (`sgs-e14-r4 fixture`, so the existing QA customer `sgs-qa-customer` could view it), a variable product with an RRP and taxonomy attributes (`pa_size`, `pa_flavour`, 4 variations), D / S / C at 1440 / 768 / 375, a phase marker confirmed on every load, a sham read on an unset sibling. 0 HTTP 403 and 0 page errors in every load (the only console output is Cloudflare Turnstile's own log line). Rows: `2026-10-07-f3-e14-live-verification-round4.json` (351 rows).
+
+First pass at `d358e1026`: **314 of 330 PASS, 16 FAIL**, from two causes, both traced to source and fixed in `562282619`; the fixture was recreated and the failing surfaces re-read (21 rows, 21 PASS). The pre-fix FAIL rows stay in the JSON and are superseded by the rows labelled "re-measure after 562282619".
+
+| Surface | Result |
+|---|---|
+| card-grid `pageButton` (cpt-collection) | FAIL then PASS. The cpt-collection branch, the only one that paginates, returned before the typography rules were built, so the rule never reached the page (`card-grid/render.php`). It now rides with the early native CSS; re-read D 14px / 600 / 22.4px / normal / none, S 33px / 300 / 47px / 7px / capitalize, C = D, sham = D, at all three widths |
+| card-grid `glyphInitial`, `badge` | PASS (read on a manual-mode grid with image fallback, because the cpt-collection branch renders neither) |
+| buybox `savingBadge` (RRP 25.00 against price 10.00) | PASS |
+| buybox guided `guidedMeter` (button, index, `justify-content: flex-end`), `guidedGroupTitle` | PASS |
+| buybox guided editor canvas alignment mirror (`73cdb64ca`) | PASS in the Desktop, Tablet and Mobile device previews, D / S / C |
+| product-card bound `rrp`, `swatchMore` ("+8 more") | PASS |
+| account `cardDesc`, `chip`, `progressStep`, `guestLine` (logged out for the guest line) | PASS |
+| account text-align right for heading, cardTitle, cardDesc, progressStep, guestLine, and menu (`justify-content: flex-end`, non-active link) | PASS |
+| account menu `fontWeight` on the ACTIVE link | FAIL then PASS. The active-link bold sat at (0,4,2) and out-ranked the control's (0,3,1) (`account/style.css`). Both bold defaults now sit at (0,2,1); re-read sidebar 1440 D 700 / S 300 / C 700, tabs D 700 / S 300 / C 700 at every width, sham = D |
+| nav-drawer-menu `drillBack` (all five, text-align right, `justify-content: flex-end`) | PASS |
+
+Caveats, stated plainly:
+- The unset active link in the SIDEBAR layout reads 400 at 768 and 375, not bold: the bold-active rule is inside `@container sgs-account (min-width: 1024px)`, so below 1024px a sidebar has no bold-active default. That is the stylesheet's own behaviour (D and C agree), not a regression.
+- The account **menu Text align** control moves the label only where the link is wider than its content: the sidebar layout. In the tabs layout the pills shrink-wrap their label (`li { flex: 0 0 auto }`, `white-space: nowrap`), so the choice has nothing to move there. The attribute stays because the desktop default is a sidebar; it is inert in tabs by construction.
+- The drawer was opened with `dialog.show()` and the first `summary` clicked, not through a burger. The Back button is injected on load, so the typography reads are unaffected.
+- Editor widths used the Desktop / Tablet / Mobile device preview, not window widths.
+- Fixtures: page 4974 and variable product 4983 (round one), page 5001 (re-measure), all force-deleted over REST (200); the page and product searches for `sgs-e14-r4` return `[]` and the fixture URL returns 404. No user was created.
