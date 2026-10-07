@@ -42,7 +42,7 @@ import {
 	ToolsPanel,
 	ToolsPanelItem,
 } from '../../components/primitives';
-import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
+import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
 import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
 
 /** Sentinel value for the "No product connected" option. */
@@ -982,12 +982,14 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
 	// it — otherwise the preview shows a double `.product-card` (double
 	// padding/border).
-	// Bound mode shows render.php's own output, whose "From" label rule only
-	// refreshes when the server render does. This scoped rule paints the label
-	// from the current attributes at once; #block-{clientId} keeps it to this
-	// instance and outranks the server render's .{uid} rule while editing.
-	const priceFromLabelPreviewCss = isBound
-		? typographyPreviewCss( attributes, 'priceFromLabel', `#block-${ clientId } .price-from-label`, cardTier )
+	// Bound mode shows render.php's own output, whose "From" label and value-ladder
+	// saving rules only refresh when the server render does. These scoped rules
+	// paint both from the current attributes at once; #block-{clientId} keeps them
+	// to this instance and outranks the server render's .{uid} rules while editing.
+	const ladderSavingColour = isBound ? colourVar( attributes.valueLadderSavingColour ) : undefined;
+	const boundPreviewCss = isBound
+		? typographyPreviewCss( attributes, 'priceFromLabel', `#block-${ clientId } .price-from-label`, cardTier ) +
+			( ladderSavingColour ? `#block-${ clientId } .value-ladder__saving{color:${ ladderSavingColour };}` : '' )
 		: '';
 
 	const blockProps = useBlockProps(
@@ -3190,7 +3192,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			{ isBound ? (
 				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
-					{ priceFromLabelPreviewCss && <style>{ priceFromLabelPreviewCss }</style> }
+					{ boundPreviewCss && <style>{ boundPreviewCss }</style> }
 					{ /*
 					 * FR-30-3 Option C editor-preview fix (2026-09-18):
 					 * `<ServerSideRender>` calls WP core's `wp/v2/block-renderer`

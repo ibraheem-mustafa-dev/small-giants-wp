@@ -3912,6 +3912,13 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -5017,6 +5024,13 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -5319,11 +5333,203 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "ribbonFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "ribbonWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "ribbon"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "shadow",
       "fields": {
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "stats"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "statsWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "stats"
       }
     },
     {
@@ -5875,6 +6081,102 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "errorTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "errorTextWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "error-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -6004,6 +6306,102 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fileStatusFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileStatusWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "file-status"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -6112,6 +6510,102 @@
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
         "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "help-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "helpTextWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "help-text"
       }
     },
     {
@@ -6404,6 +6898,198 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "reviewDetailFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewDetailWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "review-detail"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewHeadingWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "review-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "reviewTermFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -6496,6 +7182,102 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "step-label"
       }
     },
     {
@@ -9033,6 +9815,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -11621,6 +12410,13 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -13382,6 +14178,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -16079,6 +16882,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "valueLadderSavingColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "valueLadderSaving"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "valueLadderSavingFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -16985,9 +17796,25 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "opacity",
       "fields": {
         "css_property": "opacity",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -17041,6 +17868,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -17549,6 +18383,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -19279,6 +20120,102 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "socialLinkFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "socialLinkWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "social"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
@@ -20604,6 +21541,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -29902,14 +30846,6 @@
     },
     {
       "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -29921,14 +30857,6 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
