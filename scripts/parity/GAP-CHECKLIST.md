@@ -551,3 +551,21 @@ the commit before the lane and green after (`L2_PARITY_DIR=<copy of scripts/pari
   none; a CSS keyframe on one side against none gives a row.
 - **Falsified by:** a drawer item that enters later on one side with no `entrance` row, or an `entrance` row of a ref-traced
   walk with no `ref`.
+
+## 27. A drawn line's weight and dash, and where a positioned element sits (Spec 47 FR-47-6, measured-diagram plan §C)
+
+- **Gap:** a measured diagram's dimension line (an svg stroke) was read for its colour only (`icon-stroke`), so a thicker or
+  dashed line on one side produced no row; and `left`/`top` were never read, so a label placed at a different spot on a
+  drawing (or a decorative image placed elsewhere) produced no row Solve could write.
+- **Detected by:** `collect.mjs::collectPair` reads `icon-stroke-width` and `icon-stroke-dasharray` from the same painted
+  shape as `icon-stroke`, and reads `left`/`top` only on an absolutely or fixed positioned element (an in-flow element's
+  offset is covered by the flow-position rows of section 17). `devtools.mjs::DECLARED_PROPS` carries `left`/`top`, and
+  `computed-route/solve.mjs::USED_VALUES` lists them, so Solve writes an offset only from the draft's declared value (a
+  declared `30%` stays `30%`; a computed `180px` would freeze it). Calibration reads `stroke-width`, `stroke-dasharray`,
+  `left` and `top` (`calibrate-props.mjs::CAL_EXTRA_PROPS` plus the walker list).
+- **Proof:** `computed-route/tests/walker-diagram-reads.test.mjs`: a 1.4px against a 3px dashed line gives
+  `icon-stroke-width` and `icon-stroke-dasharray` rows; a label at 30% against 40% gives a `left` row; an in-flow element
+  reads no offset; Solve's target is the declared `30%`, and with nothing declared it is a `used-value` gap. Planted fault:
+  removing the `icon-stroke-width` read turns the line test red.
+- **Falsified by:** a pair whose svg stroke weight or dash differs, or whose positioned box sits at another declared
+  offset, with no row.

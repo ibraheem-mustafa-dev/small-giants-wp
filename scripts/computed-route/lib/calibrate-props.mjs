@@ -12,7 +12,7 @@ export const CAL_PREFIX = 'cr-ref-cal-';
 
 // Properties calibration reads beyond the walker's own: a setting painting one of them is still located (its slot
 // and default paint are recorded) even before the walker compares that property.
-export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 'fill', 'grid-template-rows', 'grid-auto-columns', 'column-count', 'flex-basis', 'writing-mode', 'background-attachment', 'background-size', 'background-position', 'border-image-source', 'object-position', 'text-indent', 'border-bottom-style', 'border-left-style', 'border-right-style', 'text-decoration-style', 'animation-delay', 'mix-blend-mode' ];
+export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 'fill', 'grid-template-rows', 'grid-auto-columns', 'column-count', 'flex-basis', 'writing-mode', 'background-attachment', 'background-size', 'background-position', 'border-image-source', 'object-position', 'text-indent', 'border-bottom-style', 'border-left-style', 'border-right-style', 'text-decoration-style', 'animation-delay', 'mix-blend-mode', 'stroke-width', 'stroke-dasharray' ];
 
 export const READ_PROPS = [ ...new Set( [ ...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) ), ...REF_PROPS, ...HOVER_PROPS, ...CAL_EXTRA_PROPS ] ) ];
 

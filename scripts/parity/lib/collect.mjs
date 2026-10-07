@@ -13,6 +13,10 @@ export const DEFAULT_PROPS = [
 	'outline-style', 'outline-width', 'outline-color', 'outline-offset',
 	// The underline a visitor sees and an icon's colour: both read by collectPair, not from the element's own style.
 	'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset', 'icon-fill', 'icon-stroke',
+	// A drawn line's weight and dash pattern (a dimension line, an outline icon), read from the same painted shape.
+	'icon-stroke-width', 'icon-stroke-dasharray',
+	// Where an absolutely or fixed positioned element sits (a label on a drawing, a decorative image); read only for those.
+	'left', 'top',
 	// Motion timings as ordinary rows (a setting can hold each), beside the motion rows' shorthand comparison.
 	'transition-duration', 'transition-delay', 'transition-timing-function', 'animation-duration', 'animation-delay', 'animation-timing-function',
 ];
@@ -116,6 +120,11 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			styles[ p ] = /color$/.test( p ) ? srgb( v ) : ( /gap$/.test( p ) && ( 'normal' === v || ! /(^|-)(flex|grid)$/.test( lcs.display ) ) ? '0px' : v );
 		}
 	}
+	// An offset means something only on a box taken out of flow; in flow, the flow-position rows cover where it sits.
+	if ( ! [ 'absolute', 'fixed' ].includes( cs.position ) ) {
+		delete styles.left;
+		delete styles.top;
+	}
 	if ( ! finder.group && props.includes( 'text-decoration-line' ) ) {
 		const deco = paintedDecoration( carrier || el );
 		styles[ 'text-decoration-line' ] = deco ? deco.textDecorationLine : 'none';
@@ -151,6 +160,8 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 			const ss = getComputedStyle( shape );
 			styles[ 'icon-fill' ] = 'none' === ss.fill ? 'none' : srgb( ss.fill );
 			styles[ 'icon-stroke' ] = 'none' === ss.stroke ? 'none' : srgb( ss.stroke );
+			styles[ 'icon-stroke-width' ] = 'none' === ss.stroke ? 'none' : ss.strokeWidth;
+			styles[ 'icon-stroke-dasharray' ] = 'none' === ss.stroke ? 'none' : ss.strokeDasharray;
 			styles[ 'icon-colour' ] = 'none' !== ss.fill ? srgb( ss.fill ) : ( 'none' !== ss.stroke ? srgb( ss.stroke ) : 'none' );
 			const sb = svg.getBoundingClientRect();
 			styles[ 'icon-width' ] = `${ Math.round( sb.width * 100 ) / 100 }px`;

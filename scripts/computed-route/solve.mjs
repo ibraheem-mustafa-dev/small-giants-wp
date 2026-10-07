@@ -22,7 +22,8 @@ const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 const WIDTHS = '375,768,1440,1920';
 // Computed values that are used sizes, never declared ones (getComputedStyle resolves auto to pixels).
-export const USED_VALUES = [ 'width' ];
+// A positioned element's left/top computes to pixels too; only a declared length or percentage is written.
+export const USED_VALUES = [ 'width', 'left', 'top' ];
 
 // The calibration file for a block, or null (the resolver then returns `uncalibrated`).
 export function calibrationFor( block ) {

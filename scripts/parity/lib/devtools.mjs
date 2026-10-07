@@ -4,7 +4,7 @@
 // the computed ones (a declared 168px or 50% width where computed style gives only the used pixels).
 
 // The sizes whose computed value is a used size: their declared values are read from the matched rules.
-export const DECLARED_PROPS = [ 'width', 'max-width', 'min-width', 'height', 'min-height', 'max-height' ];
+export const DECLARED_PROPS = [ 'width', 'max-width', 'min-width', 'height', 'min-height', 'max-height', 'left', 'top' ];
 
 // Node side: a CDP session on a page with the DOM and CSS domains on (CSS.forcePseudoState and
 // CSS.getMatchedStylesForNode need both).

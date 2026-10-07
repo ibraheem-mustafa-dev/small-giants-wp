@@ -58,7 +58,8 @@ test( 'MUST FAIL: every target is read at 375, 768 and 1440 with every property,
 	for ( const w of READ_WIDTHS ) {
 		const s = snap( w, '1:' );
 		assert.ok( ! s.missing );
-		assert.ok( PROPS.every( ( p ) => undefined !== s.styles[ p ] || /^icon-|^animation-/.test( p ) ), `every property read at ${ w }` );
+		// left/top are read only on an absolutely or fixed positioned element (collect.mjs::collectPair).
+		assert.ok( PROPS.every( ( p ) => undefined !== s.styles[ p ] || /^icon-|^animation-|^(left|top)$/.test( p ) ), `every property read at ${ w }` );
 	}
 	assert.ok( undefined !== snap( 1024, '1:' ).styles[ 'font-size' ] );
 	assert.equal( undefined, snap( 1024, '1:' ).styles[ 'color' ], 'a fluid width reads lengths only' );

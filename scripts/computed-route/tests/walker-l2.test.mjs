@@ -464,7 +464,7 @@ test( 'NOT OVER-SUPPRESSING: an on-screen element gets exactly its raw centre; a
 
 const SVG = ( extra = '', size = 24 ) => `<svg ${ extra } width="${ size }" height="${ size }" viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="rgb(200, 0, 0)" stroke="none"/></svg>`;
 const iconKeys = ( s ) => Object.keys( s.styles ).filter( ( k ) => /^icon-/.test( k ) ).sort();
-const FULL_ICON = [ 'icon-colour', 'icon-fill', 'icon-height', 'icon-stroke', 'icon-width' ];
+const FULL_ICON = [ 'icon-colour', 'icon-fill', 'icon-height', 'icon-stroke', 'icon-stroke-dasharray', 'icon-stroke-width', 'icon-width' ];
 
 test( 'MUST FAIL TO SCOPE: a container holding two svgs reads no icon at all', async () => {
 	const page = await pageWith( `<div id="c">${ SVG() }${ SVG() }</div>` );
