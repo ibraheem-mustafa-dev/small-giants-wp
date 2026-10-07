@@ -7,7 +7,7 @@
  */
 
 import { resolveColourToken } from '../../components';
-import { backgroundPaintPreview, typographyPreviewStyle, boxPreview } from '../../utils';
+import { backgroundPaintPreview, typographyPreviewStyle, boxPreview, tierLengthPreview } from '../../utils';
 
 /**
  * Effective icon-only value for each tier: a tablet or mobile value left unset
@@ -34,6 +34,8 @@ export function themeTogglePreview( attributes, tier, palette ) {
 	const textColour = resolveColourToken( attributes.textColour, palette );
 	const iconColour = resolveColourToken( attributes.iconColour, palette );
 	const iconOnly = iconOnlyByTier( attributes );
+	// The icons themselves are drawn on the front end; the canvas shows each icon's box at the chosen size.
+	const iconSize = tierLengthPreview( attributes.iconSize, tier, 'px' );
 
 	return {
 		buttonStyle: {
@@ -44,7 +46,10 @@ export function themeTogglePreview( attributes, tier, palette ) {
 			...typographyPreviewStyle( attributes, 'label', tier ),
 			...( textColour ? { color: textColour } : {} ),
 		},
-		iconStyle: iconColour ? { color: iconColour } : {},
+		iconStyle: {
+			...( iconColour ? { color: iconColour } : {} ),
+			...( iconSize ? { width: iconSize, height: iconSize } : {} ),
+		},
 		iconOnlyClasses: [
 			iconOnly.base ? 'sgs-theme-toggle--icon-only' : '',
 			iconOnly.tablet ? 'sgs-theme-toggle--icon-only-tablet' : '',
