@@ -277,6 +277,58 @@ if ( ! function_exists( 'sgs_corner_object_shorthand' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_corner_object_longhand_list' ) ) {
+	/**
+	 * Build one border-radius longhand per SET corner of a corner-keyed box object
+	 * ("border-top-left-radius:20px"), in top-left, top-right, bottom-right,
+	 * bottom-left order. An unset corner emits nothing, so it keeps what a wider
+	 * device tier or the block's own stylesheet gives it; a shorthand would square
+	 * it to 0 instead. A corner has no style companion, so unlike a border width
+	 * there is no case where an unset corner should be 0.
+	 *
+	 * The corner order is written out here, so this file still loads on its own.
+	 *
+	 * @param mixed $box Box object with optional topLeft/topRight/bottomRight/bottomLeft
+	 *                   keys; anything else yields no declarations.
+	 * @return string[] Declarations without a trailing semicolon; empty when no corner is set.
+	 */
+	function sgs_corner_object_longhand_list( $box ): array {
+		if ( ! is_array( $box ) ) {
+			return array();
+		}
+		$corners = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+		);
+		$decls   = array();
+		foreach ( $corners as $key => $property ) {
+			$value = sgs_css_length_value( $box[ $key ] ?? '' );
+			if ( '' !== $value ) {
+				$decls[] = $property . ':' . $value;
+			}
+		}
+		return $decls;
+	}
+}
+
+if ( ! function_exists( 'sgs_corner_object_longhands' ) ) {
+	/**
+	 * The set corners of a corner-keyed box as one declaration block
+	 * ("border-top-left-radius:20px;border-bottom-right-radius:4px"), or null when
+	 * no corner is set, so a caller guarding with `null !==` skips the rule exactly
+	 * as it does for sgs_corner_object_shorthand().
+	 *
+	 * @param mixed $box Box object with optional topLeft/topRight/bottomRight/bottomLeft keys.
+	 * @return string|null Declarations joined with ';', or null when the box is empty.
+	 */
+	function sgs_corner_object_longhands( $box ): ?string {
+		$decls = sgs_corner_object_longhand_list( $box );
+		return $decls ? implode( ';', $decls ) : null;
+	}
+}
+
 if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 	/**
 	 * Resolve a block's `borderRadius` attribute into desktop/tablet/mobile

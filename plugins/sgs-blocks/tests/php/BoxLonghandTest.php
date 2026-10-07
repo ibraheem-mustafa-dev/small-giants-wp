@@ -7,10 +7,14 @@
  * longhand siblings, sgs_box_object_longhand_list() and sgs_box_object_longhands(), print one
  * declaration per set side and nothing for the rest.
  *
- * Two halves:
- *  1. The longhand siblings: set sides only, null when empty, an explicit 0 kept, unsafe values
- *     rejected, padding and margin only (a border width keeps the shorthand on purpose).
- *  2. A byte-identity pin of sgs_box_object_shorthand(), which stays in use for the `var()`
+ * Corner radius has the same defect and the same cure: sgs_corner_object_shorthand() and
+ * sgs_serialise_box_corners() print 0 for an unset corner, and sgs_corner_object_longhands() prints
+ * one border-*-radius declaration per set corner.
+ *
+ * Two halves, for sides and for corners:
+ *  1. The longhand siblings: set sides or corners only, null when empty, an explicit 0 kept, unsafe
+ *     values rejected, padding and margin only for sides (a border width keeps the shorthand on purpose).
+ *  2. A byte-identity pin of each old shorthand function, which stays in use for the `var()`
  *     consumers and every site not yet migrated: its output must not move.
  *
  * Self-contained: bootstrap.php defines ABSPATH and stubs esc_attr(); outside WordPress the spacing
@@ -28,6 +32,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-box.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-container.php';
 
 /**
  * The longhand box helpers and the pinned shorthand.
@@ -131,5 +136,77 @@ final class BoxLonghandTest extends TestCase {
 	 */
 	public function test_an_empty_box_is_null_never_an_empty_string(): void {
 		$this->assertNull( sgs_box_object_longhands( array( 'top' => '' ), 'padding' ) );
+	}
+
+	/**
+	 * Corner inputs shared by both halves.
+	 *
+	 * @return array<string, array{0: mixed, 1: ?string, 2: string, 3: ?string}> box, corner shorthand,
+	 *     serialised corners, longhands.
+	 */
+	public static function corners(): array {
+		return array(
+			'one corner'    => array( array( 'topLeft' => '20px' ), '20px 0 0 0', '20px 0 0 0', 'border-top-left-radius:20px' ),
+			'all four'      => array(
+				array(
+					'topLeft'     => '1px',
+					'topRight'    => '2px',
+					'bottomRight' => '3px',
+					'bottomLeft'  => '4px',
+				),
+				'1px 2px 3px 4px',
+				'1px 2px 3px 4px',
+				'border-top-left-radius:1px;border-top-right-radius:2px;border-bottom-right-radius:3px;border-bottom-left-radius:4px',
+			),
+			'none'          => array( array(), null, '', null ),
+			'explicit zero' => array( array( 'bottomLeft' => '0' ), '0 0 0 0px', '0 0 0 0px', 'border-bottom-left-radius:0px' ),
+			'bare number'   => array( array( 'topRight' => '8' ), '0 8px 0 0', '0 8px 0 0', 'border-top-right-radius:8px' ),
+			'unsafe value'  => array( array( 'topLeft' => '1px;}body{color:red' ), null, '', null ),
+			'side keys'     => array( array( 'top' => '6px' ), null, '', null ),
+			'two corners'   => array(
+				array(
+					'bottomRight' => '4px',
+					'topLeft'     => '50%',
+				),
+				'50% 0 4px 0',
+				'50% 0 4px 0',
+				'border-top-left-radius:50%;border-bottom-right-radius:4px',
+			),
+		);
+	}
+
+	/**
+	 * The corner sibling prints only the set corners, in corner order, and null when there are none.
+	 *
+	 * @param mixed   $box       Corner object.
+	 * @param ?string $shorthand Unused here.
+	 * @param string  $serialised Unused here.
+	 * @param ?string $longhands Expected longhand block.
+	 */
+	#[DataProvider( 'corners' )]
+	public function test_corner_longhands_print_only_the_set_corners( $box, ?string $shorthand, string $serialised, ?string $longhands ): void {
+		$this->assertSame( $longhands, sgs_corner_object_longhands( $box ) );
+	}
+
+	/**
+	 * Byte-identity pin: both corner shorthands print exactly what they printed before CR6.
+	 *
+	 * @param mixed   $box        Corner object.
+	 * @param ?string $shorthand  Expected sgs_corner_object_shorthand() output.
+	 * @param string  $serialised Expected sgs_serialise_box_corners() output.
+	 */
+	#[DataProvider( 'corners' )]
+	public function test_the_corner_shorthands_are_byte_identical( $box, ?string $shorthand, string $serialised ): void {
+		$this->assertSame( $shorthand, sgs_corner_object_shorthand( $box ) );
+		$this->assertSame( $serialised, sgs_serialise_box_corners( $box ) );
+	}
+
+	/**
+	 * A value that is not a corner box yields nothing (a raw null reaches some callers).
+	 */
+	public function test_a_non_box_yields_no_corners(): void {
+		$this->assertNull( sgs_corner_object_longhands( null ) );
+		$this->assertNull( sgs_corner_object_longhands( '12px' ) );
+		$this->assertSame( array(), sgs_corner_object_longhand_list( 7 ) );
 	}
 }
