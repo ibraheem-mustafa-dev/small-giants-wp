@@ -1736,6 +1736,8 @@ function collectPhpFunctionParams( files ) {
 				const pm = /^\s*(?:[\w\\?|]+\s+)?(&?\s*(?:\.\.\.)?)\$([A-Za-z_]\w*)\s*(?:=([\s\S]*))?$/.exec( piece );
 				if ( pm ) {
 					params.push( { name: pm[ 2 ], def: undefined !== pm[ 3 ] ? pm[ 3 ].trim() : null, variadic: pm[ 1 ].includes( '...' ) } );
+				} else if ( piece.trim() ) {
+					params.push( { name: null, def: null, variadic: true } ); // unreadable (attribute, intersection type): keeps its slot
 				}
 			}
 			const brace = f.src.slice( end ).search( /[{;]/ );
@@ -1915,6 +1917,9 @@ function captureCallRegions( src, fnName, starts ) {
 		from = idx + needle.length;
 		if ( idx > 0 && /[A-Za-z0-9_]/.test( src[ idx - 1 ] ) ) {
 			continue;
+		}
+		if ( /(?:->|::)\s*$/.test( src.slice( Math.max( 0, idx - 4 ), idx ) ) ) {
+			continue; // a method or static call that happens to share a function's name
 		}
 		if ( /function\s+&?$/.test( src.slice( Math.max( 0, idx - 24 ), idx ) ) ) {
 			continue; // the definition, not a call
@@ -4281,6 +4286,12 @@ function selfTestParamBinding( assert ) {
 	);
 	const top = build( "function sgs_pb_top( $sel ) { return $sel; }\n$sel = '.sgs-pb-top';\n$x = sgs_pb_top( $sel );\n" );
 	assert( 'param binding: a same-named argument from top-level code resolves through the caller\'s own scope', top( 0, 'return $sel' )( 'sel' ), '.sgs-pb-top' );
+	const method = build( "function sgs_pb_m( $root ) { return $root; }\n$o->sgs_pb_m( 'sgs-pb-wrong' );\nOther::sgs_pb_m( 'sgs-pb-wrong' );\n$x = sgs_pb_m( 'sgs-pb-right' );\n" );
+	assert( 'param binding: a method or static call that shares a function\'s name is not a call site', method( 0, 'return $root' )( 'root' ), 'sgs-pb-right' );
+	const methodOnly = build( "function sgs_pb_mo( $root ) { return $root; }\n$o->sgs_pb_mo( 'sgs-pb-wrong' );\n" );
+	assert( 'param binding: a function only a same-named method calls stays unresolved', methodOnly( 0, 'return $root' )( 'root' ), UNK );
+	const attr = build( "function sgs_pb_at( #[Sensitive] $t, $u ) { return $u; }\n$x = sgs_pb_at( 'sgs-pb-first', 'sgs-pb-second' );\n" );
+	assert( 'param binding: a parameter the parser cannot read keeps its slot, so later parameters bind to their own argument', attr( 0, 'return $u' )( 'u' ), 'sgs-pb-second' );
 	const reassigned = build( "function sgs_pb_re( $root ) { $root = 'sgs-pb-inner'; return $root; }\n$x = sgs_pb_re( 'sgs-pb-arg' );\n" );
 	assert( 'param binding: a parameter the function reassigns reads its own assignment', reassigned( 0, 'return $root' )( 'root' ), 'sgs-pb-inner' );
 }
