@@ -103,16 +103,17 @@ async function connectShared( chromium ) {
  * @param {string} creds.url  Site URL without a trailing slash.
  * @param {string} creds.user Login name.
  * @param {string} creds.pwd  Password.
+ * @param {number} [timeout] How long the admin page may take to load (default 60000).
  * @return {Promise<boolean>} True when the form was filled, false when an existing session was reused.
  */
-async function ensureLoggedIn( page, { url, user, pwd } ) {
-	await page.goto( `${ url }/wp-admin/`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+async function ensureLoggedIn( page, { url, user, pwd }, timeout = 60000 ) {
+	await page.goto( `${ url }/wp-admin/`, { waitUntil: 'domcontentloaded', timeout } );
 	if ( ! /wp-login\.php/.test( page.url() ) ) {
 		return false;
 	}
 	await page.fill( '#user_login', user );
 	await page.fill( '#user_pass', pwd );
-	await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: 90000, waitUntil: 'commit' } ), page.click( '#wp-submit' ) ] );
+	await Promise.all( [ page.waitForURL( /wp-admin/, { timeout: Math.max( 90000, timeout ), waitUntil: 'commit' } ), page.click( '#wp-submit' ) ] );
 	return true;
 }
 

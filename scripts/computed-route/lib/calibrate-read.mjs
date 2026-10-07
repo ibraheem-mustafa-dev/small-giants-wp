@@ -4,6 +4,7 @@
 // aria-controls (a cart dialog moved to <body>, a drawer) is keyed `@controls > <path>` (`@controls:2` for a second).
 import { WIDTHS, CAL_PREFIX, READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
+import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 
 export const SCROLL_Y = 600;
 
@@ -162,11 +163,11 @@ async function readUnderTrigger( page, instances, n, inst ) {
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
 async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
-	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
+	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
 	// are still read.
 	try {
-		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
+		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
 	} catch {
 		// The page loaded and the instance never appeared: the block rendered nothing (an early return in its render.php).
 		const wrappers = await page.locator( '[class*="cr-cal-"]' ).count();

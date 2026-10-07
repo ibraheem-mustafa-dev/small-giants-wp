@@ -24,6 +24,13 @@ test( 'MUST FAIL (CR4, a large calibration page timed out loading the editor at 
 	const src = fs.readFileSync( new URL( '../../wp-build-page.js', import.meta.url ), 'utf8' );
 	assert.equal( ( src.match( /timeout:\s*60000/g ) || [] ).length, 0, 'no editor wait keeps a hardcoded 60 s' );
 	assert.ok( ( src.match( /args\.editorTimeout/g ) || [] ).length >= 6 );
+	// The calibration run's own loads of that page (the login and the front-end reads) read the same limit.
+	for ( const f of [ '../lib/calibrate-read.mjs', '../lib/calibrate-content.mjs' ] ) {
+		const text = fs.readFileSync( new URL( f, import.meta.url ), 'utf8' );
+		assert.equal( ( text.match( /timeout:\s*60000/g ) || [] ).length, 0, `${ f } keeps no hardcoded 60 s` );
+		assert.match( text, /timeout: EDITOR_TIMEOUT_MS/ );
+	}
+	assert.match( fs.readFileSync( new URL( '../calibrate.mjs', import.meta.url ), 'utf8' ), /ensureLoggedIn\( shared\.page, env, EDITOR_TIMEOUT_MS \)/ );
 } );
 
 test( 'a fixture names its own chunk size; a bad value falls back to the default', () => {

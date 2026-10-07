@@ -17,7 +17,7 @@ import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
-import { CHILD_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
 import { WIDTHS, buildTree, slotFor, mergeSetting, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, readAll } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
@@ -71,14 +71,14 @@ async function openBrowser( site, env ) {
 	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
 	if ( process.env.SGS_CDP_URL ) {
 		const attached = await wpSession.connectShared( chromium );
-		await wpSession.ensureLoggedIn( attached.page, env );
+		await wpSession.ensureLoggedIn( attached.page, env, EDITOR_TIMEOUT_MS );
 		return attached;
 	}
 	closeOnExit.closeBrowserOnExit();
 	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
 	// or a headed window lays the page out about 15px narrower than its viewport.
 	const shared = await wpSession.launchShared( chromium, { profileDir: path.join( CACHE, `.profile-${ site }` ), headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars', ...closeOnExit.browserOwnerArgs() ] } );
-	await wpSession.ensureLoggedIn( shared.page, env );
+	await wpSession.ensureLoggedIn( shared.page, env, EDITOR_TIMEOUT_MS );
 	return shared;
 }
 

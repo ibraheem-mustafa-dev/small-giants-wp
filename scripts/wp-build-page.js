@@ -323,7 +323,7 @@ async function main() {
 	const page = shared ? shared.page : await context.newPage();
 	try {
 		try {
-			await wpSession.ensureLoggedIn( page, { url, user, pwd } );
+			await wpSession.ensureLoggedIn( page, { url, user, pwd }, args.editorTimeout );
 		} catch ( e ) {
 			fail( 2, `login failed: ${ e.message }` );
 		}

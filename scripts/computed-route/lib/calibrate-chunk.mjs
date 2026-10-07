@@ -5,7 +5,8 @@
 // at the 300-second limit for a block with several hundred instances (sgs/business-info plans 343).
 export const NODE_HEAP_FLAG = '--max-old-space-size=8192';
 export const MIN_CHUNK = 1;
-// How long each page load, editor boot and save of a calibration page may take, and the whole child's limit (login,
+// How long each page load (the login, the editor, the save, and the front-end reads in calibrate-read.mjs and
+// calibrate-content.mjs), editor boot and save of a calibration page may take, and the whole child's limit (login,
 // the editor load, the save and the reload that reads the save back). A chunk is a large page by design: on the local
 // mirror a 744-block page took 150 s to return its edit screen, then 1.3 s to boot (2026-10-07), against
 // wp-build-page.js's 60 s default.

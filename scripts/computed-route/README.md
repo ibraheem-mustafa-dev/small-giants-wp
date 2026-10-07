@@ -271,7 +271,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 
 ### `lib/calibrate-chunk.mjs`
 - `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.
-- `EDITOR_TIMEOUT_MS`, `CHILD_TIMEOUT_MS`: the `--editor-timeout` each page load, editor boot and save of a calibration page gets (240 s; `wp-build-page.js` defaults to 60 s), and the whole child's limit (three times that: login, load, save and the read-back reload). CR4: a 744-block `sgs/nav-bar-menu` page took 150 s to return its edit screen on the local mirror.
+- `EDITOR_TIMEOUT_MS`, `CHILD_TIMEOUT_MS`: the limit each load of a calibration page gets: `--editor-timeout` for `wp-build-page.js`'s page load, editor boot and save, the login (`scripts/lib/wp-session.js::ensureLoggedIn`'s timeout argument), and the front-end reads in `lib/calibrate-read.mjs` and `lib/calibrate-content.mjs` (240 s; `wp-build-page.js` defaults to 60 s), and the whole child's limit (three times that: login, load, save and the read-back reload). CR4: a 744-block `sgs/nav-bar-menu` page took 150 s to return its edit screen on the local mirror.
 - `buildSpawnArgs(script, args)` → the child's argv with the heap flag, so a large block's build is not killed for memory.
 - `chunkSizeFor(block, fixture, env)` → the fixture's own `chunk`, else `SGS_CAL_CHUNK`, else `CHUNK` (150).
 - `halveChunk(size)` → the next size down, floored at `MIN_CHUNK`.

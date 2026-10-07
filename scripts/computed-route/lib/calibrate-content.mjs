@@ -6,6 +6,7 @@
 import { WIDTHS, CAL_PREFIX } from './calibrate-props.mjs';
 import { preconditionsFor } from './calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
+import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 
 // The marker a text setting prints: letters and digits only, so esc_html, esc_attr, sanitize_text_field and wp_kses
 // all leave it unchanged, wp_trim_words cannot split it (it carries no space), and percent-encoding is a no-op. It is
@@ -210,8 +211,8 @@ export async function readContentAll( page, url, instances, needles ) {
 		const p = await ctx.newPage();
 		try {
 			await p.setViewportSize( { width: w, height: 900 } );
-			await p.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: 60000 } );
-			await p.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: 60000 } );
+			await p.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
+			await p.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
 			await p.waitForTimeout( 800 );
 			out[ w ] = await p.evaluate( readContentInPage, [ instances.length, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ] );
 		} finally {
