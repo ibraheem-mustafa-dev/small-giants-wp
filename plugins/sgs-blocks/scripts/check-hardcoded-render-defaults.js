@@ -2087,8 +2087,18 @@ function readBlockPhpFiles( blockDir ) {
 	walk( blockDir );
 	// A file named for the block (`<slug>-*.php`) is the block's own code wherever it is
 	// required from, so it is followed at any depth; any other file only one hop.
+	// A file named for a longer-named sibling block (`nav-drawer-menu-*.php` from block
+	// `nav-drawer`) belongs to that sibling.
 	const slugPrefix = path.basename( blockDir ) + '-';
-	const queue      = files.slice();
+	let siblingPrefixes = [];
+	try {
+		siblingPrefixes = fs.readdirSync( path.dirname( blockDir ), { withFileTypes: true } )
+			.filter( ( e ) => e.isDirectory() && e.name.startsWith( slugPrefix ) )
+			.map( ( e ) => e.name + '-' );
+	} catch ( err ) {
+		// An unreadable parent directory leaves no siblings to exclude.
+	}
+	const queue = files.slice();
 	for ( let hop = 0; hop < queue.length; hop++ ) {
 		const f = queue[ hop ];
 		const isFirstHop = ! f.followed; // a file of the block's own directory
@@ -2097,7 +2107,8 @@ function readBlockPhpFiles( blockDir ) {
 			if ( ! target || seen.has( target ) ) {
 				continue;
 			}
-			const isOwn = path.basename( target ).startsWith( slugPrefix );
+			const targetName = path.basename( target );
+			const isOwn      = targetName.startsWith( slugPrefix ) && ! siblingPrefixes.some( ( p ) => targetName.startsWith( p ) );
 			if ( ! isFirstHop && ! isOwn ) {
 				continue;
 			}
@@ -2226,6 +2237,38 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 	return { controls, wildcardProps };
 }
 
+const TERNARY_AFTER_RE = /^\s*\.\s*\((?:[^()]|\([^()]*\))*\?/;
+
+/**
+ * The class names a `class="…"` value holds. A value can be glued from PHP
+ * pieces (`sgs-x__orn' . ( $on ? ' sgs-x__orn--swap' : '' ) . '`): a quote on a
+ * token is a string boundary, not part of the class. A literal that ends in a
+ * quote and is followed by a plain call or variable (`'x--w' . esc_attr( $w )`)
+ * is only the front of a class, and a literal glued after a `.` onto code
+ * (`$base . '__pagination'`) is only the back of one, so neither is a class.
+ */
+function classValueTokens( value ) {
+	const text = value.replace( /<\?[\s\S]*?\?>/g, ' ' );
+	const out  = [];
+	for ( const m of text.matchAll( /\S+/g ) ) {
+		const raw    = m[ 0 ];
+		const name   = raw.replace( /^'+|'+$/g, '' );
+		const before = text.slice( 0, m.index ).trimEnd().slice( -1 );
+		const after  = text.slice( m.index + raw.length );
+		if ( ! /^[A-Za-z_][\w-]*$/.test( name ) || /[-_]$/.test( name ) ) {
+			continue;
+		}
+		if ( raw.startsWith( "'" ) && '.' === before ) {
+			continue;
+		}
+		if ( raw.endsWith( "'" ) && /^\s*\./.test( after ) && ! TERNARY_AFTER_RE.test( after ) ) {
+			continue;
+		}
+		out.push( name );
+	}
+	return out;
+}
+
 /** Literal-HTML markup tree of the block: instances with their class sets and parent links. */
 function buildMarkupModel( files, rootClasses ) {
 	const instances = [];
@@ -2251,11 +2294,7 @@ function buildMarkupModel( files, rootClasses ) {
 			}
 			const attrText = m[ 3 ];
 			const cm       = /class\s*=\s*\\?(["'])([\s\S]*?)\\?\1/.exec( attrText );
-			const classes  = new Set(
-				// A token that touches a PHP string quote (`'sgs-x__orn' . ( … ) . '`) is the literal
-				// piece of a concatenated class value; its quote is not part of the class.
-				cm ? cm[ 2 ].replace( /<\?[\s\S]*?\?>/g, ' ' ).split( /\s+/ ).map( ( c ) => c.replace( /^'+|'+$/g, '' ) ).filter( ( c ) => /^[A-Za-z_][\w-]*$/.test( c ) && ! /[-_]$/.test( c ) ) : []
-			);
+			const classes  = new Set( cm ? classValueTokens( cm[ 2 ] ) : [] );
 			let root = /wrapper_attr|get_block_wrapper/i.test( attrText );
 			for ( const c of classes ) {
 				if ( rootClasses.has( c ) ) {
@@ -4192,7 +4231,10 @@ function selfTestRequireHop( assert ) {
 		fs.mkdirSync( blockDir, { recursive: true } );
 		fs.writeFileSync( path.join( inc, 'b.php' ), "<?php\nrequire_once __DIR__ . '/c.php';\nrequire_once __DIR__ . '/x-part.php';\n?>\n<section class=\"sgs-hop-b\"></section>\n", 'utf8' );
 		// Files named for the block (`x-*.php`) are followed at any depth: they are the block's own.
-		fs.writeFileSync( path.join( inc, 'x-part.php' ), "<?php\nrequire_once __DIR__ . '/x-deeper.php';\n?>\n<i class=\"sgs-hop-xpart\"></i>\n", 'utf8' );
+		fs.writeFileSync( path.join( inc, 'x-part.php' ), "<?php\nrequire_once __DIR__ . '/x-deeper.php';\nrequire_once __DIR__ . '/x-y-sibling.php';\n?>\n<i class=\"sgs-hop-xpart\"></i>\n", 'utf8' );
+		// `x-y-sibling.php` belongs to the longer-named sibling block `x-y`, so block `x` does not follow it.
+		fs.mkdirSync( path.join( tmp, 'blocks', 'x-y' ) );
+		fs.writeFileSync( path.join( inc, 'x-y-sibling.php' ), '<?php ?>\n<u class="sgs-hop-xysibling"></u>\n', 'utf8' );
 		fs.writeFileSync( path.join( inc, 'x-deeper.php' ), '<?php ?>\n<u class="sgs-hop-xdeeper"></u>\n', 'utf8' );
 		fs.writeFileSync(
 			path.join( inc, 'c.php' ),
@@ -4250,6 +4292,7 @@ function selfTestRequireHop( assert ) {
 		assert( 'one hop: markup in B (required by the block) IS in the model (hop 1 followed)', classes.has( 'sgs-hop-b' ), true );
 		assert( 'one hop: markup in C (required by B, not by the block) is NOT in the model (hop 2 not followed)', classes.has( 'sgs-hop-c' ), false );
 		assert( 'one hop: C is never even read', names.includes( 'c.php' ), false );
+		assert( 'block-named files: a file named for a longer-named sibling block (x-y-*.php) is not followed from block x', classes.has( 'sgs-hop-xysibling' ), false );
 		assert( 'block-named files: x-part.php (hop 2) and x-deeper.php (hop 3), both named for the block, are in the model', [ classes.has( 'sgs-hop-xpart' ), classes.has( 'sgs-hop-xdeeper' ) ], [ true, true ] );
 		assert( 'require forms: parenthesised require_once and bare require are both followed', [ classes.has( 'sgs-hop-paren' ), classes.has( 'sgs-hop-plain' ) ], [ true, true ] );
 		assert( 'require forms: a require inside a // or /* */ comment is not followed', classes.has( 'sgs-hop-commented' ), false );
@@ -4338,6 +4381,15 @@ function selfTestParamBinding( assert ) {
  */
 function selfTestMarkupSplice( assert ) {
 	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] markup a function returns is placed in its caller\'s element\n\n' );
+	assert(
+		'class tokens: a literal class followed by a run-time ternary keeps both its own class and the ternary\'s literal',
+		classValueTokens( "sgs-x__orn' . ( empty( $G['s'] ) ? '' : ' sgs-x__orn--swap' ) . '" ),
+		[ 'sgs-x__orn', 'sgs-x__orn--swap' ]
+	);
+	assert( 'class tokens: a ternary branch literal is a class', classValueTokens( "sgs-x ' . ( $a ? 'sgs-x--on' : '' ) . '" ), [ 'sgs-x', 'sgs-x--on' ] );
+	assert( 'class tokens: a literal glued onto a variable (`$base . \'__pagination\'`) is a suffix, not a class', classValueTokens( "$base . '__pagination'" ), [] );
+	assert( 'class tokens: a literal prefix followed by a call (`\'x--w\' . esc_attr( $w )`) is not a whole class', classValueTokens( "sgs-x__title--w' . esc_attr( $w ) . '" ), [] );
+	assert( 'class tokens: plain classes are unchanged', classValueTokens( 'a  b-c' ), [ 'a', 'b-c' ] );
 	const label =
 		"<?php\nfunction sgs_x_label() {\n\t$o = '<span class=\"sgs-x__orn' . ( empty( $GLOBALS['sgs_x_swap'] ) ? '' : ' sgs-x__orn--swap' ) . '\" aria-hidden=\"true\">*</span>';\n\treturn $o . '<span class=\"sgs-x__txt\">T</span>';\n}\n";
 	const control = "$css .= sgs_typography_css_rule( $attributes, 'item', \"{$root_sel} .sgs-x__link\" );\n";
