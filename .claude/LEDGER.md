@@ -79,19 +79,16 @@ accepted differences. Bean approved 5 of the 7 candidate fixes. ⚠️ Compare s
 a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — 9 more SHIPPED 2026-10-07** (`75a583e23`..`fdceca53f`), deployed `0cc773b19`. Ceilings
-  **CLASS-2 48, CLASS-3 2, CANNOT-RESOLVE 61**, measured; self-test 24/24; db-consistency 38→0.
-  **13 of 26 FIX closed, 13 open** (triage §3.1/§5): `sgs/form` tile icon/label, review term,
-  consent text; `option-picker` pill text. Surface rules + 4 gate costs: auto memory
-  `installing-a-typography-surface-trips-four-gates` (ONE panel via `targets`, inline selector,
-  `:where()`, and a parent painting a CHILD block needs `typographyPreviewCss` or L3 gaps block
-  EVERY deploy). Shared-include blindness FIXED.
-  ⚠️ **VERIFY INCOMPLETE.** Live-proved only: process-steps defaults at 1440+375, sham
-  controls, 0 sheets skipped. `countdown-timer`/`product-faq` have **0 live instances** (fixture
-  needed); set-a-control + editor halves UNRUN. Script ready, never run:
-  `scratchpad/verify-f3-e14-surfaces.mjs`.
-  **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror — not
-  now (§6).
+- **F3/E14 — every FIX declaration resolved, VERIFIED LIVE 2026-10-07** (`87eb25957`..`cd004d31a`, docs
+  `84b410d3a`); eye-care-test marker `235d54de`. Ceilings **CLASS-2 35, CLASS-3 1, CANNOT-RESOLVE 55**
+  (measured on a clean worktree; self-test 31/31). 24 of 26 closed by a control, 2 `cta-section` headline
+  declarations DEFENSIBLE on a live measurement (theme heading styles block inheritance). Live: 65/65 on the
+  first nine surfaces, then 99 front-end + 3 editor checks PASS; a before/after run on old vs new code shows
+  one default change only, the stated `Inter` deletion. Evidence + method:
+  `plugins/sgs-blocks/reports/2026-10-07-f3-e14-live-verification.md`. Remaining track work: triage
+  (`plugins/sgs-blocks/reports/f3-e14-triage.md`) §6 "Still open" and §7 gate gaps (`var()` admission first).
+  Rules: auto memory `installing-a-typography-surface-trips-four-gates`.
+  **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route cleanup DONE 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, `WAVE4-RESULTS.md`).
   ⚠️ **Its F 193 → 173 is mostly LOST COVERAGE, not fixes:** a 2026-10-06 re-pairing emptied all four mega
   panels' walker configs (rows 493 → 48, F 16 → 2), so 14 of the 20 fall is unmeasured rows. Re-pair them

@@ -793,11 +793,13 @@ Row counts drift — query `/sgs-db` (or the generated DB catalogue below) rathe
 
 ### canonical_slot assignment
 
-`assign-canonical.py` reads the `slots` + `roles` schema and backfills `canonical_slot`, `role` and `derived_selector`. Re-run after every slot-vocabulary addition:
+`assign-canonical.py` reads the `slots` + `roles` schema and backfills `canonical_slot`, `role` and `derived_selector`. Re-run it after every slot-vocabulary addition **through Stage 1**, from a clean detached-HEAD worktree, never on its own:
 
 ```bash
-python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py
+python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1
 ```
+
+Stage 1 runs it as a tail step and then applies `scripts/attr-classification-overrides.json` (sub-step C) as the final writer. Run alone after a reseed, it overwrites those corrections (a standalone run on 2026-10-07 changed 407 roles). A timeout (900s cap) or a non-zero exit stops the reseed with exit 1 (`sgs-update-v2.py::_run_canonical_assignment`): it seeds `boolean-visibility`, so a run that skips it would leave boolean attrs on fallback roles while looking successful.
 
 - **It writes the one physical `sgs-framework.db`.** uimax holds neither `block_attributes` nor `slots`; the `.claude` and `.agents` DB paths are the *same file* via an NTFS junction (not two copies) — so a single write reaches every path.
 - **It is the deterministic mechanism for content-area `canonical_slot` tagging.** `assign-canonical.py` runs automatically as `/sgs-update` Stage 1; with the `content` element-slot row and the `Width`/`Padding`→`layout` `property_suffixes` rows in place, it tags the content-area attrs (`contentWidth`/`contentPadding*`/`contentMaxWidth*`) `content`/`layout` deterministically — no manual seed step.

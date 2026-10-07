@@ -756,3 +756,6 @@ python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py --ski
 
 **Args:** `--skip-tier-a`, `--skip-tier-b`, `--apply`, `--diff-file <path>`,
 `--role-detection`, `--apply-roles`, `--role-diff-file <path>`, `--recapture-baseline`.
+
+Operationally it runs as `sgs-update-v2.py` Stage 1's tail step, before the attr-classification overrides;
+run `sgs-update-v2.py --stage 1` rather than this script alone, which would overwrite those overrides.
