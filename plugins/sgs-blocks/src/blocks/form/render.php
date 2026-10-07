@@ -377,9 +377,9 @@ if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_
 // nothing, so an untouched form keeps the stylesheet's own values.
 $submit_box_decls = array();
 $submit_padding_box = is_array( $attributes['submitPadding'] ?? null ) ? $attributes['submitPadding'] : array();
-$submit_padding     = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $submit_padding_box ) : null;
+$submit_padding     = function_exists( 'sgs_box_object_longhands' ) ? sgs_box_object_longhands( $submit_padding_box, 'padding' ) : null;
 if ( null !== $submit_padding ) {
-	$submit_box_decls[] = 'padding:' . $submit_padding;
+	$submit_box_decls[] = $submit_padding;
 }
 $submit_min_height = absint( $attributes['submitMinHeight'] ?? 0 );
 if ( 0 !== $submit_min_height ) {

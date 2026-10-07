@@ -492,17 +492,17 @@ if ( $sgs_max_width ) {
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
-$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
-$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
+$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
+$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
-	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+	$tablet_box_decls[] = "{$padding_tab_val}";
 }
 if ( null !== $margin_tab_val ) {
-	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( $tablet_box_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
@@ -510,10 +510,10 @@ if ( $tablet_box_decls ) {
 
 $mobile_box_decls = array();
 if ( null !== $padding_mob_val ) {
-	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+	$mobile_box_decls[] = "{$padding_mob_val}";
 }
 if ( null !== $margin_mob_val ) {
-	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';

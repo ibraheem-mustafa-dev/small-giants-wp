@@ -508,19 +508,19 @@ if ( ! empty( $base_style_engine_args ) ) {
 // @media rule on the SAME #{uid} selector, so plain source-order cascade lets
 // the narrower device tier win. Device-tier breakpoints are 1023/767 (§B2 —
 // the 768/1024 standard), NOT arbitrary visual breakpoints.
-$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
-$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
-$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
+$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
+$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $margin_tab_val ) {
-	$tablet_box_decls[] = "margin:{$margin_tab_val}";
+	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( null !== $padding_tab_val ) {
-	$tablet_box_decls[] = "padding:{$padding_tab_val}";
+	$tablet_box_decls[] = "{$padding_tab_val}";
 }
 if ( null !== $radius_tab_val ) {
 	$tablet_box_decls[] = "border-radius:{$radius_tab_val}";
@@ -531,10 +531,10 @@ $css_tablet_box = $tablet_box_decls
 
 $mobile_box_decls = array();
 if ( null !== $margin_mob_val ) {
-	$mobile_box_decls[] = "margin:{$margin_mob_val}";
+	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( null !== $padding_mob_val ) {
-	$mobile_box_decls[] = "padding:{$padding_mob_val}";
+	$mobile_box_decls[] = "{$padding_mob_val}";
 }
 if ( null !== $radius_mob_val ) {
 	$mobile_box_decls[] = "border-radius:{$radius_mob_val}";

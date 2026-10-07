@@ -7,7 +7,7 @@
  *
  * @package SGS\Blocks
  */
-import { colourVar, sgsBorderPreview, tierBoxShorthand, tierValueOf } from '../../utils';
+import { colourVar, sgsBorderPreview, tierBoxLonghands, tierValueOf } from '../../utils';
 
 /**
  * @param {Object} attributes Block attributes.
@@ -20,10 +20,7 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 
 	// Showcase fills its full-screen frame, so render.php skips the compact box.
 	if ( 'showcase' !== flowLayout ) {
-		const paddingPreview = tierBoxShorthand( padding, tier, undefined, true );
-		if ( paddingPreview ) {
-			style.padding = paddingPreview;
-		}
+		Object.assign( style, tierBoxLonghands( padding, tier, 'padding' ) );
 		if ( maxWidth ) {
 			style.maxWidth = maxWidth;
 			style.marginLeft = 'auto';

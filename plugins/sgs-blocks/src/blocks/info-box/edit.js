@@ -20,7 +20,7 @@ import {
 	colourVar,
 	usePreviewTier,
 	typographyPreviewStyle,
-	tierBoxShorthand,
+	tierBoxLonghands,
 	textPaintPreview,
 	linkColourPreviewCss,
 	textIndentPreviewCss,
@@ -143,10 +143,7 @@ function buildPreviewStyle( attributes, tier ) {
 	// PanelBody, which is fully SgsBorderControl-driven).
 	Object.assign( preview, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier ) );
 
-	const paddingPreview = tierBoxShorthand( padding, tier );
-	if ( paddingPreview ) preview.padding = paddingPreview;
-	const marginPreview = tierBoxShorthand( margin, tier );
-	if ( marginPreview ) preview.margin = marginPreview;
+	Object.assign( preview, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
 
 	if ( maxWidth ) {
 		preview.maxWidth = maxWidth;

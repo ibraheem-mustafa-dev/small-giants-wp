@@ -29,7 +29,7 @@ import {
   SpacingControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
-import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxShorthand, sgsBorderPreview } from "../../utils";
+import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
 const ICON_SIZE_OPTIONS = [
@@ -257,10 +257,10 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     if (numberFontSize) previewStyle["--sgs-ilist-num-size"] = numberFontSize;
     if (numberFontWeight) previewStyle["--sgs-ilist-num-weight"] = numberFontWeight;
   }
-  const paddingPreview = tierBoxShorthand( padding, previewTier, ["top", "right", "bottom", "left"], true );
-  if (paddingPreview) previewStyle.padding = paddingPreview;
-  const marginPreview = tierBoxShorthand( margin, previewTier, ["top", "right", "bottom", "left"], true );
-  if (marginPreview) previewStyle.margin = marginPreview;
+  const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+  Object.assign( previewStyle, paddingLonghands );
+  const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
+  Object.assign( previewStyle, marginLonghands );
   Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient }, previewTier ) );
 
   const resolvedMarkerType = markerType || "icon";

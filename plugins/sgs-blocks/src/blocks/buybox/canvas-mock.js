@@ -19,9 +19,8 @@ import {
 	backgroundPaintPreview,
 	textPaintPreview,
 	wrapperBorderPreview,
-	tierBoxShorthand,
+	tierBoxLonghands,
 	typographyPreviewStyle,
-	BOX_SIDE_KEYS,
 } from '../../utils';
 
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
@@ -57,10 +56,7 @@ export function buyboxRootStyle( attributes, tier, palette ) {
 		...textPaintPreview( attributes.textColour, attributes.textColourGradient, palette ),
 	};
 	Object.assign( style, wrapperBorderPreview( attributes, tier, palette ) );
-	const margin = tierBoxShorthand( attributes.margin, tier, BOX_SIDE_KEYS, true );
-	if ( margin ) {
-		style.margin = margin;
-	}
+	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
 	return style;
 }
 

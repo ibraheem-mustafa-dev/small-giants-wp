@@ -17,7 +17,7 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
-import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
+import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
@@ -235,14 +235,10 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	// colour panel and the `shadow` support declared in block.json).
 	Object.assign( previewStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, previewTier, undefined, { wholeTier: true } ) );
 
-	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( paddingPreview ) {
-		previewStyle.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( marginPreview ) {
-		previewStyle.margin = marginPreview;
-	}
+	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+	Object.assign( previewStyle, paddingLonghands );
+	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
+	Object.assign( previewStyle, marginLonghands );
 
 	return previewStyle;
 }

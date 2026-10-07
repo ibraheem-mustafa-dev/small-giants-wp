@@ -14,8 +14,8 @@ import {
 	resolveBackgroundPaintPreviewStyle,
 	resolveShadowPreviewComposed,
 	tierLengthPreview,
-	tierBoxShorthand,
 	typographyPreviewStyle,
+	tierBoxLonghands,
 } from '../../utils';
 
 /**
@@ -51,12 +51,8 @@ export function cardGridPreview( attributes, tier, palette ) {
 		itemStyle[ '--sgs-card-shadow' ] = shadow;
 	}
 
-	const bodyPadding = tierBoxShorthand( attributes.cardPadding, tier );
 	const imageWrapStyle = {};
-	const imagePadding = tierBoxShorthand( attributes.imagePadding, tier );
-	if ( imagePadding ) {
-		imageWrapStyle.padding = imagePadding;
-	}
+	Object.assign( imageWrapStyle, tierBoxLonghands( attributes.imagePadding, tier, 'padding' ) );
 	const imageHeight = tierLengthPreview( attributes.imageHeight, tier );
 	if ( imageHeight ) {
 		imageWrapStyle.height = imageHeight;
@@ -65,7 +61,7 @@ export function cardGridPreview( attributes, tier, palette ) {
 
 	return {
 		itemStyle,
-		bodyStyle: bodyPadding ? { padding: bodyPadding } : {},
+		bodyStyle: tierBoxLonghands( attributes.cardPadding, tier, 'padding' ),
 		imageWrapStyle,
 		titleMarginBottom: tierLengthPreview( attributes.titleMarginBottom ),
 		titleTypography: typographyPreviewStyle( attributes, 'title', tier ),

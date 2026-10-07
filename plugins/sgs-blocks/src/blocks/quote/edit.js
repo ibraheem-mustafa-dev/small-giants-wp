@@ -52,7 +52,7 @@ import {
 	isTierBoxEmpty,
 	usePreviewTier,
 	typographyPreviewStyle,
-	spacingPreview,
+	tierBoxLonghands,
 	backgroundPaintPreview,
 	resolveTier,
 	sgsBorderPreview,
@@ -147,7 +147,7 @@ function buildWrapperStyle( attributes, tier ) {
 
 	Object.assign( wrapperStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ) );
 
-	Object.assign( wrapperStyle, spacingPreview( { padding, margin }, tier ) );
+	Object.assign( wrapperStyle, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
 
 	if ( maxWidth ) {
 		wrapperStyle.maxWidth = maxWidth;

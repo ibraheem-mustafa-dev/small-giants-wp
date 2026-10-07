@@ -11,7 +11,7 @@
 import {
 	backgroundPaintPreview,
 	textPaintPreview,
-	tierBoxShorthand,
+	tierBoxLonghands,
 	typographyPreviewStyle,
 	wrapperBorderPreview,
 } from '../../utils';
@@ -34,14 +34,7 @@ export function buildWrapperStyle( attributes, tier, palette, bareBox ) {
 		...typographyPreviewStyle( attributes, '', tier ),
 	};
 	if ( ! bareBox ) {
-		const paddingPreview = tierBoxShorthand( padding, tier );
-		if ( paddingPreview ) {
-			style.padding = paddingPreview;
-		}
-		const marginPreview = tierBoxShorthand( margin, tier );
-		if ( marginPreview ) {
-			style.margin = marginPreview;
-		}
+		Object.assign( style, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
 		if ( maxWidth ) {
 			style.maxWidth = maxWidth;
 		}

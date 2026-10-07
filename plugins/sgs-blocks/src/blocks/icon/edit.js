@@ -12,7 +12,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, tierBoxShorthand, usePreviewTier } from '../../utils';
+import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
 
 /**
  * Resolve a shape-padding value to a valid CSS string for editor preview.
@@ -173,14 +173,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( paddingPreview ) {
-		previewStyle.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( marginPreview ) {
-		previewStyle.margin = marginPreview;
-	}
+	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+	Object.assign( previewStyle, paddingLonghands );
+	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
+	Object.assign( previewStyle, marginLonghands );
 
 	const blockProps = useBlockProps( { className, style: previewStyle } );
 

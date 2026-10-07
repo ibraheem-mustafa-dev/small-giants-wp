@@ -14,7 +14,8 @@ import {
 	resolveTextColourPreviewStyle,
 	backgroundPaintPreview,
 	sgsBorderPreview,
-	tierBoxShorthand,
+	
+	tierBoxLonghands,
 	typographyPreviewStyle,
 	isCssGradient,
 } from '../../utils';
@@ -50,14 +51,10 @@ export function buildWrapperStyle( attributes, tier, palette ) {
 	// colour, style or width overrides part by part (render.php emits each alone).
 	Object.assign( style, sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, tier, palette, { defaultBorder: 'bordered' === attributes.cardStyle } ) );
 
-	const padding = tierBoxShorthand( attributes.padding, tier );
-	if ( padding ) {
-		style.padding = padding;
-	}
-	const margin = tierBoxShorthand( attributes.margin, tier );
-	if ( margin ) {
-		style.margin = margin;
-	}
+	const paddingLonghands = tierBoxLonghands( attributes.padding, tier, 'padding' );
+	Object.assign( style, paddingLonghands );
+	const marginLonghands = tierBoxLonghands( attributes.margin, tier, 'margin' );
+	Object.assign( style, marginLonghands );
 
 	if ( attributes.maxWidth ) {
 		style.maxWidth = attributes.maxWidth;

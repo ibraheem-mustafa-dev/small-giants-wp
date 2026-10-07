@@ -166,17 +166,17 @@ $panel_padding_tiers  = sgs_responsive_normalise_object( $attributes['panelPaddi
 $panel_padding_desktop = is_array( $panel_padding_tiers['desktop'] ?? null ) ? $panel_padding_tiers['desktop'] : array();
 $panel_padding_tablet   = is_array( $panel_padding_tiers['tablet'] ?? null ) ? $panel_padding_tiers['tablet'] : array();
 $panel_padding_mobile   = is_array( $panel_padding_tiers['mobile'] ?? null ) ? $panel_padding_tiers['mobile'] : array();
-$panel_padding_desktop_val = sgs_box_object_shorthand( $panel_padding_desktop );
-$panel_padding_tablet_val  = sgs_box_object_shorthand( $panel_padding_tablet );
-$panel_padding_mobile_val  = sgs_box_object_shorthand( $panel_padding_mobile );
+$panel_padding_desktop_val = sgs_box_object_longhands( $panel_padding_desktop, 'padding' );
+$panel_padding_tablet_val  = sgs_box_object_longhands( $panel_padding_tablet, 'padding' );
+$panel_padding_mobile_val  = sgs_box_object_longhands( $panel_padding_mobile, 'padding' );
 if ( null !== $panel_padding_desktop_val ) {
-	$scoped_css[] = $root_sel . ' .sgs-language-switch__panel{padding:' . $panel_padding_desktop_val . ';}';
+	$scoped_css[] = $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_desktop_val . ';}';
 }
 if ( null !== $panel_padding_tablet_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . ' .sgs-language-switch__panel{padding:' . $panel_padding_tablet_val . ';}}';
+	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_tablet_val . ';}}';
 }
 if ( null !== $panel_padding_mobile_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . ' .sgs-language-switch__panel{padding:' . $panel_padding_mobile_val . ';}}';
+	$scoped_css[] = '@media(max-width:767px){' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_mobile_val . ';}}';
 }
 
 // ---------------------------------------------------------------------------

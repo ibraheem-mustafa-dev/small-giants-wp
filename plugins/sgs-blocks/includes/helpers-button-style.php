@@ -210,9 +210,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// (the same one sgs/label + the product-card trial tag use, via
 		// sgs_label_box_css_rule()). An unset side falls back to '0' inside the
 		// helper so the shorthand stays valid.
-		$padding_shorthand = sgs_box_object_shorthand( $padding_obj );
+		$padding_shorthand = sgs_box_object_longhands( $padding_obj, 'padding' );
 		if ( null !== $padding_shorthand ) {
-			$base_decls[] = 'padding:' . $padding_shorthand . ';';
+			$base_decls[] = $padding_shorthand . ';';
 		}
 		if ( 'full' === $width_type ) {
 			$base_decls[] = 'width:100%;';

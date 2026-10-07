@@ -779,17 +779,17 @@ if ( $is_split ) {
 // ── splitMediaPadding: box-object family — base + tablet + mobile (on the <img>
 // element). Gated on $is_split, matching the old emission's scope.
 if ( $is_split ) {
-	$img_pad_base = sgs_box_object_shorthand( $image_padding_obj );
+	$img_pad_base = sgs_box_object_longhands( $image_padding_obj, 'padding' );
 	if ( null !== $img_pad_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_base . '}';
+		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . $img_pad_base . '}';
 	}
-	$img_pad_tab = sgs_box_object_shorthand( $image_padding_tablet_obj );
+	$img_pad_tab = sgs_box_object_longhands( $image_padding_tablet_obj, 'padding' );
 	if ( null !== $img_pad_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_tab . '}}';
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{' . $img_pad_tab . '}}';
 	}
-	$img_pad_mob = sgs_box_object_shorthand( $image_padding_mobile_obj );
+	$img_pad_mob = sgs_box_object_longhands( $image_padding_mobile_obj, 'padding' );
 	if ( null !== $img_pad_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{padding:' . $img_pad_mob . '}}';
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{' . $img_pad_mob . '}}';
 	}
 }
 
@@ -1011,17 +1011,17 @@ if ( isset( $image_max_height_obj['desktop'] ) && '' !== $image_max_height_obj['
 
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
-$media_pad_base = sgs_box_object_shorthand( $media_padding_obj );
+$media_pad_base = sgs_box_object_longhands( $media_padding_obj, 'padding' );
 if ( null !== $media_pad_base ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_base . '}';
+	$responsive_css .= '.' . $uid . ' .sgs-hero__media{' . $media_pad_base . '}';
 }
-$media_pad_tab = sgs_box_object_shorthand( $media_padding_tablet_obj );
+$media_pad_tab = sgs_box_object_longhands( $media_padding_tablet_obj, 'padding' );
 if ( null !== $media_pad_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_tab . '}}';
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{' . $media_pad_tab . '}}';
 }
-$media_pad_mob = sgs_box_object_shorthand( $media_padding_mobile_obj );
+$media_pad_mob = sgs_box_object_longhands( $media_padding_mobile_obj, 'padding' );
 if ( null !== $media_pad_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{padding:' . $media_pad_mob . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{' . $media_pad_mob . '}}';
 }
 
 // mediaBackground — moved here from the inline style="" on the media wrapper
@@ -1062,17 +1062,17 @@ $media_ken_burns          = ! empty( $attributes['splitMediaKenBurns'] ) && ! $m
 $media_animation_duration = isset( $attributes['splitMediaAnimationDuration'] ) ? absint( $attributes['splitMediaAnimationDuration'] ) : 20;
 
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
-$content_pad_base = sgs_box_object_shorthand( $content_padding_obj );
+$content_pad_base = sgs_box_object_longhands( $content_padding_obj, 'padding' );
 if ( null !== $content_pad_base ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_base . '}';
+	$responsive_css .= '.' . $uid . ' .sgs-hero__content{' . $content_pad_base . '}';
 }
-$content_pad_tab = sgs_box_object_shorthand( $content_padding_tablet_obj );
+$content_pad_tab = sgs_box_object_longhands( $content_padding_tablet_obj, 'padding' );
 if ( null !== $content_pad_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_tab . '}}';
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{' . $content_pad_tab . '}}';
 }
-$content_pad_mob = sgs_box_object_shorthand( $content_padding_mobile_obj );
+$content_pad_mob = sgs_box_object_longhands( $content_padding_mobile_obj, 'padding' );
 if ( null !== $content_pad_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $content_pad_mob . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{' . $content_pad_mob . '}}';
 }
 
 // ── .sgs-hero__content base layout + background — moved here from the inline

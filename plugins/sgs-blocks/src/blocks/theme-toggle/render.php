@@ -184,17 +184,17 @@ $sgs_padding_desktop = is_array( $sgs_padding_tiers['desktop'] ?? null ) ? $sgs_
 $sgs_padding_tablet  = is_array( $sgs_padding_tiers['tablet'] ?? null ) ? $sgs_padding_tiers['tablet'] : array();
 $sgs_padding_mobile  = is_array( $sgs_padding_tiers['mobile'] ?? null ) ? $sgs_padding_tiers['mobile'] : array();
 
-$sgs_padding_desktop_val = sgs_box_object_shorthand( $sgs_padding_desktop );
+$sgs_padding_desktop_val = sgs_box_object_longhands( $sgs_padding_desktop, 'padding' );
 if ( null !== $sgs_padding_desktop_val ) {
-	$scoped_css[] = $root_sel . '{padding:' . $sgs_padding_desktop_val . ';}';
+	$scoped_css[] = $root_sel . '{' . $sgs_padding_desktop_val . ';}';
 }
-$sgs_padding_tablet_val = sgs_box_object_shorthand( $sgs_padding_tablet );
+$sgs_padding_tablet_val = sgs_box_object_longhands( $sgs_padding_tablet, 'padding' );
 if ( null !== $sgs_padding_tablet_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{padding:' . $sgs_padding_tablet_val . ';}}';
+	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . $sgs_padding_tablet_val . ';}}';
 }
-$sgs_padding_mobile_val = sgs_box_object_shorthand( $sgs_padding_mobile );
+$sgs_padding_mobile_val = sgs_box_object_longhands( $sgs_padding_mobile, 'padding' );
 if ( null !== $sgs_padding_mobile_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{padding:' . $sgs_padding_mobile_val . ';}}';
+	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . $sgs_padding_mobile_val . ';}}';
 }
 
 // Border — width/style/colour (Shape B, matches notice-banner's own block-private pattern).

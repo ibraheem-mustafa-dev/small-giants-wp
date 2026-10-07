@@ -22,6 +22,25 @@ export const WIDER_TIERS = { desktop: [], tablet: [ 'desktop' ], mobile: [ 'tabl
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
 const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-duration', 'animation-delay' ];
 
+// The `block|attr` boxes still printed through the zero-filling shorthand, from the committed CR6 census
+// (plugins/sgs-blocks/scripts/migrate-box-longhands.py --survey --json). Read once. With no census every box is
+// treated as zero-filling, which seeds unset sides everywhere: the safe direction, never the reverse.
+const CENSUS = path.resolve( HERE, '../../../reports/migrations/box-longhands-census.json' );
+let zeroFillCache = null;
+function zeroFillPairs() {
+	if ( ! zeroFillCache ) {
+		let pairs = null;
+		try {
+			pairs = JSON.parse( fs.readFileSync( CENSUS, 'utf8' ) ).zeroFillPairs;
+		} catch {
+			pairs = null;
+		}
+		// A missing file, or a census written before it carried the list, seeds everywhere rather than nowhere.
+		zeroFillCache = Array.isArray( pairs ) ? new Set( pairs ) : { has: () => true };
+	}
+	return zeroFillCache;
+}
+
 let schemaIndex = null;
 // block.json attributes for a block slug, read from the plugin's block sources (not its scripts, R-47-1).
 export function blockSchema( slug ) {
@@ -350,11 +369,14 @@ export function resolve( input, ctx ) {
 		out[ t ] = f.value;
 	}
 	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
-	// A box with some sides set prints 0 for the rest (helpers-box.php::sgs_box_object_shorthand), overriding the
-	// block's own stylesheet default. So the first side written into an empty box brings the other sides at their
-	// calibrated default paint, and only the measured side changes.
+	// Most padding and margin boxes print only their set sides (sgs_box_object_longhands), so writing one side
+	// leaves the others to the stylesheet or a wider tier, and nothing is seeded. A box still printed through
+	// sgs_box_object_shorthand prints 0 for every unset side, overriding the block's own default: a border width
+	// (where 0 for an unset side is the right meaning) and the pairs in the CR6 census's zeroFillPairs. For those
+	// the first side written into an empty box brings the other sides at their calibrated default paint.
+	const seedsUnsetSides = 'border-width' === short || zeroFillPairs().has( `${ block }|${ attr }` );
 	const seedSides = ( t, existing ) => {
-		if ( ! side || ( existing && Object.keys( existing ).length ) ) {
+		if ( ! side || ! seedsUnsetSides || ( existing && Object.keys( existing ).length ) ) {
 			return {};
 		}
 		const elementKey = Object.keys( ctx.calibration.elements || {} ).find( ( k ) => loose( k ) === slot ) ?? slot;

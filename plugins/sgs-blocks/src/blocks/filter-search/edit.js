@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
-import { borderPaintPreview, textPaintPreview, tierBoxShorthand, usePreviewTier, isCssGradient } from '../../utils';
+import { borderPaintPreview, textPaintPreview, tierBoxLonghands, usePreviewTier, isCssGradient } from '../../utils';
 import FilterSearchSettings from './FilterSearchSettings';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
@@ -55,10 +55,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		: '';
 
 	const previewTier = usePreviewTier();
+	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const blockProps = useBlockProps( {
 		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
 		style: {
-			margin: tierBoxShorthand( margin, previewTier ),
+			...marginLonghands,
 			// The custom property style.css reads for the input's focus ring.
 			'--sgs-filter-search-focus': resolveColourToken( focusRingColour, colourPalette ),
 		},

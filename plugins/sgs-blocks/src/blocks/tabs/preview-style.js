@@ -5,7 +5,7 @@
  * @package SGS\Blocks
  */
 
-import { typographyPreviewStyle, boxShorthand, isCssGradient } from '../../utils';
+import { typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../utils';
 
 
 /**
@@ -53,9 +53,7 @@ export function tabsIndicatorGradientCss( attributes, scope ) {
  */
 export function tabButtonStyle( attributes, tier ) {
 	const style = typographyPreviewStyle( attributes, 'tab', tier );
-	const padding = boxShorthand( attributes.tabPadding );
-	if ( padding ) {
-		style.padding = padding;
-	}
+	// tabPadding is a flat box (one value for every device): previewed as the desktop tier, set sides only.
+	Object.assign( style, tierBoxLonghands( { desktop: attributes.tabPadding }, 'desktop', 'padding' ) );
 	return style;
 }

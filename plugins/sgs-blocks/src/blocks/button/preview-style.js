@@ -11,11 +11,10 @@ import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import {
 	backgroundPaintPreview,
 	textPaintPreview,
-	tierBoxShorthand,
+	tierBoxLonghands,
 	typographyPreviewStyle,
 	tierLengthPreview,
 	tierValueOf,
-	BOX_SIDE_KEYS,
 	isCssGradient,
 	sgsBorderPreview,
 } from '../../utils';
@@ -181,14 +180,8 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	if ( boxShadowPreview ) {
 		style.boxShadow = boxShadowPreview;
 	}
-	const paddingPreview = tierBoxShorthand( padding, tier, BOX_SIDE_KEYS );
-	if ( paddingPreview ) {
-		style.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, tier, BOX_SIDE_KEYS );
-	if ( marginPreview ) {
-		style.margin = marginPreview;
-	}
+	Object.assign( style, tierBoxLonghands( padding, tier, 'padding' ) );
+	Object.assign( style, tierBoxLonghands( margin, tier, 'margin' ) );
 	const width = tierWidth( attributes, tier );
 	if ( width ) {
 		style.width = width;

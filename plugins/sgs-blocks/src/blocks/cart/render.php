@@ -235,14 +235,14 @@ if ( ! empty( $base_margin_obj ) ) {
 	}
 }
 
-$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{margin:{$margin_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{margin:{$margin_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{{$margin_mob_val};}}";
 }
 
 // ── Cart custom-property VALUES (icon size/colour) — scoped rule on the

@@ -557,17 +557,17 @@ $card_padding_obj        = is_array( $card_padding_tiers['desktop'] ) ? $card_pa
 $card_padding_tablet_obj = is_array( $card_padding_tiers['tablet'] ) ? $card_padding_tiers['tablet'] : array();
 $card_padding_mobile_obj = is_array( $card_padding_tiers['mobile'] ) ? $card_padding_tiers['mobile'] : array();
 
-$card_pad_base = sgs_box_object_shorthand( $card_padding_obj );
+$card_pad_base = sgs_box_object_longhands( $card_padding_obj, 'padding' );
 if ( null !== $card_pad_base ) {
-	$card_grid_native_css .= $root_sel . $card_pad_sel . '{padding:' . $card_pad_base . '}';
+	$card_grid_native_css .= $root_sel . $card_pad_sel . '{' . $card_pad_base . '}';
 }
-$card_pad_tab = sgs_box_object_shorthand( $card_padding_tablet_obj );
+$card_pad_tab = sgs_box_object_longhands( $card_padding_tablet_obj, 'padding' );
 if ( null !== $card_pad_tab ) {
-	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . $card_pad_sel . '{padding:' . $card_pad_tab . '}}';
+	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . $card_pad_sel . '{' . $card_pad_tab . '}}';
 }
-$card_pad_mob = sgs_box_object_shorthand( $card_padding_mobile_obj );
+$card_pad_mob = sgs_box_object_longhands( $card_padding_mobile_obj, 'padding' );
 if ( null !== $card_pad_mob ) {
-	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . $card_pad_sel . '{padding:' . $card_pad_mob . '}}';
+	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . $card_pad_sel . '{' . $card_pad_mob . '}}';
 }
 
 // Per-item glyph icon + image-fallback tile — one scoped custom-property

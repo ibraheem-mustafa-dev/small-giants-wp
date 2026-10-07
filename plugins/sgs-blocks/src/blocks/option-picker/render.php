@@ -492,19 +492,19 @@ if ( ! empty( $base_style_engine_args ) ) {
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
 // shorthand (contract §B/§B2: tablet max-width:1023px, mobile max-width:767px). ---
-$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
-$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
-$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
+$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
+$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 $radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_root_decls = array();
 if ( null !== $padding_tab_val ) {
-	$tablet_root_decls[] = "padding:{$padding_tab_val}";
+	$tablet_root_decls[] = "{$padding_tab_val}";
 }
 if ( null !== $margin_tab_val ) {
-	$tablet_root_decls[] = "margin:{$margin_tab_val}";
+	$tablet_root_decls[] = "{$margin_tab_val}";
 }
 if ( null !== $radius_tab_val ) {
 	$tablet_root_decls[] = "border-radius:{$radius_tab_val}";
@@ -515,10 +515,10 @@ if ( $tablet_root_decls ) {
 
 $mobile_root_decls = array();
 if ( null !== $padding_mob_val ) {
-	$mobile_root_decls[] = "padding:{$padding_mob_val}";
+	$mobile_root_decls[] = "{$padding_mob_val}";
 }
 if ( null !== $margin_mob_val ) {
-	$mobile_root_decls[] = "margin:{$margin_mob_val}";
+	$mobile_root_decls[] = "{$margin_mob_val}";
 }
 if ( null !== $radius_mob_val ) {
 	$mobile_root_decls[] = "border-radius:{$radius_mob_val}";
@@ -531,18 +531,18 @@ if ( $mobile_root_decls ) {
 // (SGS custom family; falls back to the per-size default in style.css when
 // unset — byte-identical default behaviour). ---
 $sel_pill        = "{$root_sel} .sgs-option-picker__pill";
-$pill_padding_val      = sgs_box_object_shorthand( $pill_padding_obj );
-$pill_padding_tab_val  = sgs_box_object_shorthand( $pill_padding_tablet_obj );
-$pill_padding_mob_val  = sgs_box_object_shorthand( $pill_padding_mobile_obj );
+$pill_padding_val      = sgs_box_object_longhands( $pill_padding_obj, 'padding' );
+$pill_padding_tab_val  = sgs_box_object_longhands( $pill_padding_tablet_obj, 'padding' );
+$pill_padding_mob_val  = sgs_box_object_longhands( $pill_padding_mobile_obj, 'padding' );
 
 if ( null !== $pill_padding_val ) {
-	$scoped_css[] = "{$sel_pill}{padding:{$pill_padding_val};}";
+	$scoped_css[] = "{$sel_pill}{{$pill_padding_val};}";
 }
 if ( null !== $pill_padding_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel_pill}{padding:{$pill_padding_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$sel_pill}{{$pill_padding_tab_val};}}";
 }
 if ( null !== $pill_padding_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel_pill}{padding:{$pill_padding_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$sel_pill}{{$pill_padding_mob_val};}}";
 }
 
 // --- Legend typography (font-size/tablet/mobile) via the shared responsive

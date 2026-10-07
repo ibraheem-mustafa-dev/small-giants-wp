@@ -7,7 +7,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, sgsLengthPreview, sgsBorderPreview } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxLonghands, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
 	{ label: '/', value: '/' },
@@ -39,14 +39,8 @@ function buildRootStyle( attributes, tier ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = tierBoxShorthand( padding, tier );
-	if ( paddingPreview ) {
-		rootStyle.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, tier );
-	if ( marginPreview ) {
-		rootStyle.margin = marginPreview;
-	}
+	Object.assign( rootStyle, tierBoxLonghands( padding, tier, 'padding' ) );
+	Object.assign( rootStyle, tierBoxLonghands( margin, tier, 'margin' ) );
 
 	Object.assign( rootStyle, sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, undefined, { wholeTier: true } ) );
 

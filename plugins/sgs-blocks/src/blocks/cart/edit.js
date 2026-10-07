@@ -3,7 +3,7 @@ import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 import { IconPreview, ResponsiveBoxControl, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
-import { colourVar, usePreviewTier, tierBoxShorthand } from '../../utils';
+import { colourVar, usePreviewTier, tierBoxLonghands } from '../../utils';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
@@ -90,13 +90,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewTier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const parts = triggerStyles( attributes, previewTier, palette, hasPill );
+	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	const style = {
 		'--sgs-cart-icon-size': `${ iconSize }px`,
 		'--sgs-cart-icon-colour': colourVar( iconColour ) || undefined,
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
 			colourVar( badgeTextColour ) || undefined,
-		margin: tierBoxShorthand( margin, previewTier ),
+		...marginLonghands,
 	};
 
 	const blockProps = useBlockProps( {

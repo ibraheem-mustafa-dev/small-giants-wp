@@ -427,9 +427,9 @@ if ( '' !== $sgs_pc_price_note_colour_effective ) {
 // did nothing. Caught by check-dead-controls.js, which was missing from that
 // task's verification list; the migration's own gate run reported green.
 $sgs_card_padding_obj       = is_array( $attributes['cardPadding'] ?? null ) ? $attributes['cardPadding'] : array();
-$sgs_card_padding_shorthand = sgs_box_object_shorthand( $sgs_card_padding_obj );
+$sgs_card_padding_shorthand = sgs_box_object_longhands( $sgs_card_padding_obj, 'padding' );
 if ( null !== $sgs_card_padding_shorthand ) {
-	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{padding:' . $sgs_card_padding_shorthand . ';}';
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{' . $sgs_card_padding_shorthand . ';}';
 }
 
 // ── Media-element atom layer (rule 37-media-no-handroll) — replaces the

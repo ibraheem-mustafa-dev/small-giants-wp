@@ -31,10 +31,10 @@ import {
 	colourVar,
 	resolveTextColourPreviewStyle,
 	borderPaintPreview,
-	tierBoxShorthand,
 	typographyPreviewStyle,
 	usePreviewTier,
 	boxPreview,
+	tierBoxLonghands,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
@@ -251,7 +251,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// pillPadding is a TIER-OF-BOXES object {desktop,tablet,mobile}; the canvas
 	// preview always shows the desktop tier, same as every other tier-object
 	// preview in this component.
-	const pillPaddingPreview = tierBoxShorthand( pillPadding, previewTier );
+	const pillPaddingLonghands = tierBoxLonghands( pillPadding, previewTier, 'padding' );
 
 	// Pill TEXT colour/gradient preview — flat pillTextColour already renders
 	// in-canvas via the --sgs-op-text custom-property VALUE set on the root
@@ -311,7 +311,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						className="sgs-option-picker__pill"
 						style={ {
 							...typographyPreviewStyle( attributes, 'pill', previewTier ),
-							...( pillPaddingPreview ? { padding: pillPaddingPreview } : {} ),
+							...pillPaddingLonghands,
 							...pillTextPreviewStyle,
 							...pillBorderGradientPreview,
 							...( isSelected ? pillSelectedBorderGradientPreview : {} ),

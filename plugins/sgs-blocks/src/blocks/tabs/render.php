@@ -133,7 +133,7 @@ $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 // existing literal as the var() fallback, so an unconfigured client renders
 // byte-identical to before.
 $tab_padding_box = is_array( $attributes['tabPadding'] ?? null ) ? $attributes['tabPadding'] : array();
-$tab_padding     = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $tab_padding_box ) : null;
+$tab_padding     = function_exists( 'sgs_box_object_longhands' ) ? sgs_box_object_longhands( $tab_padding_box, 'padding' ) : null;
 $tab_min_height  = sgs_css_length_value( $attributes['tabMinHeight'] ?? '' );
 if ( '' !== $tab_min_height ) {
 	$css_vars[] = '--sgs-tab-min-height:' . $tab_min_height;
@@ -293,7 +293,7 @@ $tabs_responsive_css .= sgs_typography_css_rule( $attributes, 'tab', "{$root_sel
 // 20px}` default by specificity ((0,3,0) vs (0,1,0)) regardless of source
 // order. Unset (every side empty) leaves style.css's literal untouched.
 if ( null !== $tab_padding ) {
-	$tabs_responsive_css .= "{$root_sel} .sgs-tabs__tab{padding:{$tab_padding};}";
+	$tabs_responsive_css .= "{$root_sel} .sgs-tabs__tab{{$tab_padding};}";
 }
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay

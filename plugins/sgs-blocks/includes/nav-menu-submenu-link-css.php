@@ -526,9 +526,9 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 			if ( ! $tier_box ) {
 				continue;
 			}
-			$tier_shorthand = sgs_box_object_shorthand( $tier_box );
-			if ( null !== $tier_shorthand && '' !== $tier_shorthand ) {
-				$root_box_css .= '@media ' . $tier_mq . '{' . $uid_sel . '{padding:' . $tier_shorthand . ';}}';
+			$tier_longhands = sgs_box_object_longhands( $tier_box, 'padding' );
+			if ( null !== $tier_longhands ) {
+				$root_box_css .= '@media ' . $tier_mq . '{' . $uid_sel . '{' . $tier_longhands . ';}}';
 			}
 		}
 

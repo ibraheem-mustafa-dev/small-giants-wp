@@ -156,13 +156,13 @@ if ( ! empty( $panel_padding_desktop ) ) {
 		$scoped_css[] = $panel_padding_scoped['css'];
 	}
 }
-$panel_padding_tab_val = sgs_box_object_shorthand( is_array( $panel_padding_tiers['tablet'] ?? null ) ? $panel_padding_tiers['tablet'] : array() );
-$panel_padding_mob_val = sgs_box_object_shorthand( is_array( $panel_padding_tiers['mobile'] ?? null ) ? $panel_padding_tiers['mobile'] : array() );
+$panel_padding_tab_val = sgs_box_object_longhands( is_array( $panel_padding_tiers['tablet'] ?? null ) ? $panel_padding_tiers['tablet'] : array(), 'padding' );
+$panel_padding_mob_val = sgs_box_object_longhands( is_array( $panel_padding_tiers['mobile'] ?? null ) ? $panel_padding_tiers['mobile'] : array(), 'padding' );
 if ( null !== $panel_padding_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{padding:{$panel_padding_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{{$panel_padding_tab_val};}}";
 }
 if ( null !== $panel_padding_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{padding:{$panel_padding_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{{$panel_padding_mob_val};}}";
 }
 
 // --- Gap (tiered scalar — items and the trigger's own internal gap). ---

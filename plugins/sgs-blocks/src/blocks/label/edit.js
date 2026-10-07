@@ -19,7 +19,9 @@ import {
 	resolveTextColourPreviewStyle,
 	typographyPreviewStyle,
 	usePreviewTier,
-	tierBoxShorthand, isCssGradient,
+	tierBoxLonghands,
+	
+	isCssGradient,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -125,18 +127,19 @@ function buildStyle( attributes, tier ) {
 
 	// margin and padding are TIER-OF-BOXES OBJECTS {desktop,tablet,mobile};
 	// the preview shows the tier the editor is previewing.
-	const marginPreview = tierBoxShorthand( margin, tier );
-	const paddingPreview = tierBoxShorthand( padding, tier );
+	const marginLonghands = tierBoxLonghands( margin, tier, 'margin' );
+	// Set sides only, as sgs_label_box_css_rule() prints them; an unset side keeps the stylesheet's value.
+	const paddingLonghands = tierBoxLonghands( padding, tier, 'padding' );
 
 	const previewStyle = {
 		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
 		...typographyPreviewStyle( attributes, '', tier ),
-		margin: marginPreview,
+		...marginLonghands,
+		...paddingLonghands,
 	};
 
 	// Box (padding / background / radius) paints on VALUE-PRESENCE — mirrors
 	// render.php's ungated helper (no pill gate).
-	previewStyle.padding = paddingPreview;
 	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
 	// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
 	// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
@@ -157,7 +160,8 @@ function buildStyle( attributes, tier ) {
 	const hasStyleVariant = typeof className === 'string' &&
 		className.includes( 'is-style-' );
 	if ( ! hasStyleVariant ) {
-		const boxPresent = !! paddingPreview || !! backgroundColour || hasRadius;
+		// render.php's `null !== $base_padding_shorthand`: true when any padding side is set.
+		const boxPresent = Object.keys( paddingLonghands ).length > 0 || !! backgroundColour || hasRadius;
 		if ( fullWidth ) {
 			previewStyle.display = 'block';
 			previewStyle.width = '100%';

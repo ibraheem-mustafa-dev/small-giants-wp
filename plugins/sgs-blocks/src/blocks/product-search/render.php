@@ -339,17 +339,17 @@ $sgs_padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ?
 $sgs_margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $sgs_margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$sgs_padding_tab_val = sgs_box_object_shorthand( $sgs_padding_tablet_obj );
-$sgs_padding_mob_val = sgs_box_object_shorthand( $sgs_padding_mobile_obj );
-$sgs_margin_tab_val  = sgs_box_object_shorthand( $sgs_margin_tablet_obj );
-$sgs_margin_mob_val  = sgs_box_object_shorthand( $sgs_margin_mobile_obj );
+$sgs_padding_tab_val = sgs_box_object_longhands( $sgs_padding_tablet_obj, 'padding' );
+$sgs_padding_mob_val = sgs_box_object_longhands( $sgs_padding_mobile_obj, 'padding' );
+$sgs_margin_tab_val  = sgs_box_object_longhands( $sgs_margin_tablet_obj, 'margin' );
+$sgs_margin_mob_val  = sgs_box_object_longhands( $sgs_margin_mobile_obj, 'margin' );
 
 $sgs_tablet_decls = array();
 if ( null !== $sgs_padding_tab_val ) {
-	$sgs_tablet_decls[] = "padding:{$sgs_padding_tab_val}";
+	$sgs_tablet_decls[] = "{$sgs_padding_tab_val}";
 }
 if ( null !== $sgs_margin_tab_val ) {
-	$sgs_tablet_decls[] = "margin:{$sgs_margin_tab_val}";
+	$sgs_tablet_decls[] = "{$sgs_margin_tab_val}";
 }
 if ( $sgs_tablet_decls ) {
 	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_tablet_decls ) . ';}}';
@@ -357,10 +357,10 @@ if ( $sgs_tablet_decls ) {
 
 $sgs_mobile_decls = array();
 if ( null !== $sgs_padding_mob_val ) {
-	$sgs_mobile_decls[] = "padding:{$sgs_padding_mob_val}";
+	$sgs_mobile_decls[] = "{$sgs_padding_mob_val}";
 }
 if ( null !== $sgs_margin_mob_val ) {
-	$sgs_mobile_decls[] = "margin:{$sgs_margin_mob_val}";
+	$sgs_mobile_decls[] = "{$sgs_margin_mob_val}";
 }
 if ( $sgs_mobile_decls ) {
 	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_mobile_decls ) . ';}}';

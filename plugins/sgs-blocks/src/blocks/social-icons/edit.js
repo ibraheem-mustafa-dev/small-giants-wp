@@ -11,7 +11,7 @@ import {
 	Notice,
 } from '@wordpress/components';
 import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
-import { gapVar, borderPaintPreview, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, isCssGradient, sgsBorderPreview } from '../../utils';
+import { gapVar, borderPaintPreview, typographyPreviewStyle, usePreviewTier,  tierBoxLonghands, isCssGradient, sgsBorderPreview } from '../../utils';
 import BrandIconGlyph from './brand-icons';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -161,14 +161,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( justifyPreview ) {
 		previewStyle.justifyContent = justifyPreview;
 	}
-	const paddingPreview = tierBoxShorthand( attributes.padding, previewTier );
-	if ( paddingPreview ) {
-		previewStyle.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( attributes.margin, previewTier );
-	if ( marginPreview ) {
-		previewStyle.margin = marginPreview;
-	}
+	const paddingLonghands = tierBoxLonghands( attributes.padding, previewTier, 'padding' );
+	Object.assign( previewStyle, paddingLonghands );
+	const marginLonghands = tierBoxLonghands( attributes.margin, previewTier, 'margin' );
+	Object.assign( previewStyle, marginLonghands );
 	Object.assign( previewStyle, sgsBorderPreview( { widthValues: wrapperBorderWidth, styleValue: wrapperBorderStyle, colourValue: wrapperBorderColour, colourGradientValue: wrapperBorderColourGradient, radiusValues: attributes.borderRadius }, previewTier, palette, { wholeTier: true } ) );
 	if ( gap ) {
 		previewStyle.gap = gapVar( gap );

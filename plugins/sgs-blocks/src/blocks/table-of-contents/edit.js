@@ -10,7 +10,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier, tierBoxShorthand, sgsBorderPreview } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, usePreviewTier,  tierBoxLonghands, sgsBorderPreview } from '../../utils';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -56,8 +56,8 @@ function buildRootPreviewStyle( attributes, padding, margin, tier, palette ) {
 	const defaultBorder = 'card' === tocStyle || 'minimal' === tocStyle;
 
 	const previewStyle = {
-		padding: tierBoxShorthand( padding, tier ),
-		margin: tierBoxShorthand( margin, tier ),
+		...tierBoxLonghands( padding, tier, 'padding' ),
+		...tierBoxLonghands( margin, tier, 'margin' ),
 		...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: borderRadius }, tier, palette, { defaultBorder } ),
 		...typographyPreviewStyle( attributes, '', tier ),
 	};

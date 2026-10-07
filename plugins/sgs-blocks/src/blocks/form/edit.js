@@ -22,7 +22,6 @@ import {
 	resolveTextColourPreviewStyle,
 	backgroundPaintPreview,
 	borderBoxPreview,
-	spacingPreview,
 	typographyPreviewStyle,
 	typographyPreviewCss,
 	textIndentPreviewCss,
@@ -30,6 +29,7 @@ import {
 	BandWrap,
 	wrapperPreview,
 	isCssGradient,
+	tierBoxLonghands,
 } from '../../utils';
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
@@ -402,7 +402,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		style: {
 			...wrapper.style,
 			...typographyPreviewStyle( attributes, '', previewTier ),
-			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
+			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
 		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }`,
 	} );

@@ -45,10 +45,18 @@ describe( 'notice-banner wrapper preview', () => {
 		expect( on.fontWeight ).toBe( '700' );
 		expect( buildWrapperStyle( {}, 'desktop', PALETTE, false ) ).toEqual( {} );
 	} );
-	it( 'follows the previewed tier for padding', () => {
+	it( 'follows the previewed tier for padding, set sides only (CR6)', () => {
 		const attributes = { padding: { desktop: BOX, tablet: { top: '9px' } } };
-		expect( buildWrapperStyle( attributes, 'tablet', PALETTE, false ).padding ).toBe( '9px 2px 2px 2px' );
-		expect( buildWrapperStyle( attributes, 'desktop', PALETTE, false ).padding ).toBe( '2px 2px 2px 2px' );
+		const tablet = buildWrapperStyle( attributes, 'tablet', PALETTE, false );
+		expect( tablet ).toMatchObject( { paddingTop: '9px', paddingRight: '2px', paddingBottom: '2px', paddingLeft: '2px' } );
+		expect( tablet.padding ).toBeUndefined();
+		expect( buildWrapperStyle( attributes, 'desktop', PALETTE, false ) ).toMatchObject( { paddingTop: '2px', paddingRight: '2px', paddingBottom: '2px', paddingLeft: '2px' } );
+	} );
+
+	it( 'leaves a side set at no tier to the stylesheet, never 0 (CR6)', () => {
+		const style = buildWrapperStyle( { padding: { tablet: { top: '9px' } } }, 'tablet', PALETTE, false );
+		expect( style.paddingTop ).toBe( '9px' );
+		expect( style.paddingLeft ).toBeUndefined();
 	} );
 } );
 
@@ -154,7 +162,9 @@ describe( 'cart panel preview', () => {
 		expect( s.heading.fontSize ).toBe( '22px' );
 		expect( s.checkout.backgroundColor ).toBe( '#112233' );
 		expect( s.thumb.borderRadius ).toBe( '6px' );
-		expect( s.header.padding ).toBe( '2px 2px 2px 2px' );
+		// Set sides only, as the per-side emitter prints them (CR6): four longhand keys, no shorthand.
+		expect( s.header ).toMatchObject( { paddingTop: '2px', paddingRight: '2px', paddingBottom: '2px', paddingLeft: '2px' } );
+		expect( s.header.padding ).toBeUndefined();
 		expect( s.items.gap ).toBe( '14px' );
 		expect( panelElementStyles( {}, 'desktop', PALETTE ).checkout ).toEqual( {} );
 	} );

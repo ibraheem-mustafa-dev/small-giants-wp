@@ -13,8 +13,8 @@ import {
 	textPaintPreview,
 	backgroundPaintPreview,
 	sgsBorderPreview,
-	tierBoxShorthand,
 	resolveTier,
+	tierBoxLonghands,
 } from '../../utils';
 
 const DEFAULT_FLAG = { w: 16, h: 12 };
@@ -52,7 +52,6 @@ export function flagSizeAtTier( flagSize, tier ) {
 export function storeSelectorPreviewStyles( attributes, tier ) {
 	const gap = resolveTier( attributes.gap, tier ).value;
 	const gapStyle = gap ? { gap } : {};
-	const padding = tierBoxShorthand( attributes.panelPadding, tier );
 
 	return {
 		root: typographyPreviewStyle( attributes, '', tier ),
@@ -61,7 +60,7 @@ export function storeSelectorPreviewStyles( attributes, tier ) {
 		list: {
 			...gapStyle,
 			...backgroundPaintPreview( attributes.panelBackground, '' ),
-			...( padding ? { padding } : {} ),
+			...tierBoxLonghands( attributes.panelPadding, tier, 'padding' ),
 			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, tier, undefined, { wholeTier: true } ),
 		},
 	};

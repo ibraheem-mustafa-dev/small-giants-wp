@@ -43,7 +43,7 @@ import {
 	linkColourPreviewCss,
 	typographyPreviewStyle,
 	usePreviewTier,
-	spacingPreview,
+	tierBoxLonghands,
 	backgroundPaintPreview,
 	sgsBorderPreview,
 } from '../../utils';
@@ -171,7 +171,7 @@ function buildEditorStyle( attributes, tier ) {
 	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
 	// here only); border-radius stays WP-native style.border.radius; border
 	// width comes from the SGS custom borderWidth object attr.
-	Object.assign( previewStyle, spacingPreview( { padding, margin }, tier ) );
+	Object.assign( previewStyle, tierBoxLonghands( padding, tier, 'padding' ), tierBoxLonghands( margin, tier, 'margin' ) );
 	Object.assign( previewStyle, backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ) );
 	const shadowPreview = composeShadow( attributes.boxShadow, attributes.boxShadowColour );
 	if ( shadowPreview ) previewStyle.boxShadow = shadowPreview;

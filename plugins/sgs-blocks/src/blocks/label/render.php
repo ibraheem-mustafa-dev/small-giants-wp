@@ -291,13 +291,13 @@ if ( '' !== $background_layer_css ) {
 // --- Responsive MARGIN tiers — box objects, scoped @media on the SAME selector
 // (contract §B2: tablet max-width:1023px, mobile max-width:767px). Margin tiers
 // are never gated. (Padding tiers are handled inside the box helper above.) ---
-$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$margin_mob_val};}}";
 }
 
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via

@@ -32,7 +32,7 @@ import {
 	linkColourPreviewCss,
 	usePreviewTier,
 	typographyPreviewStyle,
-	spacingPreview,
+	tierBoxLonghands,
 	backgroundPaintPreview,
 	textPaintPreview,
 	sgsBorderPreview,
@@ -291,7 +291,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
+			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient ),
 			...textPaintPreview( attributes.textColour, attributes.backgroundColourGradient ? '' : attributes.textColourGradient ),
 			...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, undefined, { defaultBorder: STYLESHEET_BORDER_VARIANTS.includes( effectiveVariant ) } ),

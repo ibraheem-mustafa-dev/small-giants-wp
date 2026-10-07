@@ -15,7 +15,7 @@ import {
 	borderPaintPreview,
 	backgroundPaintPreview,
 	usePreviewTier,
-	spacingPreview,
+	tierBoxLonghands,
 	sgsBorderPreview,
 } from '../../utils';
 
@@ -81,7 +81,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
 		style: {
-			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
+			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 			...sgsBorderPreview( { widthValues: borderWidth, styleValue: borderStyle, colourValue: borderColour, colourGradientValue: borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette, { wholeTier: true } ),
 			...( focusRing ? { '--sgs-ps-focus-ring': focusRing } : {} ),
 		},

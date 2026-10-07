@@ -11,13 +11,13 @@
 import {
 	backgroundPaintPreview,
 	containerWrapperPreview,
-	spacingPreview,
+	tierBoxLonghands,
 	tierBoxShorthand,
 	typographyPreviewStyle,
 	tierLengthPreview,
 	tierValueOf,
 	BOX_CORNER_KEYS,
-	BOX_SIDE_KEYS,
+	
 } from '../../utils';
 import {
 	css as boxShapeCss,
@@ -130,7 +130,7 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 			root[ key ] = wrapper.style[ key ];
 		}
 	} );
-	Object.assign( root, spacingPreview( { padding: attributes.padding, margin: attributes.margin }, tier ) );
+	Object.assign( root, tierBoxLonghands( attributes.padding, tier, 'padding' ), tierBoxLonghands( attributes.margin, tier, 'margin' ) );
 	// render.php always sets align-items from verticalAlignment; a wrapper layout's own value wins.
 	root.alignItems = root.alignItems || ALIGN_MAP[ attributes.verticalAlignment ] || 'center';
 	const minHeight = 'mobile' === tier
@@ -165,10 +165,8 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		content.textAlign = textAlign;
 	}
 	Object.assign( content, backgroundPaintPreview( attributes.contentBackground, attributes.contentBackgroundGradient, palette ) );
-	const contentPadding = tierBoxShorthand( attributes.contentPadding, tier, BOX_SIDE_KEYS, true );
-	if ( contentPadding ) {
-		content.padding = contentPadding;
-	}
+	// Set sides only, as render.php prints the content, media and split-media padding.
+	Object.assign( content, tierBoxLonghands( attributes.contentPadding, tier, 'padding' ) );
 
 	// Split column order: desktop 'media-first' swaps; tablet overrides when set;
 	// mobile is media-first unless set to content-first.
@@ -184,10 +182,7 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		content.order = 2;
 		media.order = 1;
 	}
-	const mediaPadding = tierBoxShorthand( attributes.mediaPadding, tier, BOX_SIDE_KEYS, true );
-	if ( mediaPadding ) {
-		media.padding = mediaPadding;
-	}
+	Object.assign( media, tierBoxLonghands( attributes.mediaPadding, tier, 'padding' ) );
 
 	// Split media element (`.sgs-hero__split-media`).
 	const image = {};
@@ -199,11 +194,7 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		}
 		const height = tierValueOf( attributes.splitMediaHeight, tier );
 		image.height = isUnset( height ) ? '100%' : `${ Math.abs( parseInt( height, 10 ) ) || 0 }${ attributes.splitMediaHeightUnit || 'px' }`;
-		const padTiers = { desktop: attributes.splitMediaPadding?.desktop, tablet: attributes.splitMediaPadding?.tablet, mobile: attributes.splitMediaPadding?.mobile };
-		const pad = tierBoxShorthand( padTiers, tier, BOX_SIDE_KEYS, true );
-		if ( pad ) {
-			image.padding = pad;
-		}
+		Object.assign( image, tierBoxLonghands( attributes.splitMediaPadding, tier, 'padding' ) );
 		const radius = tierBoxShorthand( {
 			desktop: attributes.splitMediaBorderRadius,
 			tablet: attributes.splitMediaBorderRadiusTablet,

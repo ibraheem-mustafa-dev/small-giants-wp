@@ -12,8 +12,8 @@ import {
 	resolveResponsiveTier,
 	sgsNormaliseLength,
 	textPaintPreview,
-	tierBoxShorthand,
 	typographyPreviewStyle,
+	tierBoxLonghands,
 } from '../../utils';
 
 /**
@@ -33,7 +33,6 @@ export function languageSwitchPreview( attributes, tier, palette ) {
 	const currentColour = resolveColourToken( attributes.currentColour, palette );
 	const separatorColour = resolveColourToken( attributes.separatorColour, palette );
 	const panelBackground = resolveColourToken( attributes.panelBackground, palette );
-	const panelPadding = tierBoxShorthand( attributes.panelPadding, tier );
 	const gapRaw = resolveResponsiveTier( attributes.gap, tier )?.value;
 	const gap = sgsNormaliseLength( gapRaw );
 
@@ -43,7 +42,7 @@ export function languageSwitchPreview( attributes, tier, palette ) {
 		separatorStyle: separatorColour ? { color: separatorColour } : {},
 		panelStyle: {
 			...( panelBackground ? { backgroundColor: panelBackground } : {} ),
-			...( panelPadding ? { padding: panelPadding } : {} ),
+			...tierBoxLonghands( attributes.panelPadding, tier, 'padding' ),
 		},
 		listStyle: gap ? { gap } : {},
 	};

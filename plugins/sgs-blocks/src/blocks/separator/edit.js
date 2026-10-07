@@ -24,7 +24,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle, tierBoxShorthand, resolveTier } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -176,20 +176,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	};
 
-	const paddingPreview = tierBoxShorthand( padding, previewTier );
-	if ( paddingPreview ) {
-		rootPreviewStyle.padding = paddingPreview;
-	}
+	const paddingLonghands = tierBoxLonghands( padding, previewTier, 'padding' );
+	Object.assign( rootPreviewStyle, paddingLonghands );
 	const marginProps = alignmentMargin( alignment );
-	const marginPreview = tierBoxShorthand( margin, previewTier );
-	if ( marginPreview ) {
-		// Combine explicit margin (top/bottom) with the alignment-driven
-		// left/right so both are respected in the preview.
-		const [ mTop, , mBottom ] = marginPreview.split( ' ' );
-		rootPreviewStyle.marginTop = mTop;
-		rootPreviewStyle.marginBottom = mBottom;
-		rootPreviewStyle.marginLeft = marginProps.marginLeft;
-		rootPreviewStyle.marginRight = marginProps.marginRight;
+	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
+	if ( Object.keys( marginLonghands ).length ) {
+		// The explicit margin's set top/bottom (an unset one keeps the stylesheet's value, as
+		// render.php prints only set sides) with the alignment-driven left/right.
+		Object.assign( rootPreviewStyle, {
+			...( marginLonghands.marginTop ? { marginTop: marginLonghands.marginTop } : {} ),
+			...( marginLonghands.marginBottom ? { marginBottom: marginLonghands.marginBottom } : {} ),
+			marginLeft: marginProps.marginLeft,
+			marginRight: marginProps.marginRight,
+		} );
 	}
 
 	const previewStyle = withContent

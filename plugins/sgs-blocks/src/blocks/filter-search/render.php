@@ -190,14 +190,14 @@ if ( ! empty( $base_margin_obj ) ) {
 $margin_tablet_obj = is_array( $sgs_fs_margin_tiers['tablet'] ?? null ) ? $sgs_fs_margin_tiers['tablet'] : array();
 $margin_mobile_obj = is_array( $sgs_fs_margin_tiers['mobile'] ?? null ) ? $sgs_fs_margin_tiers['mobile'] : array();
 
-$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{margin:{$margin_mob_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$margin_mob_val};}}";
 }
 
 $is_terms_mode = ( 'taxonomy-terms' === $search_mode );

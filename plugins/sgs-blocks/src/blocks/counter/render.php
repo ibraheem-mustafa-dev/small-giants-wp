@@ -282,19 +282,19 @@ $border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // CSS border-radius shorthand order is top-left top-right bottom-right
 // bottom-left (NOT the box-model top/right/bottom/left order).
-$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
-$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
-$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
-$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
+$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
+$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
+$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 $radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
 $radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
-	$tablet_decls[] = "padding:{$padding_tab_val}";
+	$tablet_decls[] = "{$padding_tab_val}";
 }
 if ( null !== $margin_tab_val ) {
-	$tablet_decls[] = "margin:{$margin_tab_val}";
+	$tablet_decls[] = "{$margin_tab_val}";
 }
 if ( null !== $radius_tab_val ) {
 	$tablet_decls[] = "border-radius:{$radius_tab_val}";
@@ -305,10 +305,10 @@ if ( $tablet_decls ) {
 
 $mobile_decls = array();
 if ( null !== $padding_mob_val ) {
-	$mobile_decls[] = "padding:{$padding_mob_val}";
+	$mobile_decls[] = "{$padding_mob_val}";
 }
 if ( null !== $margin_mob_val ) {
-	$mobile_decls[] = "margin:{$margin_mob_val}";
+	$mobile_decls[] = "{$margin_mob_val}";
 }
 if ( null !== $radius_mob_val ) {
 	$mobile_decls[] = "border-radius:{$radius_mob_val}";

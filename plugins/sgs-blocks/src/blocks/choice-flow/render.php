@@ -175,19 +175,19 @@ if ( '' !== $max_width && ! $is_showcase ) {
 	}
 }
 
-$padding_base_val = sgs_box_object_shorthand( $padding_desktop );
+$padding_base_val = sgs_box_object_longhands( $padding_desktop, 'padding' );
 if ( null !== $padding_base_val && ! $is_showcase ) {
-	$scoped_css[] = "{$root_sel}{padding:{$padding_base_val};}";
+	$scoped_css[] = "{$root_sel}{{$padding_base_val};}";
 }
 
-$padding_tablet_val = sgs_box_object_shorthand( $padding_tablet );
+$padding_tablet_val = sgs_box_object_longhands( $padding_tablet, 'padding' );
 if ( null !== $padding_tablet_val && ! $is_showcase ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{padding:{$padding_tablet_val};}}";
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$padding_tablet_val};}}";
 }
 
-$padding_mobile_val = sgs_box_object_shorthand( $padding_mobile );
+$padding_mobile_val = sgs_box_object_longhands( $padding_mobile, 'padding' );
 if ( null !== $padding_mobile_val && ! $is_showcase ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{padding:{$padding_mobile_val};}}";
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$padding_mobile_val};}}";
 }
 
 // Back button — shared button-style emitter (mirrors sgs/product-card's

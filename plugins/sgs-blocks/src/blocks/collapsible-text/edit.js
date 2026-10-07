@@ -19,7 +19,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { textPaintPreview, linkColourPreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, spacingPreview } from '../../utils';
+import { textPaintPreview, linkColourPreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, tierBoxLonghands } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient } = attributes;
@@ -45,7 +45,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
 		style: {
 			...backgroundPaintPreview( backgroundColour, attributes.backgroundColourGradient, colourPalette ),
-			...spacingPreview( { padding: attributes.padding, margin: attributes.margin }, previewTier ),
+			...tierBoxLonghands( attributes.padding, previewTier, 'padding' ),
+			...tierBoxLonghands( attributes.margin, previewTier, 'margin' ),
 		},
 	} );
 

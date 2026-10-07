@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusPreview, sgsBorderPreview } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -231,14 +231,8 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 	// Base padding/margin preview — padding/margin are owned tier-object
 	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
 	// order top/right/bottom/left).
-	const paddingPreview = tierBoxShorthand( padding, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( paddingPreview ) {
-		wrapperStyle.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, previewTier, [ 'top', 'right', 'bottom', 'left' ], true );
-	if ( marginPreview ) {
-		wrapperStyle.margin = marginPreview;
-	}
+	Object.assign( wrapperStyle, tierBoxLonghands( padding, previewTier, 'padding' ) );
+	Object.assign( wrapperStyle, tierBoxLonghands( margin, previewTier, 'margin' ) );
 	return wrapperStyle;
 }
 

@@ -374,9 +374,9 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 
 		// Base padding shorthand.
 		if ( isset( $box['padding'] ) && is_array( $box['padding'] ) ) {
-			$padding = sgs_box_object_shorthand( $box['padding'] );
+			$padding = sgs_box_object_longhands( $box['padding'], 'padding' );
 			if ( null !== $padding ) {
-				$decls[] = 'padding:' . $padding;
+				$decls[] = $padding;
 			}
 		}
 
@@ -428,15 +428,15 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 
 		// Responsive padding tiers — scoped @media on the SAME selector.
 		if ( isset( $box['paddingTablet'] ) && is_array( $box['paddingTablet'] ) ) {
-			$padding_tab = sgs_box_object_shorthand( $box['paddingTablet'] );
+			$padding_tab = sgs_box_object_longhands( $box['paddingTablet'], 'padding' );
 			if ( null !== $padding_tab ) {
-				$css .= '@media(max-width:1023px){' . $selector . '{padding:' . $padding_tab . ';}}';
+				$css .= '@media(max-width:1023px){' . $selector . '{' . $padding_tab . ';}}';
 			}
 		}
 		if ( isset( $box['paddingMobile'] ) && is_array( $box['paddingMobile'] ) ) {
-			$padding_mob = sgs_box_object_shorthand( $box['paddingMobile'] );
+			$padding_mob = sgs_box_object_longhands( $box['paddingMobile'], 'padding' );
 			if ( null !== $padding_mob ) {
-				$css .= '@media(max-width:767px){' . $selector . '{padding:' . $padding_mob . ';}}';
+				$css .= '@media(max-width:767px){' . $selector . '{' . $padding_mob . ';}}';
 			}
 		}
 

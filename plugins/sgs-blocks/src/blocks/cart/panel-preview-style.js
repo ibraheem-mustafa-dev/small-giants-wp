@@ -15,12 +15,12 @@ import {
 	textPaintPreview,
 	backgroundPaintPreview,
 	sgsBorderPreview,
-	tierBoxShorthand,
 	resolveTier,
 	tierLengthPreview,
 	sgsLengthPreview,
 	resolveShadowPreviewComposed,
 	isCssGradient,
+	tierBoxLonghands,
 } from '../../utils';
 import { resolveColourToken } from '../../components';
 
@@ -46,7 +46,7 @@ export function panelElementStyles( attributes, tier, palette ) {
 		empty: {
 			...typographyPreviewStyle( attributes, 'panelEmpty', tier ),
 			color: colour( attributes.panelEmptyColour ),
-			padding: tierBoxShorthand( attributes.panelEmptyPadding, tier ),
+			...tierBoxLonghands( attributes.panelEmptyPadding, tier, 'padding' ),
 		},
 		emptyMessage: {
 			...typographyPreviewStyle( attributes, 'emptyMessage', tier ),
@@ -57,7 +57,7 @@ export function panelElementStyles( attributes, tier, palette ) {
 			...typographyPreviewStyle( attributes, 'emptyCta', tier ),
 			backgroundColor: colour( attributes.emptyCtaBg ),
 			color: colour( attributes.emptyCtaColour ),
-			padding: tierBoxShorthand( attributes.emptyCtaPadding, tier ),
+			...tierBoxLonghands( attributes.emptyCtaPadding, tier, 'padding' ),
 			borderRadius: radius( attributes.emptyCtaRadius ),
 		},
 		brand: {
@@ -103,11 +103,11 @@ export function panelElementStyles( attributes, tier, palette ) {
 		footer: {
 			backgroundColor: colour( attributes.panelFooterBg ),
 			borderTopColor: colour( attributes.panelFooterBorderColour ),
-			padding: tierBoxShorthand( attributes.panelFooterPadding, tier ),
+			...tierBoxLonghands( attributes.panelFooterPadding, tier, 'padding' ),
 		},
 		header: {
 			borderBottomColor: colour( attributes.panelHeadBorderColour ),
-			padding: tierBoxShorthand( attributes.panelHeadPadding, tier ),
+			...tierBoxLonghands( attributes.panelHeadPadding, tier, 'padding' ),
 		},
 		thumb: {
 			backgroundColor: colour( attributes.itemThumbBg ),
@@ -130,12 +130,12 @@ export function panelElementStyles( attributes, tier, palette ) {
 		freeTrack: {
 			backgroundColor: colour( attributes.freeDeliveryTrackColour ),
 			height: tierLengthPreview( attributes.freeDeliveryTrackHeight, tier ),
-			margin: tierBoxShorthand( attributes.freeDeliveryBarMargin, tier ),
+			...tierBoxLonghands( attributes.freeDeliveryBarMargin, tier, 'margin' ),
 			borderRadius: radius( attributes.freeDeliveryTrackRadius ),
 		},
 		items: {
 			gap: tierLengthPreview( attributes.panelBodyGap, tier ),
-			padding: tierBoxShorthand( attributes.panelBodyPadding, tier ),
+			...tierBoxLonghands( attributes.panelBodyPadding, tier, 'padding' ),
 			'--sgs-cart-item-thumb': tierLengthPreview( attributes.itemThumbSize, tier ),
 		},
 		item: {

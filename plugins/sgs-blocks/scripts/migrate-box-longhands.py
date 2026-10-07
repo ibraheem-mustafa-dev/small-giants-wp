@@ -81,14 +81,30 @@ EXCLUDE = {
         'border width (zero-fill is correct) and double use: also feeds sgs_border_gradient_css()',
 }
 
+# The block attributes behind sites the census cannot trace itself (their box arrives through block context or a
+# shared serialiser), each still printed through the zero-filling shorthand. They feed zeroFillPairs, which the
+# computed route reads so it keeps seeding the unset sides of exactly these boxes (scripts/computed-route/lib/resolve.mjs).
+HOLDOUT_ATTRS = {
+    ('src/blocks/accordion-item/render.php', '$short'): [('sgs/accordion', 'headerPadding'), ('sgs/accordion', 'contentPadding')],
+    ('includes/helpers-container.php', '$shorthand'): [('sgs/container', 'gridItemPadding')],
+}
+
+
+def zero_fill_pairs(sites):
+    """Every (block, attribute) whose box is still printed with 0 for unset sides: refused and excluded sites the
+    census traced, plus the hand-pinned holdouts."""
+    pairs = {('sgs/' + s['block'], s['attr']) for s in sites
+             if s['category'] in ('refused', 'excluded') and s['block'] and s['attr']}
+    for (f, v), attrs in HOLDOUT_ATTRS.items():
+        if any(s['file'] == f and s['variable'] == v and s['category'] in ('refused', 'excluded') for s in sites):
+            pairs.update(attrs)
+    return sorted(f'{b}|{a}' for b, a in pairs)
+
+
 # Files allowed to name the helper without calling it, with the count pinned and the reason.
-GUARD = ('function_exists() guard on a ternary assignment migrated by hand (U6): LOAD-BEARING, '
-         'move the guard to sgs_box_object_longhands with the call or it tests one function and calls another')
 BARE_OK = {
     'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
     'includes/render-helpers.php': (1, 'docblock listing which helper file provides what'),
-    'src/blocks/form/render.php': (1, GUARD),
-    'src/blocks/tabs/render.php': (1, GUARD),
     'src/blocks/mega-aside/render.php': (1, 'function_exists() guard on a border-width ternary, which stays on the shorthand'),
     'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, a var() holdout that stays on the shorthand'),
 }
@@ -314,13 +330,18 @@ def transform(text, relpath, only=None):
         for s, e, kind, fam in decls:
             if kind == 'interp':
                 edits.append((s, e, '{' + site['variable'] + '}'))
+                continue
+            q = text[s + len(fam) + 1]
+            # The literal is exactly '<family>:' when its opening quote sits right before the family and is not
+            # itself the end of another string: then the whole `'<family>:' . $v` becomes `$v`. Otherwise only
+            # the family text goes and the literal keeps its other characters: `'.x{padding:' . $v` → `'.x{' . $v`.
+            if s >= 1 and text[s - 1] == q and (s < 2 or text[s - 2] not in ('\\', q) and not text[s - 2].isalnum()):
+                edits.append((s - 1, e, site['variable']))
             else:
-                q = text[s + len(fam) + 1]
                 edits.append((s, e, q + ' . ' + site['variable']))
     for s, e, new in sorted(edits, reverse=True):
         text = text[:s] + new + text[e:]
-    # An empty literal joined to the value reads as noise: '' . $v and "" . $v become $v.
-    return re.sub(r"(?<![\w'\"])(['\"])\1\s*\.\s*(\$\w+)", r'\2', text)
+    return text
 
 
 def survey(only=None):
@@ -358,7 +379,8 @@ def zero_filling_previews(js):
         open_idx = m.end() - 1
         close = close_paren(js, open_idx)
         args = js[open_idx + 1:close] if close > 0 else ''
-        if 'spacingPreview' == m.group(1) or re.search(r'\b(padding|margin)\w*', args, re.I):
+        # Anywhere in a name, not only as a whole word: attributes.contentPadding and splitMediaPadding are padding too.
+        if 'spacingPreview' == m.group(1) or re.search(r'padding|margin', args, re.I):
             if not re.search(r'radius|border', args, re.I):
                 out.append((line_of(js, m.start()), m.group(1)))
     return out
@@ -420,7 +442,8 @@ def write_census(sites):
     with io.open(CENSUS, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({'generated': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
                    'tool': 'plugins/sgs-blocks/scripts/migrate-box-longhands.py',
-                   'totals': totals, 'sites': sites, 'bareMentions': bare_mentions(),
+                   'totals': totals, 'sites': sites, 'zeroFillPairs': zero_fill_pairs(sites),
+                   'bareMentions': bare_mentions(),
                    'editorMismatches': editor_mismatches(sites)}, f, indent=1)
         f.write('\n')
 
@@ -461,6 +484,11 @@ SELF_TEST = {
                         "if ( null !== $pad ) {\n\t$d[] = \"padding:{$pad}\";\n}\n",
                         "<?php\n$pad = sgs_box_object_longhands(\n\t$attributes['cardPadding'] ?? array(), 'padding'\n);\n"
                         "if ( null !== $pad ) {\n\t$d[] = \"{$pad}\";\n}\n"),
+    # An unrelated `'' . $v` elsewhere in a migrated file is not the migration's to tidy.
+    'untouched neighbours': ("<?php\n$keep = '' . $other;\n$pad = sgs_box_object_shorthand( $p );\n"
+                             "if ( null !== $pad ) {\n\t$css .= '.x{padding:' . $pad . '}';\n}\n",
+                             "<?php\n$keep = '' . $other;\n$pad = sgs_box_object_longhands( $p, 'padding' );\n"
+                             "if ( null !== $pad ) {\n\t$css .= '.x{' . $pad . '}';\n}\n"),
 }
 SELF_TEST_REFUSED = {
     'double use': "<?php\n$pad = sgs_box_object_shorthand( $p );\n$present = $pad;\n$d[] = \"padding:{$pad}\";\n",
@@ -471,7 +499,8 @@ SELF_TEST_REFUSED = {
 }
 SELF_TEST_INERT = ("<?php\ndefined( 'ABSPATH' ) || exit;\n$x = 1;\n// sgs_box_object_shorthand( $y ) in a comment\n"
                    "echo $x; // phpcs:ignore -- sgs_box_object_shorthand( $z ) named in a trailing comment\n"
-                   "$s = 'a # sign and // in a string'; $t = 1;\n")
+                   "$s = 'a # sign and // in a string'; $t = 1;\n"
+                   "$u = '' . $x;\n$w = \"\" . $t;\n")
 
 
 def self_test():
@@ -487,7 +516,7 @@ def self_test():
         if cats != ['refused'] or transform(src, 'src/blocks/x/render.php') != src:
             fails.append(f'refusal "{name}": classified {cats} or rewritten; it must be refused and byte-identical')
     if transform(SELF_TEST_INERT, 'src/blocks/x/render.php') != SELF_TEST_INERT:
-        fails.append('negative control: a file with no live call was changed')
+        fails.append('negative control: a file with no live call was changed (an unrelated edit leaked out of a site)')
     if analyse(SELF_TEST_INERT, 'src/blocks/x/render.php'):
         fails.append('negative control: a commented call was counted as a site')
     only = transform(SELF_TEST['interp'][0], 'src/blocks/x/render.php', only={'other-block'})
@@ -497,10 +526,11 @@ def self_test():
           "\tborderRadius: tierBoxShorthand( borderRadius, previewTier, BOX_CORNER_KEYS ) };\n"
           "const p = boxShorthand( padding?.desktop, [ 'top' ] );\n"
           "const r = boxShorthand( radius?.desktop, BOX_CORNER_KEYS );\n"
-          "const l = tierBoxLonghands( padding, previewTier, 'padding' );\n")
+          "const l = tierBoxLonghands( padding, previewTier, 'padding' );\n"
+          "const c = tierBoxShorthand( attributes.contentPadding, tier, BOX_SIDE_KEYS, true );\n")
     got = [h for _, h in zero_filling_previews(js)]
-    if got != ['spacingPreview', 'boxShorthand']:
-        fails.append(f'editor arm: flagged {got}; want spacingPreview and the padding boxShorthand, never the radius calls or the longhand sibling')
+    if got != ['spacingPreview', 'boxShorthand', 'tierBoxShorthand']:
+        fails.append(f'editor arm: flagged {got}; want spacingPreview, the padding boxShorthand and the camelCase contentPadding call, never the radius calls or the longhand sibling')
     for f in fails:
         print('SELF-TEST FAIL ' + f)
     print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check, 1 editor arm; {len(fails)} failure(s)')
@@ -517,6 +547,9 @@ def fix(apply_changes, only):
         new = transform(old, r, only=only)
         if new == old:
             continue
+        # A change in a file with no migratable site is an edit leaking out of a site: refuse it outright.
+        if not any(s['category'] == 'migratable' and (not only or s['block'] in only) for s in analyse(old, r)):
+            raise SystemExit(f'REFUSED: {r} would change but holds no migratable site; the transform leaked. Nothing written for it.')
         changed += 1
         if apply_changes:
             tmp = p + '.tmp'
