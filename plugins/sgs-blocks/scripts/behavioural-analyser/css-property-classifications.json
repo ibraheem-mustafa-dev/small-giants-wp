@@ -2541,6 +2541,13 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "galleryColumnGap",
       "fields": {
         "css_property": "gap",
@@ -2553,6 +2560,24 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "gallery-thumb",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "gallery-thumb"
       }
     },
     {
@@ -3520,14 +3545,6 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "stock"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "gallery-thumb"
       }
     },
     {
@@ -27542,6 +27559,41 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderColourCurrent",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "gallery-thumb",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryThumbBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "stockInStockColour",
       "fields": {
         "css_property": "color",
@@ -27605,38 +27657,11 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "thumbBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "thumbGap",
       "fields": {
         "css_property": "gap",
         "css_layer": "GRID",
         "css_element": "gallery-thumb"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbSelectedBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "gallery-thumb",
-        "css_state": "current"
       }
     },
     {
