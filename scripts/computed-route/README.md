@@ -63,6 +63,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json` (the whole-page line, content and handover counts, and the handover list). |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
 | `lib/entrance.mjs` | Entrance start: a block the draft shows at rest while live holds its entrance waiting for a scroll gets `sgsAnimationStart: 'load'` (Spec 38). |
+| `lib/fill-diagram.mjs` | A rendered draft's dimension diagram measured into `sgs/diagram-dimension` settings (line ends, guide reach and overshoot, tick length, label anchor), from the SVG geometry API and the label's box, never the source text (R-47-4). |
 | `lib/pairs.mjs` | Block pairing: words per block, their draft twins (repeated words planned apart), the partner choice (element, padded wrapper or text run), the keep-or-leave-out judgement (PAIRING_LIMITS) and the generated config's text. |
 | `lib/pairs-page.mjs` | Block pairing's in-page collectors: tagged words, live block boxes and text runs, draft chains (repeated words placed nearest the sure ones), form controls by identity, hand pair elements, and the draft opened through its navigation. |
 | `lib/issue-classes.mjs` | The one definition of a distinct open issue: the visual row kinds, the Solve classes and their order, the unmapped-state class and the issue key. Imported by both `lib/sweep.mjs` and `lib/triage.mjs`, so a surface's triage count equals its sweep count by construction rather than by two copies agreeing. |
@@ -108,6 +109,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/walker-devtools.test.mjs` | A-1 in headless Chromium on local HTML: the walker settles on finished animations, forces `:hover` on every pair, reads declared sizes from the matched rules and a text run's row spacing. |
 | `tests/walker-l2.test.mjs` | Session C lane L2 (walker core, GAP-CHECKLIST sections 20 to 26): the tag-mismatch guard, the unmatched-ref drop, the 1920 default, focus and active reads on every interactive element, link coverage, line counts during a state transition, and region entrances; headless Chromium on local HTML. |
 | `tests/walker-diagram-reads.test.mjs` | GAP-CHECKLIST section 27: a drawn line's stroke weight and dash are icon rows, a positioned element's `left`/`top` are rows (in-flow elements read none), and Solve writes an offset only from the draft's declared value; headless Chromium on local HTML. |
+| `tests/fill-diagram.test.mjs` | R-47-4 for diagrams: the Eye Care draft's front-view lines, guides (uneven reaches in one path included), ticks and a positioned label are measured to the unit in headless Chromium; a selector matching nothing is an error, never a zero. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
 | `tests/wp-session.test.mjs` | `scripts/lib/wp-session.js` in headless Chromium: a child attached to the shared browser and the owner both survive a page dialog; a confirm is dismissed and a beforeunload left, as Playwright's default does (MUST FAIL: the two auto-dismissals raced and one crashed with "No dialog is showing"; dismissing a beforeunload aborted the editor navigation). |
 | `tests/draft-serve.test.mjs` | FR-47-4 draft server: no path escape or symlink escape (MUST FAIL), ephemeral port, directory index, content types, Range, and close frees the port. |
@@ -325,6 +327,10 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `detectReferences(dir?)` → every SGS reference block.
 - `referenceOf(node, refs)` → the reference a tree node holds, or null (a linked block only with its flag on).
 - `lintSurfaces(surfaces, buildDir, refs?)` → problems: a tree prints a post that no surface targets (frames) or `provides` (linked blocks, template parts).
+
+### `lib/fill-diagram.mjs`
+
+- `diagramGeometry(spec)` (in-page, passed to `page.evaluate`) → `{ startX, startY, endX, endY, extReach, extReachEnd, extOvershoot, tickLength, labelX, labelY }` in % of the drawing (reach, overshoot and tick in % of its width), or `{ error }` when a selector matches nothing. `spec` is `{ svg, line, guides?, ticks?, label?, labelAlign? }`; guides and ticks may each be one path holding both ends, split by nearness to the line's start and end. A positive reach reaches towards -n, as `plugins/sgs-blocks/src/utils/diagram-geometry.js` draws it. Imports nothing.
 
 ### `lib/entrance.mjs`
 
