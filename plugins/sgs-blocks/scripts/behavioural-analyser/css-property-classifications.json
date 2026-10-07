@@ -307,6 +307,105 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "cardDescFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "cardDescTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "card-desc"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardTitleFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -415,10 +514,109 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "chipFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "chipTextColour",
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
         "css_element": "chip"
       }
     },
@@ -439,6 +637,105 @@
         "role": "color",
         "css_element": "contentLink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "guestLineTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "guest-line"
       }
     },
     {
@@ -656,6 +953,105 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "menuLink"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "progressStepTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "progress-step"
       }
     },
     {
@@ -2169,10 +2565,679 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "guidedGroupTitle"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedGroupTitleWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "guidedMeter"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "guidedMeterWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyHeadingWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "notify-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyInputWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "notify-email"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "notifyLabel"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyLabelWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifyStatusWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "notify-status"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "notify-submit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "notifySubmitWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "notify-submit"
       }
     },
     {
@@ -2271,9 +3336,200 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "savingBadgeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "savingBadgeWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "stackBelow",
       "fields": {
         "css_property": "min-width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "stock"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "stockWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
       }
     },
     {
@@ -2283,6 +3539,22 @@
         "css_property": "transform",
         "css_element": "gallery-thumb",
         "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbsPerRow",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_element": "gallery-thumb"
       }
     },
     {
@@ -2522,6 +3794,102 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "badgeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "badgeWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -2670,6 +4038,102 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "glyphInitialFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "glyphInitialWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "glyph-initial"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "glyphSize",
       "fields": {
         "css_property": "font-size,height,width"
@@ -2789,6 +4253,102 @@
       "attr": "overlayOpacity",
       "fields": {
         "css_property": "opacity"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "paginationWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "page-btn"
       }
     },
     {
@@ -12287,6 +13847,90 @@
       }
     },
     {
+      "slug": "sgs/media",
+      "attr": "videoTimeFontFamily",
+      "fields": {
+        "css_property": "font-family"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeFontSize",
+      "fields": {
+        "css_property": "font-size"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeFontStyle",
+      "fields": {
+        "css_property": "font-style"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeFontWeight",
+      "fields": {
+        "css_property": "font-weight"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeLineHeight",
+      "fields": {
+        "css_property": "line-height"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextAlign",
+      "fields": {
+        "css_property": "text-align"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextColumns",
+      "fields": {
+        "css_property": "column-count"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextTransform",
+      "fields": {
+        "css_property": "text-transform"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeTextWrap",
+      "fields": {
+        "css_property": "text-wrap"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "videoTimeWritingMode",
+      "fields": {
+        "css_property": "writing-mode"
+      }
+    },
+    {
       "slug": "sgs/mega-aside",
       "attr": "asideBorderColour",
       "fields": {
@@ -13799,6 +15443,102 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "drillBackWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "drill-back-btn"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBadgeGap",
       "fields": {
         "css_property": "margin",
@@ -14948,6 +16688,102 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "badgeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "badgeWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -15013,6 +16849,102 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "categoryFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -15027,6 +16959,102 @@
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "excerpt"
       }
     },
     {
@@ -15094,11 +17122,395 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "loadMoreFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "loadMoreWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "load-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "metaWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "paginationWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "page-btn"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "readmore"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "readMoreWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "readmore"
       }
     },
     {
@@ -16479,10 +18891,26 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "attributeTagFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "attributeTagFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "attribute-tag"
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "attributeTag"
       }
     },
     {
@@ -16490,7 +18918,7 @@
       "attr": "attributeTagFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "attribute-tag"
+        "css_element": "attributeTag"
       }
     },
     {
@@ -16498,7 +18926,23 @@
       "attr": "attributeTagLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "attribute-tag"
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "attributeTag"
       }
     },
     {
@@ -16507,6 +18951,46 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "attributeTag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "attributeTagWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "attributeTag"
       }
     },
@@ -16597,6 +19081,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "brandFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -16613,9 +19105,65 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "brandPadding",
       "fields": {
         "css_property": "padding",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "brand"
       }
     },
@@ -16747,6 +19295,14 @@
       "attr": "ctaFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaLineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "cta"
       }
     },
@@ -17173,7 +19729,200 @@
       "attr": "ratingColour",
       "fields": {
         "css_property": "color",
-        "css_element": "rating-text"
+        "role": "color",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingStarsWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "ratingStars"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "rating"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "rating"
       }
     },
     {
@@ -17181,7 +19930,160 @@
       "attr": "rrpColour",
       "fields": {
         "css_property": "color",
+        "role": "color",
         "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "rrpWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "rrp"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "savingBadge"
       }
     },
     {
@@ -17190,6 +20092,46 @@
       "fields": {
         "css_property": "color",
         "css_element": "saving-badge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "savingBadge"
       }
     },
     {
@@ -17208,6 +20150,102 @@
         "css_property": "transform",
         "css_element": "swatch",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "swatchMore"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "swatchMoreWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "swatchMore"
       }
     },
     {
@@ -24657,12 +27695,29 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "thumbGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "thumbSelectedBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "gallery-thumb",
         "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbStripOffset",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "gallery-thumb"
       }
     },
     {
@@ -30692,6 +33747,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "cta2TextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaColourBorderGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -30722,6 +33785,14 @@
         "css_property": "color-gradient",
         "css_element": "cta",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "cta"
       }
     },
     {
