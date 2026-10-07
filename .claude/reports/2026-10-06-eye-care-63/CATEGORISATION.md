@@ -1,6 +1,6 @@
 # The 63 rows the walker cannot see — categorised
 
-**2026-10-06; the open rows closed 2026-10-07.** Live at **`7cb60d4f4`** (`~/.sgs-deploy-marker-eye-care-test.json`); each row's proof is in its register Fix cell.
+**2026-10-06; the open rows closed 2026-10-07.** Live at **`da925c40c`** (`~/.sgs-deploy-marker-eye-care-test.json`); each row's proof is in its register Fix cell.
 Live `https://darkcyan-grouse-898606.hostingersite.com` · draft `https://mintcream-lyrebird-224487.hostingersite.com/`.
 Source of truth: `.claude/plans/2026-10-02-eye-care-fix-register.md`. Partition: `worksheet.md`.
 
@@ -11,8 +11,8 @@ then-live `578a8830b`. The **fixes** this session then made shipped in `4aa47750
 
 | Category | Rows |
 |---|---|
-| **Closed** — built and live, fixed, or already closed | **33**, plus the 4 aliases verified |
-| **Still open** | **2**: 14 (built, deploy pending), N36S (blocked on data and D1) |
+| **Closed** — built and live, fixed, or already closed | **34**, plus the 4 aliases verified |
+| **Still open** | **1**: N36S (blocked on lens-height data and the D1 block) |
 | Content — written, ours to own | 4 |
 | Accepted divergence / beyond the draft | 2 |
 | Alias of a parent row | 12 |
@@ -41,9 +41,9 @@ Each verified against the running site tonight, not against its commit.
 
 ## 2. The open rows — closed 2026-10-07
 
-Every row below was built, deployed and measured live on eye-care-test (`7cb60d4f4`); the register's Fix cell
-carries each one's proof. Framework commits `111bcd98b`, `db97bed10`, `235d54de0`, `7d1173187`, `7cb60d4f4`;
-trees `7507ce0ae`, `473b42694`.
+Every row below was built, deployed and measured live on eye-care-test (`7cb60d4f4`; row 14 at `1f6cdb4dc`); the
+register's Fix cell carries each one's proof. Framework commits `111bcd98b`, `db97bed10`, `235d54de0`,
+`7d1173187`, `7cb60d4f4`, `077f7dbec`; trees `7507ce0ae`, `473b42694`.
 
 | Ref | Closed by |
 |---|---|
@@ -54,14 +54,15 @@ trees `7507ce0ae`, `473b42694`.
 | **51** | the ken-burns paint repaired on the hero's own `<img>`; zoom-out-once 3s from 108% |
 | **96** | `scripts/check-focus-ring-token.py` (a build gate): 93 focus rules in 32 files now read the client's ring token |
 | **N4** | trust-bar drop and scroll coexist; 44px pause toggle |
+| **14** | drawer stagger CSS moved into `nav-drawer/style.css` (077f7dbec); live, the links start at 0 / 52 / 90 / 140ms |
 | **N37, 73, D7, N30** | advance-on-pick with a step announcer; buybox photo entrance; the Google badge in the header's top row; plain size numbers |
 | **N2A, N33A** | measured as never applied on Eye Care, then fixed in the trees |
 | **N8** | not reproduced (wordmark stayed on 1 line while the bag opened) |
 
 Three defects surfaced while verifying and are fixed: every frame's add-to-bag was refused (two attributes
 labelled "Size"; `class-cart-proxy.php`), a set `sgs/media` size was ignored on every WooCommerce page
-(`media-atoms/box-shape.css`), and a drawer with no menu block never loaded its stagger CSS (`077f7dbec`, not
-yet deployed).
+(`media-atoms/box-shape.css`), and a drawer with no menu block never loaded its stagger CSS (`077f7dbec`,
+verified live: the drawer's links now start at 0 / 52 / 90 / 140ms).
 
 ## 3. Content — written, ours to own
 
@@ -224,7 +225,7 @@ host was held by two peers). Each carries the one live measurement that would co
 | N30 bridge-size box | TREE + seed data | the seeder writes `U+25A1` into `_sgs_size_measure` (`woo-seed/seed.php::sgs_seed_find_or_create_size_term`); the draft uses the same glyph |
 | N36S sizing tab | mixed | 4th row is a tree change needing lens-height data that does not exist; the diagram is a new block (D1). **The register's "no description column" is STALE — it is already built** |
 | 64 filter bar scrolls | **FIXED, verified live `0cc773b19`** | `sgs-shop-filters.js::ensureParts` puts the header inside `.sgs-shop-filters__scroll`, which has `overflow-y:auto`; the footer is appended outside it, which is why it stays pinned |
-| 14 drawer stagger | FRAMEWORK | `nav-drawer-menu/style.css` staggers only direct children of `.sgs-nav-drawer__body`; the tree's `sgs/container` is one child, so everything inside it arrives together |
+| 14 drawer stagger | **FIXED, verified live `1f6cdb4dc`** | `nav-drawer-menu/style.css` staggers only direct children of `.sgs-nav-drawer__body`; the tree's `sgs/container` is one child, so everything inside it arrives together |
 | 17, 3 bag count pop | **FIXED, verified live `0cc773b19`** | `count-pop.js::maybeAnimateCountPop` pops only on increase and the first call is `NaN`, so no pop on load; the CSS is fixed at 0.35s against the draft's 0.5s |
 | 19 delivery bar | **FIXED, verified live `0cc773b19`** | `cart/style.css` hardcodes `transition: width 0.3s ease`; no duration or easing attribute exists |
 | 73 photo fade | FRAMEWORK | `sgs/buybox` has no photo-entrance attribute; the existing crossfade fires only on variation swap |
@@ -239,13 +240,10 @@ host was held by two peers). Each carries the one live measurement that would co
 - **Entrance motion (14, 73, 17)** — all want a draft-shaped entrance; fix against one shared keyframe and timing convention (rise 18px, 0.5-0.9s, `cubic-bezier(.2,.7,.2,1)`) rather than re-typing it three times
 
 **Not settled from source, stated rather than guessed:** 152 (a live-DB copy of the part could carry locks),
-N36S (whether real lens-height values exist), 14 (whether the live drawer uses the tree's `sgs/button` nav
-container), 19 (whether the bar transitions at all, a different cause from the duration).
+N36S (whether real lens-height values exist), 19 (whether the bar transitions at all, a different cause from the duration).
 
 ## What is left
 
-- **14** drawer stagger: deploy `077f7dbec` (blocks-only) to eye-care-test, then at 375 confirm the drawer's
-  links start at staggered times (`animationstart` listener installed before navigation).
 - **N36S** sizing tab: blocked. The 4th row needs a lens-height value no product carries, and the diagram is
   the new D1 block. The note under the table is live.
 

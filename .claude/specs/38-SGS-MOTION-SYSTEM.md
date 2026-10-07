@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 38
-spec_version: 1.4
+spec_version: 1.5
 status: active
 title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
@@ -1462,7 +1462,8 @@ seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_row
 - **Timing.** Duration and easing resolve from the theme tokens (`--wp--custom--duration--*`,
   `--wp--custom--easing--*`) or a custom value (0-5000ms; CSS `ease` or a stored raw easing
   string); `sgsAnimationDistance` (15, 30, 50 or 100px, or a custom 0-400px, written only when set)
-  replaces a directional effect's own travel (30px fade, 100px slide). The delay is
+  replaces a directional effect's own travel (30px fade, 100px slide); with none set, a fade's travel
+  is the entrance distance token below. The delay is
   `sgsAnimationDelay` plus the block's stagger, resolved by `assets/js/animation-entrance-timing.js`:
   its own `sgsAnimationStagger` step times its position among the matching animated blocks beside
   it, else the nearest parent's `sgsAnimationStaggerChildren` step times its position among that
@@ -1471,6 +1472,15 @@ seeder (`scripts/dbschema/seed-motion-shape-signatures.py::_extract_entrance_row
   their own that start together (in view at load, or in one observer batch) play 100ms apart.
   `supports.sgs.animationItems` hands a block's entrance to its repeated items (`sgs/card-grid`
   tiles), staggered by its declared `anim:stagger` attribute.
+- **The entrance tokens.** `settings.custom.entrance` (`distance`, `duration`, `easing`; framework
+  default 30px / 500ms / `cubic-bezier(0.16,1,0.3,1)`, a client's snapshot overrides them, e.g. Eye
+  Care's 18px / 600ms / `cubic-bezier(0.2,0.7,0.2,1)`) is the one source for a draft's entrance
+  feel. `sgs/buybox`'s `photoEntrance` reads all three; the drawer stagger reads the distance and
+  easing (`--sgs-nd-stagger-dist`, `--sgs-nd-stagger-ease` fallbacks); the hero's zoom-out-once reads
+  the easing. `sgsAnimation` reads only the **distance** (for fade-up/down/left/right when the block
+  sets none); its duration and easing stay on the `--wp--custom--duration--*` /
+  `--wp--custom--easing--*` keys above. A snapshot without `entrance` gets each consumer's CSS
+  fallback (the drawer's distance falls back to 16px).
 - **When it plays.** `sgsAnimationStart` chooses the start: `''` (default, "Block scrolls into view")
   or `'load'` ("Page loads", written as `data-sgs-animation-start="load"`). A `load` entrance plays
   as the observer script starts, wherever the block sits (below the fold included), with its own

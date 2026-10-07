@@ -106,13 +106,12 @@ a cosmetic path change re-keys rows wholesale.
 
 - **The walker-blind rows** — register rows the Spec 47 walker cannot see (verdicts and the closing pass:
   `reports/2026-10-06-eye-care-63/CATEGORISATION.md`; each row's proof is in its register Fix cell). **All
-  closed and verified live on eye-care-test (`7cb60d4f4`) except two:** **14** (drawer stagger) is built
-  (`077f7dbec`, its CSS moved into `nav-drawer/style.css` because a drawer with no menu block never loaded it)
-  and rides small-giants-wp-bd's next eye-care-test deploy; it still needs its 375px check. **N36S** is blocked:
-  no product carries a lens-height value, and the diagram is the new D1 block. Two pre-existing finds are
-  parked as Q3 and Q4 in `plans/2026-10-05-eye-care-functionality-backlog.md`. ⚠️ A plugin deploy does NOT
-  apply a tree fix: rebuild the page with `wp-build-page.js` (pace one at a time; the host's edge challenge
-  refuses bursts).
+  closed and verified live on eye-care-test (`da925c40c`) except N36S**, blocked: no product carries a
+  lens-height value, and the diagram is the new D1 block. Two post-hoc `/qc-council` passes on this work found
+  and fixed seven defects (proof in commits 7346235f3 and da925c40c); pre-existing finds are parked as Q3 to Q8 in
+  `plans/2026-10-05-eye-care-functionality-backlog.md`. The focus ring stays the client accent (D467, confirmed
+  2026-10-07). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with `wp-build-page.js` (one at a
+  time; the host's edge challenge refuses bursts).
 
 
 **Routing:** the 31 held rows stay NULL (deliberate). Transition rows DO calibrate
