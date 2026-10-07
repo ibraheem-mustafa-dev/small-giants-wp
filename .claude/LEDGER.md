@@ -57,12 +57,12 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 **Now (2026-10-07).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
-No blockers. **eye-care-test runs `430545e06` and the sandybrown canary `6ca8fdb8a`** (markers). ⚠️ Since 21:50 on 2026-10-07 the host edge 403s this machine's web requests (SSH fine): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
+No blockers. **eye-care-test runs `70072ad8c` and the sandybrown canary `6d7ab0169`** (markers). ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the "Ask us" cell) and Q12 (the gallery grid) are closed live; their open edges are in their backlog rows. Q1 is decided, not building.
 
-**Spec 47 (v0.15.3): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+**Spec 47 (v0.15.4): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
 compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
 read per-surface counts from `qa/triage/*.json`, never a cached figure. **Everything except stage 5 (a second draft)
 is built.** Route defects with owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time
@@ -111,8 +111,8 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-07):** Solve writes first, per surface (Bean). Lenses: 67 to 4 issues, none visible (ledgered); owed its
-  done-line checks. Register 87, 100-102 closed live. Calibration lock and three checker/walker fixes built. Detail: the plan.
+- **Session D (2026-10-07):** Solve writes first, per surface (Bean). Lenses: 0 unexplained (/qc); done line misses the
+  independent check (7 rows, N39 tablet sides) and the 10% wrong-write ratio. Register 87, 100-102 closed live. Calibration lock and three checker/walker fixes built. Detail: the plan.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 

@@ -43,6 +43,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/calibrate-instances.mjs` | Which instances a block's calibration page holds: markers, their preconditions (variant, gating toggle, border partners, overlay image, layout mode) and state targets. |
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
 | `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
+| `lib/calibration-lock.mjs` | One calibration per calibration page: a per-site lock in the machine's temp folder that `calibrate.mjs` takes before building. |
 | `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
 | `lib/calibrate-content.mjs` | The content side of calibration: which elements a setting makes appear or disappear, whose text it prints and which it makes a link — the settings that paint no CSS property, queried by framework-database `role` because `attrsFor` never returns them. |
 | `lib/deploy-hash.mjs` | The deploy key: md5 of a block's front-end build files, locally and on the site. |
@@ -268,6 +269,11 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `textFrom(needle, markRead)` → `{ path, reachedAt }` for the deepest element carrying the marker, or null.
 - `linkFrom(needle, markRead)` → `{ path, attr }` for the element carrying the marker in its most preferred link attribute, or null.
 - `collectContent(instances)` → the cache file's `text`, `presence` and `link` keys, each omitted when the block has nothing of that kind.
+
+### `lib/calibration-lock.mjs`
+- `acquireCalibrationLock(site, { blocks, dir, pid, isAlive, now })` → `{ file, release }`, or throws R-47-11 naming the run that holds the site's lock (pid, blocks, start). The file is created atomically (`wx`); a lock whose owner process is gone is taken over; a lock file still being written counts as held for 60 s. `release` removes it only while this process owns it.
+- `calibrationLockPath(site, dir)`, `processAlive(pid)`.
+- Why: two calibrations on one site build onto its one calibration page with the same `cr-ref-cal-<n>` classes, so each reads the other's blocks (2026-10-07, a mega-group run measured a nav-bar-menu root). Tests: `tests/calibration-lock.test.mjs`.
 
 ### `lib/calibrate-chunk.mjs`
 - `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.

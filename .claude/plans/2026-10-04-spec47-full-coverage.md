@@ -63,9 +63,8 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
   Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
-  - 131 / S3: the hover colour is in the trees and live (no fade; the links rest at #141414, so hover shows no colour
-    change). Contact's next Solve run needs a ledger entry holding `text` on contact-9 against the draft's taupe, or it writes
-    the taupe back. The visible hover cue waits for S2's underline sweep (framework).
+  - 131 / S3: before Contact's next Solve run, ledger `textColourHover` `text` on cr-ref-contact-9 against the draft's taupe
+    (none exists; Solve would otherwise write the taupe back). The visible hover cue waits for S2's underline sweep.
   - The mobile drawer's links (mobile-menu surface): the draft fades and rises each link in when the drawer opens, live
     shows them at once; 14 rows open (2026-10-05 sweep), but the walker does not sample the rise, so they cannot be judged.
     Taken with the mobile-menu surface's Solve pass: first make the walker sample an entrance inside the `drawer-open` state.
@@ -102,7 +101,8 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     local-eye-care measured a nav-bar-menu root because another session's sgs/nav-bar-menu calibration ran on the same
     mirror at the same time; both build onto the site's one calibration page with the same `cr-ref-cal-<n>` classes
     (overlap confirmed by that session). Guard built (`5bebb2b6d`): `lib/calibration-lock.mjs`, a per-site lock that makes
-    a second calibration refuse to start. The contaminated cache was replaced by the 2026-10-05 one. **Next:** re-run
+    a second calibration refuse to start. The contaminated cache was replaced by the 2026-10-05 one. **Next:** once the local-eye-care
+    calibration lock is free (another session's nav-bar-menu re-measure held it on 2026-10-08, about 50 minutes a run), re-run
     `calibrate.mjs --site local-eye-care --blocks sgs/mega-group --recalibrate` alone and confirm `discovered.sgsChildSizing`
     records `flex-grow` on the root; the 2026-10-05 run may itself have been crossed (its discovery is empty), which the
     clean run will show.
@@ -158,7 +158,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses (Session D; 26 distinct issues open on the page rebuilt from the tree on 2026-10-07, 67 that morning): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+- [ ] **Lenses (Session D; 0 unexplained on the rebuild after D-82 to D-85, 2026-10-08, from 67; done line not yet met, see below): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
   `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
@@ -186,9 +186,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   steps' current markup and read the grid and steps column on their container section, the walker stopped reading a
   `display:none` pseudo layer, and straight and curly quotes compared as one character (`5bebb2b6d`). The 9 paint nothing
   and are ledgered D-72 to D-81 (the draft's scroll reveal never fires below 1440; the steps' flex-grow, gap shorthand and
-  `align-items`). **Next, the done line:** a rebuild measuring 0 unexplained, `independent-check.mjs --surface lenses` 0
-  beyond the ledger, and a planted-fault control (Solve's last write run had 3 wrong writes of 17, two of them the guard's
-  unconfirmed padding verdict).
+  `align-items`). **Done line, checked by /qc 2026-10-08** (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`): a rebuild
+  of the committed tree measures **0 unexplained, 0 labelled gaps, 0 new rows** (`qa/solve/lenses/2026-10-07T23-*`, after
+  D-82 to D-85 ledgered the draft reveal at 768); the planted-fault control passes (22px top padding caught at 1440 and 1920
+  only, then cleared on restore). **Two criteria not met:** (1) `independent-check.mjs --surface lenses` leaves 7 rows: the
+  page's side inset at 375 and 768 on cr-ref-lenses-0, -21 and -25 (live content starts at x 52 where the draft starts at
+  x 20, register N39's unproven sides; About and Contact hold the same 52px, so check them first), and 3 rows comparing a
+  block with no gap to a flex gap of 0px, which paint alike (`independent-check.mjs::compare` should treat them as equal,
+  test first); (2) wrong writes at most 10%: the last write run recorded 3 of 17, two of them the guard's unconfirmed
+  container-height verdict on the page padding.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
