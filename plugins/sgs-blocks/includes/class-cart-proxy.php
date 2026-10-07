@@ -537,7 +537,8 @@ final class Cart_Proxy {
 			/*
 			 * Display-name to taxonomy map, e.g. 'size' => 'pa_size', 'flavour' => 'pa_flavour'.
 			 */
-			$display_to_tax = array();
+			$display_to_tax   = array();
+			$label_candidates = array();
 
 			if ( $parent_product ) {
 				foreach ( $parent_product->get_attributes() as $tax_slug => $attr_obj ) {
@@ -549,6 +550,9 @@ final class Cart_Proxy {
 						$display_name = (string) $tax_slug;
 					}
 					$display_to_tax[ \strtolower( $display_name ) ] = $tax_slug;
+					// Every attribute behind a label, so two attributes sharing one label
+					// (a "Size" axis and a hidden "Size" filter attribute) still resolve.
+					$label_candidates[ \strtolower( $display_name ) ][] = $tax_slug;
 					// Also index by the raw taxonomy slug so the client can use either form.
 					$display_to_tax[ \strtolower( $tax_slug ) ] = $tax_slug;
 
@@ -592,6 +596,16 @@ final class Cart_Proxy {
 				$lower_attr = \strtolower( $client_attr );
 				if ( isset( $display_to_tax[ $lower_attr ] ) ) {
 					$tax_slug = $display_to_tax[ $lower_attr ];
+					// A label shared by several attributes resolves to the one this
+					// variation is built on (the later attribute won the map above).
+					if ( ! \array_key_exists( $tax_slug, $wc_attrs ) ) {
+						foreach ( $label_candidates[ $lower_attr ] ?? array() as $candidate ) {
+							if ( \array_key_exists( $candidate, $wc_attrs ) ) {
+								$tax_slug = $candidate;
+								break;
+							}
+						}
+					}
 				} else {
 					// Unrecognised attribute key — reject.
 					return new \WP_Error(
