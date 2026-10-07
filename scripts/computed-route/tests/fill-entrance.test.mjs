@@ -69,8 +69,14 @@ test( 'in a real browser: a keyframe entrance is sampled for delay, duration, di
 		const jobs = [ 'rise', 'late', 'loop', 'still' ].map( ( id ) => ( { id, finder: `.${ id }` } ) );
 		const raw = await sampleEntrances( { url: served.url, jobs, windowMs: 2500 } );
 		const rise = shapeEntrance( raw.rise );
-		assert.equal( rise.delayMs, 200, `delay ${ rise.delayMs }` );
-		assert.equal( rise.durationMs, 600, `duration ${ rise.durationMs }` );
+		// A real browser reads each time to a frame (about 17ms at 60Hz), and the measured delay runs 188-220ms against
+		// the 225ms where it rounds to 250, so one dropped frame moves the rounded value a whole step. The raw intervals
+		// are held to two frames of what the page sets; the rounding to STEP_MS is pinned by the synthetic tests above.
+		const FRAMES_2 = 34;
+		const rawDelay = raw.rise.start - raw.rise.seenAt;
+		const rawDuration = raw.rise.end - raw.rise.start;
+		assert.ok( Math.abs( rawDelay - 200 ) <= FRAMES_2, `raw delay ${ rawDelay }` );
+		assert.ok( Math.abs( rawDuration - 600 ) <= FRAMES_2, `raw duration ${ rawDuration }` );
 		assert.ok( Math.abs( rise.distancePx - 18 ) <= 1, `distance ${ rise.distancePx }` );
 		assert.equal( rise.opacityFrom, 0 );
 		const late = shapeEntrance( raw.late );
