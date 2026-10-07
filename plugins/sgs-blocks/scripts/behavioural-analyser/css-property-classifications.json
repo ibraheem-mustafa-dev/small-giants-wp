@@ -2655,7 +2655,8 @@
       "slug": "sgs/buybox",
       "attr": "guidedGroupTitleWritingMode",
       "fields": {
-        "css_property": "writing-mode"
+        "css_property": "writing-mode",
+        "css_element": "guidedGroupTitle"
       }
     },
     {
@@ -2750,7 +2751,8 @@
       "slug": "sgs/buybox",
       "attr": "guidedMeterWritingMode",
       "fields": {
-        "css_property": "writing-mode"
+        "css_property": "writing-mode",
+        "css_element": "guidedMeter"
       }
     },
     {
@@ -2766,7 +2768,7 @@
       "attr": "notifyHeadingFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2774,7 +2776,7 @@
       "attr": "notifyHeadingFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2782,7 +2784,7 @@
       "attr": "notifyHeadingFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2790,7 +2792,7 @@
       "attr": "notifyHeadingFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2798,7 +2800,7 @@
       "attr": "notifyHeadingLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2806,7 +2808,7 @@
       "attr": "notifyHeadingLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2814,7 +2816,7 @@
       "attr": "notifyHeadingTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2822,7 +2824,7 @@
       "attr": "notifyHeadingTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2830,7 +2832,7 @@
       "attr": "notifyHeadingTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2838,7 +2840,7 @@
       "attr": "notifyHeadingTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2846,7 +2848,7 @@
       "attr": "notifyHeadingTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2854,7 +2856,7 @@
       "attr": "notifyHeadingWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "notify-heading"
+        "css_element": "notifyHeading"
       }
     },
     {
@@ -2862,7 +2864,7 @@
       "attr": "notifyInputFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2870,7 +2872,7 @@
       "attr": "notifyInputFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2878,7 +2880,7 @@
       "attr": "notifyInputFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2886,7 +2888,7 @@
       "attr": "notifyInputFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2894,7 +2896,7 @@
       "attr": "notifyInputLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2902,7 +2904,7 @@
       "attr": "notifyInputLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2910,7 +2912,7 @@
       "attr": "notifyInputTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2918,7 +2920,7 @@
       "attr": "notifyInputTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2926,7 +2928,7 @@
       "attr": "notifyInputTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2934,7 +2936,7 @@
       "attr": "notifyInputTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2942,7 +2944,7 @@
       "attr": "notifyInputTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -2950,7 +2952,7 @@
       "attr": "notifyInputWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "notify-email"
+        "css_element": "notifyInput"
       }
     },
     {
@@ -3045,7 +3047,8 @@
       "slug": "sgs/buybox",
       "attr": "notifyLabelWritingMode",
       "fields": {
-        "css_property": "writing-mode"
+        "css_property": "writing-mode",
+        "css_element": "notifyLabel"
       }
     },
     {
@@ -3053,7 +3056,7 @@
       "attr": "notifyStatusFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3061,7 +3064,7 @@
       "attr": "notifyStatusFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3069,7 +3072,7 @@
       "attr": "notifyStatusFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3077,7 +3080,7 @@
       "attr": "notifyStatusFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3085,7 +3088,7 @@
       "attr": "notifyStatusLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3093,7 +3096,7 @@
       "attr": "notifyStatusLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3101,7 +3104,7 @@
       "attr": "notifyStatusTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3109,7 +3112,7 @@
       "attr": "notifyStatusTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3117,7 +3120,7 @@
       "attr": "notifyStatusTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3125,7 +3128,7 @@
       "attr": "notifyStatusTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3133,7 +3136,7 @@
       "attr": "notifyStatusTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3141,7 +3144,7 @@
       "attr": "notifyStatusWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "notify-status"
+        "css_element": "notifyStatus"
       }
     },
     {
@@ -3149,7 +3152,7 @@
       "attr": "notifySubmitFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3157,7 +3160,7 @@
       "attr": "notifySubmitFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3165,7 +3168,7 @@
       "attr": "notifySubmitFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3173,7 +3176,7 @@
       "attr": "notifySubmitFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3181,7 +3184,7 @@
       "attr": "notifySubmitLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3189,7 +3192,7 @@
       "attr": "notifySubmitLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3197,7 +3200,7 @@
       "attr": "notifySubmitTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3205,7 +3208,7 @@
       "attr": "notifySubmitTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3213,7 +3216,7 @@
       "attr": "notifySubmitTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3221,7 +3224,7 @@
       "attr": "notifySubmitTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3229,7 +3232,7 @@
       "attr": "notifySubmitTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3237,7 +3240,7 @@
       "attr": "notifySubmitWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "notify-submit"
+        "css_element": "notifySubmit"
       }
     },
     {
@@ -3339,7 +3342,7 @@
       "attr": "savingBadgeFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3347,7 +3350,7 @@
       "attr": "savingBadgeFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3355,7 +3358,7 @@
       "attr": "savingBadgeFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3363,7 +3366,7 @@
       "attr": "savingBadgeFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3371,7 +3374,7 @@
       "attr": "savingBadgeLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3379,7 +3382,7 @@
       "attr": "savingBadgeLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3387,7 +3390,7 @@
       "attr": "savingBadgeTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3395,7 +3398,7 @@
       "attr": "savingBadgeTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3403,7 +3406,7 @@
       "attr": "savingBadgeTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3411,7 +3414,7 @@
       "attr": "savingBadgeTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3419,7 +3422,7 @@
       "attr": "savingBadgeTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3427,7 +3430,7 @@
       "attr": "savingBadgeWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "saving-badge"
+        "css_element": "savingBadge"
       }
     },
     {
@@ -3529,7 +3532,8 @@
       "slug": "sgs/buybox",
       "attr": "stockWritingMode",
       "fields": {
-        "css_property": "writing-mode"
+        "css_property": "writing-mode",
+        "css_element": "stock"
       }
     },
     {
