@@ -1470,6 +1470,34 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextColumns: true,
 								showWritingMode: true,
 							},
+							{
+								key: 'glyphInitial',
+								label: __( 'Fallback initial letter', 'sgs-blocks' ),
+								prefix: 'glyphInitial',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'badge',
+								label: __( 'Badge', 'sgs-blocks' ),
+								prefix: 'badge',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
 							imageFallback && noImageLabel && {
 								key: 'noImageLabel',
 								label: __( 'No-photo label', 'sgs-blocks' ),
@@ -1712,6 +1740,7 @@ export default function Edit( { attributes, setAttributes } ) {
 											style={ {
 												color: glyphColourValue,
 												fontSize: glyphSize || '32px',
+												...cardPreview.glyphInitialTypography,
 											} }
 										>
 											{ item.title.trim().charAt( 0 ).toUpperCase() }
@@ -1762,6 +1791,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									{ item.badge && item.badgeVariant && (
 										<span
 											className={ `sgs-card-grid__badge sgs-card-grid__badge--${ item.badgeVariant }` }
+											style={ cardPreview.badgeTypography }
 										>
 											{ item.badge }
 										</span>

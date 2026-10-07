@@ -1581,10 +1581,10 @@ const E14_BLOCKS_BUILD = false;
 // - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
 //   intent).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 21: post-grid card parts and card-grid glyph/badge with
-//   no typography control yet, a control selector ending in a bare tag or
-//   built from a function parameter (triage §7 gaps 11, 12), a caption
-//   selector list with an unplaceable member, and the CANNOT-TELL rows.
+// - CANNOT-RESOLVE 5: the cart badge (its trigger markup is unseen,
+//   CANNOT-TELL), the media caption list's bare `figcaption` member, the
+//   nav-drawer ornament (a control selector built from a function parameter,
+//   triage §7 gap 12) and the theme-toggle icon's svg glyph size.
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
@@ -1597,7 +1597,7 @@ const E14_BLOCKS_BUILD = false;
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        28,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 21,
+	'CANNOT-RESOLVE': 5,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */

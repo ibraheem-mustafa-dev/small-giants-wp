@@ -563,6 +563,14 @@ $responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' 
 // defaults inside :where() so these scoped rules win.
 $responsive_css .= sgs_typography_css_rule( $attributes, 'pagination', $root_sel . ' .sgs-post-grid__page-btn' );
 $responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more' );
+// Card text elements (built by Post_Grid_REST::render_card, and by the editor
+// preview): meta line, image badge, plain category label, excerpt, read-more link.
+// Each type default in style.css sits in :where() so these scoped rules win.
+$responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $root_sel . ' .sgs-post-grid__meta' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'badge', $root_sel . ' .sgs-post-grid__badge' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'category', $root_sel . ' .sgs-post-grid__category' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'excerpt', $root_sel . ' .sgs-post-grid__excerpt' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'readMore', $root_sel . ' .sgs-post-grid__readmore' );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

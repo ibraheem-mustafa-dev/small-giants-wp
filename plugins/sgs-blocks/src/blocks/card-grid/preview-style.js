@@ -67,5 +67,7 @@ export function cardGridPreview( attributes, tier, palette ) {
 		titleTypography: typographyPreviewStyle( attributes, 'title', tier ),
 		subtitleTypography: typographyPreviewStyle( attributes, 'subtitle', tier ),
 		noImageLabelTypography: typographyPreviewStyle( attributes, 'noImageLabel', tier ),
+		glyphInitialTypography: typographyPreviewStyle( attributes, 'glyphInitial', tier ),
+		badgeTypography: typographyPreviewStyle( attributes, 'badge', tier ),
 	};
 }

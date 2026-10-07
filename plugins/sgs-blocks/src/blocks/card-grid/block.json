@@ -1029,6 +1029,192 @@
       ],
       "default": ""
     },
+    "glyphInitialFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "glyphInitialFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "glyphInitialFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "glyphInitialFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "glyphInitialFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "glyphInitialTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "glyphInitialTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "glyphInitialLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "glyphInitialLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "glyphInitialLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "glyphInitialLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "glyphInitialTextAlign": {
+      "type": "string",
+      "enum": [
+        "",
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "default": ""
+    },
+    "glyphInitialTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "glyphInitialTextColumns": {
+      "type": "number"
+    },
+    "glyphInitialWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
+    "badgeFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "badgeFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeFontStyle": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextTransform": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ],
+      "default": ""
+    },
+    "badgeTextDecoration": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "underline",
+        "line-through"
+      ],
+      "default": ""
+    },
+    "badgeLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "badgeLetterSpacing": {
+      "type": "object",
+      "default": {}
+    },
+    "badgeLetterSpacingUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "badgeTextAlign": {
+      "type": "string",
+      "enum": [
+        "",
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "default": ""
+    },
+    "badgeTextWrap": {
+      "type": "string",
+      "enum": [
+        "",
+        "wrap",
+        "nowrap",
+        "balance",
+        "pretty",
+        "stable"
+      ],
+      "default": ""
+    },
+    "badgeTextColumns": {
+      "type": "number"
+    },
+    "badgeWritingMode": {
+      "type": "string",
+      "enum": [
+        "",
+        "horizontal-tb",
+        "vertical-rl",
+        "vertical-lr"
+      ],
+      "default": ""
+    },
     "textColourHoverGradient": {
       "type": "string",
       "default": "",

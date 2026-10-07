@@ -847,6 +847,7 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'BorderRadius',
 		'FontWeight',
 		'FontSize',
+		'LineHeight',
 		'Padding',
 		'WidthType',
 	],
