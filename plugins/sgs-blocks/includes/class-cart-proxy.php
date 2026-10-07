@@ -530,22 +530,25 @@ final class Cart_Proxy {
 			 */
 			$wc_attrs = $variation->get_attributes();
 
-			// Map of lowercase attribute key to taxonomy slug, built from the parent
-			// product's registered attributes. The key is the slug, never the display
-			// label (labels are filtered and cached): 'pa_frame-size' resolves, and so
-			// do the slug's own bare forms 'frame-size' and 'frame size'.
+			// Map of normalised attribute key to the parent's attribute key. Keys are
+			// compared through sanitize_title() on both sides, so a global taxonomy
+			// ('pa_frame-size', or its bare 'frame-size') and a product-local
+			// attribute (posted by its raw name, e.g. 'Size (cm)', which
+			// get_variation_attributes() keys it by, while get_attributes() keys it
+			// 'size-cm') resolve alike. Never a display label: labels are filtered.
 			$parent_product  = \wc_get_product( $parent_id );
 			$attr_key_to_tax = array();
 
 			if ( $parent_product ) {
-				foreach ( \array_keys( $parent_product->get_attributes() ) as $tax_slug ) {
-					$attr_key_to_tax[ \strtolower( (string) $tax_slug ) ] = $tax_slug;
+				foreach ( $parent_product->get_attributes() as $tax_slug => $attr_obj ) {
+					$attr_key_to_tax[ \sanitize_title( (string) $tax_slug ) ] = $tax_slug;
 
 					$bare = \preg_replace( '/^pa_/', '', (string) $tax_slug );
 					if ( \is_string( $bare ) && '' !== $bare ) {
-						$attr_key_to_tax[ \strtolower( $bare ) ]                            = $tax_slug;
-						$attr_key_to_tax[ \strtolower( \str_replace( '-', ' ', $bare ) ) ] = $tax_slug;
-						$attr_key_to_tax[ \strtolower( \str_replace( '_', ' ', $bare ) ) ] = $tax_slug;
+						$attr_key_to_tax[ \sanitize_title( $bare ) ] = $tax_slug;
+					}
+					if ( \is_object( $attr_obj ) && \method_exists( $attr_obj, 'get_name' ) ) {
+						$attr_key_to_tax[ \sanitize_title( (string) $attr_obj->get_name() ) ] = $tax_slug;
 					}
 				}
 			}
@@ -559,9 +562,9 @@ final class Cart_Proxy {
 				$client_value = \sanitize_text_field( (string) $pair['value'] );
 
 				// Translate the client's attribute key → taxonomy slug.
-				$lower_attr = \strtolower( $client_attr );
-				if ( isset( $attr_key_to_tax[ $lower_attr ] ) ) {
-					$tax_slug = $attr_key_to_tax[ $lower_attr ];
+				$attr_key = \sanitize_title( $client_attr );
+				if ( isset( $attr_key_to_tax[ $attr_key ] ) ) {
+					$tax_slug = $attr_key_to_tax[ $attr_key ];
 				} else {
 					// Unrecognised attribute key — reject.
 					return new \WP_Error(

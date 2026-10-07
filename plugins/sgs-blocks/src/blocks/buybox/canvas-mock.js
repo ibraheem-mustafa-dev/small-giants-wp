@@ -97,10 +97,15 @@ export function buyboxMockCss( attributes, scope, palette ) {
 		const resolved = value ? resolveColourToken( value, palette ) || value : '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
-	const thumbWidth = String( attributes.thumbBorderWidth || '' ).trim();
+	const rawWidth = String( attributes.thumbBorderWidth || '' ).trim();
+	// A bare number is pixels, as sgs_css_length_value() reads it on the front end.
+	const thumbWidth = /^\d+(\.\d+)?$/.test( rawWidth ) ? `${ rawWidth }px` : rawWidth;
 	const thumbColour = colourOf( attributes.thumbBorderColour );
 	const thumbSelected = colourOf( attributes.thumbSelectedBorderColour );
-	const thumbScale = Number.isFinite( Number( attributes.thumbSelectedScale ) ) ? Math.min( 150, Math.max( 50, Number( attributes.thumbSelectedScale ) ) ) : 105;
+	const rawScale = attributes.thumbSelectedScale;
+	const thumbScale = null === rawScale || undefined === rawScale || '' === rawScale || ! Number.isFinite( Number( rawScale ) )
+		? 105
+		: Math.min( 150, Math.max( 50, Number( rawScale ) ) );
 	const thumbDecls = [];
 	if ( thumbWidth && ! /[;{}<>]/.test( thumbWidth ) ) {
 		thumbDecls.push( `border-width:${ thumbWidth }` );

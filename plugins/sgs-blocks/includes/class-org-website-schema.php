@@ -115,7 +115,8 @@ final class Org_Website_Schema {
 			// A Site Info address rarely names its country; the store's country
 			// (when WooCommerce is active) completes it.
 			if ( null !== $address && \function_exists( 'WC' ) ) {
-				$address = self::with_default_country( $address, self::store_country_code() );
+				// A parsed UK postcode names the country itself; otherwise the store's country fills it.
+				$address = self::with_default_country( $address, isset( $address['postalCode'] ) ? 'GB' : self::store_country_code() );
 			}
 		}
 		if ( null !== $address ) {
@@ -447,7 +448,9 @@ final class Org_Website_Schema {
 			if ( \preg_match( '/^' . $postcode_shape . '$/i', $last ) ) {
 				$postcode = self::normalise_uk_postcode( $last );
 				\array_pop( $lines );
-			} elseif ( \preg_match( '/^(.*?\S)[\s,]+(' . $postcode_shape . ')$/i', $last, $m ) ) {
+			} elseif ( \preg_match( '/^([^\d]*?[^\d\s,])[\s,]+(' . $postcode_shape . ')$/i', $last, $m ) ) {
+				// Only digit-free text before the postcode is read as a town: '12 High Street, B1 1AA'
+				// is a street line, so it falls through and is kept whole (never guess a town).
 				$postcode = self::normalise_uk_postcode( $m[2] );
 				$locality = \trim( $m[1], " \t," );
 				\array_pop( $lines );

@@ -152,7 +152,14 @@ def check_memory_size(sizes: dict[str, int] | None = None) -> Result:
     )
 
 
-FINISHED_STATUS_RE = re.compile(r"^[\s\"']*(complete|done|closed|superseded)", re.IGNORECASE)
+# A finished word as a whole word, not followed by a qualifier that keeps the plan open
+# ("complete except Phase 4", "done: phase 1; phase 2 open", "Doneness review" all stay live).
+FINISHED_STATUS_RE = re.compile(
+    r"^[\s\"']*(?:complete|completed|done|closed|superseded)\b"
+    r"(?!\s*(?:except|but|apart|other than|for phase|for part)\b)(?![^\n]*\b(?:open|remaining|todo)\b)",
+    re.IGNORECASE,
+)
+
 CHECKBOX_RE = re.compile(r"^[ \t]*[-*][ \t]+\[([ xX])\]", re.MULTILINE)
 _PLAN_PATH_RE = r"(?:\.claude/)?plans/(?:archive/)?"
 _WHOLE_PATH_RE = re.compile(r"^(?:\.{1,2}/)*" + _PLAN_PATH_RE + r"[^/]+\.md$")
@@ -256,7 +263,9 @@ def self_test() -> int:
         ("plans-folder: finished status",
          lambda: _plans_case({"plans/a.md": "---\nstatus: COMPLETE\n---\n- [ ] open\n"}),
          lambda: _plans_case({"plans/a.md": "---\nstatus: phase 1 shipped\n---\n- [ ] open\n",
-                              "plans/b.md": "---\nstatus: BUILD IN PROGRESS\n---\n- [x] a\n- [ ] b\n"})),
+                              "plans/b.md": "---\nstatus: BUILD IN PROGRESS\n---\n- [x] a\n- [ ] b\n",
+                              "plans/c.md": "---\nstatus: complete except Phase 4\n---\n- [ ] p4\n",
+                              "plans/d.md": "---\nstatus: Doneness review\n---\n- [ ] r\n"})),
         ("plans-folder: all ticked",
          lambda: _plans_case({"plans/a.md": "- [x] one\n* [X] two\n"}),
          lambda: _plans_case({"plans/a.md": "no checkboxes here\n"})),

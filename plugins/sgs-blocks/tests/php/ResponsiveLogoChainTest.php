@@ -494,6 +494,16 @@ class ResponsiveLogoChainTest extends TestCase {
 	}
 
 	/**
+	 * A street line that ends in a postcode is never read as a town: text with a digit stays street.
+	 */
+	public function test_address_street_and_postcode_line_is_not_a_town(): void {
+		$address = $this->call_schema( 'parse_multiline_address', "Suite 4\n12 High Street, B1 1AA" );
+
+		$this->assertArrayNotHasKey( 'addressLocality', $address );
+		$this->assertStringContainsString( '12 High Street', $address['streetAddress'] );
+	}
+
+	/**
 	 * Unstructured input never has a town guessed from it.
 	 */
 	public function test_address_never_guesses_a_town(): void {
