@@ -3159,14 +3159,16 @@
       "slug": "sgs/cart",
       "attr": "freeDeliveryFillDuration",
       "fields": {
-        "css_property": "transition-duration"
+        "css_property": "transition-duration",
+        "css_element": "freeDeliveryFill"
       }
     },
     {
       "slug": "sgs/cart",
       "attr": "freeDeliveryFillEasing",
       "fields": {
-        "css_property": "transition-timing-function"
+        "css_property": "transition-timing-function",
+        "css_element": "freeDeliveryFill"
       }
     },
     {
@@ -5921,6 +5923,102 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "consentFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "consent-text"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "contentWidth",
       "fields": {
         "css_property": "width",
@@ -6310,6 +6408,102 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "navButtonFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "navButtonWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "nav-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -6355,6 +6549,102 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "reviewTermFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "reviewTermWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "review-term"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitAlign",
       "fields": {
         "css_property": "justify-content",
@@ -6391,9 +6681,25 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitFontStyle",
+      "fields": {
+        "css_property": "font-style",
         "css_element": "submit-button"
       }
     },
@@ -6415,6 +6721,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -6431,9 +6745,49 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitTextTransform",
       "fields": {
         "css_property": "text-transform",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "submit-button"
       }
     },
@@ -6477,6 +6831,198 @@
       "attr": "textWrap",
       "fields": {
         "css_property": "text-wrap"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileIconWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "tile-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "tileLabelWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "tile-label"
       }
     },
     {
@@ -8730,9 +9276,11 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "bgHoverZoomScale",
+      "attr": "bgAnimationDuration",
       "fields": {
-        "css_property": "transform"
+        "css_property": "anim:duration",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -8740,6 +9288,13 @@
       "attr": "bgSvgOpacity",
       "fields": {
         "css_property": "opacity"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "bgZoomStart",
+      "fields": {
+        "css_property": "transform"
       }
     },
     {
@@ -15389,9 +15944,97 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "priceFromLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "priceFromLabelFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "priceFromLabel"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceFromLabelWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
         "css_element": "priceFromLabel"
       }
     },
@@ -18235,6 +18878,102 @@
         "role": "color",
         "css_element": "title",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "titleWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "title"
       }
     },
     {
@@ -24863,15 +25602,6 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "bgAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }

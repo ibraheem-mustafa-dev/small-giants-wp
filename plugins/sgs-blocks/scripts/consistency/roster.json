@@ -1702,7 +1702,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 4,
+        "paintDeclarations": 3,
         "replacedCoreSupports": [
           "anchor",
           "ariaLabel",
@@ -1874,7 +1874,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 10,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
