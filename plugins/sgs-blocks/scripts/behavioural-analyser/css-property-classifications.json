@@ -3538,19 +3538,19 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "thumbPixelSize",
+      "fields": {
+        "css_property": "height",
+        "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "thumbSelectedScale",
       "fields": {
         "css_property": "transform",
         "css_element": "gallery-thumb",
         "css_state": "current"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbSize",
-      "fields": {
-        "css_property": "width",
-        "css_element": "gallery-thumb"
       }
     },
     {
@@ -27714,6 +27714,14 @@
         "role": "color",
         "css_element": "gallery-thumb",
         "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "gallery-thumb"
       }
     },
     {
