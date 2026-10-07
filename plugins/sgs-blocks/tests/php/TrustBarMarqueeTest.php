@@ -30,7 +30,7 @@ final class TrustBarMarqueeTest extends TestCase {
 		$out = $this->render( array_merge( $this->scroll_attrs(), array( 'autoScrollBelow' => 768 ) ) );
 
 		$this->assertStringContainsString( 'data-auto-scroll-below="768"', $out['html'] );
-		$this->assertStringContainsString( '@media (min-width:768px){.sgs-tb-1.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__track{display:contents;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__track[aria-hidden="true"]{display:none;}}', $out['css'] );
+		$this->assertStringContainsString( '@media (min-width:768px){.sgs-tb-1.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__track{display:contents;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__track[aria-hidden="true"]{display:none;}.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__pause{display:none;}}', $out['css'] );
 		$this->assertStringContainsString( '@media (max-width:767px) and (prefers-reduced-motion:no-preference){', $out['css'] );
 		$this->assertStringContainsString( '.sgs-tb-1.sgs-trust-bar .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,.sgs-tb-1.sgs-trust-bar.sgs-trust-bar__marquee-row > .sgs-trust-bar__track{flex:0 0 auto;gap:inherit;}', $out['css'] );
 		$this->assertStringContainsString( '(prefers-reduced-motion:reduce)', $out['css'], 'reduced motion wraps the badges instead of clipping them' );
@@ -158,7 +158,7 @@ final class TrustBarMarqueeTest extends TestCase {
 	 * The breakpoint output is frozen: the every-width fix must not move a byte of it.
 	 */
 	public function test_marquee_below_768_css_is_byte_for_byte_unchanged(): void {
-		$expected = '@media (min-width:768px){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track{display:contents;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track[aria-hidden="true"]{display:none;}}'
+		$expected = '@media (min-width:768px){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track{display:contents;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track[aria-hidden="true"]{display:none;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__pause{display:none;}}'
 			. '@media (max-width:767px) and (prefers-reduced-motion:no-preference){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"] .sgs-trust-bar__marquee-row,.sgs-tb-9.sgs-trust-bar.sgs-trust-bar__marquee-row{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow:hidden;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__marquee-row > .sgs-trust-bar__track,.sgs-tb-9.sgs-trust-bar.sgs-trust-bar__marquee-row > .sgs-trust-bar__track{flex:0 0 auto;gap:inherit;}}'
 			. '@media (max-width:767px) and (prefers-reduced-motion:reduce){.sgs-tb-9.sgs-trust-bar[data-auto-scroll="true"]{overflow:visible;}.sgs-tb-9.sgs-trust-bar .sgs-trust-bar__track{flex-wrap:wrap;justify-content:center;grid-column:1/-1;width:100%;}}';
 
