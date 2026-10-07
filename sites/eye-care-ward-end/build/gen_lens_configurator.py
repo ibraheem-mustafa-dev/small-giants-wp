@@ -213,7 +213,7 @@ tree = [
                               summaryPendingLabel="Lenses", summaryPendingText="not chosen yet",
                               stageNote="Not sure which to pick?",
                               stageNoteLink={
-                                  "url": "https://wa.me/4479605978",
+                                  "url": "https://wa.me/447960597847",
                                   "text": "Happy to talk it through — message me and we'll choose together.",
                               },
                               stageNoteIcon="whatsapp", stageNoteIconColour="whatsapp",

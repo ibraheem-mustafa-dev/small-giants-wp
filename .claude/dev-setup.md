@@ -492,6 +492,24 @@ Both gates are correct; the sequence is the thing to remember. The same at-HEAD 
 is why an uncommitted fix cannot ship even though the deploy prints `[DONE]` with every
 gate green.
 
+### Removing or renaming a block attribute? Stage 1 does not delete
+
+Stage 1 of `sgs-update-v2.py` inserts the new rows and leaves the old ones in the DB, so
+`check-wiring-fingerprint` then flags each old name (L2, L3, L4) as a declared attribute no control
+writes. Run **`--stage 9`** (prune orphans) from the same clean detached worktree at `origin/main`
+after the stage-1 reseed; it deletes exactly the attribute rows no `block.json` declares (proved
+2026-10-07: 4 rows for the `sgs/buybox` thumbnail controls). A name the same block's media element
+injects (`mediaElements` prefix plus `Size`, `Fit` and the like) must not be reused with another
+type: inspector-scan rule 38 fails it. A rename also trips the deploy's `oldshape-audit` while any
+stored post still carries the old name, and the live site's current schema rejects the new name, so
+the template cannot be rebuilt first: deploy with `--skip-oldshape-audit` (a test site only, naming
+the reason), then rebuild the tree at once.
+
+**Prove a deploy by the host's marker, never by an exit code.** `ssh … cat
+~/.sgs-deploy-marker-<target>.json` must name your commit. A deploy piped through `tail` reports
+`tail`'s exit code, and one run ended with exit 0 after only packaging; the marker was unchanged.
+Run it with output to a log file and read `[DONE]` and the `[payload-verify]` line.
+
 ### Full deployment (ALL targets) — always via `build-deploy.py`
 
 > **⛔ Use the script. Never hand-roll a tar/scp deploy.**
