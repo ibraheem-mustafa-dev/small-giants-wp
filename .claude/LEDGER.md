@@ -111,8 +111,8 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-07):** Solve writes first, per surface (Bean). Lenses 67 to 26 issues; its step titles (`0070c8d4a`) await
-  a rebuild. Walker gap 2 (transition timings) fixed. mega-group calibrates the wrong root (unproven). Detail: the plan.
+- **Session D (2026-10-07):** Solve writes first, per surface (Bean). Lenses: 67 to 4 issues, none visible (ledgered); owed its
+  done-line checks. Register 87, 100-102 closed live. Calibration lock and three checker/walker fixes built. Detail: the plan.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
