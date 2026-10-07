@@ -47,7 +47,7 @@ been folded in below.
 | `sgs_box_object_shorthand` has no test; `tests/php/run-notice-banner-icon-badge-standalone.php` loads `helpers-box.php` ALONE (so the new helper may not require another file) | `rg -n "helpers-box" tests/php/run-notice-banner*` |
 | Route workaround: `scripts/computed-route/lib/resolve.mjs::seedSides`, sole caller the `boxed` closure in `resolve()`, covering `box_family` rows, `tier_shape='box_only'` and border-width via `splitProperty`; three dependent tests in `tests/resolve.test.mjs` | read `resolve()` |
 | `seedSides` writes explicit `'0px'` sides (`wider[s] ?? '0px'`); 162 committed tier boxes already hold a zero side across 11 Eye Care trees | risk review |
-| Gates: `plugins/sgs-blocks/scripts/gates.json` holds 154 records of 7 fields; **no record has `mode` or `openBacklog`**. Ratchets live inside each script as a sibling baseline (`scripts/check-enum-control-shape.py` + `check-enum-control-shape-baseline.json`: fail on a new violation, fail on a baseline entry no longer reproduced) | `python -c "import json;…"` on `gates.json` |
+| Gates: `plugins/sgs-blocks/scripts/gates.json` holds 154 records of 7 fields; **no record has `mode` or `openBacklog`** (those fields belong to `inspector-scan/rules.json`, a different runner). A `gates.json` ratchet lives inside its script as a sibling baseline (`scripts/check-enum-control-shape.py` + `check-enum-control-shape-baseline.json`: fail on a new violation, fail on a baseline entry no longer reproduced) | `python -c "import json;…"` on `gates.json` |
 | `build-deploy.py` refuses dirty in-scope files (`build-deploy.py::deployed_dirty_files`) and builds from HEAD | read the function |
 | PHPUnit is self-contained: `plugins/sgs-blocks/vendor/bin/phpunit`, template `tests/php/ContainerWrapperCssLengthTest.php` | `ls vendor/bin/phpunit` |
 
@@ -148,15 +148,21 @@ byte-identical. **Fail:** an unexplained difference → fix the recogniser; neve
 - [ ] Record in `gates.json` with the 7 fields that exist (`id`, `cmd`, `tier: "fast"`, `added_D`,
   `added_commit: null`, `budget_ms: null`, `order` = max + 1 from `npm run gate:list`); alias
   `check:box-longhands` in `package.json` (tab-indented file).
-- [ ] Correct `.claude/THE-MIGRATION-METHOD.md` Step 8's "advisory + `openBacklog`" text to the baseline
-  ratchet that actually exists.
+- [ ] `.claude/THE-MIGRATION-METHOD.md` Step 8: its `mode`/`openBacklog` text is correct (it is scoped to
+  `inspector-scan/rules.json`); add the missing line that a `gates.json` gate keeps its ceiling in the
+  script's own sibling baseline. **Done 2026-10-07.**
 - [ ] **VERIFY:** `npm run gate:list` lists it; `--check` exit 0; planting a new
   `sgs_box_object_shorthand` padding site in a scratch copy → exit 1. Commit.
 
 ### U4 — the pilot, live on both surfaces (critical path) — 25 min
 **Files:** `src/blocks/whatsapp-cta/render.php` (+ its editor preview if it passes `wholeBox`).
 - [ ] `python scripts/migrate-box-longhands.py --fix --apply --only whatsapp-cta`; read the diff; update
-  the baseline; **commit** (the deploy builds from HEAD and refuses dirty files).
+  the baseline.
+- [ ] The editor sibling lands HERE, not in U5: U4's VERIFY compares the editor with the front end, and
+  case B (desktop unset, tablet top only) previews `40px 0 0 0` through today's `spacingPreview()`. Add
+  `src/utils/spacing-preview.js::tierBoxLonghands` and its test (U5's editor step describes both), and
+  switch `whatsapp-cta`'s preview to it. `migrate-box-longhands.py --check`'s editor arm then passes for it.
+- [ ] **Commit** (the deploy builds from HEAD and refuses dirty files).
 - [ ] Peers: message them; `ps -ef | grep -E "[s]gs-update|[b]uild-deploy"` must be empty. Build in
   PowerShell (`cd plugins/sgs-blocks; npm run build`), then
   `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown --blocks-only`.

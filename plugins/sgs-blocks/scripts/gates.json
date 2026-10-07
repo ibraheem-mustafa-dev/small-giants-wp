@@ -1390,5 +1390,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 153
+  },
+  {
+    "id": "migrate-box-longhands",
+    "cmd": "python scripts/migrate-box-longhands.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 154
   }
 ]

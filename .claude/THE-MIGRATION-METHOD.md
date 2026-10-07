@@ -547,6 +547,13 @@ reaches 0 AND every remaining baseline entry carries a real human reason** — n
 | **Guard** | 0 from registration; 1 only on divergence | it compares a derived copy to its source (D775) |
 | **Ratcheted ceiling** | 1 when findings EXCEED the recorded ceiling | a real backlog too large to clear at once |
 
+⚠ **`mode` and `openBacklog` exist only in `inspector-scan/rules.json`.** A `plugins/sgs-blocks/scripts/gates.json`
+record has seven fields and no mode: the runner reads only the exit code. A ratcheted ceiling registered
+there keeps its ceiling INSIDE the script, as a sibling baseline that `--check` reads — fail on a site
+outside it, and fail on an entry no longer reproduced so the baseline must shrink. Worked examples:
+`scripts/check-enum-control-shape.py` + its `-baseline.json`, and `scripts/migrate-box-longhands.py` +
+`migrate-box-longhands-baseline.json`.
+
 **The ratchet, as practised in `inspector-scan/rules.json`:**
 
 - The ceiling is **monotonic downward**. Every lowering records its composition **enumerated, not
