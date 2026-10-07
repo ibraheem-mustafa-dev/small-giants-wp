@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
-"""CR6: move padding and margin boxes off the shorthand that zero-fills unset sides.
+"""CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides.
 
-THE DEFECT. includes/helpers-box.php::sgs_box_object_shorthand returns a four-value shorthand, and a
-shorthand sets every side, so an unset side prints as 0 and wipes the block's own default or a wider
-@media tier's value. Its sibling sgs_box_object_longhands( $box, $family ) prints only the set sides.
+THE DEFECT. includes/helpers-box.php returns four-value shorthands, and a shorthand sets every side or
+corner, so an unset one prints as 0 and wipes the block's own default or a wider @media tier's value.
+Two helpers are migrated, each to its longhand sibling that prints only the set sides:
+    box     sgs_box_object_shorthand( $box )     → sgs_box_object_longhands( $box, '<family>' )
+            families padding and margin; prints padding-top:12px;padding-left:…
+    corner  sgs_corner_object_shorthand( $box )  → sgs_corner_object_longhands( $box )
+            the single family is border-radius and the helper takes no family argument;
+            prints border-top-left-radius:20px;border-bottom-right-radius:4px
 
 THE SHAPE (coupled, two statements). A site is a variable assigned from the helper whose every other
 use is one of:
-    (a) a guard           null !== $v   /   $v !== null
+    (a) a guard           null !== $v   /   $v !== null   /   '' !== $v   /   $v !== ''
     (b) an interpolation  "padding:{$v}"     (also inside a whole rule: "{$sel}{margin:{$v};}}")
     (c) a concatenation   'padding:' . $v   (the family ends a quoted segment)
-The transform rewrites the assignment to sgs_box_object_longhands( <expr>, '<family>' ) AND every (b)/(c)
-use to drop the "<family>:" prefix, in one pass. Changing only the call would print
-"padding:padding-top:12px", which the browser drops whole, so a variable with ANY other use is refused
-and left untouched.
+The transform rewrites the assignment to the longhand helper AND every (b)/(c) use to drop the
+"<family>:" prefix, in one pass. Changing only the call would print "padding:padding-top:12px", which
+the browser drops whole, so a variable with ANY other use is refused and left untouched.
 
-FAMILIES. padding and margin only. A border width keeps the shorthand on purpose: border-style is
-written for all four sides, so an unset width SHOULD be 0; a longhand would leave it at the browser's
-`medium` and paint phantom borders (G5, tests/php/run-border-default-style-standalone.php).
+FAMILIES. padding and margin for the box helper, border-radius for the corner helper. A border width
+keeps the shorthand on purpose: border-style is written for all four sides, so an unset width SHOULD be
+0; a longhand would leave it at the browser's `medium` and paint phantom borders (G5,
+tests/php/run-border-default-style-standalone.php). A use whose family is a custom property
+(`--sgs-…:`) is a var() holdout, stored for a later `padding: var()` / `border-radius: var()` read where
+a longhand cannot go, and is refused.
+
+EDITOR. A block migrated to the box helper must not preview padding/margin through a 0-filling editor
+helper; a block migrated to the corner helper must not preview its border radius through one (the
+corner arm of editor_mismatches()).
 
 Plan: .claude/plans/2026-10-07-cr6-box-longhand-migration.md (U2). Method: .claude/THE-MIGRATION-METHOD.md.
 
@@ -65,14 +76,8 @@ REPO = _repo_root()
 CENSUS = os.path.join(REPO, 'reports', 'migrations', 'box-longhands-census.json')
 BASELINE = os.path.join(PLUGIN, 'scripts', 'migrate-box-longhands-baseline.json')
 
-OLD = 'sgs_box_object_shorthand'
-NEW = 'sgs_box_object_longhands'
-FAMILIES = ('padding', 'margin')
-CALL = re.compile(r'\b' + OLD + r'\s*\(')
-ASSIGN = re.compile(r'(?P<var>\$[A-Za-z_]\w*)\s*=\s*(?P<rhs>[^;]*?)\b' + OLD + r'\s*\(')
-
 # Sites that stay on the shorthand, by (relpath, variable), each with its reason. Added by hand.
-EXCLUDE = {
+BOX_EXCLUDE = {
     ('src/blocks/accordion-item/render.php', '$short'):
         'var() holdout: stored in --sgs-accordion-header-pad / --sgs-accordion-content-pad, read as padding: var(), where a longhand cannot go',
     ('src/blocks/label/render.php', '$base_padding_shorthand'):
@@ -84,7 +89,7 @@ EXCLUDE = {
 # The block attributes behind sites the census cannot trace itself (their box arrives through block context or a
 # shared serialiser), each still printed through the zero-filling shorthand. They feed zeroFillPairs, which the
 # computed route reads so it keeps seeding the unset sides of exactly these boxes (scripts/computed-route/lib/resolve.mjs).
-HOLDOUT_ATTRS = {
+BOX_HOLDOUT_ATTRS = {
     ('src/blocks/accordion-item/render.php', '$short'): [('sgs/accordion', 'headerPadding'), ('sgs/accordion', 'contentPadding')],
     ('includes/helpers-container.php', '$shorthand'): [('sgs/container', 'gridItemPadding')],
 }
@@ -92,28 +97,53 @@ HOLDOUT_ATTRS = {
 
 def zero_fill_pairs(sites):
     """Every (block, attribute) whose box is still printed with 0 for unset sides: refused and excluded sites the
-    census traced, plus the hand-pinned holdouts."""
+    census traced, plus the hand-pinned holdouts. Box sites only: the computed route seeds nothing for corners."""
     pairs = {('sgs/' + s['block'], s['attr']) for s in sites
-             if s['category'] in ('refused', 'excluded') and s['block'] and s['attr']}
-    for (f, v), attrs in HOLDOUT_ATTRS.items():
-        if any(s['file'] == f and s['variable'] == v and s['category'] in ('refused', 'excluded') for s in sites):
+             if s['helper'] == 'box' and s['category'] in ('refused', 'excluded') and s['block'] and s['attr']}
+    for (f, v), attrs in BOX_HOLDOUT_ATTRS.items():
+        if any(s['helper'] == 'box' and s['file'] == f and s['variable'] == v and s['category'] in ('refused', 'excluded') for s in sites):
             pairs.update(attrs)
     return sorted(f'{b}|{a}' for b, a in pairs)
 
 
-# Files allowed to name the helper without calling it, with the count pinned and the reason.
-BARE_OK = {
+# Files allowed to name a helper without calling it, with the count pinned and the reason.
+BOX_BARE_OK = {
     'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
     'includes/render-helpers.php': (1, 'docblock listing which helper file provides what'),
     'src/blocks/mega-aside/render.php': (1, 'function_exists() guard on a border-width ternary, which stays on the shorthand'),
     'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, a var() holdout that stays on the shorthand'),
 }
 
-# Files outside the corpus that still contain the old name, each with its reason.
-WIDTH_OK = {
+# Files outside the corpus that still contain an old name, each with its reason.
+BOX_WIDTH_OK = {
     'scripts/tests/test-mega-aside-border-render.php': 'standalone render-test harness; loads the helper chain, not deployed',
     'tests/php/BoxLonghandTest.php': 'phpunit pin: calls the old function on purpose to prove its output never moves',
 }
+
+CORNER_BARE_OK = {
+    'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
+}
+
+CORNER_WIDTH_OK = {
+    'tests/php/BoxLonghandTest.php': 'phpunit pin: calls the old corner function on purpose to prove its output never moves',
+}
+
+
+def _helper(key, old, new, families, family_arg, exclude, bare_ok, width_ok, holdout_attrs):
+    return {'key': key, 'old': old, 'new': new, 'families': families, 'family_arg': family_arg,
+            'exclude': exclude, 'bare_ok': bare_ok, 'width_ok': width_ok, 'holdout_attrs': holdout_attrs,
+            'call': re.compile(r'\b' + old + r'\s*\('),
+            'assign': re.compile(r'(?P<var>\$[A-Za-z_]\w*)\s*=\s*(?P<rhs>[^;]*?)\b' + old + r'\s*\(')}
+
+
+# One row per migrated helper. `family_arg` says whether the new helper takes the family as its second argument.
+HELPERS = [
+    _helper('box', 'sgs_box_object_shorthand', 'sgs_box_object_longhands', ('padding', 'margin'), True,
+            BOX_EXCLUDE, BOX_BARE_OK, BOX_WIDTH_OK, BOX_HOLDOUT_ATTRS),
+    _helper('corner', 'sgs_corner_object_shorthand', 'sgs_corner_object_longhands', ('border-radius',), False,
+            {}, CORNER_BARE_OK, CORNER_WIDTH_OK, {}),
+]
+BY_KEY = {h['key']: h for h in HELPERS}
 
 
 def rel(path):
@@ -129,8 +159,8 @@ def targets():
     return out
 
 
-def broad_enumeration():
-    """A second, dumb, wide list of every PHP file holding the old name. Shares no code with targets()."""
+def broad_enumeration(h):
+    """A second, dumb, wide list of every PHP file holding the helper's old name. Shares no code with targets()."""
     prune = {'.git', 'node_modules', 'build', 'vendor', 'worktrees', '.claude'}
     found = set()
     for dirpath, dirnames, filenames in os.walk(PLUGIN):
@@ -140,7 +170,7 @@ def broad_enumeration():
                 p = os.path.join(dirpath, fn)
                 try:
                     with io.open(p, encoding='utf-8', newline='') as f:
-                        if OLD in f.read():
+                        if h['old'] in f.read():
                             found.add(rel(p))
                 except (UnicodeDecodeError, OSError):
                     continue
@@ -246,7 +276,8 @@ def uses_of(text, var, skip):
             continue
         s, e = m.start(), m.end()
         before, after = text[max(0, s - 40):s], text[e:e + 40]
-        if re.search(r'null\s*!==\s*$', before) or re.match(r'\s*!==\s*null\b', after):
+        if (re.search(r'null\s*!==\s*$', before) or re.match(r'\s*!==\s*null\b', after)
+                or re.search(r"(?:''|\"\")\s*!==\s*$", before) or re.match(r"\s*!==\s*(?:''|\"\")", after)):
             found.append((s, e, 'guard', None))
             continue
         b = re.search(r'([a-z-]+):\{$', before)
@@ -262,14 +293,22 @@ def uses_of(text, var, skip):
 
 
 def analyse(text, relpath):
-    """Every helper call in one file, classified. Returns a list of site dicts."""
+    """Every call of every migrated helper in one file, classified. Returns a list of site dicts."""
+    sites = []
+    for h in HELPERS:
+        sites += analyse_helper(text, relpath, h)
+    return sites
+
+
+def analyse_helper(text, relpath, h):
+    """Every call of one helper in one file, classified."""
     sites = []
     block = relpath.split('/')[2] if relpath.startswith('src/blocks/') else None
-    for call in CALL.finditer(text):
+    for call in h['call'].finditer(text):
         idx = call.start()
         if in_comment(text, idx):
             continue
-        site = {'file': relpath, 'line': line_of(text, idx), 'block': block, 'variable': None,
+        site = {'file': relpath, 'line': line_of(text, idx), 'helper': h['key'], 'block': block, 'variable': None,
                 'family': None, 'tier': 'n/a', 'attr': None, 'category': None, 'reason': None}
         sites.append(site)
         if re.match(r'\s*function\b', text[text.rfind('\n', 0, idx) + 1:idx]) or text[max(0, idx - 9):idx] == 'function ':
@@ -277,7 +316,7 @@ def analyse(text, relpath):
             continue
         stmt_start = text.rfind(';', 0, idx)
         stmt_start = max(stmt_start, text.rfind('{', 0, idx), text.rfind('}', 0, idx)) + 1
-        a = ASSIGN.search(text, stmt_start, idx + len(call.group(0)))
+        a = h['assign'].search(text, stmt_start, idx + len(call.group(0)))
         if not a or a.end() != idx + len(call.group(0)):
             site.update(category='refused', reason='not a plain assignment (passed inline or in an expression)')
             continue
@@ -292,8 +331,8 @@ def analyse(text, relpath):
         if a.group('rhs').strip():
             site.update(category='refused', reason='ternary or expression assignment; migrate by hand')
             continue
-        if (relpath, var) in EXCLUDE:
-            site.update(category='excluded', reason=EXCLUDE[(relpath, var)])
+        if (relpath, var) in h['exclude']:
+            site.update(category='excluded', reason=h['exclude'][(relpath, var)])
             continue
         if len(re.findall(re.escape(var) + r'\s*=(?!=)', text)) > 1:
             site.update(category='refused', reason='variable assigned more than once in the file')
@@ -308,9 +347,13 @@ def analyse(text, relpath):
             site.update(category='refused', reason='no declaration use found')
         elif len(fams) != 1:
             site.update(category='refused', reason='declarations name different families: ' + ', '.join(sorted(fams)))
-        elif next(iter(fams)) not in FAMILIES:
-            site.update(category='refused', family=next(iter(fams)),
-                        reason=f'family {next(iter(fams))}: zero-fill is correct there, it stays on the shorthand')
+        elif next(iter(fams)) not in h['families']:
+            fam = next(iter(fams))
+            if fam.startswith('--'):
+                reason = f'family {fam}: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand'
+            else:
+                reason = f'family {fam}: zero-fill is correct there, it stays on the shorthand'
+            site.update(category='refused', family=fam, reason=reason)
         else:
             site.update(category='migratable', family=next(iter(fams)))
             site['_edit'] = (call.start(), open_idx, close, decls)
@@ -326,7 +369,9 @@ def transform(text, relpath, only=None):
         name_start, open_idx, close, decls = site.pop('_edit')
         inner = text[open_idx + 1:close]
         body = inner.rstrip()
-        edits.append((name_start, close + 1, NEW + '(' + body + ", '" + site['family'] + "'" + inner[len(body):] + ')'))
+        h = BY_KEY[site['helper']]
+        fam_arg = ", '" + site['family'] + "'" if h['family_arg'] else ''
+        edits.append((name_start, close + 1, h['new'] + '(' + body + fam_arg + inner[len(body):] + ')'))
         for s, e, kind, fam in decls:
             if kind == 'interp':
                 edits.append((s, e, '{' + site['variable'] + '}'))
@@ -386,79 +431,128 @@ def zero_filling_previews(js):
     return out
 
 
-def editor_mismatches(sites):
-    """A migrated block whose editor still previews padding/margin through a 0-filling helper."""
-    migrated = set()
+BORDER_PREVIEW_JS = 'src/utils/border-preview.js'
+RADIUS_PREVIEW = re.compile(r'\bborderRadiusPreview\s*\(')
+WHOLE_TIER = re.compile(r'\bwholeTier\s*:\s*true\b')
+SGS_BORDER_PREVIEW = re.compile(r'\bsgsBorderPreview\s*\(')
+
+
+def zero_filling_radius_previews(js, border_preview_zero_fills):
+    """(line, call) for each editor preview that prints a border radius with 0 for unset corners.
+
+    borderRadiusPreview() and any `wholeTier: true` always do. sgsBorderPreview() does when its arguments pass
+    radiusValues AND border-preview.js still routes the radius through borderRadiusPreview(); once it prints
+    longhands itself (border_preview_zero_fills False) a call to it is fine.
+    """
+    out = [(line_of(js, m.start()), 'borderRadiusPreview()') for m in RADIUS_PREVIEW.finditer(js)]
+    out += [(line_of(js, m.start()), 'wholeTier: true') for m in WHOLE_TIER.finditer(js)]
+    if border_preview_zero_fills:
+        for m in SGS_BORDER_PREVIEW.finditer(js):
+            open_idx = m.end() - 1
+            close = close_paren(js, open_idx)
+            if re.search(r'\bradiusValues\b', js[open_idx + 1:close] if close > 0 else ''):
+                out.append((line_of(js, m.start()), 'sgsBorderPreview()'))
+    return sorted(out)
+
+
+def migrated_blocks(h):
+    """Slugs of src/blocks/<slug>/ holding a PHP file that calls the helper's new name."""
+    out = set()
     for p in targets():
         r = rel(p)
-        if r.startswith('src/blocks/') and NEW + '(' in read(p):
-            migrated.add(r.split('/')[2])
+        if r.startswith('src/blocks/') and h['new'] + '(' in read(p):
+            out.add(r.split('/')[2])
+    return sorted(out)
+
+
+def editor_mismatches(sites):
+    """A migrated block whose editor still previews its box (padding/margin) or its border radius through a 0-filling helper."""
     out = []
-    for slug in sorted(migrated):
+    for slug in migrated_blocks(BY_KEY['box']):
         d = os.path.join(PLUGIN, 'src', 'blocks', slug)
         for fn in sorted(os.listdir(d)):
             if fn.endswith('.js'):
                 for ln, helper in zero_filling_previews(read(os.path.join(d, fn))):
                     out.append(f'src/blocks/{slug}/{fn}:{ln} {helper}() previews a migrated block\'s padding/margin with 0 for unset sides; use tierBoxLonghands()')
+    border_js = os.path.join(PLUGIN, *BORDER_PREVIEW_JS.split('/'))
+    zero_fills = os.path.isfile(border_js) and bool(RADIUS_PREVIEW.search(read(border_js)))
+    for slug in migrated_blocks(BY_KEY['corner']):
+        d = os.path.join(PLUGIN, 'src', 'blocks', slug)
+        for fn in sorted(os.listdir(d)):
+            if fn.endswith('.js'):
+                for ln, call in zero_filling_radius_previews(read(os.path.join(d, fn)), zero_fills):
+                    out.append(f'src/blocks/{slug}/{fn}:{ln} {call} previews a migrated block\'s border radius with 0 for unset corners; use borderRadiusLonghands()')
     return out
 
 
-def crosscheck(bare_counts):
+def crosscheck(bare_by_helper):
     fails = []
     narrow = {rel(p) for p in targets()}
-    broad = broad_enumeration()
-    for f in sorted(broad - narrow - set(WIDTH_OK)):
-        fails.append(f'CORPUS TOO NARROW: {f} contains {OLD} but is outside targets(); widen targets() or name it in WIDTH_OK')
-    for f in sorted(set(WIDTH_OK) - broad):
-        fails.append(f'STALE WIDTH_OK entry {f}: it no longer contains {OLD}')
-    for (f, v) in sorted(EXCLUDE):
-        if not os.path.isfile(os.path.join(PLUGIN, f)):
-            fails.append(f'STALE EXCLUDE entry {f} ({v}): the file does not exist')
-    for f, n in sorted(bare_counts.items()):
-        if f not in BARE_OK:
-            fails.append(f'UNJUSTIFIED bare mention x{n} of {OLD} in {f}: a function_exists() guard or a dispatch string is load-bearing; read it and add it to BARE_OK')
-        elif BARE_OK[f][0] != n:
-            fails.append(f'bare-mention COUNT CHANGED in {f}: BARE_OK pins {BARE_OK[f][0]}, found {n}; re-read them and update the pin')
-    for f in sorted(set(BARE_OK) - set(bare_counts)):
-        fails.append(f'STALE BARE_OK entry {f}: no bare mention left (on a hand migration, the guard moved with the call); remove it')
+    for h in HELPERS:
+        old, bare_ok, width_ok = h['old'], h['bare_ok'], h['width_ok']
+        bare_counts = bare_by_helper[h['key']]
+        broad = broad_enumeration(h)
+        for f in sorted(broad - narrow - set(width_ok)):
+            fails.append(f'CORPUS TOO NARROW: {f} contains {old} but is outside targets(); widen targets() or name it in the {h["key"]} WIDTH_OK')
+        for f in sorted(set(width_ok) - broad):
+            fails.append(f'STALE {h["key"]} WIDTH_OK entry {f}: it no longer contains {old}')
+        for (f, v) in sorted(h['exclude']):
+            if not os.path.isfile(os.path.join(PLUGIN, f)):
+                fails.append(f'STALE {h["key"]} EXCLUDE entry {f} ({v}): the file does not exist')
+        for f, n in sorted(bare_counts.items()):
+            if f not in bare_ok:
+                fails.append(f'UNJUSTIFIED bare mention x{n} of {old} in {f}: a function_exists() guard or a dispatch string is load-bearing; read it and add it to the {h["key"]} BARE_OK')
+            elif bare_ok[f][0] != n:
+                fails.append(f'bare-mention COUNT CHANGED in {f}: the {h["key"]} BARE_OK pins {bare_ok[f][0]}, found {n}; re-read them and update the pin')
+        for f in sorted(set(bare_ok) - set(bare_counts)):
+            fails.append(f'STALE {h["key"]} BARE_OK entry {f}: no bare mention left (on a hand migration, the guard moved with the call); remove it')
     return fails
 
 
-def bare_mentions():
+def bare_mentions(h):
     out = {}
     for p in targets():
         t = read(p)
-        n = len(re.findall(r'\b' + OLD + r'\b(?!\s*\()', t))
+        n = len(re.findall(r'\b' + h['old'] + r'\b(?!\s*\()', t))
         if n:
             out[rel(p)] = n
     return out
 
 
-def write_census(sites):
+def totals_of(sites):
     totals = {}
     for s in sites:
         totals[s['category']] = totals.get(s['category'], 0) + 1
+    return totals
+
+
+def write_census(sites):
     os.makedirs(os.path.dirname(CENSUS), exist_ok=True)
     with io.open(CENSUS, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({'generated': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
                    'tool': 'plugins/sgs-blocks/scripts/migrate-box-longhands.py',
-                   'totals': totals, 'sites': sites, 'zeroFillPairs': zero_fill_pairs(sites),
-                   'bareMentions': bare_mentions(),
+                   'totals': {h['key']: totals_of([s for s in sites if s['helper'] == h['key']]) for h in HELPERS},
+                   'sites': sites, 'zeroFillPairs': zero_fill_pairs(sites),
+                   'bareMentions': {h['key']: bare_mentions(h) for h in HELPERS},
                    'editorMismatches': editor_mismatches(sites)}, f, indent=1)
         f.write('\n')
 
 
 def check():
     sites = survey()
-    fails = crosscheck(bare_mentions())
+    fails = crosscheck({h['key']: bare_mentions(h) for h in HELPERS})
     fails += editor_mismatches(sites)
     if not os.path.isfile(BASELINE):
         fails.append('no baseline: run --write-baseline once, then commit it')
     else:
         pinned = set(json.load(io.open(BASELINE, encoding='utf-8'))['migratable'])
         now = set(baseline_keys(sites))
+        corner_keys = baseline_keys([s for s in sites if s['helper'] == 'corner'])
         for k in sorted(now - pinned):
-            fails.append(f'NEW zero-fill padding/margin site {k}: use {NEW}( $box, \'<family>\' ) instead')
+            if k in corner_keys:
+                fails.append(f'NEW zero-fill border-radius site {k}: use {BY_KEY["corner"]["new"]}( $box ) instead')
+            else:
+                fails.append(f'NEW zero-fill padding/margin site {k}: use {BY_KEY["box"]["new"]}( $box, \'<family>\' ) instead')
         for k in sorted(pinned - now):
             fails.append(f'STALE baseline entry {k}: it is migrated or gone; run --write-baseline so the ratchet shrinks')
     for f in fails:
@@ -489,6 +583,25 @@ SELF_TEST = {
                              "if ( null !== $pad ) {\n\t$css .= '.x{padding:' . $pad . '}';\n}\n",
                              "<?php\n$keep = '' . $other;\n$pad = sgs_box_object_longhands( $p, 'padding' );\n"
                              "if ( null !== $pad ) {\n\t$css .= '.x{' . $pad . '}';\n}\n"),
+    'corner interp': ('<?php\n$radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );\n'
+                      'if ( null !== $radius_tab_val ) {\n\t$tablet_box_decls[] = "border-radius:{$radius_tab_val}";\n}\n',
+                      '<?php\n$radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );\n'
+                      'if ( null !== $radius_tab_val ) {\n\t$tablet_box_decls[] = "{$radius_tab_val}";\n}\n'),
+    'corner whole rule': ('<?php\n$radius_mob_val = sgs_corner_object_shorthand( $r );\nif ( null !== $radius_mob_val ) {\n'
+                          '\t$css[] = "{$root_sel}{border-radius:{$radius_mob_val};}}";\n}\n',
+                          '<?php\n$radius_mob_val = sgs_corner_object_longhands( $r );\nif ( null !== $radius_mob_val ) {\n'
+                          '\t$css[] = "{$root_sel}{{$radius_mob_val};}}";\n}\n'),
+    'corner concat': ("<?php\n$r = sgs_corner_object_shorthand( $b );\nif ( null !== $r ) {\n"
+                      "\t$css .= '.x{border-radius:' . $r . '}';\n\t$css .= '{border-radius:' . $r . ';}}';\n"
+                      "\t$decls[] = 'border-radius:' . $r;\n}\n",
+                      "<?php\n$r = sgs_corner_object_longhands( $b );\nif ( null !== $r ) {\n"
+                      "\t$css .= '.x{' . $r . '}';\n\t$css .= '{' . $r . ';}}';\n\t$decls[] = $r;\n}\n"),
+    'corner empty-string guard': ("<?php\n$r = sgs_corner_object_shorthand( $b );\nif ( null !== $r && '' !== $r ) {\n"
+                                  "\t$d[] = \"border-radius:{$r}\";\n}\nif ( $r !== '' ) {\n\t$d[] = 'x';\n}\n"
+                                  "if ( \"\" !== $r ) {\n\t$d[] = 'y';\n}\n",
+                                  "<?php\n$r = sgs_corner_object_longhands( $b );\nif ( null !== $r && '' !== $r ) {\n"
+                                  "\t$d[] = \"{$r}\";\n}\nif ( $r !== '' ) {\n\t$d[] = 'x';\n}\n"
+                                  "if ( \"\" !== $r ) {\n\t$d[] = 'y';\n}\n"),
 }
 SELF_TEST_REFUSED = {
     'double use': "<?php\n$pad = sgs_box_object_shorthand( $p );\n$present = $pad;\n$d[] = \"padding:{$pad}\";\n",
@@ -496,6 +609,8 @@ SELF_TEST_REFUSED = {
     'ternary': "<?php\n$s = function_exists( 'x' ) ? sgs_box_object_shorthand( $b ) : null;\n$d[] = \"padding:{$s}\";\n",
     'mixed families': "<?php\n$v = sgs_box_object_shorthand( $b );\n$d[] = \"padding:{$v}\";\n$e[] = \"margin:{$v}\";\n",
     'custom property': "<?php\n$v = sgs_box_object_shorthand( $b );\n$d[] = '--sgs-x-pad:' . $v;\n",
+    'corner custom property': "<?php\n$v = sgs_corner_object_shorthand( $b );\n$d[] = '{--sgs-x-radius-default:' . $v . ';}';\n",
+    'corner ternary': "<?php\n$r = $c ? sgs_corner_object_shorthand( $b ) : '';\n$d[] = \"border-radius:{$r}\";\n",
 }
 SELF_TEST_INERT = ("<?php\ndefined( 'ABSPATH' ) || exit;\n$x = 1;\n// sgs_box_object_shorthand( $y ) in a comment\n"
                    "echo $x; // phpcs:ignore -- sgs_box_object_shorthand( $z ) named in a trailing comment\n"
@@ -531,9 +646,23 @@ def self_test():
     got = [h for _, h in zero_filling_previews(js)]
     if got != ['spacingPreview', 'boxShorthand', 'tierBoxShorthand']:
         fails.append(f'editor arm: flagged {got}; want spacingPreview, the padding boxShorthand and the camelCase contentPadding call, never the radius calls or the longhand sibling')
+    reason = analyse(SELF_TEST_REFUSED['corner custom property'], 'src/blocks/x/render.php')[0]['reason'] or ''
+    if 'var() holdout' not in reason:
+        fails.append(f'refusal "corner custom property": reason is "{reason}"; it must say var() holdout')
+    radius_js = ("const a = { ...borderRadiusPreview( borderRadius, tier ) };\n"
+                 "const b = tierBoxLonghands( padding, tier, 'padding' );\n"
+                 "const c = sgsBorderPreview( { radiusValues: radius }, tier, {}, { wholeTier: true } );\n"
+                 "const d = sgsBorderPreview( { widthValues: width }, tier );\n"
+                 "const e = sgsBorderPreview( { radiusValues: radius }, tier );\n")
+    got = [c for _, c in zero_filling_radius_previews(radius_js, True)]
+    if got != ['borderRadiusPreview()', 'sgsBorderPreview()', 'wholeTier: true', 'sgsBorderPreview()']:
+        fails.append(f'corner editor arm: flagged {got}; want borderRadiusPreview, both sgsBorderPreview calls that pass radiusValues and wholeTier, never the longhand or width-only calls')
+    got = [c for _, c in zero_filling_radius_previews(radius_js, False)]
+    if got != ['borderRadiusPreview()', 'wholeTier: true']:
+        fails.append(f'corner editor arm (border-preview.js printing longhands): flagged {got}; want only borderRadiusPreview and wholeTier')
     for f in fails:
         print('SELF-TEST FAIL ' + f)
-    print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check, 1 editor arm; {len(fails)} failure(s)')
+    print(f'self-test: {len(SELF_TEST)} positive, {len(SELF_TEST_REFUSED)} refusal, 1 negative control, 1 scope check, 1 editor arm, 1 corner editor arm, 1 var() reason check; {len(fails)} failure(s)')
     return 1 if fails else 0
 
 
@@ -589,13 +718,11 @@ def main():
     if a.fix:
         return fix(a.apply, only)
     sites = survey(only)
-    totals = {}
-    for s in sites:
-        totals[s['category']] = totals.get(s['category'], 0) + 1
-    print('box-longhands census:', json.dumps(totals))
+    for h in HELPERS:
+        print(f"box-longhands census [{h['key']}]:", json.dumps(totals_of([s for s in sites if s['helper'] == h['key']])))
     for s in sites:
         if s['category'] in ('refused', 'excluded'):
-            print(f"  {s['category']:9} {s['file']}:{s['line']} {s['variable'] or ''} - {s['reason']}")
+            print(f"  {s['helper']:6} {s['category']:9} {s['file']}:{s['line']} {s['variable'] or ''} - {s['reason']}")
     if a.json:
         write_census(sites)
         print('census written: ' + os.path.relpath(CENSUS, REPO).replace('\\', '/'))
