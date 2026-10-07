@@ -2348,7 +2348,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				     "Price" panel (bound mode) — this panel is appearance only. ── */ }
 				{ /* Both modes: render.php emits every target's rule before the
 				     typed/bound split. Bound mode leaves out 'brand', which has
-				     its own "Brand overlay typography" panel there. */ }
+				     its own "Brand overlay typography" panel there; typed mode
+				     leaves out 'priceFromLabel', because only a bound card renders
+				     the "From" label. */ }
 				{ (
 					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 						<TypographyControls
@@ -2500,7 +2502,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									showLineHeight: false,
 									showLetterSpacing: true,
 								},
-							].filter( ( target ) => target && ( isBuiltIn || 'brand' !== target.key ) ) }
+							].filter( ( target ) => target && ( isBuiltIn || 'brand' !== target.key ) && ( isBound || 'priceFromLabel' !== target.key ) ) }
 						/>
 						{ isTrial && (
 							<>
