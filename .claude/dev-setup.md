@@ -2866,17 +2866,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_border_style_keyword` | `function sgs_border_style_keyword( $raw ): string` | Resolve a stored border-style value to the keyword a width paints with. |
 | `sgs_border_box_decls` | `function sgs_border_box_decls( $width_box, $style_raw ): array` | Build the border-style + border-width declarations for a 4-side width box and a stored style. |
 
-#### `includes/helpers-box.php` — 9 function(s)
+#### `includes/helpers-box.php` — 10 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_css_length_sanitise` | `function sgs_css_length_sanitise( $value ): string` | Strip a CSS length value down to the safe grammar (digits, letters for the unit, dot, percent) — the shared form of the local… |
 | `sgs_css_keyword_sanitise` | `function sgs_css_keyword_sanitise( $value ): string` | Strip a CSS keyword value down to letters + hyphen only (e.g. 'inline-block', 'uppercase') — the shared form of the local… |
-| `sgs_native_border_style_width_args` | `function sgs_native_border_style_width_args( $style_raw, $width_raw ): array` | Gate a WP-native `style.border.style` + `style.border.width` PAIR so a border-style set with no width never falls through to the browser's… |
-| `sgs_native_border_has_width` | `function sgs_native_border_has_width( array $border ): bool` | True when a native `style.border` array carries a width in EITHER shape. |
-| `sgs_gate_native_border_style` | `function sgs_gate_native_border_style( array $border ): array` | Apply the SAME "no width = no border" gate (see `sgs_native_border_style_width_args()` above) to an ALREADY-BUILT native `style.border`… |
 | `sgs_box_object_shorthand` | `function sgs_box_object_shorthand( array $box ): ?string` | Build a 4-side CSS shorthand ("top right bottom left") from a box object, filling any unset side with '0'. Returns null when every side is… |
+| `sgs_box_object_longhand_list` | `function sgs_box_object_longhand_list( $box, string $family ): array` | Build one longhand declaration per SET side of a padding or margin box object ("padding-top:12px"), in top, right, bottom, left order. An… |
+| `sgs_box_object_longhands` | `function sgs_box_object_longhands( $box, string $family ): ?string` | The set sides of a padding or margin box as one declaration block ("padding-top:12px;padding-left:24px"), or null when no side is set, so a… |
 | `sgs_corner_object_shorthand` | `function sgs_corner_object_shorthand( $box ): ?string` | Build a 4-CORNER CSS shorthand ("top-left top-right bottom-right bottom-left") from a corner-keyed box object, filling any unset corner… |
+| `sgs_corner_object_longhand_list` | `function sgs_corner_object_longhand_list( $box ): array` | Build one border-radius longhand per SET corner of a corner-keyed box object ("border-top-left-radius:20px"), in top-left, top-right… |
+| `sgs_corner_object_longhands` | `function sgs_corner_object_longhands( $box ): ?string` | The set corners of a corner-keyed box as one declaration block ("border-top-left-radius:20px;border-bottom-right-radius:4px"), or null when… |
 | `sgs_border_radius_tiers` | `function sgs_border_radius_tiers( array $attributes ): array` | Resolve a block's `borderRadius` attribute into desktop/tablet/mobile corner objects, shape-agnostic (Phase 2 tier-object migration… |
 | `sgs_label_box_css_rule` | `function sgs_label_box_css_rule( array $box, string $selector ): string` | Build the SCOPED CSS for a label-style box on ONE selector. |
 
@@ -2903,10 +2904,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. |
 
-#### `includes/helpers-button-style.php` — 1 function(s)
+#### `includes/helpers-button-style.php` — 3 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
+| `sgs_button_element_line_height` | `function sgs_button_element_line_height( $value ): string` | Sanitise a button line-height: a unitless number or a CSS length. |
+| `sgs_button_element_text_align` | `function sgs_button_element_text_align( $value ): string` | Allow-list a button text-align keyword. Used by blocks that emit a `{prefix}TextAlign` rule for their own built-in CTA; the style helper… |
 | `sgs_button_element_style_css` | `function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer =…` | Build a scoped CSS string (base rule + hover/focus rule) for a built-in button-like element, reading a prefixed attribute set. |
 
 #### `includes/helpers-cart-panel-css.php` — 1 function(s)
@@ -3005,6 +3008,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_css_sizing_keyword` | `function sgs_css_sizing_keyword( $value ): string` | Return a CSS intrinsic sizing keyword in canonical form, or '' when the value is not one. |
 | `sgs_css_length_or_sizing_keyword` | `function sgs_css_length_or_sizing_keyword( $value ): string` | Sanitise a CSS length, letting the intrinsic sizing keywords through intact. |
 
+#### `includes/helpers-diagram-geometry.php` — 3 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_diagram_fmt` | `function sgs_diagram_fmt( float $value ): string` | Two decimals, trailing zeros dropped (JS twin: fmt()). |
+| `sgs_diagram_clamp` | `function sgs_diagram_clamp( $value, float $min, float $max, float $fallback ): float` | Clamp a number, with a fallback for junk input (JS twin: clamp()). |
+| `sgs_diagram_dimension_paths` | `function sgs_diagram_dimension_paths( array $dim, float $width, float $height ): array` | Build the SVG path data for one dimension. |
+
 #### `includes/helpers-empty-tab.php` — 1 function(s)
 
 | Function | Signature | Purpose |
@@ -3089,6 +3100,21 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_list_marker_element_tag` | `function sgs_list_marker_element_tag( $marker_type )` | The list ROOT tag for a given marker type. `numbered` renders a real `<ol>` so order is conveyed to assistive tech and crawlers; every… |
 | `sgs_list_marker_render` | `function sgs_list_marker_render( $marker_type, $icon_html )` | Build the per-item marker markup for one `<li>`. |
 | `sgs_icon_list_flatten_menu_blocks` | `function sgs_icon_list_flatten_menu_blocks( array $blocks )` | Flatten resolved nav blocks (from SGS_Nav_Menu_Source::blocks_from_ref()) into `{ text, url }` pairs shaped like an `sgs/icon-list` typed… |
+
+#### `includes/helpers-measured-diagram.php` — 10 function(s)
+
+| Function | Signature | Purpose |
+|---|---|---|
+| `sgs_measured_diagram_box` | `function sgs_measured_diagram_box( $width, $height ): array` | The drawing's own width and height, used as the line SVGs' viewBox and the frame's aspect ratio. Before a drawing is chosen (or when the… |
+| `sgs_measured_diagram_pct` | `function sgs_measured_diagram_pct( $value, float $fallback ): float` | A position as a % of the drawing box, cast and clamped to 0–100. |
+| `sgs_measured_diagram_pct_tiers` | `function sgs_measured_diagram_pct_tiers( $raw, float $desktop_fallback ): array` | A `{desktop,tablet,mobile}` % position, every present tier clamped to 0–100. An unset desktop takes $desktop_fallback (the line's midpoint… |
+| `sgs_measured_diagram_dot_radius` | `function sgs_measured_diagram_dot_radius( $tick_length, float $width ): string` | Radius of a dot end, in viewBox units: half the tick length. The tick length is a % of the drawing width with the same 0–20 clamp and 1.76… |
+| `sgs_measured_diagram_length` | `function sgs_measured_diagram_length( $raw ): string` | One CSS length through the shared hardened validator. A bare number is read as pixels, the unit the editor's length control shows first. |
+| `sgs_measured_diagram_length_tiers` | `function sgs_measured_diagram_length_tiers( $raw ): array` | A `{desktop,tablet,mobile}` length, every tier through sgs_measured_diagram_length(); an unset or unsafe tier becomes null. |
+| `sgs_measured_diagram_dash_decls` | `function sgs_measured_diagram_dash_decls( string $style, string $width ): string` | The guide lines' dash pattern for one stroke width: dashed is a 4:3 dash:gap rhythm of the width, dotted is round-capped zero-length dashes… |
+| `sgs_measured_diagram_user_space_gradient` | `function sgs_measured_diagram_user_space_gradient( string $defs, float $width, float $height ): string` | Re-anchor a gradient def from sgs_svg_stroke_gradient() to the drawing. |
+| `sgs_diagram_dimension_text_kses` | `function sgs_diagram_dimension_text_kses(): array` | The markup a label's caption or value may carry: simple inline emphasis, plus the bound-value span the `sgs-product/field` binding wraps a… |
+| `sgs_diagram_dimension_empty_marker` | `function sgs_diagram_dimension_empty_marker( array $attributes, $block ): string` | The empty bound-value container a size change can fill later. |
 
 #### `includes/helpers-media-element.php` — 5 function(s)
 
@@ -3457,7 +3483,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 28 P1). |
 
-**62 files, 289 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**64 files, 305 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -3481,6 +3507,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `GridDotFieldRowControls.js` | `GridDotFieldRowControls` | GridDotFieldRowControls — shared grid-dot field (FR-38-33) controls for blocks that reach the effect via a block-private escape… |
 | `index.js` | `ResponsiveControl`, `BooleanResponsiveControl`, `ResponsiveOverride`… | export { default as ResponsiveControl } from './ResponsiveControl'; export { default as BooleanResponsiveControl } from… |
 | `LinkPopoverControl.js` | `LinkPopoverField (default)`, `LinkPopoverContent`, `TARGET_ENUM_OPTIONS` | LinkPopoverControl — the SGS standard LINK control (Spec 35 §2 LINK, promoted from `sgs/button`'s pilot 2026-08-13, Bean-approved… |
+| `LogicalAlignControl.js` | `LogicalAlignControl (default)`, `LogicalAlignToolbar` | LogicalAlignControl — the one inspector control for a box's horizontal alignment, stored as the logical values `start \| center… |
 | `MediaElementControls.js` | `mediaAttrName`, `mediaAttrType`, `mediaAttrKeys`, `mediaStoredAttrName`, `MEDIA_BASES`… | L1 — media attribute NAMING. The contract every later wave inherits. |
 | `MediaElementPanel.js` | `MediaElementPanel (default)` | L3 — the media element's DISPATCH layer. |
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
@@ -3520,7 +3547,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**54 files.**
+**55 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -3541,7 +3568,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `meaning.control.js` | `control` | Atom: MEANING (control half) — the editor UI. |
 | `meaning.js` | `altBaseFor`, `resolveMediaType`, `disclosure`, `validate`, `css`, `TYPE_VOCABULARY` | Atom: MEANING (logic half) — accessibility text for the media. |
 | `media-padding.control.js` | `control` | `media-padding` atom — CONTROL half (JSX). |
-| `media-padding.js` | `attrKey`, `sidesToShorthand`, `disclosure`, `validate`, `css` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
+| `media-padding.js` | `attrKey`, `sidesToShorthand`, `sideDecls`, `disclosure`, `validate`, `css` | `media-padding` atom — L2b control + disclosure + validator + value-setter. |
 | `media-type.control.js` | `control` | `media-type` atom — CONTROL half (JSX-equivalent `control()`, via `createElement()`). |
 | `media-type.js` | `validate`, `disclosure`, `css`, `CANONICAL_ENUM`, `TIER_ENUM` | `media-type` atom — LOGIC half (pure: css/validate/disclosure). |
 | `motion.control.js` | `control` | `motion` atom — CONTROL half (JSX). |

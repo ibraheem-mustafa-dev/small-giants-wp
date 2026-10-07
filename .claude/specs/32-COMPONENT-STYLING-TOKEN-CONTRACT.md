@@ -260,6 +260,13 @@ closure is duplication to migrate, not a local choice.
 | 4-side (`top/right/bottom/left`) | `sgs_box_object_shorthand( array $box ): ?string` | top right bottom left |
 | **4-corner** (`topLeft/topRight/bottomRight/bottomLeft`) | **`sgs_corner_object_shorthand( $box ): ?string`** | TL TR BR BL |
 
+**For a device tier, print longhands, not a shorthand** (the two shorthand helpers above are now for border width and the `var()` holdouts only). A shorthand prints `0` for every unset side
+or corner, wiping the stylesheet's value and the wider tier's (CR6). Tier rules use
+`sgs_box_object_longhands( $box, 'padding'|'margin' )` and `sgs_corner_object_longhands( $box )`, which
+print one declaration per SET side or corner and return `null` when none is; the shorthands above stay for
+border width (an unset side SHOULD be 0) and the `var()` holdouts. Gate:
+`plugins/sgs-blocks/scripts/migrate-box-longhands.py --check`.
+
 Both return `null` when every key is empty, so the caller skips the declaration entirely rather
 than emitting a no-op rule. **They are NOT interchangeable** — CSS `border-radius` shorthand order
 is TL TR BR BL, which is a different sequence from the box-model's TRBL, so passing a corner object
@@ -326,7 +333,7 @@ Block membership per family is DB-authoritative:
 | SGS custom (4-side) | `borderWidth{side}` | every block with a border-width control | SGS object `borderWidth:{...}` — colour/style stay single scalar attrs (no per-side colour/style family exists) |
 | SGS custom (4-side) | `contentBandPadding{side}` | `container`, `cta-section`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` | SGS object + tiers + BoxControl (per-band, not root) |
 | SGS custom (4-side) | per-area families: `contentPadding`, `mediaPadding`, `splitMediaPadding`, `splitMediaBorderWidth` | `hero` | SGS object + tiers + BoxControl |
-| WP-native root (4-corner) | `borderRadius{TL,TR,BL,BR}` | every block declaring root radius | base → `style.border.radius` object `{topLeft,…}`; tiers → `borderRadiusTablet`/`borderRadiusMobile` object |
+| SGS custom root (4-corner) | `borderRadius` | every block with a root radius | one tier object `{desktop,tablet,mobile}`, each a corner object `{topLeft,…}` (read by `sgs_border_radius_tiers()`); WordPress's native `style.border` is never read |
 | SGS custom (4-corner) | `splitMediaBorderRadius{TL,TR,BL,BR}` | `hero` | SGS custom corner object + corner control |
 
 **KEEP scalar (not box properties, or single-side):**

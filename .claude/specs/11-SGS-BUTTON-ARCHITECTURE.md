@@ -570,7 +570,7 @@ The live attribute list and count come from the framework DB (`sgs-db.py block s
 
 ### API choices
 
-**Use `__experimentalBorder` support for border controls, not custom attributes.** Core now uses it — it serialises to `style.border.*` in block attributes and hooks into the standard sidebar panel. This avoids re-implementing what WordPress ships. However, the `__experimentalBorder.perSide` control was only added in GB 6.4 (WP 6.4). Check with `wp.blocks.getBlockSupport('core/button', '__experimentalBorder')` in the console. If on WP 6.3 or earlier, fall back to custom attributes.
+**Border controls are the block's own attributes, never `__experimentalBorder`.** No SGS block declares WordPress's native border support or reads `style.border.*`; the shared `SgsBorderControl` panel writes `borderWidth`/`borderStyle`/`borderColour`/`borderRadius`. This avoids re-implementing what WordPress ships. However, the `__experimentalBorder.perSide` control was only added in GB 6.4 (WP 6.4). Check with `wp.blocks.getBlockSupport('core/button', '__experimentalBorder')` in the console. If on WP 6.3 or earlier, fall back to custom attributes.
 
 Decision: **use custom attributes** (as above) because SGS blocks ship with per-breakpoint border radius which the native `__experimentalBorder` API does not yet support per-breakpoint. Custom attributes give us full control and are what Kadence uses.
 

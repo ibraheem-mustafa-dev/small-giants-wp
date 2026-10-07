@@ -2573,9 +2573,9 @@ Most blocks' root `borderRadius` attribute carries `{"desktop":{}}`, governed by
 `sgs/product-card`'s `ctaBorderRadius`:
 `{"topLeft":"10px","topRight":"10px","bottomLeft":"10px","bottomRight":"10px"}` — a flat corner object
 holding CSS length STRINGS, consumed by
-`plugins/sgs-blocks/includes/helpers-box.php::sgs_corner_object_shorthand`, which reads exactly
-`topLeft` / `topRight` / `bottomRight` / `bottomLeft` through `sgs_css_length_value()`. ⛔ Reaching for
-the root-radius tier envelope here would author a shape `sgs_corner_object_shorthand()` cannot read —
+`plugins/sgs-blocks/includes/helpers-box.php::sgs_corner_object_longhands`, which reads exactly
+`topLeft` / `topRight` / `bottomRight` / `bottomLeft` through `sgs_css_length_value()` and prints only the
+set corners. ⛔ Reaching for the root-radius tier envelope here would author a shape it cannot read —
 it would find no corner keys and return `null`, so the radius would silently vanish rather than
 error. ⚠ Values are STRINGS with units (`"8px"`), matching `ctaBorderRadius`; a bare number is not
 the precedent.

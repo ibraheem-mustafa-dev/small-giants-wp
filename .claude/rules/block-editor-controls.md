@@ -62,8 +62,16 @@ control a width the client did not choose.
 **The canvas previews the panel through its twin.** Every block that mounts `SgsBorderControl`
 previews that element's border with `src/utils/border-preview.js::sgsBorderPreview`, passing the same
 values the panel receives (`widthValues`, `styleValue`, `colourValue`, `colourGradientValue`,
-`radiusValues`; options `wholeTier`, `defaultBorder`, `fallbackColour`). Gate:
+`radiusValues`; options `defaultBorder`, `fallbackColour`). Gate:
 `scripts/check-border-preview-twin.js`.
+
+**A radius prints only the corners a client set.** render.php prints a tier's corners through
+`includes/helpers-box.php::sgs_corner_object_longhands` (one `border-*-radius` per set corner), and the
+canvas through `src/utils/radius-preview.js::borderRadiusLonghands`, which `sgsBorderPreview` uses; an
+unset corner keeps the stylesheet's radius. `sgs_corner_object_shorthand` (unset corners `0`) stays only
+for the `var()` holdouts. Gate: `python plugins/sgs-blocks/scripts/migrate-box-longhands.py --check`
+(fails a new zero-filling corner site). Blocks read only their own border attributes, never WordPress's
+native `style.border`.
 
 A palette slug fed raw to CSS paints nothing: `sgs_border_states_css()` needs `sgs_colour_value()`
 resolution first (it feeds a masked `::before` ring that also sets `border-color:transparent`, so
