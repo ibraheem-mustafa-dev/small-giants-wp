@@ -179,8 +179,17 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   unconfirmed `h@375 780→684` reading of the page container's own height (the sum of everything in it, a weak signal for
   one padding write) and then cycled one suspect per round through round 9; round 10's rebuild failed ("editor did not
   load", the host's bot challenge after nine builds). The page container then took S6's decided value by hand, the same
-  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Owed: one rebuild-and-measure (`--rounds 0`) to bring
-  the live page in line with the tree and read the real count; then the done line.
+  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Verified by a rebuild of the committed tree and a
+  measure-only walk (`qa/solve/lenses/2026-10-07T20-35-24/`): **26 distinct issues, 0 hardcode, 0 missing setting.** Open:
+  `transition-duration` on cr-ref-lenses-2, -23, -24, -26 (draft 0s, live 0.15 to 0.25s: the site-wide walker gap, 51 rows on
+  13 surfaces); the steps (cr-ref-lenses-27) are 69px shorter than the draft at 375 and 44px at 768, which the column and
+  page heights above them follow; the steps' `align-items` at 375. **Both causes fixed 2026-10-07 (`0070c8d4a`), not yet
+  measured live:** (a) walker gap 2, `compare.mjs::timingIrrelevant` skips transition timings where both sides' states were
+  read and neither element changes in hover, focus or pressed (phones mark `noHover`, `state-passes.mjs::hoverPass`); the
+  51 rows should fall on each surface's next walk; (b) the steps' titles sat at line-height 1 (draft 1.5) and 8px from their
+  numbers (draft 16px), read on both sites at 375 and 1440; the tree takes `titleLineHeight` 1.5 and `numberGap` 16px. The
+  walker never measured the step titles (it pairs the block and its number only). Next: one rebuild-and-measure on Lenses,
+  then the done line.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
