@@ -638,7 +638,17 @@
         }
       },
       "header": {},
-      "footer": {}
+      "footer": {},
+      "measuredDiagramPresets": {
+        "default": {
+          "line": "var(--wp--preset--color--accent)",
+          "extension": "var(--wp--preset--color--border-strong)",
+          "value": "var(--wp--preset--color--text)",
+          "caption": "var(--wp--preset--color--text-muted)",
+          "line-width": "1.4px",
+          "extension-width": "1px"
+        }
+      }
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,

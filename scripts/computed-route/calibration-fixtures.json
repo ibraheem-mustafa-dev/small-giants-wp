@@ -2810,5 +2810,69 @@
     "attributes": {
       "showWhenEmpty": true
     }
+  },
+  "sgs/measured-diagram": {
+    "attributes": {
+      "drawingImageId": 4969,
+      "drawingImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg",
+      "drawingImageAlt": "Sample drawing",
+      "drawingImageWidth": 680,
+      "drawingImageHeight": 300
+    },
+    "inner": [
+      {
+        "name": "sgs/diagram-dimension",
+        "attributes": {
+          "caption": "Width",
+          "value": "56 mm",
+          "startX": 17.65,
+          "startY": 79.33,
+          "endX": 42.65,
+          "endY": 79.33,
+          "orientation": "horizontal",
+          "extReach": 5,
+          "extOvershoot": 0.88
+        }
+      },
+      {
+        "name": "sgs/diagram-dimension",
+        "attributes": {
+          "caption": "Height",
+          "value": "41 mm",
+          "startX": 83.82,
+          "startY": 26.67,
+          "endX": 83.82,
+          "endY": 66.67,
+          "orientation": "vertical",
+          "extReach": -6.76,
+          "extOvershoot": 0.88
+        }
+      }
+    ]
+  },
+  "sgs/diagram-dimension": {
+    "attributes": {
+      "caption": "Width",
+      "value": "56 mm",
+      "startX": 17.65,
+      "startY": 79.33,
+      "endX": 42.65,
+      "endY": 79.33,
+      "orientation": "horizontal",
+      "extReach": 5,
+      "extOvershoot": 0.88
+    },
+    "parents": [
+      {
+        "name": "sgs/measured-diagram",
+        "attributes": {
+          "drawingImageId": 4969,
+          "drawingImageUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg",
+          "drawingImageAlt": "Sample drawing",
+          "drawingImageWidth": 680,
+          "drawingImageHeight": 300
+        }
+      }
+    ]
   }
 }

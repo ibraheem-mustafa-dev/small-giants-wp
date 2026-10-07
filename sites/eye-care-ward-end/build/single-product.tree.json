@@ -1544,6 +1544,329 @@
                       {
                         "name": "sgs/container",
                         "attributes": {
+                          "className": "eye-care-sizing-diagram",
+                          "layout": "stack",
+                          "gap": {
+                            "desktop": "22px"
+                          },
+                          "backgroundColour": "surface-alt",
+                          "borderWidth": {
+                            "top": "1px",
+                            "right": "1px",
+                            "bottom": "1px",
+                            "left": "1px"
+                          },
+                          "borderColour": "border",
+                          "padding": {
+                            "desktop": {
+                              "top": "22px",
+                              "right": "20px",
+                              "bottom": "22px",
+                              "left": "20px"
+                            }
+                          },
+                          "margin": {
+                            "desktop": {
+                              "bottom": "16px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "layout": "stack"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.18
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-muted",
+                                  "margin": {
+                                    "desktop": {
+                                      "bottom": "6px"
+                                    }
+                                  },
+                                  "text": "Front"
+                                }
+                              },
+                              {
+                                "name": "sgs/measured-diagram",
+                                "attributes": {
+                                  "labelMode": {
+                                    "desktop": "onDrawing",
+                                    "mobile": "numbered"
+                                  },
+                                  "labelGap": {
+                                    "desktop": "3px"
+                                  },
+                                  "valueFontSize": {
+                                    "desktop": 17,
+                                    "tablet": 15,
+                                    "mobile": 15
+                                  },
+                                  "valueFontSizeUnit": "px",
+                                  "valueLineHeight": {
+                                    "desktop": 1.1
+                                  },
+                                  "valueLineHeightUnit": "",
+                                  "captionFontSize": {
+                                    "desktop": 11.5,
+                                    "tablet": 10,
+                                    "mobile": 11
+                                  },
+                                  "captionFontSizeUnit": "px",
+                                  "captionLetterSpacing": {
+                                    "desktop": 0.14
+                                  },
+                                  "captionLetterSpacingUnit": "em",
+                                  "captionTextTransform": "uppercase",
+                                  "drawingImageId": 1293,
+                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-front.svg",
+                                  "drawingImageWidth": 680,
+                                  "drawingImageHeight": 300,
+                                  "drawingImageAlt": "Front view of the frame",
+                                  "tickLength": 1.765
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/diagram-dimension",
+                                    "attributes": {
+                                      "caption": "Bridge",
+                                      "value": "",
+                                      "kind": "dimension",
+                                      "endStyle": "tick",
+                                      "orientation": "horizontal",
+                                      "startX": 42.647,
+                                      "startY": 19.333,
+                                      "endX": 51.471,
+                                      "endY": 19.333,
+                                      "extReach": -5.588,
+                                      "extOvershoot": 0.882,
+                                      "labelX": {
+                                        "desktop": 47.099
+                                      },
+                                      "labelY": {
+                                        "desktop": 1
+                                      },
+                                      "labelAlign": "center",
+                                      "labelOrder": "captionFirst",
+                                      "metadata": {
+                                        "bindings": {
+                                          "value": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_bridge",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "name": "sgs/diagram-dimension",
+                                    "attributes": {
+                                      "caption": "Lens width",
+                                      "value": "",
+                                      "kind": "dimension",
+                                      "endStyle": "tick",
+                                      "orientation": "horizontal",
+                                      "startX": 17.647,
+                                      "startY": 79.333,
+                                      "endX": 42.647,
+                                      "endY": 79.333,
+                                      "extReach": 5,
+                                      "extOvershoot": 0.882,
+                                      "labelX": {
+                                        "desktop": 30.099
+                                      },
+                                      "labelY": {
+                                        "desktop": 81.996
+                                      },
+                                      "labelAlign": "center",
+                                      "labelOrder": "valueFirst",
+                                      "metadata": {
+                                        "bindings": {
+                                          "value": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_eye",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "name": "sgs/diagram-dimension",
+                                    "attributes": {
+                                      "caption": "Lens height",
+                                      "value": "",
+                                      "kind": "dimension",
+                                      "endStyle": "tick",
+                                      "orientation": "vertical",
+                                      "startX": 83.824,
+                                      "startY": 26.667,
+                                      "endX": 83.824,
+                                      "endY": 66.667,
+                                      "extReach": -6.765,
+                                      "extOvershoot": 0.882,
+                                      "labelX": {
+                                        "desktop": 86.5
+                                      },
+                                      "labelY": {
+                                        "desktop": 36.997
+                                      },
+                                      "labelAlign": "start",
+                                      "labelOrder": "valueFirst",
+                                      "metadata": {
+                                        "bindings": {
+                                          "value": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_height",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "layout": "stack",
+                              "borderWidth": {
+                                "top": "1px"
+                              },
+                              "borderColour": "accent-light",
+                              "padding": {
+                                "desktop": {
+                                  "top": "20px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "fontSize": {
+                                    "desktop": 11
+                                  },
+                                  "fontSizeUnit": "px",
+                                  "letterSpacing": {
+                                    "desktop": 0.18
+                                  },
+                                  "letterSpacingUnit": "em",
+                                  "textTransform": "uppercase",
+                                  "textColour": "text-muted",
+                                  "margin": {
+                                    "desktop": {
+                                      "bottom": "6px"
+                                    }
+                                  },
+                                  "text": "Side"
+                                }
+                              },
+                              {
+                                "name": "sgs/measured-diagram",
+                                "attributes": {
+                                  "labelMode": {
+                                    "desktop": "onDrawing",
+                                    "mobile": "numbered"
+                                  },
+                                  "labelGap": {
+                                    "desktop": "3px"
+                                  },
+                                  "valueFontSize": {
+                                    "desktop": 17,
+                                    "tablet": 15,
+                                    "mobile": 15
+                                  },
+                                  "valueFontSizeUnit": "px",
+                                  "valueLineHeight": {
+                                    "desktop": 1.1
+                                  },
+                                  "valueLineHeightUnit": "",
+                                  "captionFontSize": {
+                                    "desktop": 11.5,
+                                    "tablet": 10,
+                                    "mobile": 11
+                                  },
+                                  "captionFontSizeUnit": "px",
+                                  "captionLetterSpacing": {
+                                    "desktop": 0.14
+                                  },
+                                  "captionLetterSpacingUnit": "em",
+                                  "captionTextTransform": "uppercase",
+                                  "drawingImageId": 1294,
+                                  "drawingImageUrl": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/eye-care-sizing-frame-side.svg",
+                                  "drawingImageWidth": 680,
+                                  "drawingImageHeight": 230,
+                                  "drawingImageAlt": "Side view of the frame",
+                                  "tickLength": 1.765
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/diagram-dimension",
+                                    "attributes": {
+                                      "caption": "Temple length, ear bend included",
+                                      "value": "",
+                                      "kind": "dimension",
+                                      "endStyle": "tick",
+                                      "orientation": "horizontal",
+                                      "startX": 13.529,
+                                      "startY": 82.609,
+                                      "endX": 81.765,
+                                      "endY": 82.609,
+                                      "extReach": 17.647,
+                                      "extOvershoot": 0.882,
+                                      "labelX": {
+                                        "desktop": 47.6
+                                      },
+                                      "labelY": {
+                                        "desktop": 61.995
+                                      },
+                                      "labelAlign": "center",
+                                      "labelOrder": "valueFirst",
+                                      "metadata": {
+                                        "bindings": {
+                                          "value": {
+                                            "source": "sgs-product/field",
+                                            "args": {
+                                              "key": "meta._sgs_frame_temple",
+                                              "after": " mm"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "extReachEnd": 7.641
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
                           "layout": "stack",
                           "gap": {
                             "desktop": "1px"
