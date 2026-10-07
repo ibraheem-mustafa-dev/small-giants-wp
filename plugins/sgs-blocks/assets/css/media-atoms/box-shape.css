@@ -123,3 +123,39 @@
 		);
 	}
 }
+
+/*
+ * WooCommerce pages: WooCommerce's layout sheet sizes every image there
+ * (`.woocommerce img, .woocommerce-page img { height: auto; max-width: 100% }`,
+ * specificity 0-1-1), which outranks `.sgs-media-el` (0-1-0), so a height or
+ * maximum width set on an SGS media element was ignored on every shop page.
+ * These rules re-assert the two properties at 0-2-0. Their fallbacks equal
+ * WooCommerce's own values, so nothing changes unless a size is set.
+ */
+.woocommerce .sgs-media-el,
+.woocommerce-page .sgs-media-el {
+	height: var( --sgs-media-height, auto );
+	max-width: var( --sgs-media-max-width, 100% );
+}
+
+@media ( max-width: 1023px ) {
+	.woocommerce .sgs-media-el,
+	.woocommerce-page .sgs-media-el {
+		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
+		max-width: var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.woocommerce .sgs-media-el,
+	.woocommerce-page .sgs-media-el {
+		height: var(
+			--sgs-media-height-mobile,
+			var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) )
+		);
+		max-width: var(
+			--sgs-media-max-width-mobile,
+			var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) )
+		);
+	}
+}
