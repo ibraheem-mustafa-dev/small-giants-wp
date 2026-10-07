@@ -710,7 +710,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		attributeTagSource,
 		attributeTagTaxonomy,
 		attributeTagTerm,
-		attributeTagText,
 		attributeTagTextColour,
 		attributeTagBorderColour,
 		attributeTagBorderWidth,
@@ -2200,7 +2199,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 									'Empty (default) uses the matched term\'s own name.',
 									'sgs-blocks'
 								) }
-								value={ attributeTagText || '' }
+								value={ attributes.attributeTagText || '' }
 								onChange={ ( v ) =>
 									setAttributes( { attributeTagText: v } )
 								}
