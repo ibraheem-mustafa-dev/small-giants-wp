@@ -16,6 +16,7 @@ import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
+import { acquireCalibrationLock } from './lib/calibration-lock.mjs';
 import { skipReason } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
@@ -319,6 +320,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	// A local mirror has no host deploy to wait for; this machine's deploy or reseed still blocks the run.
 	assertQuiet( target.pluginDir ? null : undefined );
+	// One calibration per calibration page: a second run would overwrite this one's instances (lib/calibration-lock.mjs).
+	const lock = acquireCalibrationLock( site, { blocks } );
+	process.on( 'exit', lock.release );
 	fs.mkdirSync( CACHE, { recursive: true } );
 	const env = readEnv( target.envFile, target.envKey );
 	const shared = await openBrowser( site, env );
@@ -341,6 +345,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const r = await build( target, empty, [ '--post-id', String( target.postId ) ] );
 		console.log( r.json?.ok ? 'calibration page emptied' : `[WARN] calibration page not emptied: ${ r.err.slice( -300 ) }` );
 		await shared.close();
+		lock.release();
 	}
 	process.exit( results.some( ( r ) => r.error ) ? 1 : 0 );
 }

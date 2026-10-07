@@ -550,3 +550,18 @@ test( 'an animation name with no readable rules reads as unresolved whatever it 
 		await p.close();
 	}
 } );
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Pseudo layers that generate no box (2026-10-07, Lenses step-1)
+
+test( 'MUST FAIL (Lenses step-1, 2026-10-07): a ::after with content but display:none is no painting layer; a shown one still is', async () => {
+	const { PSEUDO_PROPS } = await lib( 'collect.mjs' );
+	const css = '<style>.s{position:relative}.s::after{content:"";position:absolute;width:20px;height:2px;background:#e6e1da}.off .s::after{display:none !important}</style>';
+	const page = await pageWith( `${ css }<div class="off"><div class="s a">Step one</div></div><div><div class="s b">Step two</div></div>` );
+	const read = ( finder ) => page.evaluate( collectPair, [ finder, DEFAULT_PROPS, RESOLVE, null, null, null, PAINT_SRC, PSEUDO_PROPS ] );
+	const hidden = await read( '.a' );
+	const shown = await read( '.b' );
+	assert.equal( hidden.pseudo[ '::after' ], undefined, 'a switched-off connector paints nothing' );
+	assert.equal( shown.pseudo[ '::after' ]?.height, '2px', 'a shown connector is still read' );
+	await page.close();
+} );

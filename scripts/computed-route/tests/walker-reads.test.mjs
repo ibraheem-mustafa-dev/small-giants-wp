@@ -57,6 +57,15 @@ test( 'MUST FAIL TO MISS: a transition timing still compares where either side c
 	assert.deepEqual( timing( comparePair( { text: false }, d, unread, tol ) ), [ 'transition-duration' ] );
 } );
 
+test( 'MUST FAIL (Lenses intro, 2026-10-07): a straight quote on the draft and WordPress\'s curly one live are the same text; other words still differ', () => {
+	const pair = { box: [] };
+	const d = snap( {}, { text: 'You tell me what they\'re for, the "best" fit' } );
+	const l = snap( {}, { text: 'You tell me what they’re for, the “best” fit' } );
+	assert.deepEqual( keys( comparePair( pair, d, l, tol ) ), [] );
+	const other = snap( {}, { text: 'You tell me what they’re used for, the “best” fit' } );
+	assert.deepEqual( keys( comparePair( pair, d, other, tol ) ), [ 'text' ] );
+} );
+
 test( 'positive control: one timing for every property matches a list of the same timing; still transitions compare no easing', () => {
 	const d = snap( { 'transition-duration': '0.25s', 'transition-delay': '0s' } );
 	const l = snap( { 'transition-duration': '0.25s, 0.25s', 'transition-delay': '0s, 0s' } );

@@ -1035,5 +1035,149 @@
       "S1"
     ],
     "decided": "2026-10-04 Bean"
+  },
+  {
+    "id": "D-72",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-23",
+    "state": "opening",
+    "property": "y-from-lens-grid",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "785"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-73",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-27",
+    "state": "opening",
+    "property": "flex-grow",
+    "expected": {
+      "value": "1"
+    },
+    "reason": "A flex-grow on a step of a column list with no spare height paints nothing: the steps list measures the same height on both sides (185px at 1440, 254px at 375).",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-74",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-27",
+    "state": "opening",
+    "property": "gap",
+    "expected": {
+      "value": "0px 16px"
+    },
+    "reason": "The number-to-title gap is 16px on both sides; live's 0px row gap applies only between a title and a description, which these steps do not have.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-75",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-25",
+    "state": "opening",
+    "property": "opacity",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "1"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-76",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-25",
+    "state": "opening",
+    "property": "transform",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "none"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-77",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-25",
+    "state": "opening",
+    "property": "y-after-benefits-item-1",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "281"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-78",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-27",
+    "state": "opening",
+    "property": "y-after-steps-reveal",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "61"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-79",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-27",
+    "state": "opening",
+    "property": "align-items",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "flex-start"
+    },
+    "reason": "The steps are width:100% grid boxes, so cross-axis alignment changes nothing: each step is the list's full 335px width on both sides at 375.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-80",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-23",
+    "state": "opening",
+    "property": "y-from-lens-grid",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "436"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-81",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-26",
+    "state": "opening",
+    "property": "y-from-benefits-list",
+    "widths": [
+      768
+    ],
+    "expected": {
+      "value": "234"
+    },
+    "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
+    "decided": "2026-10-07 Bean"
   }
 ]

@@ -10,15 +10,17 @@ const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/prescription-lens
 const DGRID = `(r) => [...document.querySelectorAll('div')].find((x) => getComputedStyle(x).display === 'grid' && x.children.length === 4 && [...x.children].every((c) => /single vision|varifocal|polarised|thinner lenses/i.test(c.textContent)))`;
 const dcard = ( name ) => `(r) => { const g = (${ DGRID })(r); return g && [...g.children].find((c) => c.textContent.includes('${ name }')); }`;
 const dpart = ( name, nth ) => `(r) => { const c = (${ dcard( name ) })(r); return c && c.children[${ nth }]; }`;
-// The live equivalent: a stack container whose inner div's direct children are exactly the
-// three text lines a card holds (title, price, description), narrowed by its own text.
-const lcard = ( name ) => `(r) => [...document.querySelectorAll('main .wp-block-sgs-container.sgs-container--stack')].find((c) => { const inner = c.querySelector(':scope > .sgs-container__inner'); return inner && inner.children.length === 3 && [...inner.children].every((e) => e.tagName === 'P') && c.textContent.includes('${ name }'); })`;
+// The live equivalent: a container in main whose inner div's direct children are exactly the
+// three text lines a card holds (title, price, description), narrowed by its own text (the
+// cards carry no layout class since they dropped their stack layout, 2026-10-03).
+const lcard = ( name ) => `(r) => [...document.querySelectorAll('main .wp-block-sgs-container')].find((c) => { const inner = c.querySelector(':scope > .sgs-container__inner'); return inner && inner.children.length === 3 && [...inner.children].every((e) => e.tagName === 'P') && c.textContent.includes('${ name }'); })`;
 const lpart = ( name, nth ) => `(r) => { const c = (${ lcard( name ) })(r); const inner = c && c.querySelector(':scope > .sgs-container__inner'); return inner && inner.children[${ nth }]; }`;
 // The benefits list ("In every lens") and the numbered steps ("How it goes"): found by one
 // known item's text, then its list parent, on both sides (neither tree has a shared BEM class
 // for these page-specific sections).
 const dlistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li')].find((li) => ${ itemRe }.test(li.textContent.trim()))?.parentElement`;
-const llistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li')].find((li) => ${ itemRe }.test(li.textContent.trim()))?.parentElement`;
+// Live's numbered steps are sgs/process-steps items (div.sgs-process-steps__step), not <li>.
+const llistOf = ( itemRe ) => `(r) => [...r.querySelectorAll('li, .sgs-process-steps__step')].find((li) => ${ itemRe }.test(li.textContent.trim()))?.parentElement`;
 
 const config = {
 	name: 'lenses',
@@ -59,9 +61,11 @@ const config = {
 			props: [ 'font-family', 'font-size', 'line-height', 'color' ] },
 		// The grid of four lens-type cards: whole grid for layout, one full card (Single vision)
 		// for its parts, the other three as whole cards (content covered by the automatic check).
+		// Live's grid and steps column are read on their container section, which paints the
+		// border, ground and width, not its inner band.
 		{ name: 'lens-grid', anchor: 'intro', text: false, box: [ 'w' ],
 			draft: { js: `(r) => (${ dcard( 'Single vision' ) })(r)?.parentElement` },
-			live: { js: `(r) => (${ lcard( 'Single vision' ) })(r)?.parentElement` },
+			live: { js: `(r) => (${ lcard( 'Single vision' ) })(r)?.parentElement?.closest('.wp-block-sgs-container')` },
 			props: [ 'grid-template-columns', 'column-gap', 'row-gap' ] },
 		{ name: 'card-single-vision', text: false,
 			draft: { js: dcard( 'Single vision' ) }, live: { js: lcard( 'Single vision' ) },
@@ -101,10 +105,10 @@ const config = {
 		// 460ms fade-up): the card grid and the steps column, found as the card grid and the steps list's parent (as card-7 in shop.mjs).
 		{ name: 'grid-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
 			draft: { js: `(r) => (${ dcard( 'Single vision' ) })(r)?.parentElement` },
-			live: { js: `(r) => (${ lcard( 'Single vision' ) })(r)?.parentElement` } },
+			live: { js: `(r) => (${ lcard( 'Single vision' ) })(r)?.parentElement?.closest('.wp-block-sgs-container')` } },
 		{ name: 'steps-reveal', states: [ 'opening' ], scrollIn: true, text: false, box: [ 'h' ], props: [ 'opacity' ], structure: false,
 			draft: { js: `(r) => (${ dlistOf( '/choose a frame and tap/i' ) })(r)?.parentElement` },
-			live: { js: `(r) => (${ llistOf( '/choose a frame and tap/i' ) })(r)?.parentElement` } },
+			live: { js: `(r) => (${ llistOf( '/choose a frame and tap/i' ) })(r)?.parentElement?.closest('.wp-block-sgs-container')` } },
 		{ name: 'choose-a-frame', anchor: 'step-1', hover: true,
 			draft: { text: '^choose a frame$', tag: 'button' }, live: { text: '^choose a frame$', tag: 'a,button' },
 			props: [ 'background-color', 'color', 'padding-left', 'padding-right', 'text-transform', 'letter-spacing' ] },

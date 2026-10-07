@@ -409,7 +409,9 @@ entries with `pair: '(auto)'`; `auto.normalise` for a word-level decision such a
   measured pair `noHover`);
   `declaredValues` reads `DECLARED_PROPS` from `CSS.getMatchedStylesForNode` (`cascadeWinner`: author rules then inline,
   last wins, `!important` first, user-agent ignored) into `snap.declared`. `collect.mjs`: `DEFAULT_PROPS` reads
-  transition and animation duration, delay and easing; `PSEUDO_PROPS` are read on each painting layer (`snap.pseudo`).
+  transition and animation duration, delay and easing; `PSEUDO_PROPS` are read on each painting layer (`snap.pseudo`; a layer with content but `display:none`, such as a
+  connector a list layout switches off, is not painting, 2026-10-07, `walker-l2.test.mjs`); text compares with straight and
+  typographic quotes as one character (WordPress prints curly quotes for a static draft's straight ones).
   `compare.mjs`: timings compare as sets of distinct values and are skipped where nothing runs; animation timings only
   where both sides animate with CSS keyframes (a script-driven entrance leaves no CSS timing), and transition timings
   not where both sides' states were read (a hover end state, or a phone's `noHover`) and neither side's element changes

@@ -203,11 +203,12 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		}
 		return 'unresolved';
 	};
-	// The element's painting pseudo layers: { '::before': { prop: value } }, absent where content is none.
+	// The element's painting pseudo layers: { '::before': { prop: value } }, absent where content is none or the layer is
+	// display:none (a connector line a list layout switches off generates no box and paints nothing).
 	const pseudo = {};
 	for ( const ps of run || ! pseudoProps ? [] : [ '::before', '::after' ] ) {
 		const pcs = getComputedStyle( el, ps );
-		if ( ! [ 'none', 'normal', '' ].includes( pcs.getPropertyValue( 'content' ).trim() ) ) {
+		if ( ! [ 'none', 'normal', '' ].includes( pcs.getPropertyValue( 'content' ).trim() ) && 'none' !== pcs.getPropertyValue( 'display' ).trim() ) {
 			pseudo[ ps ] = Object.fromEntries( pseudoProps.map( ( p ) => [ p, /color$/.test( p ) ? srgb( pcs.getPropertyValue( p ).trim() ) : pcs.getPropertyValue( p ).trim() ] ) );
 		}
 	}

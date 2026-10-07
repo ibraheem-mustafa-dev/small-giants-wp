@@ -103,7 +103,9 @@ export const sameDecoration = ( a = 'none', b = 'none' ) => {
 	return la === lb && ( 'none' === la || sameValue( 'color', ca, cb, 0 ) );
 };
 
-const normText = ( t ) => ( t || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+// Straight and typographic quotes are one character: WordPress prints curly quotes for straight ones (wptexturize), so a
+// static draft's "they're" is a live "they’re" with the same words.
+const normText = ( t ) => ( t || '' ).replace( /[\u2018\u2019\u201a\u2032]/g, "'" ).replace( /[\u201c\u201d\u201e\u2033]/g, '"' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
 
 // The same words in another DOM order are the same text; where they sit on screen is
 // judged by the box sizes and the side-by-side screenshots.
