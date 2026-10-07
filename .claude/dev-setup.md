@@ -849,8 +849,8 @@ Check every row before building anything new.
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 229 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 1028 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 231 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 1034 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -994,15 +994,16 @@ Each entry's purpose is quoted from the script's own header.
 | 127 | `check-border-preview-twin.js` | check-border-preview-twin — every block that mounts the shared border panel previews that border through the panel's twin. |
 | 128 | `check-border-width-defaults.py` | "the stylesheet never chooses a border width". |
 | 129 | `check-focus-ring-token.py` | : every keyboard focus ring is drawn from the focus-ring token. |
-| 130 | `migrate-box-longhands.py` | CR6: move padding and margin boxes off the shorthand that zero-fills unset sides. |
+| 130 | `migrate-box-longhands.py` | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | 131 | `check-import-shadowing.js` | Fails when an editor file destructures a block attribute whose name is also a module-level binding in the same file: an import, or a top-level function… |
-| 132 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 133 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 134 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 135 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 136 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 132 | `migrate-box-alignment.py` | physical `left\|right` to logical `start\|end` for five settings. |
+| 133 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 134 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 135 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 136 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 137 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
 
-**136 gating scripts.** Regenerate this whole section with:
+**137 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -1010,7 +1011,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (136 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 137 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (137 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 1 resolved scripts) — 138 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -1583,6 +1584,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `bjPath`, `editPath`, `phpPath`
 - Non-zero exit sites found: exit(0)
 
+**`plugins/sgs-blocks/scripts/migrate-box-alignment.py`** (build)
+- Path constants: `ROOT` = next(p for p in Path(__file__).resolve().parents if (p / '.claude' / 'THE-MIGRATION-METHOD.md').exis
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: `tmp`
+- CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/migrate-box-longhands.py`** (build)
 - Path constants: `PLUGIN` = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); `CENSUS` = os.path.join(REPO, 'reports', 'migrations', 'box-longhands-census.json')
 - Reads: `BASELINE`
@@ -1838,7 +1846,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 870 scripts
+#### `plugins/sgs-blocks/scripts/` — 875 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2261,6 +2269,7 @@ for the verb you happen to have in mind.
 | `ledger/declare_input.py` | manifest+npm+script-call+test-import | ledger.declare_input — F2 draft-derived CSS Accounting Ledger (input parser). |
 | `ledger/models.py` | manifest+script-call+skill+test-import | ledger.models — data model for F2 CSS Accounting Ledger (input half). |
 | `lib/context-keys.js` | script-call | The one answer to "is this context key consumed?" for check-dead-controls.js, check-editor-render-parity.js and the wiring-fingerprint gate. A key is… |
+| `lib/e14-markup-splice.js` | script-call | E14 markup splice (triage section 7, gap 13). |
 | `lib/stage8-cli.js` | manifest+script-call | to keep stage8-audit.js under the repo's 250-line limit. No browser, no network — `makeRunId` is deterministic given an explicit `now` (never calls… |
 | `lib/stage8-lighthouse.js` | manifest+script-call | out purely to keep stage8-audit.js under the repo's 250-line limit. This is the ONLY module in the stage8 family that touches a real browser/network… |
 | `lib/stage8-network-console-builders.js` | manifest+script-call | stage8-audit.js. CWV builder + the shared LHR helpers (`hasRuntimeError`, `auditErrored`, `auditItems`, `hostnameOf`) live in the sibling… |
@@ -2279,11 +2288,13 @@ for the verb you happen to have in mind.
 | `make-visual-diff-reports.py` | manifest+script-call | Emit visual-diff reports, each citing ITS OWN measurement. |
 | `migrate-border-content.php` | — | block-private Shape-B attributes. Run with `wp eval-file`. |
 | `migrate-border-control.js` | manifest+script-call | an already block-private border UI (width + style + colour) in edit.js. |
+| `migrate-border-element.py` | — | Border-element census: HOW each block's PHP glues its border CSS together today. |
 | `migrate-border-radius-render.py` | manifest | Codemod: swap the per-block hand-rolled border-radius tier read in |
 | `migrate-border-shape-b.js` | manifest+npm | ⛔ THIS IS NOT A BRANCH OF migrate-border-control.js. That script's header declares a hard Shape-B exclusion, on the stated grounds that "there is no… |
+| `migrate-box-alignment.py` | manifest+npm | physical `left\|right` to logical `start\|end` for five settings. |
 | `migrate-box-control-presets.py` | manifest+script-call | - roll the C16 spacing-preset dropdown out from its |
 | `migrate-box-control-wiring.py` | manifest | Codemod: swap the flat-sibling <ResponsiveBoxControl> wiring for the |
-| `migrate-box-longhands.py` | manifest+npm+script-call | CR6: move padding and margin boxes off the shorthand that zero-fills unset sides. |
+| `migrate-box-longhands.py` | manifest+npm+script-call | CR6: move padding, margin and corner-radius boxes off the shorthands that zero-fill unset sides. |
 | `migrate-colour-picker-to-panel.py` | manifest | - migrate raw <DesignTokenPicker> colour mounts in a |
 | `migrate-container-flexwrap-and-stack-candidates.py` | manifest | census + safe single-apply for TWO |
 | `migrate-content-collection-to-card-grid.php` | — | Migrate `sgs/content-collection` blocks to `sgs/card-grid` (source = cpt-collection). |
@@ -2529,8 +2540,10 @@ for the verb you happen to have in mind.
 | `qa/capture-ncui-remainder.js` | manifest | Visual capture for the 9 native-colour-ui blocks NOT covered by reports/visual-diff/native-colour-ui-2026-08-22.md. |
 | `qa/capture-ncui-templateparts.js` | manifest | The final 2 native-colour-ui blocks, verified IN THEIR REAL CONTEXT. |
 | `qa/check-border-roundtrip.js` | manifest+script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
+| `qa/check-box-alignment-editor.js` | — | Editor pass for the logical box-alignment migration (icon, media, separator, nav-drawer, tabs) and the lens flow's note-link source. |
+| `qa/check-box-corners-blocks-live.mjs` | — | CR6 P2-a live check across the corner-radius patterns: a radius set on every corner at desktop, then on ONE corner at tablet and ONE other corner at… |
 | `qa/check-box-longhands-blocks-live.mjs` | — | CR6 U8 live check across migrated blocks: a padding box that sets three sides on desktop and only the top on tablet keeps the desktop sides at tablet… |
-| `qa/check-box-longhands-live.mjs` | — | CR6 live check: padding set on one side of one tier changes only that side, on the front end AND in the editor canvas, at 1440 / 768 / 375 (plan… |
+| `qa/check-box-longhands-live.mjs` | — | CR6 live check: padding set on one side, or a radius set on one corner, of one tier changes only that side or corner, on the front end AND in the… |
 | `qa/check-colour-editor-roundtrip.js` | manifest+script-call | QA Gate C — the EDITOR half. |
 | `qa/check-colour-gradient-roundtrip.js` | manifest | Text-colour gradient round-trip probe — does the FRONTEND actually paint a `background-clip:text` gradient when a `{attr}Gradient` sibling is set… |
 | `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
@@ -2713,7 +2726,7 @@ for the verb you happen to have in mind.
 | `wiring-fingerprint/wf_tokens.py` | script-call | Channel tokens: what one PHP statement emits. |
 | `wp-pre-merge-gate.py` | manifest | Pre-merge validation gate for SGS WordPress plugin changes. |
 
-#### `scripts/` — 115 scripts
+#### `scripts/` — 116 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -2722,7 +2735,7 @@ for the verb you happen to have in mind.
 | `check-focus-ring-token.py` | manifest | : every keyboard focus ring is drawn from the focus-ring token. |
 | `check-no-client-names.py` | manifest+script-call | : keep client names and reference-site names out of the framework. |
 | `colour-parity-audit.js` | — | Colour Parity Audit — automated comparison between mockup HTML brief and SGS variation JSON. |
-| `computed-route/calibrate.mjs` | — | Block calibration command (FR-47-2). |
+| `computed-route/calibrate.mjs` | script-call | Block calibration command (FR-47-2). |
 | `computed-route/confirm-canvas.mjs` | script-call | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
 | `computed-route/fill.mjs` | manifest+script-call+skill+test-import | Fill (FR-47-4): from a skeleton tree (which blocks, nested how, with the draft's words, each node naming the draft element it copies) to a tree… |
 | `computed-route/ledger.mjs` | script-call+skill+test-import | Divergence ledger command (FR-47-5). |
@@ -2735,6 +2748,7 @@ for the verb you happen to have in mind.
 | `computed-route/lib/calibrate-props.mjs` | script-call | What calibration reads and how a setting's css_property maps onto it (FR-47-2). |
 | `computed-route/lib/calibrate-read.mjs` | script-call | The browser side of calibration: reads every element of each calibration instance at each width, at rest and under its state trigger. Element keys… |
 | `computed-route/lib/calibrate.mjs` | script-call | Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one marked instance per setting and… |
+| `computed-route/lib/calibration-lock.mjs` | script-call | One calibration per calibration page (R-47-11). Every run on a site builds its instances onto that site's one calibration page with the same instance… |
 | `computed-route/lib/db.mjs` | manifest+script-call+skill+test-import | Read-only access to the framework database (R-47-2). Opened with node:sqlite in read-only mode, which refuses every write; the route never seeds… |
 | `computed-route/lib/deploy-hash.mjs` | script-call | The deploy key calibration stamps on a cache: md5 of a block's front-end build files, locally and on the site, so a cache is used only while the… |
 | `computed-route/lib/draft.mjs` | manifest+script-call+skill+test-import | Serves a draft that exists only as local files (Fill step 1, FR-47-4): a static server on 127.0.0.1 at an ephemeral port, so the browser reads the… |
