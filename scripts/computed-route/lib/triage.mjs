@@ -369,7 +369,10 @@ export function emissionOf( cite, props, ctx ) {
 		return selectorTargets( named );
 	}
 	const emits = new RegExp( `(?:^|[^\\w-])(?:${ props.map( ( p ) => p.replace( /-/g, '\\-' ) ).join( '|' ) })\\s*:` );
-	const found = Object.values( ctx.helpers?.functions || {} ).filter( ( f ) => emits.test( f.text ) && ( ctx.helpers.files?.[ f.file ] || '' ).includes( cite.setting ) && ! rootEmission( f.text ) );
+	// A helper that carries the property in a variable ($property = 'transform' | 'scale', printed as `$property . ':'`)
+	// never writes `transform:` literally, so the property is read from its string literals instead.
+	const emitsByVariable = ( text ) => /\.\s*':'/.test( text ) && literalsOf( text ).some( ( l ) => props.includes( l ) );
+	const found = Object.values( ctx.helpers?.functions || {} ).filter( ( f ) => ( emits.test( f.text ) || emitsByVariable( f.text ) ) && ( ctx.helpers.files?.[ f.file ] || '' ).includes( cite.setting ) && ! rootEmission( f.text ) );
 	return found.length ? selectorTargets( found.flatMap( ( f ) => literalsOf( f.text ) ) ) : null;
 }
 
