@@ -1,11 +1,11 @@
 {
  "surface": "product",
- "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-06T10-04-11/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-06T10-04-11/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-06T18-53-45/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/product/2026-10-06T18-53-45/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 214,
-  "F": 17,
+  "W": 188,
+  "F": 15,
   "T": 17,
   "U": 6
  },
@@ -1595,11 +1595,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "gap",
+     "ref": "cr-ref-product-3",
+     "block": "sgs/breadcrumbs",
+     "setting": "itemGap",
      "property": "gap",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -1833,11 +1834,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-11",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionEasing",
      "property": "transition-timing-function",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -2500,11 +2502,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-11",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionEasing",
      "property": "transition-timing-function",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -3153,11 +3156,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-11",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionEasing",
      "property": "transition-timing-function",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -3763,11 +3767,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
+     "ref": "cr-ref-product-90",
+     "block": "sgs/accordion",
+     "setting": "iconRotation",
      "property": "transform",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -3835,11 +3840,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionDuration",
      "property": "transition-duration",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -4470,23 +4476,8 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "transient",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "0→1",
-      "0→1",
-      "0→1",
-      "0→1"
-     ]
-    },
     {
      "check": "resolver",
      "gap": "no-setting",
@@ -4547,23 +4538,8 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "transient",
+   "decidedBy": "attribute",
    "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "matrix(1, 0, 0, 1, 0, 26)→none",
-      "matrix(1, 0, 0, 1, 0, 26)→none",
-      "matrix(1, 0, 0, 1, 0, 26)→none",
-      "matrix(1, 0, 0, 1, 0, 26)→none"
-     ]
-    },
     {
      "check": "resolver",
      "gap": "no-setting",
@@ -5181,8 +5157,6 @@
       375,
       375,
       375,
-      375,
-      768,
       768,
       768,
       768,
@@ -5195,8 +5169,6 @@
       1440,
       1440,
       1440,
-      1440,
-      1920,
       1920,
       1920,
       1920,
@@ -6432,7 +6404,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      }
     ]
@@ -7174,7 +7146,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -7700,11 +7672,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-11",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionEasing",
      "property": "transition-timing-function",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -8643,11 +8616,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
+     "ref": "cr-ref-product-90",
+     "block": "sgs/accordion",
+     "setting": "iconRotation",
      "property": "transform",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -8715,11 +8689,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
+     "ref": "cr-ref-product-5",
+     "block": "sgs/text",
+     "setting": "transitionDuration",
      "property": "transition-duration",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -9044,7 +9019,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -9631,10 +9606,11 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "columnGap"
       ]
      },
      {
@@ -9659,7 +9635,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -9705,10 +9681,11 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "rowGap"
       ]
      },
      {
@@ -9733,7 +9710,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -9875,7 +9852,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "min-height:44px"
+      "declaration": "min-height:var(--sgs-accordion-header-min-h, 44px)"
      }
     ],
     "helpers": [
@@ -9921,10 +9898,10 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
+      "mentions": [
        "gap"
-      ]
+      ],
+      "absent": []
      },
      {
       "file": "accordion/render.php",
@@ -9945,7 +9922,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -10030,1659 +10007,6 @@
      "setting": "headerBackgroundOpen",
      "via": "slot",
      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|font-size",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > p",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7) > p\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "priceFontSize",
-     "css_property": "font-size",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "pickerLabelFontSize",
-     "css_property": "font-size",
-     "css_element": "picker-label-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartFontSize",
-     "css_property": "font-size",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "fontSize",
-     "property": "font-size",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [
-       "priceFontSize",
-       "pickerLabelFontSize"
-      ],
-      "absent": [
-       "addToCartFontSize",
-       "fontSize"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": [
-       "priceFontSize",
-       "pickerLabelFontSize",
-       "addToCartFontSize"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "buybox",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "buybox",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     },
-     {
-      "block": "buybox",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|line-height",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > p",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7) > p\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "priceLineHeight",
-     "css_property": "line-height",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [
-       "priceLineHeight"
-      ],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "priceLineHeight",
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|color",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > p",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7) > p\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "rrpPillBackgroundColour",
-     "css_property": "background-color",
-     "css_element": "rrp-pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "rrpPillTextColour",
-     "css_property": "color",
-     "css_element": "rrp-pill",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "stockInStockColour",
-     "css_property": "color",
-     "css_element": "stock-in-stock",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "stockLowStockColour",
-     "css_property": "color",
-     "css_element": "stock-low-stock",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "stockOutOfStockColour",
-     "css_property": "color",
-     "css_element": "stock-out-of-stock",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "guidedMeterColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "pickerLabelColour",
-     "css_property": "color",
-     "css_element": "picker-label-text",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartBackgroundColour",
-     "css_property": "background-color",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|opacity",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "0→1",
-      "0→1",
-      "0→1",
-      "0→1"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-top-width",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-top-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-top-style",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-top-style",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderStyle",
-     "css_property": "border-style",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-top-color",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-top-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartBorderColour",
-     "css_property": "border-color",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-bottom-width",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-bottom-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-bottom-color",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-bottom-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartBorderColour",
-     "css_property": "border-color",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-left-width",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-left-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-right-width",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-right-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderWidth",
-     "css_property": "border-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-radius",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-radius",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderRadius",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|box-shadow",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "box-shadow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|padding-top",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "padding-top",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|padding-right",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "padding-right",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|padding-bottom",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "padding-bottom",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|padding-left",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "padding-left",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|column-gap",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "galleryColumnGap",
-     "css_property": "gap",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [
-       "galleryColumnGap",
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "galleryColumnGap",
-       "columnGap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "buybox/style.css",
-      "selector": ".sgs-buybox__config-col",
-      "declaration": "gap:var(--sgs-buybox-gap, 12px)"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|row-gap",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "galleryColumnGap",
-     "css_property": "gap",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [
-       "galleryColumnGap",
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "galleryColumnGap",
-       "rowGap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "buybox/style.css",
-      "selector": ".sgs-buybox__config-col",
-      "declaration": "gap:var(--sgs-buybox-gap, 12px)"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|align-items",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "align-items",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-left-color",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-left-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartBorderColour",
-     "css_property": "border-color",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|border-right-color",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "border-right-color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "discovered",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColour",
-     "css_property": "border-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "borderColourGradient",
-     "css_property": "border-color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartBorderColour",
-     "css_property": "border-color",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/buybox",
-     "setting": "buyboxLayout",
-     "values": [
-      "guided"
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|position",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "position",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "gallerySavingBadgePosition",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "stockLinePosition",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|width",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|gap",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "galleryColumnGap",
-     "css_property": "gap",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-product-2",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [
-       "galleryColumnGap",
-       "gap"
-      ],
-      "absent": []
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "galleryColumnGap"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "buybox/style.css",
-      "selector": ".sgs-buybox__config-col",
-      "declaration": "gap:var(--sgs-buybox-gap, 12px)"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-product-4||style|icon-fill",
-   "ref": "cr-ref-product-4",
-   "pair": "gen-product-4",
-   "path": "",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/buybox has no setting for icon-fill"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-product-4||style|icon-stroke",
-   "ref": "cr-ref-product-4",
-   "pair": "gen-product-4",
-   "path": "",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/buybox has no setting for icon-stroke"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "buybox/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > button > svg|style|icon-width",
-   "ref": "cr-ref-product-4",
-   "pair": "gen-product-4",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > button > svg",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7) > button > svg\" is not a calibrated element"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > button > svg|style|icon-height",
-   "ref": "cr-ref-product-4",
-   "pair": "gen-product-4",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7) > button > svg",
-   "block": "sgs/buybox",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/buybox path \".sgs-buybox__config-col > div:nth-of-type(7) > button > svg\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/buybox",
-     "setting": "addToCartMinHeight",
-     "css_property": "min-height",
-     "css_element": "add-to-cart",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
     }
    ]
   },
@@ -11862,18 +10186,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "tabs/style.css",
-      "selector": ".sgs-tabs__tab:hover",
-      "declaration": "text-decoration:underline"
-     },
-     {
-      "file": "tabs/style.css",
-      "selector": ".sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs__tab--active",
-      "declaration": "text-decoration:none"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "tabs",
@@ -12402,18 +10715,7 @@
       ]
      }
     ],
-    "rules": [
-     {
-      "file": "tabs/style.css",
-      "selector": ".sgs-tabs__tab:hover",
-      "declaration": "text-decoration:underline"
-     },
-     {
-      "file": "tabs/style.css",
-      "selector": ".sgs-tabs__tab[aria-selected=\"true\"], .sgs-tabs__tab--active",
-      "declaration": "text-decoration:none"
-     }
-    ],
+    "rules": [],
     "helpers": [
      {
       "block": "tabs",
@@ -13090,18 +11392,16 @@
    ]
   },
   {
-   "key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|box|y-after-gen-product-10",
+   "key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|box|y-after-gen-product-12",
    "ref": "cr-ref-product-12",
    "pair": "tab-description-heading",
    "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
    "block": "sgs/tabs",
    "kind": "box",
-   "property": "y-after-gen-product-10",
+   "property": "y-after-gen-product-12",
    "widths": [
     375,
-    768,
-    1440,
-    1920
+    768
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -13113,49 +11413,13 @@
      "parent": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
      "ref": "cr-ref-product-12",
      "key": "line-height",
-     "relation": "self",
+     "relation": "anchor",
      "match": "layout-row",
      "width": 375,
-     "delta": 9,
+     "delta": -26,
      "widths": [
       375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920,
-      1920
+      768
      ]
     }
    ]
@@ -13478,8 +11742,6 @@
       1440,
       1440,
       1440,
-      1440,
-      1920,
       1920,
       1920,
       1920,
@@ -13522,6 +11784,8 @@
       375,
       375,
       375,
+      375,
+      375,
       768,
       768,
       768,
@@ -13538,8 +11802,6 @@
       1440,
       1440,
       1440,
-      1440,
-      1920,
       1920,
       1920,
       1920,
@@ -13751,6 +12013,41 @@
    ]
   },
   {
+   "key": "cr-ref-product-12||box|y-after-gen-product-10",
+   "ref": "cr-ref-product-12",
+   "pair": "gen-product-12",
+   "path": "",
+   "block": "sgs/tabs",
+   "kind": "box",
+   "property": "y-after-gen-product-10",
+   "widths": [
+    375,
+    768,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-product-12",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 35,
+     "widths": [
+      375,
+      768,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-product-12||box|h",
    "ref": "cr-ref-product-12",
    "pair": "gen-product-12",
@@ -13818,6 +12115,43 @@
       1920,
       1920,
       1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-product-14||box|y-after-tab-sizing-heading",
+   "ref": "cr-ref-product-14",
+   "pair": "gen-product-14",
+   "path": "",
+   "block": "core/post-content",
+   "kind": "box",
+   "property": "y-after-tab-sizing-heading",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-product-12",
+     "key": "line-height",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 24,
+     "widths": [
+      375,
+      768,
+      1440,
       1920
      ]
     }
@@ -14163,6 +12497,43 @@
    ]
   },
   {
+   "key": "cr-ref-product-111||box|y-after-reviews-reveal",
+   "ref": "cr-ref-product-111",
+   "pair": "gen-product-111",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-reviews-reveal",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-111||style|line-height",
+     "ref": "cr-ref-product-111",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -715,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-product-111||box|h",
    "ref": "cr-ref-product-111",
    "pair": "gen-product-111",
@@ -14336,6 +12707,73 @@
       1440,
       1440,
       1440,
+      1920,
+      1920,
+      1920,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|box|y-after-gen-product-10",
+   "ref": "cr-ref-product-12",
+   "pair": "tab-description-heading",
+   "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+   "block": "sgs/tabs",
+   "kind": "box",
+   "property": "y-after-gen-product-10",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-product-12",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 375,
+     "delta": 35,
+     "widths": [
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      375,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      768,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1440,
+      1920,
+      1920,
+      1920,
+      1920,
       1920,
       1920,
       1920,
@@ -14606,12 +13044,15 @@
       768,
       768,
       768,
+      768,
       1440,
       1440,
       1440,
       1440,
       1440,
       1440,
+      1440,
+      1920,
       1920,
       1920,
       1920,
@@ -14956,10 +13397,6 @@
       768,
       768,
       1440,
-      1440,
-      1440,
-      1920,
-      1920,
       1920
      ],
      "parent": "cr-ref-product-4|.sgs-buybox__config-col > .sgs-buybox__picker-label-row:nth-of-type(3) > .sgs-buybox__picker-selected-value|style|font-size"
@@ -15115,105 +13552,6 @@
    ]
   },
   {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|box|y-after-gen-product-7",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "box",
-   "property": "y-after-gen-product-7",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|font-size",
-     "ref": "cr-ref-product-4",
-     "key": "font-size",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 461,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|box|w",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "box",
-   "property": "w",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|style|width",
-     "ref": "cr-ref-product-4",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 147,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|box|h",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "box",
-   "property": "h",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-product-10||style|column-gap",
-     "ref": "cr-ref-product-10",
-     "key": "column-gap",
-     "relation": "descendant",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -20,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-product-5||box|y-after-size-guide-close",
    "ref": "cr-ref-product-5",
    "pair": "gen-product-5",
@@ -15245,76 +13583,6 @@
    ]
   },
   {
-   "key": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7)|box|y-after-gen-product-88",
-   "ref": "cr-ref-product-4",
-   "pair": "bag-toast",
-   "path": ".sgs-buybox__config-col > div:nth-of-type(7)",
-   "block": "sgs/buybox",
-   "kind": "box",
-   "property": "y-after-gen-product-88",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|font-size",
-     "ref": "cr-ref-product-4",
-     "key": "font-size",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 768,
-     "delta": -1478,
-     "widths": [
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-product-111||box|y-after-bag-toast",
-   "ref": "cr-ref-product-111",
-   "pair": "gen-product-111",
-   "path": "",
-   "block": "sgs/heading",
-   "kind": "box",
-   "property": "y-after-bag-toast",
-   "widths": [
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-product-4|.sgs-buybox__config-col > div:nth-of-type(7) > p|style|font-size",
-     "ref": "cr-ref-product-4",
-     "key": "font-size",
-     "relation": "anchor",
-     "match": "layout-row",
-     "width": 768,
-     "delta": 709,
-     "widths": [
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-product-89||box|y-after-size-guide-close",
    "ref": "cr-ref-product-89",
    "pair": "gen-product-89",
@@ -15338,9 +13606,42 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 768,
-     "delta": 164,
+     "delta": 102,
      "widths": [
       768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|box|y-after-gen-product-88",
+   "ref": "cr-ref-product-12",
+   "pair": "tab-description-heading",
+   "path": ".sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)",
+   "block": "sgs/tabs",
+   "kind": "box",
+   "property": "y-after-gen-product-88",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-12|.sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-product-12",
+     "key": "line-height",
+     "relation": "self",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": -26,
+     "widths": [
+      1440,
+      1920
      ]
     }
    ]
@@ -15464,6 +13765,37 @@
       1920,
       1920,
       1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-product-89||box|y-after-gen-product-10",
+   "ref": "cr-ref-product-89",
+   "pair": "gen-product-89",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-gen-product-10",
+   "widths": [
+    1440
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-product-11|.sgs-container__inner > .sgs-container:nth-of-type(1) > .sgs-tabs__nav > .sgs-tabs__tab:nth-of-type(1)|style|line-height",
+     "ref": "cr-ref-product-11",
+     "key": "line-height",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 35,
+     "widths": [
+      1440
      ]
     }
    ]
@@ -15799,7 +14131,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 1440,
-     "delta": 171,
+     "delta": 109,
      "widths": [
       1440,
       1920
@@ -16025,31 +14357,29 @@
    ]
   },
   {
-   "key": "bag-toast||text|text",
+   "key": "bag-toast||presence|element",
    "ref": null,
    "pair": "bag-toast",
    "path": null,
    "block": null,
-   "kind": "text",
-   "property": "text",
+   "kind": "presence",
+   "property": "element",
    "widths": [
-    375,
-    768,
     1440,
     1920
    ],
    "solveClass": "content",
-   "solveReason": "not written",
+   "solveReason": "unmapped-element (no ref: the walker names no node for this row, and the pair has no live element)",
    "class": "W",
    "decidedBy": "content",
    "evidence": [
     {
      "check": "content",
      "kinds": [
-      "text"
+      "presence"
      ],
      "keys": [
-      "text"
+      "element"
      ],
      "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }

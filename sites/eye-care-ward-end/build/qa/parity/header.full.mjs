@@ -3,6 +3,7 @@
 import base from './header.mjs';
 
 const generated = [
+	{ name: "gen-header-1", text: false, structure: false, draft: "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)", live: ".cr-ref-header-1" },
 	{ name: "gen-header-7", text: false, structure: false, draft: "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)", live: ".cr-ref-header-7" },
 	{ name: "gen-header-5", text: false, structure: false, draft: "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)", live: ".cr-ref-header-5" },
 	{ name: "gen-header-9", text: false, structure: false, draft: "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2) > span:nth-child(2)", live: ".cr-ref-header-9" },

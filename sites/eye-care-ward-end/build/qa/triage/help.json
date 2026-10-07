@@ -1,12 +1,12 @@
 {
  "surface": "help",
- "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T09-39-33/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T09-39-33/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T18-20-04/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/help/2026-10-06T18-20-04/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 80,
-  "F": 36,
-  "T": 37,
+  "W": 76,
+  "F": 28,
+  "T": 30,
   "U": 0
  },
  "verdicts": [
@@ -833,24 +833,17 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for column-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "columnGap"
       ]
      },
      {
@@ -875,7 +868,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -915,24 +908,17 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for row-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "rowGap"
       ]
      },
      {
@@ -957,7 +943,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -997,14 +983,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for justify-content"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "justifyContent",
-     "property": "justify-content",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1115,7 +1093,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "min-height:44px"
+      "declaration": "min-height:var(--sgs-accordion-header-min-h, 44px)"
      }
     ],
     "helpers": [
@@ -1155,24 +1133,16 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
+      "mentions": [
        "gap"
-      ]
+      ],
+      "absent": []
      },
      {
       "file": "accordion/render.php",
@@ -1193,7 +1163,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -1409,440 +1379,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-family",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-family",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontFamily"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "fontFamily",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-size",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontSize"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "fontSize",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-weight",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-weight",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "headerFontWeight"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "headerFontWeight",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-style",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-style",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontStyle"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "fontStyle",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|line-height",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "lineHeight",
-     "property": "line-height",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|letter-spacing",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "letter-spacing",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "enclosing",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for letter-spacing"
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "letterSpacing",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|text-transform",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "text-transform",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "textTransform"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "textTransform",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|color",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "iconColour"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "iconColour",
-     "via": "slot",
-     "path": ".sgs-container:nth-of-type(1) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|opacity",
    "ref": "cr-ref-help-17",
    "pair": "faq-icon-1",
@@ -1858,54 +1394,21 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "1→0",
-      "1→0",
-      "1→0",
-      "1→0"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for opacity"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|text-shadow",
-   "ref": "cr-ref-help-17",
-   "pair": "faq-icon-1",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "text-shadow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for text-shadow"
+     "detail": "sgs/accordion-item has no setting for opacity"
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-help-0",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "property": "opacity",
+     "via": "declared"
     }
    ],
    "source": {
@@ -1914,26 +1417,58 @@
       "file": "accordion-item/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      },
      {
       "file": "accordion/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      },
      {
       "file": "container/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      }
     ],
-    "rules": [],
-    "helpers": []
+    "rules": [
+     {
+      "file": "accordion/style.css",
+      "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open",
+      "declaration": "opacity:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100",
+       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100"
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_overlay_decls",
+      "mentions": [],
+      "declares": [
+       "`; a bare `0` stays `0`. $decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.'"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/shape-dividers.php::includes/shape-dividers.php",
+      "mentions": [],
+      "declares": [
+       "e stop. * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity. */ function s"
+      ]
+     }
+    ]
    }
   },
   {
@@ -2039,14 +1574,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-0",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2123,14 +1650,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/accordion-item has no setting for transition-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-0",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
-     "property": "transition-timing-function",
-     "via": "declared"
     }
    ],
    "source": {
@@ -2227,6 +1746,59 @@
      "reaches": false
     }
    ]
+  },
+  {
+   "key": "cr-ref-help-17|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg|style|icon-colour",
+   "ref": "cr-ref-help-17",
+   "pair": "faq-icon-1",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg",
+   "block": "sgs/accordion-item",
+   "kind": "style",
+   "property": "icon-colour",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/accordion-item has no setting for icon-colour"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-help-37|.sgs-business-info > .sgs-business-info__before|style|color",
@@ -3510,14 +3082,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/text has no setting for column-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-13",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3578,14 +3142,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/text has no setting for row-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-13",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -3764,14 +3320,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/text has no setting for gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-13",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -4594,230 +4142,6 @@
    ]
   },
   {
-   "key": "cr-ref-help-17||style|column-gap",
-   "ref": "cr-ref-help-17",
-   "pair": "gen-help-17",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "column-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for column-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "columnGap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-17||style|row-gap",
-   "ref": "cr-ref-help-17",
-   "pair": "gen-help-17",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "row-gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for row-gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": [
-       "rowGap"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-17||style|gap",
-   "ref": "cr-ref-help-17",
-   "pair": "gen-help-17",
-   "path": "",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "gap",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for gap"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "gap"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "gap"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "ile ) ) { $base_grid_real_decls[] = 'gap:' . sgs_container_gap_value( $gap ); } // Base m",
-       "{ $responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}'; } if",
-       "dia (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';"
-      ]
-     }
-    ]
-   }
-  },
-  {
    "key": "cr-ref-help-17||style|painted-ground",
    "ref": "cr-ref-help-17",
    "pair": "gen-help-17",
@@ -5153,10 +4477,11 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "columnGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "columnGap"
       ]
      },
      {
@@ -5181,7 +4506,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -5227,10 +4552,11 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "rowGap",
+      "mentions": [
        "gap"
+      ],
+      "absent": [
+       "rowGap"
       ]
      },
      {
@@ -5255,7 +4581,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -5397,7 +4723,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "min-height:44px"
+      "declaration": "min-height:var(--sgs-accordion-header-min-h, 44px)"
      }
     ],
     "helpers": [
@@ -5443,10 +4769,10 @@
     "render": [
      {
       "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
+      "mentions": [
        "gap"
-      ]
+      ],
+      "absent": []
      },
      {
       "file": "accordion/render.php",
@@ -5467,7 +4793,7 @@
      {
       "file": "accordion/style.css",
       "selector": ".sgs-accordion-item__header",
-      "declaration": "gap:12px"
+      "declaration": "gap:var(--sgs-accordion-header-gap, 12px)"
      }
     ],
     "helpers": [
@@ -5764,538 +5090,6 @@
    }
   },
   {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-family",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-family",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for font-family (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "fontFamily"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "fontFamily"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "fontFamily"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "== $family_safe ) { $base_decls[] = 'font-family:' . $family_safe . ';'; } } elseif ( $inhe",
-       "bs/audio style.css). $base_decls[] = 'font-family:inherit;'; } if ( ! empty( $attributes[ $k_"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-size",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-size",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for font-size (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "fontSize"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "fontSize"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "fontSize"
-      ],
-      "absent": []
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion-item",
-      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
-      "mentions": [],
-      "declares": [
-       "l !== $font_size ) { $base_decls[] = 'font-size:' . $font_size . 'px;'; } // Padding — box-ob"
-      ]
-     },
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "'' !== $legacy ) { $base_decls[] = 'font-size:' . $legacy . ';'; } } elseif ( ! $size_is_t",
-       "iven client's theme. $base_decls[] = 'font-size:inherit;'; } // Font-family — plain string, n"
-      ]
-     },
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-tokens.php::sgs_font_size_value",
-      "mentions": [],
-      "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-weight",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-weight",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "headerFontWeightOpen"
-     ],
-     "on": {
-      "ref": "cr-ref-help-16",
-      "block": "sgs/accordion",
-      "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-     },
-     "holds": false
-    },
-    {
-     "check": "enclosing",
-     "ref": "cr-ref-help-16",
-     "block": "sgs/accordion",
-     "setting": "headerFontWeightOpen",
-     "via": "reaches",
-     "path": ".sgs-container:nth-of-type(2) > .sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|font-style",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "font-style",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for font-style (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "fontStyle"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "fontStyle"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "fontStyle"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "talic' ), true ) ) { $base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';'; } $allowe"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|line-height",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "line-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for line-height (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "lineHeight"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|letter-spacing",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "letter-spacing",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for letter-spacing (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "letterSpacing"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "letterSpacing"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "letterSpacing"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|text-transform",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "text-transform",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for text-transform (open)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "accordion-item/render.php",
-      "mentions": [],
-      "absent": [
-       "textTransform"
-      ]
-     },
-     {
-      "file": "accordion/render.php",
-      "mentions": [],
-      "absent": [
-       "textTransform"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "textTransform"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "accordion",
-      "cite": "includes/helpers-typography.php::sgs_typography_css_rule",
-      "mentions": [],
-      "declares": [
-       "ansforms, true ) ) { $base_decls[] = 'text-transform:' . $attributes[ $k_transform ] . ';'; }"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|color",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "color",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for color (open)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "textColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/accordion-item",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|opacity",
    "ref": "cr-ref-help-19",
    "pair": "faq-icon-2",
@@ -6311,54 +5105,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "1→0",
-      "1→0",
-      "1→0",
-      "1→0"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for opacity (open)"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open|style|text-shadow",
-   "ref": "cr-ref-help-19",
-   "pair": "faq-icon-2",
-   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open",
-   "block": "sgs/accordion-item",
-   "kind": "style",
-   "property": "text-shadow",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
    "class": "F",
    "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
-     "detail": "sgs/accordion-item has no setting for text-shadow (open)"
+     "detail": "sgs/accordion-item has no setting for opacity (open)"
     }
    ],
    "source": {
@@ -6367,26 +5120,58 @@
       "file": "accordion-item/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      },
      {
       "file": "accordion/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      },
      {
       "file": "container/render.php",
       "mentions": [],
       "absent": [
-       "textShadow"
+       "opacity"
       ]
      }
     ],
-    "rules": [],
-    "helpers": []
+    "rules": [
+     {
+      "file": "accordion/style.css",
+      "selector": ".sgs-accordion-item[open] .sgs-accordion-item__icon-open",
+      "declaration": "opacity:0"
+     }
+    ],
+    "helpers": [
+     {
+      "block": "accordion-item",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100",
+       "x){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100"
+      ]
+     },
+     {
+      "block": "accordion-item",
+      "cite": "includes/helpers-tokens.php::sgs_overlay_decls",
+      "mentions": [],
+      "declares": [
+       "`; a bare `0` stays `0`. $decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.'"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/shape-dividers.php::includes/shape-dividers.php",
+      "mentions": [],
+      "declares": [
+       "e stop. * @return array{colour: string, opacity: float} Opaque colour + 0-1 opacity. */ function s"
+      ]
+     }
+    ]
    }
   },
   {
@@ -6655,6 +5440,59 @@
      "reaches": false
     }
    ]
+  },
+  {
+   "key": "cr-ref-help-19|.sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg|style|icon-colour",
+   "ref": "cr-ref-help-19",
+   "pair": "faq-icon-2",
+   "path": ".sgs-accordion-item__header > .sgs-accordion-item__icons > .sgs-accordion-item__icon-open > svg",
+   "block": "sgs/accordion-item",
+   "kind": "style",
+   "property": "icon-colour",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/accordion-item has no setting for icon-colour (open)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "accordion-item/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     },
+     {
+      "file": "accordion/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "iconColour"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-help-38||hover|border-top-color",

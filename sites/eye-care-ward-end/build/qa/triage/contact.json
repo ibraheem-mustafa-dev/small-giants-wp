@@ -1,7 +1,7 @@
 {
  "surface": "contact",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T09-41-03/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T09-41-03/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T18-21-41/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact/2026-10-06T18-21-41/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 25,
@@ -108,7 +108,7 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "ng-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+       "g-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
       ]
      },
      {
@@ -817,14 +817,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-7",
-     "block": "sgs/container",
-     "setting": "margin",
-     "property": "margin",
-     "via": "declared"
     }
    ],
    "source": {
@@ -933,14 +925,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-7",
-     "block": "sgs/container",
-     "setting": "margin",
-     "property": "margin",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1049,14 +1033,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-7",
-     "block": "sgs/container",
-     "setting": "margin",
-     "property": "margin",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1165,14 +1141,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-7",
-     "block": "sgs/container",
-     "setting": "margin",
-     "property": "margin",
-     "via": "declared"
     }
    ],
    "source": {

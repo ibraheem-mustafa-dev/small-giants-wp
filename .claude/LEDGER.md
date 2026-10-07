@@ -92,14 +92,12 @@ a cosmetic path change re-keys rows wholesale.
   `scratchpad/verify-f3-e14-surfaces.mjs`.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror — not
   now (§6).
-- **Route cleanup — DONE and VERIFIED 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, results
-  `reports/2026-10-06-session-c2/WAVE4-RESULTS.md`). 16 tasks, suite 523 → 589. **F 193 → 173**, measure-only,
-  inside the 155-175 band committed BEFORE the sweep. All four owed items closed or named.
-  **`--noise` DONE** (`BENCHMARK-NOISE-RESULT.md`): **5 of 5 scored caught; noise 5 rows, all PHASE — host load
-  and flakiness both EXCLUDED.** **Canvas: ALL 63 families confirmed on one SHA** (`confirm-canvas.mjs`,
-  `CANVAS-SETTABLE-CONFIRMATION.md`): 59 refuted, 4 not-refuted-but-not-proven, 0 absent. Cause MEASURED:
-  `reachesElement` **fails open** — `emissionOf` null for every refuted one, so each row read W untested.
-  **`mobile-menu` pairs** (`7255be68d`), `handScope` in git for all 17.
+- **Route cleanup DONE 2026-10-06** (`plans/2026-10-06-spec47-route-cleanup.md`, `WAVE4-RESULTS.md`).
+  ⚠️ **Its F 193 → 173 is mostly LOST COVERAGE, not fixes:** a 2026-10-06 re-pairing emptied all four mega
+  panels' walker configs (rows 493 → 48, F 16 → 2), so 14 of the 20 fall is unmeasured rows. Re-pair them
+  (`--state` open) BEFORE the W→F move. **Canvas:** 63 families confirmed live, 59 refuted
+  (`CANVAS-SETTABLE-CONFIRMATION.md`); `reachesElement` **fails open**, so each read W untested. A register
+  check (2026-10-07) found ~60 of those 164 rows are NOT framework gaps: route by category after a `/qc-council`.
   **`sgs/hero`'s 3 closed** (`HERO-DEAD-SETTINGS.md` §9): `maxWidth` is a REAL gap — **never remove
   `section.sgs-hero{max-width:none}`** (D725, 24px off-screen).
   **OWED, no host needed:** (1) the W→F reclassification over all 63 at once so F keeps one meaning; (2) **CR6 is

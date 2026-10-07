@@ -1,11 +1,11 @@
 {
  "surface": "footer",
- "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T09-36-52/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T09-36-52/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T18-17-14/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/footer/2026-10-06T18-17-14/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 142,
-  "F": 20,
+  "W": 141,
+  "F": 21,
   "T": 15,
   "U": 0
  },
@@ -55,45 +55,6 @@
      "reaches": false
     }
    ]
-  },
-  {
-   "key": "cr-ref-footer-0||style|icon-stroke",
-   "ref": "cr-ref-footer-0",
-   "pair": "footer-root",
-   "path": "",
-   "block": "sgs/site-footer",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-footer has no setting for icon-stroke"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "site-footer/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
   },
   {
    "key": "cr-ref-footer-1||style|max-width",
@@ -149,48 +110,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-1||style|icon-stroke",
-   "ref": "cr-ref-footer-1",
-   "pair": "columns-row",
-   "path": "",
-   "block": "sgs/site-footer-row",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|icon-stroke",
-     "ref": "cr-ref-footer-0",
-     "key": "icon-stroke",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/site-footer-row has no setting for icon-stroke"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-2||style|flex-grow",
    "ref": "cr-ref-footer-2",
    "pair": "col-brand",
@@ -221,48 +140,6 @@
      "values": [
       "fill"
      ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-2||style|icon-stroke",
-   "ref": "cr-ref-footer-2",
-   "pair": "col-brand",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|icon-stroke",
-     "ref": "cr-ref-footer-0",
-     "key": "icon-stroke",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for icon-stroke"
     }
    ]
   },
@@ -590,48 +467,6 @@
    }
   },
   {
-   "key": "cr-ref-footer-6||style|icon-stroke",
-   "ref": "cr-ref-footer-6",
-   "pair": "social-row",
-   "path": "",
-   "block": "sgs/social-icons",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|icon-stroke",
-     "ref": "cr-ref-footer-0",
-     "key": "icon-stroke",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/social-icons has no setting for icon-stroke"
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|border-top-color",
    "ref": "cr-ref-footer-6",
    "pair": "social-instagram",
@@ -848,9 +683,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -1083,9 +918,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -1986,9 +1821,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -2221,9 +2056,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -2265,11 +2100,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
      "property": "transition-duration",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -2456,31 +2292,49 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|icon-stroke",
-     "ref": "cr-ref-footer-0",
-     "key": "icon-stroke",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for icon-stroke"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "social-icons/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(1)|style|painted-ground",
@@ -2560,31 +2414,49 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-footer-0||style|icon-stroke",
-     "ref": "cr-ref-footer-0",
-     "key": "icon-stroke",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/social-icons has no setting for icon-stroke"
     }
-   ]
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "social-icons/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "site-footer-row/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     },
+     {
+      "file": "site-footer/render.php",
+      "mentions": [],
+      "absent": [
+       "iconStroke"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-footer-6|.sgs-social-icons__item:nth-of-type(3)|style|border-top-color",
@@ -2803,9 +2675,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -3038,9 +2910,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -3941,9 +3813,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -4176,9 +4048,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -4220,11 +4092,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
      "property": "transition-duration",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -4674,9 +4547,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -4909,9 +4782,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -5812,9 +5685,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -6047,9 +5920,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -6091,11 +5964,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-footer-2",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
+     "ref": "cr-ref-footer-3",
+     "block": "sgs/heading",
+     "setting": "transitionDuration",
      "property": "transition-duration",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -6521,7 +6395,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -6669,7 +6543,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -6817,7 +6691,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -6965,7 +6839,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -7113,7 +6987,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -7261,7 +7135,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -7409,7 +7283,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -11237,6 +11111,414 @@
    ]
   },
   {
+   "key": "cr-ref-footer-30|a|hover|color",
+   "ref": "cr-ref-footer-30",
+   "pair": "link-privacy",
+   "path": "a",
+   "block": "sgs/text",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColour",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourHover",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColour",
+     "css_property": "color",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHover",
+     "css_property": "color-link",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHoverGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-31|a|hover|color",
+   "ref": "cr-ref-footer-31",
+   "pair": "link-terms",
+   "path": "a",
+   "block": "sgs/text",
+   "kind": "hover",
+   "property": "color",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColour",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColour",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColour",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHover",
+     "css_property": "color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHover",
+     "css_property": "background-color",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourGradient",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "textColourHoverGradient",
+     "css_property": "color-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "backgroundColourHoverGradient",
+     "css_property": "background-image",
+     "css_element": "background",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "firstLetterColourHover",
+     "css_property": "color",
+     "css_element": "first-letter",
+     "css_state": "hover",
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColour",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColour",
+     "css_property": "color",
+     "css_element": "text-link",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": true
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHover",
+     "css_property": "color-link",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "linkColourHoverGradient",
+     "css_property": "color-link-gradient",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "boxShadowColourHover",
+     "css_property": "box-shadow-color",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/text",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs-ext"
+    },
+    {
+     "check": "extension",
+     "extension": "clickEffects",
+     "setting": "sgsClickRippleColour",
+     "css_property": null,
+     "css_element": null
+    }
+   ]
+  },
+  {
    "key": "cr-ref-footer-24||hover|border-top-color",
    "ref": "cr-ref-footer-24",
    "pair": "gen-footer-24",
@@ -11435,11 +11717,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-footer-7",
-     "block": "sgs/container",
-     "setting": "borderColourHover",
+     "ref": "cr-ref-footer-6",
+     "block": "sgs/social-icons",
+     "setting": "iconBorderColourHover",
      "property": "border-color",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -11485,9 +11768,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -11560,11 +11843,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-footer-14",
-     "block": "sgs/container",
-     "setting": "borderColourHover",
+     "ref": "cr-ref-footer-6",
+     "block": "sgs/social-icons",
+     "setting": "iconBorderColourHover",
      "property": "border-color",
-     "via": "declared"
+     "via": "declared",
+     "where": "sibling"
     }
    ],
    "source": {
@@ -11610,9 +11894,9 @@
       "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
       "mentions": [],
       "declares": [
-       "width = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
-       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // stylesheet",
-       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= sg"
+       "th = '2px'; } $css = \"{$selector}{border-color:transparent;position:relative;background-clip:",
+       "background: a // pre-existing `:hover{border-color:…}` rule elsewhere in the same // styleshee",
+       "ss .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' ); $css .= s"
       ]
      },
      {
@@ -11879,410 +12163,6 @@
    ]
   },
   {
-   "key": "cr-ref-footer-30|a|hover|color",
-   "ref": "cr-ref-footer-30",
-   "pair": "link-privacy",
-   "path": "a",
-   "block": "sgs/text",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-footer-31|a|hover|color",
-   "ref": "cr-ref-footer-31",
-   "pair": "link-terms",
-   "path": "a",
-   "block": "sgs/text",
-   "kind": "hover",
-   "property": "color",
-   "widths": [
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no color setting on sgs/text paints \"a\" (candidates: textColourHover, firstLetterColourHover)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColour",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColour",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "textColourHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": "background-image",
-     "css_element": "background",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "firstLetterColourHover",
-     "css_property": "color",
-     "css_element": "first-letter",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColour",
-     "css_property": "color",
-     "css_element": "text-link",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHover",
-     "css_property": "color-link",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "linkColourHoverGradient",
-     "css_property": "color-link-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/text",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
    "key": "cr-ref-footer-0||box|y-in-main",
    "ref": "cr-ref-footer-0",
    "pair": "footer-root",
@@ -12309,7 +12189,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 375,
-     "delta": 187,
+     "delta": 69,
      "widths": [
       375,
       768,
@@ -12383,6 +12263,41 @@
      "match": "layout-row",
      "width": 375,
      "delta": 21,
+     "widths": [
+      375,
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-2||box|y-after-columns-row",
+   "ref": "cr-ref-footer-2",
+   "pair": "col-brand",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-columns-row",
+   "widths": [
+    375,
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 375,
+     "delta": -5,
      "widths": [
       375,
       1440,
@@ -13763,6 +13678,68 @@
    ]
   },
   {
+   "key": "cr-ref-footer-7||box|y-after-brand-wordmark",
+   "ref": "cr-ref-footer-7",
+   "pair": "col-shop",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "box",
+   "property": "y-after-brand-wordmark",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": 6,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-footer-3||box|y-after-col-brand",
+   "ref": "cr-ref-footer-3",
+   "pair": "brand-wordmark",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-col-brand",
+   "widths": [
+    768
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|max-width",
+     "ref": "cr-ref-footer-0",
+     "key": "max-width",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 768,
+     "delta": -6,
+     "widths": [
+      768
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-footer-5||box|y-after-link-all-brands",
    "ref": "cr-ref-footer-5",
    "pair": "brand-description",
@@ -14023,6 +14000,39 @@
    ]
   },
   {
+   "key": "cr-ref-footer-1||box|y-after-footer-root",
+   "ref": "cr-ref-footer-1",
+   "pair": "columns-row",
+   "path": "",
+   "block": "sgs/site-footer-row",
+   "kind": "box",
+   "property": "y-after-footer-root",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-footer-0||style|margin-top",
+     "ref": "cr-ref-footer-0",
+     "key": "margin-top",
+     "relation": "anchor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 7,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-footer-5||box|y-after-link-phone",
    "ref": "cr-ref-footer-5",
    "pair": "brand-description",
@@ -14047,7 +14057,7 @@
      "relation": "ancestor",
      "match": "layout-row",
      "width": 1440,
-     "delta": 12,
+     "delta": 11,
      "widths": [
       1440,
       1920

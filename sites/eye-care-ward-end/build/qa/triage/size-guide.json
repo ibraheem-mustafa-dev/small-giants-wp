@@ -1,7 +1,7 @@
 {
  "surface": "size-guide",
- "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T09-56-32/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T09-56-32/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T18-38-21/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/size-guide/2026-10-06T18-38-21/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
   "W": 54,
@@ -777,7 +777,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {

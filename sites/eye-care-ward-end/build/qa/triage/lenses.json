@@ -1,10 +1,10 @@
 {
  "surface": "lenses",
- "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T09-38-54/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T09-38-54/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T18-19-19/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lenses/2026-10-06T18-19-19/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 45,
+  "W": 48,
   "F": 0,
   "T": 23,
   "U": 0
@@ -928,6 +928,66 @@
    ]
   },
   {
+   "key": "cr-ref-lenses-22||style|opacity",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "opacity",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "css_property": "opacity",
+     "css_element": "svg-bg",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayOpacity",
+     "css_property": "opacity",
+     "css_element": "overlay",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
    "key": "cr-ref-lenses-22|.sgs-container__inner|style|column-gap",
    "ref": "cr-ref-lenses-22",
    "pair": "gen-lenses-22",
@@ -1014,6 +1074,56 @@
    ]
   },
   {
+   "key": "cr-ref-lenses-22||style|transform",
+   "ref": "cr-ref-lenses-22",
+   "pair": "gen-lenses-22",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "transform",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomScale",
+     "css_property": "transform",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper"
+    }
+   ]
+  },
+  {
    "key": "cr-ref-lenses-22|.sgs-container__inner|style|gap",
    "ref": "cr-ref-lenses-22",
    "pair": "gen-lenses-22",
@@ -1053,6 +1163,66 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25||style|opacity",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "opacity",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no opacity setting on sgs/container paints \"\" (candidates: bgSvgOpacity, backgroundOverlayOpacity)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "css_property": "opacity",
+     "css_element": "svg-bg",
+     "css_state": null,
+     "source": "sgs",
+     "reaches": false
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "backgroundOverlayOpacity",
+     "css_property": "opacity",
+     "css_element": "overlay",
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverOpacity",
+     "css_property": "opacity",
+     "css_element": "wrapper"
     }
    ]
   },
@@ -1139,6 +1309,56 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-lenses-25||style|transform",
+   "ref": "cr-ref-lenses-25",
+   "pair": "gen-lenses-25",
+   "path": "",
+   "block": "sgs/container",
+   "kind": "style",
+   "property": "transform",
+   "widths": [
+    375,
+    768
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transform setting on sgs/container paints \"\" (candidates: bgHoverZoomScale)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "bgHoverZoomScale",
+     "css_property": "transform",
+     "css_element": null,
+     "css_state": null,
+     "source": "sgs"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/container",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper",
+     "css_state": "hover",
+     "source": "sgs-ext",
+     "reaches": true
+    },
+    {
+     "check": "extension",
+     "extension": "hover",
+     "setting": "sgsHoverLift",
+     "css_property": "transform",
+     "css_element": "wrapper"
     }
    ]
   },
@@ -2085,39 +2305,6 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-25||box|y-after-benefits-item-1",
-   "ref": "cr-ref-lenses-25",
-   "pair": "gen-lenses-25",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-benefits-item-1",
-   "widths": [
-    375,
-    768
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-lenses-0||style|padding-top",
-     "ref": "cr-ref-lenses-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 375,
-     "delta": 26,
-     "widths": [
-      375,
-      768
-     ]
-    }
-   ]
-  },
-  {
    "key": "cr-ref-lenses-25||box|h",
    "ref": "cr-ref-lenses-25",
    "pair": "gen-lenses-25",
@@ -2155,13 +2342,13 @@
    ]
   },
   {
-   "key": "cr-ref-lenses-27||box|y-after-steps-heading",
+   "key": "cr-ref-lenses-27||box|y-after-gen-lenses-25",
    "ref": "cr-ref-lenses-27",
    "pair": "gen-lenses-27",
    "path": "",
    "block": "sgs/process-steps",
    "kind": "box",
-   "property": "y-after-steps-heading",
+   "property": "y-after-gen-lenses-25",
    "widths": [
     375,
     768
@@ -2173,13 +2360,13 @@
    "evidence": [
     {
      "check": "consequence",
-     "parent": "cr-ref-lenses-0||style|padding-top",
-     "ref": "cr-ref-lenses-0",
-     "key": "padding-top",
-     "relation": "ancestor",
-     "match": "layout-row",
+     "parent": "cr-ref-lenses-25|.sgs-container__inner|style|column-gap",
+     "ref": "cr-ref-lenses-25",
+     "key": "column-gap",
+     "relation": "anchor",
+     "match": "same-delta",
      "width": 375,
-     "delta": 42,
+     "delta": 16,
      "widths": [
       375,
       768

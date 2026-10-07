@@ -1,13 +1,13 @@
 {
  "surface": "home",
- "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T09-42-21/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T09-42-21/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T18-23-07/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/home/2026-10-06T18-23-07/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 149,
+  "W": 144,
   "F": 50,
-  "T": 43,
-  "U": 7
+  "T": 37,
+  "U": 6
  },
  "verdicts": [
   {
@@ -348,7 +348,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -1947,23 +1947,8 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "transient",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "0.75→1",
-      "0.75→1",
-      "0.75→1",
-      "0.75→1"
-     ]
-    },
     {
      "check": "resolver",
      "gap": "unmapped-element",
@@ -1978,6 +1963,14 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
+    },
+    {
+     "check": "canvas-settable",
+     "ref": "cr-ref-home-7",
+     "block": "sgs/container",
+     "setting": "bgSvgOpacity",
+     "property": "opacity",
+     "via": "declared"
     }
    ]
   },
@@ -2582,7 +2575,7 @@
       "cite": "includes/helpers-tokens.php::sgs_font_size_value",
       "mentions": [],
       "declares": [
-       ") { $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
+       "{ $sanitised = safecss_filter_attr( 'font-size:' . $value ); return $sanitised ? $value : '';"
       ]
      },
      {
@@ -3536,47 +3529,6 @@
     "rules": [],
     "helpers": []
    }
-  },
-  {
-   "key": "cr-ref-home-8|.sgs-brand-strip__track|style|transform",
-   "ref": "cr-ref-home-8",
-   "pair": "brand-track",
-   "path": ".sgs-brand-strip__track",
-   "block": "sgs/brand-strip",
-   "kind": "style",
-   "property": "transform",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "transient",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "matrix(1, 0, 0, 1, -149.495, 0)→matrix(1, 0, 0, 1, -47.935, 0)",
-      "matrix(1, 0, 0, 1, -149.522, 0)→matrix(1, 0, 0, 1, -44.9193, 0)",
-      "matrix(1, 0, 0, 1, -147.075, 0)→matrix(1, 0, 0, 1, -45.8502, 0)",
-      "matrix(1, 0, 0, 1, -150.955, 0)→matrix(1, 0, 0, 1, -66.8947, 0)"
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/brand-strip has no setting for transform"
-    }
-   ]
   },
   {
    "key": "cr-ref-home-8|.sgs-brand-strip__track|style|animation-name",
@@ -4585,14 +4537,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -4700,280 +4644,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)|style|icon-fill",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-54||style|icon-fill",
-     "ref": "cr-ref-home-54",
-     "key": "icon-fill",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/google-reviews has no setting for icon-fill"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-width",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\" (candidates: starSize, aggregateStarSize, cardWidth, avatarSize, cardLogoSize, arrowSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "contentWidth",
-     "css_property": "max-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "headerDividerWidth",
-     "css_property": "border-bottom-width",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardWidth",
-     "css_property": "flex-basis,width",
-     "css_element": "review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-height",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "starSize"
-     ],
-     "on": {
-      "ref": "cr-ref-home-58",
-      "block": "sgs/google-reviews",
-      "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "writeReviewMinHeight",
-     "css_property": "min-height",
-     "css_element": "write-review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "seeAllMinHeight",
-     "css_property": "min-height",
-     "css_element": "see-all",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__arrow:nth-of-type(1)|style|transition-duration",
    "ref": "cr-ref-home-58",
    "pair": "review-arrow-prev",
@@ -4996,14 +4666,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -5578,14 +5240,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6160,14 +5814,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -6286,14 +5932,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7079,14 +6717,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/media has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-59",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7150,14 +6780,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/media has no setting for transition-timing-function"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-59",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
-     "property": "transition-timing-function",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7529,15 +7151,18 @@
    ]
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title|style|flex-grow",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|flex-grow",
    "ref": "cr-ref-home-65",
    "pair": "about-step-1",
-   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(1)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "flex-grow",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7572,10 +7197,80 @@
    }
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title|style|width",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|transition-duration",
    "ref": "cr-ref-home-65",
    "pair": "about-step-1",
-   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(1)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(1)\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|transition-timing-function",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-1",
+   "path": ".sgs-process-steps__step:nth-of-type(1)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(1)\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|width",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-1",
+   "path": ".sgs-process-steps__step:nth-of-type(1)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "width",
@@ -7591,6 +7286,17 @@
    "decidedBy": "used-value",
    "evidence": [
     {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-home-61||style|width"
+    },
+    {
      "check": "used-value",
      "property": "width",
      "declared": {}
@@ -7603,10 +7309,10 @@
    ]
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title|style|gap",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)|style|gap",
    "ref": "cr-ref-home-65",
    "pair": "about-step-1",
-   "path": ".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(1)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "gap",
@@ -7619,12 +7325,19 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "F",
-   "decidedBy": "no-setting",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no gap setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(1) > .sgs-process-steps__title\" (candidates: numberGap, stepGap)"
+     "wouldWrite": [
+      "numberGap"
+     ],
+     "on": {
+      "ref": "cr-ref-home-65",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(1)"
+     },
+     "holds": true
     },
     {
      "check": "attribute",
@@ -7634,7 +7347,7 @@
      "css_element": "step",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7645,14 +7358,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-61",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7677,7 +7382,13 @@
       ]
      }
     ],
-    "rules": [],
+    "rules": [
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps__step",
+      "declaration": "gap:var(--wp--preset--spacing--20)"
+     }
+    ],
     "helpers": [
      {
       "block": "container",
@@ -7693,15 +7404,113 @@
    }
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title|style|flex-grow",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(1)::after|style|content",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-1",
+   "path": ".sgs-process-steps__step:nth-of-type(1)::after",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "content",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/process-steps has no setting for content"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "process-steps/render.php",
+      "mentions": [
+       "content"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "content"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-line .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\""
+     },
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-arrow .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\\2192\""
+     },
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-dots .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\\2022 \\2022 \\2022\""
+     }
+    ],
+    "helpers": [
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+      "mentions": [],
+      "declares": [
+       "isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     },
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "g-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+      ]
+     },
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "equires. $sgs_media_layer_decls[] = 'content:\"\"'; $sgs_media_layer_decls[] = 'position:absol"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)|style|flex-grow",
    "ref": "cr-ref-home-65",
    "pair": "about-step-2",
-   "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(2)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "flex-grow",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7736,10 +7545,80 @@
    }
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title|style|width",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)|style|transition-duration",
    "ref": "cr-ref-home-65",
    "pair": "about-step-2",
-   "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(2)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(2)\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)|style|transition-timing-function",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-2",
+   "path": ".sgs-process-steps__step:nth-of-type(2)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(2)\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)|style|width",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-2",
+   "path": ".sgs-process-steps__step:nth-of-type(2)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "width",
@@ -7755,6 +7634,17 @@
    "decidedBy": "used-value",
    "evidence": [
     {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-home-61||style|width"
+    },
+    {
      "check": "used-value",
      "property": "width",
      "declared": {}
@@ -7767,10 +7657,10 @@
    ]
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title|style|gap",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)|style|gap",
    "ref": "cr-ref-home-65",
    "pair": "about-step-2",
-   "path": ".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(2)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "gap",
@@ -7783,12 +7673,19 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "F",
-   "decidedBy": "no-setting",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no gap setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(2) > .sgs-process-steps__title\" (candidates: numberGap, stepGap)"
+     "wouldWrite": [
+      "numberGap"
+     ],
+     "on": {
+      "ref": "cr-ref-home-65",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(2)"
+     },
+     "holds": true
     },
     {
      "check": "attribute",
@@ -7798,7 +7695,7 @@
      "css_element": "step",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7809,14 +7706,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-61",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -7841,7 +7730,13 @@
       ]
      }
     ],
-    "rules": [],
+    "rules": [
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps__step",
+      "declaration": "gap:var(--wp--preset--spacing--20)"
+     }
+    ],
     "helpers": [
      {
       "block": "container",
@@ -7857,15 +7752,113 @@
    }
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title|style|flex-grow",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(2)::after|style|content",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-2",
+   "path": ".sgs-process-steps__step:nth-of-type(2)::after",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "content",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/process-steps has no setting for content"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "process-steps/render.php",
+      "mentions": [
+       "content"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [
+       "content"
+      ],
+      "absent": []
+     }
+    ],
+    "rules": [
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-line .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\""
+     },
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-arrow .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\\2192\""
+     },
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps--connector-dots .sgs-process-steps__step:not(:last-child)::after",
+      "declaration": "content:\"\\2022 \\2022 \\2022\""
+     }
+    ],
+    "helpers": [
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
+      "mentions": [],
+      "declares": [
+       "isolate;}\"; $css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     },
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-tokens.php::sgs_border_gradient_css",
+      "mentions": [],
+      "declares": [
+       "g-box;}\"; $css .= \"{$selector}::before{content:\\\"\\\";position:absolute;inset:0;margin:-{$width};bor"
+      ]
+     },
+     {
+      "block": "process-steps",
+      "cite": "includes/helpers-button-style.php::sgs_button_element_style_css",
+      "mentions": [],
+      "declares": [
+       "$css .= \"{$after_selector}{content:\\\"\\\";position:absolute;inset:0;z-index:-1;border-ra"
+      ]
+     },
+     {
+      "block": "container",
+      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
+      "mentions": [],
+      "declares": [
+       "equires. $sgs_media_layer_decls[] = 'content:\"\"'; $sgs_media_layer_decls[] = 'position:absol"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3)|style|flex-grow",
    "ref": "cr-ref-home-65",
    "pair": "about-step-3",
-   "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(3)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "flex-grow",
    "widths": [
-    375
+    375,
+    768,
+    1440,
+    1920
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
@@ -7900,10 +7893,80 @@
    }
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title|style|width",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3)|style|transition-duration",
    "ref": "cr-ref-home-65",
    "pair": "about-step-3",
-   "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(3)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-duration",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-duration setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(3)\" (candidates: transitionDuration)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionDuration",
+     "css_property": "transition-duration",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3)|style|transition-timing-function",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-3",
+   "path": ".sgs-process-steps__step:nth-of-type(3)",
+   "block": "sgs/process-steps",
+   "kind": "style",
+   "property": "transition-timing-function",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "attribute",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "no transition-timing-function setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(3)\" (candidates: transitionEasing)"
+    },
+    {
+     "check": "attribute",
+     "block": "sgs/process-steps",
+     "setting": "transitionEasing",
+     "css_property": "transition-timing-function",
+     "css_element": "wrapper",
+     "css_state": null,
+     "source": "sgs"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3)|style|width",
+   "ref": "cr-ref-home-65",
+   "pair": "about-step-3",
+   "path": ".sgs-process-steps__step:nth-of-type(3)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "width",
@@ -7919,6 +7982,17 @@
    "decidedBy": "used-value",
    "evidence": [
     {
+     "check": "consequence",
+     "partial": true,
+     "widths": [
+      375,
+      768,
+      1440,
+      1920
+     ],
+     "parent": "cr-ref-home-61||style|width"
+    },
+    {
      "check": "used-value",
      "property": "width",
      "declared": {}
@@ -7931,10 +8005,10 @@
    ]
   },
   {
-   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title|style|gap",
+   "key": "cr-ref-home-65|.sgs-process-steps__step:nth-of-type(3)|style|gap",
    "ref": "cr-ref-home-65",
    "pair": "about-step-3",
-   "path": ".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title",
+   "path": ".sgs-process-steps__step:nth-of-type(3)",
    "block": "sgs/process-steps",
    "kind": "style",
    "property": "gap",
@@ -7947,12 +8021,19 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "F",
-   "decidedBy": "no-setting",
+   "decidedBy": "hardcode",
    "evidence": [
     {
      "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no gap setting on sgs/process-steps paints \".sgs-process-steps__step:nth-of-type(3) > .sgs-process-steps__title\" (candidates: numberGap, stepGap)"
+     "wouldWrite": [
+      "numberGap"
+     ],
+     "on": {
+      "ref": "cr-ref-home-65",
+      "block": "sgs/process-steps",
+      "path": ".sgs-process-steps__step:nth-of-type(3)"
+     },
+     "holds": true
     },
     {
      "check": "attribute",
@@ -7962,7 +8043,7 @@
      "css_element": "step",
      "css_state": null,
      "source": "sgs",
-     "reaches": false
+     "reaches": true
     },
     {
      "check": "attribute",
@@ -7973,14 +8054,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": false
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-61",
-     "block": "sgs/container",
-     "setting": "gap",
-     "property": "gap",
-     "via": "declared"
     }
    ],
    "source": {
@@ -8005,7 +8078,13 @@
       ]
      }
     ],
-    "rules": [],
+    "rules": [
+     {
+      "file": "process-steps/style.css",
+      "selector": ".sgs-process-steps__step",
+      "declaration": "gap:var(--wp--preset--spacing--20)"
+     }
+    ],
     "helpers": [
      {
       "block": "container",
@@ -8862,138 +8941,6 @@
      "css_state": null,
      "source": "sgs",
      "reaches": true
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-10||style|opacity",
-   "ref": "cr-ref-home-10",
-   "pair": "gen-home-10",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "1→0",
-      "1→0",
-      "1→0",
-      "1→0"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-10",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-10||style|translate",
-   "ref": "cr-ref-home-10",
-   "pair": "gen-home-10",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ],
-     "values": [
-      "none→0px 26px",
-      "none→0px 26px",
-      "none→0px 26px",
-      "none→0px 26px"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-10",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
     }
    ]
   },
@@ -11270,501 +11217,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-54||style|icon-fill",
-   "ref": "cr-ref-home-54",
-   "pair": "gen-home-54",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/container has no setting for icon-fill"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-home-54|.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-width",
-   "ref": "cr-ref-home-54",
-   "pair": "gen-home-54",
-   "path": ".sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "contentWidth",
-     "css_property": "width",
-     "css_element": "content-band",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "minColumnWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "scrollItemWidth",
-     "css_property": "flex",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-54|.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-height",
-   "ref": "cr-ref-home-54",
-   "pair": "gen-home-54",
-   "path": ".sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/container path \".sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "minHeight",
-     "css_property": "min-height",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgMinHeight",
-     "css_property": "min-height",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58||style|icon-fill",
-   "ref": "cr-ref-home-58",
-   "pair": "gen-home-58",
-   "path": "",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-54||style|icon-fill",
-     "ref": "cr-ref-home-54",
-     "key": "icon-fill",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/google-reviews has no setting for icon-fill"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-width",
-   "ref": "cr-ref-home-58",
-   "pair": "gen-home-58",
-   "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-54|.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-width",
-     "ref": "cr-ref-home-54",
-     "key": "icon-width",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -13.2,
-     "widths": [
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/google-reviews paints \".sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\" (candidates: starSize, aggregateStarSize, cardWidth, avatarSize, cardLogoSize, arrowSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "contentWidth",
-     "css_property": "max-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "headerDividerWidth",
-     "css_property": "border-bottom-width",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardWidth",
-     "css_property": "flex-basis,width",
-     "css_element": "review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-height",
-   "ref": "cr-ref-home-58",
-   "pair": "gen-home-58",
-   "path": ".sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-54|.sgs-container__inner > .sgs-has-focus-ring > .sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-height",
-     "ref": "cr-ref-home-54",
-     "key": "icon-height",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": -13.2,
-     "widths": [
-      375,
-      375,
-      375,
-      768,
-      768,
-      768,
-      1440,
-      1440,
-      1440,
-      1920,
-      1920,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "ambiguous",
-     "detail": "starSize, aggregateStarSize all paint height on \".sgs-google-reviews__aggregate > .sgs-google-reviews__aggregate-main > .sgs-google-reviews__aggregate-text > .sgs-google-reviews__score-row > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\""
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "writeReviewMinHeight",
-     "css_property": "min-height",
-     "css_element": "write-review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "seeAllMinHeight",
-     "css_property": "min-height",
-     "css_element": "see-all",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-home-65||style|width",
    "ref": "cr-ref-home-65",
    "pair": "gen-home-65",
@@ -11860,732 +11312,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-35||style|opacity",
-   "ref": "cr-ref-home-35",
-   "pair": "gen-home-35",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375
-     ],
-     "values": [
-      "1→0"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-35",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-35||style|translate",
-   "ref": "cr-ref-home-35",
-   "pair": "gen-home-35",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375
-     ],
-     "values": [
-      "none→0px 26px"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-35",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-35||style|painted-ground",
-   "ref": "cr-ref-home-35",
-   "pair": "gen-home-35",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "painted-ground",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "hardcode",
-   "evidence": [
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "backgroundColour"
-     ],
-     "on": {
-      "ref": "cr-ref-home-35",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImage",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImageTablet",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundImageMobile",
-     "css_property": "background-image",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundSize",
-     "css_property": "background-size,object-fit",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundPosition",
-     "css_property": "background-position,object-position",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundRepeat",
-     "css_property": "background-repeat",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundAttachment",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColour",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideo",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideoMobile",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgParallax",
-     "css_property": "anim:parallax",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgAnimationDuration",
-     "css_property": "anim:duration",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgContent",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgPosition",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgAnimation",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgAnimationSpeed",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgMinHeight",
-     "css_property": "min-height",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgTextShadow",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackground",
-     "css_property": "background-color",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgVideoTablet",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayColourHover",
-     "css_property": "background-color",
-     "css_element": "overlay",
-     "css_state": "hover",
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayBlendMode",
-     "css_property": "mix-blend-mode",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColour",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHover",
-     "css_property": "background-color",
-     "css_element": null,
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundColourHoverGradient",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundHover",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "grid-item",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "gridItemBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "grid-item",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgLottie",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomScale",
-     "css_property": "transform",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "css_property": "transition-duration",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasing",
-     "css_property": "transition-timing-function",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomEasingCustom",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "container/render.php",
-      "mentions": [
-       "backgroundColour",
-       "backgroundOverlayColour",
-       "backgroundColourGradient",
-       "backgroundColourHover",
-       "backgroundColourHoverGradient",
-       "backgroundColor"
-      ],
-      "absent": [
-       "backgroundImage",
-       "backgroundImageTablet",
-       "backgroundImageMobile",
-       "backgroundSize",
-       "backgroundPosition",
-       "backgroundRepeat",
-       "backgroundAttachment",
-       "bgVideo",
-       "bgVideoMobile",
-       "bgParallax",
-       "bgAnimationDuration",
-       "bgSvgContent",
-       "bgSvgPosition",
-       "bgSvgAnimation",
-       "bgSvgAnimationSpeed",
-       "bgSvgOpacity",
-       "bgSvgMinHeight",
-       "bgSvgTextShadow",
-       "gridItemBackground",
-       "bgVideoTablet",
-       "backgroundOverlayOpacity",
-       "backgroundOverlayColourHover",
-       "backgroundOverlayBlendMode",
-       "gridItemBackgroundHover",
-       "gridItemBackgroundGradient",
-       "gridItemBackgroundHoverGradient",
-       "bgLottie",
-       "bgHoverZoomScale",
-       "bgHoverZoomDuration",
-       "bgHoverZoomEasing",
-       "bgHoverZoomEasingCustom"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [
-       "backgroundColour",
-       "backgroundImage",
-       "backgroundImageTablet",
-       "backgroundImageMobile",
-       "backgroundSize",
-       "backgroundPosition",
-       "backgroundRepeat",
-       "backgroundAttachment",
-       "backgroundOverlayColour",
-       "bgVideo",
-       "bgVideoMobile",
-       "bgParallax",
-       "bgAnimationDuration",
-       "bgSvgContent",
-       "bgSvgPosition",
-       "bgSvgAnimation",
-       "bgSvgAnimationSpeed",
-       "bgSvgOpacity",
-       "bgSvgMinHeight",
-       "bgSvgTextShadow",
-       "gridItemBackground",
-       "bgVideoTablet",
-       "backgroundOverlayOpacity",
-       "backgroundOverlayColourHover",
-       "backgroundOverlayBlendMode",
-       "backgroundColourGradient",
-       "bgLottie",
-       "bgHoverZoomScale",
-       "bgHoverZoomDuration",
-       "bgHoverZoomEasing",
-       "bgHoverZoomEasingCustom"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-grid-item.php::sgs_grid_item_settings",
-      "mentions": [
-       "gridItemBackground",
-       "gridItemBackgroundHover",
-       "gridItemBackgroundGradient",
-       "gridItemBackgroundHoverGradient"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-grid-item.php::sgs_grid_item_vars",
-      "mentions": [
-       "gridItemBackground",
-       "gridItemBackgroundGradient"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-grid-item.php::sgs_grid_item_needs_scoped_css",
-      "mentions": [
-       "gridItemBackgroundHover",
-       "gridItemBackgroundHoverGradient"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-grid-item.php::sgs_grid_item_state_css",
-      "mentions": [
-       "gridItemBackgroundHover",
-       "gridItemBackgroundHoverGradient"
-      ],
-      "declares": []
-     },
-     {
-      "block": "container",
-      "cite": "includes/helpers-box.php::sgs_label_box_css_rule",
-      "mentions": [],
-      "declares": [
-       "; if ( '' !== $bg ) { $decls[] = 'background-color:' . $bg; } } // Display model — fu"
-      ]
-     }
-    ]
-   }
-  },
-  {
-   "key": "cr-ref-home-48||style|opacity",
-   "ref": "cr-ref-home-48",
-   "pair": "gen-home-48",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "opacity",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375
-     ],
-     "values": [
-      "1→0"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-48",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "bgSvgOpacity",
-     "css_property": "opacity",
-     "css_element": "svg-bg",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "backgroundOverlayOpacity",
-     "css_property": "opacity",
-     "css_element": "overlay",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/container",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs-ext",
-     "reaches": true
-    },
-    {
-     "check": "extension",
-     "extension": "hover",
-     "setting": "sgsHoverOpacity",
-     "css_property": "opacity",
-     "css_element": "wrapper"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-48||style|translate",
-   "ref": "cr-ref-home-48",
-   "pair": "gen-home-48",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "style",
-   "property": "translate",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "entrance-start",
-   "evidence": [
-    {
-     "check": "transient",
-     "widths": [
-      375
-     ],
-     "values": [
-      "none→0px 26px"
-     ]
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "sgsAnimationStart"
-     ],
-     "on": {
-      "ref": "cr-ref-home-48",
-      "block": "sgs/container",
-      "path": ""
-     },
-     "holds": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-home-14||style|text-align",
    "ref": "cr-ref-home-14",
    "pair": "bestsellers-see-all",
@@ -12644,14 +11370,6 @@
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/google-reviews has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-home-54",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -12759,272 +11477,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2)|style|icon-fill",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card-2",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-54||style|icon-fill",
-     "ref": "cr-ref-home-54",
-     "key": "icon-fill",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": null,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    },
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/google-reviews has no setting for icon-fill"
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-width",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card-2",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "attribute",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "no width setting on sgs/google-reviews paints \".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)\" (candidates: starSize, aggregateStarSize, cardWidth, avatarSize, cardLogoSize, arrowSize)"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "contentWidth",
-     "css_property": "max-width",
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "headerDividerWidth",
-     "css_property": "border-bottom-width",
-     "css_element": "header",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardWidth",
-     "css_property": "flex-basis,width",
-     "css_element": "review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)|style|icon-height",
-   "ref": "cr-ref-home-58",
-   "pair": "review-card-2",
-   "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)",
-   "block": "sgs/google-reviews",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "wouldWrite": [
-      "starSize"
-     ],
-     "on": {
-      "ref": "cr-ref-home-58",
-      "block": "sgs/google-reviews",
-      "path": ".sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(2) > .sgs-google-reviews__review-content > .sgs-google-reviews__stars > .sgs-google-reviews__star:nth-of-type(1)"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "starSize",
-     "css_property": "height,width,font-size",
-     "css_element": "star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "aggregateStarSize",
-     "css_property": "height,width,font-size",
-     "css_element": "aggregate-star",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "avatarSize",
-     "css_property": "height,width",
-     "css_element": "avatar",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "cardLogoSize",
-     "css_property": "height,width",
-     "css_element": "card-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "arrowSize",
-     "css_property": "height,width",
-     "css_element": "arrow",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "writeReviewMinHeight",
-     "css_property": "min-height",
-     "css_element": "write-review",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/google-reviews",
-     "setting": "seeAllMinHeight",
-     "css_property": "min-height",
-     "css_element": "see-all",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
    "key": "cr-ref-home-6||hover|hover-effects",
    "ref": "cr-ref-home-6",
    "pair": "hero-btn-prescription",
@@ -13106,6 +11558,76 @@
      "reaches": true
     }
    ]
+  },
+  {
+   "key": "cr-ref-home-8|.sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a|hover|reached",
+   "ref": "cr-ref-home-8",
+   "pair": "brand-link",
+   "path": ".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a",
+   "block": "sgs/brand-strip",
+   "kind": "hover",
+   "property": "reached",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "resolver-unmapped-element",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "unmapped-element",
+     "detail": "sgs/brand-strip path \".sgs-brand-strip__track > .sgs-brand-strip__set:nth-of-type(1) > .sgs-brand-strip__item:nth-of-type(1) > a\" is not a calibrated element"
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-8|.sgs-brand-strip__track|hover|reached",
+   "ref": "cr-ref-home-8",
+   "pair": "brand-track",
+   "path": ".sgs-brand-strip__track",
+   "block": "sgs/brand-strip",
+   "kind": "hover",
+   "property": "reached",
+   "widths": [
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "unresolved",
+   "solveReason": "not written",
+   "class": "F",
+   "decidedBy": "no-setting",
+   "evidence": [
+    {
+     "check": "resolver",
+     "gap": "no-setting",
+     "detail": "sgs/brand-strip has no setting for reached (hover)"
+    }
+   ],
+   "source": {
+    "render": [
+     {
+      "file": "brand-strip/render.php",
+      "mentions": [
+       "reached"
+      ],
+      "absent": []
+     },
+     {
+      "file": "container/render.php",
+      "mentions": [],
+      "absent": [
+       "reached"
+      ]
+     }
+    ],
+    "rules": [],
+    "helpers": []
+   }
   },
   {
    "key": "cr-ref-home-14||hover|transform",
@@ -14831,50 +13353,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-8|.sgs-brand-strip__track|hover|animation-play-state",
-   "ref": "cr-ref-home-8",
-   "pair": "brand-track",
-   "path": ".sgs-brand-strip__track",
-   "block": "sgs/brand-strip",
-   "kind": "hover",
-   "property": "animation-play-state",
-   "widths": [
-    1440,
-    1920
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/brand-strip has no setting for animation-play-state (hover)"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "brand-strip/render.php",
-      "mentions": [],
-      "absent": [
-       "animationPlayState"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "animationPlayState"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
    "key": "cr-ref-home-2||style|font-size",
    "ref": "cr-ref-home-2",
    "pair": "hero-heading",
@@ -15778,6 +14256,41 @@
    ]
   },
   {
+   "key": "cr-ref-home-5||box|y-after-hero-subtext",
+   "ref": "cr-ref-home-5",
+   "pair": "hero-btn-shop",
+   "path": "",
+   "block": "sgs/button",
+   "kind": "box",
+   "property": "y-after-hero-subtext",
+   "widths": [
+    375,
+    768,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-4||style|column-gap",
+     "ref": "cr-ref-home-4",
+     "key": "column-gap",
+     "relation": "ancestor",
+     "match": "same-delta",
+     "width": 375,
+     "delta": -5,
+     "widths": [
+      375,
+      768,
+      1920
+     ]
+    }
+   ]
+  },
+  {
    "key": "cr-ref-home-6||box|y-after-gen-home-4",
    "ref": "cr-ref-home-6",
    "pair": "hero-btn-prescription",
@@ -15916,43 +14429,6 @@
      "match": "same-delta",
      "width": 375,
      "delta": 26,
-     "widths": [
-      375,
-      768,
-      1440,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-12||box|y-after-brand-link",
-   "ref": "cr-ref-home-12",
-   "pair": "bestsellers-eyebrow",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-brand-link",
-   "widths": [
-    375,
-    768,
-    1440,
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-8||style|padding-top",
-     "ref": "cr-ref-home-8",
-     "key": "padding-top",
-     "relation": "anchor",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 25,
      "widths": [
       375,
       768,
@@ -16136,7 +14612,9 @@
    "kind": "box",
    "property": "y-after-card-7",
    "widths": [
-    375
+    375,
+    1440,
+    1920
    ],
    "solveClass": "derived",
    "solveReason": null,
@@ -16298,23 +14776,6 @@
    ]
   },
   {
-   "key": "cr-ref-home-50||box|y-after-gen-home-47",
-   "ref": "cr-ref-home-50",
-   "pair": "shapetiles-eyebrow",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-gen-home-47",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "U",
-   "decidedBy": "box-unexplained",
-   "evidence": []
-  },
-  {
    "key": "cr-ref-home-58|.sgs-google-reviews__slider > .sgs-google-reviews__list > .sgs-google-reviews__review:nth-of-type(1)|box|y-after-gen-home-58",
    "ref": "cr-ref-home-58",
    "pair": "review-card",
@@ -16382,68 +14843,6 @@
       768,
       1440,
       1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-35||box|y-after-gen-home-34",
-   "ref": "cr-ref-home-35",
-   "pair": "gen-home-35",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-gen-home-34",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-35||style|padding-top",
-     "ref": "cr-ref-home-35",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 375,
-     "delta": 27,
-     "widths": [
-      375
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-39||box|y-after-gen-home-38",
-   "ref": "cr-ref-home-39",
-   "pair": "gen-home-39",
-   "path": "",
-   "block": "sgs/container",
-   "kind": "box",
-   "property": "y-after-gen-home-38",
-   "widths": [
-    375
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-39||style|padding-top",
-     "ref": "cr-ref-home-39",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "layout-row",
-     "width": 375,
-     "delta": -25,
-     "widths": [
-      375
      ]
     }
    ]
@@ -16689,7 +15088,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 768,
-     "delta": 4531,
+     "delta": 4466,
      "widths": [
       768
      ]
@@ -16720,9 +15119,77 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 768,
-     "delta": -4532,
+     "delta": -4467,
      "widths": [
       768
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-2||box|y-after-hero-label",
+   "ref": "cr-ref-home-2",
+   "pair": "hero-heading",
+   "path": "",
+   "block": "sgs/heading",
+   "kind": "box",
+   "property": "y-after-hero-label",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
+     "ref": "cr-ref-home-0",
+     "key": "display",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": 5,
+     "widths": [
+      1440,
+      1920
+     ]
+    }
+   ]
+  },
+  {
+   "key": "cr-ref-home-3||box|y-after-hero-heading",
+   "ref": "cr-ref-home-3",
+   "pair": "hero-subtext",
+   "path": "",
+   "block": "sgs/text",
+   "kind": "box",
+   "property": "y-after-hero-heading",
+   "widths": [
+    1440,
+    1920
+   ],
+   "solveClass": "derived",
+   "solveReason": null,
+   "class": "W",
+   "decidedBy": "consequence",
+   "evidence": [
+    {
+     "check": "consequence",
+     "parent": "cr-ref-home-0|.sgs-container__inner > .sgs-hero__bg-img|style|display",
+     "ref": "cr-ref-home-0",
+     "key": "display",
+     "relation": "ancestor",
+     "match": "layout-row",
+     "width": 1440,
+     "delta": -11,
+     "widths": [
+      1440,
+      1920,
+      1920,
+      1920
      ]
     }
    ]
@@ -16752,7 +15219,7 @@
      "relation": "anchor",
      "match": "layout-row",
      "width": 1440,
-     "delta": -3029,
+     "delta": -2966,
      "widths": [
       1440,
       1920
@@ -16785,7 +15252,7 @@
      "relation": "self",
      "match": "layout-row",
      "width": 1440,
-     "delta": 3029,
+     "delta": 2966,
      "widths": [
       1440,
       1920
@@ -16815,39 +15282,6 @@
      "ref": "cr-ref-home-2",
      "key": "font-size",
      "relation": "self",
-     "match": "layout-row",
-     "width": 1920,
-     "delta": -26,
-     "widths": [
-      1920,
-      1920,
-      1920
-     ]
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-home-3||box|y-after-hero-heading",
-   "ref": "cr-ref-home-3",
-   "pair": "hero-subtext",
-   "path": "",
-   "block": "sgs/text",
-   "kind": "box",
-   "property": "y-after-hero-heading",
-   "widths": [
-    1920
-   ],
-   "solveClass": "derived",
-   "solveReason": null,
-   "class": "W",
-   "decidedBy": "consequence",
-   "evidence": [
-    {
-     "check": "consequence",
-     "parent": "cr-ref-home-2||style|font-size",
-     "ref": "cr-ref-home-2",
-     "key": "font-size",
-     "relation": "anchor",
      "match": "layout-row",
      "width": 1920,
      "delta": -26,
@@ -17021,6 +15455,37 @@
       1920,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "card-brand||text|text",
+   "ref": null,
+   "pair": "card-brand",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }

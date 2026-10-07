@@ -1,11 +1,11 @@
 {
  "surface": "contact-form",
- "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T10-06-57/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T10-06-57/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T18-49-57/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/contact-form/2026-10-06T18-49-57/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 49,
-  "F": 1,
+  "W": 44,
+  "F": 6,
   "T": 45,
   "U": 0
  },
@@ -328,21 +328,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-text has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -708,21 +700,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-email has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1088,21 +1072,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-phone has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1468,21 +1444,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-select has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1710,21 +1678,13 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "canvas-settable",
+   "class": "F",
+   "decidedBy": "no-setting",
    "evidence": [
     {
      "check": "resolver",
      "gap": "no-setting",
      "detail": "sgs/form-field-textarea has no setting for transition-duration"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
    ],
    "source": {
@@ -1798,11 +1758,12 @@
     },
     {
      "check": "canvas-settable",
-     "ref": "cr-ref-contact-form-0",
-     "block": "sgs/form",
-     "setting": "margin",
-     "property": "margin",
-     "via": "declared"
+     "ref": "cr-ref-contact-20",
+     "block": "sgs/container",
+     "setting": "contentBandMargin",
+     "property": "margin-bottom,margin-left,margin-right,margin-top",
+     "via": "declared",
+     "where": "ancestor"
     }
    ],
    "source": {
@@ -1978,59 +1939,14 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "resolver-unmapped-element",
    "evidence": [
     {
      "check": "resolver",
      "gap": "unmapped-element",
      "detail": "sgs/form path \".sgs-form__inner > .sgs-form__actions > .sgs-form__button\" is not a calibrated element"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-contact-20",
-     "block": "sgs/container",
-     "setting": "bgHoverZoomDuration",
-     "property": "transition-duration",
-     "via": "declared"
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "form/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "transitionDuration"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": [
-     {
-      "block": "form",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "s-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-i"
-      ]
-     },
-     {
-      "block": "form",
-      "cite": "includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css",
-      "mentions": [],
-      "declares": [
-       "suffix . '{transition-property:transform;transition-duration:' . $ms . 'ms;transition-timing-functio"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-contact-form-0|.sgs-form__inner > .sgs-form__actions > .sgs-form__button|style|width",
@@ -2231,9 +2147,10 @@
      "check": "canvas-settable",
      "ref": "cr-ref-contact-20",
      "block": "sgs/container",
-     "setting": "shadow",
+     "setting": "gridItemShadow",
      "property": "box-shadow",
-     "via": "declared"
+     "via": "declared",
+     "where": "ancestor"
     }
    ],
    "source": {
@@ -2556,7 +2473,7 @@
       "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
       "mentions": [],
       "declares": [
-       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+       "adient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
       ]
      },
      {
@@ -2655,7 +2572,7 @@
       "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
       "mentions": [],
       "declares": [
-       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+       "adient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
       ]
      },
      {
@@ -2789,9 +2706,10 @@
      "check": "canvas-settable",
      "ref": "cr-ref-contact-20",
      "block": "sgs/container",
-     "setting": "shadow",
+     "setting": "gridItemShadow",
      "property": "box-shadow",
-     "via": "declared"
+     "via": "declared",
+     "where": "ancestor"
     }
    ],
    "source": {
@@ -3061,7 +2979,7 @@
       "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
       "mentions": [],
       "declares": [
-       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+       "adient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
       ]
      },
      {
@@ -3195,9 +3113,10 @@
      "check": "canvas-settable",
      "ref": "cr-ref-contact-20",
      "block": "sgs/container",
-     "setting": "shadow",
+     "setting": "gridItemShadow",
      "property": "box-shadow",
-     "via": "declared"
+     "via": "declared",
+     "where": "ancestor"
     }
    ],
    "source": {
@@ -3467,7 +3386,7 @@
       "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
       "mentions": [],
       "declares": [
-       "$gradient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
+       "adient ) { return ''; } return 'background-image:' . $gradient . ';-webkit-background-clip:"
       ]
      },
      {
@@ -3601,9 +3520,10 @@
      "check": "canvas-settable",
      "ref": "cr-ref-contact-20",
      "block": "sgs/container",
-     "setting": "shadow",
+     "setting": "gridItemShadow",
      "property": "box-shadow",
-     "via": "declared"
+     "via": "declared",
+     "where": "ancestor"
     }
    ],
    "source": {

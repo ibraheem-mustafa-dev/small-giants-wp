@@ -17,6 +17,15 @@ came back empty, so **no write reached a client tree**.
 | Revised band, committed BEFORE measuring (`2cf9ab4c3`) | **155–175 — INSIDE** |
 | Original band | 148–168 — **OUTSIDE** |
 
+⚠️ **Most of this fall is lost coverage, not fixes (measured 2026-10-07).** The re-pairing run of
+2026-10-06 (16:39-16:43) re-checked every mega-panel pair at 375, where the panels do not open, and
+rejected all of them: the four `qa/parity/mega-*.full.mjs` this sweep walked carry 0 generated pairs,
+against 114 in the 2026-10-05 configs. The four mega surfaces fell from 493 rows to 48 and from F 16 to
+F 2, so **14 of the 20-row fall is rows that stopped being measured**; the other 15 surfaces account for
+177 → 171. A total cannot tell fewer defects from fewer things looked at, so read the band result below
+with that in mind. Per-surface figures: the triage files at `3296f3349` (before) against the commit that
+first recorded this sweep's triage files.
+
 **The band revision is the point, not a detail.** The original 148–168 counted only the fixes that remove
 rows and missed that R1 and P3d *add* them by unmasking rows that were always F. Had it not been revised
 before the sweep ran, **173 would have been read as a failure** and the next session would have hunted a

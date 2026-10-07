@@ -1,11 +1,11 @@
 {
  "surface": "lens",
- "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T09-57-25/solve-report.json",
- "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T09-57-25/round-1/report.json",
+ "report": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T18-39-23/solve-report.json",
+ "walk": "sites/eye-care-ward-end/build/qa/solve/lens/2026-10-06T18-39-23/round-1/report.json",
  "date": "2026-10-06",
  "counts": {
-  "W": 41,
-  "F": 28,
+  "W": 40,
+  "F": 26,
   "T": 0,
   "U": 0
  },
@@ -809,7 +809,7 @@
       "cite": "includes/helpers-tokens.php::sgs_block_background_layer_css",
       "mentions": [],
       "declares": [
-       "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\"; $css .= $pain"
+       "\"\\\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;\"; $css .= $pai"
       ]
      },
      {
@@ -885,168 +885,6 @@
      }
     ]
    }
-  },
-  {
-   "key": "cr-ref-lens-0||style|icon-fill",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "icon-fill",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for icon-fill"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "iconFill"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-lens-0||style|icon-stroke",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": "",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "icon-stroke",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "F",
-   "decidedBy": "no-setting",
-   "evidence": [
-    {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/choice-flow has no setting for icon-stroke"
-    }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "choice-flow/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     },
-     {
-      "file": "modal/render.php",
-      "mentions": [],
-      "absent": [
-       "iconStroke"
-      ]
-     }
-    ],
-    "rules": [],
-    "helpers": []
-   }
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph|style|icon-width",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "icon-width",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/choice-flow path \".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "maxWidth",
-     "css_property": "max-width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
-  },
-  {
-   "key": "cr-ref-lens-0|.sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph|style|icon-height",
-   "ref": "cr-ref-lens-0",
-   "pair": "gen-lens-0",
-   "path": ".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph",
-   "block": "sgs/choice-flow",
-   "kind": "style",
-   "property": "icon-height",
-   "widths": [
-    375
-   ],
-   "solveClass": "unresolved",
-   "solveReason": "not written",
-   "class": "W",
-   "decidedBy": "used-value",
-   "evidence": [
-    {
-     "check": "used-value",
-     "property": "height",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "unmapped-element",
-     "detail": "sgs/choice-flow path \".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-icon > .sgs-choice-flow__summary-note-glyph\" is not a calibrated element"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/choice-flow",
-     "setting": "headerLogoHeight",
-     "css_property": "height",
-     "css_element": "chrome-logo",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    }
-   ]
   },
   {
    "key": "cr-ref-lens-4|.sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-label|style|width",
@@ -2153,7 +1991,7 @@
       "cite": "includes/helpers-tokens.php::sgs_text_colour_decl",
       "mentions": [],
       "declares": [
-       "value ); return '' === $colour ? '' : 'color:' . $colour; } $gradient = sgs_css_gradient_value(",
+       "alue ); return '' === $colour ? '' : 'color:' . $colour; } $gradient = sgs_css_gradient_val",
        "ackground-clip:text;background-clip:text;color:transparent'; }"
       ]
      },
@@ -4070,6 +3908,37 @@
       1440,
       1920
      ]
+    }
+   ]
+  },
+  {
+   "key": "stage||text|text",
+   "ref": null,
+   "pair": "stage",
+   "path": null,
+   "block": null,
+   "kind": "text",
+   "property": "text",
+   "widths": [
+    375,
+    768,
+    1440,
+    1920
+   ],
+   "solveClass": "content",
+   "solveReason": "not written",
+   "class": "W",
+   "decidedBy": "content",
+   "evidence": [
+    {
+     "check": "content",
+     "kinds": [
+      "text"
+     ],
+     "keys": [
+      "text"
+     ],
+     "detail": "the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it"
     }
    ]
   }
