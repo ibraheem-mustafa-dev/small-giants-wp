@@ -25,7 +25,7 @@ import { sampleEntrances, shapeEntrance, entranceWrites } from './lib/fill-entra
 import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs } from './lib/fill-config.mjs';
 import { fillReport, unmappedList } from './lib/fill-report.mjs';
-import { calibrationFor } from './solve.mjs';
+import { calibrationFor, withInnerRootAliases } from './solve.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -38,7 +38,7 @@ export function calibrationLoader( dir = null ) {
 	}
 	return ( block ) => {
 		const f = path.join( path.resolve( dir ), `${ block.replace( /^sgs\//, '' ) }.json` );
-		return fs.existsSync( f ) ? JSON.parse( fs.readFileSync( f, 'utf8' ) ) : null;
+		return fs.existsSync( f ) ? withInnerRootAliases( JSON.parse( fs.readFileSync( f, 'utf8' ) ), block ) : null;
 	};
 }
 

@@ -7,6 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { triage, nameFits, rosterApplies, settingFits, canvasSettable } from '../lib/triage.mjs';
+import { withInnerRootAliases } from '../solve.mjs';
 
 const row = ( over = {} ) => ( { kind: 'style', key: 'margin-top', draft: '10px', live: '0px', ref: 'cr-ref-s-1', path: '.sgs-field__input', owners: [], pair: 'field', state: 'rest', width: 375, accepted: null, ...over } );
 // A walker report: one run per width, each pair with its draft snapshot and its open rows.
@@ -474,4 +475,64 @@ test( 'MUST FAIL ON REVERT (wiring): triage.mjs::runTriage builds ctx.measuredRe
 	assert.match( src, /canvas-confirm\.json/ );
 	const ctxBody = src.slice( src.indexOf( 'const ctx = {' ), src.indexOf( 'const result = triage(' ) );
 	assert.match( ctxBody, /^\s*measuredReach,\s*$/m, 'the ctx object carries measuredReach' );
+} );
+
+// A row whose live value is empty at every width has no live element behind it (the walker never found one).
+const noLive = ( key, draft ) => [ 375, 768, 1440, 1920 ].map( ( width ) => row( { key, draft, live: null, width, reason: 'not written' } ) );
+
+test( 'MUST FAIL ON REVERT: rows with a null live value at every width are W, no-live-element, before any setting lookup', () => {
+	const rows = [ ...noLive( 'opacity', '0.5' ), ...noLive( 'row-gap', '8px' ) ];
+	let asked = 0;
+	const { verdicts } = run( { missing: rows }, rows, ctxOf( { resolver: () => ( asked++, { gap: 'no-setting', detail: 'none' } ) } ) );
+	assert.equal( verdicts.length, 2 );
+	for ( const v of verdicts ) {
+		assert.equal( v.class, 'W' );
+		assert.equal( v.decidedBy, 'no-live-element' );
+		assert.deepEqual( v.evidence[ 0 ], { check: 'no-live-element', detail: '4 rows, live value empty at every width: the walker found no live element' } );
+	}
+	assert.equal( asked, 0 );
+} );
+
+test( 'not over-suppressing: one row with a live value keeps the ordinary classification', () => {
+	const rows = noLive( 'opacity', '0.5' );
+	rows[ 2 ] = { ...rows[ 2 ], live: '1' };
+	const v = run( { missing: rows }, rows, ctxOf() ).verdicts[ 0 ];
+	assert.equal( v.class, 'F' );
+	assert.equal( v.decidedBy, 'no-setting' );
+} );
+
+// A block that wraps its own root only in some modes: calibrated wrapped (a heading on), measured on a page unwrapped.
+const wrappedCal = () => ( {
+	elements: { '': {}, '.sgs-field-textarea': {}, '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text': {} },
+	settings: { textLineHeight: { slot: '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text', slots: [ '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text' ],
+		reaches: [ '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text', '.sgs-field-textarea > .sgs-field__item:nth-of-type(2) > .sgs-field__text' ] } },
+} );
+const unwrappedRow = () => row( { key: 'line-height', draft: '18px', live: '21.75px', path: '.sgs-field__item:nth-of-type(1) > .sgs-field__text' } );
+const textLh = () => [ { attr_name: 'textLineHeight', css_property: 'line-height', css_element: 'text', source: 'sgs' } ];
+
+test( 'MUST FAIL ON REVERT: a setting calibrated on a wrapped instance reaches the same element on an unwrapped page', () => {
+	const r = unwrappedRow();
+	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: textLh, calFor: ( b ) => withInnerRootAliases( wrappedCal(), b ) } ) ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'attribute' );
+	assert.equal( v.evidence.find( ( e ) => 'attribute' === e.check ).reaches, true );
+} );
+
+test( 'control: the raw wrapped calibration does not reach the unwrapped row (the defect the aliases close)', () => {
+	const r = unwrappedRow();
+	const v = run( { missing: [ r ] }, [ r ], ctxOf( { attrRows: textLh, calFor: () => wrappedCal() } ) ).verdicts[ 0 ];
+	assert.notEqual( v.decidedBy, 'attribute' );
+	assert.equal( v.evidence.find( ( e ) => 'attribute' === e.check ).reaches, false );
+	assert.equal( v.evidence.find( ( e ) => 'resolver' === e.check ).gap, 'unmapped-element' );
+} );
+
+test( 'aliases are added beside the measured paths, and a calibration without the inner root is returned unchanged', () => {
+	const cal = withInnerRootAliases( wrappedCal(), 'sgs/field-textarea' );
+	assert.deepEqual( cal.settings.textLineHeight.reaches, [ '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text', '.sgs-field-textarea > .sgs-field__item:nth-of-type(2) > .sgs-field__text',
+		'.sgs-field__item:nth-of-type(1) > .sgs-field__text', '.sgs-field__item:nth-of-type(2) > .sgs-field__text' ] );
+	assert.ok( Object.hasOwn( cal.elements, '.sgs-field__item:nth-of-type(1) > .sgs-field__text' ) );
+	// A nested block of the same kind (a container inside a container) is not an inner root: no `.sgs-container` element.
+	const nested = { elements: { '': {}, '.sgs-container__inner > .sgs-container': {} }, settings: { gap: { slot: '.sgs-container > .x', slots: [ '.sgs-container > .x' ] } } };
+	assert.equal( withInnerRootAliases( nested, 'sgs/container' ), nested );
+	assert.equal( withInnerRootAliases( null, 'sgs/container' ), null );
 } );

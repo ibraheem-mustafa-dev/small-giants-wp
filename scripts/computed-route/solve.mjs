@@ -27,7 +27,44 @@ export const USED_VALUES = [ 'width' ];
 // The calibration file for a block, or null (the resolver then returns `uncalibrated`).
 export function calibrationFor( block ) {
 	const f = path.join( HERE, 'cache', `${ block.replace( /^sgs\//, '' ) }.json` );
-	return fs.existsSync( f ) ? JSON.parse( fs.readFileSync( f, 'utf8' ) ) : null;
+	return fs.existsSync( f ) ? withInnerRootAliases( JSON.parse( fs.readFileSync( f, 'utf8' ) ), block ) : null;
+}
+
+// A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
+// a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A
+// calibration that ran wrapped records the inner root as `.sgs-<slug>` directly under the wrapper and every path below it
+// as `.sgs-<slug> > …`, while a page instance with no wrapper measures the same elements from that inner root. When the
+// calibration holds the inner root as an element, every slot, reach and element path also answers to its form without
+// the `.sgs-<slug>` step, so both page modes find the element calibration measured. A calibration without that element
+// is returned unchanged.
+export function withInnerRootAliases( cal, block ) {
+	const root = `.sgs-${ block.replace( /^sgs\//, '' ) }`;
+	if ( ! cal?.elements || ! Object.hasOwn( cal.elements, root ) ) {
+		return cal;
+	}
+	const strip = ( p ) => {
+		if ( p === root ) {
+			return '';
+		}
+		if ( 'string' === typeof p && ( p.startsWith( `${ root } > ` ) || p.startsWith( `${ root }::` ) ) ) {
+			return p.slice( root.length ).replace( /^ > /, '' );
+		}
+		return null;
+	};
+	const widen = ( list ) => [ ...new Set( [ ...list, ...list.map( strip ).filter( ( x ) => null !== x ) ] ) ];
+	const settings = Object.fromEntries( Object.entries( cal.settings || {} ).map( ( [ name, s ] ) => [ name, ( s && 'object' === typeof s ) ? {
+		...s,
+		...( s.slots || undefined !== s.slot ? { slots: widen( s.slots || [ s.slot ] ) } : {} ),
+		...( s.reaches ? { reaches: widen( s.reaches ) } : {} ),
+	} : s ] ) );
+	const elements = { ...cal.elements };
+	for ( const [ p, v ] of Object.entries( cal.elements ) ) {
+		const alias = strip( p );
+		if ( null !== alias && ! Object.hasOwn( elements, alias ) ) {
+			elements[ alias ] = v;
+		}
+	}
+	return { ...cal, settings, elements };
 }
 
 // A block's render.php source, or null.

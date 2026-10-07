@@ -462,7 +462,7 @@ export function canvasSettable( issue, ctx ) {
 	return null;
 }
 
-// One issue's verdict. Order: a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
+// One issue's verdict. Order: a row with no live element is a measuring artefact (W); a box row is a consequence (W) or unexplained (U); an entrance the tree can start on load
 // (lib/entrance.mjs) is T; then artefacts (transient, used value, consequence: W); then the resolver (a new value it
 // would write: T; blocked by the guard, a shared-setting conflict or a state conflict: W; the setting already holds the draft value, or Solve wrote it
 // and paint still differed: F, a hardcode); then a fitting setting (W; one calibration measured not reaching the
@@ -491,6 +491,12 @@ export function triageIssue( issue, ctx ) {
 		evidence.unshift( { check: 'content', kinds: [ ...new Set( issue.rows.map( ( x ) => x.kind ) ) ], keys: [ ...new Set( issue.rows.map( ( x ) => x.key ) ) ],
 			detail: 'the row is page content, not a painted property: the route writes no words yet (FR-47-2), so no setting can be proven missing through it' } );
 		return verdict( 'W', 'content' );
+	}
+	// A row whose live value is empty at every width has no live element behind it: the walker never found one, so there
+	// is no difference to classify and no setting lookup can say anything true about it. A measuring artefact (W).
+	if ( issue.rows.every( ( x ) => null === x.live || undefined === x.live ) ) {
+		evidence.unshift( { check: 'no-live-element', detail: `${ issue.rows.length } rows, live value empty at every width: the walker found no live element` } );
+		return verdict( 'W', 'no-live-element' );
 	}
 	if ( 'box' === r.kind ) {
 		return conseq ? ( evidence.unshift( conseq ), verdict( 'W', 'consequence' ) ) : verdict( 'U', 'box-unexplained' );
