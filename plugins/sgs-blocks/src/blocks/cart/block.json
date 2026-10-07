@@ -201,10 +201,12 @@
 				"freeDeliveryFill": {
 					"label": "Free-delivery progress fill",
 					"order": 8,
-					"clusters": [ "fill" ],
+					"clusters": [ "fill", "motion" ],
 					"prefix": "freeDelivery",
 					"attrMap": {
-						"css:background-color": "freeDeliveryFillColour"
+						"css:background-color": "freeDeliveryFillColour",
+						"css:transition-duration": "freeDeliveryFillDuration",
+						"css:transition-timing-function": "freeDeliveryFillEasing"
 					},
 					"_note": "Wave B — the filled portion of the free-delivery progress bar, width driven live by a --sgs-cart-free-delivery-pct custom property (panel-render.js element.style.setProperty()) — a custom-property VALUE, never a raw style=\"width:...\" declaration (Spec 32 FR-32-4; mirrors sgs/audio's --sgs-progress and sgs/before-after's --sgs-before-after-position)."
 				},
