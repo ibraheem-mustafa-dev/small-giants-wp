@@ -75,6 +75,13 @@
 
 /* ===== Headline ===== */
 
+/* The headline is an sgs/heading child: its own typography controls
+ * (`.{uid}.wp-block-sgs-heading`, 0,2,0) outrank these defaults. These stay at
+ * (0,1,0) and must not move into :where(): the theme's global heading styles
+ * (`h1, …, h6`, 0,0,1) would then win and repaint the headline at weight 500
+ * and line-height 1. Those same global styles stop the section's own
+ * typography controls reaching any heading by inheritance, so the headline is
+ * styled from its own block. */
 .sgs-cta-section__headline {
 	font-size: var(--wp--preset--font-size--x-large);
 	font-weight: 700;
@@ -93,9 +100,18 @@
 
 /* ===== Body ===== */
 
-.sgs-cta-section__body {
+/* The body text's size and line-height are zero-specificity defaults on the
+ * section itself, so they reach the body (and any paragraph a client adds) by
+ * inheritance, and the section's own font-size / line-height controls
+ * (`.{uid}.wp-block-sgs-cta-section`, render.php) replace them. The buttons
+ * declare their own typography, and the headline is held by the theme's
+ * global heading styles, so neither picks these up. */
+:where(.sgs-cta-section) {
 	font-size: var(--wp--preset--font-size--medium);
 	line-height: 1.6;
+}
+
+.sgs-cta-section__body {
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 }
 
