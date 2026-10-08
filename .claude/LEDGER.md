@@ -81,12 +81,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found has a control or a zero-specificity default.**
-  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 124/124; sandybrown at `c68cd3903`). Gate gaps 4, 9, 10b, 12 and 13 are built
+  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 131/131; sandybrown at `edb956c7c`, QC pass 10/10). Gate gaps 4, 9, 10b, 12 and 13 are built
   (`scripts/lib/e14-*.js`); other gate gaps are built only when a row needs one (§7). `scripts/check-editor-css-imported.js` fails a block whose
   `editor.css` nothing imports. `:where()` default only: slider pause icon, banner icon and close, hours time, button note, current store link (§3.2).
-  **Open, no owner yet:** four files grew past the length limits (`post-grid/edit.js`, `google-reviews/render.php`, `cart/render.php`, `media/edit.js`)
-  and need splitting; the cart pill label fails contrast; hardcoded empty states remain in gallery, card-grid and post-grid `view.js`. All in
-  `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", plan §7.
+  **Open, no owner yet** (`plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open"): five more files over the limits; ~95 scripts still name
+  `render.php` (partial blindness audit); `primary` used as a text colour (43 stylesheet fallbacks, 17 attribute defaults; post-grid title and
+  read-more fail axe on sandybrown) needs Bean's palette decision; the render-undefined-vars `--self-test` hero fixture is stale.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
