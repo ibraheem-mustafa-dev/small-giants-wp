@@ -5223,14 +5223,20 @@
       "slug": "sgs/choice-flow",
       "attr": "infoToggleBorderColour",
       "fields": {
-        "css_property": "border-color"
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "info-toggle"
       }
     },
     {
       "slug": "sgs/choice-flow",
       "attr": "infoToggleColour",
       "fields": {
-        "css_property": "color"
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "info-toggle"
       }
     },
     {
