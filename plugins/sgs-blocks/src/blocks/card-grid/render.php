@@ -489,10 +489,7 @@ if ( 'none' !== $border_style ) {
 	}
 
 	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	// masked ::before ring (which sets border-color:transparent).
 	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
 	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 	if ( '' !== $border_colour_gradient ) {

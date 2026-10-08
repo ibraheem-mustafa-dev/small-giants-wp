@@ -123,21 +123,6 @@ $inherit_style      = ! empty( $attributes['inheritStyle'] );
 $bg_colour          = $attributes['backgroundColour'] ?? '';
 $bg_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 
-// Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base
-// only (no tiers). No WP-native border-width support; colour/style stay
-// scalar attrs (dual-border resolution — matches sgs/heading).
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw       = $attributes['borderStyle'] ?? '';
-$border_style           = sgs_border_style_keyword( $border_style_raw );
-$border_colour          = $attributes['borderColour'] ?? '';
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-
 // sgs_shadow_decls() (Wave A1 ShadowControl redesign, 2026-09-07) composes
 // shape+colour for BOTH states into declaration arrays merged below.
 $box_shadow_decls = sgs_shadow_decls(
@@ -198,14 +183,6 @@ $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sg
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys). Skip-serialised
-// → emit scoped via the style engine in step 6.
-$radius_tiers            = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $radius_tiers['base'];
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-
 // WP `color`/`typography` support values (skip-serialised → NOT auto-inlined).
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
@@ -226,6 +203,29 @@ $anchor = $attributes['anchor'] ?? '';
 // of whether an anchor id is present.
 $uid      = 'sgs-quote-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-quote';
+
+// Border (width, style, colour, hover colour, gradient ring, radius at three
+// tiers) through the shared assembler; inheritStyle prints none of it.
+$border = $inherit_style
+	? array(
+		'base'   => array(),
+		'tablet' => array(),
+		'mobile' => array(),
+		'hover'  => array(),
+		'rules'  => array(),
+	)
+	: sgs_border_element_decls(
+		$attributes,
+		'',
+		$root_sel,
+		array(
+			'colour' => array(
+				'base'     => 'borderColour',
+				'hover'    => 'borderColourHover',
+				'gradient' => 'borderColourGradient',
+			),
+		)
+	);
 
 // ---------------------------------------------------------------------------
 // 7. Build the attribution slot's scoped typography declarations (base) +
@@ -356,9 +356,7 @@ if ( $has_scale ) {
 	$hover_rules[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
 }
 
-if ( '' !== ( $attributes['borderColourHover'] ?? '' ) ) {
-	$hover_rules[] = 'border-color:' . sgs_colour_value( $attributes['borderColourHover'] );
-}
+$hover_rules = array_merge( $hover_rules, $border['hover'] );
 if ( $hover_rules || $has_scale ) {
 	$scoped_css[] = "{$root_sel}{transition:transform {$transition_duration}ms {$transition_easing},box-shadow {$transition_duration}ms {$transition_easing},background-color {$transition_duration}ms {$transition_easing},color {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){{$root_sel}{transition:none !important;transform:none !important;}}";
@@ -378,33 +376,7 @@ if ( $hover_rules || $has_scale ) {
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
-	if ( 'none' !== $border_style ) {
-		if ( $has_border_width ) {
-			$bwt             = '' !== $border_width_top ? $border_width_top : '0';
-			$bwr             = '' !== $border_width_right ? $border_width_right : '0';
-			$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
-			$bwl             = '' !== $border_width_left ? $border_width_left : '0';
-			$wrapper_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-		}
-		// G5 (Bean, 2026-08-26): "border with no width should mean no border by
-		// default." The width block above is nested, so this emission was NOT
-		// covered by it — a style with no width fell through to the browser's
-		// initial `medium` (~3px). Gated here rather than on the outer condition
-		// so border-colour, which is legitimately independent, still emits.
-		if ( $has_border_width ) {
-			$wrapper_decls[] = 'border-style:' . $border_style;
-		}
-		if ( $border_colour ) {
-			$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-		}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
-}
+	$wrapper_decls = array_merge( $wrapper_decls, $border['base'] );
 	if ( $box_shadow_decls['normal'] ) {
 		$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 	}
@@ -421,12 +393,8 @@ if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
 }
 
-// --- Border gradient (D636 border builder) — masked ::before ring, gated
-// the SAME way as the flat border-color declaration above. ---
-if ( ! $inherit_style && 'none' !== $border_style && '' !== $border_colour_gradient ) {
-	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '1px';
-	$scoped_css[]          = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_gradient_width );
-}
+// --- Border rules: the gradient ring and the explicit `none` override. ---
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // --- Base spacing (padding/margin), border-radius, WP colour + typography
 // supports — skip-serialised, emitted scoped via the stable core style engine
@@ -443,10 +411,6 @@ if ( ! $inherit_style ) {
 	}
 	if ( ! empty( $base_spacing ) ) {
 		$base_style_engine_args['spacing'] = $base_spacing;
-	}
-
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
 	}
 
 	$color_args = array();
@@ -510,8 +474,6 @@ if ( ! $inherit_style ) {
 	$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 	$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 	$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-	$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-	$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 	$tablet_box_decls = array();
 	if ( null !== $padding_tab_val ) {
@@ -520,9 +482,7 @@ if ( ! $inherit_style ) {
 	if ( null !== $margin_tab_val ) {
 		$tablet_box_decls[] = "{$margin_tab_val}";
 	}
-	if ( null !== $radius_tab_val ) {
-		$tablet_box_decls[] = "{$radius_tab_val}";
-	}
+	$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 	if ( $tablet_box_decls ) {
 		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
 	}
@@ -534,9 +494,7 @@ if ( ! $inherit_style ) {
 	if ( null !== $margin_mob_val ) {
 		$mobile_box_decls[] = "{$margin_mob_val}";
 	}
-	if ( null !== $radius_mob_val ) {
-		$mobile_box_decls[] = "{$radius_mob_val}";
-	}
+	$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 	if ( $mobile_box_decls ) {
 		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 	}
