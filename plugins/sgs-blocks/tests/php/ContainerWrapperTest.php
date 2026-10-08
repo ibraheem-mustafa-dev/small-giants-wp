@@ -189,6 +189,25 @@ final class ContainerWrapperTest extends TestCase {
 		return $m[1];
 	}
 
+	// ── Base margin beats core's full-width margin rule ──────────────────────
+
+	/**
+	 * The base (desktop) margin prints `!important`, the tablet and mobile margins already did, so
+	 * core's `margin-block: 0` rule for full-width blocks cannot cancel it; padding stays plain.
+	 */
+	public function test_base_margin_is_important_and_base_padding_is_not(): void {
+		$attrs                      = $this->section_attrs();
+		$attrs['style']['spacing']['margin'] = array(
+			'top'  => '40px',
+			'left' => '8px',
+		);
+		$html = SGS_Container_Wrapper::render( $attrs, null, '<p>x</p>', 'section' );
+
+		$this->assertStringContainsString( 'margin-top:40px !important;margin-left:8px !important;', $html, 'base margin declarations carry !important' );
+		$this->assertStringContainsString( 'padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;', $html, 'base padding is unchanged and not !important' );
+		$this->assertStringNotContainsString( 'padding-top:40px !important', $html, 'base padding never takes !important' );
+	}
+
 	// ── (a) Structural + golden-rule assertions per KIND ─────────────────────
 
 	/**

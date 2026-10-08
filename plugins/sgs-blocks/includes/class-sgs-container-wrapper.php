@@ -2543,19 +2543,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// !important. wp_style_engine_get_styles() produces the same CSS WP's own
 			// style engine would have inlined, just scoped to .$uid instead.
 			if ( $has_base_spacing && $uid ) {
-				$base_spacing_style_args = array();
 				if ( ! empty( $base_spacing_padding ) ) {
-					$base_spacing_style_args['padding'] = $base_spacing_padding;
+					$base_padding_styles = wp_style_engine_get_styles(
+						array( 'spacing' => array( 'padding' => $base_spacing_padding ) ),
+						array( 'selector' => '.' . $uid )
+					);
+					if ( ! empty( $base_padding_styles['css'] ) ) {
+						$responsive_css .= $base_padding_styles['css'];
+					}
 				}
+				// The base margin is `!important`, like the tablet and mobile margins below: core's
+				// full-width rule (`margin-block: 0` on a full-width block under .wp-site-blocks or
+				// .entry-content, specificity 0,2,0) otherwise beats this class rule (0,1,0) at desktop
+				// and the block's own margin never prints there.
 				if ( ! empty( $base_spacing_margin ) ) {
-					$base_spacing_style_args['margin'] = $base_spacing_margin;
-				}
-				$base_spacing_styles = wp_style_engine_get_styles(
-					array( 'spacing' => $base_spacing_style_args ),
-					array( 'selector' => '.' . $uid )
-				);
-				if ( ! empty( $base_spacing_styles['css'] ) ) {
-					$responsive_css .= $base_spacing_styles['css'];
+					$base_margin_styles = wp_style_engine_get_styles(
+						array( 'spacing' => array( 'margin' => $base_spacing_margin ) ),
+						array( 'selector' => '.' . $uid )
+					);
+					if ( ! empty( $base_margin_styles['css'] ) ) {
+						$responsive_css .= preg_replace( '/(margin[a-z-]*:[^;{}]+);/', '$1 !important;', $base_margin_styles['css'] );
+					}
 				}
 			}
 
