@@ -607,24 +607,49 @@ _REQUIRE_SIBLING_RE = re.compile(
 )
 
 
+def _block_sibling_php(block_dir: Path) -> list:
+    """The block's PHP files other than render.php: the partials and helper
+    files render.php requires from its own folder. They are part of the
+    block's render, so render evidence reads them too."""
+    return sorted(p for p in block_dir.glob("*.php") if p.name != "render.php")
+
+
+def _block_render_text(block_dir: Path) -> str:
+    """render.php followed by the block's sibling PHP files, '' when none."""
+    parts = []
+    for p in [block_dir / "render.php"] + _block_sibling_php(block_dir):
+        try:
+            parts.append(p.read_text(encoding="utf-8", errors="replace"))
+        except OSError:
+            continue
+    return "\n".join(parts)
+
+
 def _render_tier_attrs_for_block(
     render_path: Path, scan: Callable[[Path], set] = _tier_object_attrs_from_php
 ) -> set:
-    """Tier-object evidence for one block: its own render.php PLUS every
-    includes/*.php file reachable from it through require/require_once, at
-    any depth. See the module-level comment above `_INCLUDES_DIR` for why
-    render.php alone under-detects. `scan` reads one PHP file; the default
-    finds `$attributes` evidence, `_context_tier_keys_from_php` finds the
-    block-context keys a child unpacks per tier.
+    """Tier-object evidence for one block: its own render.php, the other PHP
+    files in its folder (render partials such as google-reviews/render-styles.php
+    and buybox/gallery-col.php), PLUS every includes/*.php file reachable from
+    them through require/require_once, at any depth. See the module-level
+    comment above `_INCLUDES_DIR` for why render.php alone under-detects.
+    `scan` reads one PHP file; the default finds `$attributes` evidence,
+    `_context_tier_keys_from_php` finds the block-context keys a child unpacks
+    per tier.
     """
     found = set(scan(render_path))
     if not render_path.is_file():
         return found
-    try:
-        text = render_path.read_text(encoding="utf-8")
-    except OSError:
-        return found
-    queue = [m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(text)]
+    own_files = [render_path] + _block_sibling_php(render_path.parent)
+    queue = []
+    for own in own_files:
+        if own != render_path:
+            found |= scan(own)
+        try:
+            text = own.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        queue.extend(m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(text))
     seen = set()
     while queue:
         name = queue.pop()
@@ -2485,10 +2510,9 @@ def _render_consumes_content(block_dir: Path) -> bool:
     Excludes docblock and comment-only lines so a ``@var string $content``
     docblock annotation does not count as consumption.
     """
-    render_php = block_dir / "render.php"
-    if not render_php.exists():
+    if not (block_dir / "render.php").exists():
         return False
-    for line in render_php.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in _block_render_text(block_dir).splitlines():
         if not line.strip():
             continue
         if _is_php_comment_line(line):
@@ -3385,12 +3409,8 @@ def _populate_preset_implications(
     if not isinstance(preset_selectors, list) or not preset_selectors:
         return
 
-    render_path = block_dir / "render.php"
     style_path = block_dir / "style.css"
-    try:
-        render_text = render_path.read_text(encoding="utf-8") if render_path.exists() else ""
-    except (OSError, UnicodeDecodeError):
-        render_text = ""
+    render_text = _block_render_text(block_dir)
     try:
         style_text = style_path.read_text(encoding="utf-8") if style_path.exists() else ""
     except (OSError, UnicodeDecodeError):

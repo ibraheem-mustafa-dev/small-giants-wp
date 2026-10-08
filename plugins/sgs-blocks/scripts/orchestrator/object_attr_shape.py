@@ -212,7 +212,12 @@ def attr_tier_consumer_evidence(
     assigned variable name, not a literal-string match.
     """
     block_dir_name = block_slug.split("/")[-1]
-    candidate_paths = [blocks_dir / block_dir_name / "render.php", wrapper_path]
+    # render.php plus the block's other PHP files (render partials it requires
+    # from its own folder, e.g. google-reviews/render-styles.php).
+    block_dir = blocks_dir / block_dir_name
+    candidate_paths = [block_dir / "render.php"] + sorted(
+        p for p in block_dir.glob("*.php") if p.name != "render.php"
+    ) + [wrapper_path]
 
     direct_re = re.compile(
         r"sgs_responsive_normalise_object\(\s*\$attributes\[\s*['\"]"
