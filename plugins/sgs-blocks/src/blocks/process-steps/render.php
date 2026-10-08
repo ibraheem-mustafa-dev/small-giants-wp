@@ -105,25 +105,9 @@ $description_colour_gradient = $attributes['descriptionColourGradient'] ?? '';
 // backgroundColourHover/textColourHover are read directly from $attributes
 // further down (sgs_resolve_text_colour_or_gradient()/sgs_fill_decls()), not
 // pre-extracted here — they no longer feed the flat $hover_decls bucket.
-$hover_border_colour     = $attributes['borderColourHover'] ?? '';
-$hover_border_gradient   = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect            = $attributes['effectHover'] ?? 'none';
 $transition_duration     = $attributes['transitionDuration'] ?? '';
 $transition_easing       = $attributes['transitionEasing'] ?? '';
-
-// Border — SGS custom attrs (base only, no WP-native width/colour/style
-// support — matches sgs/heading + sgs/quote). Border-radius stays WP-native.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw       = $attributes['borderStyle'] ?? '';
-$border_style           = sgs_border_style_keyword( $border_style_raw );
-$border_colour          = $attributes['borderColour'] ?? '';
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
@@ -148,13 +132,6 @@ $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sg
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys), base only.
-$radius_tiers            = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $radius_tiers['base'];
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // WP `shadow` support value (skip-serialised in block.json → NOT
 // auto-inlined). Passed wholesale to the style engine below — the engine
@@ -240,57 +217,25 @@ if ( $wrapper_style_parts ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_style_parts ) . ';}';
 }
 
-// --- Root border-style / border-colour / border-width (SGS custom, scoped). ---
-$root_border_decls = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width.
-if ( 'none' !== $border_style && $has_border_width ) {
-	if ( $has_border_width ) {
-		$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr                 = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb                 = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl                 = '' !== $border_width_left ? $border_width_left : '0';
-		$root_border_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
-	$root_border_decls[] = 'border-style:' . $border_style;
-	if ( $border_colour ) {
-		$root_border_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-	}
+// --- Border (width, style, colour, gradient ring, none override, radius at
+// three tiers) through the shared assembler. ---
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
 }
-if ( $root_border_decls ) {
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_border_decls ) . ';}';
-}
-
-// --- Border gradients (D636 border builder) — masked ::before ring, gated
-// the SAME way as the flat-colour declarations above (border geometry only
-// exists once borderStyle !== 'none'; style.css's :hover rule paints an
-// invisible 0-width border otherwise regardless of colour). ---
-if ( 'none' !== $border_style ) {
-	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '1px';
-	if ( '' !== $border_colour_gradient ) {
-		$scoped_css[] = sgs_border_gradient_css(
-			$root_sel,
-			$border_colour_gradient,
-			'' !== $hover_border_gradient ? $hover_border_gradient : ( $hover_border_colour ? sgs_colour_value( $hover_border_colour ) : null ),
-			$border_gradient_width
-		);
-	} elseif ( '' !== $hover_border_gradient ) {
-		// Resting border stays flat (or unset); only the hover state gains a
-		// gradient ring — mirrors mega-panel's accentBorderColourGradient
-		// hover-only pattern.
-		$scoped_css[] = sgs_hover_media_wrap(
-			sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $hover_border_gradient, null, $border_gradient_width )
-		);
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
-}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // Hover border colour declaration — emitted as a scoped .uid{…}:hover rule
 // via the shared helper. No fallback values (matches the info-box pattern).
@@ -299,9 +244,7 @@ if ( 'none' !== $border_style ) {
 // primitives below (sgs_resolve_text_colour_or_gradient()/sgs_fill_decls()),
 // which building them here too would duplicate on the same selector.
 $hover_decls = array();
-if ( $hover_border_colour ) {
-	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
-}
+$hover_decls = array_merge( $hover_decls, $border['hover'] );
 // NOTE: `numberBackgroundHover` is deliberately NOT in this bucket — it paints
 // the number BADGE, a descendant, not the block root. It is emitted as an
 // ancestor-hover rule beside its resting sibling `numberBackground` below.
@@ -382,10 +325,6 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
-
 if ( '' !== $style_shadow ) {
 	$base_style_engine_args['shadow'] = $style_shadow;
 }
@@ -426,8 +365,6 @@ $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -436,9 +373,7 @@ if ( null !== $padding_tab_val ) {
 if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "{$radius_tab_val}";
-}
+$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 if ( $tablet_box_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
 }
@@ -450,9 +385,7 @@ if ( null !== $padding_mob_val ) {
 if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "{$radius_mob_val}";
-}
+$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 }

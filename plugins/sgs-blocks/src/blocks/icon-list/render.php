@@ -55,7 +55,6 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 $sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
-$sgs_radius_tiers        = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -262,51 +261,10 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
-$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
-$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
-$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-$border_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
-$border_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys). Skip-serialised
-// → emitted scoped via the style engine below.
-$base_border_radius = null;
-if ( null !== $sgs_radius_tiers['desktop'] ) {
-	$radius_raw = $sgs_radius_tiers['desktop'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-
-// Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base
-// only (no tiers — sgs/quote pattern). Paired with scalar borderColour/borderStyle attrs.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-$border_colour         = $attributes['borderColour'] ?? '';
-// Border-colour gradient — sibling attribute, wins over $border_colour when set.
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 // WP `typography` support values (skip-serialised → NOT auto-inlined).
 //
 // There are no `color` reads here. supports.color.background and .text are
@@ -341,6 +299,19 @@ $item_row_sel = $root_sel . ' .sgs-icon-list__item';
 
 $scoped_css = array();
 
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour'    => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+		'none_rule' => false,
+	)
+);
+
 // --- Heading + item + item text typography families (shared emitter,
 // never a bespoke font-size control). Only set properties are emitted. ---
 if ( function_exists( 'sgs_typography_css_rule' ) ) {
@@ -368,8 +339,8 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 // The optional per-item description line: its own colour and typography
 // (`descriptionColour`, the `description*` TypographyControls set). style.css
 // supplies the muted, smaller default in :where(), so these always win.
-$description_sel            = $root_sel . ' .sgs-icon-list__description';
-$description_colour         = trim( (string) ( $attributes['descriptionColour'] ?? '' ) );
+$description_sel    = $root_sel . ' .sgs-icon-list__description';
+$description_colour = trim( (string) ( $attributes['descriptionColour'] ?? '' ) );
 if ( '' !== $description_colour ) {
 	$scoped_css[] = $description_sel . '{color:' . sgs_colour_value( $description_colour ) . ';}';
 }
@@ -501,10 +472,6 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -515,33 +482,12 @@ if ( ! empty( $base_style_engine_args ) ) {
 	}
 }
 
-// --- Border width/style/colour (SGS custom, base only) — hand-built,
-// scoped. ---
-// 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width.
-if ( 'none' !== $border_style && $has_border_width ) {
-	$border_decls = array();
-	if ( $has_border_width ) {
-		$bwt            = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr            = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb            = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl            = '' !== $border_width_left ? $border_width_left : '0';
-		$border_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
-	$border_decls[] = 'border-style:' . $border_style;
-	if ( $border_colour ) {
-		$border_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-	}
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_decls ) . ';}';
+// --- Border (width, style, colour, gradient ring, radius at three tiers)
+// through the shared assembler. ---
+if ( $border['base'] ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
 }
-
-// --- Border gradient (border builder) — masked ::before, wins over the
-// flat border-color decl above (emitted after it so the cascade favours the
-// mask). ---
-if ( '' !== $border_colour_gradient ) {
-	$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $has_border_width ? $bwt : '1px' );
-}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // --- Responsive padding/margin/border-radius tiers — box objects, longhands for
 // the set sides and corners only, scoped @media on the SAME root selector (contract §B2: tablet
@@ -550,8 +496,6 @@ $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -560,9 +504,7 @@ if ( null !== $padding_tab_val ) {
 if ( null !== $margin_tab_val ) {
 	$tablet_decls[] = "{$margin_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_decls[] = "{$radius_tab_val}";
-}
+$tablet_decls = array_merge( $tablet_decls, $border['tablet'] );
 if ( $tablet_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
 }
@@ -574,9 +516,7 @@ if ( null !== $padding_mob_val ) {
 if ( null !== $margin_mob_val ) {
 	$mobile_decls[] = "{$margin_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_decls[] = "{$radius_mob_val}";
-}
+$mobile_decls = array_merge( $mobile_decls, $border['mobile'] );
 if ( $mobile_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
 }
@@ -598,7 +538,7 @@ if ( $mobile_decls ) {
 // preset colour classes and is added ONLY to whichever element ends up being
 // the wp-block root (the list itself when there is no heading; the wrapping
 // `<div>` when there is — see step 8).
-$list_visual_classes = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
+$list_visual_classes  = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
 $wrapper_only_classes = $uid;
 
 // Spec 32 FR-32-1/FR-32-4 (enforced by
@@ -641,7 +581,7 @@ $sgs_ilist_roll     = sgs_label_roll_value( $attributes['labelRoll'] ?? '' );
 $sgs_ilist_list_sel = ':is(' . $root_sel . '.sgs-icon-list, ' . $root_sel . ' .sgs-icon-list)';
 // Lines between the items: the shared Separators setting, drawn by the items
 // (includes/helpers-separators-line-css.php). Rows only; `edges` boxes the list.
-$scoped_css[]       = sgs_separators_css(
+$scoped_css[] = sgs_separators_css(
 	$attributes['separators'] ?? array(),
 	array(
 		'list'      => $sgs_ilist_list_sel,
@@ -657,8 +597,8 @@ $scoped_css[]       = sgs_separators_css(
 		'sweep' => false,
 	)
 );
-$scoped_css[]       = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item', ' :is(.sgs-icon-list__text, .sgs-icon-list__item-link)', $attributes );
-$scoped_css[]       = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );
+$scoped_css[] = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item', ' :is(.sgs-icon-list__text, .sgs-icon-list__item-link)', $attributes );
+$scoped_css[] = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );
 if ( 'numbered' === $marker_type ) {
 	$sgs_ilist_num_decls = array( 'color:var(--sgs-list-marker-colour, ' . ( '' !== trim( (string) ( $attributes['numberColour'] ?? '' ) ) ? sgs_colour_value( $attributes['numberColour'] ) : 'currentColor' ) . ')' );
 	$sgs_ilist_num_size  = sgs_css_single_length_value( $attributes['numberFontSize'] ?? '' );

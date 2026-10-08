@@ -221,12 +221,6 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys), base only.
-
-// Border width/style/colour — WP-native scalar (base only, no tiers; no
-// custom SGS border attrs exist on this block).
-
 $base_style_engine_args = array();
 
 $base_spacing = array();
@@ -276,16 +270,31 @@ $padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null )
 $padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
 $margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
+
+// Border (width, style, colour, gradient ring, radius at three tiers) through
+// the shared assembler.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+
+// The base border rule comes before the tier rules so a tablet or mobile
+// radius (same specificity) wins inside its media query.
+if ( $border['base'] ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
+}
 
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -294,9 +303,7 @@ if ( null !== $padding_tab_val ) {
 if ( null !== $margin_tab_val ) {
 	$tablet_decls[] = "{$margin_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_decls[] = "{$radius_tab_val}";
-}
+$tablet_decls = array_merge( $tablet_decls, $border['tablet'] );
 if ( $tablet_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
 }
@@ -308,9 +315,7 @@ if ( null !== $padding_mob_val ) {
 if ( null !== $margin_mob_val ) {
 	$mobile_decls[] = "{$margin_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_decls[] = "{$radius_mob_val}";
-}
+$mobile_decls = array_merge( $mobile_decls, $border['mobile'] );
 if ( $mobile_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
 }
@@ -350,70 +355,8 @@ $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 
 ?>
 <?php
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
-}
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$scoped_css[] = $border_radius_out['css'];
-	}
-}
+// ── Border rules: the gradient ring and the explicit `none` override. ──
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 ?>
 <?php if ( $scoped_css ) : ?>
 	<?php

@@ -715,6 +715,24 @@
     "order": 80
   },
   {
+    "id": "border-element-selftest",
+    "cmd": "python scripts/migrate-border-element.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 80
+  },
+  {
+    "id": "border-element-check",
+    "cmd": "python scripts/migrate-border-element.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 80
+  },
+  {
     "id": "check-hover-state-classification",
     "cmd": "python scripts/check-hover-state-classification.py --check",
     "tier": "fast",

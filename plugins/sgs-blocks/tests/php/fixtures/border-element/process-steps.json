@@ -26,7 +26,11 @@
             "border-width:2px 2px 2px 2px"
         ]
     },
-    "f_colour_no_widths": [],
+    "f_colour_no_widths": {
+        " || .sgs-proc-UID.sgs-process-steps": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
     "g_gradient": {
         " || .sgs-proc-UID.sgs-process-steps": [
             "background-clip:padding-box",

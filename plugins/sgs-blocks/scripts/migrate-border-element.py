@@ -30,11 +30,18 @@ and '}' outside quotes. An element's region is the statements that name one of i
 border-related variable derived from them (three propagation passes). Radius statements are placed in the
 base, tablet or mobile tier from tablet/mobile/_tab/_mob/1023/767 in the statement.
 
-Current behaviour: census only. There is no --fix and no --check mode.
+--check is the gate for the shared assembler, includes/helpers-border-style.php::sgs_border_element_decls:
+every file that calls it must read the attributes it covers ({prefix}BorderWidth, {prefix}BorderStyle,
+{prefix}BorderRadius and the attributes named in its literal colour map) through the call only, and pass the
+prefix and options as literals (the behavioural analyser routes attributes from literals). A border migrated
+to the assembler therefore cannot keep, or regain, a hand-built second source. There is no --fix: the
+elements that share a census shape differ in how their emission code is laid out, so each migration is made
+by hand and proved by tests/php/BorderElementParityTest.php (declaration set per selector, before and after).
 
 Usage (from plugins/sgs-blocks):
     python scripts/migrate-border-element.py --survey            census to stdout
     python scripts/migrate-border-element.py --survey --json     also writes reports/migrations/border-element-census.json
+    python scripts/migrate-border-element.py --check             gate (exit 1 on a finding)
     python scripts/migrate-border-element.py --self-test
 
 Method: .claude/THE-MIGRATION-METHOD.md. Modelled on scripts/migrate-box-longhands.py.
@@ -650,6 +657,71 @@ def grouped(elements):
     return sorted(g.items(), key=lambda kv: (-len(kv[1]), kv[0]))
 
 
+ASSEMBLER = 'sgs_border_element_decls'
+COLOUR_ENTRY = re.compile(r"'(?:base|hover|gradient|hover_gradient)'\s*=>\s*'(\w+)'")
+
+
+def prefixed(prefix, base):
+    """The attribute name sgs_typography_attr() builds: '' + 'BorderWidth' is 'borderWidth'."""
+    return prefix + base if prefix else base[0].lower() + base[1:]
+
+
+def assembler_findings(text):
+    """[(problem, line)] for each sgs_border_element_decls() call in a PHP file.
+
+    The assembler reads {prefix}BorderWidth, {prefix}BorderStyle, {prefix}BorderRadius and every
+    attribute its literal colour map names. A file that names one of those attributes anywhere
+    outside the call still builds that border by hand (half-migrated, two sources for one
+    property). A prefix or colour map that is not a literal is refused: the behavioural analyser
+    routes the attributes only from literals.
+    """
+    clean = blank_definitions(blank_comments(text))
+    out = []
+    for args, off in calls(clean, ASSEMBLER):
+        line = line_of(clean, off)
+        if len(args) < 3:
+            out.append(('call has fewer than three arguments', line))
+            continue
+        m = re.fullmatch(r"'(\w*)'", args[1].strip())
+        if not m:
+            out.append(('prefix is not a string literal: %s' % args[1].strip(), line))
+            continue
+        options = args[3].strip() if len(args) > 3 else ''
+        if options and not options.startswith('array('):
+            out.append(('options are not a literal array( ... ): %s' % options, line))
+            continue
+        prefix = m.group(1)
+        keys = {prefixed(prefix, b) for b in ('BorderWidth', 'BorderStyle', 'BorderRadius')}
+        keys |= set(COLOUR_ENTRY.findall(options))
+        close = close_paren(clean, clean.index('(', off))
+        outside = clean[:off] + ' ' * (close + 1 - off) + clean[close + 1:]
+        for key in sorted(keys):
+            for hit in re.finditer("'" + re.escape(key) + "'", outside):
+                out.append(("'%s' is read outside the %s() call" % (key, ASSEMBLER), line_of(clean, hit.start())))
+    return out
+
+
+def check():
+    """Gate: every sgs_border_element_decls() caller reads its border attributes through it only."""
+    callers, findings = 0, []
+    for path in targets():
+        text = read(path)
+        if ASSEMBLER not in text:
+            continue
+        found = assembler_findings(text)
+        if calls(blank_definitions(blank_comments(text)), ASSEMBLER):
+            callers += 1
+        findings += [(rel(path), problem, line) for problem, line in found]
+    for f, problem, line in findings:
+        print('  %s:%d  %s' % (f, line, problem))
+    if findings:
+        print('CHECK FAILED: %d finding(s) in the %d file(s) that call %s(). Read each attribute only '
+              'through the call, and pass the prefix and options as literals.' % (len(findings), callers, ASSEMBLER))
+        return 1
+    print('CHECK OK: %d file(s) call %s(); none reads a border attribute outside it.' % (callers, ASSEMBLER))
+    return 0
+
+
 def survey(write_json):
     files, elements = census()
     shapes = grouped(elements)
@@ -780,18 +852,46 @@ function sgs_border_box_decls( $w, $s ) { return array(); }
         failed += 1
     else:
         print('ok    prefix grouping: card and the empty prefix are separate elements')
+    call = """$border = sgs_border_element_decls(
+	$attributes, '', $root_sel,
+	array( 'colour' => array( 'base' => 'borderColour', 'gradient' => 'borderColourGradient' ), 'none_rule' => false )
+);
+$decls = array_merge( $decls, $border['base'] );
+"""
+    cases = (
+        ('assembler: a clean caller has no finding', '<?php\n' + call, 0),
+        ('assembler: a comment naming the attribute is ignored', "<?php\n// $attributes['borderColour']\n" + call, 0),
+        ('assembler: a stray colour read is found', "<?php\n" + call + "$c = $attributes['borderColour'] ?? '';\n", 1),
+        ('assembler: a stray radius read by the prefix is found',
+         "<?php\n" + call + "$r = sgs_border_radius_tiers( array( 'borderRadius' => 1 ) );\n", 1),
+        ('assembler: another prefix is not this call\'s attribute', "<?php\n" + call + "$w = $attributes['cardBorderWidth'];\n", 0),
+        ('assembler: a variable prefix is refused', "<?php\n$b = sgs_border_element_decls( $attributes, $p, $s );\n", 1),
+        ('assembler: a variable options array is refused', "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, $opts );\n", 1),
+        ('assembler: the definition is not a call',
+         "<?php\nfunction sgs_border_element_decls( array $attributes, string $prefix ) { return sgs_typography_attr( $prefix, 'BorderWidth' ); }\n", 0),
+    )
+    for name, src, want in cases:
+        got = assembler_findings(src)
+        if len(got) != want:
+            print('FAIL  %s: want %d finding(s), got %s' % (name, want, got))
+            failed += 1
+        else:
+            print('ok    %s' % name)
     print('self-test: %s' % ('FAILED (%d)' % failed if failed else 'passed'))
     return 1 if failed else 0
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Border-element census (census only).')
+    ap = argparse.ArgumentParser(description='Border-element census and the shared-assembler gate.')
     ap.add_argument('--survey', action='store_true')
     ap.add_argument('--json', action='store_true', help='with --survey: also write ' + os.path.relpath(CENSUS, REPO))
+    ap.add_argument('--check', action='store_true', help='gate: exit 1 if a %s() caller reads a border attribute outside it' % ASSEMBLER)
     ap.add_argument('--self-test', action='store_true')
     a = ap.parse_args()
     if a.self_test:
         return self_test()
+    if a.check:
+        return check()
     if a.survey:
         return survey(a.json)
     ap.print_help()

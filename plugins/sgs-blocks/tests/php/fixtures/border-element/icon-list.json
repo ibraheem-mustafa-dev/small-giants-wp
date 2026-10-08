@@ -34,7 +34,8 @@
     },
     "f_colour_no_widths": {
         " || .sgs-ilist-UID.wp-block-sgs-icon-list": [
-            "--sgs-icon-list-gap:20px"
+            "--sgs-icon-list-gap:20px",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "g_gradient": {

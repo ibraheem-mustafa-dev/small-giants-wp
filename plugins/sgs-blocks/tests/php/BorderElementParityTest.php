@@ -42,18 +42,18 @@ final class BorderElementParityTest extends TestCase {
 	 */
 	private static function case_requirements(): array {
 		return array(
-			'a_baseline'            => array(),
-			'b_equal_sides'         => array( 'borderWidth', 'borderColour' ),
-			'c_unequal_dashed_raw'  => array( 'borderWidth', 'borderStyle', 'borderColour' ),
-			'd_style_none'          => array( 'borderWidth', 'borderStyle', 'borderColour' ),
-			'e_widths_no_colour'    => array( 'borderWidth' ),
-			'f_colour_no_widths'    => array( 'borderColour' ),
-			'g_gradient'            => array( 'borderWidth', 'borderColourGradient' ),
-			'h_hover_flat'          => array( 'borderWidth', 'borderColour', 'borderColourHover' ),
-			'i_hover_gradient'      => array( 'borderWidth', 'borderColourGradient', 'borderColourHoverGradient' ),
-			'j_radius_uniform'      => array( 'borderRadius' ),
-			'k_radius_tiers'        => array( 'borderRadius' ),
-			'l_inherit_style'       => array( 'borderWidth', 'borderColour', 'inheritStyle' ),
+			'a_baseline'           => array(),
+			'b_equal_sides'        => array( 'borderWidth', 'borderColour' ),
+			'c_unequal_dashed_raw' => array( 'borderWidth', 'borderStyle', 'borderColour' ),
+			'd_style_none'         => array( 'borderWidth', 'borderStyle', 'borderColour' ),
+			'e_widths_no_colour'   => array( 'borderWidth' ),
+			'f_colour_no_widths'   => array( 'borderColour' ),
+			'g_gradient'           => array( 'borderWidth', 'borderColourGradient' ),
+			'h_hover_flat'         => array( 'borderWidth', 'borderColour', 'borderColourHover' ),
+			'i_hover_gradient'     => array( 'borderWidth', 'borderColourGradient', 'borderColourHoverGradient' ),
+			'j_radius_uniform'     => array( 'borderRadius' ),
+			'k_radius_tiers'       => array( 'borderRadius' ),
+			'l_inherit_style'      => array( 'borderWidth', 'borderColour', 'inheritStyle' ),
 		);
 	}
 
@@ -62,6 +62,7 @@ final class BorderElementParityTest extends TestCase {
 	 *
 	 * @param string $case Case name.
 	 * @return array<string, mixed>
+	 * @throws InvalidArgumentException For a case name the matrix does not define.
 	 */
 	private static function case_attrs( string $case ): array {
 		$two = array(
@@ -144,7 +145,7 @@ final class BorderElementParityTest extends TestCase {
 					'inheritStyle' => true,
 				);
 		}
-		throw new InvalidArgumentException( 'unknown case ' . $case );
+		throw new InvalidArgumentException( 'unknown case ' . esc_html( $case ) );
 	}
 
 	/**
@@ -167,6 +168,53 @@ final class BorderElementParityTest extends TestCase {
 	}
 
 	/**
+	 * Attributes a block needs before it prints any CSS: quote/render.php returns
+	 * early unless there is a body or an attribution.
+	 *
+	 * @param string $block Block folder name.
+	 * @return array<string, mixed>
+	 */
+	private static function block_base( string $block ): array {
+		return 'quote' === $block ? array( 'attribution' => 'Parity' ) : array();
+	}
+
+	/**
+	 * The six blocks, as data-provider rows.
+	 *
+	 * @return array<string, array{0: string}>
+	 */
+	public static function blocks(): array {
+		$out = array();
+		foreach ( self::BLOCKS as $block ) {
+			$out[ $block ] = array( $block );
+		}
+		return $out;
+	}
+
+	/**
+	 * The desktop radius rule prints BEFORE the tablet and mobile media rules.
+	 *
+	 * Both carry the root selector at the same specificity, so whichever comes
+	 * later wins; a desktop rule printed after the media rules silently beats
+	 * the tablet and mobile radius. The declaration-set comparison cannot see
+	 * order, so this test does.
+	 *
+	 * @param string $block Block folder name.
+	 */
+	#[DataProvider( 'blocks' )]
+	public function test_desktop_radius_precedes_the_tier_radius( string $block ): void {
+		$css     = $this->render_block( 'sgs/' . $block, array_merge( self::block_base( $block ), self::case_attrs( 'k_radius_tiers' ) ) )['css'];
+		$desktop = strpos( $css, 'border-top-left-radius:12px' );
+		$tablet  = strpos( $css, 'border-top-left-radius:6px' );
+		$mobile  = strpos( $css, 'border-top-left-radius:2px' );
+		$this->assertNotFalse( $desktop, "{$block}: desktop radius not printed" );
+		$this->assertNotFalse( $tablet, "{$block}: tablet radius not printed" );
+		$this->assertNotFalse( $mobile, "{$block}: mobile radius not printed" );
+		$this->assertLessThan( $tablet, $desktop, "{$block}: the desktop radius prints after the tablet media rule, so it beats it" );
+		$this->assertLessThan( $mobile, $tablet, "{$block}: the tablet radius prints after the mobile media rule, so it beats it" );
+	}
+
+	/**
 	 * Render, parse and compare (or record) one case.
 	 *
 	 * @param string $block Block folder name.
@@ -174,14 +222,7 @@ final class BorderElementParityTest extends TestCase {
 	 */
 	#[DataProvider( 'cases' )]
 	public function test_border_css_declaration_sets_are_unchanged( string $block, string $case ): void {
-		// heading/render.php reads $attributes['maxWidthUnit'] unguarded in its ternary's true branch (the harness applies no
-		// block.json defaults), so the warning corrupts the harness JSON; pin the unit to its default.
-		// quote/render.php returns early (no CSS) unless there is a body or an attribution, so give it an attribution.
-		$base = array(
-			'heading' => array( 'maxWidthUnit' => 'px' ),
-			'quote'   => array( 'attribution' => 'Parity' ),
-		)[ $block ] ?? array();
-		$out  = $this->render_block( 'sgs/' . $block, array_merge( $base, self::case_attrs( $case ) ) );
+		$out = $this->render_block( 'sgs/' . $block, array_merge( self::block_base( $block ), self::case_attrs( $case ) ) );
 		$map = self::parse_css( $out['css'] );
 
 		$file = __DIR__ . '/fixtures/border-element/' . $block . '.json';
@@ -224,7 +265,7 @@ final class BorderElementParityTest extends TestCase {
 			} elseif ( null === $g ) {
 				$lines[] = "  [{$key}] selector is GONE; declarations were: " . implode( '; ', $w );
 			} elseif ( $missing || $extra ) {
-				$lines[] = "  [{$key}] missing: " . ( implode( '; ', $missing ) ?: '-' ) . ' | extra: ' . ( implode( '; ', $extra ) ?: '-' );
+				$lines[] = "  [{$key}] missing: " . ( $missing ? implode( '; ', $missing ) : '-' ) . ' | extra: ' . ( $extra ? implode( '; ', $extra ) : '-' );
 			}
 		}
 		return implode( "\n", $lines );
@@ -385,7 +426,7 @@ final class BorderElementParityTest extends TestCase {
 	 * @param array<string, array<int, string>> $map      Output.
 	 */
 	private static function rule( string $selector, string $body, string $context, array &$map ): void {
-		$key = $context . ' || ' . $selector;
+		$key           = $context . ' || ' . $selector;
 		$map[ $key ] ??= array();
 		foreach ( self::split_top( $body, ';' ) as $segment ) {
 			$segment = trim( $segment );
@@ -402,11 +443,11 @@ final class BorderElementParityTest extends TestCase {
 			if ( false === $colon ) {
 				continue;
 			}
-			$prop = strtolower( trim( substr( $segment, 0, $colon ) ) );
-			$val  = trim( (string) preg_replace( '/\s+/', ' ', substr( $segment, $colon + 1 ) ) );
-			$val  = (string) preg_replace( '/\s*,\s*/', ',', $val );
-			$val  = (string) preg_replace( '/\(\s+/', '(', $val );
-			$val  = (string) preg_replace( '/\s+\)/', ')', $val );
+			$prop          = strtolower( trim( substr( $segment, 0, $colon ) ) );
+			$val           = trim( (string) preg_replace( '/\s+/', ' ', substr( $segment, $colon + 1 ) ) );
+			$val           = (string) preg_replace( '/\s*,\s*/', ',', $val );
+			$val           = (string) preg_replace( '/\(\s+/', '(', $val );
+			$val           = (string) preg_replace( '/\s+\)/', ')', $val );
 			$map[ $key ][] = $prop . ':' . $val;
 		}
 		if ( array() === $map[ $key ] ) {

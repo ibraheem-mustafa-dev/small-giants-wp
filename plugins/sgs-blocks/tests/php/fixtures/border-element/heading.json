@@ -14,12 +14,7 @@
             "border-width:1px 0 0 4px"
         ]
     },
-    "d_style_none": {
-        " || .sgs-hdg-UID.wp-block-sgs-heading": [
-            "border-color:var(--wp--preset--color--primary,currentColor)",
-            "border-width:2px 2px 2px 2px"
-        ]
-    },
+    "d_style_none": [],
     "e_widths_no_colour": {
         " || .sgs-hdg-UID.wp-block-sgs-heading": [
             "border-style:solid",

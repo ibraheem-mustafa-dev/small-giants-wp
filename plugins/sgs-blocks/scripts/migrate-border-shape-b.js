@@ -2611,7 +2611,12 @@ function check() {
 			// half-migrated block. 50 blocks already consume this exact helper.
 			const viaSharedRadiusHelper = ! a.borderWidth && ! a.borderStyle && ! a.borderColour
 				&& /sgs_border_radius_tiers\(\s*\$attributes\s*\)/.test( php );
-			if ( ! viaMediaAtom && ! viaWrapperPrefix && ! viaSharedRadiusHelper && ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
+			// The shared border assembler called with the block's attributes and
+			// the empty prefix reads `borderWidth`/`borderStyle`/`borderRadius`
+			// by name (`sgs_typography_attr( '', 'BorderWidth' )`) and the colour
+			// attrs through its literal colour map.
+			const viaSharedBorderElement = /sgs_border_element_decls\(\s*\$attributes\s*,\s*''/.test( php );
+			if ( ! viaMediaAtom && ! viaWrapperPrefix && ! viaSharedRadiusHelper && ! viaSharedBorderElement && ! /\$attributes\['border(Width|Style|Colour|Radius)'\]/.test( php ) ) {
 				problems.push(
 					`sgs/${ slug }: declares private border attrs but render.php never reads them — ` +
 						'the control writes an attribute nothing paints (half-migrated)'

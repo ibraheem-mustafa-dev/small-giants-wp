@@ -73,7 +73,8 @@
             "--sgs-date-colour:var(--wp--preset--color--accent,currentColor)",
             "--sgs-reveal-stagger:100ms",
             "--sgs-timeline-media-width:180px",
-            "--sgs-timeline-milestone-min-height:80vh"
+            "--sgs-timeline-milestone-min-height:80vh",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
         ],
         " || .sgs-tl-UID.sgs-timeline .sgs-timeline__date": [
             "color:var(--wp--preset--color--accent,currentColor)"

@@ -148,9 +148,6 @@ $text_colour_gradient = $attributes['textColourGradient'] ?? '';
 // object attrs. The flat per-side + {family}Unit attrs are removed.
 $background_colour          = $attributes['backgroundColour'] ?? '';
 $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
-$border_colour              = $attributes['borderColour'] ?? '';
-// D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
-$border_colour_gradient  = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 // sgs_shadow_decls() (Wave A1 ShadowControl redesign, 2026-09-07) composes
 // shape+colour for BOTH states into declaration arrays merged below.
 $box_shadow_decls = sgs_shadow_decls(
@@ -177,13 +174,10 @@ $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
 $custom_width      = $attributes['customWidth'] ?? '';
 $custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
 $max_width_raw     = $attributes['maxWidth'] ?? '';
-$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? $attributes['maxWidthUnit'] : 'px';
+$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? ( $attributes['maxWidthUnit'] ?? 'px' ) : 'px';
 $inherit_style     = ! empty( $attributes['inheritStyle'] );
 
 // Text alignment — validated against allowlist; emitted scoped on the wrapper.
@@ -203,23 +197,6 @@ $text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ?
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // (border-style / text-transform). Strips everything except letters + hyphen so
 // ;{}():digits can never break out of the declaration (contract §D).
-// Border-width — SGS custom OBJECT attr { top, right, bottom, left }, base only
-// (no tiers). No WP-native border-width support; colour/style stay scalar attrs.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-// Border-radius — WP-native style.border.radius (string = uniform, or an object
-// with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
-// in block.json → emit scoped via the style engine in step 5.
-$radius_tiers            = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $radius_tiers['base'];
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 // Kept as-is (string values incl. preset "var:preset|spacing|N" refs) and passed
 // straight to the style engine, which formats + sanitises them (contract §B / the
@@ -314,6 +291,32 @@ if ( '' !== $text_colour_effective ) {
 // text-align / border-width all move OFF the wrapper `style` attr and into the
 // scoped .{uid} rule below. Gated by !inherit_style (inheritStyle suppresses
 // block-level wrapper styling and inherits from the parent).
+$uid      = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.wp-block-sgs-heading';
+
+// Border (width, style, colour, gradient ring, radius at three tiers) through
+// the shared assembler; inheritStyle prints none of it.
+$border = $inherit_style
+	? array(
+		'base'   => array(),
+		'tablet' => array(),
+		'mobile' => array(),
+		'hover'  => array(),
+		'rules'  => array(),
+	)
+	: sgs_border_element_decls(
+		$attributes,
+		'',
+		$root_sel,
+		array(
+			'colour'    => array(
+				'base'     => 'borderColour',
+				'gradient' => 'borderColourGradient',
+			),
+			'none_rule' => false,
+		)
+	);
+
 $wrapper_decls = array();
 
 if ( ! $inherit_style ) {
@@ -323,15 +326,7 @@ if ( ! $inherit_style ) {
 	// which silently overwrites (same `background-image` property) or clips
 	// (same box) a background painted directly on the root. See
 	// `sgs_block_background_layer_css()` in helpers-tokens.php.
-	// $border_style is allowlist-validated above (stronger than the keyword regex).
-	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by default —
-	// never fall through to the browser's initial medium (~3px) border-width.
-	if ( $border_style && 'none' !== $border_style && $has_border_width ) {
-		$wrapper_decls[] = 'border-style:' . $border_style;
-	}
-	if ( $border_colour ) {
-		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-	}
+	$wrapper_decls = array_merge( $wrapper_decls, $border['base'] );
 	if ( $box_shadow_decls['normal'] ) {
 		$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 	}
@@ -351,14 +346,6 @@ if ( ! $inherit_style ) {
 	if ( '' !== $text_align ) {
 		$wrapper_decls[] = 'text-align:' . $text_align;
 	}
-	// Border-width — SGS custom object attr, base only, hand-built shorthand.
-	if ( $has_border_width ) {
-		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
-		$wrapper_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
 }
 
 // ---------------------------------------------------------------------------
@@ -370,9 +357,6 @@ if ( ! $inherit_style ) {
 // scoped uid is a CLASS (`.sgs-hdg-{md5}`, container-style), never an `id` —
 // so every scoped rule targets the root selector `.{uid}.wp-block-sgs-heading`.
 // ---------------------------------------------------------------------------
-
-$uid      = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel = '.' . $uid . '.wp-block-sgs-heading';
 
 $scoped_css = array();
 
@@ -462,11 +446,8 @@ if ( ! $inherit_style ) {
 	}
 }
 
-// --- Border gradient (D636 border builder) — masked ::before, wins over the flat
-// border-color decl above (emitted after it so the cascade favours the mask). ---
-if ( ! $inherit_style && '' !== $border_colour_gradient ) {
-	$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $has_border_width ? $bwt : '1px' );
-}
+// --- Border rules: the gradient ring. ---
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // --- Base spacing (padding/margin), border-radius, and WP colour support —
 // skip-serialised in block.json, emitted scoped via the stable core style
@@ -483,10 +464,6 @@ if ( ! $inherit_style ) {
 	}
 	if ( ! empty( $base_spacing ) ) {
 		$base_style_engine_args['spacing'] = $base_spacing;
-	}
-
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
 	}
 
 	$color_args = array();
@@ -522,8 +499,6 @@ if ( ! $inherit_style ) {
 	$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 	$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 	$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-	$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-	$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 	$tablet_box_decls = array();
 	if ( null !== $padding_tab_val ) {
@@ -532,9 +507,7 @@ if ( ! $inherit_style ) {
 	if ( null !== $margin_tab_val ) {
 		$tablet_box_decls[] = "{$margin_tab_val}";
 	}
-	if ( null !== $radius_tab_val ) {
-		$tablet_box_decls[] = "{$radius_tab_val}";
-	}
+	$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 	if ( $tablet_box_decls ) {
 		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
 	}
@@ -546,9 +519,7 @@ if ( ! $inherit_style ) {
 	if ( null !== $margin_mob_val ) {
 		$mobile_box_decls[] = "{$margin_mob_val}";
 	}
-	if ( null !== $radius_mob_val ) {
-		$mobile_box_decls[] = "{$radius_mob_val}";
-	}
+	$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 	if ( $mobile_box_decls ) {
 		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 	}

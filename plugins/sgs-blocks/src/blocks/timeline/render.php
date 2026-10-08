@@ -50,8 +50,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -69,23 +69,23 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
-$entries          = isset( $attributes['entries'] ) && is_array( $attributes['entries'] ) ? $attributes['entries'] : array();
+$entries = isset( $attributes['entries'] ) && is_array( $attributes['entries'] ) ? $attributes['entries'] : array();
 // Entry-title heading level — an out-of-enum stored value is otherwise
 // silently coerced to the block.json default (blockjson-enum-coerces-
 // invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
 $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
-$heading_level    = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-$orientation      = $attributes['orientation'] ?? 'vertical';
+$orientation            = $attributes['orientation'] ?? 'vertical';
 // contentLayout / datePosition replace the old alignment / showDateColumn split
 // (Task 3a). 'same-side' (Task 3b) is a distinct two-sided layout — every row
 // uses the SAME date/content assignment instead of flipping per row, unlike
 // 'alternating'. 'single-column' keeps the old 'left' shape (the mapping's 8px
 // rail-offset difference against the old 'centre' is a known, accepted loss —
 // Task 3a brief, "near-identical").
-$content_layout   = $attributes['contentLayout'] ?? 'alternating';
-$content_layout   = in_array( $content_layout, array( 'alternating', 'same-side', 'single-column' ), true )
+$content_layout = $attributes['contentLayout'] ?? 'alternating';
+$content_layout = in_array( $content_layout, array( 'alternating', 'same-side', 'single-column' ), true )
 	? $content_layout
 	: 'alternating';
 // contentSide — Task 3b. Meaningless outside 'same-side' (alternating flips by
@@ -116,16 +116,16 @@ $connector_colour_gradient = $attributes['connectorColourGradient'] ?? '';
 // before-after's handleColour.
 $connector_colour_hover          = $attributes['connectorColourHover'] ?? '';
 $connector_colour_hover_gradient = $attributes['connectorColourHoverGradient'] ?? '';
-$date_colour      = $attributes['dateColour'] ?? 'accent';
+$date_colour                     = $attributes['dateColour'] ?? 'accent';
 // dateColourGradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT closeout)
 // — same sgs_custom_property_gradient_decls() 5-arg form proven on textColour below.
-$date_colour_gradient = $attributes['dateColourGradient'] ?? '';
+$date_colour_gradient       = $attributes['dateColourGradient'] ?? '';
 $date_colour_hover          = $attributes['dateColourHover'] ?? '';
 $date_colour_hover_gradient = $attributes['dateColourHoverGradient'] ?? '';
-$progress_fill    = ! empty( $attributes['connectorProgressFill'] );
-$fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
-$reveal_on_scroll = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
-$reveal_stagger   = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
+$progress_fill              = ! empty( $attributes['connectorProgressFill'] );
+$fill_colour                = $attributes['connectorFillColour'] ?? 'accent';
+$reveal_on_scroll           = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
+$reveal_stagger             = isset( $attributes['revealStagger'] ) ? absint( $attributes['revealStagger'] ) : 100;
 
 // Step 4b — curated scroll-effect mode. Reuses the EXISTING GSAP fx slugs
 // (`scrub` / `pin-scrub` / `horizontal-panel`) rather than registering a new
@@ -177,7 +177,7 @@ $milestone_size = in_array( $milestone_size, array( 'compact', 'full-height' ), 
 // milestoneMinHeight / entryGap — CSS-length attrs, routed as custom-property
 // VALUES only (no property declaration), matching $media_width above.
 $milestone_min_height = sgs_css_length_value( $attributes['milestoneMinHeight'] ?? '80vh' );
-$entry_gap             = sgs_css_length_value( $attributes['entryGap'] ?? '' );
+$entry_gap            = sgs_css_length_value( $attributes['entryGap'] ?? '' );
 
 // Decorative milestone media. WordPress already stores the real alt text on the
 // ATTACHMENT, which is where it belongs and which this block reads — so this is
@@ -191,9 +191,9 @@ $entry_gap             = sgs_css_length_value( $attributes['entryGap'] ?? '' );
 $media_decorative = ! empty( $attributes['milestoneMediaDecorative'] );
 
 // Alternating A/B row bands.
-$row_stripes   = ! empty( $attributes['rowStripes'] );
-$stripe_a      = $attributes['rowStripeColourA'] ?? '';
-$stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
+$row_stripes = ! empty( $attributes['rowStripes'] );
+$stripe_a    = $attributes['rowStripeColourA'] ?? '';
+$stripe_b    = $attributes['rowStripeColourB'] ?? 'surface-alt';
 // rowStripeColourA/BGradient (2026-09-06, colour-conformance closeout) — no
 // attrMap entry (see block.json's rowStripeColourAGradient description: A/B
 // both target the entry element's background-color via mutually exclusive
@@ -258,13 +258,13 @@ $date_gutter   = 'own-column' === $date_position && 'single-column' === $content
 // textColour/Gradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT closeout)
 // — background moves to ::after layer via sgs_block_background_layer_css() below
 // to free the root for background-clip:text on text colour gradients.
-$style_color_text = isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ? sgs_colour_value( $attributes['textColour'] ) : '';
-$text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$style_color_text           = isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ? sgs_colour_value( $attributes['textColour'] ) : '';
+$text_colour_gradient       = $attributes['textColourGradient'] ?? '';
 $text_colour_hover          = $attributes['textColourHover'] ?? '';
 $text_colour_hover_gradient = $attributes['textColourHoverGradient'] ?? '';
-$style_color_bg   = isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ? sgs_colour_value( $attributes['backgroundColour'] ) : '';
-$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$style_color_bg             = isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ? sgs_colour_value( $attributes['backgroundColour'] ) : '';
+$preset_text_slug           = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug             = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // WP `shadow` support value (skip-serialised).
 $style_shadow = isset( $attributes['style']['shadow'] ) ? (string) $attributes['style']['shadow'] : '';
@@ -298,30 +298,6 @@ $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sg
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys). Tiers are the
-// SGS object attrs borderRadiusTablet/borderRadiusMobile.
-$radius_tiers            = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $radius_tiers['base'];
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-
-// Border width/colour/style — SGS custom attrs (no WP-native per-side width
-// support; matches sgs/quote + sgs/button). Base only, no tiers.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_colour = $attributes['borderColour'] ?? '';
-// D636 border-colour gradient rollout — non-empty wins over $border_colour
-// above, painted via the shared masked ::before ring mechanism.
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$border_style_raw       = $attributes['borderStyle'] ?? '';
-$border_style           = sgs_border_style_keyword( $border_style_raw );
-
 // ---------------------------------------------------------------------------
 // 3. Scoped CSS assembly. uid is a CLASS (this block has anchor support for
 // the ToC, so the `id` attribute stays free for the anchor).
@@ -331,6 +307,22 @@ $uid             = 'sgs-tl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 
 $root_sel        = '.' . $uid . '.sgs-timeline';
 $title_sel       = $root_sel . ' .sgs-timeline__title';
 $description_sel = $root_sel . ' .sgs-timeline__description';
+
+// Border (width, style, colour, gradient ring, radius at three tiers) through
+// the shared assembler.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour'     => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+		'none_rule'  => false,
+		'ring_width' => '2px',
+	)
+);
 
 $scoped_css = array();
 
@@ -353,10 +345,10 @@ if ( '' !== $text_colour_flat || '' !== sgs_css_gradient_value( $text_colour_gra
 	$text_decl = sgs_text_colour_decl( $text_colour_flat );
 	if ( '' !== $text_decl ) {
 		$scoped_css[] = "{$root_sel}{" . $text_decl . ';}';
-		// Fallback for browsers without background-clip:text support
+		// Fallback for browsers without background-clip:text support.
 		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_flat );
 	}
-	// Hover state
+	// Hover state.
 	$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
 	if ( '' !== $text_colour_hover_flat || '' !== sgs_css_gradient_value( $text_colour_hover_gradient ) ) {
 		$text_hover_decl = sgs_text_colour_decl( $text_colour_hover_flat );
@@ -375,37 +367,12 @@ if ( '' !== $description_link_css ) {
 	$scoped_css[] = $description_link_css;
 }
 
-// --- Root box/border declarations (custom borderWidth/Colour/Style — no WP
-// native support for per-side width, matches sgs/quote + sgs/button). ---
-$root_decls = array();
-// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
-// default — never fall through to the browser's initial medium (~3px)
-// border-width.
-if ( 'none' !== $border_style && $has_border_width ) {
-	if ( $has_border_width ) {
-		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
-		$root_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
-	$root_decls[] = 'border-style:' . $border_style;
-	if ( $border_colour ) {
-		$root_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-	}
-}
+// --- Root border declarations + gradient ring. ---
+$root_decls = $border['base'];
 if ( $root_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 }
-
-// D636 border-colour gradient rollout — masked ::before ring, only when the
-// operator has ALSO set a real border (matches every other border decl
-// above, gated on 'none' !== $border_style). Width mirrors the resolved
-// top border width when set, else the shared helper's own 2px default.
-if ( 'none' !== $border_style && '' !== $border_colour_gradient ) {
-	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '2px';
-	$scoped_css[]          = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, $border_gradient_width );
-}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // --- Base spacing (padding/margin), border-radius, WP colour + shadow
 // supports — skip-serialised, emitted scoped via the stable core style
@@ -422,10 +389,6 @@ if ( ! empty( $base_margin_obj ) ) {
 }
 if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
-}
-
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
 }
 
 $color_args = array();
@@ -486,8 +449,6 @@ $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -496,9 +457,7 @@ if ( null !== $padding_tab_val ) {
 if ( null !== $margin_tab_val ) {
 	$tablet_decls[] = "{$margin_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_decls[] = "{$radius_tab_val}";
-}
+$tablet_decls = array_merge( $tablet_decls, $border['tablet'] );
 if ( $tablet_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
 }
@@ -510,9 +469,7 @@ if ( null !== $padding_mob_val ) {
 if ( null !== $margin_mob_val ) {
 	$mobile_decls[] = "{$margin_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_decls[] = "{$radius_mob_val}";
-}
+$mobile_decls = array_merge( $mobile_decls, $border['mobile'] );
 if ( $mobile_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
 }
@@ -625,9 +582,9 @@ $wrapper_style_parts = array_merge(
 // stylesheet's flat `.sgs-timeline__date{color:var(--sgs-date-colour)}` rule.
 // Also gives dateColourHover a touch-safe hover pair via sgs_hover_state_rules()
 // instead of style.scss's raw (non-touch-guarded) `:hover` selector.
-$date_sel                    = $root_sel . ' .sgs-timeline__date';
-$date_colour_effective       = sgs_resolve_text_colour_or_gradient( $date_colour, $date_colour_gradient );
-$date_decl                   = sgs_text_colour_decl( $date_colour_effective );
+$date_sel              = $root_sel . ' .sgs-timeline__date';
+$date_colour_effective = sgs_resolve_text_colour_or_gradient( $date_colour, $date_colour_gradient );
+$date_decl             = sgs_text_colour_decl( $date_colour_effective );
 if ( '' !== $date_decl ) {
 	$scoped_css[] = "{$date_sel}{" . $date_decl . ';}';
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $date_sel, $date_colour_effective );
@@ -719,9 +676,9 @@ $wrapper_args = array(
 // markup for `data-sgs-fx` on `render_block` priority 99 and enqueues the
 // matching module, so this is the ONLY place that needs to know the slug.
 if ( 'basic' !== $scroll_effect ) {
-	$fx_slug_by_effect = array(
-		'scrub'            => 'scrub',
-		'pinned-journey'   => 'pin-scrub',
+	$fx_slug_by_effect           = array(
+		'scrub'             => 'scrub',
+		'pinned-journey'    => 'pin-scrub',
 		'pinned-horizontal' => 'horizontal-panel',
 	);
 	$wrapper_args['data-sgs-fx'] = $fx_slug_by_effect[ $scroll_effect ];
@@ -871,8 +828,8 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 				$entry_media_type = in_array( $entry_media_type, array( 'image', 'video', 'svg' ), true )
 					? $entry_media_type
 					: 'image';
-				$entry_video = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
-				$entry_svg   = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
+				$entry_video      = isset( $entry['video'] ) && is_array( $entry['video'] ) ? $entry['video'] : array();
+				$entry_svg        = isset( $entry['svg'] ) ? (string) $entry['svg'] : '';
 
 				$entry_media_spec = array();
 				if ( 'svg' === $entry_media_type && '' !== trim( $entry_svg ) ) {
@@ -893,8 +850,8 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 					// reserves its space and does not shift the layout as it loads. Same
 					// backfill sgs/hero does; the ID is stored rather than a URL so it
 					// survives a media re-upload.
-					$src               = wp_get_attachment_image_src( $image_id, 'large' );
-					$entry_media_spec  = array(
+					$src              = wp_get_attachment_image_src( $image_id, 'large' );
+					$entry_media_spec = array(
 						'type'  => 'image',
 						'media' => array(
 							'id'     => $image_id,
