@@ -92,11 +92,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
   (Spec 47 §5 "Route"): after any sweep, re-measure every canvas citation with `confirm-canvas.mjs --candidates`
-  (37 canvas-settable rows rest on 36 CONFIRMED families + 1 ABSENT, 2026-10-07). Register CR27 and CR28 are closed. Route suite
-  638/638.
+  (37 canvas-settable rows rest on 36 CONFIRMED families + 1 ABSENT, 2026-10-07). Route suite 638/638 (the deploy-guard test fails only while a deploy or reseed runs).
   **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`** (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
   for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
+- **Mega menu width:** the full-width wrap paints the panel's fill and shadow (Spec 36 "Panel placement"); the 40-brand list
+  reads the draft. Live on eye-care-test. Open: register CR29 (page scrolls sideways) and CR30 (untested full-width paths).
 - **The walker-blind rows** are all closed and verified live on eye-care-test, N36S included.
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
