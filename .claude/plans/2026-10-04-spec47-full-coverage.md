@@ -164,6 +164,25 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
+- [ ] **Contact: state at the end of 2026-10-08 (Session D, after its 16:43 Solve and fixes).** Solve
+  (`qa/solve/contact/2026-10-08T15-43-56/`): whole page 45 -> 44 distinct issues, 0 new; 3 writes, wrong settings 1 of 2
+  (business-info `displayType` phone -> email, reverted twice by the guard; root-fixed in `230456b91`: a setting that
+  changes an element's words never answers a style row). Hours closed (register 130, `e77963c4e`). The independent check
+  had read 123 differences, mostly its own (`751800ca9`: a `<br>` now separates words, unseen text adds no inset, bare-text
+  words are measured as a text run); it now reads **41 open, 3 accepted** (D-99/D-100: the draft's WhatsApp number is
+  two digits short). The 41, by cause, for the next session:
+  1. The D-16 map (about 18 rows): live cr-ref-contact-24 holds the embedded map (no words) where the draft column holds
+     a sketch with its own words, so -24's height and text inset (432px) and the cards' and their texts' positions
+     (-27 to -32) follow the map. Prove they move with the map alone (one probe with the map hidden on both sides), then
+     ledger them as D-16's consequences.
+  2. The form column cr-ref-contact-20: 10-11px taller at every width, and at 768/1440 its text fills the column
+     (right inset 28px) where the draft's stops short (363px at 768, 195px at 1440). Read the draft's declared max-width
+     on the form intro/fields first (`devtools.mjs::declaredValues`).
+  3. The page and left column (-0, -1): about 10px taller at every width, and the page's right text edge at 1440 (draft
+     69, live 116; the old N39 probe). Find which child adds the 10px before writing anything.
+  4. Small right insets on -1 and -3 at 1440 (7 against 4px).
+  Then Solve (3 rounds) and the done line: fresh rebuild, 0 unexplained and 0 labelled gaps, wrong settings at most 10%,
+  independent check 0 beyond the ledger, planted-fault control.
 - [ ] **Contact to 100% (Session D of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): 60 distinct issues open after the 2026-10-08 Solve run, 13 labelled gaps to prove** (run detail below). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). **Solve 2026-10-08 (`qa/solve/contact/2026-10-08T02-29-56/`,
   3 write rounds): distinct issues 66 to 60, 0 new, 17 writes, 1 wrong (6%: cr-ref-contact-22's mobile bottom margin,
