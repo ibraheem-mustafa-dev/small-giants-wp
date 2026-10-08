@@ -51,6 +51,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const parser = require( '@babel/parser' );
+const { editFiles } = require( './lib/block-source-files' );
 
 const SRC = path.resolve( __dirname, '..', 'src' );
 
@@ -73,18 +74,7 @@ function collectFiles( srcDir ) {
 	const blocksDir = path.join( srcDir, 'blocks' );
 	if ( fs.existsSync( blocksDir ) ) {
 		for ( const dir of fs.readdirSync( blocksDir ) ) {
-			const edit = path.join( blocksDir, dir, 'edit.js' );
-			if ( fs.existsSync( edit ) ) {
-				out.push( edit );
-			}
-			const comps = path.join( blocksDir, dir, 'components' );
-			if ( fs.existsSync( comps ) ) {
-				for ( const f of fs.readdirSync( comps ) ) {
-					if ( f.endsWith( '.js' ) ) {
-						out.push( path.join( comps, f ) );
-					}
-				}
-			}
+			out.push( ...editFiles( path.join( blocksDir, dir ) ) );
 		}
 	}
 	const shared = path.join( srcDir, 'components' );

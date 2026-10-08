@@ -81,7 +81,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { renderSource } = require( './lib/block-source-files' );
+const { renderSource, viewSource } = require( './lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -128,7 +128,7 @@ function readBlockOwnCorpus( dir ) {
 	const parts = [
 		renderSource( dir ),
 		readIfExists( path.join( dir, 'save.js' ) ),
-		readIfExists( path.join( dir, 'view.js' ) ),
+		viewSource( dir ),
 		readIfExists( path.join( dir, 'style.css' ) ),
 	];
 	return stripComments( parts.join( '\n' ) );

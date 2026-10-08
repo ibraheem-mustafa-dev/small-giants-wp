@@ -106,11 +106,11 @@ function resolveJs(base, spec, blockDir) {
 	return null;
 }
 
-function editFiles(blockDir) {
-	const edit = path.join(blockDir, 'edit.js');
-	if (!isFile(edit)) return [];
-	const out = [edit];
-	const seen = new Set([path.resolve(edit)]);
+function jsEntryFiles(blockDir, entryName) {
+	const entry = path.join(blockDir, entryName);
+	if (!isFile(entry)) return [];
+	const out = [entry];
+	const seen = new Set([path.resolve(entry)]);
 	for (let i = 0; i < out.length; i++) {
 		for (const m of read(out[i]).matchAll(new RegExp(JS_IMPORT_RE_SRC, 'g'))) {
 			if (!m[1].startsWith('.')) continue;
@@ -123,17 +123,33 @@ function editFiles(blockDir) {
 	return out;
 }
 
-function editSource(blockDir) {
-	return editFiles(blockDir)
+function joinSource(blockDir, files) {
+	return files
 		.map((f) => '/* ==== ' + path.relative(blockDir, f).split(path.sep).join('/') + ' ==== */\n' + read(f))
 		.join('\n');
 }
 
-module.exports = { renderFiles, renderSource, blockPhpFiles, editFiles, editSource };
+function editFiles(blockDir) {
+	return jsEntryFiles(blockDir, 'edit.js');
+}
+
+function editSource(blockDir) {
+	return joinSource(blockDir, editFiles(blockDir));
+}
+
+function viewFiles(blockDir) {
+	return jsEntryFiles(blockDir, 'view.js');
+}
+
+function viewSource(blockDir) {
+	return joinSource(blockDir, viewFiles(blockDir));
+}
+
+module.exports = { renderFiles, renderSource, blockPhpFiles, editFiles, editSource, viewFiles, viewSource };
 
 // ---------------------------------------------------------------- self-test
 
-function buildFixture(root, partACode) {
+function buildFixture(root, partACode, viewCode = '1') {
 	const w = (p, s) => {
 		fs.mkdirSync(path.dirname(p), { recursive: true });
 		fs.writeFileSync(p, s, 'utf8');
@@ -166,6 +182,15 @@ function buildFixture(root, partACode) {
 	);
 	w(path.join(b, 'constants.js'), 'export const A = 1; export const B = 2;\n');
 	w(path.join(b, 'reexp.js'), 'export const X = 1;\n');
+	w(
+		path.join(b, 'view.js'),
+		"import { store } from '@wordpress/interactivity';\n" +
+			"import { fetchIt } from './view-fetch.js';\n" +
+			"import Outside from '../../../components/Outside';\n" +
+			'store("demo", {});\n'
+	);
+	w(path.join(b, 'view-fetch.js'), "import { help } from './view-helpers';\nexport const fetchIt = () => help();\n");
+	w(path.join(b, 'view-helpers.js'), 'export const help = () => ' + viewCode + ';\n');
 	return b;
 }
 
@@ -217,11 +242,26 @@ function selfTest() {
 			'edit_source has no outside/bare code',
 			es.includes('Shared') && es.includes('components/Shared') && es.includes('export const A')
 		);
+		check('view_files list', same(rel(viewFiles(b)), ['view.js', 'view-fetch.js', 'view-helpers.js']));
+		const vs = viewSource(b);
+		check(
+			'view_source headers and submodule code',
+			vs.startsWith('/* ==== view.js ==== */\n') &&
+				vs.includes('/* ==== view-helpers.js ==== */') &&
+				vs.includes('export const help = () => 1;')
+		);
+		check('view_source has no outside/bare code', vs.includes('components/Outside') && !vs.includes('export const A'));
 		const empty = path.join(tmp, 'empty');
 		fs.mkdirSync(empty);
+		check('missing view.js -> []', viewFiles(empty).length === 0 && viewSource(empty) === '');
 		check('missing render.php -> [] and \'\'', renderFiles(empty).length === 0 && renderSource(empty) === '');
 		check('missing edit.js -> []', editFiles(empty).length === 0 && editSource(empty) === '');
-		const b2 = buildFixture(path.join(tmp, 'v2'), '$a = 99;');
+		const b2 = buildFixture(path.join(tmp, 'v2'), '$a = 99;', '77');
+		const v2 = viewSource(b2);
+		check(
+			'negative control: changed view submodule changes view_source',
+			v2 !== vs && v2.includes('=> 77;') && !v2.includes('=> 1;')
+		);
 		const s2 = renderSource(b2);
 		check(
 			'negative control: changed partial changes render_source',

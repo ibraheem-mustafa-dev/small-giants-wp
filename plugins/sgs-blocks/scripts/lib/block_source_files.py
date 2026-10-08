@@ -117,10 +117,9 @@ def _resolve_js(base: Path, spec: str, block_dir: Path) -> Optional[Path]:
     return None
 
 
-def edit_files(block_dir: Path) -> List[Path]:
-    """edit.js first, then every relative import inside the block folder, transitively."""
+def _js_entry_files(block_dir: Path, entry_name: str) -> List[Path]:
     block_dir = Path(block_dir)
-    edit = block_dir / "edit.js"
+    edit = block_dir / entry_name
     if not edit.is_file():
         return []
     out: List[Path] = [edit]
@@ -141,19 +140,37 @@ def edit_files(block_dir: Path) -> List[Path]:
     return out
 
 
-def edit_source(block_dir: Path) -> str:
-    """edit_files joined, each prefixed with a `/* ==== relative path ==== */` line."""
-    block_dir = Path(block_dir)
+def _join_source(block_dir: Path, files: List[Path]) -> str:
     parts = []
-    for f in edit_files(block_dir):
+    for f in files:
         rel = f.resolve().relative_to(block_dir.resolve()).as_posix()
         parts.append("/* ==== " + rel + " ==== */\n" + _read(f))
     return "\n".join(parts)
 
 
+def edit_files(block_dir: Path) -> List[Path]:
+    """edit.js first, then every relative import inside the block folder, transitively."""
+    return _js_entry_files(block_dir, "edit.js")
+
+
+def edit_source(block_dir: Path) -> str:
+    """edit_files joined, each prefixed with a `/* ==== relative path ==== */` line."""
+    return _join_source(Path(block_dir), edit_files(block_dir))
+
+
+def view_files(block_dir: Path) -> List[Path]:
+    """view.js first, then every relative import inside the block folder, transitively."""
+    return _js_entry_files(block_dir, "view.js")
+
+
+def view_source(block_dir: Path) -> str:
+    """view_files joined, each prefixed with a `/* ==== relative path ==== */` line."""
+    return _join_source(Path(block_dir), view_files(block_dir))
+
+
 # ---------------------------------------------------------------- self-test
 
-def _build_fixture(root: Path, part_a_code: str = "$a = 1;") -> Path:
+def _build_fixture(root: Path, part_a_code: str = "$a = 1;", view_code: str = "1") -> Path:
     b = root / "demo"
     (b / "nested").mkdir(parents=True)
     (b / "components").mkdir()
@@ -181,6 +198,15 @@ def _build_fixture(root: Path, part_a_code: str = "$a = 1;") -> Path:
         "import {\n  A,\n  B,\n} from '../constants.js';\nimport '@wordpress/components';\n", encoding="utf-8")
     (b / "constants.js").write_text("export const A = 1; export const B = 2;\n", encoding="utf-8")
     (b / "reexp.js").write_text("export const X = 1;\n", encoding="utf-8")
+    (b / "view.js").write_text(
+        "import { store } from '@wordpress/interactivity';\n"
+        "import { fetchIt } from './view-fetch.js';\n"
+        "import Outside from '../../../components/Outside';\n"
+        "store(\"demo\", {});\n",
+        encoding="utf-8")
+    (b / "view-fetch.js").write_text(
+        "import { help } from './view-helpers';\nexport const fetchIt = () => help();\n", encoding="utf-8")
+    (b / "view-helpers.js").write_text("export const help = () => " + view_code + ";\n", encoding="utf-8")
     return b
 
 
@@ -217,11 +243,21 @@ def _self_test() -> int:
         check("edit_source headers", "/* ==== edit.js ==== */" in es and "/* ==== constants.js ==== */" in es
               and es.startswith("/* ==== edit.js ==== */\n"))
         check("edit_source has no outside/bare code", "Shared" in es and "components/Shared" in es and "export const A" in es)
+        check("view_files list", [p.relative_to(b).as_posix() for p in view_files(b)] ==
+              ["view.js", "view-fetch.js", "view-helpers.js"])
+        vs = view_source(b)
+        check("view_source headers and submodule code", vs.startswith("/* ==== view.js ==== */\n")
+              and "/* ==== view-helpers.js ==== */" in vs and "export const help = () => 1;" in vs)
+        check("view_source has no outside/bare code", "components/Outside" in vs and "export const A" not in vs)
         empty = tmp / "empty"
         empty.mkdir()
+        check("missing view.js -> []", view_files(empty) == [] and view_source(empty) == "")
         check("missing render.php -> [] and ''", render_files(empty) == [] and render_source(empty) == "")
         check("missing edit.js -> []", edit_files(empty) == [] and edit_source(empty) == "")
-        b2 = _build_fixture(tmp / "v2", "$a = 99;")
+        b2 = _build_fixture(tmp / "v2", "$a = 99;", "77")
+        v2 = view_source(b2)
+        check("negative control: changed view submodule changes view_source",
+              v2 != vs and "=> 77;" in v2 and "=> 1;" not in v2)
         s2 = render_source(b2)
         check("negative control: changed partial changes render_source", s2 != src and "$a = 99;" in s2 and "$a = 1;" not in s2)
     finally:

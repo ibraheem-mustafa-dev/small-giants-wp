@@ -114,7 +114,7 @@ const os   = require( 'os' );
 const { spliceFragments } = require( './lib/e14-markup-splice' );
 const { bareTagMatchesUnknownTag } = require( './lib/e14-unknown-tag' );
 const { isJsLeafClass } = require( './lib/e14-js-leaf' );
-const { renderFiles, renderSource } = require( './lib/block-source-files' );
+const { renderFiles, renderSource, editFiles, editSource, viewFiles } = require( './lib/block-source-files' );
 
 const ROOT      = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -2531,10 +2531,10 @@ const escapeRegExp = ( t ) => t.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
  * block a front-end control.
  */
 function isEditorOnlyClass( cls, blockDir, phpFiles ) {
-	let editSrc = '';
-	try {
-		editSrc = fs.readFileSync( path.join( blockDir, 'edit.js' ), 'utf8' );
-	} catch ( err ) {
+	// edit.js plus every own file it imports: a class painted only by an editor
+	// component is still editor-only.
+	const editSrc = editSource( blockDir );
+	if ( '' === editSrc ) {
 		return false;
 	}
 	const token = new RegExp( '(?<![\\w-])' + escapeRegExp( cls ) + '(?![\\w-])' );
@@ -2546,12 +2546,17 @@ function isEditorOnlyClass( cls, blockDir, phpFiles ) {
 		// by the child block on the front end.
 		return false;
 	}
+	// A file the editor imports that the front-end view script also imports is front-end code.
+	const viewSet = new Set( viewFiles( blockDir ).map( ( f ) => path.resolve( f ) ) );
+	const editorOnlyFiles = new Set(
+		editFiles( blockDir ).map( ( f ) => path.resolve( f ) ).filter( ( f ) => ! viewSet.has( f ) )
+	);
 	const stemAt = cls.indexOf( '__' );
-	const stem   = new RegExp( '[\'"]' + escapeRegExp( stemAt > 0 ? cls.slice( stemAt ) : cls ) + '(?![\\w-])' );
+	const stem   =new RegExp( '[\'"]' + escapeRegExp( stemAt > 0 ? cls.slice( stemAt ) : cls ) + '(?![\\w-])' );
 	const frontEnd = [
 		...phpFiles.map( ( f ) => f.src ),
 		...listSourceFiles( blockDir, [ '.js' ] )
-			.filter( ( f ) => 'edit.js' !== path.basename( f ) )
+			.filter( ( f ) => ! editorOnlyFiles.has( path.resolve( f ) ) )
 			.map( ( f ) => fs.readFileSync( f, 'utf8' ) ),
 		readSharedIncludesSrc( blockDir ),
 	];

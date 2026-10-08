@@ -107,7 +107,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding='utf-8')
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
-from block_source_files import edit_source, render_source  # noqa: E402
+from block_source_files import edit_source, render_source, view_files, view_source  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -932,7 +932,12 @@ class BlockFiles:
         self.edit_js_raw = edit_source(block_dir)
         self.render_php_raw = render_source(block_dir)
         self.save_js_raw = read_text(block_dir / 'save.js')
-        self.view_js_raw = read_text(block_dir / 'view.js')
+        self.view_js_raw = view_source(block_dir)
+        # (path relative to the block folder, comment-stripped text) per view.js file, so a
+        # finding names the file the read is really in
+        self.view_js_parts = [
+            (f.relative_to(block_dir).as_posix(), strip_comments(read_text(f))) for f in view_files(block_dir)
+        ]
         self.index_js_raw = read_text(block_dir / 'index.js')
 
         self.edit_js = strip_comments(self.edit_js_raw)
@@ -1033,7 +1038,7 @@ def check_undeclared_render_refs(block, extension_attrs):
     sources = [
         ('render.php', block.render_php),
         ('save.js', block.save_js),
-        ('view.js', block.view_js),
+        *block.view_js_parts,
     ]
     for filename, src in sources:
         if not src:

@@ -84,6 +84,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const os = require( 'os' );
+const { editFiles } = require( './lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -129,6 +130,18 @@ const SHARED_COMPONENT_FILE_BASENAMES = [
 
 function readIfExists( p ) {
 	return fs.existsSync( p ) ? fs.readFileSync( p, 'utf8' ) : '';
+}
+
+/**
+ * Comment-stripped source of the block's own edit code: edit.js plus every file
+ * it imports from inside the block folder, except the library-wide shared
+ * component files that happen to sit under a block's components/ dir.
+ */
+function collectOwnEditSource( blockDir ) {
+	return editFiles( blockDir )
+		.filter( ( f, i ) => i === 0 || ! SHARED_COMPONENT_FILE_BASENAMES.includes( path.basename( f ) ) )
+		.map( ( f ) => stripComments( readIfExists( f ) ) )
+		.join( '\n' );
 }
 
 /**
@@ -295,16 +308,8 @@ function checkResponsiveSwitcher( blockName, blockDir, attrs ) {
 	const editJs = stripComments( readIfExists( path.join( blockDir, 'edit.js' ) ) );
 	if ( ! editJs ) return findings;
 
-	// Collect all local component files in the block's own dir (components/ or *.js).
-	let blockOwnSrc = editJs;
-	const blockComponentsDir = path.join( blockDir, 'components' );
-	if ( fs.existsSync( blockComponentsDir ) ) {
-		for ( const f of fs.readdirSync( blockComponentsDir ) ) {
-			if ( f.endsWith( '.js' ) && ! SHARED_COMPONENT_FILE_BASENAMES.includes( f ) ) {
-				blockOwnSrc += '\n' + stripComments( readIfExists( path.join( blockComponentsDir, f ) ) );
-			}
-		}
-	}
+	// edit.js plus every own-block file it imports (components, hooks, helpers).
+	const blockOwnSrc = collectOwnEditSource( blockDir );
 
 	// If the block's own source imports AND uses a shared component, those attrs
 	// are delegated to the shared component — compliant.
@@ -406,16 +411,8 @@ function checkUnitSelectControl( blockName, blockDir, attrs ) {
 	const editJs = stripComments( readIfExists( path.join( blockDir, 'edit.js' ) ) );
 	if ( ! editJs ) return findings;
 
-	// Also scan block-local component files.
-	let blockOwnSrc = editJs;
-	const blockComponentsDir = path.join( blockDir, 'components' );
-	if ( fs.existsSync( blockComponentsDir ) ) {
-		for ( const f of fs.readdirSync( blockComponentsDir ) ) {
-			if ( f.endsWith( '.js' ) && ! SHARED_COMPONENT_FILE_BASENAMES.includes( f ) ) {
-				blockOwnSrc += '\n' + stripComments( readIfExists( path.join( blockComponentsDir, f ) ) );
-			}
-		}
-	}
+	// edit.js plus every own-block file it imports (components, hooks, helpers).
+	const blockOwnSrc = collectOwnEditSource( blockDir );
 
 	const attrKeys = new Set( Object.keys( attrs ) );
 

@@ -74,6 +74,9 @@ import subprocess
 import sys
 from typing import Dict, Set, Tuple, Optional
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_files  # noqa: E402
+
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 EXTENSIONS_DIR = BLOCKS_DIR / 'extensions'
@@ -364,6 +367,18 @@ def scan_edit_file(edit_file: pathlib.Path, block_name: str) -> Tuple[Set[str], 
         seen_files.add(component_path)
         try:
             src += '\n' + pathlib.Path(component_path).read_text(encoding='utf-8', errors='replace')
+        except OSError:
+            pass
+
+    # Own-block files edit.js imports by relative path but never mounts as a
+    # capitalised JSX tag (hooks and helpers such as gallery/use-gallery-items.js).
+    for own_file in edit_files(edit_file.parent):
+        own_path = str(own_file.resolve())
+        if own_path in seen_files:
+            continue
+        seen_files.add(own_path)
+        try:
+            src += '\n' + own_file.read_text(encoding='utf-8', errors='replace')
         except OSError:
             pass
 

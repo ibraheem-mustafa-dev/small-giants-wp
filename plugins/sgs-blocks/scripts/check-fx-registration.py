@@ -91,6 +91,9 @@ import sys
 from dataclasses import dataclass, replace
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import view_files  # noqa: E402
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 _PLUGIN_ROOT = Path(__file__).resolve().parent.parent
@@ -198,14 +201,18 @@ class Tree:
 
     @property
     def view_js_paths(self) -> list[Path]:
-        """Every block `view.js` on disk - R5's corpus. Not cached as text like the
+        """Every block `view.js` on disk plus the own-block files it imports
+        (view_files) - R5/R6's corpus. Not cached as text like the
         other two files because R5 needs to name the OFFENDING FILE per violation, not
         just fail one shared blob; a self-test perturbing "the" view.js text would have
         no single file to perturb."""
         blocks_dir = self.root / "src" / "blocks"
         if not blocks_dir.is_dir():
             return []
-        return sorted(blocks_dir.glob("*/view.js"))
+        found: list[Path] = []
+        for block_dir in sorted(p for p in blocks_dir.iterdir() if p.is_dir()):
+            found.extend(view_files(block_dir))
+        return found
 
     def read_view_js(self, path: Path) -> str:
         if self.view_js_overrides and path in self.view_js_overrides:
