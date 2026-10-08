@@ -12165,6 +12165,22 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -12884,8 +12900,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "shape"
       }
     },
     {
@@ -12893,15 +12908,42 @@
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/icon",
-      "attr": "backgroundPadding",
+      "attr": "backgroundColourHover",
       "fields": {
-        "css_property": "padding"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "shape"
       }
     },
     {
@@ -12910,8 +12952,7 @@
       "fields": {
         "css_property": "color",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "shape"
       }
     },
     {
@@ -12920,24 +12961,33 @@
       "fields": {
         "css_property": "color",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
+        "css_element": "shape",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "iconRotate",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/icon",
       "attr": "iconSize",
       "fields": {
-        "css_property": "font-size,height,width",
-        "css_element": "emoji"
+        "css_property": "width",
+        "css_element": "glyph"
       }
     },
     {
       "slug": "sgs/icon",
-      "attr": "margin",
+      "attr": "opacityHover",
       "fields": {
-        "css_property": "margin"
+        "css_property": "opacity",
+        "css_element": "link",
+        "css_state": "hover"
       }
     },
     {
@@ -12945,27 +12995,24 @@
       "attr": "scaleHover",
       "fields": {
         "css_property": "transform",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
+        "css_element": "shape",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/icon",
-      "attr": "shapeColourHover",
+      "attr": "shapeSize",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
+        "css_property": "width",
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/icon",
       "attr": "textAlign",
       "fields": {
-        "css_property": "text-align"
+        "css_property": "text-align",
+        "css_element": "shape"
       }
     },
     {
@@ -25107,6 +25154,22 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -30667,12 +30730,55 @@
     },
     {
       "slug": "sgs/icon",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "shape"
       }
     },
     {
@@ -30681,18 +30787,8 @@
       "fields": {
         "css_property": "stroke",
         "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
+        "css_element": "shape",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/icon",
-      "attr": "iconRotate",
-      "fields": {
-        "css_property": "transform",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
