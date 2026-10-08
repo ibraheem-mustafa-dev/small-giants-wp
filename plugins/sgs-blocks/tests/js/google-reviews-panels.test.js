@@ -414,7 +414,7 @@ describe( 'Header', () => {
 		expect( patch.headerPadding.desktop.top ).toBe( '4px' );
 		expect( patch.headerDividerWidth ).toBe( '1px' );
 		expect( patch.headerDividerColour ).toBe( 'primary' );
-		expect( m.q( '[data-typography]' ).getAttribute( 'data-typography' ) ).toBe( 'sourceLabel,score,count' );
+		expect( m.q( '[data-typography]' ).getAttribute( 'data-typography' ) ).toBe( 'sourceLabel,score,count,mapsLink,breakdownRow' );
 		m.unmount();
 	} );
 

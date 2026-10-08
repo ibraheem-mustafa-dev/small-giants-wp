@@ -431,17 +431,6 @@
 					"attrMap": {},
 					"_note": "One star-level row of the rating breakdown (.sgs-google-reviews__breakdown-row): its label, bar and count. Typography only; the default font size is the Google widget value."
 				},
-				"badge-text": {
-					"label": "Badge caption",
-					"order": 26,
-					"layer": "OUTER",
-					"clusters": [
-						"text"
-					],
-					"prefix": "badgeText",
-					"attrMap": {},
-					"_note": "The caption line beside the rating in the badge layout (the <span> in .sgs-google-reviews__badge-text). Typography only; the default font size is the Google widget value."
-				},
 				"list": {
 					"label": "Review rail",
 					"order": 21,
@@ -579,8 +568,6 @@
 				"grid",
 				"slider",
 				"list",
-				"badge",
-				"floating-badge",
 				"wall"
 			]
 		},
@@ -1200,7 +1187,7 @@
 		"mutedTextColour": {
 			"type": "string",
 			"default": "",
-			"description": "The block-wide muted text colour: every secondary line (source caption, review count, reviewer details, review date, badge caption, breakdown counts) reads Google's grey from one custom property, and this sets it. Empty keeps Google's own grey (and its dark-mode counterpart). A per-line colour (sourceLabelColour, countColour, metaColour, dateColour) still wins on its own line."
+			"description": "The block-wide muted text colour: every secondary line (source caption, review count, reviewer details, review date, breakdown counts) reads Google's grey from one custom property, and this sets it. Empty keeps Google's own grey (and its dark-mode counterpart). A per-line colour (sourceLabelColour, countColour, metaColour, dateColour) still wins on its own line."
 		},
 		"accentColour": {
 			"type": "string",
@@ -2620,93 +2607,6 @@
 			"default": ""
 		},
 		"breakdownRowTextWrap": {
-			"type": "string",
-			"enum": [
-				"",
-				"wrap",
-				"nowrap",
-				"balance",
-				"pretty",
-				"stable"
-			],
-			"default": ""
-		},
-		"badgeTextFontSize": {
-			"type": "object",
-			"default": {
-				"desktop": 0.8125
-			}
-		},
-		"badgeTextFontSizeUnit": {
-			"type": "string",
-			"default": "rem"
-		},
-		"badgeTextFontFamily": {
-			"type": "string",
-			"default": ""
-		},
-		"badgeTextFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"badgeTextFontStyle": {
-			"type": "string",
-			"enum": [
-				"",
-				"normal",
-				"italic"
-			],
-			"default": ""
-		},
-		"badgeTextLineHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"badgeTextLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"badgeTextLetterSpacing": {
-			"type": "object",
-			"default": {}
-		},
-		"badgeTextLetterSpacingUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"badgeTextTextTransform": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"uppercase",
-				"lowercase",
-				"capitalize"
-			],
-			"default": ""
-		},
-		"badgeTextTextDecoration": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"underline",
-				"line-through"
-			],
-			"default": ""
-		},
-		"badgeTextTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
-		},
-		"badgeTextTextWrap": {
 			"type": "string",
 			"enum": [
 				"",

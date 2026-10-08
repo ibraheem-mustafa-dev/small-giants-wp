@@ -588,12 +588,6 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			$this->assertStringContainsString( 'Sadia K', $html, "{$variant} keeps the second review" );
 			$this->assertSame( 0, preg_match( '/<[a-z][^>]*\sstyle="/i', $html ), "{$variant}: no inline style attribute" );
 		}
-		foreach ( array( 'badge', 'floating-badge' ) as $variant ) {
-			$html = $this->render( array_merge( $rich, array( 'variant' => $variant ) ) )['html'];
-			$this->assertStringContainsString( 'sgs-google-reviews__badge', $html );
-			$this->assertStringContainsString( '4.7', $html, "{$variant} shows the rating" );
-			$this->assertSame( 0, preg_match( '/<[a-z][^>]*\sstyle="/i', $html ), "{$variant}: no inline style attribute" );
-		}
 	}
 
 	// ── Precedence: a look is two classes, an author's value is three ──────────────────────────────────────

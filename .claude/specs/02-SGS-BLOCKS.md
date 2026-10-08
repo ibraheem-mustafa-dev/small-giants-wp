@@ -702,12 +702,10 @@ The icon circle has an overridable default border; a title placeholder never lea
 - `grid` — Reviews in a responsive CSS Grid (2-4 columns)
 - `slider` — Horizontal carousel using CSS scroll-snap
 - `list` — Vertical stacked list
-- `badge` — Compact aggregate rating badge (stars + count + "Google Reviews")
-- `floating-badge` — Fixed-position badge in corner (bottom-left or bottom-right)
 - `wall` — Masonry-style layout
 
 **Attributes:**
-- `variant` — grid | slider | list | badge | floating-badge | wall (default: grid)
+- `variant` — grid | slider | list | wall (default: grid)
 - `placeId` — string (Google Place ID — configured in settings page, overridable per block)
 - `columns` — 2-4 (for grid variant, default: 3)
 - `columnsTablet` — 1-3 (default: 2)
@@ -762,19 +760,16 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 
 **Render:** Dynamic `render.php` — fetches cached reviews server-side, renders HTML. No client-side API calls.
 - Slider variant uses `viewScriptModule` for carousel interactivity (CSS scroll-snap + Interactivity API for autoplay/nav)
-- Floating badge uses `viewScriptModule` for positioning + expand/collapse
 
 **Responsive:**
 - Grid: columns reduce per breakpoint settings
 - Slider: single slide on mobile, multi-slide on desktop
-- Badge: adapts width, truncates text at small sizes
-- Floating badge: smaller on mobile, bottom-right default
 
 **Accessibility:**
 - Review cards: `article` element with `aria-label="Review by {name}, {rating} stars"`
 - Star rating: `aria-label="{rating} out of 5 stars"` — stars are `aria-hidden="true"`
 - Slider: same carousel accessibility as testimonial-slider (arrow key navigation, aria-live)
-- Google attribution (Places API policy): the official Google Maps logo, `alt="Google Maps"`, 18px high with 10px clear space left, right and top and 5px below, prints on every render of every variant (the colour logo, a PNG of Google's own Google Maps logo, on a light ground; Google's white official logo file replaces it on a dark ground). It has no setting.
+- Google attribution (Places API policy): Google's plain "Google" wordmark (`assets/google-wordmark-colour.svg`, `alt="Google"`, 53x18 from its 272x92 viewBox, 18px high) with 10px clear space left, right and top and 5px below, prints on every render of every variant (the four-colour wordmark on a light ground; the all-white `assets/google-wordmark-light.svg` replaces it on a dark ground). It has no setting. For live (synced) data the policy's text form is met as well by the "View on Google Maps" link to the place (the policy: "In cases where space is limited, the text Google Maps is acceptable."); inline data has no place to link and prints the wordmark alone.
 - Default colours are Google's, not the site theme's: `style.css::.sgs-google-reviews` defines `--sgs-gr-star` (#fbbc04), the Material greys, the Google blue and the surface, `.sgs-google-reviews--theme-dark` redefines them for dark mode, and every inspector colour overrides them. Only the opt-in `star-primary` and `star-success` variants read the theme palette. Buttons: See all is white text on Google blue (the darker blue on hover); Write a review is blue text on white with a grey border; the border of Write a review and of the arrows turns blue on hover and nothing else changes. The pills' text colours and the "Read the full review" link (Google blue, `reviewLinkColour` overrides) sit at two-class specificity so the theme's global link colour cannot override them. The arrows and both buttons default to Google's 40px (an accepted difference from the project's 44px target, as the colours differ from the theme's), and keyboard focus is a 2px Google-blue ring.
 - Every review shows the author's avatar (initial letter when Google sends no photo) and name; the name links to the author's Google profile, each review links to its Google Maps page ("View on Google Maps"), and the block links to the place; all open in a new tab (`rel="noopener noreferrer"`, visually-hidden "(opens in a new tab)"). A link whose Google field is missing is not drawn.
 

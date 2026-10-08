@@ -72,17 +72,14 @@ final class ReviewsAggregateTest extends TestCase {
 
 	/**
 	 * Number of star icons drawn in the aggregate row (its star run sits between the rating figure and the
-	 * review count, inside the row's text block) or in the badge (before its text block).
+	 * review count, inside the row's text block).
 	 */
 	private function aggregateStars( string $html ): int {
 		if ( preg_match( '#<div class="sgs-google-reviews__aggregate">(.*?)<div class="sgs-google-reviews__aggregate-text">.*?(?:sgs-google-reviews__cta|sgs-google-reviews__attribution|</div>\s*</div>)#s', $html, $m ) ) {
 			$row = substr( $m[0], strpos( $m[0], 'sgs-google-reviews__aggregate-text' ) );
 			return substr_count( $row, 'sgs-google-reviews__star ' );
 		}
-		if ( ! preg_match( '#<div class="sgs-google-reviews__badge">(.*?)<div class="sgs-google-reviews__badge-text">#s', $html, $m ) ) {
-			return 0;
-		}
-		return substr_count( $m[1], 'sgs-google-reviews__star ' );
+		return 0;
 	}
 
 	// ── 1. Default variant ─────────────────────────────────────────────────────
@@ -185,27 +182,6 @@ final class ReviewsAggregateTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-google-reviews__aggregate', $html );
 		$this->assertStringNotContainsString( '0.0', $html );
 		$this->assertStringNotContainsString( 'ld+json', $html, 'no complete aggregate, so no schema' );
-	}
-
-	public function test_the_badge_variants_follow_the_same_rule(): void {
-		$html = $this->render(
-			array(
-				'variant' => 'badge',
-				'reviews' => array( $this->review( 'A', null ) ),
-			)
-		);
-		$this->assertStringNotContainsString( '0.0', $html );
-		$this->assertSame( 0, $this->aggregateStars( $html ) );
-		$this->assertStringContainsString( '1 review', $html );
-
-		$rated = $this->render(
-			array(
-				'variant' => 'badge',
-				'reviews' => array( $this->review( 'A', 4 ) ),
-			)
-		);
-		$this->assertStringContainsString( '<strong>4.0</strong>', $rated );
-		$this->assertSame( 5, $this->aggregateStars( $rated ) );
 	}
 
 	public function test_show_aggregate_off_hides_all_of_it(): void {

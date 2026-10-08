@@ -265,8 +265,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 							{ label: __( 'Slider', 'sgs-blocks' ), value: 'slider' },
 							{ label: __( 'List', 'sgs-blocks' ), value: 'list' },
-							{ label: __( 'Badge', 'sgs-blocks' ), value: 'badge' },
-							{ label: __( 'Floating Badge', 'sgs-blocks' ), value: 'floating-badge' },
 							{ label: __( 'Wall (Masonry)', 'sgs-blocks' ), value: 'wall' },
 						] }
 						onChange={ ( value ) => setAttributes( { variant: value } ) }

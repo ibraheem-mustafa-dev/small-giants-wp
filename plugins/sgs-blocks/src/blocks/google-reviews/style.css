@@ -3,7 +3,7 @@
  *
  * THE BASELINE IS THE GOOGLE REVIEWS WIDGET (design 2026-09-23 §2, §3.5). A block with no setting
  * touched looks like it: 340px cards (270px on a phone) with a 1px hairline, 8px corners and 20px
- * padding, 40px round initials, 15px stars, a header with the leading Google Maps logo, a 32px score and a
+ * padding, 40px round initials, 15px stars, a header with the leading Google wordmark, a 32px score and a
  * hairline divider, pill buttons, a thin visible scrollbar and 40px round arrows under the rail.
  * Colours come from the theme's tokens, each falling back to the widget's own value.
  *
@@ -156,28 +156,28 @@
 	flex: none;
 }
 
-/* The official logo is 98x18: a fixed box that no flex row, container or global img rule can squeeze below 16px high. */
-.sgs-google-reviews__maps-logo {
+/* The Google wordmark is 53x18 (its 272x92 viewBox at 18px high): a fixed box that no flex row, container or global img rule can squeeze below 16px high. */
+.sgs-google-reviews__google-logo {
 	display: block;
 	flex: none;
-	width: 98px;
+	width: 53px;
 	height: 18px;
 	min-height: 18px;
 	max-width: none;
 }
 
-/* The colour Google Maps logo on a light ground (the default); the white official one replaces it on a dark ground. */
-.sgs-google-reviews__maps-logo--light {
+/* The colour wordmark on a light ground (the default); the white one replaces it on a dark ground. */
+.sgs-google-reviews__google-logo--light {
 	display: none;
 }
 
-.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--light,
-.sgs-on-dark .sgs-google-reviews__maps-logo--light {
+.sgs-google-reviews--theme-dark .sgs-google-reviews__google-logo--light,
+.sgs-on-dark .sgs-google-reviews__google-logo--light {
 	display: block;
 }
 
-.sgs-google-reviews--theme-dark .sgs-google-reviews__maps-logo--colour,
-.sgs-on-dark .sgs-google-reviews__maps-logo--colour {
+.sgs-google-reviews--theme-dark .sgs-google-reviews__google-logo--colour,
+.sgs-on-dark .sgs-google-reviews__google-logo--colour {
 	display: none;
 }
 
@@ -610,45 +610,6 @@ a.sgs-google-reviews__author:hover {
 	text-decoration: underline;
 }
 
-/* ─── Badge Variant ──────────────────────────────────────────────────────── */
-
-.sgs-google-reviews--badge .sgs-google-reviews__badge,
-.sgs-google-reviews--floating-badge .sgs-google-reviews__badge {
-	display: inline-flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.75rem;
-	padding: 1rem 1.5rem;
-	background-color: var( --sgs-gr-surface );
-	border: 1px solid var( --sgs-gr-line-light );
-	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );
-}
-
-.sgs-google-reviews--floating-badge {
-	position: fixed;
-	bottom: 2rem;
-	right: 2rem;
-	z-index: 999;
-}
-
-.sgs-google-reviews__badge-text {
-	display: flex;
-	flex-direction: column;
-	gap: 0.125rem;
-}
-
-:where( .sgs-google-reviews__badge-text strong ) {
-	font-size: 1.5rem;
-	font-weight: 500;
-	line-height: 1;
-	color: var( --sgs-gr-ink );
-}
-
-.sgs-google-reviews__badge-text span {
-	color: var( --sgs-gr-ink-muted );
-}
-
 /* ─── Header buttons + footnote ──────────────────────────────────────────── */
 
 /* Below the reviews (no header row): centred under the list, as before. */
@@ -1071,13 +1032,4 @@ a.sgs-google-reviews__author:hover {
 
 .sgs-google-reviews--logo-trailing .sgs-google-reviews__cta {
 	margin-left: 0;
-}
-
-/* ─── Mobile ─────────────────────────────────────────────────────────────── */
-
-@media ( max-width: 767px ) {
-	.sgs-google-reviews--floating-badge {
-		bottom: 1rem;
-		right: 1rem;
-	}
 }

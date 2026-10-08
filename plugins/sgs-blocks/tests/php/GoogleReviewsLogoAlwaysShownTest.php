@@ -2,7 +2,7 @@
 /**
  * Tests: sgs/google-reviews meets the Google Places API attribution policy.
  *
- * The Google Maps logo (16-19px high) prints on every render of every variant, whatever the aggregate
+ * The Google wordmark (16-19px high) prints on every render of every variant, whatever the aggregate
  * settings; each review shows its author's avatar, name and profile link and links to Google Maps; the
  * place links to Google Maps. A cache that lacks a link field renders no broken anchor and logs once.
  *
@@ -80,10 +80,7 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		);
 		return array(
 			'default header'       => array( $base ),
-			'badge'                => array( $base + array( 'variant' => 'badge' ) ),
-			'floating badge'       => array( $base + array( 'variant' => 'floating-badge' ) ),
 			'retired false'        => array( $base + array( 'showGoogleLogo' => false ) ),
-			'badge, retired false' => array( $base + array( 'variant' => 'badge', 'showGoogleLogo' => false ) ),
 		);
 	}
 
@@ -93,8 +90,9 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 	 */
 	public function test_logo_always_rendered( array $attrs ): void {
 		$html = $this->render( $attrs );
-		$this->assertMatchesRegularExpression( '#<img[^>]*src="[^"]*assets/google-maps-logo-(?:colour\.png|light\.svg)"[^>]*alt="Google Maps"#', $html );
-		// Negative control: the old "G" never stands in for the attribution.
+		$this->assertMatchesRegularExpression( '#<img[^>]*src="[^"]*assets/google-wordmark-(?:colour|light)\.svg"[^>]*alt="Google"#', $html );
+		// Negative control: the "Maps" logo is gone everywhere, and the old "G" never stands in for the attribution.
+		$this->assertStringNotContainsString( 'google-maps-logo', $html );
 		$this->assertDoesNotMatchRegularExpression( '#<img[^>]*src="[^"]*assets/google-logo\.svg"[^>]*alt="Google"#', $html );
 	}
 
@@ -128,7 +126,7 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 			)
 		);
 		$this->assertSame( 1, substr_count( $html, 'class="sgs-google-reviews__attribution' ), "one attribution element for {$variant}" );
-		$this->assertMatchesRegularExpression( '#sgs-google-reviews__attribution.*?google-maps-logo-#s', $html );
+		$this->assertMatchesRegularExpression( '#sgs-google-reviews__attribution.*?google-wordmark-#s', $html );
 	}
 
 	/** @dataProvider every_variant */
@@ -160,18 +158,18 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringNotContainsString( '60px', $out['css'] );
 		$this->assertStringNotContainsString( 'opacity:0.3', $out['css'] );
 
-		preg_match_all( '#<img[^>]*google-maps-logo-[^>]*>#', $out['html'], $imgs );
+		preg_match_all( '#<img[^>]*google-wordmark-[^>]*>#', $out['html'], $imgs );
 		$this->assertNotEmpty( $imgs[0] );
 		foreach ( $imgs[0] as $img ) {
-			$this->assertSame( 1, preg_match( '#\sheight="(\d+)"#', $img, $m ), 'every Maps logo declares its height' );
+			$this->assertSame( 1, preg_match( '#\sheight="(\d+)"#', $img, $m ), 'every wordmark declares its height' );
 			$this->assertGreaterThanOrEqual( 16, (int) $m[1] );
 			$this->assertLessThanOrEqual( 19, (int) $m[1] );
 		}
 
 		// The stylesheet sizes the logo to the same fixed height, with the policy's clear space.
 		$css = (string) file_get_contents( self::BLOCK . '/style.css' );
-		$this->assertMatchesRegularExpression( '#__maps-logo[^{]*\{[^}]*height:\s*18px#', $css );
-		preg_match_all( '#__(?:maps-logo|google-logo)[^{]*\{[^}]*\bheight:\s*(\d+)px#', $css, $heights );
+		$this->assertMatchesRegularExpression( '#__google-logo[^{]*\{[^}]*height:\s*18px#', $css );
+		preg_match_all( '#__google-logo[^{]*\{[^}]*\bheight:\s*(\d+)px#', $css, $heights );
 		foreach ( $heights[1] as $h ) {
 			$this->assertGreaterThanOrEqual( 16, (int) $h );
 			$this->assertLessThanOrEqual( 19, (int) $h );
@@ -207,13 +205,31 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertStringContainsString( 'opens in a new tab', $html );
 	}
 
+	/** Live (synced) data carries the policy's text form, the "View on Google Maps" place link; inline data has no place to link to. */
+	public function test_the_place_text_link_prints_for_synced_data_only(): void {
+		$synced = $this->render( array( 'variant' => 'grid' ), 'live' );
+		$this->assertSame( 1, substr_count( $synced, 'sgs-google-reviews__maps-link--place' ) );
+		$this->assertMatchesRegularExpression( '#sgs-google-reviews__attribution.*?sgs-google-reviews__maps-link--place[^>]*>View on Google Maps#s', $synced );
+
+		$inline = $this->render(
+			array(
+				'dataSource' => 'inline',
+				'variant'    => 'grid',
+				'reviews'    => array( array( 'author' => 'A', 'text' => 'Body.' ) ),
+			)
+		);
+		$this->assertStringNotContainsString( 'sgs-google-reviews__maps-link', $inline );
+		$this->assertStringNotContainsString( 'View on Google Maps', $inline );
+		$this->assertStringContainsString( 'google-wordmark-', $inline, 'the wordmark still prints for inline data' );
+	}
+
 	public function test_a_cache_without_the_link_fields_renders_no_broken_anchor_and_logs_once(): void {
 		$html = $this->render( array( 'variant' => 'grid' ), 'nolinks' );
 		$this->assertStringNotContainsString( 'View on Google Maps', $html );
 		$this->assertDoesNotMatchRegularExpression( '#<a[^>]*href=""#', $html );
 		$this->assertDoesNotMatchRegularExpression( '#<a[^>]*class="sgs-google-reviews__author"#', $html );
 		$this->assertStringContainsString( 'Old Cache Reviewer', $html );
-		$this->assertMatchesRegularExpression( '#sgs-google-reviews__attribution.*?google-maps-logo-#s', $html );
+		$this->assertMatchesRegularExpression( '#sgs-google-reviews__attribution.*?google-wordmark-#s', $html );
 		$this->assertSame( 1, substr_count( $this->error_log, 'sgs/google-reviews' ), 'logged once per request, got: ' . $this->error_log );
 	}
 
@@ -244,14 +260,14 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 	}
 
 	/**
-	 * The logo is a fixed 98x18 box that cannot shrink: at 375px a shrinking flex row squeezed it to 3px high
+	 * The wordmark is a fixed 53x18 box that cannot shrink: at 375px a shrinking flex row squeezed it to 3px high
 	 * (found on the live page), so the rule must pin width, height and flex.
 	 */
-	public function test_the_maps_logo_is_a_fixed_box_that_no_flex_row_can_squeeze(): void {
+	public function test_the_google_wordmark_is_a_fixed_box_that_no_flex_row_can_squeeze(): void {
 		$css = (string) file_get_contents( __DIR__ . '/../../src/blocks/google-reviews/style.css' );
-		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__maps-logo \{([^}]*)\}#', $css, $m ) );
+		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__google-logo \{([^}]*)\}#', $css, $m ) );
 		$this->assertMatchesRegularExpression( '#flex:\s*none#', $m[1] );
-		$this->assertMatchesRegularExpression( '#width:\s*98px#', $m[1] );
+		$this->assertMatchesRegularExpression( '#width:\s*53px#', $m[1] );
 		$this->assertMatchesRegularExpression( '#height:\s*18px#', $m[1] );
 		$this->assertMatchesRegularExpression( '#min-height:\s*18px#', $m[1] );
 		$this->assertSame( 1, preg_match( '#\.sgs-google-reviews__attribution \{([^}]*)\}#', $css, $a ) );
