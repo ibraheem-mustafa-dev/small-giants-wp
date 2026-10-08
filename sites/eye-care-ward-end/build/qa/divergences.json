@@ -1434,5 +1434,35 @@
       "S3"
     ],
     "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-99",
+    "scope": "contact",
+    "node": "cr-ref-contact-5",
+    "state": "*",
+    "property": "found",
+    "expected": {
+      "rule": "draft-flaw"
+    },
+    "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
+    "register": [
+      "127"
+    ],
+    "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
+  },
+  {
+    "id": "D-100",
+    "scope": "contact",
+    "node": "cr-ref-contact-5",
+    "state": "*",
+    "property": "text",
+    "expected": {
+      "rule": "draft-flaw"
+    },
+    "reason": "The draft's WhatsApp button reads \"WhatsApp 07960 5978\" and links wa.me/4479605978, two digits short of a UK mobile; live shows the clinic's real number, 07960 597847 (Site Info). Live is right; the button is still paired and measured by the walker.",
+    "register": [
+      "127"
+    ],
+    "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
   }
 ]
