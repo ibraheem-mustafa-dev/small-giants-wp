@@ -2794,12 +2794,14 @@ for the verb you happen to have in mind.
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 47 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
 | `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
+| `computed-route/lib/solve-groups.mjs` | script-call | Solve's report views: issues (one element, property and state, every width with its own draft and live values, and the widths that match) and causes (issues sharing a class, a property and the winning rule or the same values, every element kept with its widths). No row is merged away. |
 | `computed-route/lib/solve-report.mjs` | script-call | Writes Solve's report (FR-47-3): solve-report.json (everything) and solve-report.md (counts per class, every write with its before and after values… |
 | `computed-route/lib/solve-rows.mjs` | manifest+script-call | Solve's reading of a walker report (FR-47-3): which open rows it may write, the draft value at every width for each |
 | `computed-route/lib/sweep.mjs` | script-call | The whole-site sweep (FR-47-3): every surface's latest Solve report as one row per distinct open issue. An issue is solve-report.mjs::wholePage's: a… |
 | `computed-route/lib/tree.mjs` | script-call | Layout trees: read, write, ref classes, setting writes, and the live-site safety guard (R-47-11). |
 | `computed-route/lib/triage-source.mjs` | script-call | Triage's source pass (B1), string search only (no PHP or CSS parsing): what a block's own render.php and style.css say about a row's property and… |
 | `computed-route/lib/triage.mjs` | script-call | Triage (Spec 47, Session B1): one candidate class per distinct open issue of a Solve report, with the evidence that decided it. Classes: W (walker or… |
+| `computed-route/lib/winning-rule.mjs` | script-call | The rule that wins on the live page for a Hardcode row, and the rule carrying the draft value, read through Chrome DevTools' matched rules (read-only, rest state, headed unless `--headless`). |
 | `computed-route/lint.mjs` | script-call | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/pairs.mjs` | manifest+script-call | Block pairing command (plan .claude/plans/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/register-sweep.mjs` | script-call | Register <-> sweep command (A4). |

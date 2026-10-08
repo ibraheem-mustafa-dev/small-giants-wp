@@ -61,7 +61,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/fill-config.mjs` | Generates the walker config: one pair per node with a `draftRef`, `refPrefix: 'cr-ref-'` and the ledger path, via `pairs.mjs::configText`. |
 | `lib/fill-report.mjs` | `fill-report.md` and `fill-report.json`: UNMAPPED, handover, writes, spacing, fluid, breakpoints, entrances, ledger, snaps. |
 | `lib/solve-rows.mjs` | Solve's reading of a walker report: open rows, writable groups, draft values per width, the state-conflict refusal, content rows (text, presence, link) and their resolution, the handover list, classification. |
-| `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json` (the whole-page line, content and handover counts, and the handover list). |
+| `lib/solve-report.mjs` | Writes `solve-report.md` and `solve-report.json` (the whole-page line, content and handover counts, the handover list, the issue and cause views, and a Hardcode table with the widths that differ and the winning rule). |
+| `lib/solve-groups.mjs` | The report's two readings of the surviving style and hover rows: issues (one element, property and state, every width with its own draft and live values, and the widths that match) and causes (issues sharing a class, a property and the winning rule or the same values, every element listed with its widths). No row is merged away. |
+| `lib/winning-rule.mjs` | For Hardcode rows: the rule that wins on the live page and the rule carrying the draft value, read through Chrome DevTools' matched rules (read-only, headed unless `--headless`, rest state only). |
 | `lib/references.mjs` | Reference blocks found from each block's render.php (linked placeholders, frames around another post's blocks, core template parts) and the surfaces lint that every printed post has a surface. |
 | `lib/entrance.mjs` | Entrance start: a block the draft shows at rest while live holds its entrance waiting for a scroll gets `sgsAnimationStart: 'load'` (Spec 38). |
 | `lib/fill-diagram.mjs` | A rendered draft's dimension diagram measured into `sgs/diagram-dimension` settings (line ends, guide reach and overshoot, tick length, label anchor), from the SVG geometry API and the label's box, never the source text (R-47-4). |
@@ -84,6 +86,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/ledger.test.mjs` | FR-47-5: validation, stale entries, migration, accept; the independent check matches entries on `node` and leaves a drifted value entry open (A5). |
 | `tests/references.test.mjs` | Reference blocks: the detector, the linked-placeholder rule in Solve, the surfaces lint. |
 | `tests/lint.test.mjs` | R-47-1 and R-47-10 through the lint; B4: a ledger entry citing an item the register lacks, or none, fails; a house-rule entry needs none; a ledger with entries and no register fails; without `--register` the register comes from `qa/ledger.config.json`, and a named register that does not exist fails. |
+| `tests/solve-held.test.mjs` | A setting already holding the draft value is held, not written, and its row is a Hardcode that names what the tree holds and the widths that differ; the winning-rule ranking, with negative controls. |
+| `tests/solve-groups.test.mjs` | The issue and cause views: every width with its own values, no row lost, elements joined by cause and each kept with its widths. |
 | `tests/solve.test.mjs` | R-47-9: the guard reverts only the write calibration names, or proves a suspect by the next walk and restores an innocent one; walker state mapping (an unmapped state is never written); `--rounds 0` never calls the write round (A1) |
 | `tests/pairs.test.mjs` | Block pairing: a partner is kept only when it holds the block's words and none from outside it, at a similar size, with its padding where the block's is; hand pairs measuring a paired block's draft element move to the block root; a panel state that is missing or opens one side only is refused; a landmark exclusion holding the surface is lifted. |
 | `tests/entrance.test.mjs` | Entrance start: a hidden-live, shown-draft entrance gets `sgsAnimationStart: 'load'`; no entrance, a part, a hover, a half opacity or a hidden draft gets nothing. |
@@ -313,7 +317,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`.
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
-- `classify(report, { writes, gaps, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`.
+- `classify(report, { writes, gaps, held?, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`; `held` (from `writeRound` or `heldGroups`) makes a row whose setting already holds the draft value a Hardcode.
 - `intendedCount(report)` → accepted rows.
 - `knownPaths(cal)` → every element path a calibration knows (its elements, each setting's slots and reaches, and the discovered slots); the write path and triage read the same set, so a row whose only evidence is a discovered slot is never gapped `unmapped-element` by one and resolved by the other.
 - `stateDisagreement(report, group, stateMap)` → `{ width, values, detail }` when the walker states mapped to the group's setting state read different draft values at one width, else null; it compares every mapped state, not only those with an open row, because a baseline state usually has none.
@@ -328,7 +332,14 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 
 ### `lib/solve-report.mjs`
 - `wholePage(before, after, classes, prefix?)` → distinct style, hover and box issues before and after: `{ before, after, closed, new, labelledGap, unexplained }` (a labelled gap counts as handled only once proven). With `prefix` (writeSolveReport passes `cr-ref-<surface>-`), only the surface's own blocks' rows and rows with no block count: a surface sharing its walker is not judged on its neighbour's blocks.
-- `writeSolveReport(outDir, result)`.
+- `writeSolveReport(outDir, result)`: also writes `issues` and `causes` to the JSON and the `## Issues` and `## Causes` views to the markdown, above the per-width tables.
+
+### `lib/solve-groups.mjs`
+- `issueGroups(report, classes)` → one issue per class, element, property and state: `{ class, ref, path, key, state, rows: [ { width, draft, live } ], fails, matches, reasons, held, winningRule }`.
+- `causeGroups(issues)` → `[ { class, key, label, issues } ]`, largest first; `valueText(issue)`; `groupsMarkdown(issues, causes)`.
+
+### `lib/winning-rule.mjs`
+- `propertyFamily(prop)` → the property names that can set it (logical longhands and shorthands). `explainCascade(matched, prop, draft, sources)` → `{ winner, carrier }` from a CDP matched-rules result. `readWinningRules(rows, { liveUrl })` → a Map of row to `{ text }` or `{ note }`.
 
 ### `lib/references.mjs` (reads `plugins/sgs-blocks/src/blocks/*/render.php`)
 - `BLOCKS_SRC`: the block sources folder. `CORE_PLACEHOLDERS`: core blocks that print another post or part, with the attribute naming it.
@@ -441,7 +452,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `withInnerRootAliases(cal, block)` → the calibration with every slot, reach and element path also answering to its form without a leading `.sgs-<slug>` step, when the cache holds that inner root as an element (a block calibrated with its optional wrapper on, measured on a page with it off); otherwise `cal` unchanged.
 - `blockRenderSource(name)` → a block's `render.php` source, or null.
 - `outsideOwner(node, { refs, source })` → who owns the content of a block whose words, elements or links come from outside the layout tree (`content-page`, `site-info`, `woocommerce-text`, `product-data`), read from the block's own source, or null. Evidence about the block, never a verdict on a row.
-- `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor?, canvas?, ancestorHop?, ownerOf? })` → `{ writes, gaps }`; only rows from mapped walker states are written. It hops to an enclosing ancestor last, writes content rows through calibration's `text`, `presence` and `link` entries, and reports `state-conflict` and `handover` gaps.
+- `writeRound(report, tree, { db, snapshot, round, log, blocked, stateMap, calFor?, canvas?, ancestorHop?, ownerOf? })` → `{ writes, gaps, held }` (`held[groupKey]` lists a setting that already holds the draft value; `heldGroups(report, tree, opts)` reads it on a copy with its own snap log); only rows from mapped walker states are written. It hops to an enclosing ancestor last, writes content rows through calibration's `text`, `presence` and `link` entries, and reports `state-conflict` and `handover` gaps.
 - `solveLoop({ maxRounds, build, walk, guard, write, save, blocked?, log? })` → `{ report, writes, gaps, rounds, lastWrote }`: the build, walk and write rounds with every step passed in; `maxRounds` 0 is measure-only (one build, one walk, never a write).
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
