@@ -14,6 +14,7 @@
 import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveOverride } from '../../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { Section, Row } from './panel-kit';
 import { TierBox, TierLength, BorderField } from './panel-fields';
 
@@ -100,27 +101,33 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 				</ResponsiveOverride>
 			</Row>
 			<Row label={ __( 'Progress indicator', 'sgs-blocks' ) } attrs={ [ 'pagination' ] } { ...shared }>
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Progress indicator', 'sgs-blocks' ) }
 					value={ pagination }
-					options={ PAGINATION_OPTIONS }
 					onChange={ ( value ) => setAttributes( { pagination: value } ) }
 					help={ __( 'How visitors see where they are in the row of reviews.', 'sgs-blocks' ) }
+					isBlock
 					__next40pxDefaultSize
-				/>
+					__nextHasNoMarginBottom
+				>
+					{ PAGINATION_OPTIONS.map( ( option ) => (
+						<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+					) ) }
+				</ToggleGroupControl>
 			</Row>
 			{ 'scrollbar' === pagination && (
 				<Row label={ __( 'Scrollbar', 'sgs-blocks' ) } attrs={ SCROLLBAR_ATTRS } { ...shared }>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Scrollbar width', 'sgs-blocks' ) }
-						value={ attributes.scrollbarStyle }
-						options={ [
-							{ label: __( 'Thin', 'sgs-blocks' ), value: 'thin' },
-							{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
-						] }
+						value={ attributes.scrollbarStyle || 'thin' }
 						onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
+						isBlock
 						__next40pxDefaultSize
-					/>
+						__nextHasNoMarginBottom
+					>
+						<ToggleGroupControlOption value="thin" label={ __( 'Thin', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="standard" label={ __( 'Standard', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 					<DesignTokenPicker
 						label={ __( 'Scrollbar colour', 'sgs-blocks' ) }
 						states={ [

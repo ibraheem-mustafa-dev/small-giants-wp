@@ -16,10 +16,8 @@ import {
 	TextControl,
 	TextareaControl,
 	Button,
-	BaseControl,
-	ColorPalette,
 } from '@wordpress/components';
-import { useSettings } from '@wordpress/block-editor';
+import { DesignTokenPicker } from '../../../components';
 import { NumberControl } from '../../../components/primitives';
 import MediaPicker from '../../../components/MediaPicker';
 import { generateItemKey } from '../../../utils';
@@ -44,7 +42,6 @@ const RATING_OPTIONS = [
  */
 export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 	const { reviews = [], averageRating, reviewCount, businessName } = attributes;
-	const [ palette ] = useSettings( 'color.palette' );
 
 	const update = ( index, patch ) =>
 		setAttributes( {
@@ -159,15 +156,18 @@ export default function WrittenReviewsPanel( { attributes, setAttributes } ) {
 							label={ __( 'Reviewer photo (optional)', 'sgs-blocks' ) }
 							instructionsImage={ __( 'Shown instead of the initial.', 'sgs-blocks' ) }
 						/>
-						<BaseControl label={ __( 'Initial background colour', 'sgs-blocks' ) } __nextHasNoMarginBottom>
-							<ColorPalette
-								colors={ palette || [] }
-								value={ review.avatarColour || undefined }
-								onChange={ ( value ) => update( index, { avatarColour: value || '' } ) }
-								enableAlpha={ false }
-								clearable
-							/>
-						</BaseControl>
+						<DesignTokenPicker
+							label={ __( 'Initial background colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: review.avatarColour,
+									onChange: ( value ) => update( index, { avatarColour: value ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
 						<div className="sgs-google-reviews-editor__row-actions">
 							<Button variant="link" onClick={ () => move( index, -1 ) } disabled={ index === 0 }>
 								{ __( 'Move up', 'sgs-blocks' ) }

@@ -4,18 +4,5 @@
     "why": "Shrink-only ratchet for classify-end-shape.js --check. Rows listed here are known currentComplete=false rows the gate newly sees now that it reads component/partial files. --check fails on any row NOT listed (a new defect) and on any listed row that no longer fails (a stale entry: delete it). Never add an entry to make a new defect pass.",
     "keyFormat": "sgs/<slug>.<attr> written as <slug>.<attr>"
   },
-  "rows": [
-    {
-      "id": "google-reviews.headerDividerColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "google-reviews.scrollbarColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "nav-drawer.chromeButtonColourText",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    }
-  ]
+  "rows": []
 }

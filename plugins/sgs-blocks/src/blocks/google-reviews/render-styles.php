@@ -161,7 +161,7 @@ $gr_responsive_css .= sgs_typography_css_rule( $attributes, '', $gr_root_hi );
 $gr_header_sel      = $gr_root_sel . ' .sgs-google-reviews__aggregate';
 $gr_responsive_css .= $gr_len_rule( $gr_header_sel, $attributes['headerGap'] ?? null, array( 'gap' ) );
 $gr_responsive_css .= $gr_box_rule( $gr_header_sel, $attributes['headerPadding'] ?? null, 'padding', $gr_sides );
-$gr_responsive_css .= $gr_colour_rule( $gr_header_sel, 'border-bottom-color', $attributes['headerDividerColour'] ?? '' );
+$gr_responsive_css .= sgs_border_states_css( $gr_header_sel, $attributes, array( 'base' => 'headerDividerColour' ) );
 $gr_divider_width   = sgs_responsive_format_atom_value( $attributes['headerDividerWidth'] ?? '', 'px', 'float', null );
 if ( null !== $gr_divider_width ) {
 	$gr_responsive_css .= $gr_header_sel . '{border-bottom-width:' . $gr_divider_width . ';}';
@@ -277,7 +277,11 @@ if ( 'scrollbar' === $gr_pagination ) {
 	if ( $gr_is_set( 'scrollbarStyle', 'thin' ) ) {
 		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:' . ( 'thin' === $gr_scrollbar_style ? 'thin' : 'auto' ) . ';}';
 	}
-	$gr_responsive_css .= $gr_colour_rule( $gr_list_sel, '--sgs-gr-scrollbar-colour', $attributes['scrollbarColour'] ?? '' );
+	// scrollbar-color takes flat colours only, so the thumb colour travels as one custom property (style.css reads it).
+	$gr_scrollbar_decls = sgs_custom_property_gradient_decls( 'sgs-gr-scrollbar-colour', (string) ( $attributes['scrollbarColour'] ?? '' ), '' );
+	if ( array() !== $gr_scrollbar_decls ) {
+		$gr_responsive_css .= $gr_list_sel . '{' . implode( ';', $gr_scrollbar_decls ) . ';}';
+	}
 }
 
 // ── Buttons and arrows: box, border, radius, height, width. Type and colour come from the families above. ──
