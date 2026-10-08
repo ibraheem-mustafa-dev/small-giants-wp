@@ -9793,6 +9793,239 @@
       }
     },
     {
+      "slug": "sgs/google-rating-badge",
+      "attr": "accentStripeColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "accent-stripe"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "floatingOffset",
+      "fields": {
+        "css_property": "inset-block-end,inset-block-start,inset-inline-end,inset-inline-start"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "minHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "starColour",
+      "fields": {
+        "css_property": "fill",
+        "css_element": "star"
+      }
+    },
+    {
       "slug": "sgs/google-reviews",
       "attr": "accentColour",
       "fields": {
@@ -29562,6 +29795,77 @@
         "css_property": "anim:easing",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "accentStripeColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "accent-stripe"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "badge",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "captionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "scoreColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "score"
+      }
+    },
+    {
+      "slug": "sgs/google-rating-badge",
+      "attr": "starColourGradient",
+      "fields": {
+        "css_property": "fill-gradient",
+        "css_element": "star"
       }
     },
     {
