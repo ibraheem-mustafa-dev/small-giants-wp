@@ -416,9 +416,10 @@ CSS **generation** is untouched — every helper (`sgs_typography_css_rule`, `sg
 
 This section records the grid-item defaults mechanism so it need not be re-derived from `container/style.css`.
 
-**FR-32-12** — A grid CONTAINER parent may set `--sgs-gi-padding` / `--sgs-gi-bg` /
-`--sgs-gi-radius` / `--sgs-gi-border` / `--sgs-gi-shadow` / `--sgs-gi-color` as custom-property
-VALUES on the grid element (`SGS_Container_Wrapper`, built by `plugins/sgs-blocks/includes/helpers-grid-item.php::sgs_grid_item_vars`;
+**FR-32-12** — A grid CONTAINER parent may set `--sgs-gi-padding-{top|right|bottom|left}` / `--sgs-gi-bg` /
+`--sgs-gi-radius-{top-left|top-right|bottom-right|bottom-left}` / `--sgs-gi-border` / `--sgs-gi-shadow` / `--sgs-gi-color` as
+custom-property VALUES on the grid element (padding and radius print one property per side or corner a device tier sets, so a
+narrower tier changes only its own; `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_responsive_atoms_from_spec`'s `box` and `corners` options) (`SGS_Container_Wrapper`, built by `plugins/sgs-blocks/includes/helpers-grid-item.php::sgs_grid_item_vars`;
 editor UI: `GridItemDefaultsPanel.js` in `src/blocks/container/components/`; the canvas sets the same six variables
 on the same element through `src/blocks/container/grid-item-preview.js`). `--sgs-gi-border` resolves its colour
 through `sgs_colour_value()`, so a palette slug and a custom colour both paint.
@@ -433,9 +434,15 @@ not cells:
 ```css
 :where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ),
 :where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ) {
-	padding: var( --sgs-gi-padding );
+	padding-top: var( --sgs-gi-padding-top );
+	padding-right: var( --sgs-gi-padding-right );
+	padding-bottom: var( --sgs-gi-padding-bottom );
+	padding-left: var( --sgs-gi-padding-left );
 	background: var( --sgs-gi-bg );
-	border-radius: var( --sgs-gi-radius );
+	border-top-left-radius: var( --sgs-gi-radius-top-left );
+	border-top-right-radius: var( --sgs-gi-radius-top-right );
+	border-bottom-right-radius: var( --sgs-gi-radius-bottom-right );
+	border-bottom-left-radius: var( --sgs-gi-radius-bottom-left );
 	border: var( --sgs-gi-border );
 	box-shadow: var( --sgs-gi-shadow );
 	color: var( --sgs-gi-color );

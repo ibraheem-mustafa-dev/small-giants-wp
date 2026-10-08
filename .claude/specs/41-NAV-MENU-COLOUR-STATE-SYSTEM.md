@@ -1513,9 +1513,9 @@ shorthand, on any selector a Sweep can paint.
   `background-color` / `background-image` read `--sgs-nm-submenu-bg` / `--sgs-nm-submenu-bg-gradient`
   (written from `submenuBg` / `submenuBgGradient`, empty-guarded, with the chained
   `surface-alt → surface → #fff` token fallback); `min-width` reads `submenuMinWidth`;
-  `border-radius` reads `--sgs-nm-submenu-radius`, written from `submenuBorderRadius` through
-  `sgs_corner_object_shorthand()` (the flat corner-object helper, not the side-keyed
-  `sgs_box_object_shorthand()`); border width and style read `--sgs-nm-submenu-border-width` /
+  each corner's radius reads `--sgs-nm-submenu-radius-{top-left|top-right|bottom-right|bottom-left}`, written
+  from `submenuBorderRadius` through `sgs_corner_object_property_list()` (one property per corner the client
+  set; an unset corner keeps the 8px token); border width and style read `--sgs-nm-submenu-border-width` /
   `--sgs-nm-submenu-border-style`, with the colour emitted by the shared `sgs_border_states_css()`
   appended after the rule (Normal-only, no `suppress_edges` — FR-41-9); the shadow is
   `filter:drop-shadow()` from `--sgs-nm-submenu-filter` (FR-41-9). The drill-down sub-panel's
@@ -2581,7 +2581,7 @@ error. ⚠ Values are STRINGS with units (`"8px"`), matching `ctaBorderRadius`; 
 the precedent.
 
 ⚠ **`submenuBorderRadius` keeps its `{}` default** — the panel renders its own radius from
-`--sgs-nm-submenu-radius` with a token fallback (FR-41-15), so there is no existing behaviour to
+`--sgs-nm-submenu-radius-{corner}` with a token fallback (FR-41-15), so there is no existing behaviour to
 preserve. Same flat corner shape, empty default. Do not read the item's default as a reason to give
 the panel one.
 
