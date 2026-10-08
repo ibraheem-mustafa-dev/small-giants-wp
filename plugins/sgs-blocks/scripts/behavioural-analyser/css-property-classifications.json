@@ -5561,6 +5561,13 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -6635,6 +6642,13 @@
       "attr": "backgroundMedia",
       "fields": {
         "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -12372,6 +12386,13 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color",
@@ -15245,6 +15266,13 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -17160,6 +17188,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22033,6 +22068,14 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -22052,6 +22095,14 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -22105,6 +22156,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22580,6 +22638,13 @@
     },
     {
       "slug": "sgs/site-header",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -22977,34 +23042,18 @@
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "fontFamily",
+      "attr": "childIconShapeSize",
       "fields": {
-        "css_property": "font-family",
-        "css_element": "wrapper"
+        "css_property": "width",
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "fontSize",
+      "attr": "childIconSize",
       "fields": {
-        "css_property": "font-size",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "fontStyle",
-      "fields": {
-        "css_property": "font-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "fontWeight",
-      "fields": {
-        "css_property": "font-weight",
-        "css_element": "wrapper"
+        "css_property": "width",
+        "css_element": "glyph"
       }
     },
     {
@@ -23014,118 +23063,6 @@
         "css_property": "gap",
         "css_layer": "GRID",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "iconGlyphColourGradient",
-      "fields": {
-        "css_property": "stroke",
-        "role": "color",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "iconSize",
-      "fields": {
-        "css_property": "height,width",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "letterSpacing",
-      "fields": {
-        "css_property": "letter-spacing",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "lineHeight",
-      "fields": {
-        "css_property": "line-height",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "margin",
-      "fields": {
-        "css_property": "margin",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "padding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "textAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "textColumns",
-      "fields": {
-        "css_property": "column-count",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "textDecoration",
-      "fields": {
-        "css_property": "text-decoration",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "textTransform",
-      "fields": {
-        "css_property": "text-transform",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "textWrap",
-      "fields": {
-        "css_property": "text-wrap",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "wrapperBorderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "wrapperBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "writingMode",
-      "fields": {
-        "css_property": "writing-mode"
       }
     },
     {
@@ -25737,6 +25674,13 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayBlendMode",
+      "fields": {
+        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -35430,22 +35374,6 @@
       }
     },
     {
-      "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/site-footer",
       "attr": "backgroundAttachment",
       "fields": {
@@ -35750,147 +35678,136 @@
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "borderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "iconBackground",
+      "attr": "childIconBackground",
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "item"
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBackgroundGradient",
+      "attr": "childIconBackgroundGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "item"
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBackgroundHover",
+      "attr": "childIconBackgroundHover",
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "item",
+        "css_element": "shape",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBackgroundHoverGradient",
+      "attr": "childIconBackgroundHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "item",
+        "css_element": "shape",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBorderColour",
+      "attr": "childIconBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "item"
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBorderColourGradient",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "iconBorderColourHover",
+      "attr": "childIconBorderColourHover",
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "item",
+        "css_element": "shape",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconBorderColourHoverGradient",
+      "attr": "childIconBorderStyle",
       "fields": {
-        "css_property": "border-color-gradient",
-        "css_element": "item",
-        "css_state": "hover"
+        "css_property": "border-style",
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconGlyphColour",
+      "attr": "childIconBorderWidth",
       "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "item"
+        "css_property": "border-width",
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconGlyphColourHover",
+      "attr": "childIconColour",
       "fields": {
         "css_property": "color",
         "role": "color",
-        "css_element": "item",
-        "css_state": "hover"
+        "css_element": "shape"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "iconGlyphColourHoverGradient",
+      "attr": "childIconColourGradient",
       "fields": {
         "css_property": "stroke",
         "role": "color",
-        "css_element": "item",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "shape",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "wrapperBorderColour",
+      "attr": "childIconColourHoverGradient",
       "fields": {
-        "css_property": "border-color",
+        "css_property": "stroke",
         "role": "color",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
         "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "wrapperBorderColourGradient",
+      "attr": "padding",
       "fields": {
-        "css_property": "border-color-gradient",
+        "css_property": "padding",
         "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/social-icons",
-      "attr": "wrapperBorderColourHover",
+      "attr": "rowAlign",
       "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/social-icons",
-      "attr": "wrapperBorderColourHoverGradient",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_element": "wrapper",
-        "css_state": "hover"
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
