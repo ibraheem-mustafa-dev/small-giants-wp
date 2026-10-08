@@ -162,8 +162,9 @@ Each section: what is built, and what is open.
     the wordmark and the tagline.
   - A full-width hairline on the bottom bar, with Privacy and Terms on the right.
   - `/privacy` and `/terms` return 404 on live (content, below).
-  - Link underline, address, hours and social icons: owned by the sessions working on the link-underline helper and the
-    icon-unification plan.
+  - Social icons: owned by the icon-unification plan (P2-r, the brand colour overriding the border colour). The
+    "Visit or call" column's link underline, Google-linked address and compact hours are live (2026-10-09); their
+    divergence-ledger entries are owed (`plans/2026-10-08-link-underline-helper.md`).
 
 ### Home (page 208, front page, `build/home.tree.json`)
 - **Built:** the brand strip as a logo row in the draft's order; the prescription-strip photo as `sgs/media` with hover

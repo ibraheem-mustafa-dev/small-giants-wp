@@ -295,6 +295,9 @@ reuses a number; it is appended to any existing `className`. Then rebuild once. 
   already held it (`solve.mjs::writeRound` records the held groups; a measure-only run reads them against a copy of the
   tree). A group is held only if the tree held the value before the round's first write: a value another group wrote
   earlier in the same round (two rows resolving to one setting) is a write, never a hold (test `tests/solve-held.test.mjs`).
+  A row whose draft or live value the walker never read (a draft inline span's box styles, a live element with no
+  text) is not a paint: it is Unresolved with the reason `unmeasured-side`, never Hardcode, and a row with no draft
+  value forms no writable group (`lib/solve-rows.mjs::classify`, `::writableGroups`; same test file).
   The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row, the rule
   that wins on the live page beside the rule that carries the draft value
   (`lib/winning-rule.mjs`, Chrome DevTools' matched rules; `--no-rules` skips the browser read).
@@ -765,7 +768,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
          still emitted a row for it), and the noise figure is settled at 5 noise rows, every one a PHASE artefact (a draft view-swap fade already accepted at `qa/parity/shop.mjs`:286, the `sgs/trust-bar` marquee's scroll phase, and one `box-shadow` read at t≈0.999 — alpha, blur and spread each short by an identical 0.0950%). Not host load and not detector flakiness; a run reading 0 was never evidence of absence because every cause is phase-dependent. `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`.
          The earlier 13-on-shop and 9-on-lens reading is superseded.
        - **A gate exists that would have caught an unwalkable surface, and it never ran.**
-         `scripts/parity/draft-live-walk.mjs` calls `lib/lint.mjs::lintConfig` and exits 1 before any browser opens,
+         `scripts/parity/draft-live-walk.mjs` calls `lib/lint.mjs::lintConfig` (on the states the run walks, `--states`, since `ee9d6e31c`) and exits 1 before any browser opens,
          but a whole sitting passed without re-walking, so a surface stayed unwalkable. **A route gate should run
          `draft-live-walk.mjs --lint` over every surface's `walkerFull`** — no browser, no host.
        - **The 338 to 176 decomposition is machine-local.** `.gitignore` ignores `sites/*/build/qa/solve/`, so it
