@@ -22,7 +22,7 @@ Paths are relative to `[1]` (the `sgs/site-header`); `mid` = `innerBlocks[1]` (m
 | Sticky | position sticky | `headerSticky={desktop:on}` (already there) | SET |
 | Scroll threshold | scrolled at 40px | site-header `scrolledOffset=40` | SET |
 | Content cap 1440 | inner max-width 1440, centred | `mid.maxWidth={desktop:1440px}`; header `contentWidth` removed (default full), so no band/gutter | SET |
-| Grid | 1fr auto 1fr, gap 16, centred | `mid.layout=grid`, `gridTemplateColumns` desktop/tablet/mobile `1fr auto 1fr`, `gap=16px` | SET |
+| Grid | 1fr auto 1fr, gap 16, centred (at mobile the draft is unsymmetrical: burger, logo, cart) | `mid.layout=grid`, `gridTemplateColumns` desktop/tablet `1fr auto 1fr`, mobile `auto 1fr auto`, `gap=16px` | SET |
 | Row padding | 20px 28px | `mid.padding.desktop=17px 28px` (NOT 20: see Gap 1), tablet 20px 28px, mobile 12px 16px | SET, compensated |
 | Header height | 79 | 17+44+17+1 = 79 (nav link and bag pill are 44px min-height in CSS) | SET, compensated |
 | Left nav items | padding 6px 0, gap 24, 13.5px, .06em, uppercase | navL `itemPadding.desktop=6px 0`, `gap=24px`, `itemFontSize=13.5px`, `itemLetterSpacing=.06em`, `itemTextTransform=uppercase`, `itemFontWeight=400` | SET |
