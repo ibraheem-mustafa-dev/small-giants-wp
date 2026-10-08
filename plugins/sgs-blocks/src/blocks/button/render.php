@@ -662,7 +662,7 @@ $scoped_css_parts[] = implode( '', $min_height_decls );
 // viewport; the base rule is declared before the @media tiers so normal
 // source-order cascade lets a matched tier win. Full-width also relies on the
 // wrapper's sgs-button-wrapper--full class (see step 8) to hold the line
-// inside a flex-row parent (flex-basis:100%), which this id-scoped element
+// inside a flex-row parent (flex:0 0 auto, so its width:100% is not shrunk), which this id-scoped element
 // width rule alone cannot guarantee.
 $width_css_value = static function ( $type, $val, $unit ) {
 	switch ( $type ) {

@@ -261,17 +261,19 @@
 }
 
 /* Width modifiers (D288 — the button IS the block root now, no wrapper div).
- * flex:0 0 100% (basis 100%, no grow, no shrink) is required in addition to
- * width:100% because a flex ITEM ignores width when the browser default
- * flex-shrink:1 is free to shrink it below that width — this happens when the
- * button is a child of a flex row (sgs/multi-button, sgs/container flex
- * layout). flex-basis:100% forces the item to claim the full line (wrapping
- * siblings onto the next line), while width:100% still governs non-flex
- * parents (block-level containers) where flex-basis is simply ignored.
- * align-self:stretch fills the cross-axis when the parent is a flex COLUMN. */
+ * flex:0 0 auto (no grow, no shrink, basis from width) is required in addition
+ * to width:100% because a flex ITEM is shrunk below its width by the browser
+ * default flex-shrink:1 — this happens when the button is a child of a flex row
+ * (sgs/multi-button, sgs/container flex layout). With shrink off, the auto basis
+ * is width:100%, so the item claims the full line (wrapping siblings onto the
+ * next line). The basis is never a percentage: in a flex COLUMN a percentage
+ * basis resolves against the parent's height (a full-width button in a drawer's
+ * stack became as tall as the stack); auto there is the content height.
+ * width:100% still governs non-flex parents, and align-self:stretch fills the
+ * cross-axis in a column. */
 .sgs-button--full {
 	width: 100%;
-	flex: 0 0 100%;
+	flex: 0 0 auto;
 	max-width: 100%;
 	align-self: stretch;
 }
