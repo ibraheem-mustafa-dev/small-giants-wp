@@ -147,8 +147,11 @@ if ( $sf_resting_decls || $sf_hover_decls ) {
 	// shared helper, which other blocks may deliberately want a themed
 	// link colour inside) — this container's job is to make ALL of its
 	// own text, including links, read as one resolved colour.
+	// Specificity (0,1,1): above core's `a:where(:not(.wp-element-button))`
+	// (0,0,1), below a block's own link-colour rule (`.wp-block-sgs-text.sgs-text-*
+	// a`, 0,2,1), so a block's own linkColour inside the footer wins.
 	if ( '' !== $sf_text_effective ) {
-		$css .= "{$root_sel} a{color:inherit;}";
+		$css .= ".{$uid} a{color:inherit;}";
 	}
 
 	$sf_text_fallback = sgs_text_colour_gradient_fallback_rule( $root_sel, $sf_text_effective );
