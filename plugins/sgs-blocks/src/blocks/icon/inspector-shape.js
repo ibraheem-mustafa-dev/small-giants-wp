@@ -58,7 +58,7 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 					value={ shape }
 					onChange={ ( value ) =>
 						// Only the square takes a radius: leaving it clears the radius.
-						setAttributes( 'square' === value ? { shape: value } : { shape: value, borderRadius: {} } )
+						setAttributes( { shape: value, ...( 'square' === value ? {} : { borderRadius: {} } ) } )
 					}
 					isBlock
 					__nextHasNoMarginBottom

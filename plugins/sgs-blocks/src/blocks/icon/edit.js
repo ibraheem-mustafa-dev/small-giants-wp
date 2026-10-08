@@ -18,6 +18,8 @@ import {
 	resolveBrand,
 	accessibleName,
 	iconLengthValue,
+	iconGroupContext,
+	attributesInGroup,
 } from './icon-state';
 
 /**
@@ -45,14 +47,14 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs ) {
 	if ( height ) {
 		style[ '--sgs-icon-shape-h' ] = height;
 	}
-	const own = {
-		iconColour: '--sgs-icon-colour',
-		iconColourHover: '--sgs-icon-colour-hover',
-		backgroundColour: '--sgs-icon-bg',
-		backgroundColourHover: '--sgs-icon-bg-hover',
-	};
-	Object.entries( own ).forEach( ( [ attr, property ] ) => {
-		const value = colourVar( attributes[ attr ] );
+	const own = [
+		[ '--sgs-icon-colour', attributes.iconColour ],
+		[ '--sgs-icon-colour-hover', attributes.iconColourHover ],
+		[ '--sgs-icon-bg', attributes.backgroundColour ],
+		[ '--sgs-icon-bg-hover', attributes.backgroundColourHover ],
+	];
+	own.forEach( ( [ property, raw ] ) => {
+		const value = colourVar( raw );
 		if ( value ) {
 			style[ property ] = value;
 		}
@@ -88,15 +90,20 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs ) {
 	return style;
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes: ownAttributes, setAttributes, context } ) {
 	const tier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
 	const presetSlugs = flattenPresetSetting( spacingSizes ).map( ( s ) => s.slug );
 
+	// Inside an sgs/social-icons row the canvas paints the row's group defaults (render.php's twin); the inspector
+	// keeps editing the icon's own attributes.
+	const group = iconGroupContext( context );
+	const attributes = attributesInGroup( ownAttributes, group );
 	const { iconSource, iconAlign, iconFill, shape = 'square', showBackground, linkUrl, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, backgroundColourGradient } = attributes;
 
 	const boundKey = boundLinkKey( attributes );
+	const hiddenInRow = group.inGroup && !! boundKey && group.hidden.includes( boundKey );
 	const link = siteInfoLinkState( boundKey, window.sgsBlocksData?.siteInfo );
 	const brand = resolveBrand( attributes, boundKey );
 	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl } );
@@ -114,6 +121,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		palette
 	);
 	const hasBorder = !! ( shapeStyle.borderWidth || shapeStyle.borderTopWidth || shapeStyle.borderStyle );
+	const groupBorder = ! hasBorder && group.border;
 	if ( showBg && backgroundColourGradient ) {
 		shapeStyle.backgroundImage = backgroundColourGradient;
 	}
@@ -124,11 +132,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-icon--source-${ iconSource || 'lucide' }`,
 		`sgs-icon--shape-${ shape }`,
 		showBg && 'sgs-icon--has-bg',
-		( showBg || hasBorder ) && 'sgs-icon--boxed',
+		( showBg || hasBorder || groupBorder ) && 'sgs-icon--boxed',
+		groupBorder && 'sgs-icon--group-border',
 		brand.brandOn && 'sgs-icon--brand',
 		fillGlyph && 'sgs-icon--fill',
 		iconAlign && 'start' !== iconAlign && `sgs-icon--align-${ iconAlign }`,
-		link.hidden && 'sgs-icon--hidden-empty',
+		( link.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -150,11 +159,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					onChange={ ( value ) => setAttributes( { iconAlign: value } ) }
 				/>
 			</BlockControls>
-			<IconInspector attributes={ attributes } setAttributes={ setAttributes } state={ { boundKey, link, brand, name } } />
+			<IconInspector attributes={ ownAttributes } setAttributes={ setAttributes } state={ { boundKey, link, brand, name } } />
 			<div { ...blockProps }>
 				{ /* A span, not a link: the canvas must not navigate. Same class, so the 44px target and shape paint. */ }
 				{ linked ? <span className="sgs-icon__link">{ shapeEl }</span> : shapeEl }
-				{ link.hidden && (
+				{ hiddenInRow && (
+					<span className="sgs-icon__notice" role="note">
+						{ sprintf(
+							/* translators: %s: Site Info field, e.g. WhatsApp. */
+							__( 'Hidden in this row: tick %s under Links on the Social Icons block to show it.', 'sgs-blocks' ),
+							link.label
+						) }
+					</span>
+				) }
+				{ ! hiddenInRow && link.hidden && (
 					<span className="sgs-icon__notice" role="note">
 						{ sprintf(
 							/* translators: %s: Site Info field, e.g. WhatsApp. */
