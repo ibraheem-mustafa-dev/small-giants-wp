@@ -16,7 +16,7 @@ Headline numbers. The CLASS 2 and CLASS 3 rows count the 73 findings triaged on 
 |---|---|
 | CLASS 2 + CLASS 3 findings triaged | 73 |
 | ... judged FIX | 26 declarations (22 CLASS 2, 4 CLASS 3): **all resolved**. 24 closed by a control (4 in `6f1963c28`, 9 in `75a583e23`, 11 in `4a4d442fd`..`4289311a9`), 2 (`cta-section` headline) re-verdicted DEFENSIBLE on a live measurement |
-| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 29 remain (28 CLASS 2, 1 CLASS 3); the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline's 3 are CLASS 1 now the gate reads its `sgs/heading` child's controls (section 7 gap 9) |
+| ... DEFENSIBLE (documented intent, UI chrome, or measured) | 24 remain (23 CLASS 2, 1 CLASS 3); the `sgs/form` file button's 4 and file prompt's `text-align` got controls (`880aab178`, `f21461b1a`), the `cta-section` ribbon's 4 and the form file progress's `text-align` got controls (`7dfc6552b`, `875196fe5`), and the `cta-section` headline's 3 are CLASS 1 now the gate reads its `sgs/heading` child's controls (section 7 gap 9) |
 | ... DEAD (no markup emits the class) | 10, deleted in `6f1963c28` |
 | ... EDITOR-ONLY | 3, moved to `editor.css` in `6d30835bd` |
 | CANNOT-RESOLVE at triage | 54 |
@@ -160,12 +160,12 @@ Verdict key: **FIX** a control cannot reach a live element. All 26 FIX declarati
 | 27 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__arrow` | 2 | CLASS-2 | DEFENSIBLE | 2 | permanent |
 | 28 | `sgs/post-grid` | `.sgs-post-grid__error` | 1 | CLASS-3 | DEFENSIBLE | 2 | permanent for the empty-state text |
 | 29 | `sgs/cta-section` | `.sgs-cta-section__ribbon` | 4 | CLASS-2 | DEFENSIBLE | 1 | permanent |
-| 30 | `sgs/form` | `.sgs-form-field__file-button` | 4 | CLASS-2 | DEFENSIBLE | 1 | permanent |
+| 30 | `sgs/form` | `.sgs-form-field__file-button` | 4 | CLASS-2 | CLOSED `880aab178` | 1 | `fileButton` surface |
 | 31 | `sgs/notice-banner` | `.sgs-notice-banner__icon` | 2 | CLASS-2 | DEFENSIBLE | 1 | default-state only (`iconSize` owns the glyph) |
 | 32 | `sgs/notice-banner` | `.sgs-notice-banner__close` | 2 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 33 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-icon` | 2 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 34 | `sgs/button` | `.sgs-button__note` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent (documented) |
-| 35 | `sgs/form` | `.sgs-form-field__file-label` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
+| 35 | `sgs/form` | `.sgs-form-field__file-label` | 1 | CLASS-2 | CLOSED `880aab178` | 1 | `filePrompt` surface |
 | 36 | `sgs/form` | `.sgs-form-file__progress` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 37 | `sgs/google-reviews` | `.sgs-google-reviews__badge-text` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
@@ -260,11 +260,11 @@ Each table row is one declaration. "Competing control" is the control the gate r
 | `form/style.css::.sgs-form-tile__icon` | `font-size: 1.5rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
 | `form/style.css::.sgs-form-tile__icon` | `line-height: 1` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
 | `form/style.css::.sgs-form-tile__label` | `font-weight: 500` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
-| `form/style.css::.sgs-form-field__file-label` | `text-align: center` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__file-button` | `font-size: 12.5px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__file-button` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__file-button` | `letter-spacing: 0.12em` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__file-button` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
+| `form/style.css::.sgs-form-field__file-label` | `text-align: center` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
+| `form/style.css::.sgs-form-field__file-button` | `font-size: 12.5px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
+| `form/style.css::.sgs-form-field__file-button` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
+| `form/style.css::.sgs-form-field__file-button` | `letter-spacing: 0.12em` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
+| `form/style.css::.sgs-form-field__file-button` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
 | `form/style.css::.sgs-form-file__progress` | `text-align: center` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
 | `form/style.css::.sgs-form-field__consent-text` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
 | `form/style.css::.sgs-form__progress-step-number` | `font-size: 0.8125rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
@@ -279,8 +279,8 @@ Each table row is one declaration. "Competing control" is the control the gate r
 - `.sgs-form-field__label` (CLOSED `6f1963c28`). **Reach:** `includes/forms/field-render-helpers.php::field_label`: `'<label for="%s" class="sgs-form-field__label%s">'`, called from 9 field blocks, plus `<legend class="sgs-form-field__label">` in `form-field-checkbox`, `form-field-radio` and `form-field-tiles`. 1 per labelled field. **Leak:** permanent (no label typography control). **CLASS 4 element:** element-level: no label typography control at all. **Evidence:** Root `fontWeight` cannot reach field labels (`font-weight: 600`); the same rule also hardcodes `font-size: var(--wp--preset--font-size--small, 0.9375rem)`, which this gate does not examine.
 - `.sgs-form-tile__icon` (CLOSED `c9d0f7cf4`). **Reach:** `form-field-tiles/render.php`: `echo '<span class="sgs-form-tile__icon" aria-hidden="true">'` once per tile that has an icon. **Leak:** permanent. **CLASS 4 element:** element-level. **Evidence:** Tiles field only.
 - `.sgs-form-tile__label` (CLOSED `c9d0f7cf4`). **Reach:** `form-field-tiles/render.php`: `echo '<span class="sgs-form-tile__label">' . esc_html( $tile['label'] ?? '' ) . '</span>';` once per tile. **Leak:** permanent. **CLASS 4 element:** element-level. **Evidence:** Tiles field only.
-- `.sgs-form-field__file-label` (DEFENSIBLE). **Reach:** `form-field-file/render.php`: `echo '<div class="sgs-form-field__file-label">'` once per file field. **Leak:** permanent. **Evidence:** Centred upload-panel caption. Reading from source: a panel layout choice; intent not documented.
-- `.sgs-form-field__file-button` (DEFENSIBLE). **Reach:** `form-field-file/render.php`: `<span class="sgs-form-field__file-button" aria-hidden="true">` once per file field. 4 declarations (size, line-height, tracking, case). **Leak:** permanent. **Evidence:** A decorative "Choose file" chip inside the upload panel (aria-hidden). Reading from source: button-like chrome; intent not documented.
+- `.sgs-form-field__file-label` (CLOSED `880aab178`: the `filePrompt` surface). **Reach:** `form-field-file/render.php`: `echo '<div class="sgs-form-field__file-label">'` once per file field. **Leak:** permanent. **Evidence:** Centred upload-panel caption. Reading from source: a panel layout choice; intent not documented.
+- `.sgs-form-field__file-button` (CLOSED `880aab178`: the `fileButton` surface). **Reach:** `form-field-file/render.php`: `<span class="sgs-form-field__file-button" aria-hidden="true">` once per file field. 4 declarations (size, line-height, tracking, case). **Leak:** permanent. **Evidence:** A decorative "Choose file" chip inside the upload panel (aria-hidden). Reading from source: button-like chrome; intent not documented.
 - `.sgs-form-file__progress` (DEFENSIBLE). **Reach:** `form-field-file/render.php`: `echo '<div class="sgs-form-file__progress" hidden>'` once per file field, visible only while uploading. **Leak:** permanent. **Evidence:** Transient status text.
 - `.sgs-form-field__consent-text` (CLOSED `c9d0f7cf4`). **Reach:** `form-field-consent/render.php`: `echo '<span class="sgs-form-field__consent-text">'` once per consent field. **Leak:** permanent. **CLASS 4 element:** element-level. **Evidence:** Root `lineHeight` cannot reach the consent wording.
 - `.sgs-form__progress-step-number` (DEFENSIBLE). **Reach:** `form/render.php`: `<span class="sgs-form__progress-step-number">` once per step of a multi-step form (the progress bar). **Leak:** permanent. **Evidence:** A numbered bubble in a progress indicator; reading from source: UI chrome; intent not documented.
@@ -560,7 +560,7 @@ Measured 2026-10-07 on clean detached worktrees, from `plugins/sgs-blocks`: `nod
 
 The descent this section predicted was 33 / 1 / 54. The two differences are measured, not missed: the `cta-section` headline pair is DEFENSIBLE (2 CLASS-2), and the own-control reorder clears only one of its two named rows, because `media`'s caption selector list also contained a bare `figcaption` that the gate could not place (causes E and F); gap 4 now places it. The option-picker pill's row went with its dead `line-height: 1`.
 
-The 29 DEFENSIBLE findings (28 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows are CLASS 1: the gate reads its `sgs/heading` child's controls (section 7 gap 9).
+The 24 DEFENSIBLE findings (23 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows are CLASS 1: the gate reads its `sgs/heading` child's controls (section 7 gap 9).
 
 **Shipped 2026-10-07 (`00994a40d`..the admission commit): every `var()` row fixed, then `var()` admitted.**
 

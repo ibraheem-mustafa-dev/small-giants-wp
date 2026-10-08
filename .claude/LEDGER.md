@@ -81,14 +81,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `6d7ab0169`). The gate reads InnerBlocks template
+  Ceilings **CLASS-2 23, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `cdf0d80a8`). The gate reads InnerBlocks template
   children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
-  (gap 4), matches a bare tag to it (`scripts/lib/e14-unknown-tag.js`) and places a childless JS-built control (`e14-js-leaf.js`). `sgs/theme-toggle` has an `iconSize` control. The drill-down drawer panel now fills the bar
-  (proved live at 375 and 1440) and a draft `sgs_drawer` previews. **CANNOT-RESOLVE floor:** the cart badge (2 rows; needs three gate
-  features, verdict in §6, none built). **Open:** gaps 3 (moves no count today), 5, 7, 8, 10(a,c,d), 11, and the rest of gap 4 (a class glued
-  to a placeholder). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+  (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). **CANNOT-RESOLVE floor:** the cart badge (2 rows; Bean accepted them as the permanent floor on 2026-10-08, verdict in §6). **Open:** the
+  23 CLASS-2 rows (`sgs/form` column/row headings and progress number, `testimonial-slider`, `notice-banner`, `store-selector`, `business-info`, `button` note; google-reviews' 4 are its session's). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
@@ -105,8 +103,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
 - **Box alignment is logical (2026-10-07, `8671c0e64`):** icon, media, separator, nav-drawer and tabs store `start|center|end` (`stretch` kept on drawer and tabs) via `LogicalAlignControl`; gate `check:box-alignment`. Live on sandybrown, eye-care-test, indus-test (`2adf0dd06`); measured at 375/768/1440, LTR and RTL; editor pass `check-box-alignment-editor.js` passes. Media's editor canvas paints alignment on the image (`50449c17e`). **Owed:** indus-test's next deploy carries `b90def34b`, `50449c17e` and the picker/button-note colours (`afae93d66`); the front-end separator at a numeric 40% width is not yet read in LTR and RTL.
-- **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2: corner radius (P2-a) and the media atoms
-  (P2-c) live on sandybrown; no block reads native `style.border`. Open: P2-b, the P2-g function, P2-e (`plans/2026-10-07-cr6-box-longhand-migration.md` Phase 2).
+- **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2 live on sandybrown: P2-a, P2-b, P2-c, P2-h; no block reads native `style.border`. Open: P2-i (accordion padding's DB `is_responsive`; a reseed owed for multi-button `childBtnBorderRadius`), the P2-g function, P2-e (`plans/2026-10-07-cr6-box-longhand-migration.md`).
 - **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
   row carries its hash. The stretched link was rebuilt so a block's OWN visible link owns the surface. `brandUseLogo`
   ships `true` (a cross-client default).
