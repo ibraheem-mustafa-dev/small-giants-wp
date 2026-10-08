@@ -289,19 +289,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
-							<SelectControl
-								label={ __( 'Hours position', 'sgs-blocks' ) }
-								value={ hoursRowJustify || 'space-between' }
-								options={ [
-									{ label: __( 'At the end of the row', 'sgs-blocks' ), value: 'space-between' },
-									{ label: __( 'Next to the day name', 'sgs-blocks' ), value: 'flex-start' },
-								] }
-								onChange={ ( val ) => setAttributes( { hoursRowJustify: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
 						{ 'condensed' === hoursLayout && (
 							<>
 								<ToggleControl
@@ -335,30 +322,6 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 								) }
 							</>
-						) }
-						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
-							<ResponsiveOverride
-								value={ attributes.hoursRowPadding }
-								onChange={ ( obj ) => setAttributes( { hoursRowPadding: obj } ) }
-							>
-								{ ( { ownValue, setOwnValue } ) => (
-									<SgsBoxControl
-										label={ __( 'Hours row padding', 'sgs-blocks' ) }
-										values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
-										units={ BOX_UNITS }
-										presets
-										onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-									/>
-								) }
-							</ResponsiveOverride>
-						) }
-						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
-							<SgsSeparatorControl
-								label={ __( 'Lines between rows', 'sgs-blocks' ) }
-								value={ separators }
-								onChange={ ( next ) => setAttributes( { separators: next } ) }
-								axes={ [ 'row' ] }
-							/>
 						) }
 					</PanelBody>
 				) }
@@ -521,6 +484,47 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+
+			{ /* The hours rows' position, spacing and lines are styles of one element
+			   (hours-row), so they sit together in the Styles tab; a one-line
+			   condensed list has no rows to place, space or divide. */ }
+			{ 'hours' === displayType && ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
+				<InspectorControls group="styles">
+					<PanelBody title={ __( 'Hours rows', 'sgs-blocks' ) } initialOpen={ false }>
+						<SelectControl
+							label={ __( 'Hours position', 'sgs-blocks' ) }
+							value={ hoursRowJustify || 'space-between' }
+							options={ [
+								{ label: __( 'At the end of the row', 'sgs-blocks' ), value: 'space-between' },
+								{ label: __( 'Next to the day name', 'sgs-blocks' ), value: 'flex-start' },
+							] }
+							onChange={ ( val ) => setAttributes( { hoursRowJustify: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<ResponsiveOverride
+							value={ attributes.hoursRowPadding }
+							onChange={ ( obj ) => setAttributes( { hoursRowPadding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Hours row padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
+						<SgsSeparatorControl
+							label={ __( 'Lines between rows', 'sgs-blocks' ) }
+							value={ separators }
+							onChange={ ( next ) => setAttributes( { separators: next } ) }
+							axes={ [ 'row' ] }
+						/>
+					</PanelBody>
+				</InspectorControls>
+			) }
 
 			{ 'hours' === displayType && (
 				<InspectorControls group="styles">
