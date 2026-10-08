@@ -53,6 +53,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_files  # noqa: E402
+
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 WRAPPER_FILE = PLUGIN_ROOT / "includes" / "class-sgs-container-wrapper.php"
@@ -77,7 +80,9 @@ def _sort_re(var_name: str) -> re.Pattern:
 
 
 def _target_files() -> list[Path]:
-    files = sorted(BLOCKS_DIR.glob("*/render.php"))
+    files: list[Path] = []
+    for render in sorted(BLOCKS_DIR.glob("*/render.php")):
+        files.extend(render_files(render.parent))
     if WRAPPER_FILE.exists():
         files.append(WRAPPER_FILE)
     return files

@@ -244,6 +244,25 @@ final class NavDrawerChromeRatingTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating', $slot_hidden );
 	}
 
+	public function test_an_end_slot_keeps_the_auto_margin_when_the_rating_is_hidden_on_a_tier(): void {
+		$css = $this->row(
+			array(
+				'chromeSlotType'      => 'heading',
+				'chromeSlotText'      => 'EXAMPLE BRAND',
+				'chromeSlotPlacement' => 'end',
+				'chromeRating'        => true,
+				'chromeRatingShow'    => array( 'mobile' => false ),
+			)
+		)['css'];
+		// The end slot already carries the auto margin; giving the close button one too would split the row.
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-nav-drawer__close\{[^}]*margin-inline-start:auto/', $css );
+	}
+
+	public function test_the_close_margin_reset_beside_an_end_rating_outranks_a_moved_close_button(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/style.css' );
+		$this->assertStringContainsString( '.sgs-nav-drawer__chrome.sgs-nav-drawer__chrome:has(> .sgs-nav-drawer__chrome-rating--at-end) > .sgs-nav-drawer__close', $css );
+	}
+
 	public function test_a_tier_that_hides_an_end_rating_gives_the_close_button_its_auto_margin_back(): void {
 		$hidden_on_mobile = array(
 			'chromeRating'     => true,

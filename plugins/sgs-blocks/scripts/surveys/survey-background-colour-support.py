@@ -32,6 +32,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import render_source  # noqa: E402
+
 sys.stdout.reconfigure(encoding='utf-8')
 
 REPO = Path(__file__).resolve().parents[4]
@@ -86,7 +89,7 @@ def survey_block(block_dir):
 
     render_path = block_dir / 'render.php'
     is_dynamic = render_path.exists()
-    render_text = render_path.read_text(encoding='utf-8', errors='ignore') if is_dynamic else ''
+    render_text = render_source(block_dir) if is_dynamic else ''
 
     delegates_to_wrapper = bool(WRAPPER_CALL_RE.search(render_text))
     self_applies = bool(

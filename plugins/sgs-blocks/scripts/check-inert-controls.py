@@ -69,6 +69,9 @@ import subprocess
 import sys
 from typing import Dict, Optional
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / 'lib'))
+from block_source_files import edit_source, render_files  # noqa: E402
+
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 INCLUDES_DIR = REPO / 'plugins' / 'sgs-blocks' / 'includes'
@@ -205,7 +208,7 @@ def suppressed_shared_controls(block_dir):
     if not edit_js.exists():
         return set()
     off = set(re.findall(r'(show[A-Z]\w*)\s*=\s*\{\s*false\s*\}',
-                         strip_comments(edit_js.read_text(encoding='utf-8'))))
+                         strip_comments(edit_source(block_dir))))
     if not off:
         return set()
 
@@ -242,7 +245,7 @@ def has_control_in_edit_js(block_dir: pathlib.Path, attr_name: str) -> bool:
     edit_js = block_dir / 'edit.js'
     if not edit_js.exists():
         return False
-    src = edit_js.read_text(encoding='utf-8')
+    src = edit_source(block_dir)
     # Strip comments to avoid false positives from commented-out controls.
     src = strip_comments(src)
 
@@ -367,22 +370,24 @@ def scan() -> list:
 
         declared_attrs = schemas[block_name]
 
-        for line_num, attr_name, is_conditional, stmt in find_attribute_assignments(render_php):
-            # Must be declared in block.json.
-            if attr_name not in declared_attrs:
-                continue
+        # render.php plus every partial it requires, each reported at its own path and line.
+        for php_file in render_files(block_dir):
+            for line_num, attr_name, is_conditional, stmt in find_attribute_assignments(php_file):
+                # Must be declared in block.json.
+                if attr_name not in declared_attrs:
+                    continue
 
-            # Must have a control somewhere (edit.js or shared) that the client can
-            # ACTUALLY SEE — a shared row the block switched off is not a control.
-            suppressed = suppressed_shared_controls(block_dir)
-            has_control = (has_control_in_edit_js(block_dir, attr_name) or
-                          (attr_name in shared_controls and attr_name not in suppressed))
-            if not has_control:
-                continue
+                # Must have a control somewhere (edit.js or shared) that the client can
+                # ACTUALLY SEE — a shared row the block switched off is not a control.
+                suppressed = suppressed_shared_controls(block_dir)
+                has_control = (has_control_in_edit_js(block_dir, attr_name) or
+                              (attr_name in shared_controls and attr_name not in suppressed))
+                if not has_control:
+                    continue
 
-            # This is a genuine inert control.
-            rel_path = render_php.relative_to(REPO).as_posix()
-            findings.append((rel_path, line_num, block_name, attr_name, is_conditional))
+                # This is a genuine inert control.
+                rel_path = php_file.relative_to(REPO).as_posix()
+                findings.append((rel_path, line_num, block_name, attr_name, is_conditional))
 
     return findings
 

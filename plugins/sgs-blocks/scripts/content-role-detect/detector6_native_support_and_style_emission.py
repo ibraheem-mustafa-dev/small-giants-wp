@@ -53,7 +53,7 @@ BLIND SPOTS (enumerated)
    the SAME line as the `$attributes['attr']` read. A read split across
    multiple lines (e.g. a multi-line ternary whose `$attributes[...]` sits on
    its own line) will not seed the taint set and the row stays unclaimed.
-2. Only `render.php` is examined -- a style emitted from a shared included
+2. Only `render.php` and the partials it plain-requires are examined -- a style emitted from a shared included
    helper (rather than the block's own render.php) is invisible to this
    mechanism. Detector 4's wrapper-only carve-out is the tool for that shape.
 3. The chain is variable-name-based, not scope-aware: a variable reused with
@@ -199,6 +199,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import render_files, render_source  # noqa: E402
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_ROOT = SCRIPT_DIR.parent.parent          # plugins/sgs-blocks
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
@@ -224,6 +227,17 @@ def _rel(path: Path) -> str:
 
 def _block_dir(block_slug: str) -> Path:
     return BLOCKS_DIR / block_slug.split("/", 1)[-1]
+
+
+def _real_location(block_dir: Path, source_line: str, inlined_line_no: int) -> tuple[Path, int]:
+    """(file, 1-based line) of `source_line` in render.php or the first partial it
+    requires that holds that exact line; `inlined_line_no` is the line in the
+    inlined text, used only when no file matches."""
+    for f in render_files(block_dir):
+        for i, line in enumerate(_read(f).splitlines(), 1):
+            if line == source_line:
+                return f, i
+    return block_dir / "render.php", inlined_line_no
 
 
 # ---------------------------------------------------------------------------
@@ -316,10 +330,11 @@ def _find_attr_read(lines: list[str], attr: str) -> tuple[str, int] | tuple[None
 
 
 def style_emission_evidence(block_slug: str, attr: str) -> dict | None:
-    path = _block_dir(block_slug) / "render.php"
-    if not path.is_file():
+    block_dir = _block_dir(block_slug)
+    if not (block_dir / "render.php").is_file():
         return None
-    text = _read(path)
+    # render.php with its plain-required partials inlined: the read and the <style> echo may sit in different files
+    text = render_source(block_dir)
     if attr not in text:
         return None
     lines = text.splitlines()
@@ -341,7 +356,8 @@ def style_emission_evidence(block_slug: str, attr: str) -> dict | None:
         if "<style>" not in line:
             continue
         if any(re.search(rf"\${re.escape(v)}\b", line) for v in tainted):
-            return {"evidence_file": _rel(path), "evidence_line": read_line_no}
+            evidence_path, evidence_line = _real_location(block_dir, lines[read_line_no - 1], read_line_no)
+            return {"evidence_file": _rel(evidence_path), "evidence_line": evidence_line}
     return None
 
 

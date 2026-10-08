@@ -89,6 +89,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_files, render_source  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -612,7 +615,7 @@ def discover_blocks() -> dict[str, Path]:
 def scan_block(slug: str, block_dir: Path) -> list[Finding]:
     render_path = block_dir / "render.php"
     style_path = block_dir / "style.css"
-    render_text = render_path.read_text(encoding="utf-8", errors="replace") if render_path.exists() else ""
+    render_text = render_source(block_dir)
     style_text = style_path.read_text(encoding="utf-8", errors="replace") if style_path.exists() else ""
     # A block's CSS custom-property WRITER (render.php) and a READER of that
     # same property (style.css, or vice versa) can live in either file — the
@@ -620,7 +623,9 @@ def scan_block(slug: str, block_dir: Path) -> list[Finding]:
     # whichever file is currently being scanned.
     combined = render_text + "\n" + style_text
     findings: list[Finding] = []
-    findings += scan_file(render_path, slug, _PLUGIN_ROOT.parent, writer_lookup_text=combined)
+    # render.php plus every partial it requires, each reported at its own path
+    for php_file in render_files(block_dir) or [render_path]:
+        findings += scan_file(php_file, slug, _PLUGIN_ROOT.parent, writer_lookup_text=combined)
     findings += scan_file(style_path, slug, _PLUGIN_ROOT.parent, writer_lookup_text=combined)
     return findings
 

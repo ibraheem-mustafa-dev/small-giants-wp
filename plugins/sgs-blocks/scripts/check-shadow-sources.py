@@ -62,11 +62,11 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
-from block_source_files import render_source  # noqa: E402
-
 if sys.stdout.encoding is None or sys.stdout.encoding.lower() != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_files, render_source  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -650,16 +650,15 @@ def scan_php_calls(text: str, relpath: str) -> list[dict]:
 
 def php_targets() -> list[Path]:
     files = sorted(INCLUDES_DIR.glob("*.php"))
-    files += sorted(BLOCKS_DIR.glob("*/render.php"))
+    for render in sorted(BLOCKS_DIR.glob("*/render.php")):
+        files += render_files(render.parent)
     return files
 
 
 def scan_all_php() -> list[dict]:
     results: list[dict] = []
     for path in php_targets():
-        # A block's render.php is read with its require'd partials inlined, so code
-        # moved into a partial is still scanned and reported against render.php.
-        text = render_source(path.parent) if path.name == "render.php" else path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8")
         results.extend(scan_php_calls(text, path.relative_to(ROOT).as_posix()))
     return results
 
@@ -1048,7 +1047,8 @@ HOVER_COVERAGE_EXCLUDED_FILES = (
 
 
 def block_slug_from_render_php(relpath: str) -> str | None:
-    m = re.search(r"src/blocks/([a-z0-9-]+)/render\.php$", relpath.replace("\\", "/"))
+    # render.php or any partial it requires from the block folder
+    m = re.search(r"src/blocks/([a-z0-9-]+)/(?:[\w.-]+/)*[\w.-]+\.php$", relpath.replace("\\", "/"))
     return m.group(1) if m else None
 
 
@@ -1086,11 +1086,12 @@ def scan_hover_coverage(php_sources: list[dict]) -> list[dict]:
     rows = []
     for relpath, sources in sorted(by_file.items()):
         abspath = ROOT / relpath
-        if abspath.name == "render.php" and abspath.exists():
-            text = render_source(abspath.parent)
+        slug = block_slug_from_render_php(relpath)
+        # A block's hover wiring may sit in render.php while the emitter sits in a partial.
+        if slug and (BLOCKS_DIR / slug / "render.php").exists():
+            text = render_source(BLOCKS_DIR / slug)
         else:
             text = abspath.read_text(encoding="utf-8") if abspath.exists() else ""
-        slug = block_slug_from_render_php(relpath)
         overlay = bool(slug) and block_shadow_lift_support(slug) is False
         wired = any(marker in text for marker in HOVER_WIRED_MARKERS)
         if overlay:
@@ -1134,7 +1135,7 @@ def build_survey() -> dict:
         if shadow_support:
             block_slug = block_json.parent.name
             render_php = block_json.parent / "render.php"
-            matching = [s for s in php_sources if s["file"].endswith(f"src/blocks/{block_slug}/render.php") and s.get("function") in ("wp_style_engine_get_styles",)]
+            matching = [s for s in php_sources if f"src/blocks/{block_slug}/" in s["file"] and s.get("function") in ("wp_style_engine_get_styles",)]
             has_style_engine_shadow = any(s.get("sink") == "style-engine-shadow" for s in matching)
             covered = any(s.get("forced_colours_reached") for s in matching if s.get("sink") == "style-engine-shadow")
             supports_shadow_blocks.append(

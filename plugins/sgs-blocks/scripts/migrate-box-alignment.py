@@ -40,6 +40,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from block_source_files import edit_source, render_source  # noqa: E402
+
 # Anchored on a repo-unique marker, never CLAUDE.md (plugins/sgs-blocks has its own).
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.claude' / 'THE-MIGRATION-METHOD.md').exists())
 BLOCKS = ROOT / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
@@ -262,7 +265,14 @@ def source_failures():
         if not path.exists():
             out.append(f'{relpath}: marker file is missing (stale SOURCE_MARKERS entry)')
             continue
-        hits = re.findall(pattern, strip_comments(read(path)))
+        # render.php and edit.js are read with the partials / components they pull in
+        if path.name == 'render.php':
+            text = render_source(path.parent)
+        elif path.name == 'edit.js':
+            text = edit_source(path.parent)
+        else:
+            text = read(path)
+        hits = re.findall(pattern, strip_comments(text))
         if hits:
             out.append(f'{relpath}: {len(hits)} old-shape site(s) - {reason}')
     return out

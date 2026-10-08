@@ -261,7 +261,7 @@ $grb_logo_url = plugins_url( 'assets/google-logo.svg', dirname( __DIR__, 3 ) . '
 
 $grb_inner  = '<img class="sgs-google-rating-badge__logo" src="' . esc_url( $grb_logo_url ) . '" alt="" aria-hidden="true" width="24" height="24" decoding="async" />';
 $grb_inner .= '<span class="sgs-google-rating-badge__score" aria-hidden="true">' . esc_html( number_format( $grb_rating, 1 ) ) . '</span>';
-$grb_inner .= '<span class="sgs-google-rating-badge__stars" aria-hidden="true">' . sgs_render_stars_svg( $grb_rating, $grb_star_fill['defs'] ) . '</span>';
+$grb_inner .= '<div class="sgs-google-rating-badge__stars" aria-hidden="true">' . sgs_render_stars_svg( $grb_rating, $grb_star_fill['defs'] ) . '</div>';
 if ( '' !== $grb_caption_html ) {
 	$grb_inner .= '<span class="sgs-google-rating-badge__caption" aria-hidden="true">' . $grb_caption_html . '</span>';
 }

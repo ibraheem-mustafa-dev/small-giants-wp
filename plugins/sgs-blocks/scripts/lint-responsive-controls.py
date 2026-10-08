@@ -93,6 +93,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_files, edit_source  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[3]  # .../small-giants-wp
 BLOCKS_SRC = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 COMPONENTS_SRC = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "components"
@@ -304,7 +307,9 @@ def scan(blocks_src: Path, sanctioned: set, use_db_context: bool):
         if is_excluded(edit_js):
             continue
         files_scanned += 1
-        src = edit_js.read_text(encoding="utf-8", errors="replace")
+        # edit.js plus the in-block components it imports: a sanctioned import or a bespoke
+        # tier switcher may sit in either.
+        src = edit_source(edit_js.parent)
 
         if imports_sanctioned_component(src, sanctioned):
             continue  # routes through a sanctioned primitive somewhere in the file
@@ -317,9 +322,19 @@ def scan(blocks_src: Path, sanctioned: set, use_db_context: bool):
         db_count = db_tiered_attr_count(block_slug) if use_db_context else None
 
         for reason, snippet in signatures:
+            hit_file, hit_line = edit_js, 0
+            for source_file in edit_files(edit_js.parent):
+                hit_line = line_of(source_file.read_text(encoding="utf-8", errors="replace"), snippet)
+                if hit_line:
+                    hit_file = source_file
+                    break
+            try:
+                hit_rel = hit_file.relative_to(REPO_ROOT)
+            except ValueError:
+                hit_rel = hit_file
             findings.append({
-                "file": str(rel),
-                "line": line_of(src, snippet),
+                "file": str(hit_rel),
+                "line": hit_line,
                 "snippet": snippet,
                 "reason": reason,
                 "block_slug": block_slug,

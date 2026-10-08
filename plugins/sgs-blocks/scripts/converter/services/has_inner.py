@@ -28,7 +28,11 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "lib"))
+from block_source_files import render_source  # noqa: E402
 
 # scripts/converter/services/has_inner.py -> plugins/sgs-blocks/
 _PLUGIN_DIR = Path(__file__).resolve().parents[3]
@@ -101,7 +105,7 @@ def _render_consumes(block_dir: Path) -> bool:
     render_php = block_dir / "render.php"
     if not render_php.exists():
         return False
-    for line in render_php.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in render_source(block_dir).splitlines():
         if not line.strip() or _is_php_comment_line(line):
             continue
         if _RENDER_CONTENT_RE.search(line):

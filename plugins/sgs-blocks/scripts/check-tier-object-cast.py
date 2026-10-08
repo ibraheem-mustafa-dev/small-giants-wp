@@ -60,6 +60,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_files  # noqa: E402
+
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 
@@ -209,9 +212,11 @@ def run_scan() -> list[str]:
         object_attrs = _object_attrs(block_json_path)
         if not object_attrs:
             continue
-        violations.extend(
-            _scan_render_php(block_json_path.parent.name, render_path, object_attrs)
-        )
+        # render.php plus every partial it requires, each reported at its own path
+        for php_file in render_files(block_json_path.parent):
+            violations.extend(
+                _scan_render_php(block_json_path.parent.name, php_file, object_attrs)
+            )
     return violations
 
 

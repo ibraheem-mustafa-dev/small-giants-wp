@@ -54,6 +54,10 @@ WHAT IT DELIBERATELY DOES NOT DO
     python remove-vacuous-style-engine-guard.py --survey | --fix [--apply] | --check | --self-test
 """
 import argparse, glob, os, re, sys
+from pathlib import Path
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
+from block_source_files import render_files  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCKS = os.path.join(ROOT, 'src', 'blocks', '*', 'render.php')
@@ -181,11 +185,14 @@ def transform(text):
 
 def scan():
     rows = []
-    for f in sorted(glob.glob(BLOCKS)):
-        t = open(f, encoding='utf-8', errors='ignore').read()
-        n = t.count(FN)
-        if n:
-            rows.append({'file': f, 'block': os.path.basename(os.path.dirname(f)), 'n': n})
+    for render in sorted(glob.glob(BLOCKS)):
+        block_dir = os.path.dirname(render)
+        # render.php plus every partial it requires: a guard is removed from the file that holds it.
+        for f in (str(p) for p in render_files(Path(block_dir))):
+            t = open(f, encoding='utf-8', errors='ignore').read()
+            n = t.count(FN)
+            if n:
+                rows.append({'file': f, 'block': os.path.basename(block_dir), 'n': n})
     return rows
 
 

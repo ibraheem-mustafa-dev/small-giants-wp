@@ -61,6 +61,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_source  # noqa: E402
+
 PLUGIN = Path(__file__).resolve().parent.parent
 COMPONENTS = PLUGIN / "src" / "components"
 BLOCKS = PLUGIN / "src" / "blocks"
@@ -144,7 +147,7 @@ def mounts_by_component() -> dict[str, list[str]]:
         # scan counted as a mount until 2026-08-26. Third instance of one bug in
         # this file - prose read as code - so the fix belongs at every read site,
         # not just the one that was noticed.
-        text = strip_comments(edit.read_text(encoding="utf-8", errors="replace"))
+        text = strip_comments(edit_source(edit.parent))
         block = edit.parent.name
         for comp in COMPONENT_NAMES:
             # Word-boundary match so `SgsBoxControl` does not count a
@@ -185,7 +188,7 @@ def shadow_mount_maps() -> list[tuple[str, dict]]:
     """Every `attrNames={{...}}` map in the tree that names a `base`."""
     out = []
     for edit in sorted(BLOCKS.glob("*/edit.js")):
-        text = edit.read_text(encoding="utf-8", errors="replace")
+        text = edit_source(edit.parent)
         for m in ATTRNAMES_RE.finditer(text):
             d = dict(KV_RE.findall(m.group(1)))
             if "base" in d:

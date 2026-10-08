@@ -185,7 +185,7 @@
 		},
 		"compactBelow": {
 			"type": "integer",
-			"default": 1200
+			"default": 0
 		},
 		"position": {
 			"type": "string",

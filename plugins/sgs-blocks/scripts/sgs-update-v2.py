@@ -85,6 +85,9 @@ from typing import Callable
 # Windows / UTF-8 output fix — must be before any print()
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_source  # noqa: E402
+
 # Shared object-attribute shape discriminator (2026-09-10) — see
 # orchestrator/object_attr_shape.py's docstring for the full 5-shape
 # doctrine. Aliased to the private names this file already used, so every
@@ -2400,7 +2403,8 @@ def scrape_allowed_blocks(edit_js_path: Path) -> list[str] | None:
     the caller counts the block in dynamic_skipped.
     """
     try:
-        text = edit_js_path.read_text(encoding="utf-8", errors="replace")
+        # edit.js plus the in-block components it imports: the array may sit in a component
+        text = edit_source(edit_js_path.parent)
     except Exception:  # noqa: BLE001
         return None
 

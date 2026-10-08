@@ -240,7 +240,7 @@
 	margin-inline-start: 0;
 }
 
-.sgs-nav-drawer__chrome:has(> .sgs-nav-drawer__chrome-rating--at-end) > .sgs-nav-drawer__close {
+.sgs-nav-drawer__chrome.sgs-nav-drawer__chrome:has(> .sgs-nav-drawer__chrome-rating--at-end) > .sgs-nav-drawer__close {
 	margin-inline-start: 0;
 }
 

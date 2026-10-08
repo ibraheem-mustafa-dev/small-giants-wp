@@ -59,6 +59,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding='utf-8')
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from block_source_files import render_source  # noqa: E402
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_DIR = SCRIPT_DIR.parent
 BLOCKS_DIR = PLUGIN_DIR / 'src' / 'blocks'
@@ -271,7 +274,7 @@ def scan():
         if not render.exists() or not block_json.exists():
             continue
         scanned += 1
-        text = strip_comments(render.read_text(encoding='utf-8'))
+        text = strip_comments(render_source(block_dir))
         relpath = f"src/blocks/{block_dir.name}/render.php"
         order_finding = check_load_order(text, relpath)
         if order_finding:

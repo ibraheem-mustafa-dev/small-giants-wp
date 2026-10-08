@@ -50,6 +50,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_source  # noqa: E402
+
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / "src" / "blocks"
 
@@ -130,7 +133,7 @@ def check_site_header_important(php_text: str | None = None, helper_text: str | 
     if php_text is None:
         if not SITE_HEADER_RENDER.exists():
             return [f"B. site-header — ANCHOR NOT FOUND — {SITE_HEADER_RENDER} does not exist"]
-        php_text = SITE_HEADER_RENDER.read_text(encoding="utf-8")
+        php_text = render_source(SITE_HEADER_RENDER.parent)
     if helper_text is None:
         if not SITE_HEADER_SCROLL_HELPER.exists():
             return [f"B. site-header — ANCHOR NOT FOUND — {SITE_HEADER_SCROLL_HELPER} does not exist"]
@@ -235,7 +238,7 @@ def check_testimonial_slider_uid(php_text: str | None = None) -> list[str]:
                 "D. testimonial-slider — ANCHOR NOT FOUND — "
                 f"{TESTIMONIAL_SLIDER_RENDER} does not exist"
             ]
-        php_text = TESTIMONIAL_SLIDER_RENDER.read_text(encoding="utf-8")
+        php_text = render_source(TESTIMONIAL_SLIDER_RENDER.parent)
 
     m = re.search(r"^\s*\$uid\s*=.*?;", php_text, re.MULTILINE)
     if not m:
@@ -306,7 +309,7 @@ def _self_test_a() -> bool:
 
 
 def _self_test_b() -> bool:
-    original = SITE_HEADER_RENDER.read_text(encoding="utf-8")
+    original = render_source(SITE_HEADER_RENDER.parent)
     if check_site_header_important(original):
         print("[single-instance-invariants B --self-test] FAIL — clean tree already flags.")
         return False
@@ -368,7 +371,7 @@ def _self_test_c() -> bool:
 
 
 def _self_test_d() -> bool:
-    original = TESTIMONIAL_SLIDER_RENDER.read_text(encoding="utf-8")
+    original = render_source(TESTIMONIAL_SLIDER_RENDER.parent)
     if check_testimonial_slider_uid(original):
         print("[single-instance-invariants D --self-test] FAIL — clean tree already flags.")
         return False

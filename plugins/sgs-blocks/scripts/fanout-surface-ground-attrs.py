@@ -67,6 +67,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from block_source_files import render_source  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / 'src' / 'blocks'
@@ -255,7 +258,7 @@ def calls_wrapper_render(block_dir: Path) -> bool:
     render_php = block_dir / 'render.php'
     if not render_php.exists():
         return False
-    stripped = _PHP_COMMENT_RE.sub('', _read(render_php))
+    stripped = _PHP_COMMENT_RE.sub('', render_source(block_dir))
     return bool(_WRAPPER_CALL_RE.search(stripped))
 
 

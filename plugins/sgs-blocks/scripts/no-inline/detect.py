@@ -43,6 +43,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tls_urlopen import urlopen_tls  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+from block_source_files import render_source  # noqa: E402
+
 # --- Paths ------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
 BLOCKS_DIR = SCRIPT_DIR.parent.parent / "src" / "blocks"
@@ -118,7 +121,7 @@ def analyse_block_json(bj_path: Path) -> dict:
 
 
 def analyse_render_php(rp_path: Path) -> dict:
-    """Emit-shape signatures from render.php."""
+    """Emit-shape signatures from render.php and the partials it plain-requires."""
     result = {
         "render_php": True,
         "passes_style_key": False,
@@ -127,7 +130,7 @@ def analyse_render_php(rp_path: Path) -> dict:
         "has_scoped_style_tag": False,
         "var_emit_shapes": [],
     }
-    php = rp_path.read_text(encoding="utf-8", errors="replace")
+    php = render_source(rp_path.parent)
 
     # Scoped <style> emission present?
     result["has_scoped_style_tag"] = "<style>" in php

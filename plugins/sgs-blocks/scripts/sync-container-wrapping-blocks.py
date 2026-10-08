@@ -84,6 +84,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Paths
 # ---------------------------------------------------------------------------
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_source  # noqa: E402
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_ROOT = SCRIPT_DIR.parent              # plugins/sgs-blocks
 SRC_BLOCKS = PLUGIN_ROOT / "src" / "blocks"
@@ -174,13 +177,17 @@ def read_js_combined(slug: str) -> str:
     name = slug.split("/", 1)[1]
     block_dir = SRC_BLOCKS / name
     combined = ""
-    for js_file in ("save.js", "edit.js"):
-        p = block_dir / js_file
-        if p.exists():
-            try:
-                combined += p.read_text(encoding="utf-8", errors="ignore")
-            except OSError:
-                pass
+    save = block_dir / "save.js"
+    if save.exists():
+        try:
+            combined += save.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            pass
+    # edit.js plus the in-block components it imports
+    try:
+        combined += edit_source(block_dir)
+    except OSError:
+        pass
     return combined
 
 

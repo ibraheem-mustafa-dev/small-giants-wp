@@ -19,6 +19,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from block_source_files import render_files  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 SCAN = [ROOT / 'includes', ROOT / 'src' / 'blocks']
 SKIP_NAMES = {'helpers-shadow-layers.php'}
@@ -29,12 +32,22 @@ FALLBACK_CALL = re.compile(r'sgs_shadow_box_decls|sgs_shadow_forced_colours_decl
 MARKER = re.compile(r'sgs-shadow-fallback:[ ]*[^\s]')
 
 
+def render_partials():
+    """The own-folder partials each block's render.php plain-requires (they run in its scope)."""
+    out = set()
+    for render in (ROOT / 'src' / 'blocks').glob('*/render.php'):
+        out.update(p.resolve() for p in render_files(render.parent))
+    return out
+
+
 def php_files():
+    partials = render_partials()
     for base in SCAN:
         for path in sorted(base.rglob('*.php')):
             if path.name in SKIP_NAMES or 'tests' in path.parts:
                 continue
-            if path.parent.name != 'blocks' and 'blocks' in path.parts and path.name != 'render.php':
+            if (path.parent.name != 'blocks' and 'blocks' in path.parts and path.name != 'render.php'
+                    and path.resolve() not in partials):
                 continue
             yield path
 

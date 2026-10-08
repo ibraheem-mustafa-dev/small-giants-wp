@@ -45,6 +45,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_files  # noqa: E402
+
 PLUGIN = Path(__file__).resolve().parents[1]
 assert (PLUGIN.parents[1] / ".claude" / "THE-MIGRATION-METHOD.md").exists(), "repo anchor missing"
 BLOCKS = PLUGIN / "src" / "blocks"
@@ -113,7 +116,9 @@ def static_findings(text: str, rel: str, colour_names: set[str]) -> list[dict]:
 
 
 def php_files() -> list[Path]:
-    files = [p for p in (PLUGIN / "includes").rglob("*.php")] + list(BLOCKS.glob("*/render.php"))
+    files = [p for p in (PLUGIN / "includes").rglob("*.php")]
+    for render in BLOCKS.glob("*/render.php"):
+        files += render_files(render.parent)
     return sorted(p for p in files if not (SKIP_PARTS & set(p.relative_to(PLUGIN).parts)))
 
 

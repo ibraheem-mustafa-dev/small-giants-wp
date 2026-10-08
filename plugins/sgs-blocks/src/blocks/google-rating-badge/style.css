@@ -124,15 +124,17 @@
 	font-size: 13px;
 }
 
-/* The accent stripe: a 3px bar over the leading edge of the border box, clipped by the badge's own corner radius. */
+/* The accent stripe: a 3px bar on the leading inside edge; the frame clips it (overflow hidden), so it follows the badge's own corner radius. */
+.sgs-google-rating-badge--card .sgs-google-rating-badge__link {
+	overflow: hidden;
+}
+
 .sgs-google-rating-badge--card .sgs-google-rating-badge__link::before {
 	content: "";
 	position: absolute;
-	inset-block: -1px;
-	inset-inline-start: -1px;
+	inset-block: 0;
+	inset-inline-start: 0;
 	width: 3px;
-	border-start-start-radius: inherit;
-	border-end-start-radius: inherit;
 }
 
 :where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)::before {
@@ -231,21 +233,16 @@
 	border: 0;
 }
 
-/* Interaction: hover brightens and lifts a hair; focus is a visible accent ring. */
+/* Interaction: hover brightens (the lift is the shadow system's, switched by shadowLiftOnHover). Focus is the
+   theme's universal ring, so the badge matches every other link on the site. */
 @media (prefers-reduced-motion: no-preference) {
 	a.sgs-google-rating-badge__link {
-		transition: filter 0.15s ease, transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+		transition: filter 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 	}
 }
 
 a.sgs-google-rating-badge__link:hover {
 	filter: brightness(1.04);
-	transform: translateY(-1px);
-}
-
-a.sgs-google-rating-badge__link:focus-visible {
-	outline: 2px solid var(--sgs-focus-color, currentColor);
-	outline-offset: 3px;
 }
 
 @media (forced-colors: active) {

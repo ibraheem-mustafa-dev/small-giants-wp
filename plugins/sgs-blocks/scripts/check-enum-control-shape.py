@@ -88,6 +88,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import edit_source  # noqa: E402
+
 PLUGIN = Path(__file__).resolve().parent.parent
 BLOCKS = PLUGIN / "src" / "blocks"
 BASELINE_PATH = Path(__file__).resolve().parent / "check-enum-control-shape-baseline.json"
@@ -418,11 +421,7 @@ def load_sources(rows: list[dict]) -> dict[str, str]:
         if block in sources:
             continue
         edit = BLOCKS / block / "edit.js"
-        sources[block] = (
-            strip_comments(edit.read_text(encoding="utf-8", errors="replace"))
-            if edit.exists()
-            else ""
-        )
+        sources[block] = strip_comments(edit_source(BLOCKS / block)) if edit.exists() else ""
     return sources
 
 

@@ -34,6 +34,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import render_source  # noqa: E402
+
 from .models import Violation, composition_key
 
 # ---------------------------------------------------------------------------
@@ -110,11 +113,11 @@ def _is_php_comment_line(line: str) -> bool:
 
 
 def _render_consumes(block_dir: Path) -> bool:
-    """True if render.php uses $content / $block->inner_blocks non-trivially."""
+    """True if render.php (or a partial it requires) uses $content / $block->inner_blocks non-trivially."""
     render_php = block_dir / "render.php"
     if not render_php.exists():
         return False
-    for line in render_php.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in render_source(block_dir).splitlines():
         if not line.strip() or _is_php_comment_line(line):
             continue
         if _RENDER_CONTENT_RE.search(line):

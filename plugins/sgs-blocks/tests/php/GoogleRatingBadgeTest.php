@@ -130,6 +130,30 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#--full-width \.sgs-google-rating-badge__link\s*\{[^}]*width:\s*100%#', $css );
 	}
 
+	public function test_council_fixes_hover_focus_stripe_and_compact_default(): void {
+		$css  = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
+		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/block.json' ), true );
+		// Hover brightens only; the lift is the shadow system's (shadowLiftOnHover), never a hard-coded transform.
+		$this->assertStringNotContainsString( 'translateY', $css );
+		$this->assertMatchesRegularExpression( '#__link:hover\s*\{[^}]*brightness#', $css );
+		// Focus: the theme's universal ring applies; the block draws no narrower one of its own.
+		$this->assertDoesNotMatchRegularExpression( '#__link:focus-visible\s*\{[^}]*outline#', $css );
+		// Card stripe: inside the border box and clipped by the frame's own corners.
+		$this->assertMatchesRegularExpression( '#--card \.sgs-google-rating-badge__link\s*\{[^}]*overflow:\s*hidden#', $css );
+		$this->assertDoesNotMatchRegularExpression( '#::before\s*\{[^}]*inset-inline-start:\s*-1px#', $css );
+		// Compact mode is opt-in: off by default, so a footer or body badge never compacts on its own.
+		$this->assertSame( 0, $json['attributes']['compactBelow']['default'] );
+		$this->assertStringNotContainsString( '@media (max-width:', $this->render_full( self::MANUAL )['css'] );
+		// Negative control: an explicit breakpoint still emits the compact rule.
+		$this->assertStringContainsString( '@media (max-width:1199.98px)', $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'] );
+	}
+
+	public function test_the_stars_wrapper_is_a_div_so_the_helper_div_nests_validly(): void {
+		$html = $this->render( self::MANUAL );
+		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
+		$this->assertStringNotContainsString( '<span class="sgs-google-rating-badge__stars"', $html );
+	}
+
 	public function test_the_default_preset_is_pill(): void {
 		$this->assertStringContainsString( 'sgs-google-rating-badge--pill', $this->render( self::MANUAL ) );
 	}
@@ -246,7 +270,7 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertSame( 1, substr_count( $html, 'Rated 4.7 out of 5' ), 'the name appears once' );
 		// The visible pieces are hidden from assistive technology so nothing is read twice.
 		$this->assertStringContainsString( '<span class="sgs-google-rating-badge__score" aria-hidden="true">4.7</span>', $html );
-		$this->assertStringContainsString( '<span class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
+		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
 		$this->assertStringContainsString( '<span class="sgs-google-rating-badge__caption" aria-hidden="true">', $html );
 		// Negative control: a custom label replaces the automatic name.
 		$custom = $this->render( self::MANUAL + array( 'linkLabel' => 'Our reviews' ) );
@@ -288,7 +312,7 @@ final class GoogleRatingBadgeTest extends TestCase {
 	}
 
 	public function test_compact_rule_uses_the_breakpoint_and_can_be_switched_off(): void {
-		$css = $this->render_full( self::MANUAL )['css'];
+		$css = $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'];
 		$this->assertStringContainsString( '@media (max-width:1199.98px){', $css );
 		$this->assertStringContainsString( 'sgs-google-rating-badge__count{display:none;}', $css );
 		$this->assertStringContainsString( 'sgs-google-rating-badge__stars svg:nth-child(n+2){display:none;}', $css );

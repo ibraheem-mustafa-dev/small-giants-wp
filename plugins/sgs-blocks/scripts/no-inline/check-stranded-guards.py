@@ -65,6 +65,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import detect  # noqa: E402  (reuse its validated style-tag stripper)
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import render_files, render_source  # noqa: E402
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -126,7 +129,8 @@ def block_emits_inline(block_dir: Path) -> bool:
         p = block_dir / name
         if not p.exists():
             continue
-        body = p.read_text(encoding="utf-8", errors="replace")
+        # render.php with its partials inlined: the emission can sit in a partial
+        body = render_source(block_dir) if name == "render.php" else p.read_text(encoding="utf-8", errors="replace")
         if p.suffix == ".php":
             # HERE the style-tag strip IS correct: it stops a `style="…"`
             # substring inside an emitted CSS rule string being mistaken for a
@@ -145,10 +149,17 @@ def scan(blocks_dir: Path) -> list[str]:
     emits_cache: dict[str, bool] = {}
 
     for block_dir in sorted(p for p in blocks_dir.iterdir() if p.is_dir()):
-        for name in GUARD_FILES:
-            f = block_dir / name
+        guard_files: list[Path] = []
+        for guard_name in GUARD_FILES:
+            if guard_name == "render.php":
+                # render.php and the partials it requires: a guard can sit in either
+                guard_files += render_files(block_dir)
+            else:
+                guard_files.append(block_dir / guard_name)
+        for f in guard_files:
             if not f.exists():
                 continue
+            name = f.relative_to(block_dir).as_posix()
             raw = f.read_text(encoding="utf-8", errors="replace")
             clean = strip_comments(raw, is_php=f.suffix == ".php")
             if not GUARD_RE.search(clean):

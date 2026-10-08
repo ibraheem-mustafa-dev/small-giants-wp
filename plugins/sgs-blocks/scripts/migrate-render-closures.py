@@ -45,6 +45,10 @@ WHY A SCRIPT AND NOT sed
     python migrate-render-closures.py --survey | --fix [--apply] | --check | --self-test
 """
 import argparse, glob, os, re, sys
+from pathlib import Path
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
+from block_source_files import render_files  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOCKS = os.path.join(ROOT, 'src', 'blocks', '*', 'render.php')
@@ -98,7 +102,7 @@ def transform(text):
         if m:
             text = text[:m.end()] + '\n' + REQUIRE + text[m.end():]
         else:
-            m = re.search(r"^defined\( 'ABSPATH' \) \|\| exit;$", text, re.M)
+            m = re.search(r"^defined\( 'ABSPATH' \) \|\| exit;$", text, re.M) or re.match(r'<\?php[^\n]*', text)
             text = text[:m.end()] + '\n\n' + REQUIRE + text[m.end():]
         notes.append('+require render-helpers.php')
     return text, notes
@@ -106,16 +110,19 @@ def transform(text):
 
 def scan():
     rows = []
-    for f in sorted(glob.glob(BLOCKS)):
-        t = open(f, encoding='utf-8', errors='ignore').read()
-        counts = {fam: len(defs_in(t, fam)) for fam in FAMILIES}
-        if not sum(counts.values()):
-            continue
-        rows.append({
-            'file': f, 'block': os.path.basename(os.path.dirname(f)),
-            'counts': counts,
-            'has_require': REQUIRE in t,
-        })
+    for render in sorted(glob.glob(BLOCKS)):
+        block_dir = os.path.dirname(render)
+        # render.php plus every partial it requires: a closure is rewritten in the file that declares it.
+        for f in (str(p) for p in render_files(Path(block_dir))):
+            t = open(f, encoding='utf-8', errors='ignore').read()
+            counts = {fam: len(defs_in(t, fam)) for fam in FAMILIES}
+            if not sum(counts.values()):
+                continue
+            rows.append({
+                'file': f, 'block': os.path.basename(block_dir),
+                'counts': counts,
+                'has_require': REQUIRE in t,
+            })
     return rows
 
 
@@ -223,7 +230,7 @@ def main():
 
     if a.check:
         if rows:
-            print(f'FAIL: {len(rows)} render.php still declare an inline sanitiser closure')
+            print(f'FAIL: {len(rows)} render file(s) (render.php or a partial) still declare an inline sanitiser closure')
             for r in rows[:10]:
                 print(f'   {r["block"]}')
             return 1

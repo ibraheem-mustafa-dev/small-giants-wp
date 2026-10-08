@@ -67,6 +67,9 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / 'lib'))
+from block_source_files import render_source  # noqa: E402
+
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 # The server-side mirror of every JS-registered extension attr, regenerated on
@@ -228,12 +231,11 @@ def load_schemas():
             continue
         save = bj.parent / 'save.js'
         save_code = JS_COMMENT_RE.sub('', save.read_text(encoding='utf-8')) if save.exists() else ''
-        render = bj.parent / 'render.php'
         out[d['name']] = {
             # The block's own declarations win over injected ones, as on the server.
             'attrs': {**media_injected_attrs(d, media_map), **d.get('attributes', {})},
             'innerblocks_save': 'InnerBlocks.Content' in save_code,
-            'render': render.read_text(encoding='utf-8', errors='replace') if render.exists() else '',
+            'render': render_source(bj.parent),
         }
     return out
 

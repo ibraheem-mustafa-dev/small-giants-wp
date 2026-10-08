@@ -39,6 +39,8 @@ DB_PATH = Path(
 # Sibling modules (helper_maps, php_include_graph, ...) live next to this script.
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import edit_source, render_source  # noqa: E402
 
 # ── Shared render files (2026-09-10, colour-resolution root-cause report) ──────
 # A colour attribute genuinely resolved ONLY inside a SHARED include (never
@@ -570,7 +572,7 @@ def extract_all_signatures() -> None:
         js_src: Optional[str] = None
 
         if render_php_path.exists():
-            php_src = render_php_path.read_text(encoding="utf-8", errors="replace")
+            php_src = render_source(block_dir)
 
         if save_js_path.exists():
             js_src = save_js_path.read_text(encoding="utf-8", errors="replace")
@@ -3046,7 +3048,7 @@ def extract_css_property_and_layer() -> dict:
         if not php_path.exists() or not css_path.exists():
             continue
 
-        php_src_raw = php_path.read_text(encoding="utf-8", errors="ignore")
+        php_src_raw = render_source(block_dir)
         css_src_raw = css_path.read_text(encoding="utf-8", errors="ignore")
         php_src_own = _strip_php_comments(php_src_raw)
         php_src = php_src_own
@@ -3829,7 +3831,7 @@ def extract_inspector_control_types() -> dict:
         edit_path = BLOCKS_DIR / short_slug / "edit.js"
         if not edit_path.exists():
             continue
-        js_src = _strip_js_block_comments(edit_path.read_text(encoding="utf-8", errors="ignore"))
+        js_src = _strip_js_block_comments(edit_source(BLOCKS_DIR / short_slug))
         valid_attrs = attrs_by_block.get(slug, set())
         if not valid_attrs:
             continue

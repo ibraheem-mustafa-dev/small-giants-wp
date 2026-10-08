@@ -272,8 +272,10 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 						),
 					)
 				);
-				if ( 'center' !== ( $attributes['chromeRatingPlacement'] ?? 'end' ) ) {
-					// style.css zeroes the ×'s auto margin beside an end rating; a tier that hides the rating gives it back.
+				$slot_at_end = $has_slot && 'end' === ( $attributes['chromeSlotPlacement'] ?? 'after-logo' );
+				if ( 'center' !== ( $attributes['chromeRatingPlacement'] ?? 'end' ) && ! $slot_at_end ) {
+					// style.css zeroes the ×'s auto margin beside an end rating; a tier that hides the rating gives it back
+					// (an end slot already carries that auto margin, so then the × keeps none).
 					$css .= sgs_emit_responsive_css(
 						$row_sel . ' > .sgs-nav-drawer__close',
 						array(

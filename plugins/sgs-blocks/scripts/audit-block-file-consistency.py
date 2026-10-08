@@ -106,6 +106,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding='utf-8')
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
+from block_source_files import edit_source, render_source  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -925,8 +928,9 @@ class BlockFiles:
         self.declared_dynamic = bool(self.block_json) and 'render' in self.block_json
         self.support_injected = compute_support_injected_attrs((self.block_json or {}).get('supports', {}))
 
-        self.edit_js_raw = read_text(block_dir / 'edit.js')
-        self.render_php_raw = read_text(block_dir / 'render.php')
+        # edit.js with its in-block component imports, render.php with its plain-required partials
+        self.edit_js_raw = edit_source(block_dir)
+        self.render_php_raw = render_source(block_dir)
         self.save_js_raw = read_text(block_dir / 'save.js')
         self.view_js_raw = read_text(block_dir / 'view.js')
         self.index_js_raw = read_text(block_dir / 'index.js')

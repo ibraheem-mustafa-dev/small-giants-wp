@@ -32,6 +32,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from block_source_files import edit_files  # noqa: E402
+
 CONTENT_CONTROLS = {"RichText", "PlainText", "TextControl", "TextareaControl"}
 STYLING_CONTROLS = {
     "ColorPicker",
@@ -283,8 +286,11 @@ def infer_block_slug(path: Path) -> str | None:
 
 def collect_default_files() -> list:
     files = []
-    files += glob.glob(str(REPO_ROOT / "plugins/sgs-blocks/src/blocks/*/edit.js"))
-    files += glob.glob(str(REPO_ROOT / "plugins/sgs-blocks/src/blocks/*/*/edit.js"))  # nested (e.g. accordion-item)
+    entries = glob.glob(str(REPO_ROOT / "plugins/sgs-blocks/src/blocks/*/edit.js"))
+    entries += glob.glob(str(REPO_ROOT / "plugins/sgs-blocks/src/blocks/*/*/edit.js"))  # nested (e.g. accordion-item)
+    for entry in entries:
+        # edit.js plus the in-block components it imports (control bindings moved out of edit.js)
+        files += [str(p) for p in edit_files(Path(entry).parent)]
     files += glob.glob(str(REPO_ROOT / "plugins/sgs-blocks/src/components/*.js"))
     return sorted(set(files))
 
