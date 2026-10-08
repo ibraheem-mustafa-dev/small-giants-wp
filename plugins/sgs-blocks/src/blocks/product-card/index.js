@@ -2,6 +2,7 @@ import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
 import './style.css';
+import './editor.css';
 
 /**
  * Dynamic block — render.php handles frontend output. Typed mode renders
