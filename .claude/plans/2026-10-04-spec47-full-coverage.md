@@ -67,7 +67,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     cannot measure (behaviour, content, functionality). Fixed directly and verified live.
   A surface is at 100% when Spec 47's done line holds and every register row for it is closed with its evidence. Why: Solve
   only closes what matches the draft, overwrites decided differences that are not ledgered, and cannot see the ~70
-  "not walker-measurable" rows, so its score alone overstates progress (Lenses read 0 with N40 unproven).
+  "not walker-measurable" rows, so its score alone overstates progress (Lenses read 0 while N40 was still unmeasured).
 - **Ranking rule.** Site-wide fixes S1-S12 first (one change closes items on many surfaces), then surface by surface. Within
   a surface: Fix-lane rows and their ledger entries before Solve runs, then Solve, then mark every row. Walker gaps that
   hold the most open Solve-lane rows across surfaces are fixed as they block the surface in hand. Walker gap 2
@@ -120,7 +120,9 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     wrote `font-family: heading`. `36f39aed2`: `typography-preview.js::fontFamilyCssValue` paints a slug as
     `var(--wp--preset--font-family--<slug>, <slug>)`, `fontFamilyPickerValue` shows it selected, `fontFamilyStoredValue`
     stores a pick as its slug. Verified in the live editor (picker shows Heading, canvas computes Playfair Display,
-    a pick stores `body`/`heading`, no console errors). Trees and Solve keep writing slugs.
+    a pick stores `body`/`heading`, no console errors). Trees and Solve keep writing slugs. `85f07d38a` makes
+    `heading/edit.js` paint a slug too (QC council); committed, not yet deployed: it ships with the next green
+    `build-deploy.py` (HEAD's gates must pass; eye-care-test waits for session 79's header rebuild).
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
@@ -166,8 +168,14 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   address line height, the business-info link's 44px tap area takes one line in the flow.
 - [ ] **Contact: state at the end of 2026-10-08 (Session D, after its 16:43 BST Solve, folder `15-43-56` UTC, and fixes).** Solve
   (`qa/solve/contact/2026-10-08T15-43-56/`): whole page 45 -> 44 distinct issues, 0 new; 3 writes, wrong settings 1 of 2
-  (business-info `displayType` phone -> email, reverted twice by the guard; root-fixed in `230456b91`: a setting that
-  changes an element's words never answers a style row). Hours closed (register 130, `e77963c4e`). The independent check
+  (business-info `displayType` phone -> email, reverted twice by the guard). **Open, root:** Solve may pick
+  a setting that changes what a block is (displayType: phone, email, hours) to fix a style row. A first rule keyed on
+  calibration's discovered `content` (`230456b91`) was reverted (`a728331f3`): that key is the `::before`/`::after`
+  `content` property, not the words. A sound signal is still to find (candidates: the cache's `text`/`presence`
+  sections, or the root element's `_tag`); until then the guard catches it, at a cost of one wrong setting per run.
+  First action: print `scripts/computed-route/cache/business-info.json`'s `text` and `presence` sections and
+  `discovered.displayType._tag`, and find a field that marks a setting changing what the block renders, then a MUST FAIL
+  test in `tests/resolve.test.mjs` on the 2026-10-08 Contact shape. Hours closed (register 130, `e77963c4e`). The independent check
   had read 123 differences, mostly its own (`751800ca9`: a `<br>` now separates words, unseen text adds no inset, bare-text
   words are measured as a text run); it now reads **41 open, 3 accepted** (D-99's `found` row at each of 375/768/1440: the draft's WhatsApp
   number is two digits short; D-100 holds the walker's text row). The 41, by cause, for the next session:
@@ -198,10 +206,10 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (`solve.mjs::unpaintedBorder`). D-87 holds the phone link's hover colour (register 131). Solve wrote fonts as literal stacks;
   it now matches a stack to the theme preset whose first family matches (`normalise.mjs::snapFontFamily`), and the 20
   literal stacks across six Eye Care trees are now preset slugs (paint unchanged; each surface picks them up on its next
-  rebuild: Contact is rebuilt, footer, header, home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
+  rebuild: Contact is rebuilt, footer, header, home, mega-brands and mega-sunglasses are not). Labelled by Solve at that run: 13 gaps. `independent-check.mjs --surface
   contact` read 123 differences that morning; most were the checker's own (see the entry above). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
-  likely the address width below. Open, all box rows:
-  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. **Cause proven
+  likely the address width below. Box rows at that run:
+  1. (Closed, register 130.) The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. **Cause proven
      (2026-10-08, from the 2026-10-08 run's report):** the hours text runs (gen-contact-18, -19) match the draft in
      style and differ only in position; `business-info/style.css::.sgs-business-hours__row` hardcoded `padding: 0.35em 0`
      (5.25px at 15px) with no setting. No row-gap row ever existed for this pair (rows are read only for a text run
@@ -236,15 +244,11 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     `h1…h6 { text-wrap: balance }` (`core-blocks-critical.css`) where the draft's are spans, so `titleTextWrap: wrap` on
     cr-ref-lenses-27 (`298c8d2f8`) matches the draft's line ends within 1.3px at every width. The walker never pairs the
     titles, so only the independent check saw it. Side padding matches (register N39 closed).
-  - **Wrong writes at most 10%: met only with an exclusion.** The last write run (`2026-10-07T20-06-48/`) counts 3 of 17
-    (17.6%) under Spec 47 as written. 2 of the 3 are the guard's unconfirmed `h@375` verdict on the page container's own
-    height ("the run ended before the next walk"), which sums everything inside it and cannot judge one padding write; the
-    padding then took S6's decided value by hand. Without them, 1 of 15 (7%). **Replaced by a root fix (Bean, 2026-10-08: judge padding on its own rows,
-    not the container's height):** `dfaf9a8cf` (Spec 47 0.15.7): a node's own height or width row never suspects a setting
-    on or inside it whose own rows closed (`guard.mjs::ownSizeRow`, `landed`); a trial open at the walk cap gets a
-    settling walk; the ratio counts settings (`solve.mjs::settingRatio`). No exclusion is written.
-  - **Planted-fault control** passed on 2026-10-08 (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`:
-    22px top padding caught at 1440 and 1920 only), before `titleTextWrap`, `gapKey` and D-86 to D-91.
+  - **Wrong writes at most 10%: met under Spec 47 0.15.7, no exclusion.** The fresh run wrote nothing (0 of 0). The
+    earlier 3 of 17 (`2026-10-07T20-06-48/`) came from the guard judging the page container's padding on the container's
+    own summed height, fixed at the root in `dfaf9a8cf` (`guard.mjs::ownSizeRow`, `landed`, `solve.mjs::settingRatio`).
+  - **Planted-fault control** re-run 2026-10-08 after every Lenses change: a 22px top padding on the page container gave
+    81 independent-check differences; the tree was restored from git and rebuilt.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One

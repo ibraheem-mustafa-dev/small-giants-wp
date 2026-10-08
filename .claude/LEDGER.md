@@ -107,13 +107,11 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-08):** the whole fix register, each row in the Solve lane or the Fix lane (a `Lane` column on
-  every row; 79 open = 30 Solve + 49 Fix). **Lenses at 100%** (Solve 0, independent check 0, planted fault caught, N40
-  closed by measurement). Site-wide: S2 (one underline-sweep mechanism, switched on by `custom.linkSweep`), S3 and
-  S5's decided values closed live; S4 is Solve lane (a colour with no preset is written as its hex, never a new token).
-  Route: the guard judges a write on its own rows and counts wrong settings (Spec 47 0.15.7); a borderless element's
-  border colour is no row. Font slugs: the editor reads them. Contact: the hours spacing is a hardcode, now
-  `business-info::hoursRowPadding` (reseeded, calibrated). Detail: the plan.
+- **Session D (2026-10-08):** every register row has a `Lane` (79 open = 30 Solve + 49 Fix). **Lenses at 100%.**
+  S2 (underline sweep, `custom.linkSweep`), S3, S5's decided values: closed live. Contact: hours closed; 41 independent-
+  check rows left, grouped in the plan. Route fixes: guard judges own rows (Spec 47 0.15.7), borderless border colour is
+  no row, checker reads `<br>`/text runs. **Not live anywhere:** `85f07d38a` (heading canvas font slug); HEAD's gates
+  must pass first, and eye-care-test deploys wait for session 79's header rebuild (google-reviews badge removed).
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
