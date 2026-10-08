@@ -517,26 +517,26 @@
 					},
 					"_note": "Typography only (fileButton* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-button). The Choose file cue inside the panel-style upload zone."
 				},
-				"file-label": {
+				"file-prompt": {
 					"label": "File upload prompt",
 					"order": 23,
 					"clusters": [ "text" ],
-					"prefix": "fileLabel",
+					"prefix": "filePrompt",
 					"attrMap": {
-						"css:font-size": "fileLabelFontSize",
-						"css:font-weight": "fileLabelFontWeight",
-						"css:font-style": "fileLabelFontStyle",
-						"css:font-family": "fileLabelFontFamily",
-						"css:text-transform": "fileLabelTextTransform",
-						"css:text-decoration": "fileLabelTextDecoration",
-						"css:line-height": "fileLabelLineHeight",
-						"css:letter-spacing": "fileLabelLetterSpacing",
-						"css:text-align": "fileLabelTextAlign",
-						"css:text-wrap": "fileLabelTextWrap",
-						"css:column-count": "fileLabelTextColumns",
-						"css:writing-mode": "fileLabelWritingMode"
+						"css:font-size": "filePromptFontSize",
+						"css:font-weight": "filePromptFontWeight",
+						"css:font-style": "filePromptFontStyle",
+						"css:font-family": "filePromptFontFamily",
+						"css:text-transform": "filePromptTextTransform",
+						"css:text-decoration": "filePromptTextDecoration",
+						"css:line-height": "filePromptLineHeight",
+						"css:letter-spacing": "filePromptLetterSpacing",
+						"css:text-align": "filePromptTextAlign",
+						"css:text-wrap": "filePromptTextWrap",
+						"css:column-count": "filePromptTextColumns",
+						"css:writing-mode": "filePromptWritingMode"
 					},
-					"_note": "Typography only (fileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
+					"_note": "Typography only (filePrompt* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
 				}
 			}
 		}
@@ -1868,66 +1868,66 @@
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
 		},
-		"fileLabelFontSize": {
+		"filePromptFontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"fileLabelFontSizeUnit": {
+		"filePromptFontSizeUnit": {
 			"type": "string",
 			"default": "px"
 		},
-		"fileLabelFontWeight": {
+		"filePromptFontWeight": {
 			"type": "string",
 			"default": ""
 		},
-		"fileLabelFontStyle": {
+		"filePromptFontStyle": {
 			"type": "string",
 			"default": ""
 		},
-		"fileLabelFontFamily": {
+		"filePromptFontFamily": {
 			"type": "string",
 			"default": ""
 		},
-		"fileLabelTextTransform": {
+		"filePromptTextTransform": {
 			"type": "string",
 			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
 			"default": ""
 		},
-		"fileLabelTextDecoration": {
+		"filePromptTextDecoration": {
 			"type": "string",
 			"enum": [ "", "none", "underline", "line-through" ],
 			"default": ""
 		},
-		"fileLabelLineHeight": {
+		"filePromptLineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"fileLabelLineHeightUnit": {
+		"filePromptLineHeightUnit": {
 			"type": "string",
 			"default": "em"
 		},
-		"fileLabelLetterSpacing": {
+		"filePromptLetterSpacing": {
 			"type": "object",
 			"default": {}
 		},
-		"fileLabelLetterSpacingUnit": {
+		"filePromptLetterSpacingUnit": {
 			"type": "string",
 			"default": "em"
 		},
-		"fileLabelTextAlign": {
+		"filePromptTextAlign": {
 			"type": "string",
 			"enum": [ "", "left", "center", "right", "justify" ],
 			"default": ""
 		},
-		"fileLabelTextWrap": {
+		"filePromptTextWrap": {
 			"type": "string",
 			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
 			"default": ""
 		},
-		"fileLabelTextColumns": {
+		"filePromptTextColumns": {
 			"type": "number"
 		},
-		"fileLabelWritingMode": {
+		"filePromptWritingMode": {
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
