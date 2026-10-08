@@ -81,12 +81,11 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 0, CLASS-3 1, CANNOT-RESOLVE 0** (self-test 124/124; sandybrown at `cc054d341`). The gate reads InnerBlocks template
+  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 124/124; sandybrown at `fe064b6a5`). The gate reads InnerBlocks template
   children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
-  (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). Google Reviews' maps link, breakdown row, badge caption and the cart count badge have typography controls (`6faacae24`, `cc054d341`). **Open:** CLASS-3 1 (post-grid empty state). Slider pause icon, banner icon and close, hours time, button note and current store link: `:where()` default only (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
-  google-reviews' accent hover shades: owned by the google-reviews session.
+  (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). **Open:** the editor round-trip (inspector and canvas) of the 2026-10-08 google-reviews, cart, post-grid and media controls. Slider pause icon, banner icon and close, hours time, button note and current store link: `:where()` default only (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
