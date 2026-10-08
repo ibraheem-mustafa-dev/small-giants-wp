@@ -139,6 +139,22 @@ const SITE_INFO_FIELDS = {
 		label: __( 'LinkedIn link', 'sgs-blocks' ),
 		type: 'string',
 	},
+	'socials.youtube': {
+		label: __( 'YouTube link', 'sgs-blocks' ),
+		type: 'string',
+	},
+	'socials.tiktok': {
+		label: __( 'TikTok link', 'sgs-blocks' ),
+		type: 'string',
+	},
+	'socials.whatsapp': {
+		label: __( 'WhatsApp link', 'sgs-blocks' ),
+		type: 'string',
+	},
+	'socials.google': {
+		label: __( 'Google Business link', 'sgs-blocks' ),
+		type: 'string',
+	},
 };
 
 registerBlockBindingsSource( {

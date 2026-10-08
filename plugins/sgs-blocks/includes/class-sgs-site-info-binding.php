@@ -5,8 +5,9 @@
  * Registers the `sgs/site-info` binding source so any block attribute
  * can be bound to a value from the SGS Site Info store (wp_options).
  *
- * Empty values render a friendly hint with a deep-link to the admin page
- * so operators know exactly where to enter the missing data.
+ * A text attribute bound to an empty value renders a friendly hint with a
+ * deep-link to the admin page for an operator (never a visitor); a link
+ * attribute gets the value's full link, or '' (never the hint).
  *
  * Depends on: Sgs_Site_Info class (Wave 1B — class-sgs-site-info.php).
  * The interface assumed is `Sgs_Site_Info::get( string $key ): mixed`.
@@ -27,11 +28,15 @@ final class Sgs_Site_Info_Binding {
 	/** Admin page slug used for deep-link hints. */
 	private const ADMIN_PAGE = 'sgs-site-info';
 
-	/** Keys that carry URL values requiring a prefix. */
-	private const URL_KEYS = array( 'email', 'phone' );
-
 	/** Social channel sub-keys that get https:// prefix. */
 	private const SOCIAL_PARENT = 'socials';
+
+	/** Socials whose value may be a bare handle, and the profile URL a handle completes. */
+	private const HANDLE_URLS = array(
+		'instagram' => 'https://www.instagram.com/',
+		'tiktok'    => 'https://www.tiktok.com/@',
+		'twitter'   => 'https://x.com/',
+	);
 
 	/**
 	 * Register the binding source on `init`.
@@ -139,55 +144,97 @@ final class Sgs_Site_Info_Binding {
 	 * Dot-notation support ('socials.facebook', 'opening_hours.monday') is
 	 * delegated to Sgs_Site_Info::get().
 	 *
+	 * The bound ATTRIBUTE decides the shape: a link attribute (`url`, or a name ending `Url`) gets the key's
+	 * value as a full link, or '' when the key is empty, never the admin hint (it would become an href); any
+	 * other attribute gets the plain value, or the hint for an operator when the key is empty.
+	 *
 	 * @param  array<string,mixed> $args    Binding args from block markup.
-	 * @param  array<string,mixed> $block   Block definition data (unused; required by WP callback signature).
-	 * @param  string              $attr    Attribute name being bound (unused; required by WP callback signature).
+	 * @param  mixed               $block   The WP_Block (unused; required by the callback signature).
+	 * @param  string              $attr    Attribute name being bound.
 	 * @return string                       Escaped HTML or URL string.
 	 */
-	public static function get_value( array $args, $block = null, string $attr = '' ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- $block is a WP_Block object (NOT array) + $attr is passed by WP core's block-bindings callback (class-wp-block-bindings-source.php); both unused here but must accept core's arg types or the callback fatals.
-		$key = isset( $args['key'] ) ? (string) $args['key'] : '';
+	public static function get_value( array $args, $block = null, string $attr = '' ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed -- $block is a WP_Block object (NOT array) passed by WP core's block-bindings callback (class-wp-block-bindings-source.php); unused here but the signature must accept it or the callback fatals.
+		$key     = isset( $args['key'] ) ? (string) $args['key'] : '';
+		$is_link = self::is_link_attribute( $attr );
 
-		if ( '' === $key ) {
-			// The hint is OPERATOR guidance, not content. It must never reach a
-			// public visitor — an unfilled field previously rendered
-			// "📞 Set your phone number in SGS Site Info →" with a wp-admin
-			// deep-link on live client sites. Public frontend renders empty.
+		if ( $is_link ) {
+			return \esc_url( self::link_for_key( $key ) );
+		}
+
+		$raw = '' === $key ? '' : self::raw_value( $key );
+
+		if ( '' === $raw ) {
+			// The hint is OPERATOR guidance, not content: a public visitor gets an empty string.
 			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
 		}
 
-		// The logo is stored as an attachment ID; a bound attribute needs its URL.
-		// get_id() re-validates the attachment, so a deleted image reads as empty.
+		return \esc_html( $raw );
+	}
+
+	/**
+	 * The full link a Site Info key makes: the value with its scheme or URL form (`prefix_url_for_key`),
+	 * the logo's image URL, or '' when the key is empty or makes no usable link.
+	 *
+	 * @param  string $key Dot-notation key.
+	 * @return string      Unescaped URL, or ''.
+	 */
+	public static function link_for_key( string $key ): string {
+		if ( '' === $key ) {
+			return '';
+		}
 		if ( 'logo' === self::root_key( $key ) ) {
-			$logo_url = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info_Logo' )
+			// Stored as an attachment ID; get_id() re-validates it, so a deleted image reads as empty.
+			return \class_exists( __NAMESPACE__ . '\Sgs_Site_Info_Logo' )
 				? (string) \wp_get_attachment_url( Sgs_Site_Info_Logo::get_id() )
 				: '';
-			if ( '' === $logo_url ) {
-				return self::is_operator_context() ? self::hint_for_key( $key ) : '';
-			}
-			return \esc_url( $logo_url );
 		}
-
-		// Delegate to Sgs_Site_Info (Wave 1B). Returns raw value; we escape here.
-		$raw = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info' )
-			? Sgs_Site_Info::get( $key )
-			: null;
-
-		// Empty / missing — render a friendly hint to an operator/editor only;
-		// a public visitor gets an empty string, never the admin-deep-link hint.
-		if ( null === $raw || '' === (string) $raw ) {
-			return self::is_operator_context() ? self::hint_for_key( $key ) : '';
+		if ( 'address' === $key ) {
+			return self::maps_link( self::raw_value( 'maps_cid' ), self::raw_value( 'address' ) );
 		}
+		$raw = self::raw_value( $key );
+		return '' === $raw ? '' : self::prefix_url_for_key( $key, $raw );
+	}
 
-		$raw = (string) $raw;
+	/**
+	 * True when a bound attribute holds a link: `url`, or any attribute name ending `Url`
+	 * (linkUrl, imageUrl, logoUrl …).
+	 *
+	 * @param  string $attr Attribute name.
+	 * @return bool
+	 */
+	public static function is_link_attribute( string $attr ): bool {
+		return 'url' === $attr || ( \strlen( $attr ) > 3 && \str_ends_with( $attr, 'Url' ) );
+	}
 
-		// URL fields: apply scheme prefix then escape as URL.
-		if ( self::is_url_field( $key ) ) {
-			$url = self::prefix_url_for_key( $key, $raw );
-			return \esc_url( $url );
+	/**
+	 * A Site Info value as a trimmed string ('' when unset).
+	 *
+	 * @param  string $key Dot-notation key.
+	 * @return string
+	 */
+	private static function raw_value( string $key ): string {
+		$raw = \class_exists( __NAMESPACE__ . '\Sgs_Site_Info' ) ? Sgs_Site_Info::get( $key ) : null;
+		return \is_scalar( $raw ) ? \trim( (string) $raw ) : '';
+	}
+
+	/**
+	 * A Google Maps link: the place's CID when Site Info holds one, else a search for the address.
+	 *
+	 * @param  string $cid     Digits-only Maps CID ('' when unset).
+	 * @param  string $address Stored address (may hold `<br>` line breaks).
+	 * @return string          Unescaped URL, or '' when both are empty.
+	 */
+	private static function maps_link( string $cid, string $address ): string {
+		$cid = (string) \preg_replace( '/[^0-9]/', '', $cid );
+		if ( '' !== $cid ) {
+			return 'https://maps.google.com/?cid=' . $cid;
 		}
-
-		// All other fields: escape as HTML.
-		return \esc_html( $raw );
+		// Line breaks become commas; tags go; runs of spaces and of commas collapse to one.
+		$text = \wp_strip_all_tags( (string) \preg_replace( '/<br\s*\/?>|[\r\n]+/i', ',', $address ) );
+		$text = (string) \preg_replace( '/\s+/', ' ', $text );
+		$text = (string) \preg_replace( '/\s*(,\s*)+/', ', ', $text );
+		$text = \trim( $text, ', ' );
+		return '' === $text ? '' : 'https://www.google.com/maps/search/?api=1&query=' . \rawurlencode( $text );
 	}
 
 	/**
@@ -296,57 +343,68 @@ final class Sgs_Site_Info_Binding {
 
 
 	/**
-	 * Applies the correct scheme prefix for URL-type fields.
+	 * The link form of a stored value, by key. Returns '' when the value makes no usable link.
 	 *
-	 * Rules:
-	 *   - email key  → prepend 'mailto:' unless a scheme is already present.
-	 *   - phone key  → prepend 'tel:' unless a scheme is already present.
-	 *   - socials.*  → prepend 'https://' unless a scheme is already present.
+	 *   - email / support_email → `mailto:` + the address ('' unless it contains an @).
+	 *   - phone                 → `tel:` + digits and a leading + ('' when no digits remain).
+	 *   - socials.whatsapp      → `https://wa.me/<digits>` from a number, a wa.me or api.whatsapp.com URL.
+	 *   - socials.instagram / tiktok / twitter → a bare handle (`@name` or `name`) becomes the profile URL.
+	 *   - other socials         → `https://` added when the value has no scheme.
+	 *   - any other key         → the value unchanged.
 	 *
-	 * A value "already has a scheme" when it contains '://' or starts with
-	 * 'mailto:' or 'tel:'.
+	 * The caller escapes the result with `esc_url()`, whose protocol allowlist drops `javascript:` and `data:`.
 	 *
 	 * @param  string $key    Dot-notation key.
 	 * @param  string $value  Raw value from the store.
-	 * @return string         Value with appropriate scheme prefix.
+	 * @return string         Unescaped link, or ''.
 	 */
 	public static function prefix_url_for_key( string $key, string $value ): string {
+		// Control characters (CR/LF header splitting, NUL) never belong in a link.
+		$value = \trim( (string) \preg_replace( '/[\x00-\x1F\x7F]+/', '', $value ) );
+		if ( '' === $value ) {
+			return '';
+		}
+
+		$root = self::root_key( $key );
+
+		if ( 'email' === $root || 'support_email' === $root ) {
+			$address = \preg_replace( '/^mailto:/i', '', $value );
+			return \str_contains( (string) $address, '@' ) ? 'mailto:' . $address : '';
+		}
+
+		if ( 'phone' === $root ) {
+			// The store keeps the display form ("0121 729 8233"); a tel: link takes digits and a leading + only.
+			$digits = (string) \preg_replace( '/[^0-9+]/', '', \preg_replace( '/^tel:/i', '', $value ) );
+			return '' === \trim( $digits, '+' ) ? '' : 'tel:' . $digits;
+		}
+
+		if ( self::SOCIAL_PARENT !== $root ) {
+			return $value;
+		}
+
+		$channel = self::sub_key( $key );
+
+		if ( 'whatsapp' === $channel ) {
+			// A number, or a wa.me / api.whatsapp.com link: wa.me takes the international digits only.
+			if ( \preg_match( '#^(?:https?://)?(?:www\.)?(?:wa\.me/|api\.whatsapp\.com/send/?\?phone=)\+?([0-9]+)#i', $value, $m ) ) {
+				return 'https://wa.me/' . $m[1];
+			}
+			if ( self::has_scheme( $value ) ) {
+				return $value;
+			}
+			$digits = (string) \preg_replace( '/[^0-9]/', '', $value );
+			return '' === $digits ? '' : 'https://wa.me/' . $digits;
+		}
+
 		if ( self::has_scheme( $value ) ) {
 			return $value;
 		}
 
-		$root = self::root_key( $key );
-
-		if ( 'email' === $root ) {
-			return 'mailto:' . $value;
+		if ( isset( self::HANDLE_URLS[ $channel ] ) && \preg_match( '/^@?([A-Za-z0-9_.]+)$/', $value, $m ) ) {
+			return self::HANDLE_URLS[ $channel ] . $m[1];
 		}
 
-		if ( 'phone' === $root ) {
-			// The store keeps the display form ("0121 729 8233"); a tel: link takes digits and a leading +
-			// only, as sgs/business-info does, or esc_url() turns the spaces into %20.
-			return 'tel:' . preg_replace( '/[^0-9+]/', '', $value );
-		}
-
-		if ( self::SOCIAL_PARENT === $root ) {
-			return 'https://' . $value;
-		}
-
-		// Non-URL field called by accident — return value unchanged.
-		return $value;
-	}
-
-
-
-	/**
-	 * Returns true when a key's value should be treated as a URL.
-	 *
-	 * @param  string $key  Dot-notation key.
-	 * @return bool
-	 */
-	private static function is_url_field( string $key ): bool {
-		$root = self::root_key( $key );
-		return \in_array( $root, self::URL_KEYS, true )
-			|| self::SOCIAL_PARENT === $root;
+		return 'https://' . \ltrim( $value, '/' );
 	}
 
 	/**
