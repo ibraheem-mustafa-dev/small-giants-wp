@@ -179,11 +179,18 @@
             "name": "sgs/icon",
             "attributes": {
               "iconName": "mail",
-              "iconSize": 18,
+              "iconSize": {
+                "desktop": "18px"
+              },
               "iconColour": "#1E2A3C",
               "backgroundColour": "#D8CA50",
-              "backgroundShape": "circle",
-              "backgroundPadding": "14px",
+              "shape": "circle",
+              "showBackground": true,
+              "shapeSize": {
+                "desktop": {
+                  "width": "46px"
+                }
+              },
               "ariaLabel": "Email",
               "linkUrl": "mailto:#",
               "opacityHover": 0.75
@@ -193,11 +200,18 @@
             "name": "sgs/icon",
             "attributes": {
               "iconName": "phone",
-              "iconSize": 18,
+              "iconSize": {
+                "desktop": "18px"
+              },
               "iconColour": "#1E2A3C",
               "backgroundColour": "#D8CA50",
-              "backgroundShape": "circle",
-              "backgroundPadding": "14px",
+              "shape": "circle",
+              "showBackground": true,
+              "shapeSize": {
+                "desktop": {
+                  "width": "46px"
+                }
+              },
               "ariaLabel": "Call",
               "linkUrl": "tel:#",
               "opacityHover": 0.75

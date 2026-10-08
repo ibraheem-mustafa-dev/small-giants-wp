@@ -10,10 +10,6 @@
       "status": "deliberate-keep",
       "ref": "Spec 32 §6.1c 'brand-strip tile'; decisions.md D383 + memory/session-2026-07-26-2.md:41 ('The 10 DELIBERATE-KEEP scalars stay')"
     },
-    "icon::backgroundPadding": {
-      "status": "deliberate-keep",
-      "ref": "Spec 32 §6.1c '1 spot-check', resolved KEEP; recorded verbatim in icon/block.json's own backgroundPadding description ('NOT a 4-side box family — Spec 32 6.1c')"
-    },
     "label::borderRadius": {
       "status": "deliberate-keep",
       "ref": "Spec 32 §6.1c 'sgs/label radius'; decisions.md D383 + memory/session-2026-07-26-2.md:41"

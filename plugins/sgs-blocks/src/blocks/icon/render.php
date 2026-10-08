@@ -2,535 +2,391 @@
 /**
  * Server-side render for the SGS Icon block.
  *
- * Supports four icon sources:
- *   - lucide    : inline SVG via sgs_get_lucide_icon() (1917 icons).
- *   - wp-icon   : inline SVG from bundled @wordpress/icons subset.
- *   - dashicon  : Dashicons font via span.dashicons (enqueues dashicons stylesheet).
- *   - emoji     : plain text emoji wrapped in a semantic <span>.
+ * Markup: the block root (alignment, Spacing padding and margin, which sit OUTSIDE the shape) holds an optional
+ * link (`.sgs-icon__link`, at least 44 x 44px, the shape centred in it, the focus ring on it), which holds the
+ * shape (`.sgs-icon__shape`: size, background, border, radius) with the glyph (`.sgs-icon__svg`, `__dashicon` or
+ * `__emoji`) centred inside.
  *
- * WCAG 2.2 AA semantics:
- *   - Decorative (no ariaLabel, no linkUrl): icon container has aria-hidden="true".
- *   - Informative (ariaLabel set, no linkUrl): root <div> gets role="img" + aria-label.
- *   - Linked (linkUrl set): <a> gets aria-label (falls back to iconName / source label).
- *   - Emoji: always has aria-label (glyphs unreliable in all screen readers).
- *   - Touch target: when linkUrl is set the wrapper enforces min 44×44 px via CSS class.
+ * Colour precedence per slot (icon plan Phase A step 6): the icon's own value, then a wrapping `sgs/social-icons`
+ * group default (`--sgs-si-*`), then the brand (when brand colours apply), then the theme role in style.css. This
+ * file prints a custom property only for a value the client set, so every later layer can show through.
  *
- * BEM classes added by this template:
- *   .sgs-icon--source-lucide  / --source-wp-icon / --source-dashicon / --source-emoji
- *   .sgs-icon__svg      (lucide + wp-icon)
- *   .sgs-icon__dashicon (dashicon span)
- *   .sgs-icon__emoji    (emoji span)
+ * Glyph sources: lucide, brand (the brand registry, includes/data/brand-registry.json), wp-icon, dashicon, emoji,
+ * custom (a pasted SVG, re-sanitised here).
  *
- * NO-INLINE: this block emits zero inline style property declarations.
- * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
- * --check. Every custom property this block uses (--sgs-icon-size /
- * --sgs-icon-hover-* / --sgs-icon-outline-colour / --sgs-icon-shape-padding)
- * plus the two literal declarations (icon `color`, shape `background-color`)
- * all move into the block's own scoped `.{uid}.wp-block-sgs-icon` <style> tag.
- * The block's root `<div>` carries a `class` attribute only — no `style` key
- * is ever passed to `get_block_wrapper_attributes()`.
+ * A link bound to a Site Info key that holds nothing renders nothing for a visitor (step 8); the editor shows it
+ * dimmed with a notice instead.
  *
- * `backgroundPadding` is a SINGLE uniform value, not a 4-side box family
- * (Spec 32 §6.1c) — it stays a scalar attribute, emitted into the scoped
- * <style> as `--sgs-icon-shape-padding` (see step 4 below).
- *
- * @since 2026-06-02  v0.2.0
- * @since 2026-07-10  v0.3.0 — no-inline migration.
- * @since 2026-07-18  v0.3.0 — zero-inline amendment (D345).
+ * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
+ * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
- * @var \WP_Block $block      Block instance.
+ * @var WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// [D-tier-object-render-fix 2026-09-06]
-// Group 1 folded padding/margin into owned tier-object attrs
-// {desktop,tablet,mobile}, but this block's own scoped CSS below still
-// reads the pre-migration flat shape (a plain box for the base value,
-// plus four separate flat attrs for the tablet/mobile overrides --
-// block.json no longer declares any of those four). Normalise once,
-// into fresh locals only -- every literal reference below has been
-// redirected to these instead of writing back into $attributes.
-// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
-// helpers-responsive.php, which this file's own render-helpers.php
-// require below WOULD load -- but too late, since these two calls run
-// before that require executes. A block whose render.php is the first
-// SGS block PHP to run in a request (nav-menu in the site header, on
-// every page) fatals with "Call to undefined function" before any
-// other block's render.php has had a chance to load it. Requiring the
-// defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
-$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
-$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
-
-
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
-// ---------------------------------------------------------------------------
-// 1. Sanitisers (box-object interface contract §D — mirrors sgs/heading).
-// ---------------------------------------------------------------------------
-
-if ( ! function_exists( 'sgs_icon_css_length' ) ) {
-	/**
-	 * CSS-length sanitiser — strips everything except digits, dot, %, and unit
-	 * letters so an object-attr side value can never break out of its
-	 * declaration.
-	 *
-	 * @param string $value Raw attribute value.
-	 * @return string       Sanitised CSS length.
-	 */
-	function sgs_icon_css_length( $value ) {
-		return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-	}
+// ── Hide when empty (step 8) ─────────────────────────────────────────────────
+$sgs_icon_block   = $block;
+$bound_link_key   = (string) sgs_bound_site_info_key( is_object( $sgs_icon_block ) || is_array( $sgs_icon_block ) ? $sgs_icon_block : array(), 'linkUrl' );
+$is_editor_render = sgs_icon_is_editor_render();
+$is_hidden_empty  = '' !== $bound_link_key && sgs_bound_site_info_is_empty( $sgs_icon_block, 'linkUrl' );
+if ( $is_hidden_empty && ! $is_editor_render ) {
+	return;
 }
 
-// ── Source resolution ─────────────────────────────────────────────────────────
-$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji', 'custom' );
-$icon_source     = $attributes['iconSource'] ?? 'lucide';
-if ( ! in_array( $icon_source, $allowed_sources, true ) ) {
+// ── Glyph source ─────────────────────────────────────────────────────────────
+$icon_source = $attributes['iconSource'] ?? 'lucide';
+if ( ! in_array( $icon_source, array( 'lucide', 'brand', 'wp-icon', 'dashicon', 'emoji', 'custom' ), true ) ) {
 	$icon_source = 'lucide';
 }
-
-// Sanitise icon name: lowercase alpha, digits, hyphens only.
-$icon_name    = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'star' ) );
-$wp_icon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['wpIconName'] ?? '' ) );
-// Dashicon slug: prefix stripped if operator includes it; hyphens allowed.
-$dashicon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['dashiconName'] ?? '' ) );
-// Emoji: allow unicode characters only — strip control chars and HTML.
-$emoji_char = $attributes['emojiChar'] ?? '';
-$emoji_char = trim( $emoji_char );
-// Strip any HTML tags that may have been injected.
-$emoji_char = wp_strip_all_tags( $emoji_char );
-// Custom SVG: client-pasted markup, re-sanitised server-side (wp_kses() +
-// sgs_svg_kses_allowed_tags(), the same allowlist every other inline-SVG
-// surface uses) — the IconPicker's client-side sanitiseSvg() is a second
-// enforcement layer, never the only one, since a value can reach here by
-// direct REST/DB write.
+$icon_name     = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) ( $attributes['iconName'] ?? 'star' ) ) );
+$brand_name    = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) ( $attributes['brandName'] ?? '' ) ) );
+$wp_icon_name  = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) ( $attributes['wpIconName'] ?? '' ) ) );
+$dashicon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( (string) ( $attributes['dashiconName'] ?? '' ) ) );
+$emoji_char    = trim( wp_strip_all_tags( (string) ( $attributes['emojiChar'] ?? '' ) ) );
+// A pasted SVG is re-sanitised here: the editor's sanitiseSvg() is a second layer, never the only one.
 $icon_svg_raw = (string) ( $attributes['iconSvg'] ?? '' );
 $icon_svg     = '' !== trim( $icon_svg_raw ) ? wp_kses( $icon_svg_raw, sgs_svg_kses_allowed_tags() ) : '';
 
-$icon_size          = absint( $attributes['iconSize'] ?? 32 );
-$icon_colour        = $attributes['iconColour'] ?? 'primary';
-$bg_colour          = $attributes['backgroundColour'] ?? '';
-$bg_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
-$bg_shape           = $attributes['backgroundShape'] ?? 'none';
-$bg_padding         = $attributes['backgroundPadding'] ?? '';
-$link_url           = $attributes['linkUrl'] ?? '';
-$link_target        = $attributes['linkTarget'] ?? '_self';
-$link_rel           = $attributes['linkRel'] ?? '';
-$aria_label         = $attributes['ariaLabel'] ?? '';
-$hover_icon_colour  = $attributes['iconColourHover'] ?? 'accent-text';
-$hover_shape_colour = $attributes['shapeColourHover'] ?? '';
-$hover_scale        = (float) ( $attributes['scaleHover'] ?? 1.1 );
-// D636/D644 icon/SVG gradient sibling attrs — non-empty wins over the flat
-// iconColour/iconColourHover above at paint time (helpers-svg-gradient.php).
-$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
-$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
-
-// Hover opacity (0-1; 0 = off, the same sentinel every other numeric hover
-// control in the framework uses — see sgs/responsive-logo's opacityHover).
-// Applies to the icon LINK only (style.scss's `.sgs-icon__link:hover` rule) —
-// a non-linked icon has no interactive hover target for a fade to signal.
-$hover_opacity = isset( $attributes['opacityHover'] ) ? (float) $attributes['opacityHover'] : 0.0;
-$hover_opacity = min( 1.0, max( 0.0, $hover_opacity ) );
-
-// Validate linkTarget — only allow known safe values.
-if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {
-	$link_target = '_self';
+// The brand the glyph draws: a registry glyph, or a Lucide icon that is a brand's own mark.
+$glyph_brand = null;
+if ( 'brand' === $icon_source ) {
+	$glyph_brand = sgs_brand_by_slug( $brand_name );
+} elseif ( 'lucide' === $icon_source ) {
+	$glyph_brand = sgs_brand_by_lucide_name( $icon_name );
 }
+$glyph_kind = 'brand' === $icon_source && null !== $glyph_brand && isset( $glyph_brand['glyph']['svg'] ) ? 'fill' : 'stroke';
 
-// Auto rel when target=_blank (security).
-$effective_rel = $link_rel;
-if ( '_blank' === $link_target && '' === $effective_rel ) {
-	$effective_rel = 'noopener noreferrer';
+// ── Brand colours (step 6, D5) ───────────────────────────────────────────────
+$key_brand    = '' !== $bound_link_key ? sgs_brand_by_site_info_key( $bound_link_key ) : null;
+$colour_brand = null !== $key_brand && '' !== $key_brand['colour'] ? $key_brand : ( null !== $glyph_brand && '' !== $glyph_brand['colour'] ? $glyph_brand : null );
+$colour_mode  = (string) ( $attributes['colourMode'] ?? 'inherit' );
+$colour_mode  = in_array( $colour_mode, array( 'inherit', 'theme', 'brand' ), true ) ? $colour_mode : 'inherit';
+$brand_on     = 'theme' !== $colour_mode && null !== $colour_brand;
+$draw_fixed   = $brand_on && 'brand' === $icon_source && null !== $glyph_brand && $glyph_brand['slug'] === $colour_brand['slug'] && ! empty( $glyph_brand['glyphBrand'] );
+$brand_paint  = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed ) : null;
+
+// ── Shape, background, border ────────────────────────────────────────────────
+$shape   = (string) ( $attributes['shape'] ?? 'square' );
+$shape   = in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : 'square';
+$show_bg = ! empty( $attributes['showBackground'] ) || $brand_on;
+
+// ── Link ─────────────────────────────────────────────────────────────────────
+$link_url    = trim( (string) ( $attributes['linkUrl'] ?? '' ) );
+$link_scheme = sgs_icon_link_scheme( $link_url );
+$link_target = '_blank' === ( $attributes['linkTarget'] ?? '_self' ) && ! in_array( $link_scheme, array( 'tel', 'mailto' ), true ) ? '_blank' : '_self';
+$link_rel    = trim( (string) ( $attributes['linkRel'] ?? '' ) );
+if ( '_blank' === $link_target && '' === $link_rel ) {
+	$link_rel = 'noopener noreferrer';
 }
+$aria_label = trim( (string) ( $attributes['ariaLabel'] ?? '' ) );
 
-// Enqueue Dashicons on the frontend when this source is used.
 if ( 'dashicon' === $icon_source ) {
 	wp_enqueue_style( 'dashicons' );
 }
 
-// ── Alignment ─────────────────────────────────────────────────────────────────
-$allowed_aligns = array( 'start', 'center', 'end' );
-$icon_align     = $attributes['iconAlign'] ?? 'start';
-if ( ! in_array( $icon_align, $allowed_aligns, true ) ) {
-	$icon_align = 'start';
-}
+// ── Classes ──────────────────────────────────────────────────────────────────
+$uid       = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) . $bound_link_key ), 0, 8 );
+$root_sel  = '.' . $uid . '.wp-block-sgs-icon';
+$shape_sel = $root_sel . ' .sgs-icon__shape';
+$link_sel  = $root_sel . ' .sgs-icon__link';
 
-$text_align          = $attributes['textAlign'] ?? '';
-$allowed_text_aligns = array( '', 'left', 'center', 'right', 'justify' );
-if ( ! in_array( $text_align, $allowed_text_aligns, true ) ) {
-	$text_align = '';
-}
-
-// ---------------------------------------------------------------------------
-// 2. WP `color`/`spacing` support values (skip-serialised in block.json → NOT
-// auto-inlined) + the new responsive box-object tiers.
-// ---------------------------------------------------------------------------
-
-$style_color_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$style_color_gradient = isset( $attributes['style']['color']['gradient'] ) ? (string) $attributes['style']['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-
-$base_padding_obj = array();
-if ( ! empty( $sgs_tor_padding_desktop ) ) {
-	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
-		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-			$base_padding_obj[ $spacing_side ] = $spacing_value;
-		}
+// ── Border (SgsBorderControl's render twin; radius for the square only) ──────
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$shape_sel,
+	array(
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+		'radius' => true,
+	)
+);
+// Only the square takes a radius (circle and pill draw theirs from style.css): drop any corner a stored value carries.
+if ( 'square' !== $shape ) {
+	foreach ( array( 'base', 'tablet', 'mobile' ) as $border_tier ) {
+		$border[ $border_tier ] = array_values( preg_grep( '/radius\s*:/', $border[ $border_tier ], PREG_GREP_INVERT ) );
 	}
 }
-$base_margin_obj = array();
-if ( ! empty( $sgs_tor_margin_desktop ) ) {
-	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
-		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-			$base_margin_obj[ $spacing_side ] = $spacing_value;
-		}
-	}
-}
+$has_border = (bool) preg_grep( '/^border(-(top|right|bottom|left))?-width\s*:/', array_merge( $border['base'], $border['tablet'], $border['mobile'] ) );
 
-$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
-$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
-$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
-$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-
-// ── Wrapper classes ───────────────────────────────────────────────────────────
-$classes = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source );
-if ( 'none' !== $bg_shape ) {
-	$allowed_shapes = array( 'circle', 'pill', 'rounded', 'square', 'outline' );
-	if ( in_array( $bg_shape, $allowed_shapes, true ) ) {
-		$classes[] = 'sgs-icon--bg-' . $bg_shape;
-	}
+$icon_align = (string) ( $attributes['iconAlign'] ?? 'start' );
+$icon_align = in_array( $icon_align, array( 'start', 'center', 'end' ), true ) ? $icon_align : 'start';
+$classes    = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source, 'sgs-icon--shape-' . $shape, $uid );
+if ( $show_bg ) {
+	$classes[] = 'sgs-icon--has-bg';
 }
-// Alignment modifier — only add non-default class; 'start' is the default (no modifier needed).
+if ( $show_bg || $has_border ) {
+	$classes[] = 'sgs-icon--boxed';
+}
+if ( $brand_on ) {
+	$classes[] = 'sgs-icon--brand';
+}
+if ( ! empty( $attributes['iconFill'] ) && 'fill' !== $glyph_kind && in_array( $icon_source, array( 'lucide', 'brand', 'wp-icon', 'custom' ), true ) ) {
+	$classes[] = 'sgs-icon--fill';
+}
 if ( 'start' !== $icon_align ) {
 	$classes[] = 'sgs-icon--align-' . $icon_align;
 }
-
-// ---------------------------------------------------------------------------
-// 3. Custom-property VALUES + literal declarations — ALL routed to the scoped
-// `.{uid}` <style> tag (D345 zero-inline amendment: no `--var` survives on the
-// wrapper's `style` attribute any more). Assembled here, emitted in step 4.
-// ---------------------------------------------------------------------------
-
-$is_outline = 'outline' === $bg_shape;
-$var_decls  = array();
-
-if ( $icon_size ) {
-	$var_decls[] = '--sgs-icon-size:' . $icon_size . 'px';
-}
-// Outline shape: border ring colour lives in a custom property (no solid fill).
-if ( $bg_colour && $is_outline ) {
-	$var_decls[] = '--sgs-icon-outline-colour:' . sgs_colour_value( $bg_colour );
-}
-$var_decls[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_icon_colour );
-if ( '' !== $hover_shape_colour ) {
-	$var_decls[] = '--sgs-icon-hover-shape-colour:' . sgs_colour_value( $hover_shape_colour );
-}
-$var_decls[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
-if ( $hover_opacity > 0 ) {
-	$var_decls[] = '--sgs-icon-opacity-hover:' . number_format( $hover_opacity, 2 );
+if ( $is_hidden_empty ) {
+	$classes[] = 'sgs-icon--hidden-empty';
 }
 
-// ---------------------------------------------------------------------------
-// 4. Scoped CSS assembly — literal declarations (icon colour, shape
-// background-color, backgroundPadding custom property, the custom-property
-// VALUES from step 3, WP colour/spacing supports, responsive tiers) all land
-// here instead of inline.
-// ---------------------------------------------------------------------------
-
-$uid      = 'sgs-icn-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel = '.' . $uid . '.wp-block-sgs-icon';
-
-$scoped_css = array();
-
-// Icon gradient — resting + hover, ALL 4 IconPicker sources (2026-09-06,
-// sgs_icon_gradient_css() POC). Previously this called sgs_svg_stroke_gradient()
-// unconditionally and injected the result into an <svg> tag — a silent no-op
-// for dashicon/emoji, which render a <span> (font glyph / literal text), not
-// an SVG. The shared helper picks the right mechanism per source: SVG stroke-
-// gradient for lucide/wp-icon, text background-clip:text for dashicon/emoji
-// (both genuinely paint via `color:`, same as any other text-gradient row).
-$sgs_icon_grad_selector = 'dashicon' === $icon_source
-	? "{$root_sel} .sgs-icon__dashicon"
-	: ( 'emoji' === $icon_source ? "{$root_sel} .sgs-icon__emoji" : "{$root_sel} .sgs-icon__svg svg" );
-$sgs_icon_grad_suffix   = 'dashicon' === $icon_source
-	? ' .sgs-icon__dashicon'
-	: ( 'emoji' === $icon_source ? ' .sgs-icon__emoji' : ' .sgs-icon__svg svg' );
-
-$sgs_icon_grad       = sgs_icon_gradient_css( $icon_source, $icon_colour_gradient, $uid . '-ig', $sgs_icon_grad_selector );
-$sgs_icon_grad_hover = sgs_icon_gradient_css( $icon_source, $icon_colour_hover_gradient, $uid . '-igh', "{$root_sel} .sgs-icon__link:hover{$sgs_icon_grad_suffix}" );
-
-if ( '' !== $sgs_icon_grad['css'] ) {
-	$scoped_css[] = "{$sgs_icon_grad_selector}{" . $sgs_icon_grad['css'] . ';}';
-}
-if ( '' !== $sgs_icon_grad['fallback_rule'] ) {
-	$scoped_css[] = $sgs_icon_grad['fallback_rule'];
-}
-if ( '' !== $sgs_icon_grad_hover['css'] ) {
-	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-icon__link", $sgs_icon_grad_hover['css'], ':focus-visible', $sgs_icon_grad_suffix );
-}
-if ( '' !== $sgs_icon_grad_hover['fallback_rule'] ) {
-	$scoped_css[] = $sgs_icon_grad_hover['fallback_rule'];
-}
-
-$root_decls = $var_decls;
-if ( $icon_colour ) {
-	$root_decls[] = 'color:' . sgs_colour_value( $icon_colour );
-}
-// Filled shapes (not outline): solid background-color OR gradient literal
-// declaration — sgs_background_paint_decl() (helpers-tokens.php) picks
-// background-image:<gradient> when backgroundColourGradient is valid,
-// else background-color:<resolved colour>, else '' (nothing to emit).
-if ( 'none' !== $bg_shape && ! $is_outline ) {
-	$sgs_icon_bg_paint = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
-	if ( '' !== $sgs_icon_bg_paint ) {
-		$root_decls[] = $sgs_icon_bg_paint;
-	}
-}
-// backgroundPadding — single uniform value (Spec 32 §6.1c: not a box family),
-// routed to the scoped <style> as a custom-property declaration.
-if ( 'none' !== $bg_shape && '' !== $bg_padding ) {
-	$sgs_bg_padding_css = sgs_container_gap_value( $bg_padding );
-	if ( '' !== $sgs_bg_padding_css ) {
-		$root_decls[] = '--sgs-icon-shape-padding:' . $sgs_bg_padding_css;
-	}
-}
-// iconRotate — a paint-time rotate() on the root: a transform never changes
-// layout, so the box stays iconSize wide however far the shape is turned. A
-// rotated shape (e.g. a diamond) is one plain square + this control, not a
-// rotation baked into an oversized custom-SVG viewBox. 0 emits nothing.
-$icon_rotate = isset( $attributes['iconRotate'] ) && is_numeric( $attributes['iconRotate'] )
-	? max( -360.0, min( 360.0, (float) $attributes['iconRotate'] ) )
-	: 0.0;
-if ( abs( $icon_rotate ) > 0.001 ) {
-	$root_decls[] = 'transform:rotate(' . round( $icon_rotate, 2 ) . 'deg)';
-}
-// Text-align — when unset (empty), emit nothing so inheritance works.
-if ( $text_align ) {
-	$root_decls[] = 'text-align:' . esc_attr( $text_align );
-}
-if ( $root_decls ) {
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
-}
-
-// --- WP colour/spacing supports + border-radius (skip-serialised in
-// block.json), emitted scoped via the stable core style engine (matches
-// sgs/heading / sgs/button / SGS_Container_Wrapper). ---
-
-$base_style_engine_args = array();
-
-$base_spacing = array();
-if ( ! empty( $base_padding_obj ) ) {
-	$base_spacing['padding'] = $base_padding_obj;
-}
-if ( ! empty( $base_margin_obj ) ) {
-	$base_spacing['margin'] = $base_margin_obj;
-}
-if ( ! empty( $base_spacing ) ) {
-	$base_style_engine_args['spacing'] = $base_spacing;
-}
-
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( '' !== $style_color_gradient ) {
-	$color_args['gradient'] = $style_color_gradient;
-}
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
-
-if ( ! empty( $base_style_engine_args ) ) {
-	$base_scoped_styles = wp_style_engine_get_styles(
-		$base_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $base_scoped_styles['css'] ) ) {
-		$scoped_css[] = $base_scoped_styles['css'];
-	}
-}
-
-// --- Responsive padding/margin tiers — box objects, hand-built shorthand,
-// scoped @media on the same root selector (tablet max-width:1023px, mobile
-// max-width:767px). ---
-$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
-$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
-$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
-$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-
-$tablet_box_decls = array();
-if ( null !== $padding_tab_val ) {
-	$tablet_box_decls[] = "{$padding_tab_val}";
-}
-if ( null !== $margin_tab_val ) {
-	$tablet_box_decls[] = "{$margin_tab_val}";
-}
-if ( $tablet_box_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
-}
-
-$mobile_box_decls = array();
-if ( null !== $padding_mob_val ) {
-	$mobile_box_decls[] = "{$padding_mob_val}";
-}
-if ( null !== $margin_mob_val ) {
-	$mobile_box_decls[] = "{$margin_mob_val}";
-}
-if ( $mobile_box_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
-}
-
-// ---------------------------------------------------------------------------
-// 5. WCAG role + aria attributes + the root element's classes + attributes.
-// ---------------------------------------------------------------------------
-
-$classes[] = $uid;
-
-// Preset colour slugs — the `color` support is skip-serialised, so re-add the
-// standard has-* classes manually (they set the colour from the theme palette).
-if ( '' !== $preset_text_slug ) {
-	$classes[] = 'has-text-color';
-	$classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$classes[] = 'has-background';
-	$classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
-
-$extra_wrapper_attrs = array(
-	'class' => implode( ' ', $classes ),
+// ── Root custom properties: sizes, own colours, brand colours, motion ────────
+$root_decls = array();
+$tier_decls = array(
+	'tablet' => array(),
+	'mobile' => array(),
 );
 
-// Informative icon (no link, but aria-label provided): wrapper becomes the img landmark.
-if ( '' === $link_url && '' !== $aria_label ) {
-	$extra_wrapper_attrs['role']       = 'img';
-	$extra_wrapper_attrs['aria-label'] = $aria_label;
+$icon_size_tiers  = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null );
+$shape_size_tiers = sgs_responsive_normalise_object( $attributes['shapeSize'] ?? null );
+$sizes_linked     = ! array_key_exists( 'shapeSizeLinked', $attributes ) || ! empty( $attributes['shapeSizeLinked'] );
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+	$decls     = array();
+	$icon_size = sgs_icon_length_value( $icon_size_tiers[ $tier ] ?? '', 512 );
+	if ( '' !== $icon_size ) {
+		$decls[] = '--sgs-icon-size:' . $icon_size;
+	}
+	$box     = is_array( $shape_size_tiers[ $tier ] ?? null ) ? $shape_size_tiers[ $tier ] : array();
+	$shape_w = sgs_icon_length_value( $box['width'] ?? '', 640 );
+	$shape_h = 'circle' === $shape || $sizes_linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
+	if ( '' !== $shape_w ) {
+		$decls[] = '--sgs-icon-shape-w:' . $shape_w;
+	}
+	if ( '' !== $shape_h ) {
+		$decls[] = '--sgs-icon-shape-h:' . $shape_h;
+	}
+	if ( 'desktop' === $tier ) {
+		$root_decls = $decls;
+	} else {
+		$tier_decls[ $tier ] = $decls;
+	}
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( $extra_wrapper_attrs );
+// Own colours: a custom property only for a value the client set.
+$own_colours = array(
+	'iconColour'            => '--sgs-icon-colour',
+	'iconColourHover'       => '--sgs-icon-colour-hover',
+	'backgroundColour'      => '--sgs-icon-bg',
+	'backgroundColourHover' => '--sgs-icon-bg-hover',
+);
+foreach ( $own_colours as $attr => $property ) {
+	$value = sgs_colour_value( is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '' );
+	if ( '' !== $value ) {
+		$root_decls[] = $property . ':' . $value;
+	}
+}
 
-// ── Icon content by source ────────────────────────────────────────────────────
+if ( null !== $brand_paint ) {
+	$brand_slots = array(
+		'ground'       => '--sgs-icon-brand-ground',
+		'glyph'        => '--sgs-icon-brand-glyph',
+		'border'       => '--sgs-icon-brand-border',
+		'ground_hover' => '--sgs-icon-brand-ground-hover',
+		'glyph_hover'  => '--sgs-icon-brand-glyph-hover',
+	);
+	foreach ( $brand_slots as $slot => $property ) {
+		$value = sgs_colour_value( $brand_paint[ $slot ] );
+		if ( '' !== $value ) {
+			$root_decls[] = $property . ':' . $value;
+		}
+	}
+}
+
+$icon_rotate = is_numeric( $attributes['iconRotate'] ?? null ) ? max( -360.0, min( 360.0, (float) $attributes['iconRotate'] ) ) : 0.0;
+if ( abs( $icon_rotate ) > 0.001 ) {
+	$root_decls[] = '--sgs-icon-rotate:' . round( $icon_rotate, 2 ) . 'deg';
+}
+$hover_scale = is_numeric( $attributes['scaleHover'] ?? null ) ? max( 1.0, min( 1.5, (float) $attributes['scaleHover'] ) ) : 1.1;
+if ( abs( $hover_scale - 1.1 ) > 0.0001 ) {
+	$root_decls[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
+}
+$hover_opacity = is_numeric( $attributes['opacityHover'] ?? null ) ? max( 0.0, min( 1.0, (float) $attributes['opacityHover'] ) ) : 0.0;
+if ( $hover_opacity > 0 ) {
+	$root_decls[] = '--sgs-icon-opacity-hover:' . number_format( $hover_opacity, 2 );
+}
+$text_align = $attributes['textAlign'] ?? '';
+if ( in_array( $text_align, array( 'left', 'center', 'right', 'justify' ), true ) ) {
+	$root_decls[] = 'text-align:' . $text_align;
+}
+
+$scoped_css = array();
+if ( $root_decls ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $root_decls ) . ';}';
+}
+
+// ── Gradients: background (box shapes) and glyph ─────────────────────────────
+if ( $show_bg ) {
+	$bg_gradient       = sgs_css_gradient_value( (string) ( $attributes['backgroundColourGradient'] ?? '' ) );
+	$bg_hover_gradient = sgs_css_gradient_value( (string) ( $attributes['backgroundColourHoverGradient'] ?? '' ) );
+	if ( '' !== $bg_gradient ) {
+		$scoped_css[] = $shape_sel . '{background-image:' . $bg_gradient . ';}';
+	}
+	if ( '' !== $bg_hover_gradient ) {
+		$scoped_css[] = sgs_hover_state_rules( $link_sel, 'background-image:' . $bg_hover_gradient, ':focus-visible', ' .sgs-icon__shape' );
+	} elseif ( '' !== $bg_gradient && '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ) {
+		$scoped_css[] = sgs_hover_state_rules( $link_sel, 'background-image:none', ':focus-visible', ' .sgs-icon__shape' );
+	}
+}
+
+$gradient_source = 'brand' === $icon_source ? ( 'fill' === $glyph_kind ? 'custom' : 'lucide' ) : $icon_source;
+$glyph_suffix    = 'dashicon' === $icon_source ? ' .sgs-icon__dashicon' : ( 'emoji' === $icon_source ? ' .sgs-icon__emoji' : ' .sgs-icon__svg svg' );
+$icon_grad       = sgs_icon_gradient_css( $gradient_source, (string) ( $attributes['iconColourGradient'] ?? '' ), $uid . '-ig', $root_sel . $glyph_suffix );
+$icon_grad_hover = sgs_icon_gradient_css( $gradient_source, (string) ( $attributes['iconColourHoverGradient'] ?? '' ), $uid . '-igh', $link_sel . ':hover' . $glyph_suffix );
+if ( '' !== $icon_grad['css'] ) {
+	$scoped_css[] = $root_sel . $glyph_suffix . '{' . $icon_grad['css'] . ';}';
+}
+if ( '' !== $icon_grad['fallback_rule'] ) {
+	$scoped_css[] = $icon_grad['fallback_rule'];
+}
+if ( '' !== $icon_grad_hover['css'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $link_sel, $icon_grad_hover['css'], ':focus-visible', $glyph_suffix );
+}
+if ( '' !== $icon_grad_hover['fallback_rule'] ) {
+	$scoped_css[] = $icon_grad_hover['fallback_rule'];
+}
+
+// ── Border CSS ───────────────────────────────────────────────────────────────
+if ( $border['base'] ) {
+	$scoped_css[] = $shape_sel . '{' . implode( ';', $border['base'] ) . ';}';
+}
+$tier_decls_shape = array(
+	'tablet' => $border['tablet'],
+	'mobile' => $border['mobile'],
+);
+if ( $border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $link_sel, implode( ';', $border['hover'] ), ':focus-visible', ' .sgs-icon__shape' );
+}
+foreach ( $border['rules'] as $rule ) {
+	$scoped_css[] = $rule;
+}
+
+// ── Spacing: padding and margin around the icon (outside the shape) ──────────
+$padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$margin_tiers  = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$spacing       = array();
+foreach ( array(
+	'padding' => $padding_tiers['desktop'],
+	'margin'  => $margin_tiers['desktop'],
+) as $family => $box ) {
+	$sides = array();
+	foreach ( is_array( $box ) ? $box : array() as $side => $value ) {
+		if ( is_string( $value ) && '' !== $value ) {
+			$sides[ $side ] = $value;
+		}
+	}
+	if ( $sides ) {
+		$spacing[ $family ] = $sides;
+	}
+}
+if ( $spacing ) {
+	$spacing_css = wp_style_engine_get_styles( array( 'spacing' => $spacing ), array( 'selector' => $root_sel ) );
+	if ( ! empty( $spacing_css['css'] ) ) {
+		$scoped_css[] = $spacing_css['css'];
+	}
+}
+foreach ( array(
+	'tablet' => '1023px',
+	'mobile' => '767px',
+) as $tier => $max ) {
+	$root_tier = $tier_decls[ $tier ];
+	foreach ( array( 'padding', 'margin' ) as $family ) {
+		$tiers    = 'padding' === $family ? $padding_tiers : $margin_tiers;
+		$longhand = sgs_box_object_longhands( is_array( $tiers[ $tier ] ?? null ) ? $tiers[ $tier ] : array(), $family );
+		if ( null !== $longhand ) {
+			$root_tier[] = $longhand;
+		}
+	}
+	$rules = '';
+	if ( $root_tier ) {
+		$rules .= $root_sel . '{' . implode( ';', $root_tier ) . ';}';
+	}
+	if ( $tier_decls_shape[ $tier ] ) {
+		$rules .= $shape_sel . '{' . implode( ';', $tier_decls_shape[ $tier ] ) . ';}';
+	}
+	if ( '' !== $rules ) {
+		$scoped_css[] = '@media(max-width:' . $max . '){' . $rules . '}';
+	}
+}
+
+// ── Glyph markup ─────────────────────────────────────────────────────────────
 switch ( $icon_source ) {
-
+	case 'brand':
+		$glyph_svg = null !== $glyph_brand ? sgs_brand_glyph_svg( $glyph_brand, '', 24, $draw_fixed ) : sgs_get_lucide_icon( $icon_name );
+		break;
 	case 'wp-icon':
-		$icon_svg_output = sgs_get_wp_icon( $wp_icon_name );
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad['defs'] );
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
-		$output          = sprintf(
-			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
-			$icon_svg_output
-		);
+		$glyph_svg = sgs_get_wp_icon( $wp_icon_name );
 		break;
-
-	case 'dashicon':
-		// Dashicons font — render via CSS content + unicode via span.dashicons.
-		// aria-hidden since the icon is decorative at element level; accessible
-		// name is on the link or wrapper role=img when needed.
-		$safe_slug = '' !== $dashicon_name ? $dashicon_name : 'star-filled';
-		$output    = sprintf(
-			'<span class="sgs-icon__dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
-			esc_attr( $safe_slug )
-		);
-		break;
-
-	case 'emoji':
-		// Emoji: always gets an aria-label — glyph screen reader support is unreliable.
-		$safe_emoji = '' !== $emoji_char ? $emoji_char : '⭐';
-		// Accessible label: use explicit label, fall back to "icon" for decorative.
-		$emoji_aria_label = '' !== $aria_label ? $aria_label : 'icon';
-		$output           = sprintf(
-			'<span class="sgs-icon__emoji" role="img" aria-label="%s">%s</span>',
-			esc_attr( $emoji_aria_label ),
-			esc_html( $safe_emoji )
-		);
-		break;
-
 	case 'custom':
-		// Already sanitised above (wp_kses + sgs_svg_kses_allowed_tags()).
-		// Shares the same `.sgs-icon__svg svg` selector as lucide/wp-icon
-		// (step 3/4's gradient-selector logic already falls through to it
-		// for every source that isn't dashicon/emoji), so colour, gradient
-		// and --sgs-icon-size sizing all behave identically to the other
-		// SVG-based sources with zero extra wiring.
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg, $sgs_icon_grad['defs'] );
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
-		$output          = sprintf(
-			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
-			$icon_svg_output
-		);
+		$glyph_svg = $icon_svg;
 		break;
-
+	case 'dashicon':
+	case 'emoji':
+		$glyph_svg = '';
+		break;
 	case 'lucide':
 	default:
-		$icon_svg_output = sgs_get_lucide_icon( $icon_name );
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad['defs'] );
-		$icon_svg_output = sgs_svg_inject_defs( $icon_svg_output, $sgs_icon_grad_hover['defs'] );
-		$output          = sprintf(
-			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
-			$icon_svg_output
-		);
+		$glyph_svg = sgs_get_lucide_icon( $icon_name );
 		break;
 }
 
-// ── Link wrapper ──────────────────────────────────────────────────────────────
-if ( '' !== $link_url ) {
-	// Determine the accessible label for the link.
-	// Priority: explicit ariaLabel → iconName (lucide) / wpIconName / dashiconName / emoji.
-	if ( '' !== $aria_label ) {
-		$accessible_label = $aria_label;
-	} elseif ( 'emoji' === $icon_source && '' !== $emoji_char ) {
-		$accessible_label = $emoji_char;
-	} elseif ( 'dashicon' === $icon_source && '' !== $dashicon_name ) {
-		$accessible_label = $dashicon_name;
-	} elseif ( 'wp-icon' === $icon_source && '' !== $wp_icon_name ) {
-		$accessible_label = $wp_icon_name;
-	} elseif ( 'custom' === $icon_source ) {
-		// A custom SVG has no name of its own — fall back to a generic label
-		// rather than the unrelated default iconName ('star').
-		$accessible_label = 'icon';
-	} else {
-		$accessible_label = $icon_name;
-	}
-
-	$link_attrs = sprintf(
-		' href="%s" class="sgs-icon__link" aria-label="%s"',
-		esc_url( $link_url ),
-		esc_attr( $accessible_label )
+if ( 'dashicon' === $icon_source ) {
+	$glyph_html = sprintf(
+		'<span class="sgs-icon__dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
+		esc_attr( '' !== $dashicon_name ? $dashicon_name : 'star-filled' )
 	);
+} elseif ( 'emoji' === $icon_source ) {
+	$glyph_html = sprintf( '<span class="sgs-icon__emoji" aria-hidden="true">%s</span>', esc_html( '' !== $emoji_char ? $emoji_char : '⭐' ) );
+} else {
+	$glyph_svg  = sgs_svg_inject_defs( (string) $glyph_svg, $icon_grad['defs'] );
+	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $icon_grad_hover['defs'] );
+	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
+}
+$output = '<span class="sgs-icon__shape">' . $glyph_html . '</span>';
 
-	if ( '_blank' === $link_target ) {
-		$link_attrs .= ' target="_blank"';
+// ── Accessible name and link (step 10) ───────────────────────────────────────
+$wrapper_extra = array( 'class' => implode( ' ', $classes ) );
+if ( '' !== $link_url ) {
+	$accessible_name = sgs_icon_accessible_name( $aria_label, $bound_link_key, $glyph_brand, $link_url );
+	$label_html      = '';
+	if ( '' !== $accessible_name ) {
+		$new_tab    = '_blank' === $link_target ? __( ' (opens in new tab)', 'sgs-blocks' ) : '';
+		$label_html = '<span class="sgs-icon__label">' . esc_html( $accessible_name . $new_tab ) . '</span>';
 	}
-
-	if ( '' !== $effective_rel ) {
-		$link_attrs .= ' rel="' . esc_attr( $effective_rel ) . '"';
-	}
-
-	$output = sprintf( '<a%s>%s</a>', $link_attrs, $output );
+	$output = sprintf(
+		'<a class="sgs-icon__link" href="%s"%s%s>%s%s</a>',
+		esc_url( $link_url ),
+		'_blank' === $link_target ? ' target="_blank"' : '',
+		'' !== $link_rel ? ' rel="' . esc_attr( $link_rel ) . '"' : '',
+		$output,
+		$label_html
+	);
+} elseif ( '' !== $aria_label ) {
+	// An unlinked icon with a label is an image with that name; without one it is decorative.
+	$wrapper_extra['role']       = 'img';
+	$wrapper_extra['aria-label'] = $aria_label;
 }
 
-// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
-// combinators like `>` intact. Every value reaching $scoped_css is pre-sanitised
-// (sgs_icon_css_length / allowlists / sgs_colour_value / sgs_container_gap_value /
-// wp_style_engine_get_styles), so no un-sanitised value survives here.
 if ( $scoped_css ) {
-	printf( '<style>%s</style>', wp_strip_all_tags( implode( '', $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>
+	// wp_strip_all_tags (not esc_html) blocks a </style> breakout and keeps CSS combinators. Every value is
+	// pre-sanitised: sgs_icon_length_value(), sgs_colour_value(), sgs_css_gradient_value(), the border helper and
+	// the style engine.
+	printf( '<style>%s</style>', wp_strip_all_tags( implode( '', $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>.
 }
 
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $output built above with esc_url/esc_attr/esc_html.
-printf( '<div %s>%s</div>', $wrapper_attributes, $output );
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wrapper attributes from WP core; $output built with esc_url/esc_attr/esc_html, glyph SVG from the Lucide/WP/registry maps or wp_kses.
+printf( '<div %s>%s</div>', get_block_wrapper_attributes( $wrapper_extra ), $output );

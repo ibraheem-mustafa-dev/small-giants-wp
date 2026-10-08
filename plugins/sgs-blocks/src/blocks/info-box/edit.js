@@ -212,9 +212,9 @@ const MEDIA_TYPE_OPTIONS = [
  * type are set here; the child block's own defaults cover the rest.
  */
 const MEDIA_TYPE_DEFAULTS = {
-	// Attr names MUST match sgs/icon block.json (iconName / backgroundColour /
-	// numeric iconSize) — WP silently discards undeclared attrs (D338).
-	icon:  { blockName: 'sgs/icon',  attrs: { iconSource: 'lucide', iconName: 'star', iconColour: 'primary', backgroundColour: 'accent-light', backgroundShape: 'circle', iconSize: 32 } },
+	// Attr names and shapes MUST match sgs/icon block.json (iconSize is per device,
+	// shape + showBackground draw the disc) — WP silently discards undeclared attrs (D338).
+	icon:  { blockName: 'sgs/icon',  attrs: { iconSource: 'lucide', iconName: 'star', backgroundColour: 'accent-light', shape: 'circle', showBackground: true, iconSize: { desktop: '32px' } } },
 	emoji: { blockName: 'sgs/icon',  attrs: { iconSource: 'emoji', emojiChar: '⭐' } },
 	image: { blockName: 'sgs/media', attrs: { mediaType: 'image' } },
 	video: { blockName: 'sgs/media', attrs: { mediaType: 'video' } },
@@ -253,16 +253,16 @@ function deriveMediaType( firstBlock ) {
  * Operators customise the child blocks in place in the editor.
  */
 const INFO_BOX_TEMPLATE = [
-	// Attr names MUST match sgs/icon block.json (iconName / backgroundColour /
-	// numeric iconSize) — WP silently discards undeclared attrs (D338).
+	// Attr names and shapes MUST match sgs/icon block.json (iconSize is per device,
+	// shape + showBackground draw the disc) — WP silently discards undeclared attrs (D338).
 	[
 		'sgs/icon',
 		{
 			iconName: 'star',
-			iconColour: 'primary',
 			backgroundColour: 'accent-light',
-			backgroundShape: 'circle',
-			iconSize: 32,
+			shape: 'circle',
+			showBackground: true,
+			iconSize: { desktop: '32px' },
 			className: 'sgs-info-box__icon',
 		},
 	],

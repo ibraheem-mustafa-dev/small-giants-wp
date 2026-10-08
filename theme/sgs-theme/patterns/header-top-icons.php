@@ -27,7 +27,7 @@ $sgs_my_account_url_json = wp_json_encode( esc_url_raw( $sgs_my_account_url ) );
 
 <!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"flex-end","backgroundColour":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}},"rowHideOnScroll":{"desktop":"on"}} -->
 <!-- wp:sgs/cart {"iconColour":"surface"} /-->
-<!-- wp:sgs/icon {"iconName":"user","iconSize":20,"iconColour":"surface","ariaLabel":"My Account","linkUrl":<?php echo $sgs_my_account_url_json; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode() output, already quoted + escaped via esc_url_raw() above. */ ?>} /-->
+<!-- wp:sgs/icon {"iconName":"user","iconSize":{"desktop":"20px"},"iconColour":"surface","ariaLabel":"My Account","linkUrl":<?php echo $sgs_my_account_url_json; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode() output, already quoted + escaped via esc_url_raw() above. */ ?>} /-->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->

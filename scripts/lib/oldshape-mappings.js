@@ -257,11 +257,12 @@ const BUILDERS = {
 				className: 'sgs-info-box__icon',
 				iconSource: 'lucide',
 				iconName: tok(tokens, 'infoBox.icon', attrs.icon),
-				backgroundShape: transparent ? 'none' : 'circle',
+				shape: 'circle',
+				showBackground: ! transparent,
 			};
 			if (attrs.iconColour) icon.iconColour = tok(tokens, 'infoBox.iconColour', attrs.iconColour);
 			if (!transparent) icon.backgroundColour = tok(tokens, 'infoBox.iconBackgroundColour', attrs.iconBackgroundColour);
-			if (typeof attrs.iconSize === 'number') icon.iconSize = attrs.iconSize;
+			if (typeof attrs.iconSize === 'number') icon.iconSize = { desktop: `${attrs.iconSize}px` };
 			children.push({ name: 'sgs/icon', attrs: icon });
 		}
 		if (attrs.heading) {

@@ -51,6 +51,7 @@ ALLOWLIST: List[Tuple[str, str, str]] = [
     ("card-grid/style.css", "__badge--primary", "a badge variant the client picks by name, beside success and accent"),
     ("counter/style.css", ".sgs-counter__icon", "icon glyph (graphic)"),
     ("icon-list/style.css", ":where(.sgs-icon-list__icon)", "icon glyph (graphic)"),
+    ("icon/style.css", ".sgs-icon__shape", "sgs/icon glyph (graphic): currentColor paints the SVG"),
     ("process-steps/style.css", ".sgs-process-steps__icon", "icon glyph (graphic)"),
     ("process-steps/style.css", "::after", "connector arrow (graphic)"),
     ("pricing-table/style.css", ".sgs-pricing-table__icon", "feature icon (graphic)"),

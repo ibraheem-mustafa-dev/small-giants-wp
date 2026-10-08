@@ -395,6 +395,7 @@
     "wp_interactivity_state",
     "wp_is_connector_registered",
     "wp_is_mobile",
+    "wp_is_serving_rest_request",
     "wp_is_writable",
     "wp_json_encode",
     "wp_kses",

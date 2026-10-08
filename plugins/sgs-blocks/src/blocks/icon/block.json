@@ -5,7 +5,7 @@
 	"version": "0.3.0",
 	"title": "SGS Icon",
 	"category": "sgs-content",
-	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, emoji, or a pasted custom SVG — with size, colour, optional background shape, and optional link.",
+	"description": "Icon from Lucide, the brand registry, WordPress icons, Dashicons, emoji or a pasted SVG, in an optional square, circle or pill with its own border, coloured by the theme, a brand or the client; linkable, and bindable to Site Info (a blank link hides).",
 	"keywords": [
 		"icon",
 		"svg",
@@ -42,6 +42,12 @@
 				],
 				"margin": [
 					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -50,16 +56,32 @@
 					"layer": "OUTER",
 					"order": 1,
 					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {},
+					"_note": "The block root: alignment and the Spacing padding and margin, which sit OUTSIDE the shape (plan D3). Every colour, border and size lives on the shape and glyph elements."
+				},
+				"shape": {
+					"label": "Shape",
+					"order": 2,
+					"clusters": [
 						"text",
 						"fill",
 						"layout"
 					],
-					"isWrapper": true,
+					"prefix": "",
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient",
 						"css:background-color": "backgroundColour",
 						"css:background-image": "backgroundColourGradient",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
+						"css:width": "shapeSize",
 						"css:transform": "iconRotate"
 					},
 					"states": {
@@ -67,19 +89,25 @@
 							"attrMap": {
 								"css:color": "iconColourHover",
 								"css:stroke": "iconColourHoverGradient",
-								"css:background-color": "shapeColourHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:transform": "scaleHover"
 							}
 						}
 					},
-					"_note": "Single-semantic-element block — the root <div> (or <a> when linkUrl is set) IS the icon element (render.php). css:color/background-color map to iconColour/backgroundColour rather than native: paths — render.php steps 3-4 drive the literal colour/shape-fill declarations from these SGS attrs directly. css:padding/margin resolve via the native fallback (isWrapper + spacing support). `backgroundPadding` is a bespoke single-value shape-inset control (Spec 32 §6.1c — deliberately NOT a BoxControl padding family) with no cluster member of its own, same carve-out reasoning as sgs/button's icon element (clusters: []) — left an honest orphan, not force-mapped. iconAlign is a bespoke icon control with no Spec 35 vocabulary member (no align member exists) — left unclaimed. `iconRotate` maps to the base `css:transform` (a paint-time rotate() on the root, so the layout box stays iconSize wide). `scaleHover` maps to `css:transform` in the hover attrMap above (fixed 2026-08-28) — the prior note here called it 'deliberately left unclaimed, no scale vocabulary member', which was stale: `css:transform` became a real vocabulary member 2026-07-24 (used by sgs/post-grid and sgs/team-member) and was simply never revisited on this block. No border-width/style/box-shadow/width/height/gap/aspect-ratio attrs on this block — honest gaps. `iconSize` is NOT this element's own attr any more (moved to the new `emoji` element below, 2026-08-15) even though `--sgs-icon-size` ALSO sizes THIS root's width/height (style.css:32-33, every source type) — a genuine one-attr/two-target case the manifest's single-element-per-attr shape cannot represent without dropping one target; `emoji` is the more precise of the two (only ONE source variant reads it as font-size) and matches what real BEM evidence already correctly resolves `css_element` to. `backgroundColourGradient` (2026-09-06, colour-conformance closeout) is a sibling of `backgroundColour`, resolved via `sgs_background_paint_decl()` (helpers-tokens.php) — a DIRECT LITERAL declaration on this block's own `.{uid}` scoped `<style>` rule, not a static-stylesheet custom-property consumer, so style.css needed no matching `background-image:var(...)` line (contrast option-picker/tabs' shape). No effect on the outline shape (border ring only, gated by `$is_outline`, no fill to gradient)."
+					"_note": "`.sgs-icon__shape`: the square, circle or pill around the glyph. Colours print as --sgs-icon-* custom properties only when the client set them, so a wrapping sgs/social-icons group default (--sgs-si-*) and brand colours show through; style.css paints the theme roles last. Width and height come from shapeSize (circle uses width only); unset, the shape is the icon size plus 2 x spacing-20 when it has a background or border."
 				},
-				"emoji": {
-					"label": "Emoji Glyph",
-					"order": 2,
+				"glyph": {
+					"label": "Glyph",
+					"order": 3,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The emoji GLYPH itself when `iconSource='emoji'` (style.css:41-42, `.sgs-icon__emoji{font-size:var(--sgs-icon-size,...)}`) — declared 2026-08-15 (Class 3, session fix: this element previously existed only in real markup/CSS, never in the manifest — an undeclared-sub-element drift the reseed audit flagged as an orphan `css_element`, since `iconSize` already resolved here via real BEM-selector evidence with no manifest backing it). Deliberately NO attrMap: adding one here would collide with `iconSize` staying declared on the `icon` root too (an attr can only carry ONE manifest_hit — see that element's own note), and `iconSize` already resolves correctly via BEM observation without one. svg/dashicon glyphs render as `<span>`/`<svg>` at `width/height:100%` and never reference `--sgs-icon-size` directly — the ROOT's own width/height (icon element) is what sizes them, so this element covers the emoji source variant only, honestly narrower than 'icon'."
+					"attrMap": {
+						"css:width": "iconSize"
+					},
+					"_note": "`.sgs-icon__svg` / `__dashicon` / `__emoji`: the glyph, sized by iconSize (--sgs-icon-size, per device)."
 				}
 			}
 		}
@@ -105,6 +133,7 @@
 			"default": "lucide",
 			"enum": [
 				"lucide",
+				"brand",
 				"wp-icon",
 				"dashicon",
 				"emoji",
@@ -114,6 +143,11 @@
 		"iconName": {
 			"type": "string",
 			"default": "star"
+		},
+		"brandName": {
+			"type": "string",
+			"default": "",
+			"description": "Brand registry slug drawn when iconSource is 'brand' (includes/data/brand-registry.json)."
 		},
 		"iconSvg": {
 			"type": "string",
@@ -133,43 +167,127 @@
 			"default": ""
 		},
 		"iconSize": {
-			"type": "number",
-			"default": 32
+			"type": "object",
+			"default": {},
+			"description": "Glyph size per device {desktop,tablet,mobile}: a CSS length (px, rem, em, %) or a theme spacing preset. Unset = the wrapper's group size, else 32px."
+		},
+		"iconFill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Fills a stroke glyph with the icon colour. Registry brand marks are already filled and ignore it."
 		},
 		"iconRotate": {
 			"type": "number",
 			"default": 0,
-			"description": "Rotates the icon element (its shape background and glyph together) by this many degrees, as a paint-time CSS transform: rotate(). The layout box stays iconSize wide, because a transform never changes layout. 0 emits nothing."
+			"description": "Turns the shape and glyph by this many degrees (a paint-time rotate(), so the layout box keeps its size). 0 = none."
+		},
+		"shape": {
+			"type": "string",
+			"default": "square",
+			"enum": [
+				"square",
+				"circle",
+				"pill"
+			],
+			"description": "The outline of the background and border. Only the square takes a radius; circle is 50%, pill 9999px from the stylesheet."
+		},
+		"showBackground": {
+			"type": "boolean",
+			"default": false,
+			"description": "Paints the shape's background. Brand colours turn it on."
+		},
+		"shapeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Shape size per device {desktop:{width,height},…}: CSS lengths or theme spacing presets. Circle uses width only; height follows width while shapeSizeLinked. Unset = icon size + 2 x spacing-20."
+		},
+		"shapeSizeLinked": {
+			"type": "boolean",
+			"default": true
+		},
+		"colourMode": {
+			"type": "string",
+			"default": "inherit",
+			"enum": [
+				"inherit",
+				"theme",
+				"brand"
+			],
+			"description": "inherit and brand use brand colours when the icon is bound to a brand's Site Info key or draws a brand glyph; theme never does. A colour the client sets always wins."
 		},
 		"iconColour": {
 			"type": "string",
-			"default": "primary"
+			"default": ""
+		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painting the glyph (wins over iconColour)."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of iconColourGradient."
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": "surface-alt"
+			"default": ""
 		},
 		"backgroundColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the filled background shape via background-image (helpers-tokens.php sgs_background_paint_decl). Non-empty wins over backgroundColour. No effect on the outline shape (border ring only, no fill)."
+			"description": "Gradient painting the shape's background (wins over backgroundColour)."
 		},
-		"backgroundShape": {
+		"backgroundColourHover": {
 			"type": "string",
-			"default": "none",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
 			"enum": [
 				"none",
-				"circle",
-				"pill",
-				"square",
-				"rounded",
-				"outline"
-			]
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
 		},
-		"backgroundPadding": {
+		"borderColour": {
 			"type": "string",
-			"default": "",
-			"description": "Padding inside the background shape (circle/pill/rounded/square/outline). Raw CSS length (e.g. 12px, 0.75rem). Empty = theme default (12px). Single uniform value — NOT a 4-side box family (Spec 32 6.1c) — emitted scoped, not inline."
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
 		},
 		"linkUrl": {
 			"type": "string",
@@ -190,29 +308,13 @@
 		},
 		"ariaLabel": {
 			"type": "string",
-			"default": ""
-		},
-		"iconColourHover": {
-			"type": "string",
-			"default": "accent-text"
-		},
-		"iconColourGradient": {
-			"type": "string",
 			"default": "",
-			"description": "CSS gradient string (linear-gradient()/radial-gradient()) painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time. Sibling attribute per D636 — see helpers-svg-gradient.php."
-		},
-		"iconColourHoverGradient": {
-			"type": "string",
-			"default": "",
-			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
-		},
-		"shapeColourHover": {
-			"type": "string",
-			"default": ""
+			"description": "The link's accessible name, or an unlinked icon's image name. Blank: the registry label for the bound Site Info key or brand glyph, else one from the link (Call, Email, the site name)."
 		},
 		"scaleHover": {
 			"type": "number",
-			"default": 1.1
+			"default": 1.1,
+			"description": "Grows the shape on hover and keyboard focus of a linked icon (1 = none). Reduced motion turns it off."
 		},
 		"opacityHover": {
 			"type": "number",
@@ -247,10 +349,11 @@
 	"example": {
 		"attributes": {
 			"iconName": "star",
-			"iconSize": 48,
-			"iconColour": "primary",
-			"backgroundShape": "circle",
-			"backgroundColour": "surface-alt"
+			"iconSize": {
+				"desktop": "48px"
+			},
+			"shape": "circle",
+			"showBackground": true
 		}
 	}
 }

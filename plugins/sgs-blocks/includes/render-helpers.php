@@ -127,6 +127,10 @@
  *   helpers-site-info-binding.php   — sgs_bound_site_info_key,
  *                                     sgs_bound_site_info_is_empty (which Site
  *                                     Info key an attribute is bound to)
+ *   helpers-icon.php                — sgs_icon_length_value,
+ *                                     sgs_icon_accessible_name,
+ *                                     sgs_icon_is_editor_render (sgs/icon's
+ *                                     length allowlist, link name, editor test)
  *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
  *                                     sgs_reviews_inline_data (written reviews
  *                                     shaped like the Places API's, so
@@ -184,6 +188,7 @@ require_once __DIR__ . '/helpers-button-note.php';
 require_once __DIR__ . '/helpers-empty-tab.php';
 require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/helpers-site-info-binding.php';
+require_once __DIR__ . '/helpers-icon.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

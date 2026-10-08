@@ -68,7 +68,7 @@ class IconTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( 'rel="noopener noreferrer"', $output );
-		$this->assertStringContainsString( 'aria-label="Go to example"', $output );
+		$this->assertStringContainsString( '<span class="sgs-icon__label">Go to example (opens in new tab)</span>', $output );
 		$this->assertStringContainsString( 'sgs-icon__link', $output );
 	}
 
@@ -106,7 +106,7 @@ class IconTest extends TestCase {
 		$this->assertStringNotContainsString( 'noopener', $output );
 	}
 
-	public function test_linked_icon_falls_back_to_icon_name_for_aria_label(): void {
+	public function test_linked_icon_name_comes_from_the_link_not_the_glyph_slug(): void {
 		$output = $this->render_block(
 			array(
 				'iconName'   => 'phone',
@@ -115,7 +115,8 @@ class IconTest extends TestCase {
 				'ariaLabel'  => '',
 			)
 		);
-		$this->assertStringContainsString( 'aria-label="phone"', $output );
+		$this->assertStringContainsString( '<span class="sgs-icon__label">Call</span>', $output );
+		$this->assertStringNotContainsString( '>phone<', $output );
 	}
 
 	// ── Multi-source: iconSource attribute ─────────────────────────────────────
@@ -162,7 +163,7 @@ class IconTest extends TestCase {
 	// ── Emoji source ──────────────────────────────────────────────────────────
 
 	/**
-	 * Emoji source renders .sgs-icon__emoji with role="img" and aria-label.
+	 * Emoji source renders .sgs-icon__emoji; the glyph itself is hidden (the root or link carries any name).
 	 */
 	public function test_emoji_source_renders_semantic_span(): void {
 		$output = $this->render_block(
@@ -177,14 +178,9 @@ class IconTest extends TestCase {
 			'Emoji source should render .sgs-icon__emoji span.'
 		);
 		$this->assertStringContainsString(
-			'role="img"',
+			'sgs-icon__emoji" aria-hidden="true"',
 			$output,
-			'Emoji span must have role="img".'
-		);
-		$this->assertStringContainsString(
-			'aria-label=',
-			$output,
-			'Emoji span must have an aria-label.'
+			'An unlabelled emoji is decorative.'
 		);
 		$this->assertStringContainsString(
 			'🎉',
@@ -207,9 +203,9 @@ class IconTest extends TestCase {
 	}
 
 	/**
-	 * Emoji without explicit ariaLabel falls back to aria-label="icon".
+	 * Emoji without an ariaLabel is decorative: never the meaningless name "icon".
 	 */
-	public function test_emoji_without_aria_label_falls_back_to_icon(): void {
+	public function test_emoji_without_aria_label_is_decorative(): void {
 		$output = $this->render_block(
 			array(
 				'iconSource' => 'emoji',
@@ -217,11 +213,12 @@ class IconTest extends TestCase {
 				'ariaLabel'  => '',
 			)
 		);
-		$this->assertStringContainsString(
+		$this->assertStringNotContainsString(
 			'aria-label="icon"',
 			$output,
-			'Emoji with no ariaLabel must fall back to aria-label="icon".'
+			'Emoji with no ariaLabel must not announce "icon".'
 		);
+		$this->assertStringNotContainsString( 'role="img"', $output );
 	}
 
 	/**

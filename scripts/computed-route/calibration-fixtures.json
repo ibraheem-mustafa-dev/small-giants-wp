@@ -2363,7 +2363,8 @@
     "variants": [
       {},
       {
-        "backgroundShape": "circle"
+        "shape": "circle",
+        "showBackground": true
       }
     ]
   },

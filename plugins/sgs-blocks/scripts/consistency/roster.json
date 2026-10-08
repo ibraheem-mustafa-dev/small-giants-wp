@@ -963,7 +963,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 7,
+        "paintDeclarations": 8,
         "replacedCoreSupports": [
           "anchor",
           "border",
