@@ -15,7 +15,7 @@ import { DesignTokenPicker, SgsLengthControl, BOX_UNITS } from '../../../compone
 import { Section, Row, typographyAttrs } from './panel-kit';
 import { TierBox, TierLength, TypographyRow, typoTarget } from './panel-fields';
 
-export const HEADER_TYPOGRAPHY_PREFIXES = [ 'sourceLabel', 'score', 'count' ];
+export const HEADER_TYPOGRAPHY_PREFIXES = [ 'sourceLabel', 'score', 'count', 'mapsLink', 'breakdownRow', 'badgeText' ];
 
 /** Every attribute this section owns (drives "Reset all"). */
 export const HEADER_ATTRS = [
@@ -96,6 +96,9 @@ export default function HeaderPanel( { attributes, setAttributes } ) {
 					typoTarget( 'sourceLabel', __( 'Source caption', 'sgs-blocks' ) ),
 					typoTarget( 'score', __( 'Rating figure', 'sgs-blocks' ) ),
 					typoTarget( 'count', __( 'Review count', 'sgs-blocks' ) ),
+					typoTarget( 'mapsLink', __( 'View on Google Maps link', 'sgs-blocks' ) ),
+					typoTarget( 'breakdownRow', __( 'Rating breakdown rows', 'sgs-blocks' ) ),
+					typoTarget( 'badgeText', __( 'Badge caption', 'sgs-blocks' ) ),
 				] }
 				{ ...shared }
 			/>
