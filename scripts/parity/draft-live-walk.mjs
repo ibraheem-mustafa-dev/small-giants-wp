@@ -58,13 +58,13 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 	process.exit( 2 );
 }
 const cfg = ( await import( pathToFileURL( cfgPath ).href ) ).default;
-const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ) );
+const onlyStates = flag( '--states' )?.split( ',' );
+const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates );
 if ( problems.length || argv.includes( '--lint' ) ) {
 	console.log( problems.length ? `${ cfg.name }: config lint failed:\n- ${ problems.join( '\n- ' ) }` : `${ cfg.name }: config lint passed.` );
 	process.exit( problems.length ? 1 : 0 );
 }
 const widths = ( flag( '--widths' ) || ( cfg.widths || [ 1440, 768, 375, 1920 ] ).join( ',' ) ).split( ',' ).map( Number );
-const onlyStates = flag( '--states' )?.split( ',' );
 const accept = argv.includes( '--no-accept' ) ? [] : cfg.accept || [];
 const lean = argv.includes( '--lean' );
 const draftCache = flag( '--draft-cache' );

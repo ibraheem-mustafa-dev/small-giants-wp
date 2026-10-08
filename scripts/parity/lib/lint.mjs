@@ -13,8 +13,9 @@ export function loadHandScope( cfgPath, cfg ) {
 
 // Returns a list of problems; an empty list means the config passes. handScope: the verdicts loadHandScope reads; a hand
 // pair whose elements hold different words (lib/pair-scope.mjs::judgePairScope) is a problem, so the run stops before
-// any browser opens.
-export function lintConfig( cfg, handScope = null ) {
+// any browser opens. onlyStates: the states this run walks (--states); null walks every state. A state the run does not
+// walk proves nothing, so it is not asked for a pair, and a walked state the config does not hold is a problem.
+export function lintConfig( cfg, handScope = null, onlyStates = null ) {
 	const problems = [];
 	const pairNames = new Set( ( cfg.pairs || [] ).map( ( p ) => p.name ) );
 	for ( const v of handScope || [] ) {
@@ -36,7 +37,15 @@ export function lintConfig( cfg, handScope = null ) {
 	}
 	// A state after the first changes something; a pair scoped to it must look at what changed.
 	// Pairs shared by every state only prove the page around the change still matches.
+	for ( const s of onlyStates || [] ) {
+		if ( ! ( cfg.states || [] ).some( ( st ) => st.name === s ) ) {
+			problems.push( `--states names unknown state "${ s }"` );
+		}
+	}
 	for ( const [ i, st ] of ( cfg.states || [] ).entries() ) {
+		if ( onlyStates && ! onlyStates.includes( st.name ) ) {
+			continue;
+		}
 		if ( i > 0 && ! ( cfg.pairs || [] ).some( ( p ) => p.states?.includes( st.name ) ) ) {
 			problems.push( `state "${ st.name }" has no pair scoped to it (add one for the thing the state changes)` );
 		}

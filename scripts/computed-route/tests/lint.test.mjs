@@ -118,6 +118,26 @@ test( 'NOT OVER-REFUSING: legitimate pairs (the phone link, the submit button) a
 	assert.deepEqual( lintConfig( cfgOf( [ 'phone-link' ] ), null ), [] );
 } );
 
+// P2-o: a run that walks some states lints only those, so states another surface adds to a shared config cannot stop it.
+const stated = { name: 'x', states: [ { name: 'base' }, { name: 'open' }, { name: 'modal' } ], pairs: [ { name: 'a' }, { name: 'dialog', states: [ 'modal' ] } ] };
+
+test( 'MUST FAIL: a walked state with no pair scoped to it fails, whether every state or only it is walked', () => {
+	assert.match( lintConfig( stated ).join(), /state "open" has no pair scoped to it/ );
+	assert.match( lintConfig( stated, null, [ 'open' ] ).join(), /state "open" has no pair scoped to it/ );
+} );
+
+test( 'a run walking only states that have pairs passes; a --states name the config lacks fails', () => {
+	assert.deepEqual( lintConfig( stated, null, [ 'modal' ] ), [] );
+	assert.deepEqual( lintConfig( stated, null, [ 'base', 'modal' ] ), [] );
+	assert.match( lintConfig( stated, null, [ 'modl' ] ).join(), /--states names unknown state "modl"/ );
+} );
+
+test( 'the size-guide surface lints clean on the shared help walker', () => {
+	const cfgPath = path.join( REPO, 'sites/eye-care-ward-end/build/qa/parity/help.mjs' );
+	const r = spawnSync( process.execPath, [ WALKER, cfgPath, '--lint', '--states', 'size-guide' ], { cwd: REPO, encoding: 'utf8', timeout: 60000 } );
+	assert.equal( r.status, 0, r.stdout );
+} );
+
 test( 'MUST FAIL TO RUN: the walker exits 1 on a mispaired config before launching a browser; a clean pairing passes', () => {
 	const d = tmp();
 	fs.mkdirSync( path.join( d, 'parity' ) );
