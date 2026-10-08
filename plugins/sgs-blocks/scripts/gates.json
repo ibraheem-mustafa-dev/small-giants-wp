@@ -1462,5 +1462,23 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 159
+  },
+  {
+    "id": "check-editor-css-imported",
+    "cmd": "node scripts/check-editor-css-imported.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 160
+  },
+  {
+    "id": "check-editor-css-imported-selftest",
+    "cmd": "node scripts/check-editor-css-imported.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 500,
+    "order": 161
   }
 ]
