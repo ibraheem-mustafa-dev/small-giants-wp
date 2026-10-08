@@ -653,7 +653,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        `style.border` any more (P2-g step 0). P2-b (the `var()` holdouts) and P2-h are done and live 2026-10-08: the route seeds only a border width's unset sides
        (`lib/resolve.mjs::seedSides`). P2-g is done and live 2026-10-08: every client border builds through
        `includes/helpers-border-style.php::sgs_border_element_decls`, and the route needs no change for it. P2-e (the Eye Care tier
-       boxes holding an explicit zero) is classified 2026-10-08: 143 of 161 match the draft, none cleared, 18 unverified.
+       boxes holding an explicit zero) is done 2026-10-08: 157 of 161 match the draft, the Help container's bottom padding is set to the draft's 90/90/60, one cart row is unmeasured.
      - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
        calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
        the bigger heap; `sgs/nav-bar-menu` 90 settings, 46 dead after CR27 (mostly states the calibration page cannot show)),

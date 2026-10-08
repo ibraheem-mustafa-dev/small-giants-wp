@@ -9,15 +9,15 @@
       "padding": {
         "desktop": {
           "top": "104px",
-          "bottom": "0px"
+          "bottom": "90px"
         },
         "tablet": {
           "top": "104px",
-          "bottom": "0px"
+          "bottom": "90px"
         },
         "mobile": {
           "top": "56px",
-          "bottom": "0px"
+          "bottom": "60px"
         }
       },
       "layout": "stack",
