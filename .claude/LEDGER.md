@@ -81,12 +81,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found has a control or a zero-specificity default.**
-  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 131/131; sandybrown at `edb956c7c`, QC pass 10/10). Gate gaps 4, 9, 10b, 12 and 13 are built
-  (`scripts/lib/e14-*.js`); other gate gaps are built only when a row needs one (§7). `scripts/check-editor-css-imported.js` fails a block whose
-  `editor.css` nothing imports. `:where()` default only: slider pause icon, banner icon and close, hours time, button note, current store link (§3.2).
-  **Open, no owner yet** (`plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open"): five more files over the limits; ~95 scripts still name
-  `render.php` (partial blindness audit); `primary` used as a text colour (43 stylesheet fallbacks, 17 attribute defaults; post-grid title and
-  read-more fail axe on sandybrown) needs Bean's palette decision; the render-undefined-vars `--self-test` hero fixture is stale.
+  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0**. Sandybrown runs `44e2c9d0f` (main is ahead only by gate scripts and docs, plus the nav
+  session's `731ec6232`/`dd32a11d2`, waiting for the next deploy). 2026-10-08 closed: block stylesheets and block.json text defaults no longer use
+  `primary` (state text `primary-dark`; gate `check-text-colour-defaults.py`); five oversized files split; every gate reads render partials, edit components and view
+  submodules through `scripts/lib/block-source-files.js` / `block_source_files.py`; `check-partial-use-imports.py` stops a partial calling a
+  class only render.php imports. **Open:** pre-existing defects the component-aware gates now see sit on shrink-only lists for the next
+  nav-drawer / nav-bar-menu / google-reviews session, and modal `borderStyle` needs the enum detector read first (triage §6).
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed

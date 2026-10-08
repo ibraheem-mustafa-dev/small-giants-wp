@@ -859,7 +859,7 @@ Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a s
 
 ### The prebuild gate chain — what actually blocks a build
 
-Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is
+Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars` and its `-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is
 what `npm run build` runs first, and what every `/handoff` and deploy relies on.
 Each entry's purpose is quoted from the script's own header.
 
