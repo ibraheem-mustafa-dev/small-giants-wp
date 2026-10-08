@@ -212,6 +212,12 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 	};
 	const options = [];
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
+		// A setting that changes what an element says (calibration found it changing the words: business-info displayType,
+		// phone to email) answers only a content row, never a style or tag row. A setting that changes only a tag can be a
+		// style variant (a trigger or close style), so it stays a candidate and the regression guard judges it.
+		if ( 'content' !== prop && props.content ) {
+			continue;
+		}
 		const d = props[ prop ];
 		if ( ! d || ! ( d.slots || [] ).map( lp ).includes( lp( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {
 			continue;
