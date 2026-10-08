@@ -327,12 +327,19 @@ export function wrongWrites( writes, reportAfter, stateMap ) {
 	} );
 }
 
+// Spec 47 §3.3's ratio: wrong settings (one attribute on one node, however many writes chained it) over every setting written.
+export function settingRatio( wrong, writes ) {
+	const key = ( w ) => `${ w.ref }|${ w.attr }`;
+	return { wrong: new Set( wrong.map( key ) ).size, total: new Set( writes.map( key ) ).size };
+}
+
 // The build, walk and write rounds (R-47-9): at most maxRounds write rounds. Guard rounds (revert a named culprit, try
 // one suspect, restore an innocent one) are not write rounds; the walk cap leaves room for a few per write round.
 // maxRounds 0 is measure-only: one build and one walk, never a write. Every step is passed in: build() → { ok, err },
 // walk( round ) → report, guard( prev, report, lastWrites ) → changed writes, write( report, round ) → { writes, gaps },
-// save() persists the tree. Returns { report, writes, gaps, rounds, lastWrote }.
-export async function solveLoop( { maxRounds, build, walk, guard, write, save, blocked = new Map(), log = console.log } ) {
+// save() persists the tree. pending() says a guard trial is still open when the walk cap is reached; settle( prev, report,
+// lastWrites ) then judges it on one more walk, so no trial ends unconfirmed. Returns { report, writes, gaps, rounds, lastWrote }.
+export async function solveLoop( { maxRounds, build, walk, guard, write, save, settle = null, pending = () => false, blocked = new Map(), log = console.log } ) {
 	const allWrites = [];
 	let gaps = {};
 	let report;
@@ -373,6 +380,14 @@ export async function solveLoop( { maxRounds, build, walk, guard, write, save, b
 		allWrites.push( ...r.writes );
 		lastWrites = r.writes;
 		prev = report;
+		save();
+	}
+	if ( settle && prev && pending() && build( 'settle' ).ok ) {
+		report = await walk( 'settle' );
+		const changed = settle( prev, report, lastWrites );
+		changed.filter( ( w ) => w.reverted ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
+		changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
+		log( `settling walk: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, restored ${ changed.filter( ( w ) => w.restored ).length }` );
 		save();
 	}
 	return { report, writes: allWrites, gaps, rounds, lastWrote };
@@ -426,6 +441,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		},
 		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates ),
 		guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
+		// The settling walk only judges open trials: with no last writes the guard opens no new one.
+		settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calibrationFor, trials ),
+		pending: () => [ ...trials.values() ].some( ( t ) => t.setting ),
 		write: ( rep, round ) => writeRound( rep, tree, { ...ctx, round, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } ),
 		save: () => writeTree( treeFile, tree ),
 	} );
@@ -435,6 +453,6 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const wrong = wrongWrites( allWrites, report, s.states );
 	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
 	const handover = handoverOf( classes );
-	writeSolveReport( outDir, { handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
-	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length }. Report: ${ path.join( outDir, 'solve-report.md' ) }` );
+	writeSolveReport( outDir, { handover, surface, refsAdded: added, rounds, roundThreeWrote: rounds >= 3 && lastWrote, writes: allWrites, wrong, wrongSettings: settingRatio( wrong, allWrites ), gaps, classes, snaps: ctx.log, intended: intendedCount( report ), unmappedState, before, after: report } );
+	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

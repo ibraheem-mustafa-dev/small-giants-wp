@@ -147,6 +147,36 @@ test( 'positive control: no write on the node, inside it or on an ancestor rever
 	assert.equal( guardRound( padRun( [] ), widened, padTree(), w, new Map(), () => ( { settings: {} } ), new Map() ).length, 0 );
 } );
 
+// A node's own height or width row (Lenses, 2026-10-07): the page container's padding write landed the draft's padding,
+// yet the container's own h@375 read further from the draft (it sums every child and the draft's scroll reveal). The
+// write's own rows (padding-top, padding-bottom, read on both sides) are the direct verdict: a setting whose own rows
+// are closed after the round is no suspect for its node's own size, nor is a write inside the node that landed.
+const lensTree = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-l-0', padding: { mobile: { top: '28px', bottom: '60px' } } }, innerBlocks: [
+	{ name: 'sgs/text', attributes: { className: 'cr-ref-l-1', margin: { mobile: { bottom: '6px' } } } } ] } ];
+const lw = () => [
+	{ round: 1, group: 'g-pt', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-top', before: { mobile: { top: '56px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '56px' } } },
+	{ round: 1, group: 'g-pb', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-bottom', before: { mobile: { top: '28px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '60px' } } },
+	{ round: 1, group: 'g-mb', ref: 'cr-ref-l-1', block: 'sgs/text', path: '', attr: 'margin', prop: 'margin-bottom', before: undefined, after: { mobile: { bottom: '6px' } } },
+];
+const lensRun = ( diffs ) => ( { runs: [ { state: 'opening', width: 375, pairs: { page: { live: { trace: { ref: 'cr-ref-l-0' } }, diffs } } } ] } );
+const ownHeight = { kind: 'box', key: 'h', draft: 780, live: 684, ref: 'cr-ref-l-0', path: '' };
+
+test( 'MUST FAIL TO MISJUDGE: a node\'s own height row never puts a landed write on trial', () => {
+	const t = lensTree();
+	const out = guardRound( lensRun( [] ), lensRun( [ ownHeight ] ), t, lw(), new Map(), () => ( { settings: {} } ), new Map() );
+	assert.equal( out.length, 0 );
+	assert.deepEqual( t[ 0 ].attributes.padding, { mobile: { top: '28px', bottom: '60px' } } );
+	assert.deepEqual( t[ 0 ].innerBlocks[ 0 ].attributes.margin, { mobile: { bottom: '6px' } } );
+} );
+
+test( 'negative control: a write whose own row is still open stays a suspect for its node\'s own height', () => {
+	const t = lensTree();
+	const stillOpen = { kind: 'style', key: 'padding-top', draft: '28px', live: '56px', ref: 'cr-ref-l-0', path: '' };
+	const out = guardRound( lensRun( [ stillOpen ] ), lensRun( [ ownHeight, stillOpen ] ), t, lw(), new Map(), () => ( { settings: {} } ), new Map() );
+	assert.ok( out.length > 0 && out.every( ( x ) => 'cr-ref-l-0' === x.ref && x.trial ) );
+	assert.deepEqual( t[ 0 ].attributes.padding, { mobile: { top: '56px', bottom: '56px' } } );
+} );
+
 // Walker state mapping (Spec 47 §5 stage 3): rows are written only from walker states the surface maps to a setting
 // state; a scrolled run's values never land in rest settings, and draft values come only from the group's own states.
 import { writeRound } from '../solve.mjs';
@@ -324,6 +354,28 @@ test( 'MUST FAIL TO WRITE: rounds 0 builds and walks once and never calls the wr
 test( 'positive control: rounds 1 calls the write round once, then walks what it wrote', async () => {
 	const { calls, steps } = loopSteps();
 	await solveLoop( { maxRounds: 1, ...steps } );
+	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
+} );
+
+// A trial still open when the walk cap is reached (Lenses, 2026-10-07: reported "unconfirmed: the run ended before the
+// next walk") gets one settling walk, so the guard's verdict is proven or the setting restored, never left unconfirmed.
+test( 'MUST FAIL TO LEAVE UNCONFIRMED: a trial open at the walk cap is settled by one more walk', async () => {
+	const { calls, steps } = loopSteps();
+	let pending = false;
+	let settled = 0;
+	const out = await solveLoop( { maxRounds: 1, ...steps,
+		guard: () => ( pending = true, [ { trial: true } ] ),
+		settle: () => ( pending ? ( settled++, pending = false, [ { restored: true } ] ) : [] ),
+		pending: () => pending,
+	} );
+	assert.equal( settled, 1 );
+	assert.equal( calls.walk, 1 * 4 + 1 + 1 );
+	assert.ok( out.report );
+} );
+
+test( 'positive control: no trial open at the end, no extra walk', async () => {
+	const { calls, steps } = loopSteps();
+	await solveLoop( { maxRounds: 1, ...steps, settle: () => [], pending: () => false } );
 	assert.deepEqual( calls, { build: 2, walk: 2, write: 1 } );
 } );
 
@@ -652,4 +704,12 @@ test( 'the report writes its whole-page line for any surface, from the final wal
 	} finally {
 		fs.rmSync( dir, { recursive: true, force: true } );
 	}
+} );
+
+// Wrong writes are judged per setting (one attribute on one node): a chained setting written for two properties is one
+// verdict, not two (Lenses, 2026-10-07: the page container's padding, written for its top and its bottom, counted twice).
+import { settingRatio } from '../solve.mjs';
+test( 'MUST FAIL TO DOUBLE-COUNT: two writes to one setting are one wrong setting', () => {
+	const all = [ ...lw(), { round: 1, group: 'g-x', ref: 'cr-ref-l-1', attr: 'gap', prop: 'row-gap' } ];
+	assert.deepEqual( settingRatio( all.slice( 0, 2 ), all ), { wrong: 1, total: 3 } );
 } );

@@ -11,8 +11,10 @@
 // each write's `before` is the previous write's `after`. With no write on the row's own node the suspects are, tier by
 // tier: writes inside the node or inside the pair a distance row is measured from, then writes on each ancestor,
 // nearest first.
+// A node's own height or width row sums everything inside it, so it judges no single write: a setting on or inside that
+// node whose own rows closed (its property now reads the draft's) is not a suspect for it (`ownSizeRow`, `landed`).
 import { refAncestors, nodeByRef } from './tree.mjs';
-import { regressedRows } from './solve-rows.mjs';
+import { regressedRows, openRows } from './solve-rows.mjs';
 
 const LAYOUT_PROP = /^(display|flex|justify|align|place|grid|gap|row-gap|column-gap|order|width|max-width|min-width|height|min-height|margin|padding|w|h)\b/;
 
@@ -59,6 +61,16 @@ export function anchorRef( report, r ) {
 		}
 	}
 	return null;
+}
+
+// A node's own size row: its box height or width, which sums everything inside it, so it cannot judge one write.
+export const ownSizeRow = ( r ) => 'box' === r.kind && /^(h|w|width|height)$/.test( r.key || '' ) && ! r.path;
+
+// True when every row a setting was written from is closed in the report: its own property, measured on both sides,
+// now reads the draft's value, which is the direct verdict on that setting.
+export function landed( s, report ) {
+	const own = new Set( s.writes.map( ( w ) => `${ w.path || '' }|${ w.prop }` ) );
+	return ! openRows( report ).some( ( r ) => r.ref === s.ref && own.has( `${ r.path || '' }|${ r.key }` ) );
 }
 
 const undo = ( tree, s ) => {
@@ -115,7 +127,10 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 		if ( [ ...handled ].some( ( h ) => under( r.ref, h ) ) ) {
 			continue;
 		}
-		let open = settingsOf( lastWrites.filter( ( w ) => w.ref === r.ref && ! w.reverted ) );
+		// A node's own size row puts no landed setting on or inside that node on trial (Lenses, 2026-10-07: the page
+		// container's padding landed the draft's padding and was blamed for the container's height).
+		const judged = ( settings ) => ( ownSizeRow( r ) ? settings.filter( ( s ) => ! landed( s, report ) ) : settings );
+		let open = judged( settingsOf( lastWrites.filter( ( w ) => w.ref === r.ref && ! w.reverted ) ) );
 		// Suspects in tiers, tried tier by tier. No write on the row's own node: a node moves with writes inside it, and
 		// a distance row also moves with writes inside the pair it is measured from (Contact, 2026-10-03: the subtext's
 		// bottom margin pushed the name field 23px down, and the row carried the form card's ref, which held no write).
@@ -126,7 +141,7 @@ export function guardRound( base, report, tree, lastWrites, blocked, calFor, tri
 			const from = anchorRef( report, r );
 			const live = lastWrites.filter( ( w ) => ! w.reverted );
 			tiers = [
-				settingsOf( live.filter( ( w ) => under( w.ref, r.ref ) || ( from && under( w.ref, from ) ) ) ),
+				judged( settingsOf( live.filter( ( w ) => under( w.ref, r.ref ) || ( from && under( w.ref, from ) ) ) ) ),
 				...[ ...( anc.get( r.ref ) || [] ) ].reverse().map( ( a ) => settingsOf( live.filter( ( w ) => w.ref === a ) ) ),
 			].filter( ( tier ) => tier.length );
 			open = tiers.flat();

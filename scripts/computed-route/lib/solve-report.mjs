@@ -50,7 +50,7 @@ export function writeSolveReport( outDir, r ) {
 		`| Content rows with no setting that could hold them (Missing setting) | ${ content( 'missing' ) } |`,
 		`| Content rows unresolved | ${ content( 'unresolved' ) } |`,
 		`| Handover (content outside the tree, or behaviour the walker cannot drive) | ${ handover.length } |`,
-		`| Wrong writes | ${ r.wrong.length } of ${ r.writes.length } |`, '',
+		`| Wrong writes | ${ r.wrong.length } of ${ r.writes.length }${ r.wrongSettings ? ` (settings ${ r.wrongSettings.wrong } of ${ r.wrongSettings.total })` : '' } |`, '',
 		'## Handover', '', ...( handover.length ? [ '| Owner | Pair | Kind | Key | Draft | Live | Widths |', '|---|---|---|---|---|---|---|', ...handover.map( ( h ) => `| ${ h.owner } | ${ h.row.pair } | ${ h.row.kind } | ${ cell( h.row.key ) } | ${ cell( h.row.draft ) } | ${ cell( h.row.live ) } | ${ h.widths.join( ', ' ) } |` ) ] : [ 'None.' ] ), '',
 		'## Writes', '', '| Round | Node | Block | Element | Property | Setting | Before | After |', '|---|---|---|---|---|---|---|---|',
 		...r.writes.map( ( w ) => `| ${ w.round } | ${ w.ref } | ${ w.block } | \`${ w.path }\` | ${ w.prop }${ w.state ? ':' + w.state : '' } | ${ w.attr } | ${ cell( w.before ) } | ${ cell( w.after ) } |` ), '',
