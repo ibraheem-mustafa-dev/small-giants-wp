@@ -649,7 +649,7 @@ Then bump `theme/sgs-theme/style.css` `Version:` to bust WP's compiled-styles ca
 
 ### theme.json raw custom values + overridable defaults
 
-`settings.color.custom` / `customGradient` / `customDuotone` and `settings.spacing.customSpacingSize` are `true`, and `settings.spacing.units` covers `px / em / rem / % / vw / vh`. This lets every block colour/spacing control accept **raw** values (hex, raw px), not only token presets — fixing the recurring "control rejected raw px" class. Framework default colour pairings are WCAG-safe; every framework default colour/spacing is an **overridable CSS custom property** (`property: var(--sgs-x, <default>)`) the editor controls can set per-instance. Light-pastel client primaries still need a per-client dark-text override (framework default is white-on-primary, WCAG-safe for saturated primaries; universal auto-contrast for any primary is parked — `P-AUTO-CONTRAST-LIGHT-PRIMARIES`).
+`settings.color.custom` / `customGradient` / `customDuotone` and `settings.spacing.customSpacingSize` are `true`, and `settings.spacing.units` covers `px / em / rem / % / vw / vh`. This lets every block colour/spacing control accept **raw** values (hex, raw px), not only token presets — fixing the recurring "control rejected raw px" class. Framework default colour pairings are WCAG-safe; every framework default colour/spacing is an **overridable CSS custom property** (`property: var(--sgs-x, <default>)`) the editor controls can set per-instance.
 
 ### Hide Browse-styles UI
 

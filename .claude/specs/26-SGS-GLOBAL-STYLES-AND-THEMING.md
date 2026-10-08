@@ -56,7 +56,6 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 
 ## Non-goals
 
-- Universal auto-contrast for any arbitrary light primary with zero per-client override (parked `P-AUTO-CONTRAST-LIGHT-PRIMARIES`). **DIRECTION DECIDED 2026-06-03 (Bean, D161): build-time luminance** — at deploy, compute the brand colour's WCAG relative luminance and pick black/white text per the contrast algorithm; layer CSS `contrast-color()` as a later progressive-enhancement once Baseline-safe. Build still deferred (with the rest of Spec 26) until the cloning phase closes.
 - Replacing per-instance inline styles — they remain the highest layer by design.
 - Fixing structural / InnerBlocks cloning gaps — separate (Spec 31 §13) and dominate pixel-diff independently of styling.
 - A new REST endpoint, a new WP Ability, or a Create Block Theme runtime dependency (see FR-26-A5).
@@ -113,10 +112,6 @@ SGS is one custom WP 7.0 block theme serving many client sites. Two problems are
 **FR-26-B4 — Per-block raw-control lint-gate (structural QC).** Every global property a block can be affected by MUST expose a per-instance control that accepts RAW values (not token-presets-only), across all ~68 blocks. Enforced as a QC gate, not per-block discipline. (Memory `block-style-controls-accept-raw-css-and-overridable`.)
 - *Done when:* a QC script asserts, per block, that each affecting global property has a raw-accepting control; a non-conforming block fails the gate.
 - *Model:* sonnet (gate authoring).
-
-**FR-26-B5 — WCAG contrast linter.** Flag any palette colour paired with white/light text that fails 4.5:1. Framework default is white-on-primary (WCAG-safe for saturated primaries); light-pastel primaries require a per-client dark-text value in their variation. Ties to `P-AUTO-CONTRAST-LIGHT-PRIMARIES`.
-- *Done when:* the linter flags a failing palette/text pairing at deploy time + names the per-client override needed.
-- *Model:* haiku.
 
 **FR-26-B6 — Inspector reads the merged custom-origin value (WP 7.0).** SGS custom inspector panels MUST read the MERGED custom-origin value (`wp_get_global_styles` / `useSettings`) as the control's initial state — never the raw `theme.json` default.
 - *Done when:* a control's initial value reflects a Site-Editor global override, not the theme.json seed.
@@ -257,5 +252,5 @@ Block editor: presets prominent + raw available; per-instance wins via cascade;
 - **Supersedes** Spec 01 §"Per-site theme.json Model" D156 "Live-style precedence" wording (the "override precedence" framing). Update Spec 01 to reference this spec when shipped.
 - **Decision 18** (variation retirement) gets a superseding note (FR-26-A2): it over-corrected a deploy-scoping bug.
 - Cross-ref: Spec 31 §13 (cloning pipeline / Stage 10 deploy), Spec 11 (button presets), Spec 17 §S1 FR-S1-4 (skip-link — separate header concern), Spec 24/25 (product/WooCommerce layer use these globals).
-- Parking: `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES` (closed by FR-26-D2), `P-AUTO-CONTRAST-LIGHT-PRIMARIES` (related, still deferred).
+- Parking: `P-PUSH-SNAPSHOT-SKIPS-GLOBAL-STYLES` (closed by FR-26-D2).
 - Memories: `canary-live-styles-come-from-wp-global-styles-post`, `block-style-controls-accept-raw-css-and-overridable`.

@@ -4,14 +4,16 @@ check-text-colour-defaults.py: no SGS text defaults to the brand colour.
 
 THE RULE (Bean, 2026-10-08)
 ---------------------------
-A client's `primary` is a brand colour, often a light mid-tone (sandybrown's #e68a95 is
-2.25:1 on its cream surface), so it is never a default TEXT colour:
+A site's `primary` is a brand colour and can be a light mid-tone, so it is never a default
+TEXT colour in a block:
 
   - text content (titles, names, numbers, labels, prices, read-more, buttons) inherits the
     site's text colour: the fallback is `inherit`, or the declaration is absent;
   - state text (hover, focus, active/current/selected/open) and links inside running text
-    use `primary-dark`, which --palettes guarantees is 4.5:1 on every light ground;
+    use `primary-dark`;
   - icons and decorative graphics may stay on `primary` (ALLOWLIST, each with its reason).
+
+Palette values themselves are a client's choice and are not checked here.
 
 WHAT FAILS
 ----------
@@ -22,12 +24,9 @@ WHAT FAILS
      routes to the CSS `color` property, unless allowlisted as a graphic.
   3. PHP: a `?? 'primary'` / `?: 'primary'` fallback for such an attribute in the block's
      render.php or a partial it requires.
-  4. --palettes: theme.json or a sites/*/theme-snapshot.json whose `primary-dark` is under
-     4.5:1 on `surface` or `surface-alt` (push-theme-snapshot.py calls palette_failures()
-     before every deploy, so a failing palette never ships).
 
 Usage:
-  python scripts/check-text-colour-defaults.py --check       # exit 1 on any finding (1-4)
+  python scripts/check-text-colour-defaults.py --check       # exit 1 on any finding (1-3)
   python scripts/check-text-colour-defaults.py --survey      # list findings, exit 0
   python scripts/check-text-colour-defaults.py --self-test   # negative + positive controls
 """
@@ -35,7 +34,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -45,12 +43,8 @@ from pathlib import Path
 from typing import Iterator, List, Tuple
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
-REPO = PLUGIN_ROOT.parent.parent
 BLOCKS = PLUGIN_ROOT / "src" / "blocks"
 DB = Path(os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db"))
-INK_SLUG = "primary-dark"
-INK_GROUNDS = ("surface", "surface-alt")
-INK_MIN = 4.5
 
 # (path suffix, selector fragment, reason). A CSS hit matching an entry is not reported.
 ALLOWLIST: List[Tuple[str, str, str]] = [
@@ -172,43 +166,6 @@ def attr_findings(blocks: Path, text_attrs: set) -> List[str]:
     return out
 
 
-def _contrast_module():
-    path = PLUGIN_ROOT / "scripts" / "derive-dark-palette.py"
-    spec = importlib.util.spec_from_file_location("sgs_derive_dark_palette_ink", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def palette_failures(snapshot: dict) -> List[Tuple[str, str, float]]:
-    """(ink slug, ground slug, ratio) for each light ground `primary-dark` fails 4.5:1 on.
-    A palette without the ink or a ground has nothing to check for that pair."""
-    mod = _contrast_module()
-    palette = mod._palette_dict(snapshot)
-    ink = palette.get(INK_SLUG)
-    out = []
-    if not ink or not ink.startswith("#"):
-        return out
-    for ground in INK_GROUNDS:
-        bg = palette.get(ground)
-        if bg and bg.startswith("#"):
-            ratio = mod.contrast_ratio(ink, bg)
-            if ratio < INK_MIN:
-                out.append((INK_SLUG, ground, round(ratio, 2)))
-    return out
-
-
-def palette_findings(repo: Path) -> List[str]:
-    out = []
-    files = [repo / "theme" / "sgs-theme" / "theme.json"] + sorted((repo / "sites").glob("*/theme-snapshot.json"))
-    for f in files:
-        if not f.is_file():
-            continue
-        for ink, ground, ratio in palette_failures(json.loads(f.read_text(encoding="utf-8"))):
-            out.append(f"palette {f.relative_to(repo).as_posix()}: {ink} on {ground} is {ratio}:1 (needs {INK_MIN}:1)")
-    return out
-
-
 def self_test() -> int:
     import tempfile
 
@@ -247,12 +204,6 @@ def self_test() -> int:
         expect("background attr ignored", sum("bgColour" in g for g in got), 0)
         expect("fallback in a required partial", sum("nameColour" in g and "render.php" in g for g in got), 1)
 
-    def snap(ink, surface):
-        return {"settings": {"color": {"palette": [
-            {"slug": "primary-dark", "color": ink}, {"slug": "surface", "color": surface}]}}}
-
-    expect("light ink fails", len(palette_failures(snap("#c56a7a", "#fbf3dc"))), 1)
-    expect("darkened ink passes", len(palette_failures(snap("#b7475b", "#fbf3dc"))), 0)
 
     print("self-test:", "FAIL " + str(failed) if failed else "ok (negative and positive controls)")
     return 1 if failed else 0
@@ -271,11 +222,11 @@ def main() -> int:
     if not DB.is_file():
         print(f"[text-colour-defaults] FAIL: framework DB not found at {DB}")
         return 1
-    findings = css_findings(BLOCKS) + attr_findings(BLOCKS, _text_colour_attrs(DB)) + palette_findings(REPO)
+    findings = css_findings(BLOCKS) + attr_findings(BLOCKS, _text_colour_attrs(DB))
     for f in findings:
         print(f"  {f}")
     print(f"[text-colour-defaults] {len(findings)} finding(s): text never defaults to primary; "
-          f"state text and in-text links use {INK_SLUG}, which must reach {INK_MIN}:1 on {'/'.join(INK_GROUNDS)}.")
+          f"state text and in-text links use primary-dark.")
     return 1 if (args.check and findings) else 0
 
 

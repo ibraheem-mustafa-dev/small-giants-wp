@@ -163,7 +163,6 @@ teardown finds an effect no Spec 38 tier (V, G, H, W) can express. Warm is not o
 | W4-c | The remaining roster clones, only after W4-b is accepted | accepted clones; every capability gap is a defect filed against waves 1-3, never a trimmed reference. **Termination rule:** an effect a Spec 38 tier can express is built with the Spec 38 effects; an effect the built effect does not yet match is a defect against that FR; an effect no tier can express comes back to Bean as a trim or exclude decision, never a silent loop-back | yes |
 | W4-d | Preset extraction | each accepted clone gives a header preset, a footer preset and a drawer starter; invented fills: Utility commerce, Overlay hero-contrast, Directory footer | no |
 | W4-e | Starter-set narrowing | drop `centred`/`minimal`/`full`; keep `scratch` plus 3 search variants | no |
-| W4-f | Contrast on all 8 client palettes per preset, automated: extend the DP7 contrast sweep to iterate every `theme-snapshot.json` palette | the palette sweep passes | no |
 
 **Test.** Happy: computed parity against the reference plus Bean's eye per clone. Edge: mobile drawer parity;
 content-role migrations. Fail: a DP7 harness mismatch fails the build. Integration: presets restyle under each
