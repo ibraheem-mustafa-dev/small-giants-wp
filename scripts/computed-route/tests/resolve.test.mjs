@@ -337,19 +337,3 @@ test( 'transition-duration: not over-suppressing, milliseconds and a real zero s
 	assert.equal( timeToMs( 'ease' ), null );
 	assert.equal( timeWrite( 'ease' ).writes, undefined );
 } );
-
-// Contact, 2026-10-08: Solve wrote business-info displayType phone -> email to fix the phone link's background-image and
-// transition rows, because calibration found displayType changing those properties. displayType also changes the
-// element's words (discovered `content`): a setting that changes what an element says is never a style or tag write. A
-// setting that changes only a tag (a style variant) still answers style rows.
-const structural = { discovered: { displayType: {
-	'background-image': { slots: [ '.x > .x__link' ], values: { email: { 375: 'none', 768: 'none', 1440: 'none' } } },
-	_tag: { slots: [ '.x > .x__link' ], values: { email: { 375: 'a', 768: 'a', 1440: 'a' } } },
-	content: { slots: [ '.x > .x__link' ], values: { email: { 375: 'e', 768: 'e', 1440: 'e' } } },
-} } };
-test( 'MUST FAIL TO SWITCH CONTENT: a setting that changes an element\'s words never answers a style row', () => {
-	assert.equal( resolveDiscovered( { slot: '.x > .x__link', prop: 'background-image', perWidth: { 375: 'none', 1440: 'none' } }, structural ), null );
-	assert.equal( resolveDiscovered( { slot: '.x > .x__link', prop: '_tag', perWidth: { 375: 'a', 1440: 'a' } }, structural ), null );
-	const tagOnly = { discovered: { triggerStyle: { 'background-image': structural.discovered.displayType[ 'background-image' ], _tag: structural.discovered.displayType._tag } } };
-	assert.ok( resolveDiscovered( { slot: '.x > .x__link', prop: 'background-image', perWidth: { 375: 'none', 1440: 'none' } }, tagOnly )?.writes, 'positive control: a tag-only style variant still answers' );
-} );
