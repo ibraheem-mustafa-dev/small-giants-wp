@@ -9,6 +9,7 @@
  */
 
 import ServerSideRender from '../../components/ServerSideRender';
+import { SsrPreviewGuard } from '../../components';
 import { resolveTier, tierLengthPreview } from '../../utils';
 import { chromeRowStyle, chromeSlotStyle } from './chrome-preview-style';
 
@@ -115,7 +116,9 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 			) }
 			{ showRating && (
 				<div className={ `sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-${ ratingPlacement }` }>
-					<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
+					<SsrPreviewGuard>
+						<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
+					</SsrPreviewGuard>
 				</div>
 			) }
 		</div>
