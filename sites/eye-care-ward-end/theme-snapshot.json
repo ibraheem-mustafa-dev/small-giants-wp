@@ -108,6 +108,16 @@
           "color": "#B7E5C7"
         },
         {
+          "slug": "whatsapp-ink",
+          "name": "WhatsApp ink",
+          "color": "#12301E"
+        },
+        {
+          "slug": "whatsapp-ink-soft",
+          "name": "WhatsApp ink soft",
+          "color": "#2F5C3F"
+        },
+        {
           "slug": "surface",
           "color": "#FAF8F5",
           "name": "Surface",
