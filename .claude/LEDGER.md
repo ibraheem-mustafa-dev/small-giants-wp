@@ -107,11 +107,13 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-08):** the whole fix register, each row in the Solve lane (fixed at the solver/walker root) or the
-  Fix lane (Bean; plan "Scope and lanes"). **Lenses: Solve and independent check 0**, register N40 to prove; its wrong-write ratio passes
-  only with two unconfirmed reverts left out (3 of 17 by the spec): open with Bean. N39 closed. **Contact:** 60 issues
-  (from 66); 11 of 17 Solve writes painted nothing, removed. Font slugs vs the editor's raw values: open with Bean.
-  Lenses (168) and Contact (190) rebuilt on eye-care-test. Detail: the plan.
+- **Session D (2026-10-08):** the whole fix register, each row in the Solve lane or the Fix lane (a `Lane` column on
+  every row; 80 open = 31 Solve + 49 Fix). **Lenses at 100%** (Solve 0, independent check 0, planted fault caught, N40
+  closed by measurement). Site-wide: S2 (one underline-sweep mechanism, switched on by `custom.linkSweep`), S3 and
+  S5's decided values closed live; S4 is Solve lane (a colour with no preset is written as its hex, never a new token).
+  Route: the guard judges a write on its own rows and counts wrong settings (Spec 47 0.15.7); a borderless element's
+  border colour is no row. Font slugs: the editor reads them. Contact: the hours spacing is a hardcode, now
+  `business-info::hoursRowPadding` (reseeded, calibrated). Detail: the plan.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
