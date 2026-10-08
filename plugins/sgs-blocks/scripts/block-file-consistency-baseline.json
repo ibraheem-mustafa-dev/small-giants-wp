@@ -1568,6 +1568,12 @@
       "block": "sgs/site-footer-row",
       "attr": "hidePromotedPlaceholder",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/container",
+      "attr": "surfaceOpacity",
+      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6. edit.js binds a control to 'surfaceOpacity' but block.json does not declare it — WP silently drops the value on save"
     }
   ]
 }

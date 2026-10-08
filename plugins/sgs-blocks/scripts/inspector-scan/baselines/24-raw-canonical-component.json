@@ -1,11 +1,11 @@
 {
   "_meta": {
-    "rule": "01-tab-group",
+    "rule": "24-raw-canonical-component",
     "ruleVersion": 1
   },
   "entries": [
     {
-      "key": "01-tab-group|sgs/choice-flow-question|plugins/sgs-blocks/src/blocks/choice-flow-question/edit.js|no-group-routing",
+      "key": "24-raw-canonical-component|sgs/google-reviews|plugins/sgs-blocks/src/blocks/google-reviews/components/WrittenReviewsPanel.js|raw-canonical-component|ColorPalette|163",
       "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
       "seededAt": "2026-10-08",
       "expires": null

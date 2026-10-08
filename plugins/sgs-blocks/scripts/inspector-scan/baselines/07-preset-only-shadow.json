@@ -1,4 +1,14 @@
 {
-	"_meta": { "rule": "07-preset-only-shadow", "ruleVersion": 1 },
-	"entries": []
+  "_meta": {
+    "rule": "07-preset-only-shadow",
+    "ruleVersion": 1
+  },
+  "entries": [
+    {
+      "key": "07-preset-only-shadow|sgs/container|plugins/sgs-blocks/src/blocks/container/components/ContainerWrapperControls.js|preset-only-shadow|100",
+      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
+      "seededAt": "2026-10-08",
+      "expires": null
+    }
+  ]
 }

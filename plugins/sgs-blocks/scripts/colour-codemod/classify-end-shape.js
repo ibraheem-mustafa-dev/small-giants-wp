@@ -874,6 +874,13 @@ function findOutlineRoutedThroughBorder() {
 	return out;
 }
 
+function loadBaselineIds() {
+	const file = path.join( __dirname, 'classify-end-shape-baseline.json' );
+	if ( ! fs.existsSync( file ) ) return new Set();
+	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	return new Set( ( data.rows || [] ).map( ( e ) => e.id ) );
+}
+
 function runCheck() {
 	const results = classifyAll();
 
@@ -912,13 +919,28 @@ function runCheck() {
 		}
 	}
 
-	if ( 0 === bad.length ) {
-		console.log( '[check] PASS — ' + results.length + ' non-conformant row(s) tracked, none left with currentComplete=false.' );
+	// Shrink-only baseline of known rows (classify-end-shape-baseline.json, keyed
+	// `<slug>.<attr>`). A row outside it fails; a listed row that no longer fails is stale.
+	const baselineIds = loadBaselineIds();
+	const badIds = new Set( bad.map( ( r ) => r.block.replace( /^sgs\//, '' ) + '.' + r.attr ) );
+	const stale = [ ...baselineIds ].filter( ( id ) => ! badIds.has( id ) );
+	const unbaselined = bad.filter( ( r ) => ! baselineIds.has( r.block.replace( /^sgs\//, '' ) + '.' + r.attr ) );
+
+	if ( stale.length ) {
+		console.log( '[check] FAIL — ' + stale.length + ' baseline entr(ies) no longer fail; delete them from classify-end-shape-baseline.json:' );
+		for ( const id of stale ) console.log( '  ' + id );
+		process.exitCode = 1;
+	}
+
+	if ( 0 === unbaselined.length ) {
+		if ( ! stale.length ) {
+			console.log( '[check] PASS — ' + results.length + ' non-conformant row(s) tracked; ' + bad.length + ' currentComplete=false row(s) all in the dated baseline, none new.' );
+		}
 		return;
 	}
 
-	console.log( '[check] FAIL — ' + bad.length + ' row(s) still currentComplete=false:' );
-	for ( const r of bad ) {
+	console.log( '[check] FAIL — ' + unbaselined.length + ' row(s) currentComplete=false and not in the baseline:' );
+	for ( const r of unbaselined ) {
 		console.log(
 			'  ' + r.block + '.' + r.attr + '  (current: ' + r.currentShape +
 			( r.currentNote ? ' — ' + r.currentNote : '' ) +

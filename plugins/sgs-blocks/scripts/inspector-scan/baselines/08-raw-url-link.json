@@ -4,5 +4,12 @@
     "ruleVersion": 2,
     "note": "S10 fix (2026-09-02, uniformity sweep): the two entries this file used to carry (sgs/google-reviews, sgs/trustpilot-reviews) are now exempted directly in rules/08-raw-url-link.js via a block-slug EXEMPT_BLOCKS set, not a line-keyed baseline match. Both blocks' <TextControl type=\"url\"> fields are genuine non-navigational config URLs (external-service target/rel hardcoded server-side; page-internal search inapplicable) — see the rule file's own comment for the full reasoning and the re-scope note if either block ever grows a second, genuinely navigational url field. This file is intentionally empty now; it stays present (rather than being deleted) so the baseline-loading mechanism shared by every rule in this scanner doesn't need a null-file special case."
   },
-  "entries": []
+  "entries": [
+    {
+      "key": "08-raw-url-link|sgs/nav-drawer|plugins/sgs-blocks/src/blocks/nav-drawer/ChromeSlotControls.js|raw-url-textcontrol|96",
+      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
+      "seededAt": "2026-10-08",
+      "expires": null
+    }
+  ]
 }
