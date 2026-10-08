@@ -22,11 +22,12 @@
 - *content*: page, product or Site Info data.
 - *client*: Eye Care-only styling, in its own token file.
 
-## Three build rules for every item
+## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page. **Done 2026-10-03:** all 17 trees rebuilt on eye-care-test with zero invalid blocks; the wordmark now computes 18px at rest and 15px scrolled.
 2. **Match each element's full CSS, not just the difference you can see (your point 26).** For every element touched, set margin, padding, line height, font, letter spacing and width to the draft's values, so neighbours stop shifting. This applies on every surface, not just the footer.
 3. **Every new or repaired setting uses the shared controls (your point 70).** Typography through the shared typography controls; per-device values through the responsive control; spacing and gaps through the shared spacing control; padding and margins through the box control; colours through the token picker. Each new setting names the block where the same control is already done, and copies it.
+4. **Every open row goes in one lane (Bean, 2026-10-08).** Solve lane: the draft is the answer and the walker can measure it; Solve closes it, and where it has not, the fix goes into the solver or walker (`scripts/computed-route/`, `scripts/parity/`), never a hand-written tree value. Fix lane: your decisions against the draft (ledgered too, so Solve never writes the draft back), framework gaps and extensions, and rows the walker cannot measure; fixed directly and checked live. A surface is done when Spec 47's done line holds and all its rows here are closed. Detail: `plans/2026-10-04-spec47-full-coverage.md` "Scope and lanes".
 
 ## Decisions
 

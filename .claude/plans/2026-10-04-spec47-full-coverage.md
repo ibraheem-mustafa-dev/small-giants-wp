@@ -56,12 +56,22 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
 
 ## Session D: what it owns
 
-- **Ranking rule.** Walker gaps holding the most open rows across surfaces go first, then each surface to 100% with
-  Solve under the existing done line (below, per surface). **Bean, 2026-10-07: Solve writes first, surface by surface**,
-  fixing a walker gap when it blocks the surface in hand. Why: the largest walker class, `used-value` width (132 rows on 15
-  surfaces), is mostly double counting (82 have an open box `w` row on the same node already triaged a consequence), so
-  relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
-  Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
+- **Scope and lanes (Bean, 2026-10-08).** Session D works the WHOLE fix register
+  (`plans/2026-10-02-eye-care-fix-register.md`), not Solve's score alone. Every register row not yet closed is put in one
+  lane, recorded on the row:
+  - **Solve lane:** the draft is the answer and the walker can measure it. Solve closes it. When Solve has not, the fix
+    is at the root, in the solver or walker (`scripts/computed-route/`, `scripts/parity/`), never a hand-written tree
+    value, so the same class closes on every surface and every future client. Test first, then re-run Solve to close it.
+  - **Fix lane:** everything else: Bean's decisions against the draft (S1 lift, S2 underline sweep, S3 no fade, S4
+    WhatsApp; each also ledgered so Solve never writes the draft back), framework gaps and extensions, and rows the walker
+    cannot measure (behaviour, content, functionality). Fixed directly and verified live.
+  A surface is at 100% when Spec 47's done line holds and every register row for it is closed with its evidence. Why: Solve
+  only closes what matches the draft, overwrites decided differences that are not ledgered, and cannot see the ~70
+  "not walker-measurable" rows, so its score alone overstates progress (Lenses read 0 with N40 unproven).
+- **Ranking rule.** Site-wide fixes S1-S12 first (one change closes items on many surfaces), then surface by surface. Within
+  a surface: Fix-lane rows and their ledger entries before Solve runs, then Solve, then mark every row. Walker gaps that
+  hold the most open Solve-lane rows across surfaces are fixed as they block the surface in hand. Walker gap 2
+  (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
   - 131 / S3: the Contact phone link's visible hover cue waits for S2's underline sweep (its hover colour is ledgered D-87).
   - The mobile drawer's links (mobile-menu surface): the draft fades and rises each link in when the drawer opens, live

@@ -56,7 +56,7 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 
 **Now (2026-10-07).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
-truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, three build rules.
+truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, four build rules.
 No blockers. **eye-care-test runs `70072ad8c` and the sandybrown canary `6d7ab0169`** (markers). ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
@@ -108,7 +108,8 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-08):** Solve writes first, per surface (Bean). **Lenses: Solve and independent check 0**, register N40 to prove; its wrong-write ratio passes
+- **Session D (2026-10-08):** the whole fix register, each row in the Solve lane (fixed at the solver/walker root) or the
+  Fix lane (Bean; plan "Scope and lanes"). **Lenses: Solve and independent check 0**, register N40 to prove; its wrong-write ratio passes
   only with two unconfirmed reverts left out (3 of 17 by the spec): open with Bean. N39 closed. **Contact:** 60 issues
   (from 66); 11 of 17 Solve writes painted nothing, removed. Font slugs vs the editor's raw values: open with Bean.
   Lenses (168) and Contact (190) rebuilt on eye-care-test. Detail: the plan.
