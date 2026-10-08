@@ -78,26 +78,19 @@ BASELINE = os.path.join(PLUGIN, 'scripts', 'migrate-box-longhands-baseline.json'
 
 # Sites that stay on the shorthand, by (relpath, variable), each with its reason. Added by hand.
 BOX_EXCLUDE = {
-    ('src/blocks/accordion-item/render.php', '$short'):
-        'var() holdout: stored in --sgs-accordion-header-pad / --sgs-accordion-content-pad, read as padding: var(), where a longhand cannot go',
-    ('src/blocks/label/render.php', '$base_padding_shorthand'):
-        'double use: also a presence test in $box_present',
     ('includes/helpers-button-style.php', '$border_width_shorthand'):
         'border width (zero-fill is correct) and double use: also feeds sgs_border_gradient_css()',
 }
 
 # The block attributes behind sites the census cannot trace itself (their box arrives through block context or a
-# shared serialiser), each still printed through the zero-filling shorthand. They feed zeroFillPairs, which the
-# computed route reads so it keeps seeding the unset sides of exactly these boxes (scripts/computed-route/lib/resolve.mjs).
-BOX_HOLDOUT_ATTRS = {
-    ('src/blocks/accordion-item/render.php', '$short'): [('sgs/accordion', 'headerPadding'), ('sgs/accordion', 'contentPadding')],
-    ('includes/helpers-container.php', '$shorthand'): [('sgs/container', 'gridItemPadding')],
-}
+# shared serialiser), each still printed through the zero-filling shorthand. They feed zeroFillPairs. None remain: the
+# computed route seeds only a border width's unset sides (scripts/computed-route/lib/resolve.mjs::seedSides).
+BOX_HOLDOUT_ATTRS = {}
 
 
 def zero_fill_pairs(sites):
     """Every (block, attribute) whose box is still printed with 0 for unset sides: refused and excluded sites the
-    census traced, plus the hand-pinned holdouts. Box sites only: the computed route seeds nothing for corners."""
+    census traced, plus the hand-pinned holdouts (today the border widths only). Box sites only: corners are never seeded."""
     pairs = {('sgs/' + s['block'], s['attr']) for s in sites
              if s['helper'] == 'box' and s['category'] in ('refused', 'excluded') and s['block'] and s['attr']}
     for (f, v), attrs in BOX_HOLDOUT_ATTRS.items():
@@ -111,7 +104,7 @@ BOX_BARE_OK = {
     'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
     'includes/render-helpers.php': (1, 'docblock listing which helper file provides what'),
     'src/blocks/mega-aside/render.php': (1, 'function_exists() guard on a border-width ternary, which stays on the shorthand'),
-    'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, a var() holdout that stays on the shorthand'),
+    'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, which only the border width calls, and a width stays on the shorthand'),
 }
 
 # Files outside the corpus that still contain an old name, each with its reason.

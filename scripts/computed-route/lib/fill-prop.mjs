@@ -6,7 +6,7 @@ import { sameValue } from '../../parity/lib/compare.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
 import { INHERITED } from './calibrate-props.mjs';
 
-// The tiers, widest first: an empty tier shows the nearest wider tier's value (resolve.mjs::WIDER_TIERS).
+// The tiers, widest first: an empty tier shows the nearest wider tier's value.
 export const TIER_WIDTHS = [ 1440, 768, 375 ];
 // Inherited properties (R-47-5): their baseline is the parent's measured value, not a recorded default. The list is
 // calibration's own (lib/calibrate-props.mjs::INHERITED), which records no default paint for any of them.

@@ -81,23 +81,28 @@ test( 'MUST FAIL TO WRITE: two values with the same effect and no deciding sibli
 } );
 
 // A padding or margin box prints only its set sides (sgs_box_object_longhands, CR6), so a side written into an empty
-// box is written alone: the others keep the stylesheet's value or a wider tier's. A box still printed through
-// sgs_box_object_shorthand prints 0 for every unset side; for those (the CR6 census's zeroFillPairs, and every border
-// width) the first side written into an empty box brings the others at their calibrated default paint.
+// box is written alone: the others keep the stylesheet's value or a wider tier's. A border width prints 0 for every
+// unset side, so the first side written into an empty width box brings the others at their calibrated default paint.
 const padCal = { settings: { padding: { slot: '.sgs-container__inner', property: 'padding' } }, elements: { '.sgs-container__inner': {
 	375: { 'padding-top': '12px', 'padding-right': '24px', 'padding-bottom': '12px', 'padding-left': '24px' },
 	1440: { 'padding-top': '16px', 'padding-right': '24px', 'padding-bottom': '16px', 'padding-left': '24px' } } } };
 const labelCal = { settings: { padding: { slot: '', property: 'padding' } }, elements: { '': padCal.elements[ '.sgs-container__inner' ] } };
+const pillPaint = ( top, bottom ) => ( { 'border-top-width': top, 'border-right-width': '2px', 'border-bottom-width': bottom, 'border-left-width': '2px' } );
+const pillCal = { settings: { pillBorderWidth: { slot: '', property: 'border-width' } }, elements: { '': { 375: pillPaint( '1px', '1px' ), 1440: pillPaint( '3px', '3px' ) } } };
 
 test( 'MUST FAIL TO SEED: one side into an empty longhand box is written alone (CR6)', () => {
 	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' } }, { db, snapshot, calibration: padCal } );
 	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px' }, desktop: { top: '0px' } } );
 } );
 
-test( 'not over-narrowed: a box still printed with 0 for unset sides keeps the other sides at their default paint', () => {
-	// sgs/label::padding has the same DB row shape as sgs/container::padding; only its zero-fill status differs.
+test( 'MUST FAIL TO SEED: a label padding box (a longhand box since P2-b) is written one side alone', () => {
 	const r = resolve( { block: 'sgs/label', slot: '', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' } }, { db, snapshot, calibration: labelCal } );
-	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px', right: '24px', bottom: '12px', left: '24px' }, desktop: { top: '0px', right: '24px', bottom: '16px', left: '24px' } } );
+	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px' }, desktop: { top: '0px' } } );
+} );
+
+test( 'not over-narrowed: a border width keeps the other sides at their default paint', () => {
+	const r = resolve( { block: 'sgs/cart', slot: '', prop: 'border-top-width', perWidth: { 375: '0px', 1440: '0px' } }, { db, snapshot, calibration: pillCal } );
+	assert.deepEqual( r.writes[ 0 ].value, { top: '0px', right: '2px', bottom: '3px', left: '2px' } );
 } );
 
 test( 'a box that already holds sides is merged, never re-seeded', () => {
@@ -107,17 +112,15 @@ test( 'a box that already holds sides is merged, never re-seeded', () => {
 
 // An empty phone tier of a longhand box is not seeded at all: the cascade carries the node's desktop sides into it
 // (Bean, 2026-10-07: a mobile tier that sets one side inherits the wider tier's other sides). Seeding would freeze
-// sides the client never chose. On a zero-filling box the phone tier is still seeded, from the node's own desktop
-// sides, never from the default paint (Lenses "Choose a frame", 2026-10-03: seeded 28px from the default against
-// desktop's 26px, the button widened).
+// sides the client never chose.
 test( 'MUST FAIL TO FREEZE: an empty phone tier of a longhand box carries only the measured side (CR6)', () => {
 	const r = resolve( { block: 'sgs/container', slot: '.sgs-container__inner', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' }, current: { padding: { desktop: { left: '26px', right: '26px' } } } }, { db, snapshot, calibration: padCal } );
 	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px' }, desktop: { top: '0px' } } );
 } );
 
-test( 'MUST FAIL TO OVERRIDE: a zero-filling box\'s empty phone tier is seeded from the node\'s own desktop sides', () => {
+test( 'MUST FAIL TO FREEZE: a label\'s empty phone tier carries only the measured side too', () => {
 	const r = resolve( { block: 'sgs/label', slot: '', prop: 'padding-top', perWidth: { 375: '0px', 1440: '0px' }, current: { padding: { desktop: { left: '26px', right: '26px' } } } }, { db, snapshot, calibration: labelCal } );
-	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px', right: '26px', bottom: '0px', left: '26px' }, desktop: { top: '0px' } } );
+	assert.deepEqual( r.writes[ 0 ].value, { mobile: { top: '0px' }, desktop: { top: '0px' } } );
 } );
 
 // A border-radius box stores corners per device (helpers-box.php::sgs_border_radius_tiers reads only topLeft,

@@ -16,30 +16,8 @@ export const GAPS = [ 'no-setting', 'ambiguous', 'shape', 'uncalibrated' ];
 
 const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop', 1920: 'desktop' };
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
-// The tiers an empty tier falls back to, nearest first (helpers-box.php: desktop base rule, tablet max-width 1023px,
-// mobile max-width 767px).
-export const WIDER_TIERS = { desktop: [], tablet: [ 'desktop' ], mobile: [ 'tablet', 'desktop' ] };
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
 const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-duration', 'animation-delay' ];
-
-// The `block|attr` boxes still printed through the zero-filling shorthand, from the committed CR6 census
-// (plugins/sgs-blocks/scripts/migrate-box-longhands.py --survey --json). Read once. With no census every box is
-// treated as zero-filling, which seeds unset sides everywhere: the safe direction, never the reverse.
-const CENSUS = path.resolve( HERE, '../../../reports/migrations/box-longhands-census.json' );
-let zeroFillCache = null;
-function zeroFillPairs() {
-	if ( ! zeroFillCache ) {
-		let pairs = null;
-		try {
-			pairs = JSON.parse( fs.readFileSync( CENSUS, 'utf8' ) ).zeroFillPairs;
-		} catch {
-			pairs = null;
-		}
-		// A missing file, or a census written before it carried the list, seeds everywhere rather than nowhere.
-		zeroFillCache = Array.isArray( pairs ) ? new Set( pairs ) : { has: () => true };
-	}
-	return zeroFillCache;
-}
 
 let schemaIndex = null;
 // block.json attributes for a block slug, read from the plugin's block sources (not its scripts, R-47-1).
@@ -369,24 +347,18 @@ export function resolve( input, ctx ) {
 		out[ t ] = f.value;
 	}
 	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
-	// Most padding and margin boxes print only their set sides (sgs_box_object_longhands), so writing one side
-	// leaves the others to the stylesheet or a wider tier, and nothing is seeded. A box still printed through
-	// sgs_box_object_shorthand prints 0 for every unset side, overriding the block's own default: a border width
-	// (where 0 for an unset side is the right meaning) and the pairs in the CR6 census's zeroFillPairs. For those
-	// the first side written into an empty box brings the other sides at their calibrated default paint.
-	const seedsUnsetSides = 'border-width' === short || zeroFillPairs().has( `${ block }|${ attr }` );
+	// Padding and margin boxes print only their set sides (sgs_box_object_longhands), so writing one side leaves the
+	// others to the stylesheet or a wider tier, and nothing is seeded. A border width prints 0 for every unset side
+	// (an unset width must be 0), so the first side written into an empty width box brings the other sides at their
+	// calibrated default paint.
+	const seedsUnsetSides = 'border-width' === short;
 	const seedSides = ( t, existing ) => {
 		if ( ! side || ! seedsUnsetSides || ( existing && Object.keys( existing ).length ) ) {
 			return {};
 		}
 		const elementKey = Object.keys( ctx.calibration.elements || {} ).find( ( k ) => loose( k ) === slot ) ?? slot;
 		const paint = ctx.calibration.elements?.[ elementKey ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
-		// An empty tier shows the node's nearest wider tier (desktop is the base rule, tablet and mobile are max-width
-		// media rules over it), so its other sides come from that tier (an unset side there prints 0, CR6), and from the
-		// default paint only when no wider tier holds any: seeding a phone tier from the default would override the node's
-		// own desktop sides.
-		const wider = 'tier_object' === row.tier_shape ? WIDER_TIERS[ t ].map( ( w ) => current[ attr ]?.[ w ] ).find( ( v ) => v && Object.keys( v ).length ) : null;
-		return Object.fromEntries( SIDES.filter( ( s ) => s !== side ).map( ( s ) => [ s, wider ? wider[ s ] ?? '0px' : paint[ `${ short }-${ s }` ] ] ).filter( ( [ , v ] ) => undefined !== v ) );
+		return Object.fromEntries( SIDES.filter( ( s ) => s !== side ).map( ( s ) => [ s, paint[ 'border-width' === short ? `border-${ s }-width` : `${ short }-${ s }` ] ] ).filter( ( [ , v ] ) => undefined !== v ) );
 	};
 	const boxed = ( v, t ) => {
 		if ( ! isBox ) {

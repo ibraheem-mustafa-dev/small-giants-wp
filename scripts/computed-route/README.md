@@ -174,7 +174,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `tiersOf(perWidth, prop)` → `{ tiers }` (375 mobile, 768 tablet, 1440 and 1920 desktop) or `{ error }`.
 - `resolveDiscovered(input, calibration)` → a write for a setting calibration found (an enum value whose effects match the draft; ties broken by the element's other properties), a gap, or null. Slots compare under the same `LOOSE()` rule, taking `anyIndex` from the input, and a row's `state` must equal the state discovery recorded.
 - `CORNERS`, `radiusCorners(raw)` → a border-radius box's corner keys (`helpers-box.php::sgs_border_radius_tiers` reads only these), and the computed shorthand as corners (null when elliptical); border-radius writes are corner objects, per device when the default is a tier object.
-- `WIDER_TIERS`: the tiers an empty tier falls back to, nearest first; box seeding takes an empty tier's other sides from the node's nearest wider tier before the default paint.
+- Box seeding: a border width (an unset width must be 0) written into an empty box brings its other sides at the calibrated default paint; a padding or margin box prints only its set sides, so one side is written alone.
 - `resolve(input, ctx)` → `{ writes: [{ attr, value, merge }] }` or `{ gap, detail }`.
 - `LOOSE(path)` → a path with its `:nth-of-type` steps dropped: the rule every cross-tree path comparison uses.
 - `blockContext(slug)` → `{ provides: { "<context key>": "<attribute>" }, uses: [ "<context key>" ] }` from the block's `block.json`: the channel by which a child receives an ancestor's attribute at render (32 provide keys over 5 blocks, 34 uses over 8; `sgs/accordion` holds 25).

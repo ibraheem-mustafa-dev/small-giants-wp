@@ -1,30 +1,16 @@
 {
- "generated": "2026-10-07T19:59:49Z",
+ "generated": "2026-10-08T01:31:37Z",
  "tool": "plugins/sgs-blocks/scripts/migrate-box-longhands.py",
  "totals": {
   "box": {
-   "excluded": 2,
    "refused": 14,
    "definition": 1
   },
   "corner": {
-   "refused": 4,
    "definition": 1
   }
  },
  "sites": [
-  {
-   "file": "src/blocks/accordion-item/render.php",
-   "line": 191,
-   "helper": "box",
-   "block": "accordion-item",
-   "variable": "$short",
-   "family": null,
-   "tier": "n/a",
-   "attr": null,
-   "category": "excluded",
-   "reason": "var() holdout: stored in --sgs-accordion-header-pad / --sgs-accordion-content-pad, read as padding: var(), where a longhand cannot go"
-  },
   {
    "file": "src/blocks/buybox/extras.php",
    "line": 289,
@@ -62,18 +48,6 @@
    "reason": "1 use(s) that are not a guard or a declaration (line 880)"
   },
   {
-   "file": "src/blocks/label/render.php",
-   "line": 221,
-   "helper": "box",
-   "block": "label",
-   "variable": "$base_padding_shorthand",
-   "family": null,
-   "tier": "n/a",
-   "attr": "padding",
-   "category": "excluded",
-   "reason": "double use: also a presence test in $box_present"
-  },
-  {
    "file": "src/blocks/mega-aside/render.php",
    "line": 63,
    "helper": "box",
@@ -87,7 +61,7 @@
   },
   {
    "file": "src/blocks/multi-button/render.php",
-   "line": 321,
+   "line": 322,
    "helper": "box",
    "block": "multi-button",
    "variable": "$mb_child_border_width_shorthand",
@@ -96,42 +70,6 @@
    "attr": "childBtnBorderWidth",
    "category": "refused",
    "reason": "family --sgs-mb-btn-border-width-default: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
-  },
-  {
-   "file": "src/blocks/multi-button/render.php",
-   "line": 152,
-   "helper": "corner",
-   "block": "multi-button",
-   "variable": "$mb_radius_base",
-   "family": "--sgs-mb-btn-radius-default",
-   "tier": "desktop",
-   "attr": "childBtnBorderRadius",
-   "category": "refused",
-   "reason": "family --sgs-mb-btn-radius-default: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
-  },
-  {
-   "file": "src/blocks/multi-button/render.php",
-   "line": 153,
-   "helper": "corner",
-   "block": "multi-button",
-   "variable": "$mb_radius_tab",
-   "family": "--sgs-mb-btn-radius-default",
-   "tier": "tablet",
-   "attr": "childBtnBorderRadius",
-   "category": "refused",
-   "reason": "family --sgs-mb-btn-radius-default: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
-  },
-  {
-   "file": "src/blocks/multi-button/render.php",
-   "line": 154,
-   "helper": "corner",
-   "block": "multi-button",
-   "variable": "$mb_radius_mob",
-   "family": "--sgs-mb-btn-radius-default",
-   "tier": "mobile",
-   "attr": "childBtnBorderRadius",
-   "category": "refused",
-   "reason": "family --sgs-mb-btn-radius-default: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
   },
   {
    "file": "src/blocks/product-card/render.php",
@@ -171,7 +109,7 @@
   },
   {
    "file": "includes/helpers-box.php",
-   "line": 176,
+   "line": 69,
    "helper": "box",
    "block": null,
    "variable": null,
@@ -183,7 +121,7 @@
   },
   {
    "file": "includes/helpers-box.php",
-   "line": 262,
+   "line": 155,
    "helper": "corner",
    "block": null,
    "variable": null,
@@ -231,7 +169,7 @@
   },
   {
    "file": "includes/nav-menu-submenu-css.php",
-   "line": 459,
+   "line": 462,
    "helper": "box",
    "block": null,
    "variable": "$sgs_nm_submenu_border_w",
@@ -240,18 +178,6 @@
    "attr": "submenuBorderWidth",
    "category": "refused",
    "reason": "ternary or expression assignment; migrate by hand"
-  },
-  {
-   "file": "includes/nav-menu-submenu-css.php",
-   "line": 460,
-   "helper": "corner",
-   "block": null,
-   "variable": "$sgs_nm_submenu_radius_shorthand",
-   "family": "--sgs-nm-submenu-radius",
-   "tier": "n/a",
-   "attr": "submenuBorderRadius",
-   "category": "refused",
-   "reason": "family --sgs-nm-submenu-radius: var() holdout, a custom property read back through var(), where a longhand cannot go; it stays on the shorthand"
   },
   {
    "file": "includes/nav-menu-trigger-css.php",
@@ -279,13 +205,9 @@
   }
  ],
  "zeroFillPairs": [
-  "sgs/accordion|contentPadding",
-  "sgs/accordion|headerPadding",
   "sgs/buybox|galleryThumbBorderWidth",
   "sgs/cart|pillBorderWidth",
-  "sgs/container|gridItemPadding",
   "sgs/hero|splitMediaBorderWidth",
-  "sgs/label|padding",
   "sgs/mega-aside|asideBorderWidth",
   "sgs/multi-button|childBtnBorderWidth",
   "sgs/product-card|attributeTagBorderWidth",

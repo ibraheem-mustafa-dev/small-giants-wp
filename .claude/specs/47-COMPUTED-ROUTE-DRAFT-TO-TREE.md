@@ -594,7 +594,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      from an unmapped state are reported, never written), 17 surfaces with walker configs and score items
      (`sites/eye-care-ward-end/build/qa/solve-score.mjs`, `qa/score-items/<surface>.json`), reference blocks
      (`lib/references.mjs`; a linked placeholder is never written; `lint.mjs --surfaces` passes), the pinpointing guard
-     (`lib/guard.mjs`, R-47-9), box seeding from the node's nearest wider tier (`resolve.mjs::WIDER_TIERS`), and the
+     (`lib/guard.mjs`, R-47-9), box seeding of a border width's unset sides (`resolve.mjs::seedSides`), and the
      divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`; every entry cites its register items).
      Contact's subtext keeps its 22px margin (Bean, 2026-10-05), so the 375px name-field drop stays open (register
      CR15/N45b).
