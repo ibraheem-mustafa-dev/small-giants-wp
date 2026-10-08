@@ -110,16 +110,20 @@ export async function readAll( page, url, instances ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
-	const hoverMissed = [];
+	const missedAtAWidth = [];
+	const hoverHit = new Set();
 	const ctx = page.context();
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit } );
 		} finally {
 			await p.close();
 		}
 	} ) );
+	// Missed means unreadable at EVERY width: an element that shows at one width only (the detached chip, below the
+	// collapse point) is read there and keeps its one-width reach.
+	const hoverMissed = missedAtAWidth.filter( ( n ) => ! hoverHit.has( n ) );
 	scrollMissed.sort( ( a, b ) => a - b );
 	hoverMissed.sort( ( a, b ) => a - b );
 	return Object.assign( out, { scrolled, scrollMissed, hoverMissed } );
@@ -189,7 +193,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
 	await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
@@ -210,6 +214,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		const read = await readUnderTrigger( page, instances, n, inst );
 		if ( read ) {
 			out[ w ][ n ] = read;
+			hoverHit.add( n );
 		} else if ( ! hoverMissed.includes( n ) ) {
 			hoverMissed.push( n );
 		}
