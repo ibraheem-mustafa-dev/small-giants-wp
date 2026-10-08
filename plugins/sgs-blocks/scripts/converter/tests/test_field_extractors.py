@@ -229,7 +229,7 @@ def test_icon_slug_from_data_lucide():
 def test_icon_slug_data_icon_beats_bem_modifier():
     """data-icon has higher priority than BEM modifier."""
     el = _el(
-        '<span class="sgs-social-icons__icon sgs-social-icons__icon--facebook" '
+        '<span class="sgs-icon-list__icon sgs-icon-list__icon--facebook" '
         'data-icon="facebook-overridden"></span>'
     )
     result = extract_field_value(el, "icon-slug")
@@ -238,7 +238,7 @@ def test_icon_slug_data_icon_beats_bem_modifier():
 
 def test_icon_slug_from_bem_modifier():
     el = _el(
-        '<a class="sgs-social-icons__icon sgs-social-icons__icon--twitter" '
+        '<a class="sgs-icon-list__icon sgs-icon-list__icon--twitter" '
         'href="https://twitter.com/example"></a>'
     )
     result = extract_field_value(el, "icon-slug")

@@ -785,6 +785,14 @@ def run_mechanism_b(
             rec, section_root, css_rules=css_rules, media_map=media_map, css_text=css_text,
         )
 
+    # Site Info link row (block.json supports.sgs.siteInfoLinkRow, read by the resolver,
+    # never a slug literal): each draft link becomes a child of the row's one allowed
+    # block, bound to Site Info when the brand registry knows its platform.
+    from converter.resolvers.array_content import lift_site_info_link_row
+    _link_row = lift_site_info_link_row(rec.slug, section_root)
+    if _link_row is not None:
+        return _link_row
+
     # ------------------------------------------------------------------
     # Build mobile-suffix set once per call (DB-driven, no hardcoded dict).
     # ------------------------------------------------------------------

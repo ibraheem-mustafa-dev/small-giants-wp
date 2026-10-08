@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from bs4 import BeautifulSoup
 
-from converter.resolvers.array_content import lift_array_content
+from converter.resolvers.array_content import lift_array_content, lift_site_info_link_row
 
 # The real Mama's trust-bar section shape: __inner grid → 3 __badge siblings,
 # each with __icon (svg) + __text (caption). Note __text, NOT __label — the
@@ -165,15 +165,79 @@ def test_icon_list_direct_child_items_lift():
     assert items[0] == {"text": "Fast", "iconName": "check", "url": "/a"}
 
 
-def test_social_icons_flat_item_self_extraction():
+# ---------------------------------------------------------------------------
+# Site Info link rows (icon plan Phase B step 5): a block declaring
+# supports.sgs.siteInfoLinkRow lifts one child of its allowed block per draft link,
+# bound to the Site Info key the brand registry names for the link's platform.
+# Negative control: 'test_link_row_binds_known_platforms' fails when the registry
+# read returns nothing (planted by emptying _brand_registry(); see the commit).
+# ---------------------------------------------------------------------------
+
+def _row_children(html: str, slug: str = "sgs/social-icons"):
+    import json
+    import re
+
+    out = lift_site_info_link_row(slug, _root(html))
+    assert out is not None
+    parsed = []
+    for child in out:
+        m = re.match(r"^<!-- wp:(\S+) (\{.*\}) /-->$", child.content)
+        assert m, child.content
+        assert m.group(1) == child.slug
+        parsed.append(json.loads(m.group(2)))
+    return out, parsed
+
+
+def _bound_key(attrs: dict):
+    return attrs.get("metadata", {}).get("bindings", {}).get("linkUrl", {}).get("args", {}).get("key")
+
+
+def test_link_row_binds_known_platforms():
     html = ('<div class="sgs-social-icons">'
             '<a class="sgs-social-icons__icon" href="https://fb.com/x" data-lucide="facebook"></a>'
-            '<a class="sgs-social-icons__icon" href="https://ig.com/x" data-lucide="instagram"></a></div>')
-    attrs, gaps = lift_array_content(_root(html), "sgs/social-icons")
-    icons = attrs.get("icons", [])
-    assert len(icons) == 2 and not gaps
-    # platform (icon-slug) + url (url-href) both read off the <a> ITSELF
-    assert icons[0] == {"platform": "facebook", "url": "https://fb.com/x"}
+            '<a class="sgs-social-icons__icon sgs-social-icons__icon--instagram" href="https://ig.com/x"></a>'
+            '<a href="https://www.linkedin.com/company/x" aria-label="Our company page"></a></div>')
+    out, kids = _row_children(html)
+    assert [c.slug for c in out] == ["sgs/icon"] * 3
+    assert [_bound_key(k) for k in kids] == ["socials.facebook", "socials.instagram", "socials.linkedin"]
+    assert kids[0]["iconSource"] == "brand" and kids[0]["brandName"] == "facebook"
+    assert "linkUrl" not in kids[0], "a bound child takes its URL from Site Info, never the draft"
+    assert kids[2]["ariaLabel"] == "Our company page"
+
+
+def test_link_row_core_social_links_markup_and_contact_schemes():
+    html = ('<ul class="wp-block-social-links">'
+            '<li class="wp-social-link wp-social-link-x"><a href="https://x.com/shop"><span>X</span></a></li>'
+            '<li class="wp-social-link wp-social-link-mail"><a href="mailto:hello@example.test"></a></li>'
+            '<li><a href="tel:+441217298233">Call</a></li>'
+            '<li class="wp-social-link wp-social-link-whatsapp"><a href="https://wa.me/447700900123"></a></li></ul>')
+    _, kids = _row_children(html)
+    assert [_bound_key(k) for k in kids] == ["socials.twitter", "email", "phone", "socials.whatsapp"]
+    assert [k["brandName"] for k in kids] == ["x", "email", "phone", "whatsapp"]
+
+
+def test_link_row_keeps_a_fixed_url_for_a_platform_the_registry_lacks():
+    html = ('<div class="sgs-social-icons"><a href="https://vimeo.com/shop" data-lucide="video" '
+            'target="_blank" aria-label="Vimeo"></a></div>')
+    _, kids = _row_children(html)
+    assert kids == [{"iconSource": "lucide", "iconName": "video", "linkUrl": "https://vimeo.com/shop",
+                     "ariaLabel": "Vimeo", "linkTarget": "_blank"}]
+
+
+def test_link_row_reads_the_registry_json():
+    import json
+    from converter.resolvers import array_content as ac
+
+    registry = json.loads(ac._BRAND_REGISTRY.read_text(encoding="utf-8"))["brands"]
+    assert [b["siteInfoKey"] for b in ac._brand_registry()] == [b["siteInfoKey"] for b in registry]
+    for b in registry:
+        assert ac.brand_for_link_hints([b["slug"], ""], "")["siteInfoKey"] == b["siteInfoKey"]
+
+
+def test_link_row_other_blocks_and_empty_rows():
+    assert lift_site_info_link_row("sgs/trust-bar", _root(_TRUST_BAR)) is None
+    out = lift_site_info_link_row("sgs/social-icons", _root('<div class="sgs-social-icons"></div>'))
+    assert len(out) == 1 and type(out[0]).__name__ == "ContentGap"
 
 
 def test_trust_bar_url_field_now_lifts():

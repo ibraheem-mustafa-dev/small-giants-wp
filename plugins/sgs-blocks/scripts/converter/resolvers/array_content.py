@@ -761,3 +761,158 @@ def lift_array_content(
         all_gaps.extend(item_gaps_reported)
 
     return result_attrs, all_gaps
+
+
+# ---------------------------------------------------------------------------
+# Site Info link rows (icon plan Phase B step 5)
+#
+# A block that declares ``supports.sgs.siteInfoLinkRow`` in its block.json (a row
+# of icon links, e.g. a social/contact row) is lifted as one child of its single
+# ``allowedBlocks`` entry per draft link. A link whose platform the brand
+# registry knows (includes/data/brand-registry.json, read here, never copied)
+# becomes a child bound to that platform's Site Info key and drawing the
+# registry glyph, so the client's own Site Info values fill it; a link to a
+# platform the registry lacks keeps its fixed URL. Covers an SGS draft row
+# (``<a data-lucide>`` / ``__icon--<platform>``) and core/social-links markup
+# (``wp-social-link-<service>``).
+# ---------------------------------------------------------------------------
+
+_PLUGIN_ROOT = __import__("pathlib").Path(__file__).resolve().parents[3]
+_BRAND_REGISTRY = _PLUGIN_ROOT / "includes" / "data" / "brand-registry.json"
+_WORD_RE = re.compile(r"[a-z0-9]+")
+_CORE_SERVICE_RE = re.compile(r"^(?:wp-social-link|lucide)-([a-z0-9-]+)$")
+_MODIFIER_RE = re.compile(r"^sgs-[a-z0-9-]+__[a-z0-9-]+--([a-z0-9-]+)$")
+
+
+@functools.lru_cache(maxsize=1)
+def _brand_registry() -> tuple[dict, ...]:
+    """The registry's brand entries, in row order (empty when the file is unreadable)."""
+    import json
+
+    try:
+        data = json.loads(_BRAND_REGISTRY.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ()
+    return tuple(b for b in data.get("brands", []) if isinstance(b, dict) and b.get("slug") and b.get("siteInfoKey"))
+
+
+def _brand_tokens(brand: dict) -> frozenset:
+    """Every word a draft may name this platform by: slug, Site Info key tail, Lucide glyph, label words."""
+    tokens = {brand["slug"], brand["siteInfoKey"].split(".")[-1]}
+    glyph = brand.get("glyph") or {}
+    if isinstance(glyph.get("lucide"), str):
+        tokens.add(glyph["lucide"])
+    tokens.update(_WORD_RE.findall(str(brand.get("label", "")).lower()))
+    return frozenset(tokens)
+
+
+def brand_for_link_hints(hints: list[str], href: str) -> dict | None:
+    """The registry entry a draft link points at, or None.
+
+    Order: explicit hints (glyph names, class modifiers, core service names), then the
+    href's scheme (tel: and mailto: are the phone and email entries), then the href host's
+    labels, then the words of the link's accessible name (the last hint).
+    """
+    registry = _brand_registry()
+    for hint in hints[:-1] if hints else []:
+        h = hint.strip().lower()
+        for brand in registry:
+            if h and h in _brand_tokens(brand):
+                return brand
+    scheme = href.split(":", 1)[0].lower() if ":" in href else ""
+    if scheme in ("tel", "mailto"):
+        wanted = "phone" if "tel" == scheme else "email"
+        return next((b for b in registry if b["siteInfoKey"] == wanted), None)
+    host = re.sub(r"^[a-z][a-z0-9+.-]*://", "", href.lower()).split("/", 1)[0].split(":", 1)[0]
+    labels = [label for label in host.split(".") if label not in ("www", "com", "co", "uk", "org", "net", "")]
+    for brand in registry:
+        if any(label in _brand_tokens(brand) for label in labels):
+            return brand
+    words = set(_WORD_RE.findall(hints[-1].lower())) if hints else set()
+    for brand in registry:
+        if words & (_brand_tokens(brand) - {"us", "on", "the"}):
+            return brand
+    return None
+
+
+def _link_hints(link: Tag) -> list[str]:
+    """Platform hints on a link, its glyph and its list item; the accessible name comes last."""
+    hints: list[str] = []
+    nodes = [link, *link.find_all(True)]
+    parent = link.parent
+    if isinstance(parent, Tag):
+        nodes.append(parent)
+    for n in nodes:
+        for attr in ("data-lucide", "data-icon"):
+            if isinstance(n.get(attr), str):
+                hints.append(n[attr])
+        for cls in n.get("class") or []:
+            m = _CORE_SERVICE_RE.match(cls) or _MODIFIER_RE.match(cls)
+            if m:
+                hints.append(m.group(1))
+    label = link.get("aria-label") or link.get("title") or link.get_text(" ", strip=True)
+    hints.append(str(label or ""))
+    return hints
+
+
+def _link_row_declaration(slug: str) -> tuple[str, dict] | None:
+    """(child block, siteInfoLinkRow declaration) for a block that declares a link row with one allowed child."""
+    import json
+
+    block_json = _PLUGIN_ROOT / "src" / "blocks" / slug.split("/", 1)[-1] / "block.json"
+    try:
+        meta = json.loads(block_json.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    decl = (meta.get("supports", {}).get("sgs", {}) or {}).get("siteInfoLinkRow")
+    allowed = meta.get("allowedBlocks") or []
+    if not isinstance(decl, dict) or not decl.get("bindingSource") or not decl.get("bindAttr") or 1 != len(allowed):
+        return None
+    return allowed[0], decl
+
+
+def link_row_child_attrs(link: Tag, decl: dict) -> dict:
+    """The child attributes for one draft link: bound to Site Info when the registry knows its platform.
+
+    ``decl`` is the row's block.json ``supports.sgs.siteInfoLinkRow``: ``bindingSource`` (the block
+    bindings source) and ``bindAttr`` (the child attribute the binding fills).
+    """
+    href = str(link.get("href") or "").strip()
+    hints = _link_hints(link)
+    label = hints[-1].strip()
+    brand = brand_for_link_hints(hints, href)
+    if brand is not None:
+        attrs: dict = {
+            "iconSource": "brand",
+            "brandName": brand["slug"],
+            "metadata": {"bindings": {decl["bindAttr"]: {"source": decl["bindingSource"], "args": {"key": brand["siteInfoKey"]}}}},
+        }
+    else:
+        lucide = next((h for h in hints[:-1] if re.fullmatch(r"[a-z0-9-]+", h or "")), "")
+        attrs = {"iconSource": "lucide", "iconName": lucide or "link", decl["bindAttr"]: href}
+    if label:
+        attrs["ariaLabel"] = label
+    if "_blank" == link.get("target") and brand is None:
+        attrs["linkTarget"] = "_blank"
+    return attrs
+
+
+def lift_site_info_link_row(slug: str | None, node: Tag) -> list | None:
+    """Children for a block declaring ``supports.sgs.siteInfoLinkRow``, or None for any other block.
+
+    One ChildBlock per draft ``<a href>`` (document order, nested links skipped); a row with no
+    link is a ContentGap, never a silent empty (Rule 4).
+    """
+    if not slug or not isinstance(node, Tag):
+        return None
+    declared = _link_row_declaration(slug)
+    if declared is None:
+        return None
+    child_slug, decl = declared
+    from converter.context import ChildBlock
+    from converter.dispatch_spine import emit_block_markup
+
+    links = [a for a in node.find_all("a", href=True) if not a.find_parent("a")]
+    if not links:
+        return [ContentGap(slug, "a Site Info link row with no <a href> link in the draft: no icon children lifted")]
+    return [ChildBlock(slug=child_slug, content=emit_block_markup(child_slug, link_row_child_attrs(a, decl))) for a in links]
