@@ -138,7 +138,9 @@ palette in the editor sidebar.
   breaks block validation and cascades.
 - **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only
   `style-index.css`, `editor.css` to the editor-only `index.css`. A fix in one does not reach the
-  other; mirror it by hand when the editor preview should match.
+  other; mirror it by hand when the editor preview should match. `editor.css` reaches the editor
+  only if the block's `index.js` has `import './editor.css';` — the build bundles nothing else
+  (gate: `scripts/check-editor-css-imported.js`).
 - **Dynamic blocks with an InnerBlocks slot must `save: () => <InnerBlocks.Content />`**, never
   `null` — `save: () => null` drops the InnerBlocks tree from `post_content` on save even though
   render.php drives 100% of frontend output. (`sgs/product-card` has no InnerBlocks slot, so its
