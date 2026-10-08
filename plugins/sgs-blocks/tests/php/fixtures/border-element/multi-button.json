@@ -1,0 +1,295 @@
+{
+    "a_baseline": {
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "display:flex",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        " || .sgs-mb-1.sgs-multi-button:has(>.sgs-container__inner)": [
+            "display:block"
+        ],
+        "@media(max-width:1023px) and (min-width:768px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:center",
+            "flex-direction:row",
+            "flex-wrap:nowrap",
+            "gap:12px",
+            "justify-content:flex-start"
+        ],
+        "@media(max-width:1023px) || .sgs-mb-1.sgs-multi-button": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ],
+        "@media(max-width:767px) || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
+            "align-items:stretch",
+            "flex-direction:column",
+            "flex-wrap:nowrap",
+            "gap:8px",
+            "justify-content:flex-start"
+        ]
+    }
+}

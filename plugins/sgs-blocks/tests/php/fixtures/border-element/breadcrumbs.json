@@ -1,0 +1,259 @@
+{
+    "a_baseline": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:none",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "h_hover_flat": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID:focus-within": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-bcr-UID:hover": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ]
+    },
+    "i_hover_gradient": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "position:relative"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-2px",
+            "mask-composite:exclude",
+            "padding:2px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        " || .sgs-bcr-UID:focus-within": [
+            "border-color:transparent"
+        ],
+        " || .sgs-bcr-UID:focus-within::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-bcr-UID:hover": [
+            "border-color:transparent"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-bcr-UID:hover::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-radius:8px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-bcr-UID": [
+            "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
+            "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__item--current": [
+            "color:var(--wp--preset--color--text,currentColor)"
+        ],
+        " || .sgs-bcr-UID .sgs-breadcrumbs__separator": [
+            "color:var(--wp--preset--color--text-muted,currentColor)"
+        ],
+        "@media(max-width:1023px) || .sgs-bcr-UID": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-bcr-UID": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

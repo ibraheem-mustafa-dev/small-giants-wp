@@ -1,0 +1,193 @@
+{
+    "a_baseline": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch",
+            "position:relative"
+        ],
+        " || .sgs-fg-1.sgs-feature-grid::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-fg-1.sgs-feature-grid": [
+            "align-items:stretch",
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px",
+            "display:grid",
+            "gap:24px",
+            "grid-template-columns:repeat(4,1fr)",
+            "justify-items:stretch"
+        ],
+        "@media (max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:24px",
+            "grid-template-columns:repeat(2,1fr)"
+        ],
+        "@media (max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "gap:16px",
+            "grid-template-columns:repeat(1,1fr)"
+        ],
+        "@media(max-width:1023px) || .sgs-fg-1.sgs-feature-grid": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-fg-1.sgs-feature-grid": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

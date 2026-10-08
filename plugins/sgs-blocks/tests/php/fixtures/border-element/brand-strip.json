@@ -1,0 +1,177 @@
+{
+    "a_baseline": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "--sgs-columns-desktop:8",
+            "--sgs-columns-mobile:2",
+            "--sgs-columns-tablet:4",
+            "--sgs-logo-gap:0px",
+            "--sgs-logo-max-height:180px",
+            "--sgs-scroll-speed:30s",
+            "--sgs-tile-border-thickness:0px",
+            "--sgs-tile-padding:10px",
+            "--sgs-tile-radius:16px",
+            "--sgs-transition-duration:300ms",
+            "--sgs-transition-easing:ease-in-out",
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-brandstrip-UID.wp-block-sgs-brand-strip": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

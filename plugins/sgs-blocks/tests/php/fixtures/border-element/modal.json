@@ -1,0 +1,65 @@
+{
+    "a_baseline": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-color:white",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-modal-UID .sgs-modal__dialog": [
+            "background-clip:padding-box",
+            "background-color:white",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-modal-UID .sgs-modal__dialog::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-2px",
+            "mask-composite:exclude",
+            "padding:2px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    }
+}

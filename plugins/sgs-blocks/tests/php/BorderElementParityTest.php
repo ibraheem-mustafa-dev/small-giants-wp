@@ -1,20 +1,28 @@
 <?php
 /**
- * Tests: border CSS parity across the six blocks that share one border function.
+ * Tests: border CSS parity across every element that paints a border.
  *
- * Renders the real render.php of sgs/quote, counter, heading, icon-list, process-steps and timeline for a
+ * A target is a (block, attribute prefix) pair. Renders the real render.php of each target's block for a
  * matrix of border cases and compares the printed CSS with a recorded golden. The comparison is by the SET
  * of declarations per (media/supports context || selector): rule grouping and declaration order may change,
  * the per-selector declaration set may not.
  *
+ * Attribute names follow sgs_typography_attr(): prefix '' reads borderWidth, borderColour and so on; prefix
+ * 'field' reads fieldBorderWidth, fieldBorderColour and so on.
+ *
  * Determinism: every block derives its scoped class from md5( wp_json_encode( $attributes ) ), so a given case
  * always renders the same class. The class is still normalised to `<prefix>-UID` (regex
- * sgs-<word>-<hex 8..32>) so that a future change to the hash input cannot churn the goldens.
+ * sgs-<words>-<hex 8..32>) so that a future change to the hash input cannot churn the goldens.
  *
- * Record goldens (writes tests/php/fixtures/border-element/<block>.json, then reports the run as skipped):
- *   SGS_RECORD_BORDER_GOLDENS=1 vendor/bin/phpunit --filter BorderElementParityTest
+ * Goldens live in tests/php/fixtures/border-element/<block>.json (prefix '') or <block>--<prefix>.json.
+ *
+ * Record goldens (writes the golden file, then reports the run as skipped; narrow with --filter so only the
+ * targets you mean are rewritten):
+ *   SGS_RECORD_BORDER_GOLDENS=1 vendor/bin/phpunit --filter 'BorderElementParityTest::test_border_css.*with data set "card-grid /'
  * Assert:
  *   vendor/bin/phpunit --filter BorderElementParityTest
+ * One target's cases: --filter 'with data set "tab /' (the opening quote anchors the name, so tab does not
+ * match tabs or product-faq). A prefixed target needs its brackets escaped: --filter 'with data set "form\[field\] /'.
  *
  * @package SGS\Blocks\Tests
  */
@@ -27,16 +35,152 @@ use PHPUnit\Framework\TestCase;
 require_once __DIR__ . '/BlockHarnessRenderTrait.php';
 
 /**
- * Per-block border CSS declaration-set parity.
+ * Per-target border CSS declaration-set parity.
  */
 final class BorderElementParityTest extends TestCase {
 
 	use BlockHarnessRenderTrait;
 
-	private const BLOCKS = array( 'quote', 'counter', 'heading', 'icon-list', 'process-steps', 'timeline' );
+	/**
+	 * Every target as array( block folder, attribute prefix ).
+	 *
+	 * Not here, because the render harness cannot run them: tabs (needs rendered inner blocks), table-of-contents
+	 * (needs a global post), trustpilot-reviews (calls sgs_trustpilot_score_label), audio (wp_parse_url),
+	 * responsive-logo, store-selector and nav-drawer (esc_url_raw), buybox (do_blocks), before-after
+	 * (wp_enqueue_script_module), theme-toggle (wp_get_global_settings).
+	 */
+	private const TARGETS = array(
+		array( 'quote', '' ),
+		array( 'counter', '' ),
+		array( 'heading', '' ),
+		array( 'icon-list', '' ),
+		array( 'process-steps', '' ),
+		array( 'timeline', '' ),
+		array( 'accordion-item', '' ),
+		array( 'form-field-tiles', '' ),
+		array( 'form-step', '' ),
+		array( 'google-reviews', '' ),
+		array( 'multi-button', '' ),
+		array( 'physics-canvas', '' ),
+		array( 'post-grid', '' ),
+		array( 'pricing-table', '' ),
+		array( 'site-footer', '' ),
+		array( 'site-footer-row', '' ),
+		array( 'site-header', '' ),
+		array( 'site-header-row', '' ),
+		array( 'trust-bar', '' ),
+		array( 'card-grid', '' ),
+		array( 'feature-grid', '' ),
+		array( 'gallery', '' ),
+		array( 'hero', '' ),
+		array( 'info-box', '' ),
+		array( 'tab', '' ),
+		array( 'testimonial', '' ),
+		array( 'testimonial-slider', '' ),
+		array( 'brand-strip', '' ),
+		array( 'countdown-timer', '' ),
+		array( 'notice-banner', '' ),
+		array( 'product-faq', '' ),
+		array( 'product-faq-item', '' ),
+		array( 'team-member', '' ),
+		array( 'breadcrumbs', '' ),
+		array( 'business-info', '' ),
+		array( 'product-search', '' ),
+		array( 'star-rating', '' ),
+		array( 'text', '' ),
+		array( 'cta-section', '' ),
+		array( 'modal', '' ),
+		array( 'form', '' ),
+		array( 'container', '' ),
+		array( 'accordion', '' ),
+		array( 'product-card', '' ),
+		array( 'social-icons', 'wrapper' ),
+		array( 'form', 'field' ),
+	);
 
 	/**
-	 * Block => attribute names it must declare for a case to apply.
+	 * Targets whose desktop radius does not print, or prints after the tier radius, in the current code. Each
+	 * is a finding, not a pass: the radius-order test does not run for these. Key = target name, value = why.
+	 */
+	private const KNOWN_ORDER_EXCEPTIONS = array(
+		'brand-strip'     => 'the root desktop radius rule prints after the tablet and mobile media rules, so it beats the tier radius',
+		'countdown-timer' => 'the root desktop radius rule prints after the tablet and mobile media rules, so it beats the tier radius',
+	);
+
+	/**
+	 * Minimum extra attributes, ancestor context and inner content a block needs before it prints any CSS.
+	 * Keyed by target name, falling back to the block folder name.
+	 */
+	private const BASES = array(
+		'quote'                 => array( 'attrs' => array( 'attribution' => 'Parity' ) ),
+		'google-reviews'        => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
+		'site-footer-row'       => array( 'content' => '<p>Parity</p>' ),
+		'site-header-row'       => array( 'content' => '<p>Parity</p>' ),
+		'card-grid'             => array(
+			'attrs' => array(
+				'items' => array(
+					array(
+						'title'       => 'One',
+						'description' => 'Two',
+					),
+				),
+			),
+		),
+		'testimonial'           => array(
+			'attrs' => array(
+				'quote'          => 'Parity quote',
+				'nameFontWeight' => '700',
+			),
+		),
+		'star-rating'           => array( 'attrs' => array( 'displayMode' => 'stars-only' ) ),
+		'product-faq-item'      => array( 'attrs' => array( 'question' => 'Q?' ) ),
+		'text'                  => array( 'attrs' => array( 'text' => 'Parity' ) ),
+		'business-info'         => array( 'attrs' => array( 'displayType' => 'attribution' ) ),
+		'social-icons[wrapper]' => array(
+			'attrs' => array(
+				'icons' => array(
+					array(
+						'platform' => 'facebook',
+						'url'      => 'https://example.test/fb',
+					),
+				),
+			),
+		),
+	);
+
+	/**
+	 * Data-set name of a target: the block, plus [prefix] when it has one.
+	 *
+	 * @param string $block  Block folder name.
+	 * @param string $prefix Attribute prefix.
+	 */
+	private static function target_name( string $block, string $prefix ): string {
+		return '' === $prefix ? $block : $block . '[' . $prefix . ']';
+	}
+
+	/**
+	 * An attribute name for a prefix, following sgs_typography_attr().
+	 *
+	 * @param string $prefix Attribute prefix.
+	 * @param string $name   Unprefixed camelCase name, e.g. borderWidth.
+	 */
+	private static function attr( string $prefix, string $name ): string {
+		return '' === $prefix ? $name : $prefix . ucfirst( $name );
+	}
+
+	/**
+	 * The attribute names a block.json declares.
+	 *
+	 * @param string $block Block folder name.
+	 * @return array<int, string>
+	 */
+	private static function block_attrs( string $block ): array {
+		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/' . $block . '/block.json' ), true );
+		return array_keys( $json['attributes'] ?? array() );
+	}
+
+	/**
+	 * Case => unprefixed attribute names that must be declared for the case to apply.
 	 *
 	 * @return array<string, array<int, string>>
 	 */
@@ -58,13 +202,28 @@ final class BorderElementParityTest extends TestCase {
 	}
 
 	/**
-	 * Attributes for a case.
+	 * Attributes for a case, with the border names carrying the target's prefix.
+	 *
+	 * @param string $case   Case name.
+	 * @param string $prefix Attribute prefix.
+	 * @return array<string, mixed>
+	 */
+	private static function case_attrs( string $case, string $prefix = '' ): array {
+		$out = array();
+		foreach ( self::case_attrs_unprefixed( $case ) as $name => $value ) {
+			$out[ 'inheritStyle' === $name ? $name : self::attr( $prefix, $name ) ] = $value;
+		}
+		return $out;
+	}
+
+	/**
+	 * Attributes for a case under the unprefixed names.
 	 *
 	 * @param string $case Case name.
 	 * @return array<string, mixed>
 	 * @throws InvalidArgumentException For a case name the matrix does not define.
 	 */
-	private static function case_attrs( string $case ): array {
+	private static function case_attrs_unprefixed( string $case ): array {
 		$two = array(
 			'top'    => '2px',
 			'right'  => '2px',
@@ -149,18 +308,23 @@ final class BorderElementParityTest extends TestCase {
 	}
 
 	/**
-	 * Every (block, case) pair whose attributes the block declares.
+	 * Every (target, case) pair whose attributes the block declares.
 	 *
-	 * @return array<string, array{0: string, 1: string}>
+	 * @return array<string, array{0: string, 1: string, 2: string}>
 	 */
 	public static function cases(): array {
 		$out = array();
-		foreach ( self::BLOCKS as $block ) {
-			$json  = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/' . $block . '/block.json' ), true );
-			$attrs = array_keys( $json['attributes'] ?? array() );
+		foreach ( self::TARGETS as $target ) {
+			list( $block, $prefix ) = $target;
+			$attrs                  = self::block_attrs( $block );
+			$name                   = self::target_name( $block, $prefix );
 			foreach ( self::case_requirements() as $case => $needs ) {
+				$needs = array_map(
+					static fn( string $n ): string => 'inheritStyle' === $n ? $n : self::attr( $prefix, $n ),
+					$needs
+				);
 				if ( array() === array_diff( $needs, $attrs ) ) {
-					$out[ $block . ' / ' . $case ] = array( $block, $case );
+					$out[ $name . ' / ' . $case ] = array( $block, $prefix, $case );
 				}
 			}
 		}
@@ -168,27 +332,79 @@ final class BorderElementParityTest extends TestCase {
 	}
 
 	/**
-	 * Attributes a block needs before it prints any CSS: quote/render.php returns
-	 * early unless there is a body or an attribution.
+	 * Targets whose block declares the prefixed radius attribute and that are not a known order exception.
 	 *
-	 * @param string $block Block folder name.
-	 * @return array<string, mixed>
+	 * @return array<string, array{0: string, 1: string}>
 	 */
-	private static function block_base( string $block ): array {
-		return 'quote' === $block ? array( 'attribution' => 'Parity' ) : array();
+	public static function radius_targets(): array {
+		$out = array();
+		foreach ( self::TARGETS as $target ) {
+			list( $block, $prefix ) = $target;
+			$name                   = self::target_name( $block, $prefix );
+			if ( in_array( self::attr( $prefix, 'borderRadius' ), self::block_attrs( $block ), true ) && ! isset( self::KNOWN_ORDER_EXCEPTIONS[ $name ] ) ) {
+				$out[ $name ] = array( $block, $prefix );
+			}
+		}
+		return $out;
 	}
 
 	/**
-	 * The six blocks, as data-provider rows.
+	 * Render one target with its minimum base attributes, context and inner content.
 	 *
-	 * @return array<string, array{0: string}>
+	 * @param string               $block Block folder name.
+	 * @param string               $prefix Attribute prefix.
+	 * @param array<string, mixed> $attrs  Case attributes.
+	 * @return array{html: string, css: string}
 	 */
-	public static function blocks(): array {
-		$out = array();
-		foreach ( self::BLOCKS as $block ) {
-			$out[ $block ] = array( $block );
+	private function render_target( string $block, string $prefix, array $attrs ): array {
+		$name    = self::target_name( $block, $prefix );
+		$base    = self::BASES[ $name ] ?? self::BASES[ $block ] ?? array();
+		$attrs   = array_merge( $base['attrs'] ?? array(), $attrs );
+		$context = $base['context'] ?? array();
+		$content = $base['content'] ?? '';
+		if ( '' === $content ) {
+			return $this->render_block( 'sgs/' . $block, $attrs, $context );
 		}
-		return $out;
+		return $this->render_block_with_content( 'sgs/' . $block, $attrs, $context, $content );
+	}
+
+	/**
+	 * Render a real block in a child process with inner content (the trait cannot pass --content).
+	 *
+	 * @param string               $slug    Block slug, e.g. 'sgs/site-footer-row'.
+	 * @param array<string, mixed> $attrs   Block attributes.
+	 * @param array<string, mixed> $context Ancestor block context.
+	 * @param string               $content Rendered inner-block HTML.
+	 * @return array{html: string, css: string}
+	 */
+	private function render_block_with_content( string $slug, array $attrs, array $context, string $content ): array {
+		$harness   = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
+		$attrs_f   = tempnam( sys_get_temp_dir(), 'sgsat' );
+		$context_f = tempnam( sys_get_temp_dir(), 'sgsct' );
+		file_put_contents( $attrs_f, json_encode( (object) $attrs, JSON_THROW_ON_ERROR ) );
+		file_put_contents( $context_f, json_encode( (object) $context, JSON_THROW_ON_ERROR ) );
+
+		try {
+			$cmd = escapeshellarg( PHP_BINARY )
+				. ' ' . escapeshellarg( $harness )
+				. ' --slug ' . escapeshellarg( $slug )
+				. ' --attrs-file ' . escapeshellarg( $attrs_f )
+				. ' --context-file ' . escapeshellarg( $context_f )
+				. ' --content ' . escapeshellarg( $content ) . ' 2>&1';
+			$out = (string) shell_exec( $cmd );
+		} finally {
+			@unlink( $attrs_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+			@unlink( $context_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+		}
+
+		$decoded = json_decode( $out, true );
+		$this->assertIsArray( $decoded, 'harness did not return JSON: ' . $out );
+		$this->assertTrue( $decoded['ok'] ?? false, 'render.php failed: ' . ( $decoded['error'] ?? $out ) );
+
+		return array(
+			'html' => (string) $decoded['html'],
+			'css'  => (string) $decoded['css'],
+		);
 	}
 
 	/**
@@ -199,33 +415,37 @@ final class BorderElementParityTest extends TestCase {
 	 * the tablet and mobile radius. The declaration-set comparison cannot see
 	 * order, so this test does.
 	 *
-	 * @param string $block Block folder name.
+	 * @param string $block  Block folder name.
+	 * @param string $prefix Attribute prefix.
 	 */
-	#[DataProvider( 'blocks' )]
-	public function test_desktop_radius_precedes_the_tier_radius( string $block ): void {
-		$css     = $this->render_block( 'sgs/' . $block, array_merge( self::block_base( $block ), self::case_attrs( 'k_radius_tiers' ) ) )['css'];
+	#[DataProvider( 'radius_targets' )]
+	public function test_desktop_radius_precedes_the_tier_radius( string $block, string $prefix ): void {
+		$name    = self::target_name( $block, $prefix );
+		$css     = $this->render_target( $block, $prefix, self::case_attrs( 'k_radius_tiers', $prefix ) )['css'];
 		$desktop = strpos( $css, 'border-top-left-radius:12px' );
 		$tablet  = strpos( $css, 'border-top-left-radius:6px' );
 		$mobile  = strpos( $css, 'border-top-left-radius:2px' );
-		$this->assertNotFalse( $desktop, "{$block}: desktop radius not printed" );
-		$this->assertNotFalse( $tablet, "{$block}: tablet radius not printed" );
-		$this->assertNotFalse( $mobile, "{$block}: mobile radius not printed" );
-		$this->assertLessThan( $tablet, $desktop, "{$block}: the desktop radius prints after the tablet media rule, so it beats it" );
-		$this->assertLessThan( $mobile, $tablet, "{$block}: the tablet radius prints after the mobile media rule, so it beats it" );
+		$this->assertNotFalse( $desktop, "{$name}: desktop radius not printed" );
+		$this->assertNotFalse( $tablet, "{$name}: tablet radius not printed" );
+		$this->assertNotFalse( $mobile, "{$name}: mobile radius not printed" );
+		$this->assertLessThan( $tablet, $desktop, "{$name}: the desktop radius prints after the tablet media rule, so it beats it" );
+		$this->assertLessThan( $mobile, $tablet, "{$name}: the tablet radius prints after the mobile media rule, so it beats it" );
 	}
 
 	/**
 	 * Render, parse and compare (or record) one case.
 	 *
-	 * @param string $block Block folder name.
-	 * @param string $case  Case name.
+	 * @param string $block  Block folder name.
+	 * @param string $prefix Attribute prefix.
+	 * @param string $case   Case name.
 	 */
 	#[DataProvider( 'cases' )]
-	public function test_border_css_declaration_sets_are_unchanged( string $block, string $case ): void {
-		$out = $this->render_block( 'sgs/' . $block, array_merge( self::block_base( $block ), self::case_attrs( $case ) ) );
-		$map = self::parse_css( $out['css'] );
+	public function test_border_css_declaration_sets_are_unchanged( string $block, string $prefix, string $case ): void {
+		$name = self::target_name( $block, $prefix );
+		$out  = $this->render_target( $block, $prefix, self::case_attrs( $case, $prefix ) );
+		$map  = self::parse_css( $out['css'] );
 
-		$file = __DIR__ . '/fixtures/border-element/' . $block . '.json';
+		$file = __DIR__ . '/fixtures/border-element/' . $block . ( '' === $prefix ? '' : '--' . $prefix ) . '.json';
 
 		if ( '1' === getenv( 'SGS_RECORD_BORDER_GOLDENS' ) ) {
 			$golden          = is_file( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : array();
@@ -236,15 +456,15 @@ final class BorderElementParityTest extends TestCase {
 				mkdir( dirname( $file ), 0777, true );
 			}
 			file_put_contents( $file, json_encode( $golden, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n" );
-			$this->markTestSkipped( "RECORD MODE: wrote golden for {$block} / {$case}; nothing was asserted." );
+			$this->markTestSkipped( "RECORD MODE: wrote golden for {$name} / {$case}; nothing was asserted." );
 		}
 
-		$this->assertFileExists( $file, 'no golden for ' . $block . '; record with SGS_RECORD_BORDER_GOLDENS=1' );
+		$this->assertFileExists( $file, 'no golden for ' . $name . '; record with SGS_RECORD_BORDER_GOLDENS=1' );
 		$golden = json_decode( (string) file_get_contents( $file ), true );
-		$this->assertArrayHasKey( $case, $golden, "no golden for {$block} / {$case}" );
+		$this->assertArrayHasKey( $case, $golden, "no golden for {$name} / {$case}" );
 
 		$diff = self::diff( $golden[ $case ], $map );
-		$this->assertSame( '', $diff, "{$block} / {$case}: printed CSS declaration set changed:\n" . $diff );
+		$this->assertSame( '', $diff, "{$name} / {$case}: printed CSS declaration set changed:\n" . $diff );
 	}
 
 	/**
@@ -280,7 +500,7 @@ final class BorderElementParityTest extends TestCase {
 	public static function parse_css( string $css ): array {
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 		// Per-render unique class (md5 of the attributes) is normalised.
-		$css = (string) preg_replace( '/\bsgs-([a-z]+)-[0-9a-f]{8,32}\b/', 'sgs-$1-UID', $css );
+		$css = (string) preg_replace( '/\bsgs-([a-z]+(?:-[a-z]+)*)-[0-9a-f]{8,32}\b/', 'sgs-$1-UID', $css );
 		$map = array();
 		self::walk( $css, '', $map );
 		foreach ( $map as $key => $decls ) {

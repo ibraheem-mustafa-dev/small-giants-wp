@@ -1,0 +1,124 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-biz-UID": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-biz-UID": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-biz-UID": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:none",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-biz-UID": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-biz-UID": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-biz-UID": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-biz-UID::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "h_hover_flat": {
+        " || .sgs-biz-UID": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-biz-UID:focus-within": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-biz-UID:hover": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ]
+    },
+    "i_hover_gradient": {
+        " || .sgs-biz-UID": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "position:relative"
+        ],
+        " || .sgs-biz-UID::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-2px",
+            "mask-composite:exclude",
+            "padding:2px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        " || .sgs-biz-UID:focus-within": [
+            "border-color:transparent"
+        ],
+        " || .sgs-biz-UID:focus-within::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-biz-UID:hover": [
+            "border-color:transparent"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-biz-UID:hover::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-biz-UID": [
+            "border-radius:8px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-biz-UID": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-biz-UID": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-biz-UID": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

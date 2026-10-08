@@ -1,0 +1,209 @@
+{
+    "a_baseline": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-style:none",
+            "border-width:0"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
+            "color:white"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge::after": [
+            "background-color:var(--wp--preset--color--accent,currentColor)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "pointer-events:none",
+            "position:absolute",
+            "z-index:-1"
+        ],
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__ribbon": [
+            "background-color:var(--sgs-pt-ribbon-bg,var(--wp--preset--color--accent,#d4a843))"
+        ],
+        "@media(max-width:1023px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}
