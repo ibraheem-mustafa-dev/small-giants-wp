@@ -20,9 +20,15 @@
    set on its own scope class, still win over this zero-specificity reset). */
 :where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ),
 :where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ) {
-	padding: var( --sgs-gi-padding );
+	padding-top: var( --sgs-gi-padding-top );
+	padding-right: var( --sgs-gi-padding-right );
+	padding-bottom: var( --sgs-gi-padding-bottom );
+	padding-left: var( --sgs-gi-padding-left );
 	background: var( --sgs-gi-bg );
-	border-radius: var( --sgs-gi-radius );
+	border-top-left-radius: var( --sgs-gi-radius-top-left );
+	border-top-right-radius: var( --sgs-gi-radius-top-right );
+	border-bottom-right-radius: var( --sgs-gi-radius-bottom-right );
+	border-bottom-left-radius: var( --sgs-gi-radius-bottom-left );
 	border: var( --sgs-gi-border );
 	box-shadow: var( --sgs-gi-shadow );
 	color: var( --sgs-gi-color );
@@ -30,9 +36,15 @@
 
 :where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ) > * ),
 :where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ) > * ) {
-	--sgs-gi-padding: initial;
+	--sgs-gi-padding-top: initial;
+	--sgs-gi-padding-right: initial;
+	--sgs-gi-padding-bottom: initial;
+	--sgs-gi-padding-left: initial;
 	--sgs-gi-bg: initial;
-	--sgs-gi-radius: initial;
+	--sgs-gi-radius-top-left: initial;
+	--sgs-gi-radius-top-right: initial;
+	--sgs-gi-radius-bottom-right: initial;
+	--sgs-gi-radius-bottom-left: initial;
 	--sgs-gi-border: initial;
 	--sgs-gi-shadow: initial;
 	--sgs-gi-color: initial;

@@ -1,0 +1,49 @@
+/**
+ * An unset side or corner at a narrower tier reports the nearest wider tier's value, so the inspector can show it as
+ * placeholder text. A tier that sets the key itself reports nothing.
+ */
+
+import { inheritedBox, inheritedBoxValue } from '../../src/utils/inherited-box';
+
+describe( 'inheritedBoxValue', () => {
+	const tiers = {
+		base: { topLeft: '6px', topRight: '4px' },
+		tablet: { topRight: '10px' },
+		mobile: {},
+	};
+
+	it( 'shows a corner set only at desktop on tablet and mobile', () => {
+		expect( inheritedBoxValue( tiers, 'tablet', 'topLeft' ) ).toBe( '6px' );
+		expect( inheritedBoxValue( tiers, 'mobile', 'topLeft' ) ).toBe( '6px' );
+	} );
+
+	it( 'prefers the nearest wider tier', () => {
+		expect( inheritedBoxValue( tiers, 'mobile', 'topRight' ) ).toBe( '10px' );
+	} );
+
+	it( 'reports nothing for a key the tier sets itself', () => {
+		expect( inheritedBoxValue( tiers, 'tablet', 'topRight' ) ).toBe( '' );
+	} );
+
+	it( 'reports nothing at desktop and for a key no tier sets', () => {
+		expect( inheritedBoxValue( tiers, 'base', 'topLeft' ) ).toBe( '' );
+		expect( inheritedBoxValue( tiers, 'mobile', 'bottomLeft' ) ).toBe( '' );
+	} );
+
+	it( 'treats an empty string as unset but an explicit 0 as set', () => {
+		expect( inheritedBoxValue( { base: { top: '' }, tablet: {} }, 'tablet', 'top' ) ).toBe( '' );
+		expect( inheritedBoxValue( { base: { top: '0px' }, tablet: {} }, 'tablet', 'top' ) ).toBe( '0px' );
+	} );
+
+	it( 'negative control: a lookup that ignores the tier order is caught', () => {
+		const wrongOrder = ( values, key ) => values.base?.[ key ] ?? values.tablet?.[ key ] ?? '';
+		expect( wrongOrder( tiers, 'topRight' ) ).not.toBe( inheritedBoxValue( tiers, 'mobile', 'topRight' ) );
+	} );
+} );
+
+describe( 'inheritedBox', () => {
+	it( 'collects only the keys that inherit a value', () => {
+		const tiers = { base: { top: '8px', left: '2px' }, tablet: { left: '5px' }, mobile: {} };
+		expect( inheritedBox( tiers, 'mobile', [ 'top', 'right', 'bottom', 'left' ] ) ).toEqual( { top: '8px', left: '5px' } );
+	} );
+} );

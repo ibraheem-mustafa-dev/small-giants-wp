@@ -6588,7 +6588,7 @@
 			"attr": "childBtnBorderRadius",
 			"fields": {
 				"css_element": "child-button",
-				"_why": "Painted on the child buttons through --sgs-mb-btn-radius-default (button/style.css); the same child-button element the manifest gives childBtnBackground."
+				"_why": "Painted on the child buttons through --sgs-mb-btn-radius-{top-left|top-right|bottom-right|bottom-left} (button/style.css); the same child-button element the manifest gives childBtnBackground."
 			}
 		},
 		{

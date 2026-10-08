@@ -13,8 +13,8 @@
  */
 
 import {
-	BOX_CORNER_KEYS,
-	tierBoxShorthand,
+	tierBoxProperties,
+	borderRadiusProperties,
 	resolveShadowPreviewComposed,
 	backgroundPaintPreview,
 	textPaintPreview,
@@ -65,15 +65,11 @@ const paintDecls = ( paint ) =>
  * @return {Object} React style fragment of custom properties.
  */
 export function gridItemVars( attributes, tier, palette ) {
-	const vars = {};
-	const padding = tierBoxShorthand( attributes.gridItemPadding, tier );
-	if ( padding ) {
-		vars[ '--sgs-gi-padding' ] = padding;
-	}
-	const radius = tierBoxShorthand( attributes.gridItemBorderRadius, tier, BOX_CORNER_KEYS );
-	if ( radius ) {
-		vars[ '--sgs-gi-radius' ] = radius;
-	}
+	// Padding and radius are one custom property per set side or corner, as render.php prints them.
+	const vars = {
+		...tierBoxProperties( attributes.gridItemPadding, tier, '--sgs-gi-padding-' ),
+		...borderRadiusProperties( attributes.gridItemBorderRadius, tier, '--sgs-gi-radius-' ),
+	};
 	const gradient = attributes.gridItemBackgroundGradient;
 	const ground = isCssGradient( gradient ) ? gradient : resolveColourToken( attributes.gridItemBackground, palette );
 	if ( ground ) {

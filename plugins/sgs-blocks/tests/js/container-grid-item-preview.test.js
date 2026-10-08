@@ -19,13 +19,35 @@ describe( 'gridItemVars', () => {
 			gridItemTextColour: '#ffffff',
 		}, 'mobile', palette );
 		expect( vars ).toEqual( expect.objectContaining( {
-			'--sgs-gi-padding': '4px 10px 10px 10px',
-			'--sgs-gi-radius': '8px 0 0 0',
+			'--sgs-gi-padding-top': '4px',
+			'--sgs-gi-padding-right': '10px',
+			'--sgs-gi-padding-bottom': '10px',
+			'--sgs-gi-padding-left': '10px',
+			'--sgs-gi-radius-top-left': '8px',
 			'--sgs-gi-bg': '#123456',
 			'--sgs-gi-border': '2px dashed #123456',
 			'--sgs-gi-color': '#ffffff',
 		} ) );
 		expect( vars[ '--sgs-gi-shadow' ] ).toBeTruthy();
+	} );
+
+	it( 'prints only the sides and corners a tier sets, never a zero fill', () => {
+		const attributes = {
+			gridItemPadding: { desktop: { top: '10px' }, tablet: { left: '6px' } },
+			gridItemBorderRadius: { desktop: { topLeft: '8px' }, mobile: { bottomRight: '2px' } },
+		};
+		const tablet = gridItemVars( attributes, 'tablet', palette );
+		expect( tablet[ '--sgs-gi-padding-top' ] ).toBe( '10px' );
+		expect( tablet[ '--sgs-gi-padding-left' ] ).toBe( '6px' );
+		expect( tablet ).not.toHaveProperty( '--sgs-gi-padding-right' );
+		expect( tablet ).not.toHaveProperty( '--sgs-gi-padding-bottom' );
+		expect( tablet ).not.toHaveProperty( '--sgs-gi-radius-bottom-right' );
+		const mobile = gridItemVars( attributes, 'mobile', palette );
+		expect( mobile[ '--sgs-gi-radius-top-left' ] ).toBe( '8px' );
+		expect( mobile[ '--sgs-gi-radius-bottom-right' ] ).toBe( '2px' );
+		expect( Object.keys( mobile ).filter( ( key ) => key.startsWith( '--sgs-gi-radius' ) ) ).toHaveLength( 2 );
+		// Negative control: a zero-filled side would be caught by the same assertions.
+		expect( { ...tablet, '--sgs-gi-padding-right': '0' } ).toHaveProperty( '--sgs-gi-padding-right' );
 	} );
 
 	it( 'prefers a background gradient as the ground value', () => {

@@ -67,14 +67,25 @@
  */
 import { __ } from '@wordpress/i18n';
 import ResponsiveControl from './ResponsiveControl';
-import { BorderRadiusControl } from './primitives';
 import SgsBoxControl from './SgsBoxControl';
+import { inheritedBox } from '../utils/inherited-box';
 
 /** Map ResponsiveControl's device-switcher breakpoint keys to the contract's tier keys. */
 const TIER_BY_BREAKPOINT = {
 	desktop: 'base',
 	tablet: 'tablet',
 	mobile: 'mobile',
+};
+
+const ALL_SIDES = [ 'top', 'right', 'bottom', 'left' ];
+
+/** The four corners in the order the radius control lists them, with their labels. */
+const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+const CORNER_LABELS = {
+	topLeft: __( 'Top left', 'sgs-blocks' ),
+	topRight: __( 'Top right', 'sgs-blocks' ),
+	bottomRight: __( 'Bottom right', 'sgs-blocks' ),
+	bottomLeft: __( 'Bottom left', 'sgs-blocks' ),
 };
 
 /** Units offered in the BoxControl side inputs (mirrors SpacingControl's free-input set). */
@@ -163,6 +174,7 @@ export default function ResponsiveBoxControl( {
 					<SgsBoxControl
 						label={ label }
 						values={ tierValues[ tier ] }
+						inherited={ inheritedBox( tierValues, tier, sides ?? ALL_SIDES ) }
 						sides={ sides }
 						units={ BOX_UNITS }
 						presets={ presets }
@@ -201,20 +213,29 @@ export function ResponsiveBorderRadiusControl( {
 
 	if ( ! showResponsive ) {
 		return (
-			<BorderRadiusControl
+			<SgsBoxControl
+				label={ label }
 				values={ tierValues.base }
+				sides={ CORNERS }
+				labels={ CORNER_LABELS }
+				units={ BOX_UNITS }
 				onChange={ ( next ) => onChange( 'base', next ) }
 			/>
 		);
 	}
 
 	return (
-		<ResponsiveControl label={ label }>
+		<ResponsiveControl>
 			{ ( breakpoint ) => {
 				const tier = TIER_BY_BREAKPOINT[ breakpoint ];
 				return (
-					<BorderRadiusControl
+					<SgsBoxControl
+						label={ label }
 						values={ tierValues[ tier ] }
+						inherited={ inheritedBox( tierValues, tier, CORNERS ) }
+						sides={ CORNERS }
+						labels={ CORNER_LABELS }
+						units={ BOX_UNITS }
 						onChange={ ( next ) => onChange( tier, next ) }
 					/>
 				);

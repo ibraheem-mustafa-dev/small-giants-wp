@@ -39,20 +39,26 @@
  * the accordion's own typography setting, so every device follows the editor.
  */
 .sgs-accordion-item {
-	--sgs-accordion-header-pad-base: 16px 20px;
-	--sgs-accordion-content-pad-base: 0 20px 16px;
+	--sgs-accordion-header-pad-base-y: 16px;
+	--sgs-accordion-header-pad-base-x: 20px;
+	--sgs-accordion-content-pad-base-top: 0;
+	--sgs-accordion-content-pad-base-x: 20px;
+	--sgs-accordion-content-pad-base-bottom: 16px;
 }
 
 .sgs-accordion--flush .sgs-accordion-item {
-	--sgs-accordion-header-pad-base: 16px 0;
-	--sgs-accordion-content-pad-base: 0 0 16px;
+	--sgs-accordion-header-pad-base-x: 0;
+	--sgs-accordion-content-pad-base-x: 0;
 }
 
 .sgs-accordion-item__header {
 	display: flex;
 	align-items: center;
 	gap: var(--sgs-accordion-header-gap, 12px);
-	padding: var(--sgs-accordion-header-pad, var(--sgs-accordion-header-pad-base));
+	padding-top: var(--sgs-accordion-header-pad-top, var(--sgs-accordion-header-pad-base-y));
+	padding-right: var(--sgs-accordion-header-pad-right, var(--sgs-accordion-header-pad-base-x));
+	padding-bottom: var(--sgs-accordion-header-pad-bottom, var(--sgs-accordion-header-pad-base-y));
+	padding-left: var(--sgs-accordion-header-pad-left, var(--sgs-accordion-header-pad-base-x));
 	/* 44px is the default, not a floor: it meets the touch target for every
 	 * client that sets nothing, and headerMinHeight can take it elsewhere. */
 	min-height: var(--sgs-accordion-header-min-h, 44px);
@@ -154,7 +160,10 @@
 /* ─── CONTENT ─── */
 
 .sgs-accordion-item__content {
-	padding: var(--sgs-accordion-content-pad, var(--sgs-accordion-content-pad-base));
+	padding-top: var(--sgs-accordion-content-pad-top, var(--sgs-accordion-content-pad-base-top));
+	padding-right: var(--sgs-accordion-content-pad-right, var(--sgs-accordion-content-pad-base-x));
+	padding-bottom: var(--sgs-accordion-content-pad-bottom, var(--sgs-accordion-content-pad-base-bottom));
+	padding-left: var(--sgs-accordion-content-pad-left, var(--sgs-accordion-content-pad-base-x));
 	overflow: hidden;
 }
 
@@ -249,13 +258,15 @@
 
 @media (max-width: 600px) {
 	.sgs-accordion-item {
-		--sgs-accordion-header-pad-base: 14px 16px;
-		--sgs-accordion-content-pad-base: 0 16px 14px;
+		--sgs-accordion-header-pad-base-y: 14px;
+		--sgs-accordion-header-pad-base-x: 16px;
+		--sgs-accordion-content-pad-base-x: 16px;
+		--sgs-accordion-content-pad-base-bottom: 14px;
 	}
 
 	.sgs-accordion--flush .sgs-accordion-item {
-		--sgs-accordion-header-pad-base: 14px 0;
-		--sgs-accordion-content-pad-base: 0 0 14px;
+		--sgs-accordion-header-pad-base-x: 0;
+		--sgs-accordion-content-pad-base-x: 0;
 	}
 }
 

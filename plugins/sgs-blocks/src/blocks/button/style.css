@@ -63,7 +63,10 @@
 	   D638 §4); only the literal is gone, so absence now renders as absence.
 	   The framework's designed rounded look moves to the preset rules below,
 	   exactly as the border reservation did. */
-	border-radius: var(--sgs-mb-btn-radius-default, 0);
+	border-top-left-radius: var(--sgs-mb-btn-radius-top-left, 0);
+	border-top-right-radius: var(--sgs-mb-btn-radius-top-right, 0);
+	border-bottom-right-radius: var(--sgs-mb-btn-radius-bottom-right, 0);
+	border-bottom-left-radius: var(--sgs-mb-btn-radius-bottom-left, 0);
 	min-height: 48px;
 	text-decoration: none;
 	cursor: pointer;

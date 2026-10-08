@@ -170,3 +170,26 @@ export function spacingPreview( { padding, margin }, tier ) {
 	if ( marginValue ) result.margin = marginValue;
 	return result;
 }
+
+/**
+ * The editor-canvas twin of includes/helpers-box.php's sgs_box_object_property_list():
+ * a tier-of-boxes padding or margin at the previewed device tier as one custom
+ * property per set side (`--sgs-x-pad-top`), for a stylesheet that reads each side
+ * through its own var() chain. An unset side prints nothing.
+ *
+ * @param {Object|undefined} tiers  `{ desktop, tablet, mobile }` boxes.
+ * @param {string}           tier   Active preview tier ('desktop'|'tablet'|'mobile').
+ * @param {string}           prefix Property name up to its trailing dash; the side is appended.
+ * @return {Object} `{ '--prefix-top': '10px', … }` for the set sides; `{}` when none is set.
+ */
+export function tierBoxProperties( tiers, tier, prefix ) {
+	const source = tiers && 'object' === typeof tiers ? tiers : {};
+	const merged = resolveBoxTierPreview( source.desktop, source.tablet, source.mobile, tier );
+	const out = {};
+	BOX_SIDE_KEYS.forEach( ( side ) => {
+		if ( merged[ side ] ) {
+			out[ `${ prefix }${ side }` ] = merged[ side ];
+		}
+	} );
+	return out;
+}

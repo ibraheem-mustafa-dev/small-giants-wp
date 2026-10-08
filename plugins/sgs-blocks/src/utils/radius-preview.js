@@ -77,3 +77,31 @@ export function borderRadiusLonghands( borderRadius, tier = 'desktop' ) {
 	} );
 	return style;
 }
+
+const CORNER_SUFFIX = {
+	topLeft: 'top-left',
+	topRight: 'top-right',
+	bottomRight: 'bottom-right',
+	bottomLeft: 'bottom-left',
+};
+
+/**
+ * borderRadiusProperties — the editor-canvas twin of includes/helpers-box.php's
+ * sgs_corner_object_property_list(): the radius at the previewed device tier as
+ * one custom property per set corner (`--sgs-x-radius-top-left`), for a
+ * stylesheet that reads each corner through its own var() chain.
+ *
+ * @param {Object|string|undefined} borderRadius The block's borderRadius attribute.
+ * @param {string}                  tier         'desktop' | 'tablet' | 'mobile'.
+ * @param {string}                  prefix       Property name up to its trailing dash; the corner is appended.
+ * @return {Object} `{ '--prefix-top-left': '6px', … }` for the set corners; {} when none is set.
+ */
+export function borderRadiusProperties( borderRadius, tier, prefix ) {
+	const longhands = borderRadiusLonghands( borderRadius, tier );
+	const out = {};
+	CORNERS.forEach( ( corner ) => {
+		const value = longhands[ LONGHAND_KEYS[ corner ] ];
+		if ( undefined !== value ) out[ `${ prefix }${ CORNER_SUFFIX[ corner ] }` ] = value;
+	} );
+	return out;
+}

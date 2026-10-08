@@ -3625,38 +3625,24 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// $obj_inner_props array and the SAME sgs_emit_responsive_css() call
 				// as the six LAYOUT properties above — one selector, one emission.
 				//
-				// gridItemPadding / gridItemBorderRadius are NOT genuinely per-SIDE
-				// box properties for this emitter's purposes, despite being
-				// BoxControl-shaped attrs: the consuming CSS (style.css :9-14) reads
-				// ONE custom property per box (`--sgs-gi-padding`, `--sgs-gi-radius`)
-				// holding a full shorthand string, never four separate
-				// `--sgs-gi-padding-{side}` properties. `box => true` would emit
-				// four atoms nothing ever reads (dead CSS) and, worse, would be
-				// wrong for gridItemBorderRadius specifically: its keys are CORNERS
-				// (topLeft/topRight/bottomLeft/bottomRight — sgs_serialise_box_corners())
-				// not SIDES (top/right/bottom/left — sgs_responsive_side_order()), so
-				// box=>true's per-side atom expansion would read the wrong keys
-				// entirely and emit nothing. Both are therefore scalar props (no
-				// `box`) whose `transform` serialises a whole tier's box/corner
-				// object into the one shorthand string the custom property expects
-				// — same two-step sanitisation the legacy path already applies
-				// (serialise → sgs_sanitize_grid_template).
+				// gridItemPadding / gridItemBorderRadius print one custom property per
+				// side or corner (`--sgs-gi-padding-top`, `--sgs-gi-radius-top-left` …),
+				// each only for a side or corner a tier sets, so a narrower tier
+				// overrides just its own and the rest keep the wider tier's value.
+				// container/style.css reads each through its own var(). `box` expands
+				// the four sides, `corners` the four corners (topLeft … bottomLeft).
 				if ( isset( $attributes['gridItemPadding'] ) && is_array( $attributes['gridItemPadding'] ) ) {
 					$obj_inner_props[] = array(
-						'value'     => $attributes['gridItemPadding'],
-						'css'       => '--sgs-gi-padding',
-						'transform' => static function ( $raw ) {
-							return sgs_sanitize_grid_template( sgs_serialise_box_sides( is_array( $raw ) ? $raw : array() ) );
-						},
+						'value' => $attributes['gridItemPadding'],
+						'css'   => '--sgs-gi-padding',
+						'box'   => true,
 					);
 				}
 				if ( isset( $attributes['gridItemBorderRadius'] ) && is_array( $attributes['gridItemBorderRadius'] ) ) {
 					$obj_inner_props[] = array(
-						'value'     => $attributes['gridItemBorderRadius'],
-						'css'       => '--sgs-gi-radius',
-						'transform' => static function ( $raw ) {
-							return sgs_serialise_box_corners( is_array( $raw ) ? $raw : array() );
-						},
+						'value'   => $attributes['gridItemBorderRadius'],
+						'css'     => '--sgs-gi-radius',
+						'corners' => true,
 					);
 				}
 				if ( isset( $attributes['gridItemBackground'] ) && is_array( $attributes['gridItemBackground'] ) ) {

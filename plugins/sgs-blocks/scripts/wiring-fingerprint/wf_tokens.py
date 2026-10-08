@@ -39,8 +39,9 @@ QUOTED_PROP_ARG_RE = re.compile(r"""[,(]\s*['"]""" + CSS_PROPS + r"""['"]\s*[,)]
 STYLE_ENGINE_KEY_RE = re.compile(r"""['"](?:spacing|border|color|typography|dimensions|shadow)['"]\s*=>""")
 CP_SET_RE = re.compile(r"(--sgs-[a-z0-9-]*[a-z0-9])\s*['\"]?\s*(?::|=>|\]\s*=(?!=))")
 CP_DYN_RE = re.compile(r"""(--sgs-[a-z0-9-]*-)['"]\s*\.""")
-# A custom-property name passed as a value (`'attr' => '--sgs-x'`, `array( '--sgs-x' )`).
-CP_NAME_RE = re.compile(r"""['"](--sgs-[a-z0-9-]*[a-z0-9])['"]""")
+# A custom-property name passed as a value (`'attr' => '--sgs-x'`, `array( '--sgs-x' )`); one ending in a dash is the
+# prefix a helper appends a side or corner to (`'--sgs-x-pad-'`), read by prefix like CP_DYN_RE's.
+CP_NAME_RE = re.compile(r"""['"](--sgs-[a-z0-9-]*[a-z0-9]-?)['"]""")
 # A custom-property helper given the bare name (`sgs_custom_property_gradient_decls( 'sgs-x', … )`).
 CP_HELPER_RE = re.compile(r"""\b\w*custom_propert\w*\s*\(\s*['"](sgs-[a-z0-9-]*[a-z0-9])['"]""")
 CLASS_TOKEN_RE = re.compile(r"""(?<![\w-])((?:sgs|is|has)-[a-z0-9][a-z0-9_-]*)""")

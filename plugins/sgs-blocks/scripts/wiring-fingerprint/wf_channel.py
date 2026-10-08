@@ -35,6 +35,9 @@ PROP_MAP_RE = re.compile(r"""=>\s*['"]""" + CSS_PROPS + r"""['"]""")
 # The join that turns a mapped property name into a declaration (`$property . ':' . $value`). Both are required: a
 # map whose values merely look like CSS words (a link type, a token name) builds no declaration.
 DYN_DECL_RE = re.compile(r"""\.\s*['"]:['"]\s*\.""")
+# A parameter that names the declaration (`$prefix . $side . ':' . $value`): a helper that prints one custom property
+# per set side or corner under a caller-supplied name builds a declaration from its argument.
+PARAM_DECL_RE_TEMPLATE = r"""\$%s\b[^;]*\.\s*['"]:['"]\s*\."""
 # An SGS helper called from a function body; a thin wrapper emits CSS when the helper it calls does.
 SGS_CALL_RE = re.compile(r"\b(sgs_\w+)\s*\(")
 
@@ -201,6 +204,7 @@ class ChannelAnalyser:
                 src = blank_index(entry[2].src)
                 self._emits[fname] = bool(DECL_RE.search(src) or CSS_KEY_RE.search(src) or CP_SET_RE.search(src)
                                           or ( PROP_MAP_RE.search(src) and DYN_DECL_RE.search(src) )
+                                          or any(re.search(PARAM_DECL_RE_TEMPLATE % re.escape(p.lstrip('$')), src) for p in entry[1])
                                           or "wp_style_engine_get_styles" in src)
                 if not self._emits[fname] and entry[1]:
                     # A thin wrapper: it hands its own first argument straight to a helper that emits CSS. Only that

@@ -222,6 +222,64 @@ if ( ! function_exists( 'sgs_corner_object_longhands' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_corner_object_property_list' ) ) {
+	/**
+	 * Build one custom property per SET corner of a corner-keyed box object
+	 * ("--sgs-x-radius-top-left:20px"), in top-left, top-right, bottom-right,
+	 * bottom-left order. The custom-property twin of sgs_corner_object_longhand_list():
+	 * for a stylesheet that reads each corner through its own var() chain, so an
+	 * unset corner keeps the stylesheet's value instead of being squared to 0.
+	 *
+	 * @param mixed  $box    Box object with optional topLeft/topRight/bottomRight/bottomLeft keys.
+	 * @param string $prefix Custom-property name up to and including its trailing dash ("--sgs-x-radius-"); the corner is appended. The dash lets the wiring fingerprint match the property's readers by prefix.
+	 * @return string[] Declarations without a trailing semicolon; empty when no corner is set.
+	 */
+	function sgs_corner_object_property_list( $box, string $prefix ): array {
+		if ( ! is_array( $box ) ) {
+			return array();
+		}
+		$corners = array(
+			'topLeft'     => 'top-left',
+			'topRight'    => 'top-right',
+			'bottomRight' => 'bottom-right',
+			'bottomLeft'  => 'bottom-left',
+		);
+		$decls   = array();
+		foreach ( $corners as $key => $suffix ) {
+			$value = sgs_css_length_value( $box[ $key ] ?? '' );
+			if ( '' !== $value ) {
+				$decls[] = $prefix . $suffix . ':' . $value;
+			}
+		}
+		return $decls;
+	}
+}
+
+if ( ! function_exists( 'sgs_box_object_property_list' ) ) {
+	/**
+	 * Build one custom property per SET side of a side-keyed box object
+	 * ("--sgs-x-pad-top:20px"), in top, right, bottom, left order. The custom-property
+	 * twin of sgs_box_object_longhand_list().
+	 *
+	 * @param mixed  $box    Box object with optional top/right/bottom/left keys.
+	 * @param string $prefix Custom-property name up to and including its trailing dash ("--sgs-x-pad-"); the side is appended. The dash lets the wiring fingerprint match the property's readers by prefix.
+	 * @return string[] Declarations without a trailing semicolon; empty when no side is set.
+	 */
+	function sgs_box_object_property_list( $box, string $prefix ): array {
+		if ( ! is_array( $box ) ) {
+			return array();
+		}
+		$decls = array();
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			$value = sgs_css_length_value( $box[ $side ] ?? '' );
+			if ( '' !== $value ) {
+				$decls[] = $prefix . $side . ':' . $value;
+			}
+		}
+		return $decls;
+	}
+}
+
 if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 	/**
 	 * Resolve a block's `borderRadius` attribute into desktop/tablet/mobile

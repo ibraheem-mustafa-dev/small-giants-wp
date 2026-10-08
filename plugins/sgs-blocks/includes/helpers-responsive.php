@@ -87,7 +87,7 @@ if ( ! function_exists( 'sgs_responsive_css_rule' ) ) {
 			}
 
 			$css_prop  = $spec['css'];
-			$cast      = $spec['cast'] ?? 'float';
+			$cast       = $spec['cast'] ?? 'float';
 			$transform = $spec['transform'] ?? null;
 
 			$unit = $spec['unit_default'] ?? '';
@@ -339,6 +339,8 @@ if ( ! function_exists( 'sgs_responsive_atoms_from_spec' ) ) {
 	 *   'value'        (mixed, required)  The stored attribute value (any shape).
 	 *   'css'          (string, required) Base CSS property name (e.g. 'gap', 'padding').
 	 *   'box'          (bool, optional)   Treat as a 4-side box property. Default false.
+	 *   'corners'      (bool, optional)   Treat as a 4-corner box property (topLeft, topRight,
+	 *                  bottomRight, bottomLeft), one `-top-left` … atom per corner. Default false.
 	 *   'unit_default' (string, optional) Unit appended to numeric values. Default ''.
 	 *   'cast'         ('float'|'int', optional) Numeric cast. Default 'float'.
 	 *   'transform'    (callable, optional) Returns the full CSS value for a raw
@@ -353,11 +355,12 @@ if ( ! function_exists( 'sgs_responsive_atoms_from_spec' ) ) {
 			return array();
 		}
 
-		$is_box    = ! empty( $spec['box'] );
-		$unit      = $spec['unit_default'] ?? '';
-		$cast      = $spec['cast'] ?? 'float';
-		$transform = $spec['transform'] ?? null;
-		$obj       = sgs_responsive_normalise_object( $spec['value'], $is_box );
+		$is_corners = ! empty( $spec['corners'] );
+		$is_box     = ! empty( $spec['box'] ) || $is_corners;
+		$unit       = $spec['unit_default'] ?? '';
+		$cast       = $spec['cast'] ?? 'float';
+		$transform  = $spec['transform'] ?? null;
+		$obj        = sgs_responsive_normalise_object( $spec['value'], $is_box );
 
 		if ( ! $is_box ) {
 			return array(
@@ -373,8 +376,23 @@ if ( ! function_exists( 'sgs_responsive_atoms_from_spec' ) ) {
 			);
 		}
 
+		// A side box splits into -top/-right/-bottom/-left atoms; a corner box into
+		// -top-left/-top-right/-bottom-right/-bottom-left, read from its camelCase keys.
+		$members = array();
+		if ( $is_corners ) {
+			$members = array(
+				'topLeft'     => 'top-left',
+				'topRight'    => 'top-right',
+				'bottomRight' => 'bottom-right',
+				'bottomLeft'  => 'bottom-left',
+			);
+		} else {
+			foreach ( sgs_responsive_side_order() as $side ) {
+				$members[ $side ] = $side;
+			}
+		}
 		$atoms = array();
-		foreach ( sgs_responsive_side_order() as $side ) {
+		foreach ( $members as $side => $suffix ) {
 			$get_side = function ( $tier_val ) use ( $side ) {
 				if ( is_array( $tier_val ) && array_key_exists( $side, $tier_val ) ) {
 					return $tier_val[ $side ];
@@ -382,7 +400,7 @@ if ( ! function_exists( 'sgs_responsive_atoms_from_spec' ) ) {
 				return null;
 			};
 			$atoms[]  = array(
-				'css'       => $css . '-' . $side,
+				'css'       => $css . '-' . $suffix,
 				'desktop'   => $get_side( $obj['desktop'] ),
 				'tablet'    => $get_side( $obj['tablet'] ),
 				'mobile'    => $get_side( $obj['mobile'] ),

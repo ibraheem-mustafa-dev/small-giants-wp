@@ -143,23 +143,24 @@ $css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
 // ── Child button radius tiers ──────────────────────────────────────────────
-// `--sgs-mb-btn-radius-default` is the fallback the child buttons' own style.css
+// `--sgs-mb-btn-radius-{corner}` are the fallbacks the child buttons' own style.css
 // reads via var(); each tier re-declares it inside the matching @media so a
-// per-breakpoint radius actually reaches them. sgs_corner_object_shorthand()
-// returns null when every corner is empty, so an untouched tier emits nothing
-// and the framework default stands.
+// per-breakpoint radius actually reaches them. One property per corner
+// (`--sgs-mb-btn-radius-top-left` …) prints only for a corner that tier sets, so
+// a narrower tier overrides just its own corners and an untouched corner keeps
+// the wider tier's value, or the framework default when no tier sets it.
 $mb_radius_tiers = sgs_responsive_normalise_object( $attributes['childBtnBorderRadius'] ?? null, true );
-$mb_radius_base  = sgs_corner_object_shorthand( $mb_radius_tiers['desktop'] ?? array() );
-$mb_radius_tab   = sgs_corner_object_shorthand( $mb_radius_tiers['tablet'] ?? array() );
-$mb_radius_mob   = sgs_corner_object_shorthand( $mb_radius_tiers['mobile'] ?? array() );
-if ( null !== $mb_radius_base ) {
-	$css .= $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_base . ';}';
+$mb_radius_base  = sgs_corner_object_property_list( $mb_radius_tiers['desktop'] ?? array(), '--sgs-mb-btn-radius-' );
+$mb_radius_tab   = sgs_corner_object_property_list( $mb_radius_tiers['tablet'] ?? array(), '--sgs-mb-btn-radius-' );
+$mb_radius_mob   = sgs_corner_object_property_list( $mb_radius_tiers['mobile'] ?? array(), '--sgs-mb-btn-radius-' );
+if ( $mb_radius_base ) {
+	$css .= $root_sel . '{' . implode( ';', $mb_radius_base ) . ';}';
 }
-if ( null !== $mb_radius_tab ) {
-	$css .= '@media(max-width:1023px){' . $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_tab . ';}}';
+if ( $mb_radius_tab ) {
+	$css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $mb_radius_tab ) . ';}}';
 }
-if ( null !== $mb_radius_mob ) {
-	$css .= '@media(max-width:767px){' . $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_mob . ';}}';
+if ( $mb_radius_mob ) {
+	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $mb_radius_mob ) . ';}}';
 }
 
 // NO-INLINE: this block emits zero inline style property declarations.

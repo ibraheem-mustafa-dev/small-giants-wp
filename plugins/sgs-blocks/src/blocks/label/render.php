@@ -218,8 +218,6 @@ if ( ! empty( $base_margin_obj ) ) {
 // product-card trial tag uses, so label + product-card produce byte-identical
 // box CSS (Bean's composite wrapper requirement, R-31-9). Padding + background +
 // radius paint on VALUE-PRESENCE (ungated 2026-07-12). ---
-$base_padding_shorthand = sgs_box_object_shorthand( $padding_obj );
-
 // A meaningful (non-zero, present) border-radius. A stored 0 is treated as
 // "no rounding" and not emitted — keeps a bare eyebrow free of a pointless
 // `border-radius:0px` (regression guard: bare eyebrows stay box-free).
@@ -233,11 +231,12 @@ $has_radius   = ( '' !== (string) $border_radius && 0.0 !== floatval( $border_ra
 $radius_value = $has_radius ? $border_radius : '';
 
 // Box-present = either background channel (native style.color.background OR the
-// custom backgroundColour attr), a non-empty base padding, or a meaningful
+// custom backgroundColour attr), a base padding with at least one valid side
+// (sgs_box_object_longhand_list() lists only the set sides), or a meaningful
 // border-radius. Drives the display model.
 $box_present = ( '' !== $style_color_bg )
 	|| ( '' !== $background_colour )
-	|| ( null !== $base_padding_shorthand )
+	|| ( array() !== sgs_box_object_longhand_list( $padding_obj, 'padding' ) )
 	|| $has_radius;
 
 // Display model (contract §C): a bare eyebrow renders display:block (so its

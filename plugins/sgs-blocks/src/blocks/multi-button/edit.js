@@ -10,7 +10,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting, usePreviewTier } from '../../utils';
+import { backgroundPreview, spacingPreview, isTierBoxEmpty, svgBackgroundPreview, boxShorthand, resolveBorderStyle, resolveTextColourPreviewStyle, flattenPresetSetting, usePreviewTier, borderRadiusProperties } from '../../utils';
 import { multiButtonFlexPreview, multiButtonWrapperPreview } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -246,9 +246,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 			'--sgs-mb-btn-border-width-default': boxShorthand( childBtnBorderWidth ),
 			'--sgs-mb-btn-border-style-default': resolveBorderStyle( childBtnBorderStyle ),
 		} ),
-		...( childBtnBorderRadius && {
-			'--sgs-mb-btn-radius-default': childBtnBorderRadius,
-		} ),
+		...borderRadiusProperties( childBtnBorderRadius, previewTier, '--sgs-mb-btn-radius-' ),
 		...( childBtnFontSize && {
 			'--sgs-mb-btn-font-size-default': childBtnFontSize,
 		} ),

@@ -11,7 +11,7 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { BandWrap, tierBoxShorthand, usePreviewTier } from '../../utils';
+import { BandWrap, tierBoxProperties, usePreviewTier } from '../../utils';
 import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { itemWrapperPreview, headerPreview } from './preview-style';
 import { SgsColourPanel, fillRow, textRow,
@@ -109,8 +109,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		true
 	);
 	const slotVars = {
-		'--sgs-accordion-header-pad': tierBoxShorthand( context[ 'sgs/accordionHeaderPadding' ], tier ),
-		'--sgs-accordion-content-pad': tierBoxShorthand( context[ 'sgs/accordionContentPadding' ], tier ),
+		...tierBoxProperties( context[ 'sgs/accordionHeaderPadding' ], tier, '--sgs-accordion-header-pad-' ),
+		...tierBoxProperties( context[ 'sgs/accordionContentPadding' ], tier, '--sgs-accordion-content-pad-' ),
 		// typeof, not truthiness: a gap or height floor of 0 must still emit.
 		'--sgs-accordion-header-gap':
 			typeof headerGapTier === 'number' ? `${ headerGapTier }px` : undefined,

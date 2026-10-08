@@ -188,17 +188,19 @@ $sgs_ai_box_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_
 		if ( ! is_array( $tiers[ $tier ] ?? null ) ) {
 			continue;
 		}
-		$short = sgs_box_object_shorthand( $tiers[ $tier ] );
-		if ( null === $short ) {
+		// One custom property per side, printed only for a side this tier sets, so a narrower
+		// tier overrides just its own sides and the rest keep the wider tier's value.
+		$decls = sgs_box_object_property_list( $tiers[ $tier ], $var );
+		if ( ! $decls ) {
 			continue;
 		}
-		$rule = $root_sel . '{' . $var . ':' . $short . ';}';
+		$rule = $root_sel . '{' . implode( ';', $decls ) . ';}';
 		$out .= '' === $media ? $rule : $media . '{' . $rule . '}';
 	}
 	return $out;
 };
-$responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad' );
-$responsive_css .= $sgs_ai_box_tiers( $content_padding_raw, '--sgs-accordion-content-pad' );
+$responsive_css .= $sgs_ai_box_tiers( $header_padding_raw, '--sgs-accordion-header-pad-' );
+$responsive_css .= $sgs_ai_box_tiers( $content_padding_raw, '--sgs-accordion-content-pad-' );
 $sgs_ai_px_tiers = static function ( $raw, string $var, bool $allow_zero = false ) use ( $root_sel, $sgs_ai_var_tiers ): string {
 	$tiers = sgs_responsive_normalise_object( $raw );
 	$out   = '';

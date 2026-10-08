@@ -151,6 +151,13 @@ function parseLength( raw ) {
  *                                   subset of sides (e.g. block-start/end
  *                                   in future — currently always all 4).
  * @param {Array}    [props.units]   UnitControl unit list.
+ * @param {Object}   [props.inherited] { side: value } — what each unset side
+ *                                   takes from a wider tier. An unset side shows
+ *                                   it as placeholder text and the slider rests
+ *                                   at it; nothing is written until the client
+ *                                   types (`utils/inherited-box.js`).
+ * @param {Object}   [props.labels]  { side: label } — names for non-side keys
+ *                                   (the four corners of a radius).
  * @param {number}   [props.min]     RangeControl minimum override. Omit to
  *                                   use the per-unit range in UNIT_RANGES.
  * @param {number}   [props.max]     RangeControl maximum override. Omit to
@@ -180,6 +187,8 @@ export default function SgsBoxControl( {
 	min,
 	max,
 	presets = false,
+	inherited = {},
+	labels = SIDE_LABELS,
 } ) {
 	// Hook must run unconditionally regardless of the `presets` prop.
 	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
@@ -196,12 +205,17 @@ export default function SgsBoxControl( {
 		: spacingSizes;
 	const hasPresets = ( presets === true || Array.isArray( presets ) ) && filteredSizes.length > 0;
 
+	// Starts linked only when every side reads the same, counting what an unset side inherits.
 	const [ isLinked, setIsLinked ] = useState( () => {
-		const raw = sides.map( ( s ) => values[ s ] ?? '' );
+		const raw = sides.map( ( s ) => values[ s ] || inherited[ s ] || '' );
 		return raw.every( ( v ) => v === raw[ 0 ] );
 	} );
 
 	const firstSide = sides[ 0 ];
+
+	// What an unset row takes from a wider tier: the side's own inherited value, or the first side's on the
+	// linked row. '' when the row has its own value.
+	const inheritedFor = ( sideKey, value ) => ( value ? '' : inherited[ sideKey || firstSide ] ?? '' );
 
 	const setSide = ( side, raw ) => {
 		onChange( { ...values, [ side ]: raw } );
@@ -269,7 +283,16 @@ export default function SgsBoxControl( {
 		// last hardcoded default here compounded on nesting and was reverted,
 		// D555/D706 — a speculative second state risks the same class of bug).
 		const options = [
-			{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+			{
+				label: inheritedFor( sideKey, value )
+					? sprintf(
+							/* translators: %s: the length this side takes from a wider device. */
+							__( 'Default (%s)', 'sgs-blocks' ),
+							inheritedFor( sideKey, value )
+					  )
+					: __( 'Default', 'sgs-blocks' ),
+				value: '',
+			},
 			...filteredSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
 			{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 		];
@@ -357,7 +380,10 @@ export default function SgsBoxControl( {
 
 	/** Plain number+slider row (no presets — existing behaviour, unchanged). */
 	const plainRow = ( sideKey, value, onSideChange, rowLabel ) => {
-		const { num, unit } = parseLength( value );
+		const own = parseLength( value );
+		const inheritedRaw = inheritedFor( sideKey, value );
+		const rest = parseLength( inheritedRaw );
+		const unit = own.num === undefined && rest.num !== undefined ? rest.unit : own.unit;
 		const unitRange = rangeForUnit( unit );
 		const rowMin = explicitRange ? min ?? 0 : unitRange.min;
 		const rowMax = explicitRange ? max ?? 300 : unitRange.max;
@@ -368,7 +394,8 @@ export default function SgsBoxControl( {
 					<UnitControl
 						label={ rowLabel }
 						hideLabelFromVision={ ! sideKey }
-						value={ num === undefined ? '' : `${ num }${ unit }` }
+						value={ own.num === undefined ? '' : `${ own.num }${ unit }` }
+						placeholder={ inheritedRaw }
 						onChange={ ( raw ) => onSideChange( raw ?? '' ) }
 						units={ units }
 						__nextHasNoMarginBottom
@@ -379,7 +406,7 @@ export default function SgsBoxControl( {
 					<RangeControl
 						label={ rowLabel }
 						hideLabelFromVision
-						value={ num ?? 0 }
+						value={ own.num ?? rest.num ?? 0 }
 						onChange={ ( v ) => onSideChange( `${ v }${ unit }` ) }
 						min={ rowMin }
 						max={ rowMax }
@@ -401,7 +428,7 @@ export default function SgsBoxControl( {
 			{ isLinked
 				? row( null, values[ firstSide ] ?? '', setAllSides, label )
 				: sides.map( ( side ) =>
-						row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), SIDE_LABELS[ side ] )
+						row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
 				  ) }
 			{ ! isLinked && (
 				<Flex justify="flex-end">
