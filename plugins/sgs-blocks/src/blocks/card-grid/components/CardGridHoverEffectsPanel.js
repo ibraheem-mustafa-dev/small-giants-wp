@@ -5,7 +5,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, RangeControl, ToggleControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
-import { EASING_OPTIONS } from './constants';
+import { EASING_OPTIONS } from './card-grid-options';
 
 export default function CardGridHoverEffectsPanel( { attributes, setAttributes } ) {
 	const {

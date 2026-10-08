@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { TypographyControls } from '../../../components';
 
-export default function TypographyPanel( { attributes, setAttributes } ) {
+export default function PostGridTypographyPanel( { attributes, setAttributes } ) {
 	return (
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* One switcher: every text element of a card, the numbered page

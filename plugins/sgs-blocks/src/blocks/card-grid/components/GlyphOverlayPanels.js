@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, RangeControl, TextControl, ToggleControl } from '@wordpress/components';
 import { SgsLengthControl } from '../../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../../utils';
-import { OVERLAY_BLEND_MODE_OPTIONS } from './constants';
+import { OVERLAY_BLEND_MODE_OPTIONS } from './card-grid-options';
 
 export default function GlyphOverlayPanels( { attributes, setAttributes } ) {
 	const {

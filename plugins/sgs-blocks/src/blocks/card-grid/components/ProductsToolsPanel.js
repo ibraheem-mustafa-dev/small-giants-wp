@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { SelectControl, RangeControl, TextControl, ToggleControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ProductTaxonomyChecklist, ProductHandpickPanel } from './product-panels';
-import { PRODUCT_COLLECTION_OPTIONS } from './constants';
+import { PRODUCT_COLLECTION_OPTIONS } from './card-grid-options';
 
 export default function ProductsToolsPanel( { attributes, setAttributes, isWcProductMode } ) {
 	const {

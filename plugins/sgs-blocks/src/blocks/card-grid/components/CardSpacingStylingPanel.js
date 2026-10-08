@@ -5,7 +5,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { SgsLengthControl } from '../../../components';
-import { CARD_STYLE_PRESETS, CARD_STYLE_PRESET_OPTIONS } from './constants';
+import { CARD_STYLE_PRESETS, CARD_STYLE_PRESET_OPTIONS } from './card-grid-options';
 
 export default function CardSpacingStylingPanel( { attributes, setAttributes } ) {
 	return (

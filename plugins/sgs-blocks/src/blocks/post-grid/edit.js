@@ -30,13 +30,13 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { resolveColourToken } from '../../components';
 import PreviewCard from './components/PreviewCard';
 import QueryPanel from './components/QueryPanel';
-import LayoutPanel from './components/LayoutPanel';
+import PostGridLayoutPanel from './components/PostGridLayoutPanel';
 import ContentPanel from './components/ContentPanel';
 import CardStylePanel from './components/CardStylePanel';
 import PaginationFiltersPanel from './components/PaginationFiltersPanel';
 import HoverEffectsPanel from './components/HoverEffectsPanel';
 import CarouselPanel from './components/CarouselPanel';
-import TypographyPanel from './components/TypographyPanel';
+import PostGridTypographyPanel from './components/PostGridTypographyPanel';
 import BorderPanel from './components/BorderPanel';
 
 // -------------------------------------------------------------------------
@@ -468,7 +468,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<QueryPanel attributes={ attributes } set={ set } catSuggestions={ catSuggestions } tagSuggestions={ tagSuggestions } selectedCatNames={ selectedCatNames } selectedTagNames={ selectedTagNames } onCategoriesChange={ onCategoriesChange } onTagsChange={ onTagsChange } />
 
 				{ /* Panel 2: Layout */ }
-				<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
+				<PostGridLayoutPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
 				{ /* Panel 3: Content */ }
 				<ContentPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
@@ -521,7 +521,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    actual target was the post title, not the block root — defaults
 				    also now expose weight/style, which native typography never offered
 				    here. */ }
-				<TypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<PostGridTypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<BorderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 

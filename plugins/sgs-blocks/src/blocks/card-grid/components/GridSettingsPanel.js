@@ -5,7 +5,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { ResponsiveOverride, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl } from '../../../components';
-import { VARIANT_OPTIONS, ASPECT_RATIO_OPTIONS, HOVER_OPTIONS } from './constants';
+import { VARIANT_OPTIONS, ASPECT_RATIO_OPTIONS, HOVER_OPTIONS } from './card-grid-options';
 
 export default function GridSettingsPanel( { attributes, setAttributes } ) {
 	const {

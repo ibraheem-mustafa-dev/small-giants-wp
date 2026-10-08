@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RadioControl, RangeControl, SelectControl } from '@wordpress/components';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
-import { LAYOUT_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
+import { LAYOUT_OPTIONS, ASPECT_RATIO_OPTIONS } from './gallery-options';
 
 export default function LayoutSettingsPanel( { attributes, setAttributes, set } ) {
 	const { layout, columns, aspectRatio } = attributes;

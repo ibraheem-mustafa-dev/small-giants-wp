@@ -7,7 +7,7 @@ import { PanelBody, RangeControl, RadioControl } from '@wordpress/components';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import { LAYOUT_OPTIONS } from './constants';
 
-export default function LayoutPanel( { attributes, setAttributes, set } ) {
+export default function PostGridLayoutPanel( { attributes, setAttributes, set } ) {
 	const {
 		layout,
 		columns,

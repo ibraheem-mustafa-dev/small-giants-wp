@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import { GradientCapableColourControl, SgsColourPanel } from '../../../components';
-import { HEADING_LEVEL_OPTIONS } from './constants';
+import { HEADING_LEVEL_OPTIONS } from './card-grid-options';
 
 export default function ElementColourPanels( { attributes, setAttributes, cardBackgroundForContrast } ) {
 	const {

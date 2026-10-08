@@ -7,7 +7,7 @@ import { RangeControl, SelectControl, ToggleControl } from '@wordpress/component
 // React error #130 on selecting the block): they must come from the primitives boundary.
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { ShadowControl } from '../../../components';
-import { IMAGE_SIZE_OPTIONS, HOVER_EFFECT_OPTIONS, EASING_OPTIONS } from './constants';
+import { IMAGE_SIZE_OPTIONS, HOVER_EFFECT_OPTIONS, EASING_OPTIONS } from './gallery-options';
 
 export default function GalleryHoverEffectsPanel( { attributes, setAttributes, set } ) {
 	const {
