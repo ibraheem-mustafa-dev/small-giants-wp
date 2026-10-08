@@ -261,12 +261,12 @@ aligned-assignment hazard only.
 |---|---|---|
 | `ROOT` | `:62` | Repo-root path constant. **Anchoring is a THREE-WAY decision — read the box below before you copy it** |
 | `targets()` | `:86` | The target list. **Copy this for a call-site migration** — the DB cannot produce one (Step 2) |
-| `BARE_OK` | `:100` | Every surviving bare mention, pinned by per-file count, each with a written reason |
-| `crosscheck()` | `:191` | The whole-corpus stage. `--check` gates on what it returns |
-| `rel(path)` | `:225` | Repo-relative path for reporting |
-| `scan(...)` | `:278` | The driver: walks targets, classifies, tallies, optionally writes |
-| `self_test()` | `:343` | Runs the fixtures, returns failures |
-| `main()` | `:419` | The CLI contract below |
+| `BARE_OK` | `:102` | Every surviving bare mention, pinned by per-file count, each with a written reason |
+| `crosscheck()` | `:193` | The whole-corpus stage. `--check` gates on what it returns |
+| `rel(path)` | `:227` | Repo-relative path for reporting |
+| `scan(...)` | `:280` | The driver: walks targets, classifies, tallies, optionally writes |
+| `self_test()` | `:345` | Runs the fixtures, returns failures |
+| `main()` | `:421` | The CLI contract below |
 
 ⚠ **These moved once already.** Adding `crosscheck()` shifted every symbol below it by
 ~55 lines and four of six citations here were wrong for two commits. Re-derive rather than

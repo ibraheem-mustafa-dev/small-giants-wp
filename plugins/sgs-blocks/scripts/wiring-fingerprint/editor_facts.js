@@ -199,6 +199,9 @@ function facts( file ) {
 		CallExpression( p ) {
 			const fname = calleeName( p.node.callee );
 			const a0 = p.node.arguments[ 0 ];
+			// The curried `set( 'key' )` helper an edit.js hands its panels (post-grid's
+			// components/QueryPanel.js): a bare identifier callee, never `map.set( … )`.
+			if ( p.node.callee.type === 'Identifier' && p.node.callee.name === 'set' && a0 && a0.type === 'StringLiteral' ) setKeys.add( a0.value );
 			if ( SETTERS.has( fname ) && a0 ) {
 				if ( a0.type === 'ObjectExpression' ) addSetObj( a0 );
 				else if ( a0.type === 'StringLiteral' ) setKeys.add( a0.value );

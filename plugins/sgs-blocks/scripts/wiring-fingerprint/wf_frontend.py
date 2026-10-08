@@ -54,6 +54,29 @@ def prefix_helpers(index: PhpIndex, dead_controls_js: Path) -> dict[str, dict[in
     return {k: {i: set(v) for i, v in d.items() if v} for k, d in table.items() if any(d.values())}
 
 
+PARTIAL_REQUIRE_RE = re.compile(
+    r"(?<![\w$>:])(?:require|include)(?!_once)\s*\(?\s*__DIR__\s*\.\s*['\"]/([\w.-]+\.php)['\"]\s*\)?\s*;"
+)
+
+
+def _inline_partials(src: str, block_key: str, own_map: dict, inlined: set, depth: int = 0) -> str:
+    """`src` with each plain require/include of a file in the block's own folder
+    replaced by that file's text (nested partials too). Names the inlined files in
+    `inlined`. require_once loads a function file, which stays its own text."""
+    if depth > 4:
+        return src
+
+    def repl(m: re.Match) -> str:
+        key = block_key + "/" + m.group(1)
+        if key not in own_map:
+            return m.group(0)
+        inlined.add(key)
+        body = re.sub(r"\A\s*<\?php", "", own_map[key].src)
+        return "\n" + _inline_partials(body, block_key, own_map, inlined, depth + 1) + "\n"
+
+    return PARTIAL_REQUIRE_RE.sub(repl, src)
+
+
 class FrontEnd:
     def __init__(self, index: PhpIndex, analyser: ChannelAnalyser, ptable: dict, includes_dir: Path) -> None:
         self.index = index
@@ -69,7 +92,19 @@ class FrontEnd:
         key = bdir.as_posix()
         if key in self._block_cache:
             return self._block_cache[key]
-        own = [t for k, t in sorted(self.index.files.items()) if k.startswith(key + "/")]
+        own_map = {k: t for k, t in sorted(self.index.files.items()) if k.startswith(key + "/")}
+        own = list(own_map.values())
+        render_key = key + "/render.php"
+        if render_key in own_map:
+            # A partial render.php pulls in with plain require/include runs in render.php's
+            # own scope, so a value read into a local there is painted in the partial: read
+            # them as one text, the partial inlined where it is required.
+            inlined: set[str] = set()
+            merged = _inline_partials(own_map[render_key].src, key, own_map, inlined)
+            if inlined:
+                own = [PhpText(merged, name="render.php", path=render_key)] + [
+                    t for k, t in own_map.items() if k != render_key and k not in inlined
+                ]
         texts, _seen = self.index.reach(own)
         derived: dict[str, list[str]] = defaultdict(list)
         for t in texts:
