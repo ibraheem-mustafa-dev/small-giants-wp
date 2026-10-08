@@ -417,6 +417,11 @@
       "default": "",
       "description": "Shown in place of the grid when the query returns no posts. Empty shows nothing."
     },
+    "errorMessage": {
+      "type": "string",
+      "default": "",
+      "description": "Shown on the live site when a page or filter fails to load. Empty keeps the posts that were showing."
+    },
     "pagination": {
       "type": "string",
       "default": "none",

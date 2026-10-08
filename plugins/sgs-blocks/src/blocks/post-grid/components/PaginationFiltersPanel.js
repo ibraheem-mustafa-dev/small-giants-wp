@@ -3,7 +3,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import { PAGINATION_OPTIONS, FILTER_TAXONOMY_OPTIONS } from './constants';
 
 export default function PaginationFiltersPanel( { attributes, set } ) {
@@ -11,6 +11,7 @@ export default function PaginationFiltersPanel( { attributes, set } ) {
 		pagination,
 		showFilters,
 		filterTaxonomy,
+		errorMessage,
 	} = attributes;
 
 	return (
@@ -35,6 +36,16 @@ export default function PaginationFiltersPanel( { attributes, set } ) {
 							value={ filterTaxonomy }
 							options={ FILTER_TAXONOMY_OPTIONS }
 							onChange={ set( 'filterTaxonomy' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					{ ( 'none' !== pagination || showFilters ) && (
+						<TextControl
+							label={ __( 'Message if posts fail to load', 'sgs-blocks' ) }
+							help={ __( 'Shown on the live site when a page or filter cannot load. Leave empty to keep the posts that were showing.', 'sgs-blocks' ) }
+							value={ errorMessage || '' }
+							onChange={ set( 'errorMessage' ) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>

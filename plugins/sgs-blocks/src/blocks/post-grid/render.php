@@ -365,7 +365,7 @@ $sgs_query_data = wp_json_encode(
 // -------------------------------------------------------------------------
 // WS-4: data-* attrs carried verbatim into the helper's extra_attrs.
 // view.js reads data-sgs-query, data-hover-image-zoom, data-pagination,
-// data-layout for AJAX hydration/carousel/filter init.
+// data-layout and data-error-message for AJAX hydration/carousel/filter init.
 // -------------------------------------------------------------------------
 $extra_attrs = array(
 	'data-sgs-query'        => $sgs_query_data,
@@ -373,6 +373,11 @@ $extra_attrs = array(
 	'data-pagination'       => $pagination,
 	'data-layout'           => $layout,
 );
+// A failed page or filter load shows the client's message, or puts the previous posts back.
+$sgs_pg_error_message = trim( sanitize_text_field( (string) ( $attributes['errorMessage'] ?? '' ) ) );
+if ( '' !== $sgs_pg_error_message ) {
+	$extra_attrs['data-error-message'] = $sgs_pg_error_message;
+}
 
 // -------------------------------------------------------------------------
 // Build interior HTML — live region + filters + post cards + controls.

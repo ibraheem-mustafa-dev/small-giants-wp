@@ -91,12 +91,19 @@ function setTrustedServerHtml( container, html ) {
 }
 
 /**
- * Show an inline error message using safe DOM methods.
+ * After a failed load: the client's own error message (errorMessage) when set,
+ * otherwise the posts that were showing before the load, put back unchanged.
  *
- * @param {Element} container Target element.
- * @param {string}  message   Plain-text error message.
+ * @param {Element}   gridEl    The block root carrying data-error-message.
+ * @param {Element}   container The posts container.
+ * @param {Node[]}    previous  The container's children before the load.
  */
-function showError( container, message ) {
+function showLoadFailure( gridEl, container, previous ) {
+	const message = gridEl.dataset.errorMessage || '';
+	if ( '' === message ) {
+		container.replaceChildren( ...previous );
+		return;
+	}
 	const p = document.createElement( 'p' );
 	p.className   = 'sgs-post-grid__error';
 	p.textContent = message;
@@ -201,6 +208,7 @@ function initStandardPagination( gridEl, queryData ) {
 			b.disabled = true;
 		} );
 
+		const previousPosts = [ ...innerEl.childNodes ];
 		showSkeletons( innerEl, queryData.postsPerPage );
 
 		try {
@@ -236,7 +244,7 @@ function initStandardPagination( gridEl, queryData ) {
 				block:    'start',
 			} );
 		} catch ( err ) {
-			showError( innerEl, 'Could not load posts. Please try again.' );
+			showLoadFailure( gridEl, innerEl, previousPosts );
 			nav.querySelectorAll( '.sgs-post-grid__page-btn' ).forEach( ( b ) => {
 				b.disabled = false;
 			} );
@@ -392,6 +400,8 @@ function initFilters( gridEl, queryData ) {
 		const innerEl  = gridEl.querySelector( '.sgs-post-grid__inner' );
 		const allBtns  = filtersEl.querySelectorAll( '.sgs-post-grid__filter' );
 
+		const previousActive = filtersEl.querySelector( '.sgs-post-grid__filter[aria-pressed="true"]' );
+
 		// Update active state immediately for perceived responsiveness.
 		allBtns.forEach( ( b ) => {
 			const isActive = b === btn;
@@ -400,6 +410,7 @@ function initFilters( gridEl, queryData ) {
 			b.disabled = true;
 		} );
 
+		const previousPosts = [ ...innerEl.childNodes ];
 		showSkeletons( innerEl, queryData.postsPerPage );
 
 		try {
@@ -407,7 +418,15 @@ function initFilters( gridEl, queryData ) {
 			setTrustedServerHtml( innerEl, data.html );
 			announce( gridEl, 'Posts filtered. ' + data.totalPosts + ' results shown.' );
 		} catch ( err ) {
-			showError( innerEl, 'Could not load posts. Please try again.' );
+			showLoadFailure( gridEl, innerEl, previousPosts );
+			// Posts put back: the filter that matches them is pressed again.
+			if ( ! gridEl.dataset.errorMessage && previousActive ) {
+				allBtns.forEach( ( b ) => {
+					const isActive = b === previousActive;
+					b.classList.toggle( 'sgs-post-grid__filter--active', isActive );
+					b.setAttribute( 'aria-pressed', isActive ? 'true' : 'false' );
+				} );
+			}
 		} finally {
 			allBtns.forEach( ( b ) => {
 				b.disabled = false;

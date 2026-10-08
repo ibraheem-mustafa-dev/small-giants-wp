@@ -67,9 +67,17 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreColourGradient,
 		cardBgColour,
 		imageDecorative,
+		imageSize,
+		excerptLength,
 	} = attributes;
 
 	const featuredImage = post?._embedded?.[ 'wp:featuredmedia' ]?.[ 0 ];
+	// The size render.php asks for, falling back to the original file as it does.
+	const imageUrl      = featuredImage?.media_details?.sizes?.[ imageSize || 'medium_large' ]?.source_url || featuredImage?.source_url;
+	// wp_trim_words(): the first N words, with an ellipsis only when words were cut.
+	const excerptWords  = ( post?.excerpt?.rendered || '' ).replace( /(<([^>]+)>)/gi, '' ).trim().split( /\s+/ ).filter( Boolean );
+	const excerptMax    = excerptLength || 20;
+	const excerptText   = excerptWords.slice( 0, excerptMax ).join( ' ' ) + ( excerptWords.length > excerptMax ? '…' : '' );
 	const authorName    = post?._embedded?.author?.[ 0 ]?.name || '';
 	const categories    = post?._embedded?.[ 'wp:term' ]?.[ 0 ] || [];
 	const firstCat      = categories[ 0 ];
@@ -107,7 +115,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 						style={ aspectRatio ? { aspectRatio } : {} }
 					>
 						<img
-							src={ featuredImage.source_url }
+							src={ imageUrl }
 							alt={ imageDecorative ? '' : ( featuredImage.alt_text || '' ) }
 							className="sgs-post-grid__img"
 							aria-hidden={ imageDecorative || undefined }
@@ -152,9 +160,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 
 				{ showExcerpt && (
 					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
-						{ post?.excerpt?.rendered
-							? post.excerpt.rendered.replace( /(<([^>]+)>)/gi, '' ).slice( 0, 120 ) + '\u2026'
-							: __( 'Post excerpt\u2026', 'sgs-blocks' ) }
+						{ excerptText || __( 'Post excerpt\u2026', 'sgs-blocks' ) }
 					</p>
 				) }
 
