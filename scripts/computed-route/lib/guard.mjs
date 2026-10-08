@@ -67,10 +67,11 @@ export function anchorRef( report, r ) {
 export const ownSizeRow = ( r ) => 'box' === r.kind && /^(h|w|width|height)$/.test( r.key || '' ) && ! r.path;
 
 // True when every row a setting was written from is closed in the report: its own property, measured on both sides,
-// now reads the draft's value, which is the direct verdict on that setting.
+// now reads the draft's value, which is the direct verdict on that setting. Rows are matched by the write's group
+// (solve-rows.mjs::groupKey: ref|path|key|state), so a write placed on an owner node for a child's row is judged on the
+// child's row.
 export function landed( s, report ) {
-	const own = new Set( s.writes.map( ( w ) => `${ w.path || '' }|${ w.prop }` ) );
-	return ! openRows( report ).some( ( r ) => r.ref === s.ref && own.has( `${ r.path || '' }|${ r.key }` ) );
+	return ! openRows( report ).some( ( r ) => s.writes.some( ( w ) => String( w.group || '' ).startsWith( `${ r.ref }|${ r.path || '' }|${ r.key }|` ) ) );
 }
 
 const undo = ( tree, s ) => {

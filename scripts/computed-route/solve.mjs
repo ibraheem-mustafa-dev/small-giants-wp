@@ -166,8 +166,11 @@ export function unpaintedBorder( report, g ) {
 	if ( ! m ) {
 		return null;
 	}
-	const widths = draftValues( report, g.pair, `border-${ m[ 1 ] }-width`, false, g.walkerStates, g.pseudo ).perWidth;
-	const styles = draftValues( report, g.pair, `border-${ m[ 1 ] }-style`, false, g.walkerStates, g.pseudo ).perWidth;
+	// A hover row is judged on the hover state's width where the walker read one (a border drawn only on hover paints).
+	const rest = draftValues( report, g.pair, `border-${ m[ 1 ] }-width`, false, g.walkerStates, g.pseudo ).perWidth;
+	const hoverWidths = 'hover' === g.state ? draftValues( report, g.pair, `border-${ m[ 1 ] }-width`, true, g.walkerStates, g.pseudo ).perWidth : {};
+	const widths = { ...rest, ...hoverWidths };
+	const styles = Object.fromEntries( Object.entries( draftValues( report, g.pair, `border-${ m[ 1 ] }-style`, false, g.walkerStates, g.pseudo ).perWidth ).filter( ( [ w ] ) => undefined === hoverWidths[ w ] ) );
 	const measured = Object.keys( widths );
 	if ( ! measured.length || measured.some( ( w ) => parseFloat( widths[ w ] ) > 0 && ! [ 'none', 'hidden' ].includes( styles[ w ] ) ) ) {
 		return null;
@@ -421,6 +424,10 @@ export async function solveLoop( { maxRounds, build, walk, guard, write, save, s
 		changed.filter( ( w ) => w.restored ).forEach( ( w ) => delete gaps[ w.group ] );
 		log( `settling walk: guard reverted ${ changed.filter( ( w ) => w.reverted ).length }, restored ${ changed.filter( ( w ) => w.restored ).length }` );
 		save();
+		// A restored setting is back in the tree but was absent from that walk: measure what the tree now holds.
+		if ( changed.some( ( w ) => w.restored ) && build( 'final' ).ok ) {
+			report = await walk( 'final' );
+		}
 	}
 	return { report, writes: allWrites, gaps, rounds, lastWrote };
 }

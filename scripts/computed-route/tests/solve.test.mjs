@@ -154,9 +154,9 @@ test( 'positive control: no write on the node, inside it or on an ancestor rever
 const lensTree = () => [ { name: 'sgs/container', attributes: { className: 'cr-ref-l-0', padding: { mobile: { top: '28px', bottom: '60px' } } }, innerBlocks: [
 	{ name: 'sgs/text', attributes: { className: 'cr-ref-l-1', margin: { mobile: { bottom: '6px' } } } } ] } ];
 const lw = () => [
-	{ round: 1, group: 'g-pt', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-top', before: { mobile: { top: '56px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '56px' } } },
-	{ round: 1, group: 'g-pb', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-bottom', before: { mobile: { top: '28px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '60px' } } },
-	{ round: 1, group: 'g-mb', ref: 'cr-ref-l-1', block: 'sgs/text', path: '', attr: 'margin', prop: 'margin-bottom', before: undefined, after: { mobile: { bottom: '6px' } } },
+	{ round: 1, group: 'cr-ref-l-0||padding-top|', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-top', before: { mobile: { top: '56px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '56px' } } },
+	{ round: 1, group: 'cr-ref-l-0||padding-bottom|', ref: 'cr-ref-l-0', block: 'sgs/container', path: '', attr: 'padding', prop: 'padding-bottom', before: { mobile: { top: '28px', bottom: '56px' } }, after: { mobile: { top: '28px', bottom: '60px' } } },
+	{ round: 1, group: 'cr-ref-l-1||margin-bottom|', ref: 'cr-ref-l-1', block: 'sgs/text', path: '', attr: 'margin', prop: 'margin-bottom', before: undefined, after: { mobile: { bottom: '6px' } } },
 ];
 const lensRun = ( diffs ) => ( { runs: [ { state: 'opening', width: 375, pairs: { page: { live: { trace: { ref: 'cr-ref-l-0' } }, diffs } } } ] } );
 const ownHeight = { kind: 'box', key: 'h', draft: 780, live: 684, ref: 'cr-ref-l-0', path: '' };
@@ -365,7 +365,7 @@ test( 'MUST FAIL TO LEAVE UNCONFIRMED: a trial open at the walk cap is settled b
 	let settled = 0;
 	const out = await solveLoop( { maxRounds: 1, ...steps,
 		guard: () => ( pending = true, [ { trial: true } ] ),
-		settle: () => ( pending ? ( settled++, pending = false, [ { restored: true } ] ) : [] ),
+		settle: () => ( pending ? ( settled++, pending = false, [ { reverted: true } ] ) : [] ),
 		pending: () => pending,
 	} );
 	assert.equal( settled, 1 );
@@ -730,4 +730,36 @@ test( 'MUST FAIL TO WRITE PAINTLESS: a border colour whose draft border is 0px w
 test( 'positive control: a painted draft border, or a non-border row, is written as before', () => {
 	assert.equal( unpaintedBorder( borderRun( '1px' ), borderGroup ), null );
 	assert.equal( unpaintedBorder( borderRun( '0px' ), { ...borderGroup, prop: 'color' } ), null );
+} );
+
+// QC council 2026-10-08 (rater A). A write placed on an owner node for a child's row (a form's field style) carries the
+// child's group; it has landed only when that child row closed, never because the owner has no open row of its own.
+test( 'MUST FAIL (QC A1): an owner write whose child row is still open is a suspect for the owner\'s own height', () => {
+	const t = lensTree();
+	const w = [ { round: 1, group: 'cr-ref-l-1|.child|padding-top|', ref: 'cr-ref-l-0', block: 'sgs/container', path: '.child', attr: 'fieldPadding', prop: 'padding-top', before: undefined, after: { desktop: { top: '4px' } } } ];
+	const childOpen = { kind: 'style', key: 'padding-top', draft: '4px', live: '9px', ref: 'cr-ref-l-1', path: '.child' };
+	const out = guardRound( lensRun( [ childOpen ] ), lensRun( [ ownHeight, childOpen ] ), t, w, new Map(), () => ( { settings: {} } ), new Map() );
+	assert.ok( out.some( ( x ) => 'fieldPadding' === x.attr && x.trial ), 'the owner write is tried' );
+} );
+
+// A trial the settling walk finds innocent is restored; the tree then holds a write the last walk never measured, so one
+// more walk follows (QC A3).
+test( 'MUST FAIL (QC A3): a setting restored by the settling walk is walked once more', async () => {
+	const { calls, steps } = loopSteps();
+	let pending = false;
+	const out = await solveLoop( { maxRounds: 1, ...steps,
+		guard: () => ( pending = true, [ { trial: true } ] ),
+		settle: () => ( pending = false, [ { restored: true } ] ),
+		pending: () => pending,
+	} );
+	assert.equal( calls.walk, 1 * 4 + 1 + 2 );
+	assert.ok( out.report );
+} );
+
+// A hover border colour is unpainted only when the draft has no border on that side in that state (QC A4): a border
+// that appears on hover is painted.
+test( 'MUST FAIL (QC A4): a border drawn only on hover is painted, so its hover colour is written', () => {
+	const r = borderRun( '0px', 'none' );
+	r.runs.forEach( ( run ) => Object.assign( run.pairs.phone.draft.hover, { 'border-top-width': '1px', 'border-top-style': 'solid' } ) );
+	assert.equal( unpaintedBorder( r, borderGroup ), null );
 } );
