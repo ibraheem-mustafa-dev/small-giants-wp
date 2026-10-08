@@ -1252,7 +1252,7 @@
     "expected": {
       "value": "281"
     },
-    "reason": "The draft's scroll reveal is caught part-way at 375: in this walk the steps column had revealed and the benefits list had not, so the draft read 255 (281 less the reveal's 26px). With every reveal fired, draft and live both measure 281 from the benefits list's top to the steps heading (40px row gap both sides, probe 2026-10-08); live is right. Same ruling as D-72 to D-81.",
+    "reason": "One walk (qa/solve/lenses/2026-10-08T02-08-01) read the draft at 255; the walk before it on the same layout (2026-10-07T23-42-47) read 281, the draft steps column then still at its reveal offset. With every draft reveal fired (slow scroll, probe 2026-10-08), draft and live both measure 281 from the benefits list top to the steps heading, with a 40px row gap on both sides; live is right. Why that walk read 255 is not proven (the draft cache shows both columns revealed); the row is the draft scroll reveal's timing, as D-72 to D-81.",
     "decided": "2026-10-08 Bean"
   },
   {

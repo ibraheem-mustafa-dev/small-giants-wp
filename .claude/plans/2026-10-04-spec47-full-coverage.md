@@ -105,6 +105,16 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
       100-150. `gridTemplateColumns` needs `variant: split` and a track-list marker. cta's `backgroundImage` is the legacy
       twin of `backgroundMedia`, which the fixture always sets.
     - Unresolved, 1 row: cta `textColour`; the next step is rendering one instance with a hex colour and reading its `color`.
+  - **Font-family values: two conventions (found 2026-10-08, needs Bean's choice).** The trees hold font-family settings as
+    preset slugs (about 120 on Eye Care, hand-written, plus Solve's writes since `normalise.mjs::snapFontFamily`); the
+    frontend paints them right (`helpers-typography.php::sgs_font_family_sanitise` turns a known slug into
+    `var(--wp--preset--font-family--<slug>)`). The editor's font picker (`TypographyControls`) stores the preset's raw CSS
+    value instead, and the canvas preview (`src/utils/typography-preview.js`, `heading/edit.js`) passes the value through
+    unresolved, so a slug likely shows the picker unselected and the canvas in a fallback font (not yet seen in the editor).
+    Options: (a) the editor learns slugs (picker matches by slug, preview resolves a slug to the preset variable); the trees
+    and Solve stay; follows the client's theme if a preset changes. (b) the trees and Solve write the preset's exact value;
+    no editor change; values stop following a preset change. First step either way: open one slug-holding block in the
+    editor and confirm what the picker and canvas show.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
@@ -223,12 +233,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   `h1…h6 { text-wrap: balance }` (`core-blocks-critical.css`), the draft's are spans; `titleTextWrap: wrap` on
   cr-ref-lenses-27 matches the draft's line ends within 1px (`298c8d2f8`). The walker never pairs the titles, so only the
   independent check could see it. (2) Wrong writes: the 3-round run on the rebuilt tree (`qa/solve/lenses/2026-10-08T02-08-01/`)
-  wrote nothing (0 of 0 wrong; 0 closed, 0 new). On the 2026-10-07 write run, 2 of its 3 wrong writes are the guard's
-  unconfirmed `h@375` verdict on the page container's own height, excluded from the ratio because a container's height is
-  the sum of everything inside it and cannot judge one padding write (the padding then took S6's decided value by hand);
-  that leaves 1 of 15 (7%). The run's one open row, cr-ref-lenses-26 `y-from-benefits-list` at 375 (draft 255, live 281),
-  is the draft's reveal caught part-way (the steps column revealed, the benefits list not); with every reveal fired both
-  sides measure 281, so it is ledgered D-86 under the D-72 ruling.
+  wrote nothing (0 of 0 wrong; 0 closed, 0 new), so it proves nothing about the ratio. The 2026-10-07 write run counts
+  3 of 17 (17.6%) under Spec 47 as written, which counts every revert. 2 of the 3 are the guard's unconfirmed `h@375`
+  verdict on the page container's own height (`2026-10-07T20-06-48/solve-report.md`: "unconfirmed: the run ended before
+  the next walk"); a container's height is the sum of everything inside it and cannot judge one padding write, and the
+  padding then took S6's decided value by hand. Leaving those two out gives 1 of 15 (7%). **The exclusion rests on Bean's
+  2026-10-08 session brief, not on the spec**; whether Spec 47 §6 takes it as a rule is open with Bean. The run's one open
+  row, cr-ref-lenses-26 `y-from-benefits-list` at 375 (draft 255, live 281), read 281 on the walk before on the same layout;
+  with every draft reveal fired both sides measure 281, so it is ledgered D-86 (why that walk read 255 is not proven). The
+  planted-fault control (`stage-6-report.md`) ran on 2026-10-08 before `titleTextWrap`, `gapKey` and D-86 to D-91.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
