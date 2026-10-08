@@ -293,7 +293,7 @@ unnarrowed `seedSides` would write explicit `0px` sides onto whatsapp-cta); peer
   Spec 47 §5 Residual's CR6 entry, the backlog's §CR6, and `.claude/LEDGER.md`; phase-2 items stay named
   here.
 
-## Phase 2 (named; recorded, not built here)
+## Phase 2
 
 | Item | Why later |
 |---|---|

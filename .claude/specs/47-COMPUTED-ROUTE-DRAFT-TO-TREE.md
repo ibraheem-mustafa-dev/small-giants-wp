@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.5"
+spec_version: "0.15.6"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -651,8 +651,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        per side or corner (`check-box-corners-blocks-live.mjs` 42/42). The route needs no change for corners:
        `lib/resolve.mjs::radiusWrite` already writes all four corners per tier. No block reads WordPress's native
        `style.border` any more (P2-g step 0). P2-b (the `var()` holdouts) and P2-h are done and live 2026-10-08: the route seeds only a border width's unset sides
-       (`lib/resolve.mjs::seedSides`). Open: P2-e the Eye Care tier boxes holding an explicit zero, and P2-g's shared border
-       function.
+       (`lib/resolve.mjs::seedSides`). P2-g is done and live 2026-10-08: every client border builds through
+       `includes/helpers-border-style.php::sgs_border_element_decls`, and the route needs no change for it. Open: P2-e, the
+       Eye Care tier boxes holding an explicit zero.
      - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
        calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
        the bigger heap; `sgs/nav-bar-menu` 90 settings, 46 dead after CR27 (mostly states the calibration page cannot show)),
