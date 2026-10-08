@@ -4455,16 +4455,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "badgeTextColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "badge",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "checkoutBg",
       "fields": {
         "css_property": "background-color",
@@ -4650,15 +4640,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "freeDeliveryTrackColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "freeDeliveryTrack"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -4820,23 +4801,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "panelBg",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "panel"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "panelBgGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "panel"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "panelBodyGap",
       "fields": {
         "css_property": "gap",
@@ -4964,25 +4928,6 @@
     },
     {
       "slug": "sgs/cart",
-      "attr": "panelTextColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "panel"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "panelTextColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "panel",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/cart",
       "attr": "panelTitleFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -5003,15 +4948,6 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "panel-heading"
-      }
-    },
-    {
-      "slug": "sgs/cart",
-      "attr": "pillBgColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "pill"
       }
     },
     {
@@ -10172,6 +10108,16 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "backgroundColourGradient",
       "fields": {
         "css_property": "background-color-gradient",
@@ -10802,15 +10748,6 @@
         "css_property": "grid-template-rows",
         "css_layer": "GRID",
         "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "headerDividerWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_layer": "OUTER",
-        "css_element": "header"
       }
     },
     {
@@ -28081,6 +28018,16 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "badgeTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "badge",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "badgeTextColourHoverGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -28144,6 +28091,15 @@
       "fields": {
         "css_property": "margin",
         "css_element": "freeDeliveryBar"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "freeDeliveryTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "freeDeliveryTrack"
       }
     },
     {
@@ -28217,6 +28173,23 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "panelBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "panelBodyPadding",
       "fields": {
         "css_property": "padding",
@@ -28273,10 +28246,29 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "panelTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "panelTextColourGradient",
       "fields": {
         "css_property": "color-gradient",
         "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "panel",
+        "css_state": "hover"
       }
     },
     {
@@ -28286,6 +28278,15 @@
         "css_property": "color-gradient",
         "css_element": "panel",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "pillBgColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pill"
       }
     },
     {
@@ -29749,16 +29750,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -29904,6 +29895,15 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "headerDividerWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "header"
       }

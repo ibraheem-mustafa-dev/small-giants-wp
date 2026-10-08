@@ -848,7 +848,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 23,
+        "paintDeclarations": 21,
         "replacedCoreSupports": [
           "anchor",
           "border",
