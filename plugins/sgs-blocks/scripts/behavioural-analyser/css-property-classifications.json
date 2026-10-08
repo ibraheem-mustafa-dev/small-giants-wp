@@ -10022,6 +10022,7 @@
       "attr": "starColour",
       "fields": {
         "css_property": "fill",
+        "css_layer": "OUTER",
         "css_element": "star"
       }
     },
@@ -29865,6 +29866,7 @@
       "attr": "starColourGradient",
       "fields": {
         "css_property": "fill-gradient",
+        "css_layer": "OUTER",
         "css_element": "star"
       }
     },
