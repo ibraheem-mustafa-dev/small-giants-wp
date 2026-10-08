@@ -21,6 +21,12 @@
 	justify-content: flex-end;
 }
 
+/* Fill the width: the frame spans its container; its content stays at the start. */
+.sgs-google-rating-badge--full-width .sgs-google-rating-badge__link {
+	width: 100%;
+	justify-content: flex-start;
+}
+
 /* Floating: pinned to a viewport corner, below modals (same layer as the floating WhatsApp button). */
 .sgs-google-rating-badge--floating {
 	position: fixed;

@@ -218,6 +218,11 @@
 			],
 			"default": "start"
 		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false,
+			"description": "The badge fills the width of its container (its content stays at the start), as a full-width button would."
+		},
 		"gap": {
 			"type": "object",
 			"default": {}

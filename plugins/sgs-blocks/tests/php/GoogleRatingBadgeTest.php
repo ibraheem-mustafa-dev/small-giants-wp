@@ -122,6 +122,14 @@ final class GoogleRatingBadgeTest extends TestCase {
 		}
 	}
 
+	public function test_full_width_adds_its_modifier_and_the_stylesheet_stretches_the_frame(): void {
+		$this->assertStringContainsString( 'sgs-google-rating-badge--full-width', $this->render( self::MANUAL + array( 'fullWidth' => true ) ) );
+		// Negative control: off by default.
+		$this->assertStringNotContainsString( 'sgs-google-rating-badge--full-width', $this->render( self::MANUAL ) );
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
+		$this->assertMatchesRegularExpression( '#--full-width \.sgs-google-rating-badge__link\s*\{[^}]*width:\s*100%#', $css );
+	}
+
 	public function test_the_default_preset_is_pill(): void {
 		$this->assertStringContainsString( 'sgs-google-rating-badge--pill', $this->render( self::MANUAL ) );
 	}

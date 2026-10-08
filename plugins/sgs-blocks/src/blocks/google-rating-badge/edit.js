@@ -79,6 +79,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		position,
 		floatingCorner,
 		alignment,
+		fullWidth,
 		minHeight,
 		borderWidth,
 		borderStyle,
@@ -162,6 +163,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ alignment }
 						defaultValue="start"
 						onChange={ set( 'alignment' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Fill the width', 'sgs-blocks' ) }
+						help={ __( 'The badge stretches across its container, like a full-width button.', 'sgs-blocks' ) }
+						checked={ !! fullWidth }
+						onChange={ ( value ) => setAttributes( { fullWidth: value } ) }
+						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Minimum height (px)', 'sgs-blocks' ) }

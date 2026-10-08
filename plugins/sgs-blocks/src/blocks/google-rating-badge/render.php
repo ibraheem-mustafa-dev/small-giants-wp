@@ -237,6 +237,9 @@ $grb_root_classes = array(
 	'sgs-google-rating-badge--align-' . $grb_align,
 	$grb_uid,
 );
+if ( ! empty( $attributes['fullWidth'] ) ) {
+	$grb_root_classes[] = 'sgs-google-rating-badge--full-width';
+}
 if ( 'floating' === $grb_position ) {
 	$grb_root_classes[] = 'sgs-google-rating-badge--floating';
 	$grb_root_classes[] = 'sgs-google-rating-badge--corner-' . $grb_corner;
