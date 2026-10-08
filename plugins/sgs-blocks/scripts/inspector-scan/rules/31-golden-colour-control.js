@@ -781,6 +781,9 @@ module.exports = {
 		}
 
 		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
+		// The file whose JSX the per-block walk is currently reading (edit.js or
+		// one of the block's own component files); findings name this file.
+		let activeFile = editFile;
 		const blockJsonPath = path.join( ctx.blocksDir, block.tail, 'block.json' );
 
 		// cache.json() returns a { ok, error, data } WRAPPER, never the parsed
@@ -933,11 +936,11 @@ module.exports = {
 					...makeFinding( {
 						rule: ruleId,
 						block: block.slug,
-						file: editFile,
+						file: activeFile,
 						line,
 						severity: 'warn',
 						detail:
-							`${ editFile }:${ line } — colour row "${ rowKey }" carries ${ statesCount } state` +
+							`${ activeFile }:${ line } — colour row "${ rowKey }" carries ${ statesCount } state` +
 							`${ statesCount === 1 ? '' : 's' }, below the required ${ required } (golden-controls` +
 							'.json controls.colour.states — minimum 2, or 1 + the states declared on this ' +
 							'attribute\'s matching supports.sgs.elements entry).',
@@ -1031,11 +1034,11 @@ module.exports = {
 							...makeFinding( {
 								rule: ruleId,
 								block: block.slug,
-								file: editFile,
+								file: activeFile,
 								line,
 								severity: 'warn',
 								detail: mismatched
-									? `${ editFile }:${ line } — colour row "${ rowKey }" has a gradient path, but ` +
+									? `${ activeFile }:${ line } — colour row "${ rowKey }" has a gradient path, but ` +
 									  `it does not match this row's paint mechanism${ mechanismText }. A ${
 											mechanismInfo.mechanisms.includes( 'text' ) ? 'text' : 'fill/border/stroke'
 									  } row needs ${
@@ -1043,7 +1046,7 @@ module.exports = {
 												? 'gradientCapable:true (background-clip:text)'
 												: 'a per-state gradientValue/onGradientChange toggle'
 									  }, not the other shape.`
-									: `${ editFile }:${ line } — colour row "${ rowKey }" has no gradient path (no ` +
+									: `${ activeFile }:${ line } — colour row "${ rowKey }" has no gradient path (no ` +
 									  'gradientValue/onGradientChange on any state, and no gradientCapable:true) and ' +
 									  `no declared exemption${ mechanismText } (golden-controls.json controls.colour` +
 									  '.gradient — required, with declared exemptions).',
@@ -1092,9 +1095,18 @@ module.exports = {
 		// `Array.from()`, or a spread of something neither a nested array
 		// literal nor a known local `const` array is NOT resolved — declared
 		// blind spot (see header BLIND SPOTS).
+		//
+		// A block's own component files (edit.js plus its in-block relative
+		// imports, ctx.editFiles) are walked here with this block's elements,
+		// colourExemptions and requirements — identical to its edit.js rows.
+		// banned-lookalike stays edit.js-only (see header).
+		let ok = true;
+		for ( const blockFile of ctx.editFiles( block.tail ) ) {
+		activeFile = blockFile;
+		const isEntryFile = path.resolve( blockFile ) === path.resolve( editFile );
 		const pushedRows = Object.create( null );
 		const declaredArrays = Object.create( null );
-		ctx.cache.traverse( editFile, {
+		ctx.cache.traverse( activeFile, {
 			CallExpression( nodePath ) {
 				const node = nodePath.node;
 				const callee = node.callee;
@@ -1134,7 +1146,7 @@ module.exports = {
 		// comment on STANDALONE_ROW_CONTROL_NAMES) — TWO SEPARATE walks over the
 		// same question; a fix added to one must be added to both.
 		const { aliases: standaloneAliasNames, descriptorBindings: standaloneDescriptorBindings } =
-			collectStandaloneRowHelpers( ( visitors ) => ctx.cache.traverse( editFile, visitors ) );
+			collectStandaloneRowHelpers( ( visitors ) => ctx.cache.traverse( activeFile, visitors ) );
 
 		// Recursively resolve an expression to the flat list of candidate row
 		// nodes it can statically be shown to contribute — an inline array's
@@ -1184,7 +1196,7 @@ module.exports = {
 			return resolveArrayLike( rowsExpr, 0 ).map( unwrapRowObject ).filter( Boolean );
 		}
 
-		const ok = ctx.cache.traverse( editFile, {
+		ok = ctx.cache.traverse( activeFile, {
 			JSXOpeningElement( nodePath ) {
 				const node = nodePath.node;
 				const name = jsxName( node );
@@ -1192,7 +1204,7 @@ module.exports = {
 				const line = node.loc ? node.loc.start.line : 0;
 
 				// ── (2) banned-lookalike ─────────────────────────────────────────
-				if ( RAW_COLOUR_COMPONENT_NAMES.has( name ) ) {
+				if ( isEntryFile && RAW_COLOUR_COMPONENT_NAMES.has( name ) ) {
 					findings.push( {
 						...makeFinding( {
 							rule: ruleId,
@@ -1218,7 +1230,7 @@ module.exports = {
 					} );
 					return;
 				}
-				if ( name === 'TextControl' && jsxAttrStringValue( node, 'type' ) === 'color' ) {
+				if ( isEntryFile && name === 'TextControl' && jsxAttrStringValue( node, 'type' ) === 'color' ) {
 					findings.push( {
 						...makeFinding( {
 							rule: ruleId,
@@ -1370,6 +1382,8 @@ module.exports = {
 				}
 			},
 		} );
+		if ( ! ok && isEntryFile ) break;
+		}
 
 		// ── Shared-owner scan, emitted ONCE overall regardless of which block's
 		// call happens to run first (see header SHARED-OWNER SCAN note). Runs
@@ -1379,6 +1393,18 @@ module.exports = {
 			ctx.__rule31SharedOwnerFindingsEmitted = true;
 			const { ownerMountedBy } = getSharedOwnerScan( ctx );
 			for ( const [ ownerFile, mountedBySet ] of ownerMountedBy ) {
+				// A file inside one block's own folder belongs to that block and was
+				// judged above as that block's rows; only genuinely shared files
+				// (src/components, shared/, extensions) are owner-scoped.
+				const relToBlocks = path.relative( path.resolve( ctx.blocksDir ), path.resolve( ownerFile ) );
+				if (
+					relToBlocks &&
+					! relToBlocks.startsWith( '..' ) &&
+					! path.isAbsolute( relToBlocks ) &&
+					discoverBlockDirNames( ctx ).includes( relToBlocks.split( path.sep )[ 0 ] )
+				) {
+					continue;
+				}
 				const mountedByList = Array.from( mountedBySet ).sort();
 				findings.push( ...scanSharedOwnerRows( ctx, ruleId, ownerFile, mountedByList ) );
 			}
