@@ -2,7 +2,7 @@
 """
 check-doc-citations.py — a `file:line` citation in a doc must land on what it names.
 
-⛔ WHY THIS EXISTS. `.claude/skills/migration-method/SKILL.md` carries a skeleton table
+⛔ WHY THIS EXISTS. `.claude/skills/migration-method/references/detector-and-fixtures.md` carries a skeleton table
 mapping symbol -> line in `migrate-length-sanitiser.py`. It went stale THREE
 TIMES IN ONE DAY, each time because the model gained a function above the ones
 cited and every number below shifted 50-odd lines. Each time a cold agent
@@ -49,7 +49,7 @@ _REPO = _PLUGIN.parent.parent
 # ⛔ A doc whose subject is not declared here is NOT checked. Add the pair when
 # you add a citation table, or the table is unguarded.
 _GOVERNED = {
-    _REPO / ".claude" / "skills" / "migration-method" / "SKILL.md":
+    _REPO / ".claude" / "skills" / "migration-method" / "references" / "detector-and-fixtures.md":
         _PLUGIN / "scripts" / "migrate-length-sanitiser.py",
 }
 
