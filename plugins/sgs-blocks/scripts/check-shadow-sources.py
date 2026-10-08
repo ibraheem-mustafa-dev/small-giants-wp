@@ -62,6 +62,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from block_source_files import render_source  # noqa: E402
+
 if sys.stdout.encoding is None or sys.stdout.encoding.lower() != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -654,7 +657,9 @@ def php_targets() -> list[Path]:
 def scan_all_php() -> list[dict]:
     results: list[dict] = []
     for path in php_targets():
-        text = path.read_text(encoding="utf-8")
+        # A block's render.php is read with its require'd partials inlined, so code
+        # moved into a partial is still scanned and reported against render.php.
+        text = render_source(path.parent) if path.name == "render.php" else path.read_text(encoding="utf-8")
         results.extend(scan_php_calls(text, path.relative_to(ROOT).as_posix()))
     return results
 
@@ -1081,7 +1086,10 @@ def scan_hover_coverage(php_sources: list[dict]) -> list[dict]:
     rows = []
     for relpath, sources in sorted(by_file.items()):
         abspath = ROOT / relpath
-        text = abspath.read_text(encoding="utf-8") if abspath.exists() else ""
+        if abspath.name == "render.php" and abspath.exists():
+            text = render_source(abspath.parent)
+        else:
+            text = abspath.read_text(encoding="utf-8") if abspath.exists() else ""
         slug = block_slug_from_render_php(relpath)
         overlay = bool(slug) and block_shadow_lift_support(slug) is False
         wired = any(marker in text for marker in HOVER_WIRED_MARKERS)

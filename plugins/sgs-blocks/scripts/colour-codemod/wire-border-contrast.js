@@ -64,7 +64,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { editSource } = require( '../lib/block-source-files' );
+const { editFiles, editSource } = require( '../lib/block-source-files' );
 const babelParser = require( '@babel/parser' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
@@ -325,10 +325,46 @@ function classifyFile( dir ) {
 	} );
 }
 
+// Mounts in the block's own component files (edit.js imports them), numbered after
+// edit.js's own so the ids line up with broadEnumeration(). The fixer only edits
+// edit.js, so an unwired component mount is reported for a hand fix.
+function classifyComponentMounts( dir, firstIndex ) {
+	const blockJson = readBlockJson( dir );
+	const hasBg = hasBackgroundColourAttr( blockJson );
+	const out = [];
+	let mountIndex = firstIndex;
+	for ( const file of editFiles( path.join( BLOCKS_DIR, dir ) ).slice( 1 ) ) {
+		let ast;
+		try {
+			ast = parse( fs.readFileSync( file, 'utf8' ) );
+		} catch ( e ) {
+			out.push( { block: dir, mountIndex: null, status: 'unrecognised', reason: 'parse-error:' + path.basename( file ) } );
+			continue;
+		}
+		for ( const mount of findBorderControlMounts( ast ) ) {
+			const rel = path.relative( path.join( BLOCKS_DIR, dir ), file ).replace( /\\/g, '/' );
+			if ( jsxAttr( mount, 'contrastAgainst' ) ) {
+				out.push( { block: dir, mountIndex, status: 'wired' } );
+			} else if ( isExcluded( dir, mountIndex ) ) {
+				out.push( { block: dir, mountIndex, status: 'excluded', reason: EXCLUDE.find( ( e ) => e.block === dir && e.mountIndex === mountIndex ).reason } );
+			} else if ( ! hasBg ) {
+				out.push( { block: dir, mountIndex, status: 'exempt', reason: 'no comparable flat backgroundColour attribute on this block' } );
+			} else {
+				out.push( { block: dir, mountIndex, status: 'unrecognised', reason: `unwired mount in ${ rel }: pass contrastAgainst by hand` } );
+			}
+			mountIndex++;
+		}
+	}
+	return out;
+}
+
 function collectAll() {
 	const out = [];
 	for ( const dir of blockDirs() ) {
-		out.push( ...classifyFile( dir ) );
+		const own = classifyFile( dir );
+		out.push( ...own );
+		const ownMounts = own.filter( ( f ) => f.mountIndex !== null && f.mountIndex !== undefined ).length;
+		out.push( ...classifyComponentMounts( dir, ownMounts ) );
 	}
 	return out;
 }
