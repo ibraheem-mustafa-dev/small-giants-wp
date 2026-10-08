@@ -2117,6 +2117,13 @@
 			}
 		},
 		{
+			"slug": "sgs/social-icons",
+			"attr": "icons",
+			"fields": {
+				"role": "content"
+			}
+		},
+		{
 			"slug": "sgs/team-member",
 			"attr": "socialLinks",
 			"fields": {
