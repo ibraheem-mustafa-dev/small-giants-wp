@@ -54,11 +54,11 @@ PHPSTAN = PLUGIN_ROOT / "vendor" / "bin" / "phpstan"
 FIXTURE_FILE = PLUGIN_ROOT / "src" / "blocks" / "hero" / "render.php"
 FIXTURE_FIXED = (
     "$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, "
-    "$overlay_gradient_value, $overlay_opacity );"
+    "$overlay_gradient_value, $overlay_opacity, $overlay_blend_mode );"
 )
 FIXTURE_BROKEN = (
     "$overlay_decls = sgs_overlay_decls( $overlay_colour_raw, "
-    "$overlay_gradient, $overlay_opacity );"
+    "$overlay_gradient, $overlay_opacity, $overlay_blend_mode );"
 )
 FIXTURE_EXPECTED = "Variable $overlay_gradient might not be defined."
 
@@ -274,8 +274,28 @@ def _self_test_partials():
     return 0
 
 
+def _run_fixture(source):
+    """PHPStan findings for `source` analysed as hero/render.php, with this gate's
+    config and baseline, in a temp tree. The real file is never written, so the
+    self-test is safe in the fast tier on a tree other sessions are editing."""
+    with tempfile.TemporaryDirectory(prefix="sgs-render-vars-fixture-") as tmp:
+        root = Path(tmp)
+        # The whole block tree, because the baseline names files in other blocks and
+        # PHPStan refuses a config whose ignoreErrors paths do not exist.
+        _template_tree(root)
+        dest = root / FIXTURE_FILE.relative_to(PLUGIN_ROOT)
+        dest.write_text(source, encoding="utf-8", newline="")
+        code, findings = _run_in(root, root / CONFIG.name, [dest])
+    if code != 0 and not findings:
+        raise RuntimeError(
+            "PHPStan exited %d with no parseable findings on the fixture tree (a config "
+            "error reads as 'nothing found', which would make both controls vacuous)." % code
+        )
+    return findings
+
+
 def self_test():
-    """Reintroduce the real hero defect and prove the gate reports it.
+    """Reintroduce the real hero defect in a temp copy and prove the gate reports it.
 
     Runs THREE assertions, not one. A positive control alone would still pass if the
     gate reported that error unconditionally; a negative control alone would still pass
@@ -301,8 +321,8 @@ def self_test():
         )
         return 1
 
-    # --- Assertion 1: negative control. The unmodified tree must be silent. ----------
-    _, clean = _run([FIXTURE_FILE])
+    # --- Assertion 1: negative control. The unmodified hero must be silent. ----------
+    clean = _run_fixture(original)
     if any(FIXTURE_EXPECTED in f["message"] for f in clean):
         sys.stderr.write(
             "[render-undefined-vars --self-test] FAIL — the unmodified hero already\n"
@@ -315,16 +335,8 @@ def self_test():
     )
 
     # --- Assertion 2: positive control. The real bug must be caught. -----------------
-    try:
-        FIXTURE_FILE.write_text(
-            original.replace(FIXTURE_FIXED, FIXTURE_BROKEN),
-            encoding="utf-8",
-            newline="",
-        )
-        _, broken = _run([FIXTURE_FILE])
-        caught = [f for f in broken if FIXTURE_EXPECTED in f["message"]]
-    finally:
-        FIXTURE_FILE.write_text(original, encoding="utf-8", newline="")
+    broken = _run_fixture(original.replace(FIXTURE_FIXED, FIXTURE_BROKEN))
+    caught = [f for f in broken if FIXTURE_EXPECTED in f["message"]]
 
     if not caught:
         sys.stderr.write(
@@ -335,25 +347,17 @@ def self_test():
         return 1
     print(
         "[render-undefined-vars --self-test] positive control: hero defect reintroduced "
-        "— caught at line %s: %s — restored" % (caught[0]["line"], caught[0]["message"])
+        "in a temp copy — caught at line %s: %s" % (caught[0]["line"], caught[0]["message"])
     )
 
-    # --- Assertion 3: the restore actually landed. ------------------------------------
+    # --- Assertion 3: the real file was never touched. --------------------------------
     if FIXTURE_FILE.read_text(encoding="utf-8") != original:
         sys.stderr.write(
-            "[render-undefined-vars --self-test] FAIL — the fixture file was NOT restored\n"
-            "  byte-for-byte. Restore it from git before committing anything.\n"
+            "[render-undefined-vars --self-test] FAIL — hero/render.php changed while the\n"
+            "  self-test ran. The controls must only ever write their temp copy.\n"
         )
         return 1
-    _, restored = _run([FIXTURE_FILE])
-    if any(FIXTURE_EXPECTED in f["message"] for f in restored):
-        sys.stderr.write(
-            "[render-undefined-vars --self-test] FAIL — the defect is still reported\n"
-            "  after restore.\n"
-        )
-        return 1
-    print("[render-undefined-vars --self-test] post-restore: clean again — OK")
-
+    print("[render-undefined-vars --self-test] real hero/render.php untouched — OK")
 
     print(
         "[render-undefined-vars --self-test] PASS — the gate goes red for the real defect."

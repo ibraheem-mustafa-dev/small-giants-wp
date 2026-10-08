@@ -272,6 +272,16 @@
     "tier_reason": "Pre-deploy: a full-repo PHPStan pass (about 52 s) that needs no per-build feedback; build-deploy.py runs the full tier before every deploy."
   },
   {
+    "id": "check-render-undefined-vars-selftest",
+    "cmd": "python scripts/check-render-undefined-vars.py --self-test",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 39000,
+    "order": 162,
+    "tier_reason": "Pre-deploy: three PHPStan runs (about 39 s) would add 40% to every build; beside the gate it proves, it still fails the next deploy when the hero fixture anchor drifts."
+  },
+  {
     "id": "cheat-gate-run",
     "cmd": "python scripts/cheat-gate/run.py --check",
     "tier": "fast",
