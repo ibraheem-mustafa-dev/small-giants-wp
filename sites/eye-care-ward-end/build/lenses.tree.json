@@ -579,6 +579,7 @@
                   },
                   "titleFontSizeUnit": "px",
                   "titleFontWeight": "400",
+                  "titleTextWrap": "wrap",
                   "className": "cr-ref-lenses-27",
                   "stepGap": "15px",
                   "numberGap": "16px",
