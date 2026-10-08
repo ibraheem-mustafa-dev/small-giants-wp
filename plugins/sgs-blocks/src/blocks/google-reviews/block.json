@@ -1045,7 +1045,7 @@
 		},
 		"cardBorderWidth": {
 			"type": "object",
-			"default": {}
+			"default": { "desktop": {} }
 		},
 		"cardBorderStyle": {
 			"type": "string",

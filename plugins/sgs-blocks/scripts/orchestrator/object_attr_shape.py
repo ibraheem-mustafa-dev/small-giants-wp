@@ -322,6 +322,8 @@ def tier_object_attrs_from_php(path: Path) -> set:
             found.add(attr_name)
     found |= _closure_dispatched_tier_attrs(text)
     found |= _border_element_radius_attrs(text)
+    found |= _normalising_closure_tier_attrs(text)
+    found |= _border_element_tiered_width_attrs(text, path)
     return found
 
 
@@ -352,6 +354,98 @@ def _border_element_radius_attrs(text: str) -> set:
             continue
         else:
             found.add(prefix.group(1) + "BorderRadius" if prefix.group(1) else "borderRadius")
+    return found
+
+
+def _closure_bodies(text: str) -> list:
+    """`(name, params, body_start, body_end)` for every `$name = (static) function ( params ) ... { body }`."""
+    out = []
+    for m in re.finditer(r"\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:static\s+)?function\s*\(", text):
+        params_text = _balanced(text, m.end())
+        params = [re.sub(r"=.*$", "", p).split()[-1] for p in _split_args(params_text) if p.split()]
+        body_open = text.find("{", m.end() + len(params_text))
+        if body_open == -1:
+            continue
+        depth, end = 1, body_open + 1
+        while end < len(text) and depth:
+            depth += {"{": 1, "}": -1}.get(text[end], 0)
+            end += 1
+        out.append((m.group(1), params, body_open, end))
+    return out
+
+
+def _normalising_closure_tier_attrs(text: str) -> set:
+    """Attributes passed to a closure that unpacks its argument with `sgs_responsive_normalise_object()`.
+
+    sgs/google-reviews' `$gr_box_rule = static function ( $selector, $raw, ... ) { $obj =
+    sgs_responsive_normalise_object( $raw, true ); ... }` prints every tier of whatever it is handed, called as
+    `$gr_box_rule( $sel, $attributes['cardPadding'] ?? null, ... )`. A call that hands it
+    `$attributes[ $prefix . 'Suffix' ]` from inside another closure counts when that outer closure is called with a
+    literal at the prefix's position (`$gr_button_box( $sel, 'writeReview' )` gives `writeReviewBorderWidth`).
+    Only literal attribute names count.
+    """
+    found = set()
+    closures = _closure_bodies(text)
+    for name, params, start, end in closures:
+        body = text[start:end]
+        used = re.search(r"sgs_responsive_normalise_object\(\s*\$([A-Za-z_][A-Za-z0-9_]*)", body)
+        if not used or "$" + used.group(1) not in params:
+            continue
+        position = params.index("$" + used.group(1))
+        for arg_text in _call_arg_lists(text, name):
+            args = _split_args(arg_text)
+            if position >= len(args):
+                continue
+            arg = args[position].strip()
+            literal = re.match(r"\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]", arg)
+            if literal:
+                found.add(literal.group(1))
+                continue
+            prefixed = re.match(r"\$attributes\[\s*\$([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]", arg)
+            if not prefixed:
+                continue
+            call_at = text.find(arg_text)
+            for outer, outer_params, o_start, o_end in closures:
+                if not o_start < call_at < o_end or "$" + prefixed.group(1) not in outer_params:
+                    continue
+                prefix_position = outer_params.index("$" + prefixed.group(1))
+                for outer_args in _call_arg_lists(text, outer):
+                    o_args = _split_args(outer_args)
+                    if prefix_position < len(o_args):
+                        lit = re.fullmatch(r"['\"]([A-Za-z0-9_]+)['\"]", o_args[prefix_position].strip())
+                        if lit:
+                            found.add(lit.group(1) + prefixed.group(2))
+    return found
+
+
+def _border_element_tiered_width_attrs(text: str, path: Path) -> set:
+    """The width attribute of an `sgs_border_element_decls( $attributes, '<prefix>', ... )` call that block.json
+    declares as a tier envelope.
+
+    The helper prints a width stored as `{desktop, tablet, mobile}` per tier and a flat box once, so the call site
+    alone cannot say which a block stores; the attribute's declared default (`{"desktop": {}}`) does.
+    """
+    found = set()
+    calls = _function_call_args(text, "sgs_border_element_decls")
+    if not calls:
+        return found
+    block_json = path.parent / "block.json"
+    try:
+        import json
+        attributes = json.loads(block_json.read_text(encoding="utf-8")).get("attributes", {})
+    except (OSError, ValueError):
+        return found
+    for call in calls:
+        args = _split_args(call)
+        if len(args) < 2 or args[0].strip() != "$attributes":
+            continue
+        prefix = re.fullmatch(r"['\"]([A-Za-z0-9_]*)['\"]", args[1].strip())
+        if not prefix:
+            continue
+        name = prefix.group(1) + "BorderWidth" if prefix.group(1) else "borderWidth"
+        default = attributes.get(name, {}).get("default") if isinstance(attributes.get(name), dict) else None
+        if isinstance(default, dict) and any(k in default for k in ("desktop", "tablet", "mobile")):
+            found.add(name)
     return found
 
 
