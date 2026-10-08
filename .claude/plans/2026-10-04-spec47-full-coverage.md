@@ -115,16 +115,12 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
       100-150. `gridTemplateColumns` needs `variant: split` and a track-list marker. cta's `backgroundImage` is the legacy
       twin of `backgroundMedia`, which the fixture always sets.
     - Unresolved, 1 row: cta `textColour`; the next step is rendering one instance with a hex colour and reading its `color`.
-  - **Font-family values: two conventions (found 2026-10-08, needs Bean's choice).** The trees hold font-family settings as
-    preset slugs (about 120 on Eye Care, hand-written, plus Solve's writes since `normalise.mjs::snapFontFamily`); the
-    frontend paints them right (`helpers-typography.php::sgs_font_family_sanitise` turns a known slug into
-    `var(--wp--preset--font-family--<slug>)`). The editor's font picker (`TypographyControls`) stores the preset's raw CSS
-    value instead, and the canvas preview (`src/utils/typography-preview.js`, `heading/edit.js`) passes the value through
-    unresolved, so a slug likely shows the picker unselected and the canvas in a fallback font (not yet seen in the editor).
-    Options: (a) the editor learns slugs (picker matches by slug, preview resolves a slug to the preset variable); the trees
-    and Solve stay; follows the client's theme if a preset changes. (b) the trees and Solve write the preset's exact value;
-    no editor change; values stop following a preset change. First step either way: open one slug-holding block in the
-    editor and confirm what the picker and canvas show.
+  - [x] **Font-family values: one convention, the preset slug (Bean, 2026-10-08, option a).** The editor check on
+    eye-care-test (Lenses, cr-ref-lenses-7, value `heading`) showed the fault: the picker read Default and the canvas
+    wrote `font-family: heading`. `36f39aed2`: `typography-preview.js::fontFamilyCssValue` paints a slug as
+    `var(--wp--preset--font-family--<slug>, <slug>)`, `fontFamilyPickerValue` shows it selected, `fontFamilyStoredValue`
+    stores a pick as its slug. Verified in the live editor (picker shows Heading, canvas computes Playfair Display,
+    a pick stores `body`/`heading`, no console errors). Trees and Solve keep writing slugs.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
@@ -177,20 +173,23 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   ledgered D-88 to D-91 (the D-65 ruling); and 7 typography settings on the map (-25), copied from the draft's sketch
   placeholder through rows D-16 missed because it was scoped to the opening state only. D-16 now covers every state, as its
   ruling says ("no setting should copy the sketch's paint"). So 12 of the 17 writes were bad, though the spec counts 1.
-  Framework item: Solve should not write a border colour on an element whose border is 0px wide (D-65, D-66 and D-88 to
-  D-91 are the same case). D-87 holds the phone link's hover colour (register 131). Solve wrote fonts as literal stacks;
+  Border colours on borderless elements are fixed at the root (`262a9d41f`): the hover and pressed passes read
+  `border-top-width` beside the colour, so a state's border colour on an element with no border is no row
+  (`compare.mjs`), and Solve leaves a colour row whose draft paints no border as a `not-painted` gap
+  (`solve.mjs::unpaintedBorder`). D-87 holds the phone link's hover colour (register 131). Solve wrote fonts as literal stacks;
   it now matches a stack to the theme preset whose first family matches (`normalise.mjs::snapFontFamily`), and the 20
   literal stacks across six Eye Care trees are now preset slugs (paint unchanged; each surface picks them up on its next
   rebuild: Contact is rebuilt, footer, header, home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
   contact`: 123 differences, mostly the form card's box (cr-ref-contact-24, 27 to 32: found on live only, or 432px of
   extra top inset). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
   likely the address width below. Open, all box rows:
-  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
-     it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
-     draft's). The 2026-10-08 run had no `row-gap` row open on these refs, only box rows (cr-ref-contact-16 `h`, -18 `w`,
-     -18/-19 `y-after-*`), so it wrote nothing; why the row-gap row is gone is not yet checked. Session B's triage (2026-10-05)
-     found the row gap is a confirmed framework gap: `sgs/business-info` has no gap control for the hours row, so it
-     is in a Session C2 finding (the old group label G1) (`hoursRowGap`, css_element `hours-row`).
+  1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. **Cause proven
+     (2026-10-08, from the 2026-10-08 run's report):** the hours text runs (gen-contact-18, -19) match the draft in
+     style and differ only in position; `business-info/style.css::.sgs-business-hours__row` hardcoded `padding: 0.35em 0`
+     (5.25px at 15px) with no setting. No row-gap row ever existed for this pair (rows are read only for a text run
+     holding several lines; each hours line is its own run). Framework repair `9ba98f91d`: `hoursRowPadding` (per-device
+     box, element `hours-row`, fallback 0.35em), reseeded `94d9a7ce4`. Next: deploy, recalibrate `sgs/business-info`,
+     then Solve writes the draft's 0.
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
      lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
      (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; the 2026-10-08 run found no width row open on these refs. Session B's triage
@@ -222,8 +221,10 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   - **Wrong writes at most 10%: met only with an exclusion.** The last write run (`2026-10-07T20-06-48/`) counts 3 of 17
     (17.6%) under Spec 47 as written. 2 of the 3 are the guard's unconfirmed `h@375` verdict on the page container's own
     height ("the run ended before the next walk"), which sums everything inside it and cannot judge one padding write; the
-    padding then took S6's decided value by hand. Without them, 1 of 15 (7%). **The exclusion rests on Bean's 2026-10-08
-    session brief, not on the spec; whether Spec 47 §6 takes it as a rule is open with Bean.**
+    padding then took S6's decided value by hand. Without them, 1 of 15 (7%). **Replaced by a root fix (Bean, 2026-10-08: judge padding on its own rows,
+    not the container's height):** `dfaf9a8cf` (Spec 47 0.15.7): a node's own height or width row never suspects a setting
+    on or inside it whose own rows closed (`guard.mjs::ownSizeRow`, `landed`); a trial open at the walk cap gets a
+    settling walk; the ratio counts settings (`solve.mjs::settingRatio`). No exclusion is written.
   - **Planted-fault control** passed on 2026-10-08 (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`:
     22px top padding caught at 1440 and 1920 only), before `titleTextWrap`, `gapKey` and D-86 to D-91.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
