@@ -7,7 +7,7 @@ title: SGS WordPress Framework — Developer Setup & Operations
 # SGS WordPress Framework — Dev Setup
 
 ⛔ **More than 3 blocks/files/call sites? The first deliverable is the
-DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
+DETECTOR, not the edit — `.claude/skills/migration-method/SKILL.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
 ## Contents
 

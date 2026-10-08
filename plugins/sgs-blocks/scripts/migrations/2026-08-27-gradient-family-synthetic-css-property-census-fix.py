@@ -1,6 +1,6 @@
 """Migration: correct every unreachable, synthetic `css_property` value on the
 Gradient-attribute family across the whole framework (Task 1b follow-up census,
-D873/D778/THE-MIGRATION-METHOD.md "single-function/single-table" shape).
+D873/D778/migration-method/SKILL.md "single-function/single-table" shape).
 
 ROOT CAUSE (verified against sgs-framework.db + render.php, not inferred):
 `property_suffixes` carries exactly ONE row for the `Gradient` suffix —

@@ -6,7 +6,7 @@ border.** CSS's initial `border-width` is `medium` (~3px), so emitting
 `border-style:solid` on its own paints a border nobody asked for. It bit the
 hero's split image.
 
-WHY A DETECTOR AND NOT 37 EDITS (THE-MIGRATION-METHOD.md / D542, Bean-locked):
+WHY A DETECTOR AND NOT 37 EDITS (migration-method/SKILL.md / D542, Bean-locked):
 the same shape repeats across every block that paints a border, so the
 correction belongs in one place that can be re-run. The hand census that
 preceded this script found 37 instances and MISSED two — `sgs/quote` and

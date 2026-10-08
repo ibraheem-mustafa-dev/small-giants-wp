@@ -43,7 +43,7 @@
  *     unrelated attribute (textAlign only), so turning on their unrelated
  *     TypographyControls surface is safe.
  *
- * WHY AN AST, NOT A REGEX (THE-MIGRATION-METHOD.md Step 4): a JSX opening
+ * WHY AN AST, NOT A REGEX (migration-method/SKILL.md Step 4): a JSX opening
  * element's attribute list is a real tree, not a line-shaped pattern — a
  * regex would mis-splice across multi-line attribute values or an attribute
  * whose name is a substring of another (e.g. `showTextAlign` vs `showText`).
@@ -67,9 +67,9 @@ const traverse = require( '@babel/traverse' ).default;
 function findRepoRoot( start ) {
 	let cur = path.resolve( start );
 	for ( ;; ) {
-		if ( fs.existsSync( path.join( cur, '.claude', 'THE-MIGRATION-METHOD.md' ) ) ) return cur;
+		if ( fs.existsSync( path.join( cur, '.git' ) ) ) return cur;
 		const parent = path.dirname( cur );
-		if ( parent === cur ) throw new Error( 'repo root not found (.claude/THE-MIGRATION-METHOD.md missing)' );
+		if ( parent === cur ) throw new Error( 'repo root not found (.git missing)' );
 		cur = parent;
 	}
 }
@@ -457,7 +457,7 @@ function runSelfTest() {
 	// a blank line behind. Caught live 2026-09-07: the first version of this
 	// codemod only stripped one leading space, so `label/edit.js` came out
 	// with three blank tabbed lines where `showWeight={ false }` etc. used to
-	// be — valid JS, but a sloppy diff THE-MIGRATION-METHOD.md's own review
+	// be — valid JS, but a sloppy diff migration-method/SKILL.md's own review
 	// bar would reject.
 	const fixture5 =
 		'<TypographyControls\n' +

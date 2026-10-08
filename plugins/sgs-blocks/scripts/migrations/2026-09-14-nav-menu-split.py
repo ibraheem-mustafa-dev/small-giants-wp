@@ -5,7 +5,7 @@
     <!-- wp:sgs/nav-menu {...} -->                     (top level)   -> sgs/nav-bar-menu
     <!-- wp:sgs/nav-drawer --><!-- wp:sgs/nav-menu --> (nested)      -> sgs/nav-drawer-menu
 
-THE D542 TRIAD (`.claude/THE-MIGRATION-METHOD.md`): --survey (exhaustive census before any
+THE D542 TRIAD (`.claude/skills/migration-method/SKILL.md`): --survey (exhaustive census before any
 design decision) -> --fix (codemod) -> --check (gate). ONE detector, three modes. No phase
 does by hand what its own detector could do.
 

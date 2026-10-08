@@ -100,12 +100,12 @@ const { execFileSync } = require( 'child_process' );
 function findRepoRoot( start ) {
 	let dir = start;
 	for ( let i = 0; i < 12; i++ ) {
-		if ( fs.existsSync( path.join( dir, '.claude', 'THE-MIGRATION-METHOD.md' ) ) ) return dir;
+		if ( fs.existsSync( path.join( dir, '.git' ) ) ) return dir;
 		const up = path.dirname( dir );
 		if ( up === dir ) break;
 		dir = up;
 	}
-	throw new Error( 'could not locate repo root (.claude/THE-MIGRATION-METHOD.md)' );
+	throw new Error( 'could not locate repo root (.git)' );
 }
 
 const ROOT = findRepoRoot( __dirname );

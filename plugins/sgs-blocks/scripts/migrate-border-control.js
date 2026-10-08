@@ -20,7 +20,7 @@
  * Task 0. There is no proven render.php shape to derive Shape B from. See the
  * script's own `--survey` output and the session report for the full finding.
  *
- * WHY AN AST, NOT A REGEX (THE-MIGRATION-METHOD.md Step 4): the target is a
+ * WHY AN AST, NOT A REGEX (migration-method/SKILL.md Step 4): the target is a
  * multi-line JSX composite (a JSXElement, an object literal buried in an
  * array, and a matching removal elsewhere in the same file) -- exactly the
  * "anything with {...}" case the method names. Model: colour-codemod/adopt.js
@@ -88,15 +88,15 @@ const traverse = require( '@babel/traverse' ).default;
 
 if ( process.stdout.setEncoding ) process.stdout.setEncoding( 'utf8' );
 
-// ── Anchoring (THE-MIGRATION-METHOD.md Step 4's anchoring box) ─────────────
+// ── Anchoring (migration-method/SKILL.md Step 4's anchoring box) ─────────────
 // Anchor on a repo-unique marker, never CLAUDE.md (plugins/sgs-blocks/ has
 // its own).
 function findRepoRoot( start ) {
 	let cur = path.resolve( start );
 	for ( ;; ) {
-		if ( fs.existsSync( path.join( cur, '.claude', 'THE-MIGRATION-METHOD.md' ) ) ) return cur;
+		if ( fs.existsSync( path.join( cur, '.git' ) ) ) return cur;
 		const parent = path.dirname( cur );
-		if ( parent === cur ) throw new Error( 'repo root not found (.claude/THE-MIGRATION-METHOD.md missing)' );
+		if ( parent === cur ) throw new Error( 'repo root not found (.git missing)' );
 		cur = parent;
 	}
 }

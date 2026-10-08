@@ -1,7 +1,7 @@
 # Spec 35 — SGS Block Inspector UX, Control-Completeness & Capability Standard
 
 ⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
-`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** A census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What decides the outcome is whether the TARGET SHAPE is settled first (THE-MIGRATION-METHOD.md Step 3).
+`.claude/skills/migration-method/SKILL.md` before the 4th file edit.** A census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What decides the outcome is whether the TARGET SHAPE is settled first (migration-method/SKILL.md Step 3).
 
 ```
 doc_type: spec

@@ -100,7 +100,7 @@ final class Sgs_Block_Bindings_Support {
 	 *     each of those blocks keeps whichever of `label`/`helpText` IS read.
 	 *   - Every other `role:content` pair on a block/attr this pass did not
 	 *     reach — run `--survey` for the live list and widen in a follow-up
-	 *     pass, per THE-MIGRATION-METHOD.md (do not cover every block in one
+	 *     pass, per migration-method/SKILL.md (do not cover every block in one
 	 *     sitting).
 	 *
 	 * @var array<string,string[]>

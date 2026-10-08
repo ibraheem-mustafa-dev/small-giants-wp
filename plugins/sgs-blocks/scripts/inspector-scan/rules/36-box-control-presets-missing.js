@@ -9,7 +9,7 @@
 // WHY THIS RULE EXISTS. `presets` is a generic, zero-ripple opt-in flag threaded through
 // `<ResponsiveBoxControl>` -> `SgsBoxControl` (forwarded opaquely, see
 // ResponsiveBoxControl.js:149/168). The pilot proved the shape on one block; this rule is
-// the census half of rolling it out to every other mount, per THE-MIGRATION-METHOD.md's
+// the census half of rolling it out to every other mount, per migration-method/SKILL.md's
 // "detector before the 4th file edit" rule — there are 47+ target mounts, not 3.
 //
 // SCOPE IS DELIBERATELY NARROW: does this JSX element have a truthy `presets` attribute,

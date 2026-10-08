@@ -82,7 +82,7 @@
 // A block with no such element is out of scope for (B)/(C): it may
 // genuinely have no free-running text (an icon, a media block), and
 // guessing from attribute-name regexes is exactly the trap this codebase's
-// migration method warns against (THE-MIGRATION-METHOD.md Step 5's "shape,
+// migration method warns against (migration-method/SKILL.md Step 5's "shape,
 // not string" test — this IS that test, applied to the rule's own first
 // draft before shipping it).
 //

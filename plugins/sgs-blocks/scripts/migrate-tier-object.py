@@ -547,7 +547,7 @@ def check_db_parity(quiet: bool = False) -> int:
     level at which a stale row actually misleads.
 
     Exit 0 = agree. Exit 1 = disagree, with both sides named. This gate is GREEN from the day
-    it is registered, which is NOT the shape THE-MIGRATION-METHOD.md Step 8 describes (it
+    it is registered, which is NOT the shape migration-method/SKILL.md Step 8 describes (it
     assumes a gate that is red until the migration lands). This one guards a derived copy
     against its source; there is nothing for it to be red about until /sgs-update lags."""
     try:
@@ -1842,7 +1842,7 @@ def self_test() -> int:
 
     # ================================================================================
     # declared_siblings() — DB-first + disk crosscheck. Fixtures per
-    # THE-MIGRATION-METHOD.md Step 6 (positive / negative control / edge / idempotence /
+    # migration-method/SKILL.md Step 6 (positive / negative control / edge / idempotence /
     # corpus control), plus a fixture for the source='sgs' trap.
     # ================================================================================
 

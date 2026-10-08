@@ -7,7 +7,7 @@
  * `edit.js` that mounts `<SgsBorderControl>` but doesn't yet pass it.
  *
  * WHY THIS EXISTS. This repo's own detector-first gate
- * (`.claude/THE-MIGRATION-METHOD.md`, D542, Bean-locked) blocked a hand-
+ * (`.claude/skills/migration-method/SKILL.md`, D542, Bean-locked) blocked a hand-
  * written commit touching 27 files with the same shape. This is the
  * detector: the census half (`--survey`), the fixer half (`--fix`/--apply`)
  * and the regression guard half (`--check`) are the SAME script, so the
@@ -30,7 +30,7 @@
  *   />
  *
  * THE REAL CENSUS (verified 2026-09-05; do not trust an inherited count,
- * derive it by enumeration as `.claude/THE-MIGRATION-METHOD.md` says). 48 blocks mount `<SgsBorderControl>` in `edit.js`
+ * derive it by enumeration as `.claude/skills/migration-method/SKILL.md` says). 48 blocks mount `<SgsBorderControl>` in `edit.js`
  * (49 real JSX mounts — `multi-button` mounts it twice). Of those:
  *
  *   - 31 mounts are WIRED (contrastAgainst present on the mount) — includes
@@ -370,7 +370,7 @@ function collectAll() {
 
 // ---------------------------------------------------------------------------
 // Corpus control — a second, dumb, wide enumeration that must reconcile
-// with the AST-derived mount list (Step 6.6 of THE-MIGRATION-METHOD.md).
+// with the AST-derived mount list (Step 6.6 of migration-method/SKILL.md).
 // ---------------------------------------------------------------------------
 const WIDTH_OK = new Set(); // no known reconciliation gaps as of authoring
 

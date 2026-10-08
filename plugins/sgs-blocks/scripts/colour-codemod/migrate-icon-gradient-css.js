@@ -10,7 +10,7 @@
  * WHY A CODEMOD, NOT HAND-EDITS: the night this rollout started, 3 blocks
  * (cart, accordion-item, before-after) were hand-migrated — but only their
  * HOVER state. Base state was left on the old call in all three, undetected
- * until the next session's survey. `.claude/THE-MIGRATION-METHOD.md`'s
+ * until the next session's survey. `.claude/skills/migration-method/SKILL.md`'s
  * 3-block threshold exists exactly to prevent this: a codemod applied in one
  * pass treats base+hover as one shape and cannot silently do half the job
  * across separate files. See `.claude/prompts/2026-09-06-colour-conformance-

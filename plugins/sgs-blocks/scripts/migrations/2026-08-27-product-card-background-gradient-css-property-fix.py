@@ -22,7 +22,7 @@ of expanding it to the `background-image` longhand (the shorthand never even
 reached this attr's row, correctly labelled or not).
 
 ⚠ WIDER FINDING, NOT FIXED HERE (scope discipline — this migration is scoped
-to closing Task 1b for sgs/product-card only, per THE-MIGRATION-METHOD.md's
+to closing Task 1b for sgs/product-card only, per migration-method/SKILL.md's
 detector-first rule; a >3-block class of defect needs its own census/migration
 project, not a same-session bundle-in):
 a repo-wide audit (2026-08-27) found the SAME synthetic-and-unreachable

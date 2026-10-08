@@ -10,7 +10,7 @@ Nine surfaces render media and none agree - control set, panel structure,
 disclosure rules, naming, enum shape, and whether a media type is stored at
 all. Before any shared layer is written the build needs ONE manifest saying,
 per surface: prefix / context / insertion / mechanism / the storedAs map /
-escape-hatch flags. THE-MIGRATION-METHOD requires the detector as the first
+escape-hatch flags. migration-method requires the detector as the first
 deliverable past 3 files.
 
 Cloned from the proven triad shape of `check-image-controls-support.py`

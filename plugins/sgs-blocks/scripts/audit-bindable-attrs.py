@@ -5,7 +5,7 @@ WHY THIS EXISTS (C15-5, `.claude/reports/2026-08-28-c15-block-bindings-scope-pro
 only 3 of 83 SGS blocks (`sgs/text`, `sgs/heading`, `sgs/button`) are bindable via
 `class-sgs-block-bindings-support.php`'s `SUPPORTED_ATTRIBUTES` const. Widening that
 const touches many block.json files at once, which is exactly the shape
-`.claude/THE-MIGRATION-METHOD.md` requires a detector for BEFORE the edit. Per Bean's
+`.claude/skills/migration-method/SKILL.md` requires a detector for BEFORE the edit. Per Bean's
 2026-08-26 ruling recorded in the C15 report, this is deliberately the MINIMAL detector
 the migration-method commit gate needs — not the larger C15-12 coverage system.
 
@@ -15,7 +15,7 @@ Ground truth is each block's own `block.json` on disk, read directly — NOT the
 `block_attributes` DB table. Verified live 2026-09-04: the DB's `role='content'` rows
 for `source='sgs'` MISS attributes the disk copy plainly marks `"role":"content"`
 (`sgs/info-box` `heading`/`description`, `sgs/media` `imageUrl`/`imageAlt` among them) —
-a real DB/disk mismatch of exactly the shape `THE-MIGRATION-METHOD.md` Step 2 warns
+a real DB/disk mismatch of exactly the shape `migration-method/SKILL.md` Step 2 warns
 about ("a DB/disk count mismatch is a FINDING, not noise"). Disk wins.
 
 An attribute is a SAFE binding target (`ELIGIBLE`) when ALL of:
@@ -56,7 +56,7 @@ Run:
   python plugins/sgs-blocks/scripts/audit-bindable-attrs.py --check        # GUARD:
       exit 1 if class-sgs-block-bindings-support.php's SUPPORTED_ATTRIBUTES contains
       any (block, attr) pair this census does NOT classify ELIGIBLE. Exit 0
-      otherwise. This is a GUARD shape (THE-MIGRATION-METHOD.md Step 8) — clean from
+      otherwise. This is a GUARD shape (migration-method/SKILL.md Step 8) — clean from
       registration, fails only when someone adds an unsafe binding target.
   python plugins/sgs-blocks/scripts/audit-bindable-attrs.py --self-test
 """
@@ -124,7 +124,7 @@ _USE_FUNCTION_RE = re.compile(r"use\s+function\s+([A-Za-z0-9_\\]+)\s*;")
 def _includes_php_text():
     """Lazily concatenated {relpath: text} of every includes/**/*.php file — the
     shared-helper trees a per-block render.php scan is blind to (see
-    THE-MIGRATION-METHOD.md Step 2's 'includes/*.php ... IN SCOPE whichever you
+    migration-method/SKILL.md Step 2's 'includes/*.php ... IN SCOPE whichever you
     use' box). Cached at module scope; this repo's includes/ tree is small enough
     (low hundreds of KB) to read once per process."""
     global _INCLUDES_CACHE

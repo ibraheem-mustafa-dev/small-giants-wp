@@ -1,10 +1,6 @@
 ---
-doc_type: guide
-title: The migration method — settle the shape, then build the detector
-date: 2026-08-24
-applies_to: any change touching more than 3 blocks, attributes, files or call sites
-covers: TWO shapes — (a) build a detector for a new repeating change; (b) burn down an
-  EXISTING detector's findings backlog (Step 7b + Step 8's ratchet).
+name: migration-method
+description: "Use when the same change is needed in more than 3 blocks, attributes, files or call sites; when writing a codemod, migration script, detector, sweep or findings-backlog burn-down; or when renaming or reshaping an attribute across blocks. Settle the target shape, then build the detector (survey, fix, check, self-test) before the 4th edit. Do NOT invoke for: a single-file fix, or a change touching 3 or fewer files."
 ---
 
 # The migration method
@@ -210,7 +206,7 @@ corrupts 5% of its targets silently.**
 A script **inside the repo** anchors on `__file__`, walking up. A script **anywhere else** (scratch
 dir, temp harness) anchors on a **repo-UNIQUE marker file**. ⛔ `CLAUDE.md` is NOT unique
 (`plugins/sgs-blocks/` has its own), so a gate anchored on it scans a handful of files and prints a
-clean PASS; use `.claude/THE-MIGRATION-METHOD.md`. ⚠ Scope the GLOB so it never descends into
+clean PASS; use `.git` (a directory in the main checkout, a file in a worktree, so test with `exists()`, not `isdir`/`isfile`). ⚠ Scope the GLOB so it never descends into
 `.claude/worktrees/`, `node_modules/`, `build/`, `vendor/` or `scripts/**/fixtures/`, pruning during
 the walk, not after.
 

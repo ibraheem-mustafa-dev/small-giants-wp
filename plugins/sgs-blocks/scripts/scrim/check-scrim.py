@@ -4,7 +4,7 @@ check-scrim.py — the viewport-scrim detector (Wave 3C U-2, family M-14).
 
 Design: `.claude/reports/2026-09-24-u2-scrim-design.md` (Addendum A: one shared scrim
 for every block that dims the viewport). More than three blocks adopt it, so the
-detector comes first (`.claude/THE-MIGRATION-METHOD.md`).
+detector comes first (`.claude/skills/migration-method/SKILL.md`).
 
 A SCRIM is the see-through layer that dims the page behind an open drawer, dialog or
 panel. Every SGS block that paints one must paint it through the shared helper

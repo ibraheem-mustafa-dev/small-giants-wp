@@ -30,7 +30,7 @@ EDITOR. A block migrated to the box helper must not preview padding/margin throu
 helper; a block migrated to the corner helper must not preview its border radius through one (the
 corner arm of editor_mismatches()).
 
-Plan: .claude/plans/2026-10-07-cr6-box-longhand-migration.md (U2). Method: .claude/THE-MIGRATION-METHOD.md.
+Plan: .claude/plans/2026-10-07-cr6-box-longhand-migration.md (U2). Method: .claude/skills/migration-method/SKILL.md.
 
 Usage (from plugins/sgs-blocks):
     python scripts/migrate-box-longhands.py --survey            census to stdout
@@ -64,11 +64,11 @@ def _repo_root():
     """The repo root, found by a file that exists only there (never CLAUDE.md, which every package has)."""
     d = PLUGIN
     while True:
-        if os.path.isfile(os.path.join(d, '.claude', 'THE-MIGRATION-METHOD.md')):
+        if os.path.exists(os.path.join(d, '.git')):
             return d
         parent = os.path.dirname(d)
         if parent == d:
-            raise SystemExit('repo root not found: no .claude/THE-MIGRATION-METHOD.md above ' + PLUGIN)
+            raise SystemExit('repo root not found: no .git above ' + PLUGIN)
         d = parent
 
 

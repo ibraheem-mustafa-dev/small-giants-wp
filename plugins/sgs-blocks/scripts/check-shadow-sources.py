@@ -1073,7 +1073,7 @@ def scan_hover_coverage(php_sources: list[dict]) -> list[dict]:
       - "overlay-exempt"  — supports.sgs.shadowLift === false (design H5); correctly never lifts.
       - "wired"           — the file's text carries one of HOVER_WIRED_MARKERS.
       - "MISSING"         — a real shadow emitter with no hover marker anywhere in its file —
-                            the gap this survey exists to catch, per THE-MIGRATION-METHOD
+                            the gap this survey exists to catch, per migration-method
                             (detector before edits)."""
     by_file: dict[str, list[dict]] = {}
     for src in php_sources:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check-withdrawn-figures.py — a figure withdrawn in one file stays withdrawn everywhere.
 
-WHY: THE-MIGRATION-METHOD.md is the one canonical table for the migration-effort
+WHY: migration-method/SKILL.md is the one canonical table for the migration-effort
 figures and marks some of them withdrawn. A figure copied into other files
 drifts from the table: it is corrected in one place and keeps being restated as
 settled fact everywhere else.
@@ -9,7 +9,7 @@ settled fact everywhere else.
 The rule is NO number outside the one canonical table, and a bare pointer
 everywhere else.
 
-Follows the method's own contract (THE-MIGRATION-METHOD.md Steps 4-10):
+Follows the method's own contract (migration-method/SKILL.md Steps 4-10):
 --survey / --fix / --fix --apply / --check / --self-test, with a negative
 control AND a corpus control.
 
@@ -36,7 +36,7 @@ if sys.stdout.encoding is None or sys.stdout.encoding.lower() != "utf-8":
 # its own, so when the gate runner invokes this from that directory, ROOT bound
 # there and the corpus silently fell from 380 files to 4 — and `--check` printed
 # a clean PASS. Second corpus collapse in this one script, different cause.
-_MARKER = Path(".claude") / "THE-MIGRATION-METHOD.md"
+_MARKER = Path(".git")
 
 
 def _find_root() -> Path:
@@ -55,13 +55,13 @@ ROOT = _find_root()
 # The one file allowed to carry the figures: it is where they are DOCUMENTED as
 # withdrawn, with the derivation. Excluding it is the whole point.
 EXCLUDE = {
-    ".claude/THE-MIGRATION-METHOD.md",   # the canonical table itself
+    ".claude/skills/migration-method/SKILL.md",   # the canonical table itself
 }
 
 _THESIS = (" What separated them was not the census — the slow rollout had one on day 2 —\n"
-           "but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step 3.")
+           "but whether the TARGET SHAPE was settled first. See migration-method/SKILL.md Step 3.")
 
-_INLINE = "a withdrawn figure — see THE-MIGRATION-METHOD.md, do not restate it here"
+_INLINE = "a withdrawn figure — see migration-method/SKILL.md, do not restate it here"
 
 REPLACEMENT = ("Measured: a census-driven pass moves the corrections out of the tree and "
                "into the detector, where one commit fixes hundreds of sites. Figures + "
@@ -97,7 +97,7 @@ SHAPES = [
 # PRUNE during the walk, never filter after it. `.claude/worktrees/` holds a
 # whole second copy of the repo, so an rglob that descends and then discards
 # pays the full cost of walking it. This is the same worktree hazard
-# THE-MIGRATION-METHOD.md lists, met live.
+# migration-method/SKILL.md lists, met live.
 _PRUNE = {"worktrees", "node_modules", "build", "vendor", "memory", ".git"}
 
 
@@ -143,7 +143,7 @@ def scan(apply_changes=False, show_diff=False):
             # newline="" on the READ too, or Python translates CRLF to LF and
             # writing back rewrites every line ending -- a 1-line change becomes
             # a whole-file diff. This script had that exact bug; it is the hazard
-            # THE-MIGRATION-METHOD.md lists, made live.
+            # migration-method/SKILL.md lists, made live.
             with open(p, encoding="utf-8", newline="") as fh:
                 old = fh.read()
         except (UnicodeDecodeError, OSError):
@@ -183,7 +183,7 @@ def assert_corpus() -> list[str]:
 def self_test() -> int:
     fails = assert_corpus()
     a = ("⛔ **More than 3 blocks? The first deliverable is the\n"
-         "DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Block-by-block cost 13 days\n"
+         "DETECTOR, not the edit — `.claude/skills/migration-method/SKILL.md`.** Block-by-block cost 13 days\n"
          "and 25 corrections for 33 blocks; the detector-first path did 204 sites in one day.\n")
     b = ("⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST.**\n"
          "took 33 blocks over 13 days and 25 correction commits. Same repo, same week.\n")
@@ -200,7 +200,7 @@ def self_test() -> int:
     if out_i != inert or rec_i:
         fails.append("negative control mutated")
     # EXCLUSION: the canonical file keeps its figures.
-    out_e, rec_e = transform(a, ".claude/THE-MIGRATION-METHOD.md")
+    out_e, rec_e = transform(a, ".claude/skills/migration-method/SKILL.md")
     if out_e != a or rec_e != [("A", "excluded")]:
         fails.append("excluded file was rewritten")
     # IDEMPOTENCE: running twice equals running once.

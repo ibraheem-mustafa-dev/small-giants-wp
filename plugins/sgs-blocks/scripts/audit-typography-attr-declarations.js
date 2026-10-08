@@ -50,7 +50,7 @@ const traverse = require( '@babel/traverse' ).default;
 function findRepoRoot( start ) {
 	let cur = path.resolve( start );
 	for ( ;; ) {
-		if ( fs.existsSync( path.join( cur, '.claude', 'THE-MIGRATION-METHOD.md' ) ) ) return cur;
+		if ( fs.existsSync( path.join( cur, '.git' ) ) ) return cur;
 		const parent = path.dirname( cur );
 		if ( parent === cur ) throw new Error( 'repo root not found' );
 		cur = parent;

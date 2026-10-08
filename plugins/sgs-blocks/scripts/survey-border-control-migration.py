@@ -9,7 +9,7 @@ migration that puts it on every block that currently either (a) declares WP-nati
 block-private border attrs with some OTHER control shape.
 
 This is a "single-function body swap, large in blast radius" case per
-THE-MIGRATION-METHOD.md Step 4's third bullet: `classify()`/`EXCLUDE`/`PAT`/`targets()`/
+migration-method/SKILL.md Step 4's third bullet: `classify()`/`EXCLUDE`/`PAT`/`targets()`/
 `rel()`/`unrecognised` are N/A because there is no line-level pattern to match across --
 each block's render.php CSS-emission and edit.js control wiring differs. There is
 DELIBERATELY no --fix here: the render.php side is real per-block risk (which shared
@@ -61,11 +61,11 @@ if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
 def _find_repo_root(start):
     cur = os.path.abspath(start)
     while True:
-        if os.path.isfile(os.path.join(cur, '.claude', 'THE-MIGRATION-METHOD.md')):
+        if os.path.exists(os.path.join(cur, '.git')):
             return cur
         parent = os.path.dirname(cur)
         if parent == cur:
-            raise RuntimeError('repo root not found (.claude/THE-MIGRATION-METHOD.md missing)')
+            raise RuntimeError('repo root not found (.git missing)')
         cur = parent
 
 
@@ -612,7 +612,7 @@ def main():
         sys.exit(self_test())
     if args.check:
         sys.exit(cmd_check())
-    # default: survey (branched explicitly, per THE-MIGRATION-METHOD.md's own warning
+    # default: survey (branched explicitly, per migration-method/SKILL.md's own warning
     # that the model it copies from leaves this an implicit fallthrough)
     sys.exit(cmd_survey(as_json=args.json))
 

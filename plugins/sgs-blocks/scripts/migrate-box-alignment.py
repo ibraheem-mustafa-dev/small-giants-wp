@@ -44,7 +44,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / 'lib'))
 from block_source_files import edit_source, render_source  # noqa: E402
 
 # Anchored on a repo-unique marker, never CLAUDE.md (plugins/sgs-blocks has its own).
-ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.claude' / 'THE-MIGRATION-METHOD.md').exists())
+ROOT = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
 BLOCKS = ROOT / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 
 # block name -> (attribute, allowed new values, default new value)

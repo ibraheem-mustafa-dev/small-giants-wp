@@ -44,7 +44,7 @@ Usage (from plugins/sgs-blocks):
     python scripts/migrate-border-element.py --check             gate (exit 1 on a finding)
     python scripts/migrate-border-element.py --self-test
 
-Method: .claude/THE-MIGRATION-METHOD.md. Modelled on scripts/migrate-box-longhands.py.
+Method: .claude/skills/migration-method/SKILL.md. Modelled on scripts/migrate-box-longhands.py.
 """
 import argparse
 import io
@@ -67,11 +67,11 @@ def _repo_root():
     """The repo root, found by a file that exists only there (never CLAUDE.md, which every package has)."""
     d = PLUGIN
     while True:
-        if os.path.isfile(os.path.join(d, '.claude', 'THE-MIGRATION-METHOD.md')):
+        if os.path.exists(os.path.join(d, '.git')):
             return d
         parent = os.path.dirname(d)
         if parent == d:
-            raise SystemExit('repo root not found: no .claude/THE-MIGRATION-METHOD.md above ' + PLUGIN)
+            raise SystemExit('repo root not found: no .git above ' + PLUGIN)
         d = parent
 
 

@@ -49,7 +49,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import render_files  # noqa: E402
 
 PLUGIN = Path(__file__).resolve().parents[1]
-assert (PLUGIN.parents[1] / ".claude" / "THE-MIGRATION-METHOD.md").exists(), "repo anchor missing"
+assert (PLUGIN.parents[1] / ".git").exists(), "repo anchor missing"
 BLOCKS = PLUGIN / "src" / "blocks"
 HARNESS = PLUGIN / "scripts" / "qa" / "lib" / "render-css-harness.php"
 DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"

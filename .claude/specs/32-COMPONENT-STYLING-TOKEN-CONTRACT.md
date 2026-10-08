@@ -22,7 +22,7 @@ lock_reason: null
 # Component Styling Token Contract
 
 ⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
-`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** A census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What decides the outcome is whether the TARGET SHAPE is settled first (THE-MIGRATION-METHOD.md Step 3).
+`.claude/skills/migration-method/SKILL.md` before the 4th file edit.** A census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What decides the outcome is whether the TARGET SHAPE is settled first (migration-method/SKILL.md Step 3).
 
 > **One-liner:** Every SGS block styles itself with semantic BEM classes that CONSUME per-client design tokens (CSS custom properties auto-generated from the theme snapshot) — never hardcoded client values, never inline property declarations — so the same block library re-skins across any client by changing `theme.json`/the snapshot alone.
 
@@ -168,7 +168,7 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
     `git grep -n border_style_raw -- plugins/sgs-blocks/src plugins/sgs-blocks/includes`.
   - **Rule 2 (blob-level `wp_strip_all_tags()`).** `plugins/sgs-blocks/scripts/check-style-blob-sanitisation.py`
     is a blocking gate (registered in `scripts/gates.json`, fast tier only — removed from `package.json`'s
-    `postbuild` because it ran twice). Survey/fix/check/self-test triad (THE-MIGRATION-METHOD shape). It parses every
+    `postbuild` because it ran twice). Survey/fix/check/self-test triad (migration-method shape). It parses every
     render.php with a literal `<style` tag across four emission shapes —
     `printf`/`sprintf` with one-or-more `%s` placeholders (resolved by PLACEHOLDER POSITION, not
     argument order, because `sprintf( '<style id="%s">%s</style>', esc_attr($uid),
