@@ -1,13 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, TextControl, SelectControl } from '@wordpress/components';
-import { NumberControl, UnitControl } from '../../components/primitives';
-
-const SAVING_BADGE_POSITION_OPTIONS = [
-	{ value: 'top-right', label: __( 'Top right', 'sgs-blocks' ) },
-	{ value: 'top-left', label: __( 'Top left', 'sgs-blocks' ) },
-	{ value: 'bottom-right', label: __( 'Bottom right', 'sgs-blocks' ) },
-	{ value: 'bottom-left', label: __( 'Bottom left', 'sgs-blocks' ) },
-];
+import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
+import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
@@ -193,18 +186,23 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<SelectControl
+						<ToggleGroupControl
 							label={ __( 'Position', 'sgs-blocks' ) }
 							value={ gallerySavingBadgePosition || 'top-right' }
-							options={ SAVING_BADGE_POSITION_OPTIONS }
 							onChange={ ( val ) =>
 								setAttributes( {
 									gallerySavingBadgePosition: val,
 								} )
 							}
+							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
+						>
+							<ToggleGroupControlOption value="top-right" label={ __( 'Top right', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="top-left" label={ __( 'Top left', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="bottom-right" label={ __( 'Bottom right', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="bottom-left" label={ __( 'Bottom left', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
 					</>
 				) }
 			</PanelBody>

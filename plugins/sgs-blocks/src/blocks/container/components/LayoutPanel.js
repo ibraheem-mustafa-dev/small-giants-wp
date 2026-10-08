@@ -244,17 +244,17 @@ export function LayoutPanel( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
 						value={ attributes.flexWrap || 'wrap' }
-						options={ [
-							{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
-							{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
-						] }
 						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="wrap" label={ __( 'Wrap', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="nowrap" label={ __( 'No wrap', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</>
 			) }
 

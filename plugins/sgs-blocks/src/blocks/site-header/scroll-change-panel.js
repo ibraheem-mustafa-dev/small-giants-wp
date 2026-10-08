@@ -28,7 +28,7 @@ export default function ScrollChangePanel( { attributes, setAttributes } ) {
 			<ToggleGroupControl
 				label={ __( 'Change based on', 'sgs-blocks' ) }
 				help={ __(
-					'Direction: the header changes while scrolling down and changes back as soon as the visitor scrolls up.',
+					'Position: the header changes once the page scrolls past the distance below. Direction: the header changes while scrolling down and changes back as soon as the visitor scrolls up.',
 					'sgs-blocks'
 				) }
 				value={ scrolledTrigger || 'position' }
@@ -37,8 +37,8 @@ export default function ScrollChangePanel( { attributes, setAttributes } ) {
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			>
-				<ToggleGroupControlOption value="position" label={ __( 'Scroll position', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="direction" label={ __( 'Scroll direction', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption value="position" label={ __( 'Position', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption value="direction" label={ __( 'Direction', 'sgs-blocks' ) } />
 			</ToggleGroupControl>
 
 			<RangeControl

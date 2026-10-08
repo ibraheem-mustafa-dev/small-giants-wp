@@ -50,12 +50,6 @@ function alreadyOffersSurfaceTreatmentViaFxPanel( name ) {
 	return !! qualifyingBlocks[ name ]?.includes( 'surface-treatment' );
 }
 
-const BG_SIZE_OPTIONS = [
-	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
-];
-
 const BG_POSITION_OPTIONS = [
 	{ label: __( 'Centre centre', 'sgs-blocks' ), value: 'center center' },
 	{ label: __( 'Top centre', 'sgs-blocks' ), value: 'top center' },
@@ -66,13 +60,6 @@ const BG_POSITION_OPTIONS = [
 	{ label: __( 'Top right', 'sgs-blocks' ), value: 'top right' },
 	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom left' },
 	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom right' },
-];
-
-const BG_REPEAT_OPTIONS = [
-	{ label: __( 'No repeat', 'sgs-blocks' ), value: 'no-repeat' },
-	{ label: __( 'Repeat', 'sgs-blocks' ), value: 'repeat' },
-	{ label: __( 'Repeat X', 'sgs-blocks' ), value: 'repeat-x' },
-	{ label: __( 'Repeat Y', 'sgs-blocks' ), value: 'repeat-y' },
 ];
 
 const BG_ATTACHMENT_OPTIONS = [
@@ -108,6 +95,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 	// A block that registers the ken-burns style (the hero, whose own panel holds
 	// it) runs ken-burns with parallax and allows a short one-off zoom.
 	const hasKenBurnsMode = !! getBlockType( name )?.attributes?.bgKenBurnsMode;
+	const showSurfaceOpacity = !! getBlockType( name )?.attributes?.surfaceOpacity;
 
 	const {
 		backgroundImage,
@@ -323,14 +311,14 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 						setAttributes( {
 							surfaceBlur: '',
 							surfaceSaturate: undefined,
-							surfaceOpacity: undefined,
+							...( showSurfaceOpacity ? { surfaceOpacity: undefined } : {} ),
 						} )
 					}
 				>
 					<SurfaceGroundControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						showOpacity={ !! getBlockType( name )?.attributes?.surfaceOpacity }
+						showOpacity={ showSurfaceOpacity }
 					/>
 				</ToolsPanel>
 			) }
@@ -440,14 +428,18 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 
 								{ hasBgImage && (
 									<>
-										<SelectControl
+										<ToggleGroupControl
 											label={ __( 'Size', 'sgs-blocks' ) }
 											value={ backgroundSize }
-											options={ BG_SIZE_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundSize: val } ) }
+											isBlock
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
-										/>
+										>
+											<ToggleGroupControlOption value="cover" label={ __( 'Cover', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="contain" label={ __( 'Contain', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="auto" label={ __( 'Auto', 'sgs-blocks' ) } />
+										</ToggleGroupControl>
 										<SelectControl
 											label={ __( 'Position', 'sgs-blocks' ) }
 											value={ backgroundPosition }
@@ -456,14 +448,19 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
-										<SelectControl
+										<ToggleGroupControl
 											label={ __( 'Repeat', 'sgs-blocks' ) }
 											value={ backgroundRepeat }
-											options={ BG_REPEAT_OPTIONS }
 											onChange={ ( val ) => setAttributes( { backgroundRepeat: val } ) }
+											isBlock
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
-										/>
+										>
+											<ToggleGroupControlOption value="no-repeat" label={ __( 'No repeat', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="repeat" label={ __( 'Repeat', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="repeat-x" label={ __( 'Repeat X', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="repeat-y" label={ __( 'Repeat Y', 'sgs-blocks' ) } />
+										</ToggleGroupControl>
 										<SelectControl
 											label={ __( 'Attachment', 'sgs-blocks' ) }
 											value={ backgroundAttachment }
@@ -668,32 +665,32 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
 										/>
-										<SelectControl
+										<ToggleGroupControl
 											label={ __( 'Animation', 'sgs-blocks' ) }
 											value={ bgSvgAnimation }
-											options={ [
-												{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-												{ label: __( 'Pulse', 'sgs-blocks' ), value: 'pulse' },
-												{ label: __( 'Float', 'sgs-blocks' ), value: 'float' },
-												{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
-											] }
 											onChange={ ( val ) => setAttributes( { bgSvgAnimation: val } ) }
+											isBlock
 											__nextHasNoMarginBottom
 											__next40pxDefaultSize
-										/>
+										>
+											<ToggleGroupControlOption value="none" label={ __( 'None', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="pulse" label={ __( 'Pulse', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="float" label={ __( 'Float', 'sgs-blocks' ) } />
+											<ToggleGroupControlOption value="wave" label={ __( 'Wave', 'sgs-blocks' ) } />
+										</ToggleGroupControl>
 										{ bgSvgAnimation !== 'none' && (
-											<SelectControl
+											<ToggleGroupControl
 												label={ __( 'Animation speed', 'sgs-blocks' ) }
 												value={ bgSvgAnimationSpeed }
-												options={ [
-													{ label: __( 'Slow', 'sgs-blocks' ), value: 'slow' },
-													{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-													{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
-												] }
 												onChange={ ( val ) => setAttributes( { bgSvgAnimationSpeed: val } ) }
+												isBlock
 												__nextHasNoMarginBottom
 												__next40pxDefaultSize
-											/>
+											>
+												<ToggleGroupControlOption value="slow" label={ __( 'Slow', 'sgs-blocks' ) } />
+												<ToggleGroupControlOption value="medium" label={ __( 'Medium', 'sgs-blocks' ) } />
+												<ToggleGroupControlOption value="fast" label={ __( 'Fast', 'sgs-blocks' ) } />
+											</ToggleGroupControl>
 										) }
 										<ToggleControl
 											label={ __( 'Text shadow', 'sgs-blocks' ) }

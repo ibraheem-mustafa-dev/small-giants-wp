@@ -63,7 +63,7 @@
 import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
 
 import { WidthPanel, ContentBandWidthControl } from './WidthPanel';
 import { LayoutPanel } from './LayoutPanel';
@@ -71,7 +71,7 @@ import { BackgroundPanel } from './BackgroundPanel';
 import { ShapeDividersPanel } from './ShapeDividersPanel';
 import { GridItemDefaultsPanel } from './GridItemDefaultsPanel';
 import { SeparatorsPanel } from './SeparatorsPanel';
-import { useShadowPresetOptions } from '../../../components/shadow-control/useShadowPresets';
+import { ShadowControl, shadowAttrKeys } from '../../../components';
 
 // Re-exported for the existing call sites (and for `import { X } from './ContainerWrapperControls'`).
 export {
@@ -95,15 +95,13 @@ export const MIN_HEIGHT_OPTIONS = [
 	{ label: '600px', value: '600px' },
 ];
 
-function ShadowPresetSelect( { attributes, setAttributes } ) {
+function ContainerShadowControl( { attributes, setAttributes } ) {
 	return (
-		<SelectControl
+		<ShadowControl
 			label={ __( 'Shadow', 'sgs-blocks' ) }
-			value={ attributes.shadow || '' }
-			options={ useShadowPresetOptions() }
-			onChange={ ( val ) => setAttributes( { shadow: val } ) }
-			__nextHasNoMarginBottom
-			__next40pxDefaultSize
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			attrNames={ shadowAttrKeys( 'shadow' ) }
 		/>
 	);
 }
@@ -176,7 +174,7 @@ const KIND_PANELS = {
 		// 7. Shadow.
 		( props ) => (
 			<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
-				<ShadowPresetSelect { ...props } />
+				<ContainerShadowControl { ...props } />
 			</PanelBody>
 		),
 		// 8. Shape dividers.

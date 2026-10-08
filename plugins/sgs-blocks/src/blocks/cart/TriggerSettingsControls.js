@@ -7,6 +7,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { IconPicker } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * SGS Cart — Trigger style + Icon + Badge inspector controls. Split out of
@@ -39,21 +40,21 @@ export default function TriggerSettingsControls( {
 	return (
 		<>
 			<PanelBody title={ __( 'Trigger style', 'sgs-blocks' ) }>
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Trigger shows', 'sgs-blocks' ) }
 					help={ __(
 						'Icon: the existing icon with a count badge. Text pill: an editable word (e.g. "Cart" or "Bag") with the count beside it, in a pill.',
 						'sgs-blocks'
 					) }
 					value={ triggerStyle || 'icon' }
-					options={ [
-						{ label: __( 'Icon', 'sgs-blocks' ), value: 'icon' },
-						{ label: __( 'Text pill', 'sgs-blocks' ), value: 'pill' },
-					] }
 					onChange={ ( val ) => setAttributes( { triggerStyle: val } ) }
+					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="pill" label={ __( 'Text pill', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
 				{ isPill && (
 					<TextControl
 						label={ __( 'Pill label', 'sgs-blocks' ) }
@@ -64,21 +65,21 @@ export default function TriggerSettingsControls( {
 					/>
 				) }
 				{ isPill && (
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Count shows as', 'sgs-blocks' ) }
 						help={ __(
 							'Plain: the number beside the word. Bubble: a round chip filled with the badge colours.',
 							'sgs-blocks'
 						) }
 						value={ pillCountStyle || 'plain' }
-						options={ [
-							{ label: __( 'Plain number', 'sgs-blocks' ), value: 'plain' },
-							{ label: __( 'Bubble', 'sgs-blocks' ), value: 'bubble' },
-						] }
 						onChange={ ( val ) => setAttributes( { pillCountStyle: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="plain" label={ __( 'Plain number', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="bubble" label={ __( 'Bubble', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				) }
 				{ /* Pill border colour + radius moved to the Styles tab's "Pill
 				   border" panel (edit.js) — Spec 35 §14 / C1: border colour is

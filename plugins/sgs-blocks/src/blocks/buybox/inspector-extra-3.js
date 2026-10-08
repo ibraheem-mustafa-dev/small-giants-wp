@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { TypographyControls } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
 
 const PICKER_STYLE_OPTIONS = [
 	{ value: '', label: __( "Picker's own default", 'sgs-blocks' ) },
@@ -9,13 +9,6 @@ const PICKER_STYLE_OPTIONS = [
 	{ value: 'filled', label: __( 'Filled', 'sgs-blocks' ) },
 	{ value: 'ghost', label: __( 'Ghost', 'sgs-blocks' ) },
 	{ value: 'tile', label: __( 'Tile', 'sgs-blocks' ) },
-];
-
-const ADD_TO_CART_STYLE_OPTIONS = [
-	{ value: '', label: __( "Today's look", 'sgs-blocks' ) },
-	{ value: 'primary', label: __( 'Primary', 'sgs-blocks' ) },
-	{ value: 'secondary', label: __( 'Secondary', 'sgs-blocks' ) },
-	{ value: 'outline', label: __( 'Outline', 'sgs-blocks' ) },
 ];
 
 /**
@@ -332,20 +325,25 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 				title={ __( 'Add to cart button', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Button style', 'sgs-blocks' ) }
-					value={ addToCartStyle || '' }
-					options={ ADD_TO_CART_STYLE_OPTIONS }
+					value={ addToCartStyle || 'default' }
 					onChange={ ( val ) =>
-						setAttributes( { addToCartStyle: val } )
+						setAttributes( { addToCartStyle: 'default' === val ? '' : val } )
 					}
+					isBlock
 					help={ __(
 						"Today's look keeps the buybox's own accent-colour button.",
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					<ToggleGroupControlOption value="default" label={ __( "Today's look", 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="primary" label={ __( 'Primary', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="secondary" label={ __( 'Secondary', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="outline" label={ __( 'Outline', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
 				<ToggleControl
 					label={ __( 'Show the price on the button', 'sgs-blocks' ) }
 					checked={ !! addToCartShowPrice }

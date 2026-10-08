@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * "Button action" panel for sgs/buybox (Spec 43 FR-43-22).
@@ -17,21 +18,21 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 	return (
 		<InspectorControls>
 			<PanelBody title={ __( 'Button action', 'sgs-blocks' ) } initialOpen={ false }>
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Button action', 'sgs-blocks' ) }
 					value={ addToCartAction || 'cart' }
-					options={ [
-						{ value: 'cart', label: __( 'Add to cart', 'sgs-blocks' ) },
-						{ value: 'modal', label: __( 'Open a popup', 'sgs-blocks' ) },
-					] }
 					onChange={ ( val ) => setAttributes( { addToCartAction: val } ) }
+					isBlock
 					help={ __(
 						'Open a popup keeps the label above but opens a modal instead of adding to the cart directly — use this when the modal holds a choice-flow that finishes the purchase.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					<ToggleGroupControlOption value="cart" label={ __( 'Add to cart', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="modal" label={ __( 'Open a popup', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
 				{ 'modal' === addToCartAction && (
 					<TextControl
 						label={ __( 'Popup to open', 'sgs-blocks' ) }
