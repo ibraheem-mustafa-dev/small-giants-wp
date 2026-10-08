@@ -83,7 +83,7 @@ import { LogicalAlignControl, ResponsiveControl, ResponsiveOverride, ResponsiveB
 	ShadowControl, SurfaceGroundControls, ScrimControls, scrimColourRow,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxShorthand, tierLengthPreview } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle, resolveShadowPreviewComposed, surfaceToneClass, resolveTier, flattenPresetSetting, tierBoxLonghands, tierLengthPreview } from '../../utils';
 
 /**
  * Content template: the menu ONLY. templateLock:false. The logo and the one
@@ -375,7 +375,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const bodyStyle = {
 		alignItems: ALIGN_ITEMS[ drawerAlign ] || 'flex-start',
 		gap: tierLengthPreview( drawerGap, activeDeviceTier ),
-		padding: tierBoxShorthand( drawerPadding, activeDeviceTier ),
+		...tierBoxLonghands( drawerPadding, activeDeviceTier, 'padding' ),
 		// CHECK A finding: drawerTextColour/drawerTextColourGradient are written
 		// by the "Drawer container" panel's GradientCapableColourControl below
 		// and consumed by render.php on `.sgs-nav-drawer__body` (the SAME
@@ -1402,7 +1402,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							   4px default (style.css::.sgs-nav-drawer__close). */
 							borderRadius: closeRadiusActive,
 							// closePadding editor-canvas mirror (active device tier).
-							...( tierBoxShorthand( closePadding, activeDeviceTier ) ? { padding: tierBoxShorthand( closePadding, activeDeviceTier ) } : {} ),
+							...tierBoxLonghands( closePadding, activeDeviceTier, 'padding' ),
 							// closePlacement/closeOffset editor-canvas mirror (SHOULD 10).
 							...closePlacementPreviewStyle,
 							// closeBorder* and closeIconSize editor-canvas mirrors: the box border and the glyph size.

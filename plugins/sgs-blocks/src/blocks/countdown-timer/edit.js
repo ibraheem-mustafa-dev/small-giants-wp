@@ -8,7 +8,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
-import { textPaintPreview, backgroundPaintPreview, tierBoxShorthand, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
+import { textPaintPreview, backgroundPaintPreview, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -112,14 +112,7 @@ function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' )
 
 	const preview = {};
 
-	const paddingPreview = tierBoxShorthand( padding, previewTier );
-	if ( paddingPreview ) {
-		preview.padding = paddingPreview;
-	}
-	const marginPreview = tierBoxShorthand( margin, previewTier );
-	if ( marginPreview ) {
-		preview.margin = marginPreview;
-	}
+	Object.assign( preview, tierBoxLonghands( padding, previewTier, 'padding' ), tierBoxLonghands( margin, previewTier, 'margin' ) );
 
 	// Border is the block's own borderWidth/borderStyle/borderColour/
 	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native

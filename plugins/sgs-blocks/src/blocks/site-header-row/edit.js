@@ -41,7 +41,7 @@ import { FlowingGradientRowControls } from '../../components/FlowingGradientRowC
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import {
 	resolveResponsiveTier,
-	boxShorthand,
+	tierBoxLonghands,
 	resolveContentWidthPreview,
 	contentBandPreview,
 	usePreviewTier,
@@ -387,11 +387,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
 	// {top,right,bottom,left} box (block.json boxFamilies.margin: ['margin']
-	// only), resolved via resolveResponsiveTier() + boxShorthand() on the tier
+	// only), resolved per side by tierBoxLonghands() across the tiers
 	// object. Fixed to the 'desktop' tier — the same convention every other
 	// resolveResponsiveTier() call in this file already uses (columnsDesktop,
 	// gridTemplateColumnsValue), none of which track the live device switcher.
-	const marginPreview = boxShorthand( resolveResponsiveTier( margin, previewTier )?.value );
+	const marginPreview = tierBoxLonghands( margin, previewTier, 'margin' );
 
 	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
 	// (not a box), same shape as `gap`/`columns` above.
@@ -414,7 +414,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...textPaintPreview( textColour, textColourGradient, colourPalette ),
 		...sgsBorderPreview( { widthValues: attributes.borderWidth, styleValue: attributes.borderStyle, colourValue: attributes.borderColour, colourGradientValue: attributes.borderColourGradient, radiusValues: attributes.borderRadius }, previewTier, colourPalette ),
 	};
-	if ( marginPreview ) style.margin = marginPreview;
+	Object.assign( style, marginPreview );
 	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
 
 	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly

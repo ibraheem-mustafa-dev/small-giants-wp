@@ -40,8 +40,7 @@ import {
 	colourVar,
 	resolveResponsiveTier,
 	withStableItemKeys,
-	boxShorthand,
-	resolveBoxTierPreview,
+	tierBoxLonghands,
 	resolveContentWidthPreview,
 	contentBandPreview,
 	applyGridLayoutPreview,
@@ -186,14 +185,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	// object.
 	const galleryPaddingObj = attributes.padding && typeof attributes.padding === 'object' ? attributes.padding : {};
 	const galleryMarginObj  = attributes.margin  && typeof attributes.margin  === 'object' ? attributes.margin  : {};
-	const paddingPreview = boxShorthand(
-		resolveBoxTierPreview( galleryPaddingObj.desktop, galleryPaddingObj.tablet, galleryPaddingObj.mobile, previewTier )
+	Object.assign(
+		inlineStyles,
+		tierBoxLonghands( galleryPaddingObj, previewTier, 'padding' ),
+		tierBoxLonghands( galleryMarginObj, previewTier, 'margin' )
 	);
-	if ( paddingPreview ) inlineStyles.padding = paddingPreview;
-	const marginPreview = boxShorthand(
-		resolveBoxTierPreview( galleryMarginObj.desktop, galleryMarginObj.tablet, galleryMarginObj.mobile, previewTier )
-	);
-	if ( marginPreview ) inlineStyles.margin = marginPreview;
 
 	// maxWidth: a plain {desktop,tablet,mobile} scalar tier object — same
 	// shape as sgs/container's own maxWidth, so the same resolver applies

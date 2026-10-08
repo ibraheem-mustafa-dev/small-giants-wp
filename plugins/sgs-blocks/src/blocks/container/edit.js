@@ -17,7 +17,7 @@ import { useSeparatorOverlay } from "../../shared/separators/useSeparatorOverlay
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl, SgsSeparatorControl } from "../../components";
 import ScrollSidewaysPanel from "./components/ScrollSidewaysPanel";
 import { resolveOnTiers } from "../../utils/responsive";
-import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, boxShorthand, resolveBoxTierPreview, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
+import { resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPaintPreview, textPaintPreview, backgroundPreview, svgBackgroundPreview, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, applyGridLayoutPreview, flattenPresetSetting, separatorsFlowPreview, typographyPreviewStyle, textIndentPreviewCss, sgsBorderPreview } from "../../utils";
 import ShapeDividerPreview from "../../components/ShapeDividerPreview";
 import { gridItemVars, gridItemStateCss } from "./grid-item-preview";
 import { containerColumnsPreview, containerRowsPreview, bandMarginPreview } from "./layout-preview";
@@ -236,14 +236,9 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
   // resolveResponsiveTier(). Previously never applied to the canvas at all —
   // the inspector's ResponsiveBoxControl wrote the attrs correctly but
   // nothing here read them back.
-  const paddingPreview = boxShorthand(
-    resolveBoxTierPreview( attributes.padding?.desktop, attributes.padding?.tablet, attributes.padding?.mobile, previewTier )
-  );
-  if ( paddingPreview ) style.padding = paddingPreview;
-  const marginPreview = boxShorthand(
-    resolveBoxTierPreview( attributes.margin?.desktop, attributes.margin?.tablet, attributes.margin?.mobile, previewTier )
-  );
-  if ( marginPreview ) style.margin = marginPreview;
+  // Set sides only, as longhands: the page prints the same through
+  // wp_style_engine_get_styles(), so an unset side keeps the stylesheet's value.
+  Object.assign( style, tierBoxLonghands( attributes.padding, previewTier, 'padding' ), tierBoxLonghands( attributes.margin, previewTier, 'margin' ) );
 
   // Border preview — previously entirely absent from the canvas (only wired
   // into SgsBorderControl's InspectorControls binding, never applied to the

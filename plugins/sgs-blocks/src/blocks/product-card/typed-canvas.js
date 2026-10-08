@@ -14,7 +14,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import {
 	backgroundPaintPreview,
 	borderPaintPreview,
-	boxShorthand,
+	boxLonghands,
 	resolveTier,
 	sgsLengthPreview,
 	typographyPreviewStyle,
@@ -29,12 +29,12 @@ const CSS_LENGTH = /^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc
 const ASPECTS = [ '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ];
 
 const colour = ( value ) => resolveColourToken( value ) || undefined;
-const boxOf = ( box ) => boxShorthand( box && 'object' === typeof box ? box : undefined );
+const paddingOf = ( box ) => boxLonghands( box, 'padding' );
 
 // sgs_label_box_css_rule(): padding, radius, background and the full-width switch.
 function labelBox( padding, radius, background, fullWidth ) {
 	return {
-		padding: boxOf( padding ),
+		...paddingOf( padding ),
 		borderRadius: sgsLengthPreview( radius ),
 		backgroundColor: colour( background ),
 		...( fullWidth ? { display: 'block', width: '100%' } : {} ),
@@ -73,7 +73,7 @@ export function typedCardPreview( attrs, tier ) {
 			'--sgs-pc-swatch-size': swatchSize > 0 ? `${ swatchSize }px` : undefined,
 			'--sgs-pc-swatch-hover-scale': swatchGrow > 100 ? ( swatchGrow / 100 ).toFixed( 2 ) : undefined,
 		},
-		body: { padding: boxOf( attrs.cardPadding ) },
+		body: paddingOf( attrs.cardPadding ),
 		media: attrs.mediaBackgroundColour ? { background: colour( attrs.mediaBackgroundColour ) } : {},
 		title: { ...typographyPreviewStyle( attrs, 'title', tier ), ...textColour( attrs.titleColour, attrs.titleColourGradient ) },
 		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },
@@ -89,7 +89,7 @@ export function typedCardPreview( attrs, tier ) {
 		},
 		brand: {
 			...typographyPreviewStyle( attrs, 'brand', tier ),
-			padding: boxOf( attrs.brandPadding ),
+			...paddingOf( attrs.brandPadding ),
 			color: colour( attrs.brandColour ),
 		},
 		savingBadge: {

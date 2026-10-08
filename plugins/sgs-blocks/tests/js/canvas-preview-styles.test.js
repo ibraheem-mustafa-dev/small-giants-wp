@@ -115,7 +115,7 @@ describe( 'cta-section preview', () => {
 			style
 		);
 		expect( style.color ).toBe( '#112233' );
-		expect( style.padding ).toBe( '2px 2px 2px 2px' );
+		expect( [ style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft ] ).toEqual( [ '2px', '2px', '2px', '2px' ] );
 		expect( style.minHeight ).toBe( '200px' );
 		expect( style.gap ).toBe( '10px' );
 		expect( hasBandProps ).toBe( true );

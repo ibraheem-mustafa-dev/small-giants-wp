@@ -36,7 +36,7 @@ import { ParticleTrailRowControls } from '../../components/ParticleTrailRowContr
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
+import { resolveResponsiveTier, tierBoxLonghands, resolveContentWidthPreview, contentBandPreview, usePreviewTier } from '../../utils';
 import { footerRowPaint } from './preview-style';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
@@ -388,7 +388,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		  };
 
 	// Margin — a tier object of {top,right,bottom,left} boxes; desktop tier.
-	const marginPreview = boxShorthand( resolveResponsiveTier( margin, 'desktop' )?.value );
+	const marginPreview = tierBoxLonghands( margin, 'desktop', 'margin' );
 
 	// Max width (CHECK A) — a TIER OBJECT holding a plain CSS length per tier
 	// (not a box), same shape as `gap`/`columns` above.
@@ -407,7 +407,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const style = { ...previewStyle, ...footerRowPaint( attributes, previewTier, colourPalette ), ...paddingPreview, ...sep.style };
-	if ( marginPreview ) style.margin = marginPreview;
+	Object.assign( style, marginPreview );
 	if ( maxWidthPreview ) style.maxWidth = maxWidthPreview;
 
 	// Content band (CHECK A) — mirrors sgs/container's Layer 2 mirror exactly

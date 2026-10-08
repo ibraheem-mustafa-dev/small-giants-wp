@@ -28,7 +28,18 @@ const env = Object.fromEntries( fs.readFileSync( path.join( REPO, target.envFile
 	.map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ), l.slice( l.indexOf( '=' ) + 1 ).replace( /^["']|["']$/g, '' ) ] ) );
 const BASE = env[ `WP_URL_${ target.envKey }` ].replace( /\/$/, '' );
 const TREE = path.join( HERE, 'check-box-longhands-blocks-live.tree.json' );
-const SLUGS = [ ...new Set( JSON.parse( fs.readFileSync( TREE, 'utf8' ) ).map( ( b ) => b.name.replace( 'sgs/', '' ) ) ) ];
+// One check per padded box. `inner` is the descendant that carries the padding (empty = the block root). `side` is the
+// value the test instance sets on right/bottom/left. `flat` = the attribute has no tier object (product-card cardPadding),
+// so the sides hold at every width and the top reads the control's own default at every width. Expected readings are
+// fixed here before the run: tiered rows read [A top, side x3] at 1440 and [40, side x3] at 768 and 375.
+const CHECKS = [
+	...[ 'text', 'heading', 'button', 'label', 'info-box' ].map( ( slug ) => ( { slug, inner: '', side: '20' } ) ),
+	{ slug: 'option-picker', inner: '.sgs-option-picker__pill', side: '20' },
+	{ slug: 'hero-content', inner: '.sgs-hero__content', side: '20' },
+	{ slug: 'hero-media', inner: '.sgs-hero__media', side: '20' },
+	{ slug: 'card-grid', inner: '.sgs-card-grid__body', side: '20' },
+	{ slug: 'product-card', inner: '.sgs-product-card__body', side: '30', flat: true },
+];
 const DEVICE = { 1440: 'Desktop', 768: 'Tablet', 375: 'Mobile' };
 
 const build = ( tree ) => execFileSync( process.execPath, [ path.join( REPO, 'scripts/wp-build-page.js' ),
@@ -40,16 +51,18 @@ const pad = ( el ) => {
 };
 
 let bad = 0;
-const judge = ( surface, slug, w, a, b ) => {
+const judge = ( surface, chk, w, a, b ) => {
+	const slug = chk.slug;
 	if ( ! a || ! b ) {
 		bad++;
 		console.log( `FAIL ${ surface.padEnd( 6 ) } ${ slug } @${ w }: instance missing (A ${ a ? 'found' : 'missing' }, B ${ b ? 'found' : 'missing' })` );
 		return;
 	}
-	const want = 1440 === w ? [ a[ 0 ], '20', '20', '20' ] : [ '40', '20', '20', '20' ];
+	const top = 1440 === w || chk.flat ? a[ 0 ] : '40';
+	const want = [ top, chk.side, chk.side, chk.side ];
 	const ok = b.join( ' ' ) === want.join( ' ' );
 	bad += ok ? 0 : 1;
-	console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ surface.padEnd( 6 ) } ${ slug.padEnd( 9 ) } @${ w }: B ${ b.join( ' ' ) }  want ${ want.join( ' ' ) }  (control A ${ a.join( ' ' ) })` );
+	console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ surface.padEnd( 6 ) } ${ slug.padEnd( 13 ) } @${ w }: B ${ b.join( ' ' ) }  want ${ want.join( ' ' ) }  (control A ${ a.join( ' ' ) })` );
 };
 
 const empty = path.join( os.tmpdir(), `box-longhands-blocks-empty-${ process.pid }.json` );
@@ -62,12 +75,12 @@ try {
 	for ( const w of [ 1440, 768, 375 ] ) {
 		await page.setViewportSize( { width: w, height: 900 } );
 		await page.goto( url, { waitUntil: 'networkidle' } );
-		for ( const slug of SLUGS ) {
+		for ( const chk of CHECKS ) {
 			const read = async ( x ) => {
-				const el = await page.$( `.cr6-${ slug }-${ x }` );
+				const el = await page.$( `.cr6-${ chk.slug }-${ x } ${ chk.inner }`.trim() );
 				return el ? el.evaluate( pad ) : null;
 			};
-			judge( 'front', slug, w, await read( 'a' ), await read( 'b' ) );
+			judge( 'front', chk, w, await read( 'a' ), await read( 'b' ) );
 		}
 	}
 	if ( ! process.argv.includes( '--front-only' ) ) {
@@ -82,12 +95,12 @@ try {
 		for ( const w of [ 1440, 768, 375 ] ) {
 			await page.evaluate( ( d ) => window.wp.data.dispatch( 'core/editor' ).setDeviceType( d ), DEVICE[ w ] );
 			await page.waitForTimeout( 1500 );
-			for ( const slug of SLUGS ) {
+			for ( const chk of CHECKS ) {
 				const read = async ( x ) => {
-					const loc = canvas.locator( `.cr6-${ slug }-${ x }` ).first();
+					const loc = canvas.locator( `.cr6-${ chk.slug }-${ x } ${ chk.inner }`.trim() ).first();
 					return ( await loc.count() ) ? loc.evaluate( pad ) : null;
 				};
-				judge( 'editor', slug, w, await read( 'a' ), await read( 'b' ) );
+				judge( 'editor', chk, w, await read( 'a' ), await read( 'b' ) );
 			}
 		}
 	}

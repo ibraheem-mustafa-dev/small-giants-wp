@@ -33,7 +33,7 @@ import {
 import { ResponsiveBoxControl, ResponsiveOverride, SpacingControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
-import { tierBoxShorthand, usePreviewTier, resolveResponsiveTier, isCssGradient, sgsBorderPreview } from '../../utils';
+import { tierBoxLonghands, usePreviewTier, resolveResponsiveTier, isCssGradient, sgsBorderPreview } from '../../utils';
 
 const JUSTIFY_OPTIONS = [
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
@@ -117,10 +117,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( justifyAtTier ) {
 		previewStyle.justifyContent = justifyAtTier;
 	}
-	const paddingPreview = tierBoxShorthand( asidePadding, previewTier, [ 'top', 'right', 'bottom', 'left' ] );
-	if ( paddingPreview ) {
-		previewStyle.padding = paddingPreview;
-	}
+	Object.assign( previewStyle, tierBoxLonghands( asidePadding, previewTier, 'padding' ) );
 
 	/*
 	 * asideBgHover(Gradient) canvas mirror. render.php

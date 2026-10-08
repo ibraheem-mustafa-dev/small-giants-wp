@@ -15,8 +15,8 @@ import {
 	borderPaintPreview,
 	borderBoxPreview,
 	borderRadiusLonghands,
-	boxShorthand,
-	tierBoxShorthand,
+	boxLonghands,
+	tierBoxLonghands,
 	tierLengthPreview,
 	typographyPreviewStyle,
 	wrapperBorderPreview,
@@ -35,16 +35,14 @@ export function chromeRowStyle( attributes, tier, palette ) {
 	const style = backgroundPaintPreview( attributes.chromeRowBg, attributes.chromeRowBgGradient, palette );
 	const minHeight = tierLengthPreview( attributes.chromeRowHeight, tier );
 	const gap = tierLengthPreview( attributes.chromeRowGap, tier );
-	const padding = tierBoxShorthand( attributes.chromeRowPadding, tier );
+	const padding = tierBoxLonghands( attributes.chromeRowPadding, tier, 'padding' );
 	if ( minHeight ) {
 		style.minHeight = minHeight;
 	}
 	if ( gap ) {
 		style.gap = gap;
 	}
-	if ( padding ) {
-		style.padding = padding;
-	}
+	Object.assign( style, padding );
 	return style;
 }
 
@@ -68,10 +66,7 @@ function chromeButtonStyle( attributes, palette ) {
 		borderBoxPreview( attributes.chromeButtonBorderWidth, attributes.chromeButtonBorderStyle ),
 		borderRadiusLonghands( attributes.chromeButtonBorderRadius )
 	);
-	const padding = boxShorthand( attributes.chromeButtonPadding );
-	if ( padding ) {
-		style.padding = padding;
-	}
+	Object.assign( style, boxLonghands( attributes.chromeButtonPadding, 'padding' ) );
 	return style;
 }
 

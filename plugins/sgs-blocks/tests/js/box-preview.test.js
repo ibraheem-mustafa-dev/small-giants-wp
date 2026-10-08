@@ -17,13 +17,16 @@ describe( 'boxPreview', () => {
 
 	it( 'previews the desktop tier by default', () => {
 		const style = boxPreview( attributes, 'desktop', [] );
-		expect( style.padding ).toBe( '10px 0 0 0' );
+		expect( style.paddingTop ).toBe( '10px' );
+		expect( style ).not.toHaveProperty( 'paddingRight' );
+		expect( style ).not.toHaveProperty( 'padding' );
 		expect( [ style.borderTopLeftRadius, style.borderTopRightRadius, style.borderBottomRightRadius, style.borderBottomLeftRadius ] ).toEqual( [ '8px', '8px', '8px', '8px' ] );
 	} );
 
 	it( 'lets a tablet corner override only that corner', () => {
 		const style = boxPreview( attributes, 'tablet', [] );
-		expect( style.padding ).toBe( '20px 0 0 0' );
+		expect( style.paddingTop ).toBe( '20px' );
+		expect( style ).not.toHaveProperty( 'padding' );
 		expect( [ style.borderTopLeftRadius, style.borderTopRightRadius, style.borderBottomRightRadius, style.borderBottomLeftRadius ] ).toEqual( [ '2px', '8px', '8px', '8px' ] );
 	} );
 

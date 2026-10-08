@@ -154,23 +154,47 @@ export function tierBoxLonghands( tiers, tier, family ) {
 }
 
 /**
+ * Resolve ONE flat padding or margin box (no tiers) into longhand style keys for
+ * the SET sides only (`{ paddingTop: '12px' }`), for an attribute the front end
+ * prints through sgs_box_object_longhands(). An unset side gets no key, so the
+ * canvas shows the stylesheet's own value for it, as the page does; boxShorthand()
+ * would print `0`.
+ *
+ * @param {Object|undefined} box    `{ top, right, bottom, left }`, each an already unit-bearing length or absent.
+ * @param {string}           family 'padding' or 'margin'.
+ * @return {Object} Style keys for the set sides; `{}` when none is set.
+ */
+export function boxLonghands( box, family ) {
+	if ( 'padding' !== family && 'margin' !== family ) {
+		return {};
+	}
+	const source = box && 'object' === typeof box ? box : {};
+	const style = {};
+	BOX_SIDE_KEYS.forEach( ( side ) => {
+		if ( source[ side ] ) {
+			style[ family + side.charAt( 0 ).toUpperCase() + side.slice( 1 ) ] = source[ side ];
+		}
+	} );
+	return style;
+}
+
+/**
  * A block's canvas `style` object for padding + margin at the active preview
- * tier. Returns only the keys that resolved to a real shorthand, so a caller
- * can spread the result straight into its style object.
+ * tier, as longhand keys for the set sides only (tierBoxLonghands), so a caller
+ * can spread the result straight into its style object and an unset side keeps
+ * the stylesheet's value, as on the page.
  *
  * @param {Object} attrs         The block's spacing attributes.
  * @param {Object} [attrs.padding] Tier-of-boxes padding attribute.
  * @param {Object} [attrs.margin]  Tier-of-boxes margin attribute.
  * @param {string} tier          Active preview tier ('desktop'|'tablet'|'mobile').
- * @return {{padding?: string, margin?: string}}
+ * @return {Object} `paddingTop`, `marginLeft` and the other set-side keys; `{}` when nothing is set.
  */
 export function spacingPreview( { padding, margin }, tier ) {
-	const result = {};
-	const paddingValue = tierBoxShorthand( padding, tier );
-	if ( paddingValue ) result.padding = paddingValue;
-	const marginValue = tierBoxShorthand( margin, tier );
-	if ( marginValue ) result.margin = marginValue;
-	return result;
+	return {
+		...tierBoxLonghands( padding, tier, 'padding' ),
+		...tierBoxLonghands( margin, tier, 'margin' ),
+	};
 }
 
 /**
