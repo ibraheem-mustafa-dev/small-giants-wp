@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.14"
+spec_version: "1.15"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
-last_verified: 2026-10-05
+last_verified: 2026-10-08
 references:
   - .claude/specs/11-SGS-BUTTON-ARCHITECTURE.md
   - .claude/specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md
@@ -434,10 +434,10 @@ not cells:
 ```css
 :where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ),
 :where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ) {
-	padding-top: var( --sgs-gi-padding-top );
-	padding-right: var( --sgs-gi-padding-right );
-	padding-bottom: var( --sgs-gi-padding-bottom );
-	padding-left: var( --sgs-gi-padding-left );
+	padding-top: var( --sgs-gi-padding-top, 0 );
+	padding-right: var( --sgs-gi-padding-right, 0 );
+	padding-bottom: var( --sgs-gi-padding-bottom, 0 );
+	padding-left: var( --sgs-gi-padding-left, 0 );
 	background: var( --sgs-gi-bg );
 	border-top-left-radius: var( --sgs-gi-radius-top-left );
 	border-top-right-radius: var( --sgs-gi-radius-top-right );
@@ -448,6 +448,8 @@ not cells:
 	color: var( --sgs-gi-color );
 }
 ```
+
+Each padding side falls back to `0`. The build's minifier folds the four sides into one `padding` shorthand, and a shorthand that reads an unset custom property is invalid and paints no padding, so a grid that sets only its top side would lose it. `tests/js/per-side-var-fallback.test.js` fails any block stylesheet that reads four bare per-side custom properties.
 
 Of the six values only text colour reaches the cell's own children, by normal inheritance of `color`; the six
 variables are reset to `initial` on each cell's children, so a grid nested inside a cell starts from its own
