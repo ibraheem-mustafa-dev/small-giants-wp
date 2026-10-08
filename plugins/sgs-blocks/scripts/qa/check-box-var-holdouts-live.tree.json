@@ -15,8 +15,7 @@
         },
         "mobile": {
           "bottom": "8px"
-        },
-        "fixtureNote": "db-marks-flat-block-stores-tiers"
+        }
       },
       "contentPadding": {
         "desktop": {
@@ -30,8 +29,7 @@
         },
         "mobile": {
           "bottom": "8px"
-        },
-        "fixtureNote": "db-marks-flat-block-stores-tiers"
+        }
       }
     },
     "innerBlocks": [
@@ -172,5 +170,21 @@
         "desktop": "8px"
       }
     }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "className": "cr6h-fresh",
+      "layout": "grid"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "className": "cr6h-freshcell",
+          "text": "Fresh cell"
+        }
+      }
+    ]
   }
 ]
