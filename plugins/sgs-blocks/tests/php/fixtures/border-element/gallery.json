@@ -89,6 +89,10 @@
             "--sgs-transition-easing:ease-in-out",
             "container-type:inline-size"
         ],
+        " || .sgs-gallery-UID.wp-block-sgs-gallery": [
+            "border-style:none",
+            "border-width:0"
+        ],
         " || .sgs-gallery-UID.wp-block-sgs-gallery .sgs-gallery__caption": [
             "color:var(--wp--preset--color--text-inverse,currentColor)"
         ],
@@ -207,6 +211,9 @@
             "--sgs-transition-duration:300ms",
             "--sgs-transition-easing:ease-in-out",
             "container-type:inline-size"
+        ],
+        " || .sgs-gallery-UID.wp-block-sgs-gallery": [
+            "border-radius:8px"
         ],
         " || .sgs-gallery-UID.wp-block-sgs-gallery .sgs-gallery__caption": [
             "color:var(--wp--preset--color--text-inverse,currentColor)"

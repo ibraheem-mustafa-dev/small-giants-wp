@@ -29,13 +29,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
-$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
 
-// CSS-keyword sanitiser — free-text style/border values concatenated into raw
-// CSS declarations (border-style). Strips everything except letters + hyphen
-// (contract §D). Mirrors sgs/hero + sgs/quote.
-// CSS-length sanitiser — for border-width / radius string values.
 $style         = $attributes['accordionStyle'] ?? 'bordered';
 $icon_position = $attributes['iconPosition'] ?? 'right';
 $allow_multi   = ! empty( $attributes['allowMultiple'] );
@@ -66,31 +60,8 @@ if ( ! empty( $color_args ) ) {
 	$style_engine_args['color'] = $color_args;
 }
 
-// Border WIDTH / STYLE / COLOUR / RADIUS are all block-private attrs now (Shape
-// B, 2026-08-30; radius joined 2026-08-30 target-shape correction) — emitted
-// below, not through native supports.
-$border_args = array();
-if ( null !== $sgs_radius_tiers['desktop'] ) {
-	$radius_raw = $sgs_radius_tiers['desktop'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$border_args['radius'] = sgs_css_length_value( $radius_raw );
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean = array();
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			// An explicit '0' is a set corner (empty() would drop it).
-			$corner_value = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $corner_value ) {
-				$radius_clean[ $corner ] = $corner_value;
-			}
-		}
-		if ( ! empty( $radius_clean ) ) {
-			$border_args['radius'] = $radius_clean;
-		}
-	}
-}
-if ( ! empty( $border_args ) ) {
-	$style_engine_args['border'] = $border_args;
-}
+// Border WIDTH / STYLE / COLOUR / RADIUS are block-private attrs, emitted through
+// the shared assembler below, not through native supports.
 
 if ( ! empty( $style_engine_args ) ) {
 	$scoped_styles = wp_style_engine_get_styles(
@@ -102,103 +73,28 @@ if ( ! empty( $style_engine_args ) ) {
 	}
 }
 
-// Border-radius tablet/mobile tiers (base handled above via the style engine).
-$border_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
-$border_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-$radius_tab_val           = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val           = sgs_corner_object_longhands( $border_radius_mobile_obj );
-
-$tablet_box_decls = array();
-if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "{$radius_tab_val}";
+// Border (width, style, colour, gradient ring, radius at three tiers) through
+// the shared assembler; the base rule prints before the tier rules.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-if ( $tablet_box_decls ) {
-	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $tablet_box_decls ) . ';}}';
+$responsive_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-
-$mobile_box_decls = array();
-if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "{$radius_mob_val}";
-}
-if ( $mobile_box_decls ) {
-	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $mobile_box_decls ) . ';}}';
-}
-
-// ── Block-private border: width / style / colour (Shape B, 2026-08-30). ──
-// These were WP-native supports until 2026-08-30, but this block declares a
-// `style` ATTRIBUTE, which shadowed WP's reserved `style` object and made the
-// native path dead code — every read below the shadow returned false, so the
-// border never painted. The preset attr is now `accordionStyle` and these three
-// legs are block-private attrs on the sgs/product-card model. Radius stays
-// native (handled by the style engine above).
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
-	// default." The style is seeded ONLY alongside a real width — otherwise a
-	// style with no width falls through to the browser's initial `medium`
-	// (~3px). border-colour below is legitimately independent and still emits.
-	$border_box_decls = array();
-	if ( $has_border_width ) {
-		$bwt                = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr                = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb                = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl                = '' !== $border_width_left ? $border_width_left : '0';
-		$border_box_decls[] = 'border-style:' . $border_style;
-		$border_box_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	}
-	if ( $border_box_decls ) {
-		$responsive_css .= $root_sel . '{' . implode( ';', $border_box_decls ) . ';}';
-	}
-
-	// Colour. A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses
-	// the masked ::before ring.
-	//
-	// ⚠ Deliberately NOT `sgs_border_states_css()`, even though sgs/product-card
-	// (this block's model for the width/style legs) calls it. That helper always
-	// routes through `sgs_border_gradient_css()`, which sets
-	// `border-color:transparent` and paints the colour on a ::before ring — so a
-	// client's flat border colour is unreadable as `border-color` on the element.
-	// Measured live 2026-08-30 with `scripts/qa/check-border-roundtrip.js`
-	// against a palette token: sgs/product-card and sgs/container (the helper's
-	// only two callers) BOTH report
-	// `positive border-color = rgba(0, 0, 0, 0)`, while the blocks that emit
-	// `border-color` directly pass. Direct emission is both the majority pattern
-	// (quote/heading/button) and the cheaper one — no pseudo-element,
-	// no position:relative, no background-clip, and `border-color` stays
-	// readable by anything that inspects it.
-	//
-	// `sgs_colour_value()` resolves a palette SLUG to its custom property; a raw
-	// colour passes through. Skipping that resolution is D881 defect 3 — a bare
-	// slug is invalid CSS the browser silently drops.
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-
-	if ( '' !== $border_colour_gradient ) {
-		$responsive_css .= sgs_border_gradient_css(
-			$root_sel,
-			$border_colour_gradient,
-			null,
-			'' !== $border_width_top ? $border_width_top : '1px'
-		);
-	} elseif ( '' !== $border_colour ) {
-		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$responsive_css .= $root_sel . '{border-style:none;border-width:0;}';
+if ( $border['mobile'] ) {
+	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()

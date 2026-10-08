@@ -76,6 +76,9 @@
         ]
     },
     "j_radius_uniform": {
+        " || .sgs-sf-UID.sgs-site-footer": [
+            "border-radius:8px"
+        ],
         " || :where(.sgs-sf-UID.sgs-site-footer > *,.sgs-sf-UID.sgs-site-footer > .sgs-container__inner > *)": [
             "width:100%"
         ]

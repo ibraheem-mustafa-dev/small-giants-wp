@@ -97,6 +97,9 @@
         ]
     },
     "j_radius_uniform": {
+        " || .sgs-accordion-item-UID.wp-block-sgs-accordion-item": [
+            "border-radius:8px"
+        ],
         " || .sgs-accordion-item-UID.wp-block-sgs-accordion-item .sgs-accordion-item__header": [
             "font-weight:600"
         ],

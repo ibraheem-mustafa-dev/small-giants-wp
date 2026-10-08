@@ -81,17 +81,6 @@ $link_to_home     = isset( $attributes['linkToHome'] ) ? (bool) $attributes['lin
 $alt              = isset( $attributes['alt'] ) ? sanitize_text_field( $attributes['alt'] ) : '';
 $logo_decorative  = ! empty( $attributes['logoDecorative'] );
 
-// Border (Block Customisation Standard — wrapper-level border control).
-// Box-object interface contract: borderWidth is an SGS custom OBJECT
-// attr { top, right, bottom, left }, no tiers.
-$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
-$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
-
 // Background colour. Mirrors sgs/brand-strip's root background pair exactly: gradient (via
 // background-image) wins over the flat colour when set+valid, base + hover.
 $bg_colour                = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
@@ -344,36 +333,35 @@ if ( $shrink_width_explicit ) {
 	$scoped_css[] = '@media (prefers-reduced-motion: reduce) {' . $sel . '{transition:none !important;}}';
 }
 
-// --- Border — width/style on the wrapper, colour (flat or gradient, base +
-// hover) via the shared sgs_border_states_css() helper, radius via the
-// shared sgs_border_radius_tiers() + core style engine (base) plus
-// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
-$border_base_decls = array();
-if ( $has_border_width ) {
-	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
-	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
-	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
-	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
-	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	$border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $border_style_raw );
-}
-if ( $border_base_decls ) {
-	$scoped_css[] = "{$sel}{" . implode( ';', $border_base_decls ) . ';}';
-}
-
-$border_colour_css = sgs_border_states_css(
-	$sel,
+// --- Border (width, style, colour flat or gradient, base and hover, radius at
+// three tiers) through the shared assembler. The base rule prints before the
+// tier rules so a tablet or mobile radius (same specificity) wins inside its
+// media query. ---
+$border = sgs_border_element_decls(
 	$attributes,
+	'',
+	$sel,
 	array(
-		'base'           => 'borderColour',
-		'hover'          => 'borderColourHover',
-		'gradient'       => 'borderColourGradient',
-		'hover_gradient' => 'borderColourHoverGradient',
-		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
 	)
 );
-if ( '' !== $border_colour_css ) {
-	$scoped_css[] = $border_colour_css;
+if ( $border['base'] ) {
+	$scoped_css[] = $sel . '{' . implode( ';', $border['base'] ) . ';}';
+}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
+if ( $border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $sel, implode( ';', $border['hover'] ), ':focus-within' );
+}
+if ( $border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+}
+if ( $border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // --- Background colour — gradient wins over flat
@@ -419,28 +407,6 @@ $colour_auto_modifier = 'auto' === $colour_treatment ? ' sgs-responsive-logo--co
 // alongside the ancestor tone/header-state classes it already targets for the
 // dark-mode logo variant; see the "Ground response" section there. ---
 $has_dark_logo_modifier = '' !== $dark_logo_url ? ' sgs-responsive-logo--has-dark-logo' : '';
-
-$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$border_radius_base       = $border_radius_tiers['base'];
-$border_radius_tablet_obj = $border_radius_tiers['tablet'];
-$border_radius_mobile_obj = $border_radius_tiers['mobile'];
-if ( null !== $border_radius_base ) {
-	$border_radius_scoped = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_base ) ),
-		array( 'selector' => $sel )
-	);
-	if ( ! empty( $border_radius_scoped['css'] ) ) {
-		$scoped_css[] = $border_radius_scoped['css'];
-	}
-}
-$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
-if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{{$border_radius_tab_val};}}";
-}
-if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{{$border_radius_mob_val};}}";
-}
 
 // --- Left placement (FR-36-22 basics) — NN/g: a left-aligned logo returns visitors
 // home 6x more reliably than other placements. The block adds NO alignment margin:

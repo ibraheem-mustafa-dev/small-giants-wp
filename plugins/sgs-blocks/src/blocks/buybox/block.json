@@ -76,7 +76,11 @@
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius"
 					},
 					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap.",
 					"states": {

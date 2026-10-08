@@ -57,11 +57,6 @@ $slides_visible = $attributes['slidesVisible'] ?? 1;
 // gradient-resolve calc below, not the combined hover-decls array (see the
 // comment further down).
 $hover_text_colour   = $attributes['textColourHover'] ?? '';
-$hover_border_colour = $attributes['borderColourHover'] ?? '';
-// Border-colour gradient — non-empty wins over the flat
-// $hover_border_colour above, painted via the shared masked ::before ring
-// mechanism, scoped to :hover/:focus-within.
-$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect        = $attributes['effectHover'] ?? 'none';
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here.
@@ -215,87 +210,31 @@ $css_vars = sgs_transition_vars( $attributes );
 
 // Hover colours emit as a scoped `.{uid}.sgs-testimonial-slider:hover{…}` rule
 
-// ── Block-private border: width / style / colour. ──
-// Same shape as sgs/accordion (checked by scripts/qa/check-border-roundtrip.js).
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// A style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$slider_scoped_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent, so a flat colour would compute to
-	// rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$slider_scoped_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops.
-		$slider_scoped_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$slider_scoped_css .= $root_sel . '{border-style:none;border-width:0;}';
+// ── Root border (width, style, colour, gradient ring, hover paint, radius at
+// three tiers) through the shared assembler; its hover colour joins the hover
+// declarations below. ──
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$slider_scoped_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius. Same wp_style_engine_get_styles() route
-// used by sgs/media + sgs/before-after's borderRadiusTablet/Mobile tiers, for
-// base and tiers alike. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$slider_scoped_css .= $border_radius_out['css'];
-	}
+$slider_scoped_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$slider_scoped_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$slider_scoped_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$slider_scoped_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$slider_scoped_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // (assembled below, appended to $slider_scoped_css), NOT as inline
@@ -311,40 +250,11 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // on its own `::after` layer; text alongside its base state), so building
 // them here too would duplicate the same declarations on the same selector.
 $slider_hover_decls = array();
-if ( $hover_border_colour ) {
-	$slider_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
-}
+$slider_hover_decls = array_merge( $slider_hover_decls, $border['hover'] );
 if ( $slider_hover_decls ) {
 	// Via the ONE shared hover-colour helper — also emits the `:focus-visible`
 	// twin a keyboard user needs.
 	$slider_scoped_css .= sgs_emit_state_colour_css( $root_sel, array(), $slider_hover_decls );
-}
-
-// Border-colour gradient — masked ::before ring, scoped to
-// :hover/:focus-within only (mirrors sgs/testimonial's own borderColourHover
-// gradient — same hover-only semantics, no resting-state border to override).
-if ( '' !== $hover_border_gradient ) {
-	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
-	// when $normal_paint is empty), so a hover-scoped selector is baked in as
-	// its own "normal_paint" call — this must therefore carry its own guard
-	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
-	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
-	// prefixed onto the selector per that function's own documented pattern
-	// for opaque-rule callers. Focus-within stays outside both guards.
-	$slider_scoped_css .= sgs_hover_media_wrap(
-		sgs_border_gradient_css(
-			SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover',
-			$hover_border_gradient,
-			null,
-			'1px'
-		)
-	);
-	$slider_scoped_css .= sgs_border_gradient_css(
-		$root_sel . ':focus-within',
-		$hover_border_gradient,
-		null,
-		'1px'
-	);
 }
 
 // ── Own extra attrs — carousel data-* + ARIA region attrs ─────────────────

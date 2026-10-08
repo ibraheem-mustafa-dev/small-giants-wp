@@ -53,7 +53,8 @@ All live in `includes/helpers-tokens.php` (primitives) and `includes/helpers-col
 | Fill | `sgs_fill_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` | Element shares its selector with other declarations you're already assembling — compose, then call `sgs_emit_state_colour_css()` once. |
 | Fill | `sgs_fill_states_css( $selector, $attributes, $map )` | Finished CSS | Element owns a standalone rule for just this fill. |
 | Text | `sgs_text_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` | Returns ONLY `color:`. If the resolved value is a gradient you must separately call `sgs_text_colour_gradient_fallback_rule()` — a bare `color:linear-gradient(...)` is invalid CSS the browser silently drops. |
-| Border | `sgs_border_states_css( $selector, $attributes, $map )` | Finished CSS (always) | A border gradient needs a masked `::before` ring requiring both states at once. |
+| Border (the whole border) | `sgs_border_element_decls( $attributes, $prefix, $selector, $options )` (`includes/helpers-border-style.php`) | `{base, tablet, mobile, hover, rules}` | Any element with a border: width, style, flat-or-gradient colour, hover, the explicit `none` override and radius at three tiers in one call. Prefix literal; colour map literal (`'colour' => array( 'base' => 'borderColour', … )`); `radius` names a non-prefixed radius attribute. Print `base` before the tier media rules. Gate: `scripts/migrate-border-element.py --check`. |
+| Border colour only, a state the assembler lacks (Current, per-edge suppression) | `sgs_border_states_css( $selector, $attributes, $map )` | Finished CSS (always) | buybox's gallery thumbnails (`current`), mega-panel; a border gradient needs a masked `::before` ring requiring both states at once. |
 
 All four `$map` shapes: `['base'=>attr, 'hover'=>attr, 'gradient'=>attr, 'hover_gradient'=>attr]` —
 only `base` required. Attribute names are the caller's own (Bean-locked); the map adapts, nothing
@@ -116,8 +117,8 @@ the value is a gradient).
 
 | Element shape | Use |
 |---|---|
-| One selector, background AND/OR border AND/OR text colour, all flat-or-gradient except text | `sgs_button_element_style_css()` if genuinely button-shaped; otherwise compose `sgs_fill_decls()`/`sgs_text_decls()`/`sgs_border_states_css()` yourself |
-| One selector, background/border only, no text | `sgs_fill_states_css()` and/or `sgs_border_states_css()` directly |
+| One selector, background AND/OR border AND/OR text colour, all flat-or-gradient except text | `sgs_button_element_style_css()` if genuinely button-shaped; otherwise compose `sgs_fill_decls()`/`sgs_text_decls()` and `sgs_border_element_decls()` yourself |
+| One selector, background/border only, no text | `sgs_fill_states_css()` and/or `sgs_border_element_decls()` |
 | One selector, text gradient needed, no background on that selector | `sgs_resolve_text_colour_or_gradient()` → `sgs_text_colour_decl()` → `sgs_text_colour_gradient_fallback_rule()` (mandatory companion) |
 | One selector, text gradient needed AND a background too | Same as above, but move the background to `sgs_block_background_layer_css()` first |
 | Multiple style variants, one colour concept, different properties per variant | The bespoke `--sgs-x-*` custom-property pattern (option-picker is the reference) |

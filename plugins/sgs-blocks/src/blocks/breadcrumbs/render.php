@@ -98,17 +98,6 @@ $current_colour_hover        = $attributes['currentColourHover'] ?? '';
 $current_colour_hover_grad   = $attributes['currentColourHoverGradient'] ?? '';
 $anchor                      = $attributes['anchor'] ?? '';
 
-// Border (Block Customisation Standard — wrapper-level border control).
-// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
-// attr { top, right, bottom, left }, no tiers.
-$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
-$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
-
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 $base_padding_obj = array();
 if ( ! empty( $sgs_tor_padding_desktop ) ) {
@@ -240,58 +229,33 @@ if ( '' !== $current_colour_hover_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item--current:hover", $current_colour_hover_effective );
 }
 
-// --- Border — width/style on the wrapper, colour (flat or gradient, base +
-// hover) via the shared sgs_border_states_css() helper, radius via the
-// shared sgs_border_radius_tiers() + core style engine (base) plus
-// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
-$border_base_decls = array();
-if ( $has_border_width ) {
-	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
-	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
-	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
-	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
-	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-	$border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $border_style_raw );
-}
-if ( $border_base_decls ) {
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
-}
-
-$border_colour_css = sgs_border_states_css(
-	$root_sel,
+// --- Border (width, style, colour, hover, gradient ring, radius at three
+// tiers) through the shared assembler. Base rule first so the tier radius wins. ---
+$border = sgs_border_element_decls(
 	$attributes,
+	'',
+	$root_sel,
 	array(
-		'base'           => 'borderColour',
-		'hover'          => 'borderColourHover',
-		'gradient'       => 'borderColourGradient',
-		'hover_gradient' => 'borderColourHoverGradient',
-		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
 	)
 );
-if ( '' !== $border_colour_css ) {
-	$scoped_css[] = $border_colour_css;
+if ( $border['base'] ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
 }
-
-$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$border_radius_base       = $border_radius_tiers['base'];
-$border_radius_tablet_obj = $border_radius_tiers['tablet'];
-$border_radius_mobile_obj = $border_radius_tiers['mobile'];
-if ( null !== $border_radius_base ) {
-	$border_radius_scoped = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_base ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_scoped['css'] ) ) {
-		$scoped_css[] = $border_radius_scoped['css'];
-	}
+if ( $border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
-$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
-if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$border_radius_tab_val};}}";
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
+if ( $border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
 }
-if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$border_radius_mob_val};}}";
+if ( $border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // --- Base spacing (padding/margin) + WP colour/typography supports — skip-

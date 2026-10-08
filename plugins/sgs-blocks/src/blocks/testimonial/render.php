@@ -171,12 +171,6 @@ $rating_size             = isset( $attributes['ratingSize'] ) && (int) $attribut
 // backgroundColourHover / textColourHover are NOT read here: the shared fill
 // and text emitters (section 1a) own both states for those two properties.
 // Reading them again would give one element two owners.
-$hover_border_colour = $attributes['borderColourHover'] ?? '';
-// D636 border-colour gradient rollout — non-empty wins over the flat
-// $hover_border_colour above, painted via the shared masked ::before ring
-// mechanism, scoped to :hover/:focus-within (this block has no resting-state
-// border colour attribute of its own to override).
-$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $hover_effect          = $attributes['effectHover'] ?? 'none';
 $transition_duration   = $attributes['transitionDuration'] ?? '300';
 $transition_easing     = $attributes['transitionEasing'] ?? 'ease-in-out';
@@ -606,9 +600,6 @@ if ( $stagger_delay ) {
 // Emitting them here as well would give one element two owners, and the
 // loser is indistinguishable from a rule that was never written.
 $hover_decls = array();
-if ( $hover_border_colour ) {
-	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
-}
 
 $wrapper_vars = array();
 if ( '' !== $transition_duration && null !== $transition_duration ) {
@@ -693,38 +684,29 @@ foreach ( $testimonial_hover_colours as $sgs_hover_pair ) {
 		. '{color:' . sgs_colour_value( $sgs_hover_val ) . ';}';
 }
 
+// Root border (width, style, colour, gradient ring, hover paint, radius at
+// three tiers) through the shared assembler; emitted with the other root
+// rules further down, its hover colour joins the hover declarations here.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+	)
+);
+$hover_decls = array_merge( $hover_decls, $border['hover'] );
+
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs. Now carries only
 	// root-level declarations (border-color) — see the note above.
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
-}
-
-// D636 border-colour gradient rollout — masked ::before ring, scoped to ONLY
-// the hover/focus-within state (mirrors mega-panel's accentBorderColourGradient
-// — this block likewise has no resting-state border colour of its own).
-if ( '' !== $hover_border_gradient ) {
-	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
-	// when $normal_paint is empty), so a hover-scoped selector is baked in as
-	// its own "normal_paint" call — this must therefore carry its own guard
-	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
-	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
-	// prefixed onto the selector per that function's own documented pattern
-	// for opaque-rule callers. Focus-within stays outside both guards.
-	$scoped_css[] = sgs_hover_media_wrap(
-		sgs_border_gradient_css(
-			SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover',
-			$hover_border_gradient,
-			null,
-			'1px'
-		)
-	);
-	$scoped_css[] = sgs_border_gradient_css(
-		$root_sel . ':focus-within',
-		$hover_border_gradient,
-		null,
-		'1px'
-	);
 }
 
 // ── Rating node (fully gated) ───────────────────────────────────────────────
@@ -1072,90 +1054,17 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 // ---------------------------------------------------------------------------
 ?>
 <?php
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
-		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+// ── Root border: resting rule first, then its rules (gradient ring, none
+// override), then the tier radii (computed above with the hover paint). ──
+if ( $border['base'] ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$scoped_css[] = $border_radius_out['css'];
-	}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
+if ( $border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 ?>
 <?php if ( $scoped_css ) : ?>

@@ -1,0 +1,168 @@
+{
+    "a_baseline": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "h_hover_flat": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:focus-within": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:hover": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ]
+    },
+    "i_hover_gradient": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "position:relative"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-2px",
+            "mask-composite:exclude",
+            "padding:2px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:focus-within": [
+            "border-color:transparent"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:focus-within::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:hover": [
+            "border-color:transparent"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list:hover::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-radius:8px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__flag": [
+            "height:12px",
+            "width:16px"
+        ],
+        " || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-store-selector-1.sgs-store-selector .sgs-store-selector__list": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

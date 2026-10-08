@@ -78,6 +78,9 @@
     "j_radius_uniform": {
         " || .sgs-container-UID": [
             "container-type:inline-size"
+        ],
+        " || .sgs-shr-UID.sgs-site-header-row": [
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

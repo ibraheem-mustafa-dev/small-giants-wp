@@ -46,6 +46,8 @@
             "--sgs-trust-badge-text-colour:var(--wp--preset--color--text,currentColor)"
         ],
         " || .sgs-tb-1.wp-block-sgs-trust-bar": [
+            "border-style:none",
+            "border-width:0",
             "color:var(--wp--preset--color--text,currentColor)"
         ]
     },
@@ -111,6 +113,7 @@
             "--sgs-trust-badge-text-colour:var(--wp--preset--color--text,currentColor)"
         ],
         " || .sgs-tb-1.wp-block-sgs-trust-bar": [
+            "border-radius:8px",
             "color:var(--wp--preset--color--text,currentColor)"
         ]
     },

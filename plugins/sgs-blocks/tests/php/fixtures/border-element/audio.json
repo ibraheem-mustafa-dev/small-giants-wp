@@ -1,0 +1,148 @@
+{
+    "a_baseline": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-au-UID.wp-block-sgs-audio::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "h_hover_flat": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-au-UID.wp-block-sgs-audio:focus-within": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-au-UID.wp-block-sgs-audio:hover": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ]
+    },
+    "i_hover_gradient": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "position:relative"
+        ],
+        " || .sgs-au-UID.wp-block-sgs-audio::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-2px",
+            "mask-composite:exclude",
+            "padding:2px",
+            "pointer-events:none",
+            "position:absolute"
+        ],
+        " || .sgs-au-UID.wp-block-sgs-audio:focus-within": [
+            "border-color:transparent"
+        ],
+        " || .sgs-au-UID.wp-block-sgs-audio:focus-within::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-au-UID.wp-block-sgs-audio:hover": [
+            "border-color:transparent"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-au-UID.wp-block-sgs-audio:hover::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-radius:8px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-au-UID.wp-block-sgs-audio": [
+            "--sgs-audio-accent:var(--wp--preset--color--primary,#c9821f)",
+            "--sgs-audio-spectrum:var(--wp--preset--color--secondary,#1c9a93)",
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-au-UID.wp-block-sgs-audio": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-au-UID.wp-block-sgs-audio": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

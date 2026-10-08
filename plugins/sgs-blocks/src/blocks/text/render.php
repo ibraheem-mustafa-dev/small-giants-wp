@@ -103,29 +103,6 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 // declarations (border-style / font-style / text-transform / text-decoration).
 // Strips everything except letters + hyphen, so ;{}():digits can never break
 // out of the declaration into a new CSS rule.
-// Border-radius — block-private corner object (2026-08-30 radius target-shape
-// correction), base + tablet + mobile tiers.
-$radius_tiers            = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $radius_tiers['base'];
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-
-// Border-width — Box-object interface contract §1/§2: `borderWidth` is an SGS
-// custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
-// support, no tiers (mirrors sgs/button's base-only contract).
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style  = sgs_border_style_keyword( $attributes['borderStyle'] ?? '' );
-$border_colour = $attributes['borderColour'] ?? '';
-// D636 border-colour gradient rollout — non-empty wins over $border_colour
-// above, painted via the shared masked ::before ring mechanism.
-$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-
 // Box shadow — preset slug, or a raw shape built by ShadowControl (offset/
 // blur/spread). sgs_shadow_decls() (Wave A1 ShadowControl redesign,
 // 2026-09-07) composes shape+colour for BOTH states into declaration arrays,
@@ -324,36 +301,6 @@ if ( '' !== $custom_width && null !== $custom_width ) {
 	$base_decls[] = 'width:' . esc_attr( $custom_width ) . $custom_width_unit;
 }
 
-// Border — width comes from the borderWidth object attr (sanitised in step 1);
-// radius comes from WP-native style.border.radius (emitted via the Style
-// Engine below, not here). Emit per-side when sides differ, else shorthand.
-if ( $has_border_width && 'none' !== $border_style ) {
-	$bc = $border_colour ? sgs_colour_value( $border_colour ) : 'currentColor';
-	$bs = sgs_css_keyword_sanitise( $border_style );
-
-	$bwt = '' !== $border_width_top ? $border_width_top : '0';
-	$bwr = '' !== $border_width_right ? $border_width_right : '0';
-	$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-	$bwl = '' !== $border_width_left ? $border_width_left : '0';
-
-	// Check if all sides are equal — use shorthand if so.
-	$sides_equal = ( $border_width_top === $border_width_right
-		&& $border_width_right === $border_width_bottom
-		&& $border_width_bottom === $border_width_left
-		&& '' !== $border_width_top );
-
-	if ( $sides_equal ) {
-		$base_decls[] = 'border:' . $bwt . ' ' . $bs . ' ' . $bc;
-	} else {
-		$base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-		$base_decls[] = 'border-style:' . $bs;
-		$base_decls[] = 'border-color:' . $bc;
-	}
-} elseif ( $border_colour && ! $has_border_width ) {
-	// Colour-only (e.g. border shorthand driven by theme) — emit border-color.
-	$base_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
-}
-
 // Box shadow — preset slug OR a raw ShadowControl-built shape, composed with
 // its sibling colour attr. sanitize_html_class() previously mangled a raw
 // custom shape (e.g. "0px 4px 12px 0px") into a broken preset-var reference —
@@ -378,6 +325,25 @@ if ( ! $anchor ) {
 // source order. The anchor token is also added as a CLASS on the wrapper (below) so
 // this selector matches; the id="…" is kept for operator anchors / linking.
 $scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
+
+// Border (width, style, colour, hover, gradient ring, radius at three tiers)
+// through the shared assembler. A width with no colour paints currentColor; a
+// gradient ring with no width is 2px.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$scope,
+	array(
+		'colour'         => array(
+			'base'     => 'borderColour',
+			'hover'    => 'borderColourHover',
+			'gradient' => 'borderColourGradient',
+		),
+		'colour_default' => 'currentColor',
+		'ring_width'     => '2px',
+	)
+);
+$base_decls = array_merge( $base_decls, $border['base'] );
 
 // ---------------------------------------------------------------------------
 // 6. Responsive scoped <style> block.
@@ -422,15 +388,8 @@ $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}
 // (returns '') when $text_colour was a flat colour.
 $css_base_decls .= sgs_text_colour_gradient_fallback_rule( $scope, $text_colour_effective );
 
-// D636 border-colour gradient rollout — masked ::before ring. Width mirrors
-// the resolved border width (top value when sides are equal, else the
-// per-side top as a reasonable single-width approximation for the mask
-// inset — the mask technique assumes one uniform ring width); falls back to
-// the shared helper's own 2px default when no border width is set at all.
-if ( '' !== $border_colour_gradient ) {
-	$border_gradient_width = '' !== $border_width_top ? $border_width_top : '2px';
-	$css_base_decls       .= sgs_border_gradient_css( $scope, $border_colour_gradient, null, $border_gradient_width );
-}
+// Border rules: the gradient ring and the explicit `none` override.
+$css_base_decls .= implode( '', $border['rules'] );
 
 // Block background — painted on a `::after` layer, never the root itself. A
 // text gradient on this same element (sgs_text_colour_decl() above) uses
@@ -488,9 +447,6 @@ if ( ! empty( $base_spacing_padding ) || ! empty( $base_spacing_margin ) ) {
 		$base_style_engine_args['spacing']['margin'] = $base_spacing_margin;
 	}
 }
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -513,8 +469,6 @@ $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $margin_tab_val ) {
@@ -523,9 +477,7 @@ if ( null !== $margin_tab_val ) {
 if ( null !== $padding_tab_val ) {
 	$tablet_box_decls[] = "{$padding_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "{$radius_tab_val}";
-}
+$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 $css_tablet_box = $tablet_box_decls
 	? '@media (max-width:1023px){' . $scope . '{' . implode( ';', $tablet_box_decls ) . ';}}'
 	: '';
@@ -537,9 +489,7 @@ if ( null !== $margin_mob_val ) {
 if ( null !== $padding_mob_val ) {
 	$mobile_box_decls[] = "{$padding_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "{$radius_mob_val}";
-}
+$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 $css_mobile_box = $mobile_box_decls
 	? '@media (max-width:767px){' . $scope . '{' . implode( ';', $mobile_box_decls ) . ';}}'
 	: '';
@@ -578,8 +528,7 @@ $css_hover = '';
 // gradient siblings here keep $has_hover true when only a gradient is set.
 $hover_colour_effective    = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 $first_letter_colour_hover = (string) ( $attributes['firstLetterColourHover'] ?? '' );
-$border_colour_hover       = (string) ( $attributes['borderColourHover'] ?? '' );
-$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_decls['hover'] || '' !== $first_letter_colour_hover || '' !== $border_colour_hover );
+$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_decls['hover'] || '' !== $first_letter_colour_hover || $border['hover'] );
 if ( $has_hover ) {
 	$hover_decls = array();
 
@@ -597,9 +546,7 @@ if ( $has_hover ) {
 	if ( $box_shadow_decls['hover'] ) {
 		$hover_decls = array_merge( $hover_decls, $box_shadow_decls['hover'] );
 	}
-	if ( '' !== $border_colour_hover ) {
-		$hover_decls[] = 'border-color:' . sgs_colour_value( $border_colour_hover );
-	}
+	$hover_decls = array_merge( $hover_decls, $border['hover'] );
 
 	if ( $hover_decls || '' !== $first_letter_colour_hover ) {
 		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.

@@ -218,6 +218,7 @@ const COMPOSER_MAP_HELPERS = [
 	'sgs_text_decls',
 	'sgs_text_states_css',
 	'sgs_border_states_css',
+	'sgs_border_element_decls',
 ];
 
 /**

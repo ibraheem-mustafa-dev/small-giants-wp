@@ -1,0 +1,8 @@
+{
+    "a_baseline": [],
+    "f_colour_no_widths": {
+        " || .sgs-fs-UID.wp-block-sgs-filter-search .sgs-filter-search__input": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    }
+}

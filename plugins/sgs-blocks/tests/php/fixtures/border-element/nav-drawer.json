@@ -1,0 +1,286 @@
+{
+    "a_baseline": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "b_equal_sides": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-style:none",
+            "border-width:0"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-clip:padding-box",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-radius:8px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "--sgs-nd-anim-in:sgs-nav-drawer-in",
+            "--sgs-nd-anim-origin:center",
+            "--sgs-nd-anim-out:sgs-nav-drawer-out",
+            "--sgs-nd-body-in:none",
+            "--sgs-nd-body-out:none",
+            "--sgs-nd-curtain-in:none",
+            "--sgs-nd-curtain-out:none",
+            "--sgs-nd-ease:ease-out",
+            "--sgs-nd-enter-dur:250ms",
+            "--sgs-nd-exit-dur:200ms",
+            "--sgs-nd-from-opacity:0",
+            "background-color:var(--wp--preset--color--surface,currentColor)",
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__body": [
+            "--sgs-drawer-align:flex-start",
+            "--sgs-drawer-text-align:start",
+            "align-items:flex-start"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "height:44px",
+            "min-height:44px",
+            "min-width:44px",
+            "width:44px"
+        ],
+        "@media(max-width:1023px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

@@ -319,7 +319,6 @@ $border = sgs_border_element_decls(
 			'base'     => 'borderColour',
 			'gradient' => 'borderColourGradient',
 		),
-		'none_rule'  => false,
 		'ring_width' => '2px',
 	)
 );

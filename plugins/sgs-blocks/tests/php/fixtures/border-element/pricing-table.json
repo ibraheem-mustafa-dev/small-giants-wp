@@ -160,6 +160,9 @@
         ]
     },
     "j_radius_uniform": {
+        " || .sgs-pricing-UID.wp-block-sgs-pricing-table": [
+            "border-radius:8px"
+        ],
         " || .sgs-pricing-UID.wp-block-sgs-pricing-table .sgs-pricing-table__badge": [
             "color:white"
         ],

@@ -23,7 +23,8 @@
     "d_style_none": {
         " || .sgs-modal-UID .sgs-modal__dialog": [
             "background-color:white",
-            "border-color:var(--wp--preset--color--primary,currentColor)"
+            "border-style:none",
+            "border-width:0"
         ]
     },
     "e_widths_no_colour": {
@@ -55,9 +56,9 @@
             "border-radius:inherit",
             "content:\"\"",
             "inset:0",
-            "margin:-2px",
+            "margin:-3px",
             "mask-composite:exclude",
-            "padding:2px",
+            "padding:3px",
             "pointer-events:none",
             "position:absolute"
         ]

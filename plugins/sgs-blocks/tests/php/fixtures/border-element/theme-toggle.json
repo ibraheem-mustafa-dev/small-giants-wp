@@ -1,0 +1,54 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-radius:8px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-theme-toggle-1.sgs-theme-toggle": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}

@@ -399,11 +399,13 @@ function detectCurrentShape( php, attr, blockJson ) {
 	}
 
 	// 3 — composer-map helpers (sgs_fill_decls/sgs_fill_states_css/
-	//     sgs_text_decls/sgs_text_states_css/sgs_border_states_css).
+	//     sgs_text_decls/sgs_text_states_css/sgs_border_states_css/
+	//     sgs_border_element_decls). Each emits its map's 'hover' entry as
+	//     fully as its 'base' entry, so either key places the attribute.
 	for ( const helper of COMPOSER_MAP_HELPERS ) {
 		for ( const rawArgsText of extractCallArgLists( php, helper ) ) {
 			const argsText = resolveMapArgText( php, rawArgsText );
-			const baseRe = new RegExp( '[\'"]base[\'"]\\s*=>\\s*[\'"]' + attr + '[\'"]' );
+			const baseRe = new RegExp( '[\'"](?:base|hover)[\'"]\\s*=>\\s*[\'"]' + attr + '[\'"]' );
 			if ( baseRe.test( argsText ) ) {
 				const isText = helper.startsWith( 'sgs_text' );
 				const isBorder = helper.startsWith( 'sgs_border' );

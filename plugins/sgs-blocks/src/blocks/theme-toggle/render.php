@@ -200,6 +200,23 @@ $scoped_css[] = sgs_fill_states_css(
 // Typography (label element).
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'label', $label_sel );
 
+// Border (width, style, colour, gradient ring, radius at three tiers) through
+// the shared assembler. The base rule prints before the tier rules so a tablet
+// or mobile radius (same specificity) wins inside its media query.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base' => 'borderColour',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
+}
+
 // Padding — tier object {desktop,tablet,mobile}, base unconditional, tablet/mobile
 // media-wrapped (mirrors notice-banner's own tier-object handling).
 $sgs_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
@@ -220,39 +237,14 @@ if ( null !== $sgs_padding_mobile_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . $sgs_padding_mobile_val . ';}}';
 }
 
-// Border — width/style/colour (Shape B, matches notice-banner's own block-private pattern).
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style && $has_border_width ) {
-	$bwt          = '' !== $border_width_top ? $border_width_top : '0';
-	$bwr          = '' !== $border_width_right ? $border_width_right : '0';
-	$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
-	$bwl          = '' !== $border_width_left ? $border_width_left : '0';
-	$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-
-	$border_colour = (string) ( $attributes['borderColour'] ?? '' );
-	if ( '' !== $border_colour ) {
-		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
+// Border tier radius and the gradient ring / explicit none rules.
+if ( $border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-
-// Border radius — tier object.
-$radius_tiers      = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ?? null ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$out = wp_style_engine_get_styles( array( 'border' => array( 'radius' => $border_radius_obj ) ), array( 'selector' => $root_sel ) );
-	if ( ! empty( $out['css'] ) ) {
-		$scoped_css[] = $out['css'];
-	}
+if ( $border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
 
 // -----------------------------------------------------------------------------
 // 4. Wrapper classes — icon-only per tier (static classes, dark-mode.css owns the rules).

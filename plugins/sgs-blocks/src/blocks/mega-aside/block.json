@@ -122,12 +122,7 @@
 		},
 		"asideBorderWidth": {
 			"type": "object",
-			"default": {
-				"top": "0px",
-				"right": "0px",
-				"bottom": "0px",
-				"left": "0px"
-			}
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

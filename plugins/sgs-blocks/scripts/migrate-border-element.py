@@ -659,6 +659,7 @@ def grouped(elements):
 
 ASSEMBLER = 'sgs_border_element_decls'
 COLOUR_ENTRY = re.compile(r"'(?:base|hover|gradient|hover_gradient)'\s*=>\s*'(\w+)'")
+RADIUS_ENTRY = re.compile(r"'radius'\s*=>\s*(true|false|'\w+')")
 
 
 def prefixed(prefix, base):
@@ -666,14 +667,30 @@ def prefixed(prefix, base):
     return prefix + base if prefix else base[0].lower() + base[1:]
 
 
-def assembler_findings(text):
+def manifest_mapped(elements):
+    """Every attribute name a block's supports.sgs.elements manifest maps, at any depth (attrMap, states)."""
+    out = set()
+    if isinstance(elements, dict):
+        for value in elements.values():
+            out |= {value} if isinstance(value, str) else manifest_mapped(value)
+    elif isinstance(elements, list):
+        for value in elements:
+            out |= {value} if isinstance(value, str) else manifest_mapped(value)
+    return out
+
+
+def assembler_findings(text, manifest=None):
     """[(problem, line)] for each sgs_border_element_decls() call in a PHP file.
 
     The assembler reads {prefix}BorderWidth, {prefix}BorderStyle, {prefix}BorderRadius and every
     attribute its literal colour map names. A file that names one of those attributes anywhere
     outside the call still builds that border by hand (half-migrated, two sources for one
-    property). A prefix or colour map that is not a literal is refused: the behavioural analyser
-    routes the attributes only from literals.
+    property). A prefix or colour map that is not a literal is refused.
+
+    manifest: (declared attribute names, attribute names the supports.sgs.elements manifest maps)
+    for the block, or None. The behavioural analyser cannot derive these attributes' CSS properties
+    from the assembler's body (it reads widths through a loop and colours through a variable map),
+    so each declared attribute the call reads must be mapped in the manifest, or its routing is lost.
     """
     clean = blank_definitions(blank_comments(text))
     out = []
@@ -691,14 +708,35 @@ def assembler_findings(text):
             out.append(('options are not a literal array( ... ): %s' % options, line))
             continue
         prefix = m.group(1)
-        keys = {prefixed(prefix, b) for b in ('BorderWidth', 'BorderStyle', 'BorderRadius')}
+        keys = {prefixed(prefix, b) for b in ('BorderWidth', 'BorderStyle')}
+        radius = RADIUS_ENTRY.search(options)
+        if radius is None or radius.group(1) == 'true':
+            keys.add(prefixed(prefix, 'BorderRadius'))
+        elif radius.group(1) != 'false':
+            keys.add(radius.group(1).strip("'"))
         keys |= set(COLOUR_ENTRY.findall(options))
         close = close_paren(clean, clean.index('(', off))
         outside = clean[:off] + ' ' * (close + 1 - off) + clean[close + 1:]
         for key in sorted(keys):
             for hit in re.finditer("'" + re.escape(key) + "'", outside):
                 out.append(("'%s' is read outside the %s() call" % (key, ASSEMBLER), line_of(clean, hit.start())))
+        if manifest is not None:
+            declared, mapped = manifest
+            for key in sorted((keys & declared) - mapped):
+                out.append(("'%s' is not mapped in block.json supports.sgs.elements (css:border-*), so its "
+                            "CSS property is not routed" % key, line))
     return out
+
+
+def block_manifest(path):
+    """(declared attributes, manifest-mapped attributes) for a block's render.php, or None outside src/blocks."""
+    block_json = os.path.join(os.path.dirname(path), 'block.json')
+    if not os.path.isfile(block_json):
+        return None
+    with io.open(block_json, encoding='utf-8') as fh:
+        meta = json.load(fh)
+    elements = meta.get('supports', {}).get('sgs', {}).get('elements', {})
+    return set(meta.get('attributes', {})), manifest_mapped(elements)
 
 
 def check():
@@ -708,7 +746,7 @@ def check():
         text = read(path)
         if ASSEMBLER not in text:
             continue
-        found = assembler_findings(text)
+        found = assembler_findings(text, block_manifest(path))
         if calls(blank_definitions(blank_comments(text)), ASSEMBLER):
             callers += 1
         findings += [(rel(path), problem, line) for problem, line in found]
@@ -716,9 +754,11 @@ def check():
         print('  %s:%d  %s' % (f, line, problem))
     if findings:
         print('CHECK FAILED: %d finding(s) in the %d file(s) that call %s(). Read each attribute only '
-              'through the call, and pass the prefix and options as literals.' % (len(findings), callers, ASSEMBLER))
+              'through the call, pass the prefix and options as literals, and map each attribute in the '
+              "block's element manifest." % (len(findings), callers, ASSEMBLER))
         return 1
-    print('CHECK OK: %d file(s) call %s(); none reads a border attribute outside it.' % (callers, ASSEMBLER))
+    print('CHECK OK: %d file(s) call %s(); none reads a border attribute outside it, and every '
+          'attribute it reads is mapped in its manifest.' % (callers, ASSEMBLER))
     return 0
 
 
@@ -854,7 +894,7 @@ function sgs_border_box_decls( $w, $s ) { return array(); }
         print('ok    prefix grouping: card and the empty prefix are separate elements')
     call = """$border = sgs_border_element_decls(
 	$attributes, '', $root_sel,
-	array( 'colour' => array( 'base' => 'borderColour', 'gradient' => 'borderColourGradient' ), 'none_rule' => false )
+	array( 'colour' => array( 'base' => 'borderColour', 'gradient' => 'borderColourGradient' ) )
 );
 $decls = array_merge( $decls, $border['base'] );
 """
@@ -865,11 +905,38 @@ $decls = array_merge( $decls, $border['base'] );
         ('assembler: a stray radius read by the prefix is found',
          "<?php\n" + call + "$r = sgs_border_radius_tiers( array( 'borderRadius' => 1 ) );\n", 1),
         ('assembler: another prefix is not this call\'s attribute', "<?php\n" + call + "$w = $attributes['cardBorderWidth'];\n", 0),
+        ('assembler: a radius attribute named in the options is the call\'s own',
+         "<?php\n$b = sgs_border_element_decls( $attributes, 'wrapper', $s, array( 'radius' => 'borderRadius' ) );\n"
+         "$r = $attributes['borderRadius'];\n", 1),
+        ('assembler: radius false leaves the prefixed radius to other code',
+         "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, array( 'radius' => false ) );\n"
+         "$r = $attributes['borderRadius'];\n", 0),
         ('assembler: a variable prefix is refused', "<?php\n$b = sgs_border_element_decls( $attributes, $p, $s );\n", 1),
         ('assembler: a variable options array is refused', "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, $opts );\n", 1),
         ('assembler: the definition is not a call',
          "<?php\nfunction sgs_border_element_decls( array $attributes, string $prefix ) { return sgs_typography_attr( $prefix, 'BorderWidth' ); }\n", 0),
     )
+    manifest_cases = (
+        ('manifest: every attribute mapped has no finding', call,
+         ({'borderWidth', 'borderStyle', 'borderRadius', 'borderColour', 'borderColourGradient'},
+          {'borderWidth', 'borderStyle', 'borderRadius', 'borderColour', 'borderColourGradient'}), 0),
+        ('manifest: an unmapped colour is found', call,
+         ({'borderWidth', 'borderColour'}, {'borderWidth'}), 1),
+        ('manifest: an attribute the block does not declare is not required', call,
+         ({'borderWidth'}, {'borderWidth'}), 0),
+    )
+    for name, src, man, want in manifest_cases:
+        got = assembler_findings('<?php\n' + src, man)
+        if len(got) != want:
+            print('FAIL  %s: want %d finding(s), got %s' % (name, want, got))
+            failed += 1
+        else:
+            print('ok    %s' % name)
+    if manifest_mapped({'a': {'attrMap': {'css:x': 'one'}, 'states': {'hover': {'attrMap': {'css:y': 'two'}}}}}) != {'one', 'two'}:
+        print('FAIL  manifest: nested state attrMaps are read')
+        failed += 1
+    else:
+        print('ok    manifest: nested state attrMaps are read')
     for name, src, want in cases:
         got = assembler_findings(src)
         if len(got) != want:

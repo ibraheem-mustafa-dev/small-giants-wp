@@ -102,9 +102,9 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 * Rules it applies:
 	 * - Width and style print only when a side has a width (G5); unset sides
 	 *   print 0 (D-4).
-	 * - An explicit `none` style prints no colour, no ring and no hover, and (with
-	 *   `none_rule`) a `{border-style:none;border-width:0}` override so a
-	 *   variant's stylesheet border stops painting too.
+	 * - An explicit `none` style prints no colour, no ring and no hover, and a
+	 *   `{border-style:none;border-width:0}` override so a variant's stylesheet
+	 *   border stops painting too (G5 corollary, Bean 2026-08-26).
 	 * - A flat colour is a plain `border-color` declaration. A gradient cannot be
 	 *   a border-color value, so it paints through the masked ::before ring
 	 *   (a standalone rule), which takes the hover paint with it. A flat resting
@@ -113,7 +113,8 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *
 	 * Attribute names: width, style and radius are `{prefix}BorderWidth`,
 	 * `{prefix}BorderStyle` and `{prefix}BorderRadius` (prefix '' gives
-	 * `borderWidth`). Colour names come from the caller's LITERAL `colour` map
+	 * `borderWidth`); an element whose radius attribute does not follow the
+	 * prefix names it in the `radius` option. Colour names come from the caller's LITERAL `colour` map
 	 * so the behavioural analyser keeps routing each colour attribute.
 	 *
 	 * @param array  $attributes The block's attributes.
@@ -124,11 +125,11 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *                           `hover`, `gradient`, `hover_gradient` to attribute
 	 *                           names, any omitted); `colour_default` (painted when
 	 *                           a width is set and no colour is, e.g.
-	 *                           'currentColor', default ''); `none_rule` (emit the
-	 *                           explicit `none` override, default true);
-	 *                           `ring_width` (ring thickness when no top width is
-	 *                           set, default '1px'); `radius` (include corner
-	 *                           radius, default true).
+	 *                           'currentColor', default ''); `ring_width` (ring
+	 *                           thickness when no top width is set, default
+	 *                           '1px'); `radius` (true for `{prefix}BorderRadius`,
+	 *                           a literal attribute name for another, false for
+	 *                           none; default true).
 	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[]}
 	 *         Declarations without trailing semicolons; tablet and mobile are for
 	 *         the caller's max-width 1023px and 767px queries; hover is for the
@@ -151,9 +152,7 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 		$out['base'] = $width_decls;
 
 		if ( $is_none ) {
-			if ( $options['none_rule'] ?? true ) {
-				$out['rules'][] = $selector . '{border-style:none;border-width:0;}';
-			}
+			$out['rules'][] = $selector . '{border-style:none;border-width:0;}';
 		} else {
 			$colour_map = is_array( $options['colour'] ?? null ) ? $options['colour'] : array();
 			$read       = static function ( string $slot ) use ( $colour_map, $attributes ): string {
@@ -188,10 +187,10 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			}
 		}
 
-		if ( $options['radius'] ?? true ) {
-			$tiers = sgs_border_radius_tiers(
-				array( 'borderRadius' => $attributes[ sgs_typography_attr( $prefix, 'BorderRadius' ) ] ?? null )
-			);
+		$radius_option = $options['radius'] ?? true;
+		if ( false !== $radius_option ) {
+			$radius_key = is_string( $radius_option ) ? $radius_option : sgs_typography_attr( $prefix, 'BorderRadius' );
+			$tiers      = sgs_border_radius_tiers( array( 'borderRadius' => $attributes[ $radius_key ] ?? null ) );
 			if ( null !== $tiers['base'] ) {
 				$engine = wp_style_engine_get_styles( array( 'border' => array( 'radius' => $tiers['base'] ) ) );
 				// WordPress returns `property => value`; the QA harness stub returns

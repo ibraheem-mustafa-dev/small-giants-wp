@@ -87,8 +87,7 @@ $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text_colour         = $attributes['textColourHover'] ?? '';
 // borderColourHover/borderColourHoverGradient are read inside the shared
-// sgs_border_states_css() call further down (Wave A1 track, 2026-09-07) — no
-// local variable needed here.
+// sgs_border_element_decls() call further down — no local variable needed here.
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -136,75 +135,34 @@ $wrapper_styles = array_merge( $wrapper_styles, sgs_transition_vars( $attributes
 // every rule it wrote -- a silent discard php -l cannot see.
 $responsive_css = '';
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+// ── Border (width, style, colour, hover, gradient ring, explicit none
+// override, radius at three tiers) through the shared assembler. Base rule
+// first so the tier radius wins inside its media query. ──
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$responsive_css .= $border_radius_out['css'];
-	}
+if ( $border['hover'] ) {
+	$responsive_css .= sgs_hover_state_rules( $root_sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
+$responsive_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // emitted via sgs_emit_state_colour_css() (below, once $root_sel/$responsive_css
@@ -233,14 +191,6 @@ if ( '' !== $cta_hover_text_effective ) {
 		$hover_decls[] = $cta_hover_text_decl;
 	}
 }
-// Border colour (flat or gradient, base + hover) migrated onto the shared
-// sgs_border_states_css() helper (Wave A1 track, 2026-09-07) — replaces the
-// hand-rolled flat/gradient split below AND the hover-only gradient special
-// case further down. Reference: sgs/audio's render.php. The old in-file
-// comment claiming "no resting borderColour attribute" was stale: block.json
-// declares a block-private resting `borderColour` (Shape B migration), and
-// this block already emitted it above via the (now-removed) hand-rolled path.
-
 // ── Responsive CSS builder ──────────────────────────────────────────────────
 // No-inline contract (§A): background-image/size/position (a real property
 // declaration trio) is deferred to the scoped .uid rule below.
@@ -250,28 +200,6 @@ if ( $has_image_bg ) {
 	// Image backgrounds keep using a CSS background-image so the existing
 	// overlay + text layering continues to work without layout changes.
 	$responsive_css .= $root_sel . '{background-image:url(' . esc_url( $resolved_media['url'] ) . ');background-size:cover;background-position:center}';
-}
-
-// Border colour (flat or gradient, base + hover) — ONE call, the shared
-// sgs_border_states_css() helper. It internally branches flat-vs-gradient
-// (flat emits border-color directly; a gradient uses the masked ::before
-// ring via sgs_border_gradient_css(), which itself pairs :hover with
-// :focus-within correctly and does not carry the comma-selector-list gotcha
-// the old split code was written around — each pseudo-class gets its own
-// call internally, not a joined selector list).
-$border_colour_css = sgs_border_states_css(
-	$root_sel,
-	$attributes,
-	array(
-		'base'           => 'borderColour',
-		'hover'          => 'borderColourHover',
-		'gradient'       => 'borderColourGradient',
-		'hover_gradient' => 'borderColourHoverGradient',
-		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
-	)
-);
-if ( '' !== $border_colour_css ) {
-	$responsive_css .= $border_colour_css;
 }
 
 // Hover colour shifts (background/text/border) — per-instance scoped rule,
@@ -349,9 +277,6 @@ if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['s
 if ( ! empty( $color_args ) ) {
 	$cta_style_engine_args['color'] = $color_args;
 }
-
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
 
 if ( ! empty( $cta_style_engine_args ) ) {
 	$cta_scoped_styles = wp_style_engine_get_styles(

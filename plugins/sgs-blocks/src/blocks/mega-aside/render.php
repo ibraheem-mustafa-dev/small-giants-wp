@@ -53,14 +53,6 @@ $aside_bg_raw                = isset( $attributes['asideBg'] ) ? (string) $attri
 $aside_bg_gradient_raw       = isset( $attributes['asideBgGradient'] ) ? (string) $attributes['asideBgGradient'] : '';
 $aside_bg_hover_raw          = isset( $attributes['asideBgHover'] ) ? (string) $attributes['asideBgHover'] : '';
 $aside_bg_hover_gradient_raw = isset( $attributes['asideBgHoverGradient'] ) ? (string) $attributes['asideBgHoverGradient'] : '';
-$aside_radius = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $attributes['asideRadius'] ?? '' ) : '';
-// Box-object interface contract: asideBorderWidth is an SGS custom
-// OBJECT attr { top, right, bottom, left } — no tiers (mirrors sgs/button's
-// base-only borderWidth). box_family = 'asideBorderWidth' (a per-area family,
-// like hero's imageBorderWidth / product-card's ctaBorderWidth — not the
-// generic root 'borderWidth' family, since this is a per-element scoped box).
-$aside_border_width_obj       = is_array( $attributes['asideBorderWidth'] ?? null ) ? $attributes['asideBorderWidth'] : array();
-$aside_border_width_shorthand = function_exists( 'sgs_box_object_shorthand' ) ? sgs_box_object_shorthand( $aside_border_width_obj ) : null;
 $aside_padding_obj            = is_array( $attributes['asidePadding'] ?? null ) ? $attributes['asidePadding'] : array();
 
 // ---------------------------------------------------------------------------
@@ -99,45 +91,31 @@ if ( function_exists( 'sgs_custom_property_gradient_decls' ) && '' !== $aside_bg
 	}
 }
 
-if ( '' !== $aside_radius ) {
-	$css .= $root_sel . '{border-radius:' . $aside_radius . ';}';
-}
-
-// Border only paints when at least one side has a non-zero width (an empty/
-// all-zero box means "no border", matching the block's honest-absence
-// contract). Per-side widths need border-width/-style/-color as separate
-// declarations (a shorthand `border:` can't carry 4 distinct widths).
-$aside_border_has_width = false;
-foreach ( array( 'top', 'right', 'bottom', 'left' ) as $aside_border_side ) {
-	if ( (float) sgs_css_length_value( $aside_border_width_obj[ $aside_border_side ] ?? '' ) > 0 ) {
-		$aside_border_has_width = true;
-		break;
-	}
-}
-if ( $aside_border_has_width && null !== $aside_border_width_shorthand ) {
-	// Fallback border-color, painted BEFORE the helper call below so the
-	// cascade favours it: equal specificity, later source order wins, so an
-	// explicit asideBorderColour overrides this default; an unset one leaves
-	// it standing (the inherited-panel-scheme fallback).
-	$css .= $root_sel . '{border-width:' . $aside_border_width_shorthand . ';border-style:solid;border-color:var(--sgs-mm-panel-border, rgba(0,0,0,.12));}';
-
-	// Border colour — base + hover, flat-or-gradient, one owned rule
-	// (.claude/rules/colour-emission.md "Colour EMISSION helpers" decision table row 4).
-	$aside_border_colour_css = sgs_border_states_css(
-		$root_sel,
-		$attributes,
-		array(
+// Border (width, style, colour, hover colour, gradient ring, radius) through
+// the shared assembler. The aside's radius attribute is `asideRadius`, and a
+// width with no colour paints the panel's inherited border colour.
+$aside_border = sgs_border_element_decls(
+	$attributes,
+	'aside',
+	$root_sel,
+	array(
+		'colour'         => array(
 			'base'           => 'asideBorderColour',
 			'hover'          => 'asideBorderColourHover',
 			'gradient'       => 'asideBorderColourGradient',
 			'hover_gradient' => 'asideBorderColourHoverGradient',
-			'width'          => '' !== sgs_css_length_value( $aside_border_width_obj['top'] ?? '' ) ? sgs_css_length_value( $aside_border_width_obj['top'] ?? '' ) : '1px',
-		)
-	);
-	if ( '' !== $aside_border_colour_css ) {
-		$css .= $aside_border_colour_css;
-	}
+		),
+		'colour_default' => 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))',
+		'radius'         => 'asideRadius',
+	)
+);
+if ( $aside_border['base'] ) {
+	$css .= $root_sel . '{' . implode( ';', $aside_border['base'] ) . ';}';
 }
+if ( $aside_border['hover'] ) {
+	$css .= sgs_hover_state_rules( $root_sel, implode( ';', $aside_border['hover'] ), ':focus-within' );
+}
+$css .= implode( '', $aside_border['rules'] );
 
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {
 	$css .= sgs_emit_responsive_css(

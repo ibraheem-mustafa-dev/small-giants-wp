@@ -145,7 +145,8 @@
             "--sgs-tile-padding:10px",
             "--sgs-tile-radius:16px",
             "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-transition-easing:ease-in-out",
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

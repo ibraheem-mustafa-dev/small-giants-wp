@@ -78,38 +78,38 @@ if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
 }
 $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
 
-$title_colour        = $attributes['titleColour'] ?? '';
+$title_colour             = $attributes['titleColour'] ?? '';
 $title_colour_gradient    = $attributes['titleColourGradient'] ?? '';
-$subtitle_colour     = $attributes['subtitleColour'] ?? '';
+$subtitle_colour          = $attributes['subtitleColour'] ?? '';
 $subtitle_colour_gradient = $attributes['subtitleColourGradient'] ?? '';
-$hover_bg            = $attributes['backgroundColourHover'] ?? '';
-$hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
-$hover_text          = $attributes['textColourHover'] ?? '';
-$hover_text_gradient = $attributes['textColourHoverGradient'] ?? '';
-$hover_border        = $attributes['borderColourHover'] ?? '';
+$hover_bg                 = $attributes['backgroundColourHover'] ?? '';
+$hover_bg_gradient        = $attributes['backgroundColourHoverGradient'] ?? '';
+$hover_text               = $attributes['textColourHover'] ?? '';
+$hover_text_gradient      = $attributes['textColourHoverGradient'] ?? '';
+$hover_border             = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient siblings — resolved once here, emitted via
 // sgs_border_gradient_css() masked ::before further down; border-color can
 // never legally hold a gradient value, so these never feed the flat
 // border-colour paint above.
-$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
-$transition_dur      = $attributes['transitionDuration'] ?? '300';
-$transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
-$hover_scale         = $attributes['scaleHover'] ?? '';
-$hover_shadow        = $attributes['cardShadowHover'] ?? '';
-$hover_shadow_colour = $attributes['cardShadowColourHover'] ?? '';
+$hover_border_gradient    = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+$transition_dur           = $attributes['transitionDuration'] ?? '300';
+$transition_ease          = $attributes['transitionEasing'] ?? 'ease-in-out';
+$hover_scale              = $attributes['scaleHover'] ?? '';
+$hover_shadow             = $attributes['cardShadowHover'] ?? '';
+$hover_shadow_colour      = $attributes['cardShadowColourHover'] ?? '';
 $card_background          = $attributes['cardBackground'] ?? '';
 $card_background_gradient = $attributes['cardBackgroundGradient'] ?? '';
-$card_border_colour  = $attributes['cardBorderColour'] ?? '';
-$card_border_gradient = sgs_css_gradient_value( $attributes['cardBorderColourGradient'] ?? '' );
-$card_border_width   = $attributes['cardBorderWidth'] ?? array();
-$card_radius         = $attributes['cardRadius'] ?? '';
-$card_shadow         = $attributes['cardShadow'] ?? '';
-$card_shadow_colour  = $attributes['cardShadowColour'] ?? '';
-$hover_image_zoom    = ! empty( $attributes['imageZoomHover'] );
-$hover_grayscale     = ! empty( $attributes['grayscaleHover'] );
-$query_post_type     = sanitize_key( $attributes['queryPostType'] ?? 'post' );
-$query_per_page      = absint( $attributes['queryPostsPerPage'] ?? 6 );
-$query_category      = absint( $attributes['queryCategory'] ?? 0 );
+$card_border_colour       = $attributes['cardBorderColour'] ?? '';
+$card_border_gradient     = sgs_css_gradient_value( $attributes['cardBorderColourGradient'] ?? '' );
+$card_border_width        = $attributes['cardBorderWidth'] ?? array();
+$card_radius              = $attributes['cardRadius'] ?? '';
+$card_shadow              = $attributes['cardShadow'] ?? '';
+$card_shadow_colour       = $attributes['cardShadowColour'] ?? '';
+$hover_image_zoom         = ! empty( $attributes['imageZoomHover'] );
+$hover_grayscale          = ! empty( $attributes['grayscaleHover'] );
+$query_post_type          = sanitize_key( $attributes['queryPostType'] ?? 'post' );
+$query_per_page           = absint( $attributes['queryPostsPerPage'] ?? 6 );
+$query_category           = absint( $attributes['queryCategory'] ?? 0 );
 // Per-item glyph icon + image-fallback tile ("Shop by shape") —
 // block-wide size/colour, per-item glyph slug read inside the items loop
 // below. glyph-fallback.php holds the emission helpers. glyphSize is a CSS
@@ -120,7 +120,7 @@ $glyph_colour          = (string) ( $attributes['glyphColour'] ?? '' );
 $image_fallback        = ! empty( $attributes['imageFallback'] );
 $image_fallback_colour = (string) ( $attributes['imageFallbackColour'] ?? '' );
 // The fallback tile's label ("Photo to come"), as sgs/product-card's noImageLabel.
-$no_image_label        = trim( (string) ( $attributes['noImageLabel'] ?? '' ) );
+$no_image_label = trim( (string) ( $attributes['noImageLabel'] ?? '' ) );
 
 // Block-wide image overlay ("Shop by shape") — a
 // colour/gradient layer painted between every card's photo and its
@@ -129,10 +129,10 @@ $no_image_label        = trim( (string) ( $attributes['noImageLabel'] ?? '' ) );
 // the scoped CSS rule (below) and to decide, per item, whether the overlay
 // <div> is rendered at all — an unset colour/gradient keeps every existing
 // page byte-identical.
-$overlay_colour         = (string) ( $attributes['overlayColour'] ?? '' );
-$overlay_gradient       = (string) ( $attributes['overlayGradient'] ?? '' );
-$overlay_opacity        = $attributes['overlayOpacity'] ?? null;
-$overlay_blend_mode     = (string) ( $attributes['overlayBlendMode'] ?? 'normal' );
+$overlay_colour           = (string) ( $attributes['overlayColour'] ?? '' );
+$overlay_gradient         = (string) ( $attributes['overlayGradient'] ?? '' );
+$overlay_opacity          = $attributes['overlayOpacity'] ?? null;
+$overlay_blend_mode       = (string) ( $attributes['overlayBlendMode'] ?? 'normal' );
 $card_grid_overlay_decls  = sgs_card_grid_image_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
 $card_grid_overlay_active = '' !== $card_grid_overlay_decls;
 
@@ -345,7 +345,7 @@ if ( '' !== $card_grid_hover_bg_gradient ) {
 // textColourHoverGradient: a gradient text paint needs `background-clip:text`, which would
 // clip the item's own background to the glyphs, so it paints the title and subtitle on item
 // hover instead of the item. A flat textColourHover keeps painting the item's `color`.
-$card_grid_hover_text_effective = sgs_resolve_text_colour_or_gradient( $hover_text, $hover_text_gradient );
+$card_grid_hover_text_effective   = sgs_resolve_text_colour_or_gradient( $hover_text, $hover_text_gradient );
 $card_grid_hover_text_is_gradient = '' !== sgs_css_gradient_value( $card_grid_hover_text_effective );
 if ( $card_grid_hover_text_is_gradient ) {
 	$card_grid_item_sel         = $root_sel . ' .sgs-card-grid__item';
@@ -464,80 +464,29 @@ if ( '' !== $cg_preset_bg_slug ) {
 	$card_grid_preset_classes[] = 'has-' . $cg_preset_bg_slug . '-background-color';
 }
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$card_grid_native_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring (which sets border-color:transparent).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$card_grid_native_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$card_grid_native_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
+// ── Root border (width, style, colour, gradient ring, none override, radius at
+// three tiers) through the shared assembler. borderColourHover and its
+// gradient belong to the cards (above), not the root. ──
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$card_grid_native_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$card_grid_native_css .= $border_radius_out['css'];
-	}
+$card_grid_native_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$card_grid_native_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$card_grid_native_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // ── cardPadding: tier-object box family {desktop,tablet,mobile} — base +
@@ -917,8 +866,8 @@ if ( '' !== (string) ( $attributes['noImageLabelColour'] ?? '' ) ) {
 // no rendered element carries an inline CSS property declaration).
 // titleColourGradient/subtitleColourGradient (2026-09-03) are the sibling
 // gradient attrs — gradient wins when set+valid (sgs_resolve_text_colour_or_gradient).
-$sgs_grid_title_sel    = '.' . $sgs_grid_uid . ' .sgs-card-grid__title';
-$sgs_grid_subtitle_sel = '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle';
+$sgs_grid_title_sel     = '.' . $sgs_grid_uid . ' .sgs-card-grid__title';
+$sgs_grid_subtitle_sel  = '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle';
 $title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
 if ( '' !== $title_colour_effective ) {
 	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
@@ -1003,7 +952,7 @@ $card_grid_per_item_css = '';
 // Build the interior HTML (card items).
 ob_start();
 foreach ( $items as $index => $item ) :
-	$card_grid_item_key = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
+	$card_grid_item_key      = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
 	$card_grid_per_item_css .= sgs_media_position_css(
 		array(
 			'objectPosition' => $item['focalPoint'] ?? null,

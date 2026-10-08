@@ -53,7 +53,11 @@
             "position:absolute"
         ]
     },
-    "j_radius_uniform": [],
+    "j_radius_uniform": {
+        " || .sgs-product-faq-item-UID.sgs-product-faq-item": [
+            "border-radius:8px"
+        ]
+    },
     "k_radius_tiers": {
         " || .sgs-product-faq-item-UID.sgs-product-faq-item": [
             "border-bottom-left-radius:4px",

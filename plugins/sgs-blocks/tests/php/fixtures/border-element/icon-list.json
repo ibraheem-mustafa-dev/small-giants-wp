@@ -22,7 +22,9 @@
     },
     "d_style_none": {
         " || .sgs-ilist-UID.wp-block-sgs-icon-list": [
-            "--sgs-icon-list-gap:20px"
+            "--sgs-icon-list-gap:20px",
+            "border-style:none",
+            "border-width:0"
         ]
     },
     "e_widths_no_colour": {

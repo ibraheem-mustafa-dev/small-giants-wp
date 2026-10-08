@@ -14,7 +14,12 @@
             "border-width:1px 0 0 4px"
         ]
     },
-    "d_style_none": [],
+    "d_style_none": {
+        " || .sgs-tab-uid-UID.wp-block-sgs-tab": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
     "e_widths_no_colour": {
         " || .sgs-tab-uid-UID.wp-block-sgs-tab": [
             "border-style:solid",
@@ -48,7 +53,11 @@
             "position:absolute"
         ]
     },
-    "j_radius_uniform": [],
+    "j_radius_uniform": {
+        " || .sgs-tab-uid-UID.wp-block-sgs-tab": [
+            "border-radius:8px"
+        ]
+    },
     "k_radius_tiers": {
         " || .sgs-tab-uid-UID.wp-block-sgs-tab": [
             "border-bottom-left-radius:4px",

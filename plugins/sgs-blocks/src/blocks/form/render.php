@@ -159,13 +159,13 @@ if ( ! empty( $form_id ) ) {
 	set_transient(
 		'sgs_form_config_' . sanitize_key( $form_id ),
 		array(
-			'requireLogin'         => $require_login,
-			'rateLimit'            => $rate_limit,
-			'formName'             => $form_name,
-			'notifyEmail'          => (string) ( $attributes['notifyEmail'] ?? '' ),
-			'confirmationEmail'    => (bool) ( $attributes['confirmationEmail'] ?? false ),
-			'confirmationSubject'  => (string) ( $attributes['confirmationSubject'] ?? '' ),
-			'confirmationMessage'  => (string) ( $attributes['confirmationMessage'] ?? '' ),
+			'requireLogin'        => $require_login,
+			'rateLimit'           => $rate_limit,
+			'formName'            => $form_name,
+			'notifyEmail'         => (string) ( $attributes['notifyEmail'] ?? '' ),
+			'confirmationEmail'   => (bool) ( $attributes['confirmationEmail'] ?? false ),
+			'confirmationSubject' => (string) ( $attributes['confirmationSubject'] ?? '' ),
+			'confirmationMessage' => (string) ( $attributes['confirmationMessage'] ?? '' ),
 		),
 		DAY_IN_SECONDS
 	);
@@ -351,7 +351,7 @@ if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_
 // typography is emitted by sgs_typography_css_rule() further down, beside the
 // field and label surfaces. Each override is its own gate: unset emits
 // nothing, so an untouched form keeps the stylesheet's own values.
-$submit_box_decls = array();
+$submit_box_decls   = array();
 $submit_padding_box = is_array( $attributes['submitPadding'] ?? null ) ? $attributes['submitPadding'] : array();
 $submit_padding     = function_exists( 'sgs_box_object_longhands' ) ? sgs_box_object_longhands( $submit_padding_box, 'padding' ) : null;
 if ( null !== $submit_padding ) {
@@ -377,40 +377,36 @@ if ( ! empty( $submit_box_decls ) ) {
 // border (their own state rules) still win. An unset attribute emits nothing, so
 // an untouched form keeps the stylesheet's own look.
 // ---------------------------------------------------------------------------
-$sgs_field_sel      = '.' . $sgs_form_uid . ' .sgs-form-field__input';
-$sgs_field_decls    = array();
-$sgs_field_css      = '';
-$sgs_field_fill     = sgs_fill_decls( $attributes, array( 'base' => 'fieldBackground' ) );
-$sgs_field_text     = sgs_text_decls( $attributes, array( 'base' => 'fieldTextColour' ) );
-$sgs_field_decls    = array_merge( $sgs_field_fill['normal'], $sgs_field_text['normal'] );
-$sgs_field_border   = sgs_border_box_decls( $attributes['fieldBorderWidth'] ?? array(), $attributes['fieldBorderStyle'] ?? '' );
-$sgs_field_decls    = array_merge( $sgs_field_decls, $sgs_field_border );
-$sgs_field_radius   = sgs_border_radius_tiers( array( 'borderRadius' => $attributes['fieldBorderRadius'] ?? null ) );
-// A corner object prints only its set corners; a single length is the uniform radius.
-$sgs_field_radius_b = null;
-if ( is_array( $sgs_field_radius['base'] ) ) {
-	$sgs_field_radius_b = sgs_corner_object_longhands( $sgs_field_radius['base'] );
-} elseif ( is_string( $sgs_field_radius['base'] ) && '' !== sgs_css_length_value( $sgs_field_radius['base'] ) ) {
-	$sgs_field_radius_b = 'border-radius:' . sgs_css_length_value( $sgs_field_radius['base'] );
-}
-if ( null !== $sgs_field_radius_b ) {
-	$sgs_field_decls[] = $sgs_field_radius_b;
-}
+$sgs_field_sel   = '.' . $sgs_form_uid . ' .sgs-form-field__input';
+$sgs_field_decls = array();
+$sgs_field_css   = '';
+$sgs_field_fill  = sgs_fill_decls( $attributes, array( 'base' => 'fieldBackground' ) );
+$sgs_field_text  = sgs_text_decls( $attributes, array( 'base' => 'fieldTextColour' ) );
+$sgs_field_decls = array_merge( $sgs_field_fill['normal'], $sgs_field_text['normal'] );
+// Width, style and corner radius go through the shared assembler. The resting
+// colour is NOT a border-color declaration: it travels as --sgs-field-edge-colour
+// (below) so the focus ring and error border keep winning, which the assembler's
+// flat border-color cannot express; hence no colour map here.
+$sgs_field_border = sgs_border_element_decls(
+	$attributes,
+	'field',
+	$sgs_field_sel,
+	array()
+);
+$sgs_field_decls  = array_merge( $sgs_field_decls, $sgs_field_border['base'] );
 if ( ! empty( $sgs_field_decls ) ) {
 	$sgs_field_css .= $sgs_field_sel . '{' . implode( ';', $sgs_field_decls ) . ';}';
 }
-$sgs_field_radius_t = sgs_corner_object_longhands( $sgs_field_radius['tablet'] );
-$sgs_field_radius_m = sgs_corner_object_longhands( $sgs_field_radius['mobile'] );
-if ( null !== $sgs_field_radius_t ) {
-	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{' . $sgs_field_radius_t . ';}}';
+if ( $sgs_field_border['tablet'] ) {
+	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{' . implode( ';', $sgs_field_border['tablet'] ) . ';}}';
 }
-if ( null !== $sgs_field_radius_m ) {
-	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{' . $sgs_field_radius_m . ';}}';
+if ( $sgs_field_border['mobile'] ) {
+	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{' . implode( ';', $sgs_field_border['mobile'] ) . ';}}';
 }
 
-$sgs_field_vars    = array();
-$sgs_field_edge    = sgs_colour_value( (string) ( $attributes['fieldBorderColour'] ?? '' ) );
-$sgs_field_holder  = sgs_colour_value( (string) ( $attributes['fieldPlaceholderColour'] ?? '' ) );
+$sgs_field_vars   = array();
+$sgs_field_edge   = sgs_colour_value( (string) ( $attributes['fieldBorderColour'] ?? '' ) );
+$sgs_field_holder = sgs_colour_value( (string) ( $attributes['fieldPlaceholderColour'] ?? '' ) );
 if ( '' !== $sgs_field_edge ) {
 	$sgs_field_vars[] = '--sgs-field-edge-colour:' . $sgs_field_edge;
 }
@@ -424,7 +420,7 @@ if ( ! empty( $sgs_field_vars ) ) {
 // Heights never go under the 44px touch target (WCAG 2.2 target size, the SGS
 // standard). A stored value is a bare number (px) or one CSS length ('52px',
 // '3.25rem'), emitted as max(44px, value) so the floor holds in any unit.
-$sgs_field_height = static function ( $raw ): string {
+$sgs_field_height     = static function ( $raw ): string {
 	$length = is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
 	return '' === $length ? '' : 'max(44px,' . $length . ')';
 };
@@ -538,8 +534,8 @@ if ( '' !== $sgs_field_css ) {
 	$sgs_form_supports_css .= $sgs_field_css;
 }
 
-$submit_colour_hover = $attributes['submitColourHover'] ?? '';
-$submit_colour_gradient_hover = $attributes['submitColourHoverGradient'] ?? '';
+$submit_colour_hover           = $attributes['submitColourHover'] ?? '';
+$submit_colour_gradient_hover  = $attributes['submitColourHoverGradient'] ?? '';
 $submit_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $submit_colour_hover, $submit_colour_gradient_hover );
 if ( '' !== $submit_colour_effective_hover ) {
 	$submit_colour_effective_hover_decl = sgs_text_colour_decl( $submit_colour_effective_hover );
@@ -791,6 +787,30 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 <?php
 $inner_html = ob_get_clean();
 
+// ── Root border (width, style, colour, gradient ring, radius at three tiers)
+// through the shared assembler. The base rule prints before the tier rules. ──
+$sgs_form_border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$sgs_form_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+if ( $sgs_form_border['base'] ) {
+	$sgs_form_supports_css .= $sgs_form_sel . '{' . implode( ';', $sgs_form_border['base'] ) . ';}';
+}
+$sgs_form_supports_css .= implode( '', $sgs_form_border['rules'] );
+if ( $sgs_form_border['tablet'] ) {
+	$sgs_form_supports_css .= '@media(max-width:1023px){' . $sgs_form_sel . '{' . implode( ';', $sgs_form_border['tablet'] ) . ';}}';
+}
+if ( $sgs_form_border['mobile'] ) {
+	$sgs_form_supports_css .= '@media(max-width:767px){' . $sgs_form_sel . '{' . implode( ';', $sgs_form_border['mobile'] ) . ';}}';
+}
+
 // ── WS-4 wrapper via SGS_Container_Wrapper ─────────────────────────────────
 // tag='div' — the form block outer wrapper is always a <div>; the <form>
 // element is the inner .sgs-form__inner child.
@@ -800,93 +820,6 @@ $inner_html = ob_get_clean();
 // custom-property VALUES (`--x:y`), allowed inline per contract §A (not a
 // real property declaration). extra_classes carries 'sgs-form' + the uid +
 // re-added preset has-* classes computed above (color/typography/border are
-
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
-		$sgs_form_supports_css .= $sgs_form_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$sgs_form_supports_css .= sgs_border_gradient_css( $sgs_form_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$sgs_form_supports_css .= $sgs_form_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$sgs_form_supports_css .= $sgs_form_sel . '{border-style:none;border-width:0;}';
-}
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $sgs_form_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$sgs_form_supports_css .= $border_radius_out['css'];
-	}
-}
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $sgs_form_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$sgs_form_supports_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $sgs_form_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$sgs_form_supports_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
-}
-
 // block-private, scoped in $sgs_form_supports_css).
 $sgs_form_output = SGS_Container_Wrapper::render(
 	$attributes,

@@ -108,29 +108,24 @@
             "pointer-events:none",
             "position:absolute"
         ],
+        " || .sgs-info-box-UID.sgs-info-box:focus-within": [
+            "border-color:transparent"
+        ],
+        " || .sgs-info-box-UID.sgs-info-box:focus-within::before": [
+            "background:linear-gradient(45deg,#0f0,#ff0)"
+        ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover": [
-            "background-clip:padding-box",
-            "border-color:transparent",
-            "position:relative"
+            "border-color:transparent"
         ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover::before": [
-            "-webkit-mask-composite:xor",
-            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
-            "background:linear-gradient(45deg,#0f0,#ff0)",
-            "border-radius:inherit",
-            "content:\"\"",
-            "inset:0",
-            "margin:-1px",
-            "mask-composite:exclude",
-            "padding:1px",
-            "pointer-events:none",
-            "position:absolute"
+            "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },
     "j_radius_uniform": {
         " || .sgs-info-box-UID.sgs-info-box": [
             "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-transition-easing:ease-in-out",
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

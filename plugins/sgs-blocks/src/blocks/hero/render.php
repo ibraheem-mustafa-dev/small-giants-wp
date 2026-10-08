@@ -259,9 +259,6 @@ $hover_background_colour            = $attributes['backgroundColourHover'] ?? ''
 $hover_background_colour_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text_colour                  = $attributes['textColourHover'] ?? '';
 $hover_text_colour_gradient         = $attributes['textColourHoverGradient'] ?? '';
-$hover_border_colour                = $attributes['borderColourHover'] ?? '';
-// D636 border-colour gradient — sibling attribute, wins over $hover_border_colour when set.
-$hover_border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -535,9 +532,23 @@ if ( '' !== $hover_text_colour_effective ) {
 		$hover_decls[] = $hover_text_colour_decl;
 	}
 }
-if ( $hover_border_colour ) {
-	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
-}
+// Root border (width, style, colour, gradient ring, hover paint, radius at
+// three tiers) through the shared assembler; emitted with the other root
+// rules further down, its hover colour joins the hover declarations here.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour'    => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
+	)
+);
+$hover_decls = array_merge( $hover_decls, $border['hover'] );
 if ( $resting_decls || $hover_decls ) {
 	$responsive_css .= sgs_emit_state_colour_css( $root_sel, $resting_decls, $hover_decls );
 }
@@ -557,16 +568,6 @@ if ( $hover_decls ) {
 	}
 }
 
-// --- Border gradient, hover state (D636 border builder) — masked ::before,
-// scoped to the ":hover" selector itself so it paints ONLY on hover (the
-// wrapper has no resting border-colour attribute of its own; the flat-colour
-// path above already reads as inert at rest — border-style is never set — so
-// the gradient mask mirrors that: it only exists inside the :hover rule). ---
-if ( '' !== $hover_border_colour_gradient ) {
-	$responsive_css .= sgs_hover_media_wrap(
-		sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . " {$root_sel}:hover", $hover_border_colour_gradient, null, '1px' )
-	);
-}
 
 // Background zoom on hover. The wrapper's rule (includes/container-bg-hover-zoom.php) aims at
 // its own `.sgs-container__image-bg` or ::before, neither of which the standard hero renders
@@ -1184,9 +1185,6 @@ if ( $bg_ken_burns ) {
 
 $hero_style_engine_args = array();
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
-
 if ( ! empty( $hero_style_engine_args ) ) {
 	$hero_scoped_styles = wp_style_engine_get_styles(
 		$hero_style_engine_args,
@@ -1379,90 +1377,17 @@ if ( $has_standard_bg_image ) {
 // declarations. Contract + mechanism: Spec 32. Enforced by
 // scripts/audit-inline-styling.js --check. background-color/opacity move to
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
-		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+// ── Root border: resting rule first, then its gradient ring, then the tier
+// radii (computed above with the hover paint). ──
+if ( $border['base'] ) {
+	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$responsive_css .= $border_radius_out['css'];
-	}
+$responsive_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // the scoped <style> ($responsive_css, appended below) — the element carries

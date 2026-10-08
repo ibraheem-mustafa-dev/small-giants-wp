@@ -82,9 +82,8 @@
             "--sgs-social-border:var(--wp--preset--color--text-muted,currentColor)",
             "--sgs-social-glyph-hover:var(--wp--preset--color--primary,currentColor)",
             "--sgs-social-glyph:var(--wp--preset--color--text-muted,currentColor)",
-            "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:none",
-            "border-width:2px 2px 2px 2px",
+            "border-width:0",
             "gap:20px"
         ],
         " || .sgs-soc-UID .sgs-social-icons__item": [

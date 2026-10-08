@@ -156,6 +156,7 @@
     },
     "j_radius_uniform": {
         " || .sgs-sh-UID.sgs-site-header": [
+            "border-radius:8px",
             "display:flex",
             "flex-direction:column",
             "justify-content:center"

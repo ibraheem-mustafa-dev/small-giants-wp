@@ -40,6 +40,14 @@ $sgs_cases = array(
 		array(),
 	),
 	'off'     => array( array( 'borderRadius' => '8px' ), '', array( 'radius' => false ) ),
+	'named'   => array(
+		array(
+			'borderRadius'       => '6px',
+			'wrapperBorderWidth' => array( 'top' => '1px' ),
+		),
+		'wrapper',
+		array( 'radius' => 'borderRadius' ),
+	),
 	'prefix'  => array(
 		array(
 			'cardBorderWidth'  => array( 'top' => '1px' ),

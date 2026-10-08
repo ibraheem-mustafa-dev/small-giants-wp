@@ -103,7 +103,6 @@ def zero_fill_pairs(sites):
 BOX_BARE_OK = {
     'includes/helpers-box.php': (1, 'the definition\'s function_exists() polyfill guard: IDENTITY, follow it on any rename'),
     'includes/render-helpers.php': (1, 'docblock listing which helper file provides what'),
-    'src/blocks/mega-aside/render.php': (1, 'function_exists() guard on a border-width ternary, which stays on the shorthand'),
     'includes/helpers-container.php': (1, 'function_exists() guard in sgs_serialise_box_sides, which only the border width calls, and a width stays on the shorthand'),
 }
 

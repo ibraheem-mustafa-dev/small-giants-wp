@@ -234,9 +234,6 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
-
 $color_args = array();
 if ( '' !== $style_color_text ) {
 	$color_args['text'] = $style_color_text;

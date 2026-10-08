@@ -180,67 +180,35 @@ if ( '' !== $gap_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{gap:{$gap_mob_val};}{$trigger_sel}{gap:{$gap_mob_val};}}";
 }
 
-// --- Border (width/style on the panel, colour via the shared state
-// emitter, radius via the style engine + hand-built tier shorthand — the
-// same pattern sgs/social-icons uses for its wrapper border). ---
-$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
-$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
-
-if ( 'none' !== $border_style_raw ) {
-	$border_base_decls = array();
-	if ( $has_border_width ) {
-		$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
-		$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
-		$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
-		$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
-		$border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $border_style_raw );
-	}
-	if ( $border_base_decls ) {
-		$scoped_css[] = "{$list_sel}{" . implode( ';', $border_base_decls ) . ';}';
-	}
-
-	$border_colour_css = sgs_border_states_css(
-		$list_sel,
-		$attributes,
-		array(
+// --- Border (width, style, colour flat or gradient, base and hover, radius at
+// three tiers) through the shared assembler. The base rule prints before the
+// tier rules so a tablet or mobile radius (same specificity) wins inside its
+// media query. ---
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$list_sel,
+	array(
+		'colour' => array(
 			'base'           => 'borderColour',
 			'hover'          => 'borderColourHover',
 			'gradient'       => 'borderColourGradient',
 			'hover_gradient' => 'borderColourHoverGradient',
-			'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
-		)
-	);
-	if ( '' !== $border_colour_css ) {
-		$scoped_css[] = $border_colour_css;
-	}
+		),
+	)
+);
+if ( $border['base'] ) {
+	$scoped_css[] = $list_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$border_radius_base       = $border_radius_tiers['base'];
-$border_radius_tablet_obj = $border_radius_tiers['tablet'];
-$border_radius_mobile_obj = $border_radius_tiers['mobile'];
-if ( null !== $border_radius_base ) {
-	$border_radius_scoped = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_base ) ),
-		array( 'selector' => $list_sel )
-	);
-	if ( ! empty( $border_radius_scoped['css'] ) ) {
-		$scoped_css[] = $border_radius_scoped['css'];
-	}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
+if ( $border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $list_sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
-$border_radius_tab_val = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$border_radius_mob_val = sgs_corner_object_longhands( $border_radius_mobile_obj );
-if ( null !== $border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{{$border_radius_tab_val};}}";
+if ( $border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $list_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-if ( null !== $border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{{$border_radius_mob_val};}}";
+if ( $border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $list_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // --- Flag size (tiered {w,h}, helpers.php::sgs_store_selector_flag_size()). ---

@@ -16,9 +16,8 @@
     },
     "d_style_none": {
         " || .sgs-str-UID.wp-block-sgs-star-rating": [
-            "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:none",
-            "border-width:2px 2px 2px 2px"
+            "border-width:0"
         ]
     },
     "e_widths_no_colour": {

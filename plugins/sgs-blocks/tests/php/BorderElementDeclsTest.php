@@ -135,11 +135,11 @@ final class BorderElementDeclsTest extends TestCase {
 	}
 
 	/**
-	 * None rule off.
+	 * An explicit none style always prints the override.
 	 */
-	public function test_none_rule_off(): void {
-		$out = $this->decls( array( 'borderStyle' => 'none' ), array( 'none_rule' => false ) );
-		$this->assertSame( array(), $out['rules'] );
+	public function test_none_override_always_prints(): void {
+		$out = $this->decls( array( 'borderStyle' => 'none' ) );
+		$this->assertSame( array( self::SEL . '{border-style:none;border-width:0;}' ), $out['rules'] );
 	}
 
 	/**
@@ -251,6 +251,8 @@ final class BorderElementDeclsTest extends TestCase {
 		$this->assertSame( array( 'border-top-left-radius:2px;border-bottom-left-radius:3px' ), $r['tiers']['mobile'] );
 
 		$this->assertSame( array(), $r['off']['base'] );
+
+		$this->assertSame( array( 'border-style:solid', 'border-width:1px 0 0 0', 'border-radius:6px' ), $r['named']['base'] );
 
 		$this->assertSame(
 			array( 'border-style:dotted', 'border-width:1px 0 0 0', 'border-color:#123456', 'border-radius:4px' ),

@@ -126,6 +126,9 @@
         ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
+        ],
+        " || .sgs-form-UID.sgs-form": [
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

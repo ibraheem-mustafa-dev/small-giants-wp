@@ -58,9 +58,8 @@
             "--sgs-breadcrumbs-current-colour:var(--wp--preset--color--text,currentColor)",
             "--sgs-breadcrumbs-link-colour:var(--wp--preset--color--text-muted,currentColor)",
             "--sgs-breadcrumbs-separator-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:none",
-            "border-width:2px 2px 2px 2px"
+            "border-width:0"
         ],
         " || .sgs-bcr-UID .sgs-breadcrumbs__item a": [
             "color:var(--wp--preset--color--text-muted,currentColor)"

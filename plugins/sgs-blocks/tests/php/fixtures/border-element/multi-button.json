@@ -91,6 +91,10 @@
         ]
     },
     "d_style_none": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-style:none",
+            "border-width:0"
+        ],
         " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "display:flex",
@@ -226,6 +230,9 @@
         ]
     },
     "j_radius_uniform": {
+        " || .sgs-mb-1.sgs-multi-button": [
+            "border-radius:8px"
+        ],
         " || .sgs-mb-1.sgs-multi-button,.sgs-mb-1.sgs-multi-button>.sgs-container__inner": [
             "align-items:center",
             "display:flex",

@@ -120,20 +120,15 @@ foreach ( $checks as $label => $ok ) {
 }
 
 // ---------------------------------------------------------------------------
-// Second pass: all-zero default → NO border declaration at all (honest-
-// absence contract preserved from the pre-conversion scalar behaviour).
+// Second pass: the unset default (no side set) → NO border declaration at all
+// (honest absence). An explicit 0 on a side is a set value and prints.
 // ---------------------------------------------------------------------------
-$attributes['asideBorderWidth'] = array(
-	'top'    => '0px',
-	'right'  => '0px',
-	'bottom' => '0px',
-	'left'   => '0px',
-);
+$attributes['asideBorderWidth'] = array();
 ob_start();
 require $render_php;
 $html_zero = ob_get_clean();
 $zero_ok   = ( false === strpos( $html_zero, 'border-width:' ) );
-echo ( $zero_ok ? '[PASS] ' : '[FAIL] ' ) . "all-zero default emits NO border-width declaration\n";
+echo ( $zero_ok ? '[PASS] ' : '[FAIL] ' ) . "unset default emits NO border-width declaration\n";
 if ( ! $zero_ok ) {
 	$fail++;
 }

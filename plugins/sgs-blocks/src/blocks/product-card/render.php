@@ -174,9 +174,6 @@ if ( in_array( $sgs_image_aspect, array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '
 // handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
-$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
-
 $sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
 $sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
 $sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
@@ -577,121 +574,34 @@ $sgs_card_typo_css .= sgs_block_background_layer_css(
 	$sgs_pc_bg_decls['hover'][0] ?? ''
 );
 
-// --- Border (colour + gradient; the hover colour, borderColourHover, is
-// emitted by sgs_product_card_parts_css() below). Real border-width/style are separate
-// BOX-MODEL declarations (not paint) — emitted first so the masked
-// `::before` ring (when a colour/gradient is set) visually wins by source
-// order, matching sgs/quote + sgs/heading. ---
-$sgs_pc_border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$sgs_pc_border_width_top    = sgs_css_length_value( $sgs_pc_border_width_obj['top'] ?? '' );
-$sgs_pc_border_width_right  = sgs_css_length_value( $sgs_pc_border_width_obj['right'] ?? '' );
-$sgs_pc_border_width_bottom = sgs_css_length_value( $sgs_pc_border_width_obj['bottom'] ?? '' );
-$sgs_pc_border_width_left   = sgs_css_length_value( $sgs_pc_border_width_obj['left'] ?? '' );
-$sgs_pc_has_border_width    = ( '' !== $sgs_pc_border_width_top || '' !== $sgs_pc_border_width_right || '' !== $sgs_pc_border_width_bottom || '' !== $sgs_pc_border_width_left );
-
-$sgs_pc_border_style_raw      = $attributes['borderStyle'] ?? '';
-$sgs_pc_border_style          = sgs_border_style_keyword( $sgs_pc_border_style_raw );
-$sgs_pc_border_colour_raw     = isset( $attributes['borderColour'] ) ? (string) $attributes['borderColour'] : '';
-
-if ( 'none' !== $sgs_pc_border_style ) {
-	// G5 (Bean, 2026-08-26): "border with no width should mean no border by
-	// default." The width block below is nested, so seeding the array with the
-	// style meant a style with no width fell through to the browser's initial
-	// `medium` (~3px). The style is now seeded only alongside a real width;
-	// border-colour below is legitimately independent and still emits.
-	$sgs_pc_border_box_decls = $sgs_pc_has_border_width
-		? array( 'border-style:' . $sgs_pc_border_style )
-		: array();
-	if ( $sgs_pc_has_border_width ) {
-		$sgs_pc_bwt                = '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '0';
-		$sgs_pc_bwr                = '' !== $sgs_pc_border_width_right ? $sgs_pc_border_width_right : '0';
-		$sgs_pc_bwb                = '' !== $sgs_pc_border_width_bottom ? $sgs_pc_border_width_bottom : '0';
-		$sgs_pc_bwl                = '' !== $sgs_pc_border_width_left ? $sgs_pc_border_width_left : '0';
-		$sgs_pc_border_box_decls[] = "border-width:{$sgs_pc_bwt} {$sgs_pc_bwr} {$sgs_pc_bwb} {$sgs_pc_bwl}";
-	}
-	$sgs_card_typo_css .= $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border_box_decls ) . ';}';
-
-	$sgs_card_typo_css .= sgs_border_states_css(
-		$sgs_pc_root_sel,
-		$attributes,
-		array(
+// --- Border (width, style, colour, gradient ring, radius at three tiers)
+// through the shared assembler. The hover colour, borderColourHover, is
+// emitted by sgs_product_card_parts_css() below, so it is not in the colour
+// map. The base rule prints before the tier rules. ---
+$sgs_pc_border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$sgs_pc_root_sel,
+	array(
+		'colour' => array(
 			'base'     => 'borderColour',
 			'gradient' => 'borderColourGradient',
-			'width'    => '' !== $sgs_pc_border_width_top ? $sgs_pc_border_width_top : '1px',
-		)
-	);
-} elseif ( $sgs_pc_has_border_width || '' !== $sgs_pc_border_colour_raw ) {
-	// The card root's stylesheet width is 0 (`style.css::.product-card`), but a
-	// variant can still paint a border (the trial card's dashed :where() rule).
-	// block.json's default is borderStyle:"none" + borderWidth:{} + borderColour:"",
-	// so "untouched" and "explicitly none" are the same borderStyle state;
-	// a non-default borderWidth/borderColour is the signal that the operator
-	// engaged the controls, so "none" here is a deliberate "remove the border"
-	// request and this scoped (0,2,0) rule clears any variant border. An operator
-	// who never touched borderWidth/borderColour keeps the variant's border.
-	$sgs_card_typo_css .= $sgs_pc_root_sel . '{border-style:none;border-width:0;}';
+		),
+	)
+);
+if ( $sgs_pc_border['base'] ) {
+	$sgs_card_typo_css .= $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border['base'] ) . ';}';
 }
+$sgs_card_typo_css .= implode( '', $sgs_pc_border['rules'] );
 
 // Hover border colour, RRP colour, colour-dot size and hover growth.
 $sgs_card_typo_css .= sgs_product_card_parts_css( $sgs_pc_root_sel, $attributes );
 
-// --- Native border-radius (unchanged mechanism) — still resolved from the
-// skip-serialised style.border.radius object and emitted scoped via the
-// stable core style engine. ---
-$sgs_pc_style_engine_args = array();
-$sgs_pc_radius_args       = array();
-if ( null !== $sgs_radius_tiers['desktop'] ) {
-	$sgs_pc_radius_raw = $sgs_radius_tiers['desktop'];
-	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
-		$sgs_pc_radius_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
-	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
-		$sgs_pc_radius_clean = array();
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_pc_corner ) {
-			// An explicit '0' is a set corner (empty() would drop it).
-			$corner_value = isset( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) ? sgs_css_length_value( $sgs_pc_radius_raw[ $sgs_pc_corner ] ) : '';
-			if ( '' !== $corner_value ) {
-				$sgs_pc_radius_clean[ $sgs_pc_corner ] = $corner_value;
-			}
-		}
-		if ( ! empty( $sgs_pc_radius_clean ) ) {
-			$sgs_pc_radius_args['radius'] = $sgs_pc_radius_clean;
-		}
-	}
+if ( $sgs_pc_border['tablet'] ) {
+	$sgs_card_typo_css .= '@media(max-width:1023px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border['tablet'] ) . ';}}';
 }
-if ( ! empty( $sgs_pc_radius_args ) ) {
-	$sgs_pc_style_engine_args['border'] = $sgs_pc_radius_args;
-}
-if ( ! empty( $sgs_pc_style_engine_args ) ) {
-	$sgs_pc_scoped = wp_style_engine_get_styles(
-		$sgs_pc_style_engine_args,
-		array( 'selector' => $sgs_pc_root_sel )
-	);
-	if ( ! empty( $sgs_pc_scoped['css'] ) ) {
-		$sgs_card_typo_css .= $sgs_pc_scoped['css'];
-	}
-}
-
-// Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
-// radius target-shape correction; base handled above).
-$sgs_pc_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
-$sgs_pc_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-$sgs_pc_radius_tab_val    = sgs_corner_object_longhands( $sgs_pc_radius_tablet_obj );
-$sgs_pc_radius_mob_val    = sgs_corner_object_longhands( $sgs_pc_radius_mobile_obj );
-
-$sgs_pc_radius_tablet_decls = array();
-if ( null !== $sgs_pc_radius_tab_val ) {
-	$sgs_pc_radius_tablet_decls[] = "{$sgs_pc_radius_tab_val}";
-}
-if ( $sgs_pc_radius_tablet_decls ) {
-	$sgs_card_typo_css .= '@media(max-width:1023px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_tablet_decls ) . ';}}';
-}
-
-$sgs_pc_radius_mobile_decls = array();
-if ( null !== $sgs_pc_radius_mob_val ) {
-	$sgs_pc_radius_mobile_decls[] = "{$sgs_pc_radius_mob_val}";
-}
-if ( $sgs_pc_radius_mobile_decls ) {
-	$sgs_card_typo_css .= '@media(max-width:767px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_radius_mobile_decls ) . ';}}';
+if ( $sgs_pc_border['mobile'] ) {
+	$sgs_card_typo_css .= '@media(max-width:767px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border['mobile'] ) . ';}}';
 }
 // Skip-serialised color/border supports also stop WP auto-adding the standard
 // has-*-color / has-*-background-color / has-*-border-color classes onto the

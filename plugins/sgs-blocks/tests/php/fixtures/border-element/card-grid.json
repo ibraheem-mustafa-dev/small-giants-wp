@@ -49,7 +49,9 @@
     },
     "d_style_none": {
         " || .sgs-cg-UID.wp-block-sgs-card-grid": [
-            "--sgs-card-grid-glyph-size:32px"
+            "--sgs-card-grid-glyph-size:32px",
+            "border-style:none",
+            "border-width:0"
         ],
         " || .sgs-container-UID": [
             "--sgs-card-grid-aspect:16/10",
@@ -181,7 +183,8 @@
     },
     "j_radius_uniform": {
         " || .sgs-cg-UID.wp-block-sgs-card-grid": [
-            "--sgs-card-grid-glyph-size:32px"
+            "--sgs-card-grid-glyph-size:32px",
+            "border-radius:8px"
         ],
         " || .sgs-container-UID": [
             "--sgs-card-grid-aspect:16/10",

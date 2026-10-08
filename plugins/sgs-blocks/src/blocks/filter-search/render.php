@@ -145,20 +145,27 @@ if ( ! empty( $attributes['textColourHover'] ?? '' ) ) {
 // input element directly (css_element='input' per block_attributes DB),
 // out-specifying style.css's `border: 1px solid var(...)` shorthand at
 // (0,2,0) vs (0,1,0). ---
-$input_border_colour_css = sgs_border_states_css(
-	"{$root_sel} .sgs-filter-search__input",
+$input_border = sgs_border_element_decls(
 	$attributes,
+	'input',
+	"{$root_sel} .sgs-filter-search__input",
 	array(
-		'base'           => 'inputBorderColour',
-		'hover'          => 'inputBorderColourHover',
-		'gradient'       => 'inputBorderColourGradient',
-		'hover_gradient' => 'inputBorderColourHoverGradient',
-		'width'          => '1px',
+		'colour' => array(
+			'base'           => 'inputBorderColour',
+			'hover'          => 'inputBorderColourHover',
+			'gradient'       => 'inputBorderColourGradient',
+			'hover_gradient' => 'inputBorderColourHoverGradient',
+		),
+		'radius' => false,
 	)
 );
-if ( '' !== $input_border_colour_css ) {
-	$scoped_css[] = $input_border_colour_css;
+if ( $input_border['base'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-filter-search__input{" . implode( ';', $input_border['base'] ) . ';}';
 }
+if ( $input_border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-filter-search__input", implode( ';', $input_border['hover'] ), ':focus-within' );
+}
+$scoped_css = array_merge( $scoped_css, $input_border['rules'] );
 
 // Base margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
 // {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape

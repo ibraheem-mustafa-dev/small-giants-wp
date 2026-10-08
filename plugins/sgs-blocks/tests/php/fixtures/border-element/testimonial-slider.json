@@ -152,46 +152,25 @@
             "position:absolute"
         ],
         " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-within": [
-            "background-clip:padding-box",
-            "border-color:transparent",
-            "position:relative"
+            "border-color:transparent"
         ],
         " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-within::before": [
-            "-webkit-mask-composite:xor",
-            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
-            "background:linear-gradient(45deg,#0f0,#ff0)",
-            "border-radius:inherit",
-            "content:\"\"",
-            "inset:0",
-            "margin:-1px",
-            "mask-composite:exclude",
-            "padding:1px",
-            "pointer-events:none",
-            "position:absolute"
+            "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
-            "background-clip:padding-box",
-            "border-color:transparent",
-            "position:relative"
+            "border-color:transparent"
         ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover::before": [
-            "-webkit-mask-composite:xor",
-            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
-            "background:linear-gradient(45deg,#0f0,#ff0)",
-            "border-radius:inherit",
-            "content:\"\"",
-            "inset:0",
-            "margin:-1px",
-            "mask-composite:exclude",
-            "padding:1px",
-            "pointer-events:none",
-            "position:absolute"
+            "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },
     "j_radius_uniform": {
         " || .sgs-container-UID": [
             "--sgs-transition-duration:300ms",
             "--sgs-transition-easing:ease-in-out"
+        ],
+        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider": [
+            "border-radius:8px"
         ],
         " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__track": [
             "--sgs-slides-visible:1"

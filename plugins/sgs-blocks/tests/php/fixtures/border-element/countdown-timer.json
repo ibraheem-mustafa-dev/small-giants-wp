@@ -73,7 +73,8 @@
     "j_radius_uniform": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)"
+            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

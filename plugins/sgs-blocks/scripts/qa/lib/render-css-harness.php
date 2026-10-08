@@ -91,6 +91,10 @@ require_once __DIR__ . '/wp-stubs.php';
 // never reimplementing field_id()/field_open()/etc. as stubs here.
 require_once $sgs_blocks_dir . '/includes/forms/field-render-helpers.php';
 
+// Real SGS code: sgs/trustpilot-reviews calls sgs_trustpilot_score_label(), which the plugin
+// bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
+require_once $sgs_blocks_dir . '/includes/trustpilot-helpers.php';
+
 /**
  * Parse --flag value / --flag=value style CLI args.
  *
@@ -107,7 +111,7 @@ function harness_parse_args( array $argv ): array {
 			$key = substr( $arg, 2 );
 			if ( strpos( $key, '=' ) !== false ) {
 				list( $key, $val ) = explode( '=', $key, 2 );
-				$out[ $key ]        = $val;
+				$out[ $key ]       = $val;
 			} elseif ( $i + 1 < $n && 0 !== strpos( $argv[ $i + 1 ], '--' ) ) {
 				$out[ $key ] = $argv[ $i + 1 ];
 				++$i;
@@ -184,6 +188,21 @@ if ( ! isset( $attributes['source'] ) ) {
 
 // Minimal WP_Block-shaped stub. parsed_block.attrs.anchor is the only field
 // SGS render.php files read off $block directly (uid derivation).
+class SGS_QA_Stub_Inner_Block {
+	public string $name;
+	public array $attributes;
+	public array $inner_blocks = array();
+	private string $html;
+	public function __construct( string $name, array $attributes, string $html ) {
+		$this->name       = $name;
+		$this->attributes = $attributes;
+		$this->html       = $html;
+	}
+	public function render(): string {
+		return $this->html;
+	}
+}
+
 class SGS_QA_Stub_Block {
 	public array $parsed_block;
 	public array $inner_blocks = array();
@@ -226,13 +245,67 @@ if ( is_file( $block_json ) ) {
 	}
 }
 
-$block   = new SGS_QA_Stub_Block( $attributes, $context, $block_type );
+$block = new SGS_QA_Stub_Block( $attributes, $context, $block_type );
+
+// --inner-blocks-file: JSON list of {name, attributes, html}; each becomes a $block->inner_blocks
+// entry whose render() returns html (what a composite parent such as sgs/tabs iterates).
+if ( isset( $args['inner-blocks-file'] ) ) {
+	if ( ! is_file( $args['inner-blocks-file'] ) ) {
+		harness_fail( 'inner-blocks-file not found: ' . $args['inner-blocks-file'] );
+	}
+	$inner_rows = json_decode( (string) file_get_contents( $args['inner-blocks-file'] ), true );
+	if ( ! is_array( $inner_rows ) ) {
+		harness_fail( 'invalid JSON for inner-blocks-file: ' . json_last_error_msg() );
+	}
+	foreach ( $inner_rows as $row ) {
+		$block->inner_blocks[] = new SGS_QA_Stub_Inner_Block(
+			(string) ( $row['name'] ?? '' ),
+			is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array(),
+			(string) ( $row['html'] ?? '' )
+		);
+	}
+}
+
+// --post-content-file: the serialised content of the global post (get_post() returns it).
+if ( isset( $args['post-content-file'] ) ) {
+	if ( ! is_file( $args['post-content-file'] ) ) {
+		harness_fail( 'post-content-file not found: ' . $args['post-content-file'] );
+	}
+	$GLOBALS['sgs_qa_post'] = (object) array(
+		'ID'           => 1,
+		'post_content' => (string) file_get_contents( $args['post-content-file'] ),
+	);
+}
+
+// --global-settings-file: JSON tree wp_get_global_settings() returns (e.g. {"custom":{"dark":{...}}}).
+if ( isset( $args['global-settings-file'] ) ) {
+	if ( ! is_file( $args['global-settings-file'] ) ) {
+		harness_fail( 'global-settings-file not found: ' . $args['global-settings-file'] );
+	}
+	$settings_tree = json_decode( (string) file_get_contents( $args['global-settings-file'] ), true );
+	if ( ! is_array( $settings_tree ) ) {
+		harness_fail( 'invalid JSON for global-settings-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_global_settings'] = $settings_tree;
+}
+
+// --taxonomies-file: JSON registry for taxonomy_exists()/get_terms() (see wp-stubs.php).
+if ( isset( $args['taxonomies-file'] ) ) {
+	if ( ! is_file( $args['taxonomies-file'] ) ) {
+		harness_fail( 'taxonomies-file not found: ' . $args['taxonomies-file'] );
+	}
+	$taxonomy_tree = json_decode( (string) file_get_contents( $args['taxonomies-file'] ), true );
+	if ( ! is_array( $taxonomy_tree ) ) {
+		harness_fail( 'invalid JSON for taxonomies-file: ' . json_last_error_msg() );
+	}
+	$GLOBALS['sgs_qa_taxonomies'] = $taxonomy_tree;
+}
 // --content stands in for rendered InnerBlocks (a composite block with no inner
 // content renders nothing, so its colours are never emitted).
 $content = isset( $args['content'] ) ? (string) $args['content'] : '';
 
-$html   = '';
-$error  = null;
+$html  = '';
+$error = null;
 ob_start();
 try {
 	// $attributes / $content / $block are the three variables every SGS

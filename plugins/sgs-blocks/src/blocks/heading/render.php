@@ -313,7 +313,6 @@ $border = $inherit_style
 				'base'     => 'borderColour',
 				'gradient' => 'borderColourGradient',
 			),
-			'none_rule' => false,
 		)
 	);
 

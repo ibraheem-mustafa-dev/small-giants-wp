@@ -54,22 +54,6 @@ $dialog_width_raw  = isset( $attributes['dialogWidth'] ) && is_string( $attribut
 $dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? ( $attributes['dialogWidthUnit'] ?? 'px' ) : 'px';
 $dialog_width      = ( '' !== $dialog_width_raw && preg_match( '/^\d+(?:\.\d+)?$/', $dialog_width_raw ) ) ? $dialog_width_raw . $dialog_width_unit : '';
 
-// Dialog border — Shape B, block-private (same shape as sgs/accordion):
-// borderWidth {top,right,bottom,left} box object, borderStyle enum,
-// borderColour(+Gradient). 'none' style (the default) keeps the dialog's
-// existing borderless look; width/style paint on the same selector as the
-// background below, colour is handled separately via sgs_border_states_css()
-// (Colour EMISSION helpers table — no hover needed on this element, mirrors
-// modalBackground's own no-hover reasoning above).
-$border_width_obj      = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top      = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right    = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom   = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left     = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width      = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
 // Dialog shadow — ShadowControl's layered shape+colour text pair
 // (sgs_shadow_box_decls(), includes/helpers-shadow-layers.php, loaded
 // transitively via helpers-tokens.php -> render-helpers.php). Empty shape
@@ -168,17 +152,22 @@ if ( '' !== $dialog_width ) {
 	$dialog_rules[] = 'width:' . $dialog_width;
 	$dialog_rules[] = 'max-width:calc(100vw - 2rem)';
 }
-// Dialog border width/style — same selector as the background above; 'none'
-// (default) emits nothing, leaving style.css's `border: none` default look
-// unchanged. Colour is a separate rule (below), via sgs_border_states_css().
-if ( 'none' !== $border_style && $has_border_width ) {
-	$bwt            = '' !== $border_width_top ? $border_width_top : '0';
-	$bwr            = '' !== $border_width_right ? $border_width_right : '0';
-	$bwb            = '' !== $border_width_bottom ? $border_width_bottom : '0';
-	$bwl            = '' !== $border_width_left ? $border_width_left : '0';
-	$dialog_rules[] = 'border-style:' . $border_style;
-	$dialog_rules[] = 'border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}";
-}
+// Dialog border (width, style, colour) through the shared assembler, on the
+// same selector as the background above. Style 'none' (default) emits nothing,
+// leaving style.css's `border: none` look unchanged; the block has no radius or
+// hover border attribute.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel . ' .sgs-modal__dialog',
+	array(
+		'colour'    => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+$dialog_rules = array_merge( $dialog_rules, $border['base'] );
 
 // Backdrop — the shared viewport scrim (U-2 Addendum A, modal migration,
 // 2026-09-24). The block no longer paints its own `::backdrop`; instead it
@@ -241,22 +230,9 @@ if ( $trigger_bg_css ) {
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
 }
-// Dialog border colour — own rule (decision table: "One selector,
-// background/border only, no text" -> sgs_border_states_css() directly). A
-// flat colour resolves straight to `border-color`; a gradient gets the
-// masked ::before ring automatically — no hover sibling (this element has no
-// hover-shaped interaction, same reasoning as modalBackground above).
-$border_colour_css = sgs_border_states_css(
-	$root_sel . ' .sgs-modal__dialog',
-	$attributes,
-	array(
-		'base'     => 'borderColour',
-		'gradient' => 'borderColourGradient',
-	)
-);
-if ( $border_colour_css ) {
-	$scoped_css_rules[] = $border_colour_css;
-}
+// Dialog border rules: the gradient ring (the explicit none override is off —
+// style.css's `border: none` is the default look).
+$scoped_css_rules = array_merge( $scoped_css_rules, $border['rules'] );
 // Dialog shadow — only when the operator has set one; empty leaves
 // style.css's hardcoded box-shadow untouched
 // (dialogShadow="0 30px 70px", dialogShadowColour="site 30%").

@@ -880,6 +880,12 @@ const PREFIXED_HELPER_SUFFIXES = {
 	sgs_nav_shared_typography_hover_rule: [
 		'TextDecorationHover', 'TextTransformHover', 'FontWeightHover',
 	],
+	// `sgs_border_element_decls( $attributes, $prefix, $selector, $options )`
+	// (includes/helpers-border-style.php) reads `sgs_typography_attr( $prefix,
+	// 'BorderWidth' )` / `'BorderStyle'` / `'BorderRadius'`, so a prefixed
+	// element's width, style and radius names never appear verbatim. Its colour
+	// attributes are literal strings in the call's own colour map.
+	sgs_border_element_decls: [ 'BorderWidth', 'BorderStyle', 'BorderRadius' ],
 };
 
 /**

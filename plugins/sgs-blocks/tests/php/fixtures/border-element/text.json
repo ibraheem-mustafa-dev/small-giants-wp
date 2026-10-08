@@ -2,7 +2,9 @@
     "a_baseline": [],
     "b_equal_sides": {
         " || .wp-block-sgs-text.sgs-text-UID": [
-            "border:2px solid var(--wp--preset--color--primary,currentColor)"
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -12,10 +14,17 @@
             "border-width:1px 0 0 4px"
         ]
     },
-    "d_style_none": [],
+    "d_style_none": {
+        " || .wp-block-sgs-text.sgs-text-UID": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
     "e_widths_no_colour": {
         " || .wp-block-sgs-text.sgs-text-UID": [
-            "border:2px solid currentColor"
+            "border-color:currentColor",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
         ]
     },
     "f_colour_no_widths": {
@@ -27,7 +36,8 @@
         " || .wp-block-sgs-text.sgs-text-UID": [
             "background-clip:padding-box",
             "border-color:transparent",
-            "border:3px solid currentColor",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
             "position:relative"
         ],
         " || .wp-block-sgs-text.sgs-text-UID::before": [
@@ -46,7 +56,9 @@
     },
     "h_hover_flat": {
         " || .wp-block-sgs-text.sgs-text-UID": [
-            "border:2px solid var(--wp--preset--color--primary,currentColor)",
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
             "transition:color 300ms ease,background-color 300ms ease,transform 300ms ease,box-shadow 300ms ease"
         ],
         " || .wp-block-sgs-text.sgs-text-UID:focus-visible": [

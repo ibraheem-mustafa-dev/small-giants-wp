@@ -59,6 +59,8 @@
     "d_style_none": {
         " || .sgs-fg-1.sgs-feature-grid": [
             "align-items:stretch",
+            "border-style:none",
+            "border-width:0",
             "display:grid",
             "gap:24px",
             "grid-template-columns:repeat(4,1fr)",
@@ -148,6 +150,7 @@
     "j_radius_uniform": {
         " || .sgs-fg-1.sgs-feature-grid": [
             "align-items:stretch",
+            "border-radius:8px",
             "display:grid",
             "gap:24px",
             "grid-template-columns:repeat(4,1fr)",

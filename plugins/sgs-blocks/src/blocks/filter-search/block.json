@@ -42,7 +42,25 @@
 					"attrMap": {
 						"css:margin": "margin"
 					},
-					"_note": "Single-element block — render.php renders ONE root <div class=\"sgs-filter-search\"> in either mode (attribute-chips or taxonomy-terms). Margin (a single TIER-of-BOXES envelope attr {desktop,tablet,mobile}, folded 2026-09-11) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission."
+					"_note": "Single-element block — render.php renders ONE root <div class=\"sgs-filter-search\"> in either mode (attribute-chips or taxonomy-terms). Margin (a single TIER-of-BOXES envelope attr {desktop,tablet,mobile}, folded 2026-09-11) is the ONLY styling capability declared in supports; padding/gap/width/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission. The search input's border colour is the `input` element."
+				},
+				"input": {
+					"label": "Search input",
+					"order": 2,
+					"clusters": [ "layout" ],
+					"prefix": "input",
+					"attrMap": {
+						"css:border-color": "inputBorderColour",
+						"css:border-color-gradient": "inputBorderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "inputBorderColourHover",
+								"css:border-color-gradient": "inputBorderColourHoverGradient"
+							}
+						}
+					}
 				}
 			}
 		}

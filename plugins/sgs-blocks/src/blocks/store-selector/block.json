@@ -68,7 +68,16 @@
 						"css:border-color": "borderColour",
 						"css:border-style": "borderStyle",
 						"css:border-width": "borderWidth",
-						"css:border-radius": "borderRadius"
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
 					}
 				},
 				"item": {

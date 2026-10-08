@@ -44,10 +44,9 @@ final class BorderElementParityTest extends TestCase {
 	/**
 	 * Every target as array( block folder, attribute prefix ).
 	 *
-	 * Not here, because the render harness cannot run them: tabs (needs rendered inner blocks), table-of-contents
-	 * (needs a global post), trustpilot-reviews (calls sgs_trustpilot_score_label), audio (wp_parse_url),
-	 * responsive-logo, store-selector and nav-drawer (esc_url_raw), buybox (do_blocks), before-after
-	 * (wp_enqueue_script_module), theme-toggle (wp_get_global_settings).
+	 * Not here, because the render harness cannot run it: buybox (a variable WooCommerce product is needed
+	 * before it prints any CSS; without WooCommerce it echoes core fallback blocks that carry none). Its root
+	 * border is the same single sgs_border_element_decls() call and is read on the live site instead.
 	 */
 	private const TARGETS = array(
 		array( 'quote', '' ),
@@ -96,15 +95,17 @@ final class BorderElementParityTest extends TestCase {
 		array( 'product-card', '' ),
 		array( 'social-icons', 'wrapper' ),
 		array( 'form', 'field' ),
-	);
-
-	/**
-	 * Targets whose desktop radius does not print, or prints after the tier radius, in the current code. Each
-	 * is a finding, not a pass: the radius-order test does not run for these. Key = target name, value = why.
-	 */
-	private const KNOWN_ORDER_EXCEPTIONS = array(
-		'brand-strip'     => 'the root desktop radius rule prints after the tablet and mobile media rules, so it beats the tier radius',
-		'countdown-timer' => 'the root desktop radius rule prints after the tablet and mobile media rules, so it beats the tier radius',
+		array( 'tabs', '' ),
+		array( 'table-of-contents', '' ),
+		array( 'trustpilot-reviews', '' ),
+		array( 'audio', '' ),
+		array( 'responsive-logo', '' ),
+		array( 'store-selector', '' ),
+		array( 'nav-drawer', '' ),
+		array( 'before-after', '' ),
+		array( 'theme-toggle', '' ),
+		array( 'mega-aside', 'aside' ),
+		array( 'filter-search', 'input' ),
 	);
 
 	/**
@@ -136,6 +137,76 @@ final class BorderElementParityTest extends TestCase {
 		'product-faq-item'      => array( 'attrs' => array( 'question' => 'Q?' ) ),
 		'text'                  => array( 'attrs' => array( 'text' => 'Parity' ) ),
 		'business-info'         => array( 'attrs' => array( 'displayType' => 'attribution' ) ),
+		'tabs'                  => array(
+			'attrs'   => array( 'tabAlignment' => 'start' ),
+			'harness' => array(
+				'inner-blocks' => array(
+					array(
+						'name'       => 'sgs/tab',
+						'attributes' => array( 'label' => 'One' ),
+						'html'       => '<p>Parity</p>',
+					),
+				),
+			),
+		),
+		'table-of-contents'     => array(
+			'harness' => array( 'post-content' => '<!-- wp:sgs/heading {"level":"h2","content":"One"} /--><!-- wp:sgs/heading {"level":"h3","content":"Two"} /-->' ),
+		),
+		'trustpilot-reviews'    => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
+		'audio'                 => array( 'attrs' => array( 'audioUrl' => 'https://example.test/parity.mp3' ) ),
+		'responsive-logo'       => array( 'attrs' => array( 'logoUrl' => 'https://example.test/parity.png' ) ),
+		'store-selector'        => array(
+			'attrs' => array(
+				'stores' => array(
+					array(
+						'label' => 'UK',
+						'url'   => 'https://example.test/uk',
+					),
+				),
+			),
+		),
+		'nav-drawer'            => array(
+			'attrs' => array(
+				'drawerAlign'  => 'start',
+				'submenuModel' => 'accordion',
+			),
+		),
+		'before-after'          => array(
+			'attrs' => array(
+				'heightUnit'     => 'px',
+				'beforeImageUrl' => 'https://example.test/before.jpg',
+				'afterImageUrl'  => 'https://example.test/after.jpg',
+			),
+		),
+		'theme-toggle'          => array(
+			'harness' => array( 'global-settings' => array( 'custom' => array( 'dark' => array( 'background' => '#111111' ) ) ) ),
+		),
+		'filter-search[input]'  => array(
+			'attrs'   => array(
+				'taxonomy'  => 'product_brand',
+				'threshold' => 2,
+			),
+			'harness' => array(
+				'taxonomies' => array(
+					'product_brand' => array(
+						'label'        => 'Brand',
+						'object_types' => array( 'product' ),
+						'terms'        => array(
+							array(
+								'term_id' => 1,
+								'slug'    => 'a',
+								'name'    => 'A',
+							),
+							array(
+								'term_id' => 2,
+								'slug'    => 'b',
+								'name'    => 'B',
+							),
+						),
+					),
+				),
+			),
+		),
 		'social-icons[wrapper]' => array(
 			'attrs' => array(
 				'icons' => array(
@@ -341,7 +412,7 @@ final class BorderElementParityTest extends TestCase {
 		foreach ( self::TARGETS as $target ) {
 			list( $block, $prefix ) = $target;
 			$name                   = self::target_name( $block, $prefix );
-			if ( in_array( self::attr( $prefix, 'borderRadius' ), self::block_attrs( $block ), true ) && ! isset( self::KNOWN_ORDER_EXCEPTIONS[ $name ] ) ) {
+			if ( in_array( self::attr( $prefix, 'borderRadius' ), self::block_attrs( $block ), true ) ) {
 				$out[ $name ] = array( $block, $prefix );
 			}
 		}
@@ -362,10 +433,11 @@ final class BorderElementParityTest extends TestCase {
 		$attrs   = array_merge( $base['attrs'] ?? array(), $attrs );
 		$context = $base['context'] ?? array();
 		$content = $base['content'] ?? '';
-		if ( '' === $content ) {
+		$extra   = $base['harness'] ?? array();
+		if ( '' === $content && array() === $extra ) {
 			return $this->render_block( 'sgs/' . $block, $attrs, $context );
 		}
-		return $this->render_block_with_content( 'sgs/' . $block, $attrs, $context, $content );
+		return $this->render_block_with_content( 'sgs/' . $block, $attrs, $context, $content, $extra );
 	}
 
 	/**
@@ -375,14 +447,42 @@ final class BorderElementParityTest extends TestCase {
 	 * @param array<string, mixed> $attrs   Block attributes.
 	 * @param array<string, mixed> $context Ancestor block context.
 	 * @param string               $content Rendered inner-block HTML.
+	 * @param array<string, mixed> $extra   Harness inputs: 'inner-blocks' (list of name/attributes/html), 'post-content'
+	 *                                      (serialised global post content), 'global-settings' (settings tree), 'taxonomies' (registry).
 	 * @return array{html: string, css: string}
 	 */
-	private function render_block_with_content( string $slug, array $attrs, array $context, string $content ): array {
+	private function render_block_with_content( string $slug, array $attrs, array $context, string $content, array $extra = array() ): array {
 		$harness   = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$attrs_f   = tempnam( sys_get_temp_dir(), 'sgsat' );
 		$context_f = tempnam( sys_get_temp_dir(), 'sgsct' );
 		file_put_contents( $attrs_f, json_encode( (object) $attrs, JSON_THROW_ON_ERROR ) );
 		file_put_contents( $context_f, json_encode( (object) $context, JSON_THROW_ON_ERROR ) );
+		$files = array( $attrs_f, $context_f );
+		$flags = '';
+		if ( isset( $extra['inner-blocks'] ) ) {
+			$f = tempnam( sys_get_temp_dir(), 'sgsib' );
+			file_put_contents( $f, json_encode( $extra['inner-blocks'], JSON_THROW_ON_ERROR ) );
+			$files[] = $f;
+			$flags  .= ' --inner-blocks-file ' . escapeshellarg( $f );
+		}
+		if ( isset( $extra['post-content'] ) ) {
+			$f = tempnam( sys_get_temp_dir(), 'sgspc' );
+			file_put_contents( $f, (string) $extra['post-content'] );
+			$files[] = $f;
+			$flags  .= ' --post-content-file ' . escapeshellarg( $f );
+		}
+		if ( isset( $extra['taxonomies'] ) ) {
+			$f = tempnam( sys_get_temp_dir(), 'sgstx' );
+			file_put_contents( $f, json_encode( $extra['taxonomies'], JSON_THROW_ON_ERROR ) );
+			$files[] = $f;
+			$flags  .= ' --taxonomies-file ' . escapeshellarg( $f );
+		}
+		if ( isset( $extra['global-settings'] ) ) {
+			$f = tempnam( sys_get_temp_dir(), 'sgsgs' );
+			file_put_contents( $f, json_encode( $extra['global-settings'], JSON_THROW_ON_ERROR ) );
+			$files[] = $f;
+			$flags  .= ' --global-settings-file ' . escapeshellarg( $f );
+		}
 
 		try {
 			$cmd = escapeshellarg( PHP_BINARY )
@@ -390,11 +490,13 @@ final class BorderElementParityTest extends TestCase {
 				. ' --slug ' . escapeshellarg( $slug )
 				. ' --attrs-file ' . escapeshellarg( $attrs_f )
 				. ' --context-file ' . escapeshellarg( $context_f )
+				. $flags
 				. ' --content ' . escapeshellarg( $content ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {
-			@unlink( $attrs_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
-			@unlink( $context_f ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+			foreach ( $files as $tmp ) {
+				@unlink( $tmp ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+			}
 		}
 
 		$decoded = json_decode( $out, true );

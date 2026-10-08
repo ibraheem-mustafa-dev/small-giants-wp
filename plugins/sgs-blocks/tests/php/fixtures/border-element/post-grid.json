@@ -394,6 +394,9 @@
             "--sgs-transition-duration:300ms",
             "--sgs-transition-easing:ease-in-out"
         ],
+        " || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
+            "border-radius:8px"
+        ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__badge,.sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__category": [
             "color:var(--wp--preset--color--text-inverse,currentColor)",
             "isolation:isolate",

@@ -217,64 +217,33 @@ $sgs_scoped_css = array();
 // the dialog carries this uid class directly so the rule keeps matching it.
 // Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
 // attr { top, right, bottom, left }, no tiers. Colour resolution (flat vs
-// gradient, base + hover) is delegated to sgs_border_states_css(). ---
-$sgs_ps_border_sel       = '.' . $sgs_style_uid;
-$sgs_ps_border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
-$sgs_ps_border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$sgs_ps_border_width_top = sgs_css_length_value( $sgs_ps_border_width_obj['top'] ?? '' );
-$sgs_ps_border_width_rgt = sgs_css_length_value( $sgs_ps_border_width_obj['right'] ?? '' );
-$sgs_ps_border_width_bot = sgs_css_length_value( $sgs_ps_border_width_obj['bottom'] ?? '' );
-$sgs_ps_border_width_lft = sgs_css_length_value( $sgs_ps_border_width_obj['left'] ?? '' );
-$sgs_ps_has_border_width = ( '' !== $sgs_ps_border_width_top || '' !== $sgs_ps_border_width_rgt || '' !== $sgs_ps_border_width_bot || '' !== $sgs_ps_border_width_lft );
-
-$sgs_ps_border_base_decls = array();
-if ( $sgs_ps_has_border_width ) {
-	$sgs_ps_bwt                 = '' !== $sgs_ps_border_width_top ? $sgs_ps_border_width_top : '0';
-	$sgs_ps_bwr                 = '' !== $sgs_ps_border_width_rgt ? $sgs_ps_border_width_rgt : '0';
-	$sgs_ps_bwb                 = '' !== $sgs_ps_border_width_bot ? $sgs_ps_border_width_bot : '0';
-	$sgs_ps_bwl                 = '' !== $sgs_ps_border_width_lft ? $sgs_ps_border_width_lft : '0';
-	$sgs_ps_border_base_decls[] = "border-width:{$sgs_ps_bwt} {$sgs_ps_bwr} {$sgs_ps_bwb} {$sgs_ps_bwl}";
-	$sgs_ps_border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $sgs_ps_border_style_raw );
-}
-if ( $sgs_ps_border_base_decls ) {
-	$sgs_scoped_css[] = "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border_base_decls ) . ';}';
-}
-
-$sgs_ps_border_colour_css = sgs_border_states_css(
-	$sgs_ps_border_sel,
+// gradient, base + hover) is delegated to sgs_border_element_decls(). ---
+$sgs_ps_border_sel = '.' . $sgs_style_uid;
+$sgs_ps_border     = sgs_border_element_decls(
 	$attributes,
+	'',
+	$sgs_ps_border_sel,
 	array(
-		'base'           => 'borderColour',
-		'hover'          => 'borderColourHover',
-		'gradient'       => 'borderColourGradient',
-		'hover_gradient' => 'borderColourHoverGradient',
-		'width'          => $sgs_ps_has_border_width && '' !== $sgs_ps_border_width_top ? $sgs_ps_border_width_top : '1px',
+		'colour' => array(
+			'base'           => 'borderColour',
+			'hover'          => 'borderColourHover',
+			'gradient'       => 'borderColourGradient',
+			'hover_gradient' => 'borderColourHoverGradient',
+		),
 	)
 );
-if ( '' !== $sgs_ps_border_colour_css ) {
-	$sgs_scoped_css[] = $sgs_ps_border_colour_css;
+if ( $sgs_ps_border['base'] ) {
+	$sgs_scoped_css[] = "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border['base'] ) . ';}';
 }
-
-$sgs_ps_border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$sgs_ps_border_radius_base       = $sgs_ps_border_radius_tiers['base'];
-$sgs_ps_border_radius_tablet_obj = $sgs_ps_border_radius_tiers['tablet'];
-$sgs_ps_border_radius_mobile_obj = $sgs_ps_border_radius_tiers['mobile'];
-if ( null !== $sgs_ps_border_radius_base ) {
-	$sgs_ps_border_radius_scoped = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $sgs_ps_border_radius_base ) ),
-		array( 'selector' => $sgs_ps_border_sel )
-	);
-	if ( ! empty( $sgs_ps_border_radius_scoped['css'] ) ) {
-		$sgs_scoped_css[] = $sgs_ps_border_radius_scoped['css'];
-	}
+if ( $sgs_ps_border['hover'] ) {
+	$sgs_scoped_css[] = sgs_hover_state_rules( $sgs_ps_border_sel, implode( ';', $sgs_ps_border['hover'] ), ':focus-within' );
 }
-$sgs_ps_border_radius_tab_val = sgs_corner_object_longhands( $sgs_ps_border_radius_tablet_obj );
-$sgs_ps_border_radius_mob_val = sgs_corner_object_longhands( $sgs_ps_border_radius_mobile_obj );
-if ( null !== $sgs_ps_border_radius_tab_val ) {
-	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{{$sgs_ps_border_radius_tab_val};}}";
+$sgs_scoped_css = array_merge( $sgs_scoped_css, $sgs_ps_border['rules'] );
+if ( $sgs_ps_border['tablet'] ) {
+	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border['tablet'] ) . ';}}';
 }
-if ( null !== $sgs_ps_border_radius_mob_val ) {
-	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{{$sgs_ps_border_radius_mob_val};}}";
+if ( $sgs_ps_border['mobile'] ) {
+	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border['mobile'] ) . ';}}';
 }
 
 // --- Colour overrides (input border / focus ring / listbox background /

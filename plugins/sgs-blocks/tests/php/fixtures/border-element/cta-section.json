@@ -33,7 +33,8 @@
             "--sgs-transition-easing:ease-in-out"
         ],
         " || .sgs-cta-section-UID.wp-block-sgs-cta-section": [
-            "border-color:var(--wp--preset--color--primary,currentColor)"
+            "border-style:none",
+            "border-width:0"
         ]
     },
     "e_widths_no_colour": {
@@ -140,6 +141,9 @@
         " || .sgs-container-UID": [
             "--sgs-transition-duration:300ms",
             "--sgs-transition-easing:ease-in-out"
+        ],
+        " || .sgs-cta-section-UID.wp-block-sgs-cta-section": [
+            "border-radius:8px"
         ]
     },
     "k_radius_tiers": {

@@ -38,8 +38,8 @@ defined( 'ABSPATH' ) || exit;
 // otherwise fatal with "Call to undefined function". Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -50,10 +50,10 @@ require_once __DIR__ . '/brand-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
-$source_raw   = $attributes['source'] ?? 'manual';
-$source       = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
-$icon_size    = (int) ( $attributes['iconSize'] ?? 24 );
-$show_labels  = (bool) ( $attributes['showLabels'] ?? false );
+$source_raw  = $attributes['source'] ?? 'manual';
+$source      = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
+$icon_size   = (int) ( $attributes['iconSize'] ?? 24 );
+$show_labels = (bool) ( $attributes['showLabels'] ?? false );
 // Icon colour is one attribute PER real CSS property (background-color / border-color / color) because the
 // resting/hover token can feed up to 3 different declarations depending on
 // `iconStyle` (plain: color; filled: background; outlined/boxed: border-color
@@ -80,18 +80,6 @@ $style_type_raw                   = $attributes['iconStyle'] ?? 'plain';
 $gap_raw                          = $attributes['gap'] ?? '20';
 $anchor                           = $attributes['anchor'] ?? '';
 
-// Border (Block Customisation Standard — wrapper-level border control).
-// Prefixed `wrapper*` to distinguish from the per-item
-// `icon*BorderColour` family (item element, above) — this frames the whole
-// row, not each icon. Box-object interface contract §1/§2: borderWidth is
-// an SGS custom OBJECT attr { top, right, bottom, left }, no tiers.
-$wrapper_border_style_raw = isset( $attributes['wrapperBorderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['wrapperBorderStyle'] ) : 'solid';
-$wrapper_border_width_obj = is_array( $attributes['wrapperBorderWidth'] ?? null ) ? $attributes['wrapperBorderWidth'] : array();
-$wrapper_border_width_top = sgs_css_length_value( $wrapper_border_width_obj['top'] ?? '' );
-$wrapper_border_width_rgt = sgs_css_length_value( $wrapper_border_width_obj['right'] ?? '' );
-$wrapper_border_width_bot = sgs_css_length_value( $wrapper_border_width_obj['bottom'] ?? '' );
-$wrapper_border_width_lft = sgs_css_length_value( $wrapper_border_width_obj['left'] ?? '' );
-$has_wrapper_border_width = ( '' !== $wrapper_border_width_top || '' !== $wrapper_border_width_rgt || '' !== $wrapper_border_width_bot || '' !== $wrapper_border_width_lft );
 
 // ---------------------------------------------------------------------------
 // Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
@@ -288,8 +276,8 @@ $scoped_css = array();
 // Gap is a spacing preset slug ("20") or a custom length ("11px"), validated by
 // the shared sgs_css_length_value(); an empty or unsafe value falls back to the
 // default preset.
-$gap_css = sgs_css_length_value( $gap_raw );
-$gap_css = '' !== $gap_css ? $gap_css : 'var(--wp--preset--spacing--20)';
+$gap_css      = sgs_css_length_value( $gap_raw );
+$gap_css      = '' !== $gap_css ? $gap_css : 'var(--wp--preset--spacing--20)';
 $root_decls   = array(
 	'gap:' . $gap_css,
 );
@@ -304,61 +292,37 @@ $root_decls   = array_merge(
 );
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 
-// --- Wrapper border (Block Customisation Standard) — width/style on the
-// row, colour (flat or gradient, base + hover) via the shared
-// sgs_border_states_css() helper, radius via the shared
-// sgs_border_radius_tiers() + core style engine (base) plus longhand
-// tiers (tablet/mobile) for the set corners only. Distinct from the per-item border
-// gradient block below (that one paints EACH icon link; this frames the
-// whole row). ---
-$wrapper_border_base_decls = array();
-if ( $has_wrapper_border_width ) {
-	$wbwt                        = '' !== $wrapper_border_width_top ? $wrapper_border_width_top : '0';
-	$wbwr                        = '' !== $wrapper_border_width_rgt ? $wrapper_border_width_rgt : '0';
-	$wbwb                        = '' !== $wrapper_border_width_bot ? $wrapper_border_width_bot : '0';
-	$wbwl                        = '' !== $wrapper_border_width_lft ? $wrapper_border_width_lft : '0';
-	$wrapper_border_base_decls[] = "border-width:{$wbwt} {$wbwr} {$wbwb} {$wbwl}";
-	$wrapper_border_base_decls[] = 'border-style:' . sgs_border_style_keyword( $wrapper_border_style_raw );
-}
-if ( $wrapper_border_base_decls ) {
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_border_base_decls ) . ';}';
-}
-
-$wrapper_border_colour_css = sgs_border_states_css(
-	$root_sel,
+// --- Wrapper border (Block Customisation Standard) — width, style, colour (flat
+// or gradient, base + hover) and the corner radius at three tiers through the
+// shared assembler. The radius lives on the unprefixed `borderRadius`
+// attribute. Distinct from the per-item border gradient block further down
+// (that one paints EACH icon link; this frames the whole row). ---
+$wrapper_border = sgs_border_element_decls(
 	$attributes,
+	'wrapper',
+	$root_sel,
 	array(
-		'base'           => 'wrapperBorderColour',
-		'hover'          => 'wrapperBorderColourHover',
-		'gradient'       => 'wrapperBorderColourGradient',
-		'hover_gradient' => 'wrapperBorderColourHoverGradient',
-		'width'          => $has_wrapper_border_width && '' !== $wrapper_border_width_top ? $wrapper_border_width_top : '1px',
+		'colour' => array(
+			'base'           => 'wrapperBorderColour',
+			'hover'          => 'wrapperBorderColourHover',
+			'gradient'       => 'wrapperBorderColourGradient',
+			'hover_gradient' => 'wrapperBorderColourHoverGradient',
+		),
+		'radius' => 'borderRadius',
 	)
 );
-if ( '' !== $wrapper_border_colour_css ) {
-	$scoped_css[] = $wrapper_border_colour_css;
+if ( $wrapper_border['base'] ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_border['base'] ) . ';}';
 }
-
-$wrapper_border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$wrapper_border_radius_base       = $wrapper_border_radius_tiers['base'];
-$wrapper_border_radius_tablet_obj = $wrapper_border_radius_tiers['tablet'];
-$wrapper_border_radius_mobile_obj = $wrapper_border_radius_tiers['mobile'];
-if ( null !== $wrapper_border_radius_base ) {
-	$wrapper_border_radius_scoped = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $wrapper_border_radius_base ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $wrapper_border_radius_scoped['css'] ) ) {
-		$scoped_css[] = $wrapper_border_radius_scoped['css'];
-	}
+$scoped_css = array_merge( $scoped_css, $wrapper_border['rules'] );
+if ( $wrapper_border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $wrapper_border['hover'] ), ':focus-within' );
 }
-$wrapper_border_radius_tab_val = sgs_corner_object_longhands( $wrapper_border_radius_tablet_obj );
-$wrapper_border_radius_mob_val = sgs_corner_object_longhands( $wrapper_border_radius_mobile_obj );
-if ( null !== $wrapper_border_radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$wrapper_border_radius_tab_val};}}";
+if ( $wrapper_border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $wrapper_border['tablet'] ) . ';}}';
 }
-if ( null !== $wrapper_border_radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$wrapper_border_radius_mob_val};}}";
+if ( $wrapper_border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $wrapper_border['mobile'] ) . ';}}';
 }
 
 // --- Border gradient (border builder) — masked ::before, the two bordered
@@ -401,7 +365,7 @@ if ( 'circle' === $style_type ) {
 	$glyph_size = $circle_glyph_size > 0 ? min( $circle_glyph_size, $icon_size ) : (int) round( $icon_size * 0.5 );
 }
 if ( 'circle' === $style_type ) {
-	$item_size = max( 44, $icon_size );
+	$item_size    = max( 44, $icon_size );
 	$scoped_css[] = "{$root_sel}.sgs-social-icons--circle{--sgs-social-circle:{$icon_size}px;}";
 } else {
 	$item_size = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );

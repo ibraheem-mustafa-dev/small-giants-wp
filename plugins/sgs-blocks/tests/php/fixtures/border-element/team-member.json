@@ -94,7 +94,8 @@
     "j_radius_uniform": {
         " || .sgs-team-member-UID.wp-block-sgs-team-member": [
             "--sgs-transition-duration:300ms",
-            "--sgs-transition-easing:ease-in-out"
+            "--sgs-transition-easing:ease-in-out",
+            "border-radius:8px"
         ],
         " || .sgs-team-member-UID.wp-block-sgs-team-member .sgs-team-member__role": [
             "color:var(--wp--preset--color--text-muted,currentColor)"

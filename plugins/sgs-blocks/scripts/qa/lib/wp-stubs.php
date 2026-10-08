@@ -220,7 +220,7 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 		$selector = $options['selector'] ?? '';
 		$css      = $selector . '{' . implode( ';', $decls ) . ';}';
 		return array(
-			'css'         => $css,
+			'css'          => $css,
 			'declarations' => $decls,
 		);
 	}
@@ -273,8 +273,8 @@ if ( ! class_exists( 'WP_Query' ) ) {
 	 * "zero posts" result, never fabricated post content.
 	 */
 	class WP_Query {
-		public array $posts         = array();
-		public int $max_num_pages   = 0;
+		public array $posts        = array();
+		public int $max_num_pages  = 0;
 		private int $current_index = -1;
 
 		public function __construct( $args = array() ) {}
@@ -450,8 +450,16 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 		// Empty settings tree — every SGS caller (sgs_resolve_palette_hex())
 		// is documented to degrade to its own $fallback when global settings
 		// are unavailable, so this is the faithful "unavailable" state, not
-		// an invented palette.
-		return array();
+		// an invented palette. A caller that needs a site setting (the harness
+		// --global-settings-file option) sets $GLOBALS['sgs_qa_global_settings'].
+		$settings = $GLOBALS['sgs_qa_global_settings'] ?? array();
+		foreach ( $path as $segment ) {
+			if ( ! is_array( $settings ) || ! array_key_exists( $segment, $settings ) ) {
+				return array();
+			}
+			$settings = $settings[ $segment ];
+		}
+		return $settings;
 	}
 }
 
@@ -520,8 +528,8 @@ if ( ! function_exists( 'get_posts' ) ) {
 
 if ( ! function_exists( 'get_post' ) ) {
 	function get_post( $post = null ) {
-		// No current/specified post exists in the harness.
-		return null;
+		// No post exists unless the harness --post-content-file option set one.
+		return $GLOBALS['sgs_qa_post'] ?? null;
 	}
 }
 
@@ -801,3 +809,164 @@ if ( ! function_exists( 'attachment_url_to_postid' ) ) {
 // file's unnamespaced global-scope function stubs in one file is a PHP
 // parse error, not a style choice.
 require_once __DIR__ . '/google-reviews-settings-stub.php';
+
+// ─────────────────────────────────────────────────────────────────────────
+// Core functions the border-parity targets reach (BorderElementParityTest).
+// Each behaves like core for the inputs those renders use.
+// ─────────────────────────────────────────────────────────────────────────
+
+if ( ! function_exists( 'wp_parse_url' ) ) {
+	function wp_parse_url( string $url, int $component = -1 ) {
+		return parse_url( $url, $component );
+	}
+}
+
+if ( ! function_exists( 'esc_url_raw' ) ) {
+	function esc_url_raw( $url, $protocols = null ): string {
+		$url = trim( (string) $url );
+		if ( '' === $url ) {
+			return '';
+		}
+		$url = (string) preg_replace( '/[\x00-\x20\x7f"<>\\^`{|}]/', '', $url );
+		if ( preg_match( '#^[a-z][a-z0-9+.-]*:#i', $url ) && ! preg_match( '#^(https?|ftp|mailto|tel|sms):#i', $url ) ) {
+			return '';
+		}
+		return $url;
+	}
+}
+
+if ( ! function_exists( 'do_blocks' ) ) {
+	function do_blocks( string $content ): string {
+		// The harness has no block registry: serialised block comments are dropped and the
+		// inner markup is returned, which is what a render of static inner blocks yields.
+		return (string) preg_replace( '/<!--\s*\/?wp:[^>]*-->\s*/', '', $content );
+	}
+}
+
+if ( ! function_exists( 'wp_enqueue_script_module' ) ) {
+	function wp_enqueue_script_module( string $id, string $src = '', array $deps = array(), $version = false ): void {
+		// No-op: the harness has no script-module registry.
+	}
+}
+
+if ( ! function_exists( 'sanitize_title' ) ) {
+	function sanitize_title( $title ): string {
+		$title = strtolower( wp_strip_all_tags( (string) $title ) );
+		$title = (string) preg_replace( '/[^a-z0-9\s_-]/', '', $title );
+		return trim( (string) preg_replace( '/[\s_-]+/', '-', $title ), '-' );
+	}
+}
+
+if ( ! function_exists( 'parse_blocks' ) ) {
+	/**
+	 * Minimal block-comment parser: blockName, attrs, innerBlocks, innerHTML (own text between
+	 * the comments). Enough for heading discovery; it does not rebuild innerContent.
+	 */
+	function parse_blocks( string $content ): array {
+		$root  = array( 'innerBlocks' => array() );
+		$stack = array( &$root );
+		$re    = '/<!--\s+(\/)?wp:([a-z0-9_\-]+(?:\/[a-z0-9_\-]+)?)\s*(\{.*?\})?\s*(\/)?-->/s';
+		$pos   = 0;
+		preg_match_all( $re, $content, $m, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );
+		foreach ( $m as $hit ) {
+			$text = substr( $content, $pos, $hit[0][1] - $pos );
+			$top  = count( $stack ) - 1;
+			if ( isset( $stack[ $top ]['blockName'] ) ) {
+				$stack[ $top ]['innerHTML'] .= $text;
+			}
+			$pos = $hit[0][1] + strlen( $hit[0][0] );
+			if ( '/' === $hit[1][0] ) {
+				$done                           = array_pop( $stack );
+				$top                            = count( $stack ) - 1;
+				$stack[ $top ]['innerBlocks'][] = $done;
+				continue;
+			}
+			$block = array(
+				'blockName'   => $hit[2][0],
+				'attrs'       => isset( $hit[3] ) && '' !== $hit[3][0] ? (array) json_decode( $hit[3][0], true ) : array(),
+				'innerBlocks' => array(),
+				'innerHTML'   => '',
+			);
+			if ( isset( $hit[4] ) && '/' === $hit[4][0] ) {
+				$stack[ count( $stack ) - 1 ]['innerBlocks'][] = $block;
+			} else {
+				$stack[] = $block;
+			}
+		}
+		return $root['innerBlocks'];
+	}
+}
+
+if ( ! function_exists( '_n' ) ) {
+	function _n( string $single, string $plural, $number, string $domain = 'default' ): string {
+		return 1 === (int) $number ? $single : $plural;
+	}
+}
+
+if ( ! function_exists( 'get_bloginfo' ) ) {
+	function get_bloginfo( string $show = '', string $filter = 'raw' ): string {
+		// The harness has no site: every bloginfo field is empty.
+		return '';
+	}
+}
+
+if ( ! function_exists( 'wpautop' ) ) {
+	function wpautop( string $text, bool $br = true ): string {
+		// Blank-line separated blocks become paragraphs; single newlines become <br /> when $br.
+		$text = trim( str_replace( array( "\r\n", "\r" ), "\n", $text ) );
+		if ( '' === $text ) {
+			return '';
+		}
+		$out = '';
+		foreach ( (array) preg_split( '/\n\s*\n/', $text ) as $para ) {
+			$para = trim( (string) $para );
+			$out .= '<p>' . ( $br ? nl2br( $para, false ) : $para ) . "</p>\n";
+		}
+		return $out;
+	}
+}
+
+// Taxonomy functions read the registry the harness --taxonomies-file option sets in
+// $GLOBALS['sgs_qa_taxonomies'] (name => {label, object_types, terms: [{term_id, slug, name}]}).
+// Without it no taxonomy is registered, as on a bare WordPress with no post types.
+if ( ! function_exists( 'taxonomy_exists' ) ) {
+	function taxonomy_exists( $taxonomy ): bool {
+		return isset( $GLOBALS['sgs_qa_taxonomies'][ $taxonomy ] );
+	}
+}
+
+if ( ! function_exists( 'get_object_taxonomies' ) ) {
+	function get_object_taxonomies( $object_type, string $output = 'names' ): array {
+		$out = array();
+		foreach ( (array) ( $GLOBALS['sgs_qa_taxonomies'] ?? array() ) as $name => $tax ) {
+			if ( in_array( $object_type, (array) ( $tax['object_types'] ?? array() ), true ) ) {
+				$out[] = $name;
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'get_taxonomy' ) ) {
+	function get_taxonomy( $taxonomy ) {
+		if ( ! isset( $GLOBALS['sgs_qa_taxonomies'][ $taxonomy ] ) ) {
+			return false;
+		}
+		$label = (string) ( $GLOBALS['sgs_qa_taxonomies'][ $taxonomy ]['label'] ?? $taxonomy );
+		return (object) array(
+			'name'   => $taxonomy,
+			'labels' => (object) array( 'singular_name' => $label ),
+		);
+	}
+}
+
+if ( ! function_exists( 'get_terms' ) ) {
+	function get_terms( $args = array() ) {
+		$taxonomy = (string) ( $args['taxonomy'] ?? '' );
+		$rows     = (array) ( $GLOBALS['sgs_qa_taxonomies'][ $taxonomy ]['terms'] ?? array() );
+		if ( 'ids' === ( $args['fields'] ?? '' ) ) {
+			return array_map( static fn( array $t ): int => (int) $t['term_id'], $rows );
+		}
+		return array_map( static fn( array $t ): object => (object) $t, $rows );
+	}
+}

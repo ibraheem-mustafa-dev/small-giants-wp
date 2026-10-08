@@ -361,9 +361,6 @@ $tp_responsive_css .= sgs_text_states_css(
 	)
 );
 
-// (native border_args removed by the Shape-B migration -- width/style/colour
-// are block-private attrs now, emitted below)
-
 // The native style-engine colour path is GONE, deliberately. Text colour now
 // renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
 // above, because wp_style_engine_get_styles()'s color.text input cannot carry a
@@ -699,90 +696,29 @@ if ( $show_schema && ! empty( $reviews ) && 'placeholder' !== $data_source && ! 
 // contract §A/§D — wp_strip_all_tags, NOT esc_html, blocks a </style>
 // breakout while leaving CSS combinators intact; every value reaching
 
-// ── Block-private border: width / style / colour (Shape B). ──
-// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
-// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
-$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
-$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
-$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
-$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
-
-$border_style_raw      = $attributes['borderStyle'] ?? '';
-$border_style          = sgs_border_style_keyword( $border_style_raw );
-
-if ( 'none' !== $border_style ) {
-	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
-	// through to the browser's initial `medium` (~3px).
-	if ( $has_border_width ) {
-		$bwt                = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr                = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb                = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl                = '' !== $border_width_left ? $border_width_left : '0';
-		$tp_responsive_css .= $tp_root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$tp_responsive_css .= sgs_border_gradient_css( $tp_root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$tp_responsive_css .= $tp_root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
-	}
-} else {
-	// G5 corollary: "none" must be an explicit override too, not a
-	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
-	// class default) would otherwise keep painting even though the
-	// operator picked "no border". Cause-agnostic: harmless when no
-	// such default exists, a real fix when one does.
-	$tp_responsive_css .= $tp_root_sel . '{border-style:none;border-width:0;}';
+// ── Border (width, style, colour, gradient ring, radius at three tiers)
+// through the shared assembler. The base rule prints before the tier rules so
+// a tablet or mobile radius (same specificity) wins inside its media query.
+$border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$tp_root_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+	)
+);
+if ( $border['base'] ) {
+	$tp_responsive_css .= $tp_root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
-
-// ── Block-private border-radius (radius is no longer native -- Shape B now
-// covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
-// array), never appended raw -- only its ['css'] string goes through the
-// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers      = sgs_border_radius_tiers( $attributes );
-$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
-if ( ! empty( $border_radius_obj ) ) {
-	$border_radius_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_obj ) ),
-		array( 'selector' => $tp_root_sel )
-	);
-	if ( ! empty( $border_radius_out['css'] ) ) {
-		$tp_responsive_css .= $border_radius_out['css'];
-	}
+$tp_responsive_css .= implode( '', $border['rules'] );
+if ( $border['tablet'] ) {
+	$tp_responsive_css .= '@media(max-width:1023px){' . $tp_root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
-$border_radius_tablet_obj = $radius_tiers['tablet'];
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $tp_root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$tp_responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = $radius_tiers['mobile'];
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $tp_root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$tp_responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
-	}
+if ( $border['mobile'] ) {
+	$tp_responsive_css .= '@media(max-width:767px){' . $tp_root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // $tp_responsive_css is pre-sanitised via sgs_css_length_value() / sgs_css_keyword_sanitise()

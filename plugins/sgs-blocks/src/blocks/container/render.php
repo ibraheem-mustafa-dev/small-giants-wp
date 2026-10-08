@@ -19,9 +19,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 
-// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
-$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
-
 // sgs_sanitize_grid_template() and sgs_container_gap_value() live in render-helpers.php.
 // SGS_Container_Wrapper::render() handles the full wrapper + responsive-CSS assembly.
 // $attributes passed VERBATIM to the wrapper — uid is md5(wp_json_encode($attributes).anchor);
@@ -93,26 +90,6 @@ if ( isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundC
 	}
 }
 
-// Border colour, width and style are block-private. The radius comes from the
-// block's own radius tiers and is passed to the style engine as border.radius.
-if ( null !== $sgs_radius_tiers['desktop'] ) {
-	$sgs_container_radius_raw = $sgs_radius_tiers['desktop'];
-	if ( is_string( $sgs_container_radius_raw ) && '' !== $sgs_container_radius_raw ) {
-		$sgs_container_style_engine_input['border']['radius'] = sgs_css_length_value( $sgs_container_radius_raw );
-	} elseif ( is_array( $sgs_container_radius_raw ) ) {
-		$sgs_container_radius_clean = array();
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $sgs_container_corner ) {
-			// An explicit '0' is a set corner (empty() would drop it).
-			$corner_value = isset( $sgs_container_radius_raw[ $sgs_container_corner ] ) ? sgs_css_length_value( $sgs_container_radius_raw[ $sgs_container_corner ] ) : '';
-			if ( '' !== $corner_value ) {
-				$sgs_container_radius_clean[ $sgs_container_corner ] = $corner_value;
-			}
-		}
-		if ( ! empty( $sgs_container_radius_clean ) ) {
-			$sgs_container_style_engine_input['border']['radius'] = $sgs_container_radius_clean;
-		}
-	}
-}
 if ( ! empty( $sgs_container_style_engine_input ) ) {
 	$sgs_container_supports_uid = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$sgs_container_supports_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
@@ -124,39 +101,6 @@ if ( ! empty( $sgs_container_style_engine_input ) ) {
 	if ( ! empty( $sgs_container_engine_styles['css'] ) ) {
 		$sgs_container_supports_css       = $sgs_container_engine_styles['css'];
 		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
-	}
-}
-
-// Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
-// radius target-shape correction), same uid/selector idiom as the border-width
-// block below (mint the uid only if nothing above already needed one; APPEND
-// to $sgs_container_supports_css, never overwrite it — the block above may
-// already have written the base colour/radius/typography CSS into it).
-$sgs_container_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
-$sgs_container_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
-$sgs_container_radius_tab_val    = sgs_corner_object_longhands( $sgs_container_radius_tablet_obj );
-$sgs_container_radius_mob_val    = sgs_corner_object_longhands( $sgs_container_radius_mobile_obj );
-if ( null !== $sgs_container_radius_tab_val || null !== $sgs_container_radius_mob_val ) {
-	if ( empty( $sgs_container_supports_uid ) ) {
-		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
-	}
-	$sgs_container_radius_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
-
-	$sgs_container_radius_tablet_decls = array();
-	if ( null !== $sgs_container_radius_tab_val ) {
-		$sgs_container_radius_tablet_decls[] = "{$sgs_container_radius_tab_val}";
-	}
-	if ( $sgs_container_radius_tablet_decls ) {
-		$sgs_container_supports_css .= '@media(max-width:1023px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_tablet_decls ) . ';}}';
-	}
-
-	$sgs_container_radius_mobile_decls = array();
-	if ( null !== $sgs_container_radius_mob_val ) {
-		$sgs_container_radius_mobile_decls[] = "{$sgs_container_radius_mob_val}";
-	}
-	if ( $sgs_container_radius_mobile_decls ) {
-		$sgs_container_supports_css .= '@media(max-width:767px){' . $sgs_container_radius_sel . '{' . implode( ';', $sgs_container_radius_mobile_decls ) . ';}}';
 	}
 }
 
@@ -247,39 +191,41 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 	);
 }
 
-// ── Wrapper border (width/style + colour/gradient) — R2c pattern, mirrors
-// sgs/product-card render.php exactly. borderWidth/borderStyle/borderColour/
-// borderColourGradient are block-private attrs (see block.json note on the
-// wrapper element's attrMap); only border-radius stays native (resolved
-// above via the style engine). No hover pair (block.json declares none).
-// sgs_border_box_decls() (helpers-border-style.php) is the shared rule: a width
-// on any side paints solid unless the client chose another style, 'none' paints
-// nothing, and no width means no border (G5) — so an empty result skips the
-// colour too.
-$sgs_container_border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$sgs_container_border_box_decls = sgs_border_box_decls( $sgs_container_border_width_obj, $attributes['borderStyle'] ?? '' );
-$sgs_container_border_width_top = sgs_css_length_value( $sgs_container_border_width_obj['top'] ?? '' );
-
-if ( $sgs_container_border_box_decls ) {
-	if ( empty( $sgs_container_supports_uid ) ) {
-		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
-	}
-	$sgs_container_border_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
-
-	$sgs_container_supports_css .= $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border_box_decls ) . ';}';
-
-	$sgs_container_supports_css .= sgs_border_states_css(
-		$sgs_container_border_sel,
-		$attributes,
-		array(
+// ── Wrapper border (width, style, colour, gradient ring, hover, radius at
+// three tiers) through the shared assembler. The base rule prints before the
+// tier rules so a tablet or mobile radius wins inside its media query.
+$sgs_container_border_sel = '.sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 ) . '.wp-block-sgs-container';
+$sgs_container_border     = sgs_border_element_decls(
+	$attributes,
+	'',
+	$sgs_container_border_sel,
+	array(
+		'colour' => array(
 			'base'           => 'borderColour',
 			'gradient'       => 'borderColourGradient',
 			'hover'          => 'borderColourHover',
 			'hover_gradient' => 'borderColourHoverGradient',
-			'width'          => '' !== $sgs_container_border_width_top ? $sgs_container_border_width_top : '1px',
-		)
-	);
+		),
+	)
+);
+if ( $sgs_container_border['base'] || $sgs_container_border['hover'] || $sgs_container_border['rules'] || $sgs_container_border['tablet'] || $sgs_container_border['mobile'] ) {
+	if ( empty( $sgs_container_supports_uid ) ) {
+		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
+	}
+	if ( $sgs_container_border['base'] ) {
+		$sgs_container_supports_css .= $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border['base'] ) . ';}';
+	}
+	$sgs_container_supports_css .= implode( '', $sgs_container_border['rules'] );
+	if ( $sgs_container_border['hover'] ) {
+		$sgs_container_supports_css .= sgs_hover_state_rules( $sgs_container_border_sel, implode( ';', $sgs_container_border['hover'] ), ':focus-within' );
+	}
+	if ( $sgs_container_border['tablet'] ) {
+		$sgs_container_supports_css .= '@media(max-width:1023px){' . $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border['tablet'] ) . ';}}';
+	}
+	if ( $sgs_container_border['mobile'] ) {
+		$sgs_container_supports_css .= '@media(max-width:767px){' . $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border['mobile'] ) . ';}}';
+	}
 }
 
 // ── Text align — allows inheritance when empty, so child blocks can pick up
