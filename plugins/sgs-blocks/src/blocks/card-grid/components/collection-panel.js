@@ -145,7 +145,7 @@ export default function CollectionPanel( { attributes, setAttributes } ) {
 				<TextControl
 					label={ __( 'Empty state message', 'sgs-blocks' ) }
 					help={ __(
-						'Shown when nothing matches — the grid is never left blank.',
+						'Shown on the live site when nothing matches. Leave empty to show nothing; the editor shows a notice instead.',
 						'sgs-blocks'
 					) }
 					value={ emptyMessage || '' }

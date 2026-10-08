@@ -305,7 +305,7 @@ Conditions are meta-driven, not hardcoded per content type (R-31-1, R-31-9). `co
 
 ### FR-24-6 -- Designed empty state (SHIPPED Phase E, uncommitted, 2026-06-03)
 
-When a query matches zero items (or a bound entry is deleted), the card/collection renders the operator-editable `emptyMessage` attribute as a styled placeholder. Never blank, always server-rendered (no-JS safe). The collection also renders an empty state when the bound product has been deleted (IDOR-guarded: `get_post_type($id)` check ensures the picked ID is the correct post type before rendering).
+When a query matches zero items (or a bound entry is deleted), the live site shows the client-written `emptyMessage` (`productEmptyMessage` in WooCommerce mode), server-rendered and no-JS safe. Both default to empty: with no message the live site shows nothing in that spot and the editor canvas shows a notice telling the client to set one (Bean, 2026-10-08; the same rule covers `sgs/gallery` `emptyMessage` and `sgs/post-grid` `emptyMessage`/`errorMessage`). The collection also renders an empty state when the bound product has been deleted (IDOR-guarded: `get_post_type($id)` check ensures the picked ID is the correct post type before rendering).
 
 ### FR-24-7 -- Popularity counter (optional)
 

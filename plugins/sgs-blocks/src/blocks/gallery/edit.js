@@ -40,11 +40,11 @@ import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
 import {
 	PanelBody,
 	SelectControl,
+	TextControl,
 	RangeControl,
 	ToggleControl,
 	RadioControl,
 	Spinner,
-	FocalPointPicker,
 } from '@wordpress/components';
 // ToolsPanel/ToolsPanelItem exist only as `__experimental*` on WP 7.1 (unprefixed = undefined,
 // React error #130 on selecting the block): they must come from the primitives boundary.
@@ -57,7 +57,6 @@ import ResponsiveOverride from '../../components/ResponsiveOverride';
 import {
 	colourVar,
 	resolveResponsiveTier,
-	generateItemKey,
 	withStableItemKeys,
 	focalPointToObjectPosition,
 	boxShorthand,
@@ -69,6 +68,8 @@ import {
 	wrapperBorderPreview,
 } from '../../utils';
 import { captionPreviewStyle } from './preview-style';
+import GalleryThumbnail from './components/GalleryThumbnail';
+import { resolveGalleryMedia } from './resolve-gallery-media';
 
 // -------------------------------------------------------------------------
 // Static option arrays (defined outside component to avoid re-creation)
@@ -114,154 +115,8 @@ const HOVER_EFFECT_OPTIONS = [
 ];
 
 // -------------------------------------------------------------------------
-// Drag-to-reorder thumbnail strip
-// -------------------------------------------------------------------------
-
-/**
- * A single draggable thumbnail in the image picker strip.
- *
- * @param {Object}   props
- * @param {Object}   props.image       Image data object.
- * @param {number}   props.index       Position in the images array.
- * @param {Function} props.onRemove    Called when the remove button is clicked.
- * @param {Function} props.onDragStart Called when drag begins.
- * @param {Function} props.onDragOver  Called when dragged over this item.
- * @param {Function} props.onDrop      Called when dropped on this item.
- */
-function GalleryThumbnail( {
-	image,
-	index,
-	onRemove,
-	onDragStart,
-	onDragOver,
-	onDrop,
-	onToggleDecorative,
-	onUpdateCrop,
-} ) {
-	const fit = image.objectFit || 'cover';
-	return (
-		<div
-			className="sgs-gallery-editor__thumb"
-			draggable
-			onDragStart={ () => onDragStart( index ) }
-			onDragOver={ ( e ) => {
-				e.preventDefault();
-				onDragOver( index );
-			} }
-			onDrop={ () => onDrop( index ) }
-			role="listitem"
-		>
-			<img
-				src={ image.url }
-				alt={ image.alt || '' }
-				className="sgs-gallery-editor__thumb-img"
-				style={ {
-					objectFit: fit,
-					objectPosition:
-						'cover' === fit
-							? focalPointToObjectPosition( image.focalPoint || { x: 0.5, y: 0.5 } )
-							: undefined,
-				} }
-			/>
-			<button
-				type="button"
-				className="sgs-gallery-editor__thumb-remove"
-				onClick={ () => onRemove( index ) }
-				aria-label={ __( 'Remove image', 'sgs-blocks' ) }
-			>
-				&times;
-			</button>
-			{ /* Item 18 (2026-09-02, decorative-image-aria) — per-item decorative
-			     toggle. This is a REPEATER (mediaItems array), so the flag lives
-			     on the item object (`decorative`), not as a top-level block
-			     attribute. When true, render.php blanks this item's alt text and
-			     adds aria-hidden="true" so the image is hidden from assistive
-			     tech (WCAG 2.1 AA 1.1.1). This block has no per-item alt-text
-			     control in the editor to disable (alt is set via the WordPress
-			     Media Library, not an inline field here). */ }
-			<ToggleControl
-				className="sgs-gallery-editor__thumb-decorative"
-				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
-				checked={ !! image.decorative }
-				onChange={ ( value ) => onToggleDecorative( index, value ) }
-				__nextHasNoMarginBottom
-			/>
-			{ /* Spec 35 Part 4 — per-item crop, same shape as sgs/card-grid's
-			     repeater panel. 'image' type only: object-fit on a <video>
-			     thumbnail here shows a static poster frame, not a meaningful
-			     crop preview, and this block's video items are rare enough
-			     that a bespoke second control isn't worth the panel clutter. */ }
-			{ 'image' === image.type && (
-				<>
-					<SelectControl
-						className="sgs-gallery-editor__thumb-fit"
-						label={ __( 'Image fit', 'sgs-blocks' ) }
-						value={ fit }
-						options={ [
-							{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
-							{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
-						] }
-						onChange={ ( val ) => onUpdateCrop( index, { objectFit: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ 'cover' === fit && (
-						<FocalPointPicker
-							label={ __( 'Focal point', 'sgs-blocks' ) }
-							url={ image.url }
-							value={ image.focalPoint || { x: 0.5, y: 0.5 } }
-							onChange={ ( val ) => onUpdateCrop( index, { focalPoint: val } ) }
-						/>
-					) }
-				</>
-			) }
-		</div>
-	);
-}
-
-// -------------------------------------------------------------------------
 // Main edit component
 // -------------------------------------------------------------------------
-
-/**
- * Resolve a WordPress media library object to the SGS unified media-slot shape.
- *
- * Mirrors the resolver inside src/components/MediaPicker.js. Used here because
- * gallery uses a multi-select MediaUpload (better UX for batch add) rather
- * than one MediaPicker per slot — but we still emit the media-slot shape so
- * sgs_render_media() can consume each item server-side.
- *
- * @param {Object} media      WP media object from MediaUpload onSelect.
- * @param {string} preferSize Preferred image size slug (large, medium, etc.).
- * @return {Object}            Unified media-slot shape with extra gallery fields.
- */
-function resolveGalleryMedia( media, preferSize ) {
-	const mime = media?.mime || media?.mime_type || '';
-	const type = mime.startsWith( 'video/' ) ? 'video' : 'image';
-	const url =
-		type === 'image'
-			? media.sizes?.[ preferSize ]?.url ||
-			  media.sizes?.large?.url ||
-			  media.url
-			: media.url;
-	return {
-		id: media.id || 0,
-		url,
-		type,
-		alt: media.alt || '',
-		mime,
-		caption: media.caption || '',
-		fullUrl: media.sizes?.full?.url || media.url,
-		width: media.width || 0,
-		height: media.height || 0,
-		// Spec 35 Part 4 — stable identity for per-item crop CSS scoping,
-		// never array index or the WP attachment id (the id collides the
-		// moment the same image is used twice in one gallery).
-		_key: generateItemKey(),
-		objectFit: 'cover',
-		focalPoint: { x: 0.5, y: 0.5 },
-	};
-}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -758,6 +613,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								: __( 'items selected', 'sgs-blocks' ) }
 						</p>
 					) }
+
+					<TextControl
+						label={ __( 'Message when the gallery is empty', 'sgs-blocks' ) }
+						help={ __( 'Shown on the live site. Leave empty to show nothing.', 'sgs-blocks' ) }
+						value={ attributes.emptyMessage || '' }
+						onChange={ ( val ) => setAttributes( { emptyMessage: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				{ /* Panel 2: Layout */ }

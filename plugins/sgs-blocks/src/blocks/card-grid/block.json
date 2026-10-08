@@ -652,8 +652,8 @@
     },
     "emptyMessage": {
       "type": "string",
-      "default": "No items to show yet. Check back soon.",
-      "description": "cpt-collection mode empty state (FR-24-6). Never renders blank."
+      "default": "",
+      "description": "cpt-collection mode empty state (FR-24-6): shown on the live site when nothing matches; empty shows nothing there and a notice on the editor canvas."
     },
     "showPickers": {
       "type": "boolean",
@@ -758,8 +758,8 @@
     },
     "productEmptyMessage": {
       "type": "string",
-      "default": "No products to show at the moment. Check back soon.",
-      "description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
+      "default": "",
+      "description": "Shown on the live site when the product query returns zero results (FR-24-6); empty shows nothing there and a notice on the editor canvas."
     },
     "queryPostType": {
       "type": "string",
