@@ -133,6 +133,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { resolveComponentFiles } = require( './inspector-scan/core/components' );
 const { consumedContextKeys } = require( './lib/context-keys' );
+const { renderSource } = require( './lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -1729,7 +1730,7 @@ function checkDeadAssignments( block ) {
 	if ( ! fs.existsSync( renderPath ) ) {
 		return [];
 	}
-	const src = stripPhpCommentsForAssignmentCheck( readIfExists( renderPath ) );
+	const src = stripPhpCommentsForAssignmentCheck( renderSource( block.dir ) );
 
 	const candidateAttrs = Array.from( block.attrs ).filter(
 		( attr ) => ! isSystemAttr( attr ) && ! EDITOR_ONLY_ATTRS.has( attr ) && ! KEY_NOISE.has( attr )

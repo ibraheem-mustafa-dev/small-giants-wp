@@ -51,6 +51,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { editFiles } = require( '../lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..', '..' ); // plugins/sgs-blocks
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -393,10 +394,11 @@ function main() {
 
 	const allFindings = [];
 	for ( const dir of blockDirs ) {
-		const editPath = path.join( dir, 'edit.js' );
-		if ( ! fs.existsSync( editPath ) ) continue;
 		const blockName = resolveBlockName( dir );
-		allFindings.push( ...analyseFile( editPath, blockName ) );
+		// edit.js and the components it imports.
+		for ( const editPath of editFiles( dir ) ) {
+			allFindings.push( ...analyseFile( editPath, blockName ) );
+		}
 	}
 
 	const violations = allFindings.filter( ( f ) => ! f.wrapped );

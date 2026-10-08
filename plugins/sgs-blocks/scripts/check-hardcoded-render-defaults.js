@@ -114,6 +114,7 @@ const os   = require( 'os' );
 const { spliceFragments } = require( './lib/e14-markup-splice' );
 const { bareTagMatchesUnknownTag } = require( './lib/e14-unknown-tag' );
 const { isJsLeafClass } = require( './lib/e14-js-leaf' );
+const { renderFiles, renderSource } = require( './lib/block-source-files' );
 
 const ROOT      = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -3531,8 +3532,7 @@ function checkBlock( blockDir ) {
 	}
 
 	// Load render.php for E8/E10 analysis.
-	const renderPhpPath = path.join( blockDir, 'render.php' );
-	const renderPhpSrc  = readIfExists( renderPhpPath );
+	const renderPhpSrc  = renderSource( blockDir );
 
 	// ── E8: build set of props emitted as #$uid-scoped styles in render.php ──
 	const scopedStyleProps = getScopedStyleProps( renderPhpSrc );
@@ -3608,18 +3608,19 @@ function checkBlock( blockDir ) {
 	}
 
 	// --- render.php — inline style attributes ------------------------------
-	if ( fs.existsSync( renderPhpPath ) ) {
+	// render.php and the partials it requires, each scanned as its own file.
+	for ( const renderFile of renderFiles( blockDir ) ) {
 		// The inline-style scan keeps E9's block-wide exemption: element identity
 		// is an E14 concern for style.css, which has selectors to compare.
 		const phpFindings = scanPhpInlineStyles(
-			renderPhpSrc,
+			readIfExists( renderFile ),
 			new Set( [ ...effectiveTargetProps ].filter( ( p ) => ! ( e9Props && e9Props.has( p ) ) ) )
 		);
 		for ( const f of phpFindings ) {
 			const owningAttrs = [ ...( cssToAttrs.get( f.property ) || [] ) ].join( ', ' );
 			violations.push( {
 				block:    blockName,
-				file:     path.relative( ROOT, renderPhpPath ),
+				file:     path.relative( ROOT, renderFile ),
 				line:     f.line,
 				property: f.property,
 				value:    f.value,

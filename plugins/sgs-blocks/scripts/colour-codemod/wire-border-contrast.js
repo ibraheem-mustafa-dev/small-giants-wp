@@ -64,6 +64,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { editSource } = require( '../lib/block-source-files' );
 const babelParser = require( '@babel/parser' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
@@ -341,7 +342,9 @@ const WIDTH_OK = new Set(); // no known reconciliation gaps as of authoring
 function broadEnumeration() {
 	const found = [];
 	for ( const dir of blockDirs() ) {
-		const src = fs.readFileSync( path.join( BLOCKS_DIR, dir, 'edit.js' ), 'utf8' );
+		// edit.js plus the components it imports: a mount that moved into a component
+		// has no entry in the edit.js census, so it surfaces as missing from the narrow list.
+		const src = editSource( path.join( BLOCKS_DIR, dir ) );
 		const n = ( src.match( /\n[ \t]*<SgsBorderControl\b/g ) || [] ).length;
 		for ( let i = 0; i < n; i++ ) found.push( dir + '#' + i );
 	}

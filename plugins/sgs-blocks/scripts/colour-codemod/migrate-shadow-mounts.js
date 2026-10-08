@@ -35,6 +35,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { editFiles } = require( '../lib/block-source-files' );
 
 const PLUGIN_ROOT = path.resolve( __dirname, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
@@ -108,25 +109,26 @@ function classifyMount( body, declared ) {
 function scan() {
 	const rows = [];
 	for ( const dir of blockDirs() ) {
-		const file = path.join( BLOCKS_DIR, dir, 'edit.js' );
-		if ( ! fs.existsSync( file ) ) continue;
-		const src = fs.readFileSync( file, 'utf8' );
-		const re = /<ShadowControl\b([\s\S]*?)\/>/g;
-		let m;
-		while ( ( m = re.exec( src ) ) !== null ) {
-			const alreadyMapped = /\battrNames=/.test( m[ 1 ] );
-			const verdict = alreadyMapped
-				? { ok: false, reason: 'already migrated' }
-				: classifyMount( m[ 1 ], declaredAttrs( dir ) );
-			rows.push( {
-				block: `sgs/${ dir }`,
-				file,
-				index: m.index,
-				raw: m[ 0 ],
-				body: m[ 1 ],
-				alreadyMapped,
-				...verdict,
-			} );
+		// edit.js and the components it imports; each mount keeps its own file.
+		for ( const file of editFiles( path.join( BLOCKS_DIR, dir ) ) ) {
+			const src = fs.readFileSync( file, 'utf8' );
+			const re = /<ShadowControl\b([\s\S]*?)\/>/g;
+			let m;
+			while ( ( m = re.exec( src ) ) !== null ) {
+				const alreadyMapped = /\battrNames=/.test( m[ 1 ] );
+				const verdict = alreadyMapped
+					? { ok: false, reason: 'already migrated' }
+					: classifyMount( m[ 1 ], declaredAttrs( dir ) );
+				rows.push( {
+					block: `sgs/${ dir }`,
+					file,
+					index: m.index,
+					raw: m[ 0 ],
+					body: m[ 1 ],
+					alreadyMapped,
+					...verdict,
+				} );
+			}
 		}
 	}
 	return rows;

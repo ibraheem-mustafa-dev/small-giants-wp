@@ -80,6 +80,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { editFiles } = require( './lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -655,10 +656,18 @@ function extractTagAttrs( src, tagNameEndIdx ) {
  * @returns {Mount[]}
  */
 function findMounts( blockDir, blockName, kindPanels ) {
-	const editPath = path.join( blockDir, 'edit.js' );
-	if ( ! fs.existsSync( editPath ) ) {
-		return [];
-	}
+	return editFiles( blockDir ).flatMap( ( editPath ) => findMountsInFile( editPath, blockName, kindPanels ) );
+}
+
+/**
+ * Mounts in one source file of a block's editor (edit.js or a component it imports).
+ *
+ * @param {string} editPath
+ * @param {string} blockName
+ * @param {Map<string, Set<string>>} kindPanels
+ * @returns {Mount[]}
+ */
+function findMountsInFile( editPath, blockName, kindPanels ) {
 	const raw = fs.readFileSync( editPath, 'utf8' );
 	const src = blankComments( raw );
 	const mounts = [];

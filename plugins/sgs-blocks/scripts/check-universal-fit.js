@@ -81,6 +81,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { renderSource } = require( './lib/block-source-files' );
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -125,7 +126,7 @@ function referencesAttr( attr, corpus ) {
  */
 function readBlockOwnCorpus( dir ) {
 	const parts = [
-		readIfExists( path.join( dir, 'render.php' ) ),
+		renderSource( dir ),
 		readIfExists( path.join( dir, 'save.js' ) ),
 		readIfExists( path.join( dir, 'view.js' ) ),
 		readIfExists( path.join( dir, 'style.css' ) ),

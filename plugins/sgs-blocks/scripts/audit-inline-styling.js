@@ -75,6 +75,7 @@
 
 const fs   = require( 'fs' );
 const path = require( 'path' );
+const { renderFiles, renderSource } = require( './lib/block-source-files' );
 
 const ROOT        = path.join( __dirname, '..' );
 const BLOCKS_DIR   = path.join( ROOT, 'src', 'blocks' );
@@ -683,7 +684,7 @@ function analyseBlock( blockDir, wrapperOwnedAttrs ) {
 	const attrNames = Object.keys( attrs );
 
 	const renderPhpPath = path.join( blockDir, 'render.php' );
-	const renderPhpSrc = readIfExists( renderPhpPath );
+	const renderPhpSrc = renderSource( blockDir );
 	const strippedSrc = stripComments( renderPhpSrc );
 	const styleCssPath = path.join( blockDir, 'style.css' );
 	const styleCssSrc = readIfExists( styleCssPath );
@@ -695,10 +696,12 @@ function analyseBlock( blockDir, wrapperOwnedAttrs ) {
 	const localFns = captureLocalFunctions( strippedSrc );
 
 	// ---- Bucket 2: INLINE-via-render ---------------------------------------
-	const inlineRenderFindings = scanInlineRenderSites( renderPhpSrc, localFns ).map( ( f ) => ( {
-		...f,
-		file: path.relative( ROOT, renderPhpPath ),
-	} ) );
+	const inlineRenderFindings = renderFiles( blockDir ).flatMap( ( file ) =>
+		scanInlineRenderSites( readIfExists( file ), localFns ).map( ( f ) => ( {
+			...f,
+			file: path.relative( ROOT, file ),
+		} ) )
+	);
 
 	// ---- Bucket 3: INLINE-via-wrapper ---------------------------------------
 	const usesWrapper = detectsWrapperUsage( strippedSrc );

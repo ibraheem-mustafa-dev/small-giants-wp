@@ -62,6 +62,7 @@
 'use strict';
 
 const path = require( 'path' );
+const { renderSource } = require( '../lib/block-source-files' );
 const { hasServerSideRenderWithAttributes } = require( './lib-a-control-surface' );
 const { collectDestructuredAliases, collectDestructuredFromAttributes, collectExcludedRanges, collectSetAttributesWrites, collectUsedIdentifiersOutsideExcluded } = require( './lib-a-destructure' );
 const { checkCompanionExemption, checkNoPreviewNoticeExemption, collectSetAttributesGroups } = require( './lib-a-exemptions' );
@@ -223,7 +224,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	foldSharedComponentAttrSets( src, destructured, written );
 
 	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
-	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
+	const phpSrc = renderSource( dir );
 	const phpMask = phpSrc ? buildStringMask( phpSrc ) : null;
 	const phpCommentMask = phpSrc ? buildCommentMask( phpSrc ) : null;
 	const attrVarMap = phpSrc ? collectAttrVarMapBroad( phpSrc ) : new Map();

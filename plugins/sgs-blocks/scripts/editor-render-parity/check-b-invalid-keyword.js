@@ -87,6 +87,7 @@
 'use strict';
 
 const path = require( 'path' );
+const { editFiles, renderSource } = require( '../lib/block-source-files' );
 const traverse = require( '@babel/traverse' ).default;
 const { jsxAttrValueNode, jsxOpeningName } = require( './lib-ast' );
 const { readIfExists, safeParse } = require( './lib-blocks' );
@@ -238,11 +239,10 @@ function collectSelectControlsByAttr( ast, src ) {
  * @return {Array<Object>} Findings.
  */
 function checkInvalidKeywordPassthrough( blockName, dir, keywordTable ) {
-	const renderPath = path.join( dir, 'render.php' );
-	const editPath = path.join( dir, 'edit.js' );
-	const phpSrc = readIfExists( renderPath );
-	const jsSrc = readIfExists( editPath );
-	if ( ! phpSrc || ! jsSrc ) {
+	const phpSrc = renderSource( dir );
+	// edit.js plus the components it imports, each parsed as its own file.
+	const editSources = editFiles( dir ).map( ( file ) => ( { file, src: readIfExists( file ) } ) );
+	if ( ! phpSrc || ! editSources.length ) {
 		return [];
 	}
 	const trackedProps = Object.keys( keywordTable );
@@ -253,11 +253,22 @@ function checkInvalidKeywordPassthrough( blockName, dir, keywordTable ) {
 	const attrVarMap = collectAttrVarMap( phpSrc );
 	const derivedVarMap = collectDerivedVarMap( phpSrc, attrVarMap );
 
-	const editAst = safeParse( jsSrc );
-	if ( ! editAst ) {
+	const selectByAttr = new Map();
+	for ( const { file, src } of editSources ) {
+		const editAst = safeParse( src );
+		if ( ! editAst ) {
+			continue;
+		}
+		for ( const [ attrName, found ] of collectSelectControlsByAttr( editAst, src ) ) {
+			if ( ! selectByAttr.has( attrName ) ) {
+				selectByAttr.set( attrName, [] );
+			}
+			selectByAttr.get( attrName ).push( ...found.map( ( control ) => ( { ...control, file: path.basename( file ) } ) ) );
+		}
+	}
+	if ( ! selectByAttr.size ) {
 		return [];
 	}
-	const selectByAttr = collectSelectControlsByAttr( editAst, jsSrc );
 
 	const findings = [];
 	const seen = new Set();
@@ -289,7 +300,7 @@ function checkInvalidKeywordPassthrough( blockName, dir, keywordTable ) {
 					block: blockName,
 					attr: attrName,
 					reason:
-						`SelectControl for '${ attrName }' (edit.js:${ control.line }) offers option value ` +
+						`SelectControl for '${ attrName }' (${ control.file }:${ control.line }) offers option value ` +
 						`"${ value }", which is not a valid CSS '${ site.property }' keyword (valid: ` +
 						`${ [ ...validSet ].join( '|' ) }) — render.php emits it directly as the literal ` +
 						`'${ site.property }' value with no diverting conditional, so the browser silently ` +

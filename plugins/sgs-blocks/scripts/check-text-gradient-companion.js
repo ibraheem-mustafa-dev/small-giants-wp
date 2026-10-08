@@ -60,6 +60,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { renderFiles } = require( './lib/block-source-files' );
 
 const BASE_DIR = path.resolve( __dirname, '..' );
 
@@ -77,9 +78,11 @@ function collectFiles( baseDir = BASE_DIR ) {
 
 	if ( fs.existsSync( blocksDir ) ) {
 		for ( const dir of fs.readdirSync( blocksDir ) ) {
-			const renderFile = path.join( blocksDir, dir, 'render.php' );
-			if ( fs.existsSync( renderFile ) ) {
-				out.push( renderFile );
+			// render.php (listed even when unreadable, so the reader fails closed) plus the
+			// partials it requires.
+			const blockDir = path.join( blocksDir, dir );
+			if ( fs.existsSync( path.join( blockDir, 'render.php' ) ) ) {
+				out.push( path.join( blockDir, 'render.php' ), ...renderFiles( blockDir ).slice( 1 ) );
 			}
 		}
 	}

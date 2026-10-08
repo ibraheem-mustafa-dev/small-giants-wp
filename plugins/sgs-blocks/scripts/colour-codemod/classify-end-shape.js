@@ -35,6 +35,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { renderFiles, renderSource, editFiles } = require( '../lib/block-source-files' );
 const {
 	BLOCKS_DIR,
 	loadDbRows,
@@ -246,7 +247,7 @@ function findContextDelegatedPhp( blockJson, attr ) {
 
 		const childRenderPath = path.join( BLOCKS_DIR, childDir, 'render.php' );
 		if ( ! fs.existsSync( childRenderPath ) ) continue;
-		let childPhp = stripComments( fs.readFileSync( childRenderPath, 'utf8' ) );
+		let childPhp = stripComments( renderSource( path.join( BLOCKS_DIR, childDir ) ) );
 		for ( const ctxKey of Object.keys( provides ) ) {
 			const localAttr = provides[ ctxKey ];
 			const escapedKey = ctxKey.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
@@ -701,7 +702,6 @@ function classifyAll() {
 
 	for ( const dir of blockDirs() ) {
 		const slug = 'sgs/' + dir;
-		const editFile = path.join( BLOCKS_DIR, dir, 'edit.js' );
 		const renderFile = path.join( BLOCKS_DIR, dir, 'render.php' );
 		const blockJsonFile = path.join( BLOCKS_DIR, dir, 'block.json' );
 		const rawPhp = fs.existsSync( renderFile ) ? fs.readFileSync( renderFile, 'utf8' ) : '';
@@ -714,14 +714,19 @@ function classifyAll() {
 		// not just the dispatcher file's own text. Real case this fixed
 		// (2026-09-11): sgs/nav-menu.itemBorderColour's `sgs_border_states_css()`
 		// call lives in includes/nav-menu-css.php, never in render.php.
+		// renderFiles() adds the plain-required partials inside the block folder at any depth.
+		const partialFiles = renderFiles( path.join( BLOCKS_DIR, dir ) ).map( ( f ) => path.resolve( f ) );
 		const requiredTexts = fs.existsSync( renderFile )
-			? findRequiredFiles( rawPhp, renderFile ).map( ( f ) => fs.readFileSync( f, 'utf8' ) )
+			? [
+				...partialFiles.filter( ( f ) => f !== path.resolve( renderFile ) ),
+				...findRequiredFiles( rawPhp, renderFile ).filter( ( f ) => ! partialFiles.includes( path.resolve( f ) ) ),
+			].map( ( f ) => fs.readFileSync( f, 'utf8' ) )
 			: [];
 		const php = stripComments( [ rawPhp, ...requiredTexts ].join( '\n' ) );
 		const blockJson = fs.existsSync( blockJsonFile ) ? JSON.parse( fs.readFileSync( blockJsonFile, 'utf8' ) ) : null;
 		const styleCss = readStyleCss( dir );
 
-		for ( const row of rowsInFile( cache, editFile ) ) {
+		for ( const row of editFiles( path.join( BLOCKS_DIR, dir ) ).flatMap( ( f ) => rowsInFile( cache, f ) ) ) {
 			if ( ! row.attr ) continue;
 			const dbRow = row.attr && db[ slug ] ? db[ slug ][ row.attr ] : null;
 			const cssProperty = dbRow ? dbRow.css_property : null;
@@ -852,7 +857,7 @@ function findOutlineRoutedThroughBorder() {
 	for ( const blockDir of blockDirs() ) {
 		const phpPath = path.join( BLOCKS_DIR, blockDir, 'render.php' );
 		if ( ! fs.existsSync( phpPath ) ) continue;
-		const php = stripComments( fs.readFileSync( phpPath, 'utf8' ) );
+		const php = stripComments( renderSource( path.join( BLOCKS_DIR, blockDir ) ) );
 		const slug = 'sgs/' + blockDir;
 		const rows = db[ slug ];
 		if ( ! rows ) continue;

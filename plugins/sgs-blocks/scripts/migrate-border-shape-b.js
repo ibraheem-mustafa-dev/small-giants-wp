@@ -93,6 +93,7 @@
 const fs = require( 'fs' );
 const path = require( 'path' );
 const os = require( 'os' );
+const { renderFiles, renderSource } = require( './lib/block-source-files' );
 const { execFileSync } = require( 'child_process' );
 
 // ─── Repo anchoring (same convention as migrate-border-control.js) ───────────
@@ -1121,6 +1122,10 @@ function classify( slug ) {
 
 	if ( ! fs.existsSync( phpPath ) ) return { slug, status: 'REFUSE', reason: 'no-render-php' };
 	if ( ! fs.existsSync( editPath ) ) return { slug, status: 'REFUSE', reason: 'no-edit-js' };
+
+	// The transforms below rewrite render.php's own text, so a block whose render
+	// code lives partly in required partials cannot be migrated safely.
+	if ( renderFiles( dir ).length > 1 ) return { slug, status: 'REFUSE', reason: 'render-partials' };
 
 	const php = readFile( phpPath );
 
@@ -2580,7 +2585,7 @@ function check() {
 		}
 		const phpPath = path.join( BLOCKS_DIR, slug, 'render.php' );
 		if ( hasPrivate && fs.existsSync( phpPath ) ) {
-			const php = readFile( phpPath );
+			const php = renderSource( path.join( BLOCKS_DIR, slug ) );
 			// A block whose border rides the shared media-atom layer (the
 			// `box-shape` atom, `sgs/media` as of 2026-09-01) reads these
 			// attrs INDIRECTLY — via a computed `$attributes[ $radius_key ]`
