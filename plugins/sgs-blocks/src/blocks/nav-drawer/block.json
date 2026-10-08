@@ -263,6 +263,7 @@
 						"css:background-color": "chromeButtonColourBackground",
 						"css:background-image": "chromeButtonColourBackgroundGradient",
 						"css:color": "chromeButtonColourText",
+						"css:color-gradient": "chromeButtonColourTextGradient",
 						"css:border-color": "chromeButtonColourBorder",
 						"css:border-width": "chromeButtonBorderWidth",
 						"css:border-style": "chromeButtonBorderStyle",
@@ -274,6 +275,7 @@
 							"attrMap": {
 								"css:background-color": "chromeButtonColourBackgroundHover",
 								"css:color": "chromeButtonColourTextHover",
+								"css:color-gradient": "chromeButtonColourTextHoverGradient",
 								"css:border-color": "chromeButtonColourBorderHover"
 							}
 						}
@@ -671,6 +673,16 @@
 		"chromeButtonColourTextHover": {
 			"type": "string",
 			"default": ""
+		},
+		"chromeButtonColourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the top row button's text with a background-clip:text mechanism instead of a flat colour (sgs_button_element_style_css() with bg_layer=true moves the background onto a ::after layer to free the text). Non-empty wins over chromeButtonColourText."
+		},
+		"chromeButtonColourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of chromeButtonColourTextGradient."
 		},
 		"chromeButtonColourBorder": {
 			"type": "string",

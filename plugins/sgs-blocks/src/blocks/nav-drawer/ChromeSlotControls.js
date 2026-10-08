@@ -8,7 +8,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { SelectControl, TextControl } from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -16,6 +16,7 @@ import {
 	SgsBorderControl,
 	SgsBoxControl,
 	TypographyControls,
+	LinkPopoverField,
 } from '../../components';
 import { TierShow } from './chrome-tier-controls';
 import ChromeRatingControls from './ChromeRatingControls';
@@ -93,20 +94,24 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 					) }
 					{ isButton && (
 						<>
-							<TextControl
+							<LinkPopoverField
 								label={ __( 'Button link', 'sgs-blocks' ) }
 								help={ __( 'A button with no link is not shown.', 'sgs-blocks' ) }
-								type="url"
-								value={ chromeSlotUrl || '' }
-								onChange={ ( value ) => setAttributes( { chromeSlotUrl: value } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<ToggleControl
-								label={ __( 'Open in a new tab', 'sgs-blocks' ) }
-								checked={ !! chromeSlotNewTab }
-								onChange={ ( value ) => setAttributes( { chromeSlotNewTab: value } ) }
-								__nextHasNoMarginBottom
+								value={ {
+									url: chromeSlotUrl || '',
+									linkTarget: chromeSlotNewTab ? '_blank' : '_self',
+								} }
+								targetMode="boolean"
+								onChange={ ( next ) => {
+									const patch = {};
+									if ( undefined !== next.url ) {
+										patch.chromeSlotUrl = next.url;
+									}
+									if ( undefined !== next.linkTarget ) {
+										patch.chromeSlotNewTab = '_blank' === next.linkTarget;
+									}
+									setAttributes( patch );
+								} }
 							/>
 						</>
 					) }
@@ -158,6 +163,8 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 										attrs: {
 											base: 'chromeButtonColourText',
 											hover: 'chromeButtonColourTextHover',
+											gradient: 'chromeButtonColourTextGradient',
+											hoverGradient: 'chromeButtonColourTextHoverGradient',
 										},
 										attributes,
 										setAttributes,

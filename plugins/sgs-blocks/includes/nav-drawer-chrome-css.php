@@ -233,7 +233,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 			$slot_sel = $row_sel . ' .sgs-nav-drawer__chrome-slot';
 			$css     .= sgs_typography_css_rule( $attributes, 'chromeSlot', $slot_sel );
 			if ( 'button' === ( $attributes['chromeSlotType'] ?? '' ) ) {
-				$css .= sgs_button_element_style_css( $attributes, 'chromeButton', $slot_sel );
+				$css .= sgs_button_element_style_css( $attributes, 'chromeButton', $slot_sel, true );
 			} else {
 				$text = sgs_resolve_text_colour_or_gradient(
 					(string) ( $attributes['chromeSlotColour'] ?? '' ),

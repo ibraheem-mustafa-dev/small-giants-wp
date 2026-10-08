@@ -42,6 +42,7 @@ export default function CloseBoxControls( { attributes, setAttributes } ) {
 			/>
 			<ResponsiveBoxControl
 				label={ __( 'Close button padding', 'sgs-blocks' ) }
+				presets
 				values={ {
 					base: closePadding?.desktop ?? {},
 					tablet: closePadding?.tablet ?? {},

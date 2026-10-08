@@ -145,6 +145,7 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 			/>
 			<ResponsiveBoxControl
 				label={ __( 'Top row padding', 'sgs-blocks' ) }
+				presets
 				values={ {
 					base: chromeRowPadding?.desktop ?? {},
 					tablet: chromeRowPadding?.tablet ?? {},

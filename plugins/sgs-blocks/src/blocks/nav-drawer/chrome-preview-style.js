@@ -58,10 +58,7 @@ export function chromeRowStyle( attributes, tier, palette ) {
  */
 function chromeButtonStyle( attributes, palette ) {
 	const style = backgroundPaintPreview( attributes.chromeButtonColourBackground, attributes.chromeButtonColourBackgroundGradient, palette );
-	const text = resolveColourToken( attributes.chromeButtonColourText, palette );
-	if ( text ) {
-		style.color = text;
-	}
+	Object.assign( style, textPaintPreview( attributes.chromeButtonColourText, attributes.chromeButtonColourTextGradient, palette ) );
 	const border = resolveColourToken( attributes.chromeButtonColourBorder, palette );
 	if ( border ) {
 		style.borderColor = border;
