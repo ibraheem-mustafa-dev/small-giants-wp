@@ -59,6 +59,21 @@ block-name/
 `sgs-layout`, `sgs-content`, `sgs-interactive`, `sgs-forms` — see each block's `block.json`
 `category` for current membership.
 
+## Creating a New Block
+
+1. Make `src/blocks/<block-name>/` with the files in "Block Pattern" above. `class-sgs-blocks.php` registers every folder in `build/blocks/` that holds a `block.json`, so there is no manual registration step.
+2. `block.json` minimum: `apiVersion` 3, `name` `sgs/<block-name>`, `title`, `category` (one of the four above), `textdomain` `sgs-blocks`, `attributes`, `supports`, and for a dynamic block `"render": "file:./render.php"`. Every customisable attribute needs an inspector control (the Block Customisation Standard below).
+3. `index.js` registers with `registerBlockType( metadata.name, { edit: Edit, save } )`; `save` is `() => null` for a dynamic block.
+4. `render.php` builds its root element from `get_block_wrapper_attributes( [ 'class' => 'sgs-<block-name>' ] )`, escapes every output, and defines no top-level function (see Cross-cutting gotchas).
+5. Scope all CSS under the `.sgs-<block-name>` BEM root; no inline `style="..."`.
+6. Build from PowerShell: `cd plugins/sgs-blocks ; npm run build`.
+
+## Shared Components and Extensions
+
+- Shared editor components live in `src/components/` (`index.js` exports them): `DesignTokenPicker` (theme colour slugs, resolved in PHP by `sgs_colour_value()` in `includes/helpers-tokens.php`), `AnimationControl`, `ResponsiveControl` (desktop/tablet/mobile switcher), `SpacingControl`. Grep that directory before writing a control; `.claude/catalogues/helpers.md` lists them with their purpose.
+- Extensions add capabilities to every block through the `editor.BlockEdit` filter and live in `src/blocks/extensions/`. `extensions/index.js` imports them all and is compiled to `build/extensions/index.js`, which `class-sgs-blocks.php` enqueues once via `enqueue_block_editor_assets`. `extensions/extension-roster.json` declares which blocks receive each extension attribute; `scripts/check-extension-roster.js` fails the build on drift.
+- A new extension: add `extensions/<name>.js` following `animation.js` (`addFilter( 'editor.BlockEdit', 'sgs/<name>', ... )`), import it in `extensions/index.js`, and add a `render_block` filter in a new `includes/` file (required from `sgs-blocks.php`) when it needs server-side output.
+
 ## Build Commands
 
 ```bash

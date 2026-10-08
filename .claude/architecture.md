@@ -126,8 +126,8 @@ permitted hardcoded constant is `SKIP_TOP_LEVEL_TAGS` (header/footer/nav).
 
 **Access pattern.** `converter/db/db_lookup.py` runs schema migrations against the shared live DB as an
 import side effect, so a read-only reporter must not import it. Open the DB directly read-only:
-`sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)` (as `audit-declared-vs-seeded-roles.py`,
-`generate-db-catalogue.py` and `audit-feature-parity.py` do). For an ad-hoc query use
+`sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)` (as `audit-declared-vs-seeded-roles.py`
+and `audit-feature-parity.py` do). For an ad-hoc query use
 `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
 
 **Key tables** (names only; query counts, never cache them): `blocks` (roster, `tier`, `variant_attr`),

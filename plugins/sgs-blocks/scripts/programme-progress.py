@@ -116,7 +116,7 @@ the next thing to build, not this script.
 Ground-truth commands run this session to establish every figure above
 (sgs-framework.db at `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — the
 same DB path every sibling script in this directory uses, e.g.
-`audit-declared-vs-seeded-roles.py`, `generate-db-catalogue.py`,
+`audit-declared-vs-seeded-roles.py`,
 `audit-feature-parity.py`):
 
     SELECT COUNT(*) FROM block_attributes                        -- 3166
@@ -176,7 +176,7 @@ def get_connection() -> sqlite3.Connection:
 
     Read-only by URI mode (`mode=ro`) so this reporter can never write to a
     DB another track may be relying on this session. Matches the path + the
-    read-only-URI convention used by `generate-db-catalogue.py` and the
+    read-only-URI convention used by `audit-feature-parity.py` and the
     read-only queries in `sgs-update-v2.py` / `audit-declared-vs-seeded-roles.py`
     (which itself opens `sqlite3.connect(f"file:{SGS_DB}?mode=ro", uri=True)`).
     """

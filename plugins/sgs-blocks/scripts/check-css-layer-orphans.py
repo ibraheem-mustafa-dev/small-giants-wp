@@ -100,7 +100,7 @@ def load_css_layer_census(db_path: Path) -> tuple[dict[str, dict], int]:
 
     Never writes to the DB. Opens strictly read-only via the sqlite URI ``mode=ro``
     convention this repo uses for reporters (see audit-declared-vs-seeded-roles.py /
-    generate-db-catalogue.py / audit-feature-parity.py) — never imports
+    audit-feature-parity.py) — never imports
     converter/db/db_lookup.py's sibling ``db_lookup.py`` module by that name, which
     runs schema migrations as an import side effect against the shared live DB.
     """

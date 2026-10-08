@@ -9,7 +9,8 @@ One home per job:
 | How a piece of work will be done, and anything deferred from it | `plans/` (finished plans in `plans/archive/`) |
 | Rules | `../CLAUDE.md`, plus path-scoped `rules/*.md` |
 | Lessons | Claude Code auto memory (its `MEMORY.md` index loads every session) |
-| Build, deploy, SSH, generated catalogues | `dev-setup.md` |
+| Build, deploy, SSH, DB column meanings | `dev-setup.md` |
+| Generated catalogues (every gate/script, every helper/component) | `catalogues/` |
 | System design | `architecture.md` |
 | Why something was decided | the doc it changed, and the commit message |
 | History | git |

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """generate-helper-catalogue.py — DERIVE the helper/component/atom catalogue in
-.claude/dev-setup.md.
+.claude/catalogues/helpers.md.
 
 WHY THIS IS GENERATED AND NOT HAND-WRITTEN
 ------------------------------------------
@@ -17,7 +17,7 @@ plugins/sgs-blocks/src/components/. Both are derived straight from source
 running `--check` after any helper/component edit proves the doc is current.
 
 Regenerate with:  python plugins/sgs-blocks/scripts/generate-helper-catalogue.py
-Check without writing:  ... --check   (exit 1 if dev-setup.md is out of date)
+Check without writing:  ... --check   (exit 1 if .claude/catalogues/helpers.md is out of date)
 
 ⚠ A purpose this generator cannot find in the source is written as
 **UNDOCUMENTED**, never invented. An invented purpose is worse than a missing
@@ -33,7 +33,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 BLOCKS = REPO / "plugins" / "sgs-blocks"
-DOC = REPO / ".claude" / "dev-setup.md"
+DOC = REPO / ".claude" / "catalogues" / "helpers.md"
 START = "<!-- HELPER-CATALOGUE:START -->"
 END = "<!-- HELPER-CATALOGUE:END -->"
 
@@ -404,7 +404,7 @@ def build() -> str:
         "This section is **GENERATED** by "
         "`plugins/sgs-blocks/scripts/generate-helper-catalogue.py`. Do not "
         "hand-edit — edits are overwritten. It covers the other half of "
-        "\"what already exists\" that the tooling catalogue above doesn't: "
+        "\"what already exists\" that the tooling catalogue (`.claude/catalogues/tooling.md`) doesn't: "
         "PHP helper FUNCTIONS (not scripts) and JS editor components/atoms. "
         "It makes existing helpers discoverable — read this before writing "
         "a new helper or component that might already exist."
@@ -432,7 +432,7 @@ def build() -> str:
 def main() -> int:
     if "--json" in sys.argv:
         # Additive output mode alongside the existing default/--check markdown
-        # modes — does not touch dev-setup.md at all. PHP helper-FUNCTION rows
+        # modes — does not touch the catalogue file at all. PHP helper-FUNCTION rows
         # only; see build_php_json_rows()'s own docstring for why JS rows are
         # excluded.
         sys.stdout.write(json.dumps(build_php_json_rows()))
@@ -453,7 +453,7 @@ def main() -> int:
         print("[helper-catalogue] up to date")
         return 0
     if check:
-        print("[helper-catalogue] OUT OF DATE — run without --check to regenerate")
+        print(f"[helper-catalogue] {DOC.relative_to(REPO).as_posix()} is OUT OF DATE - run without --check to regenerate")
         return 1
     DOC.write_text(new, encoding="utf-8", newline="")
     print(f"[helper-catalogue] regenerated {DOC.relative_to(REPO)}")

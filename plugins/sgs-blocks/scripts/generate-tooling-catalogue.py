@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""generate-tooling-catalogue.py — DERIVE the tooling catalogue in .claude/dev-setup.md.
+"""generate-tooling-catalogue.py — DERIVE the tooling catalogue in .claude/catalogues/tooling.md.
 
 WHY THIS IS GENERATED AND NOT HAND-WRITTEN
 ------------------------------------------
@@ -12,7 +12,7 @@ ARE the truth:
   2. each script's own header/docstring — the purpose its author wrote.
 
 Regenerate with:  python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
-Check without writing:  ... --check   (exit 1 if dev-setup.md is out of date)
+Check without writing:  ... --check   (exit 1 if .claude/catalogues/tooling.md is out of date)
 
 ⚠ SCRIPT DIRECTORIES ARE PLURAL. Searching one and concluding "no such tool
 exists" is a live failure mode in this repo — it is how a tool gets rebuilt that
@@ -30,7 +30,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 PKG = REPO / "plugins" / "sgs-blocks" / "package.json"
-DOC = REPO / ".claude" / "dev-setup.md"
+DOC = REPO / ".claude" / "catalogues" / "tooling.md"
 START = "<!-- TOOLING-CATALOGUE:START -->"
 END = "<!-- TOOLING-CATALOGUE:END -->"
 
@@ -680,7 +680,7 @@ def main() -> int:
         print("[tooling-catalogue] up to date")
         return 0
     if check:
-        print("[tooling-catalogue] OUT OF DATE — run without --check to regenerate")
+        print(f"[tooling-catalogue] {DOC.relative_to(REPO).as_posix()} is OUT OF DATE - run without --check to regenerate")
         return 1
     DOC.write_text(new, encoding="utf-8", newline="")
     print(f"[tooling-catalogue] regenerated {DOC.relative_to(REPO)}")

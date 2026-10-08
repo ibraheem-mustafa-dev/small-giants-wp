@@ -47,7 +47,7 @@ Usage:
 
 ⛔ READ-ONLY. This script opens the shared ``sgs-framework.db`` in
 ``mode=ro`` (the ``audit-declared-vs-seeded-roles.py`` /
-``generate-db-catalogue.py`` / ``audit-feature-parity.py`` convention) and
+``audit-feature-parity.py`` convention) and
 NEVER imports ``converter/db/db_lookup.py`` — that module runs six
 schema-migration functions against the shared live DB as an IMPORT SIDE
 EFFECT, which a read-only reporter must never trigger. The two DB

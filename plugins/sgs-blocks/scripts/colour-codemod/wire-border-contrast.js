@@ -29,9 +29,8 @@
  *       ...
  *   />
  *
- * THE REAL CENSUS (verified 2026-09-05, do not trust an inherited count —
- * see `.claude/THE-MIGRATION-METHOD.md`'s own "this document distrusts its
- * own numbers" section). 48 blocks mount `<SgsBorderControl>` in `edit.js`
+ * THE REAL CENSUS (verified 2026-09-05; do not trust an inherited count,
+ * derive it by enumeration as `.claude/THE-MIGRATION-METHOD.md` says). 48 blocks mount `<SgsBorderControl>` in `edit.js`
  * (49 real JSX mounts — `multi-button` mounts it twice). Of those:
  *
  *   - 31 mounts are WIRED (contrastAgainst present on the mount) — includes
