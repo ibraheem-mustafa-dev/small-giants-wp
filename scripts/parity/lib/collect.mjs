@@ -27,14 +27,14 @@ export const DEFAULT_PROPS = [
 export const PSEUDO_PROPS = [ 'content', 'background-color', 'background-image', 'border-image-source', 'opacity', 'color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'width', 'height' ];
 
 // Properties read at rest and again at the hover end state.
-export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
+export const HOVER_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'text-decoration-line', 'text-decoration-color', 'filter' ];
 
 // Properties read on the focused control after a real Tab key reaches it (the keyboard focus ring).
 export const FOCUS_PROPS = [ 'outline-style', 'outline-width', 'outline-color', 'outline-offset', 'box-shadow', 'background-color', 'color', 'text-decoration-line', 'border-bottom-color' ];
 
 // Properties read on a pressed element (:active forced through the DevTools protocol, devtools.mjs::forcedPseudo): the
 // press feedback a visitor sees (a button that sinks, darkens or loses its shadow). Read at rest and while pressed.
-export const ACTIVE_PROPS = [ 'color', 'background-color', 'border-top-color', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'filter', 'text-decoration-line', 'text-decoration-color', 'outline-style', 'outline-width', 'outline-color' ];
+export const ACTIVE_PROPS = [ 'color', 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'scale', 'translate', 'rotate', 'opacity', 'filter', 'text-decoration-line', 'text-decoration-color', 'outline-style', 'outline-width', 'outline-color' ];
 
 // Resolves a finder to one element inside the page. A finder is a CSS selector string,
 // { text: 'regex source', within?: selector, tag?: selector } for the smallest visible

@@ -157,6 +157,23 @@ function leafChanges( before, after, at = '' ) {
 
 // One write round: resolves every writable group of the report against the tree. stateMap is the surface's walker
 // state to setting state map; rows from an unmapped state are never written. Returns the writes and gaps.
+// A border colour row on an element the draft gives no border on that side (0px wide, or style none, at every measured
+// width): the draft's value is its text colour carried along by currentColor, so a written colour would paint nothing
+// (D-65, D-66, D-88 to D-91). Returns a not-painted gap, or null when the draft paints that side somewhere.
+export function unpaintedBorder( report, g ) {
+	const m = /^border-(top|right|bottom|left)-color$/.exec( g.prop );
+	if ( ! m ) {
+		return null;
+	}
+	const widths = draftValues( report, g.pair, `border-${ m[ 1 ] }-width`, false, g.walkerStates, g.pseudo ).perWidth;
+	const styles = draftValues( report, g.pair, `border-${ m[ 1 ] }-style`, false, g.walkerStates, g.pseudo ).perWidth;
+	const measured = Object.keys( widths );
+	if ( ! measured.length || measured.some( ( w ) => parseFloat( widths[ w ] ) > 0 && ! [ 'none', 'hidden' ].includes( styles[ w ] ) ) ) {
+		return null;
+	}
+	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
+}
+
 export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor = calibrationFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null } ) {
 	const { groups, stateConflict, content } = writableGroups( report, stateMap );
 	const writes = [];
@@ -183,6 +200,11 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			continue;
 		}
 		const { perWidth, fontPx, declared, held } = draftValues( report, g.pair, g.prop, 'hover' === g.state, g.walkerStates, g.pseudo );
+		const unpainted = unpaintedBorder( report, g );
+		if ( unpainted ) {
+			gaps[ g.key ] = unpainted;
+			continue;
+		}
 		// A computed width is the used size (an auto or grid-sized box reads as pixels): writing it would freeze a fluid
 		// layout. It is written only as the draft declares it (a plain length or percentage at every measured width a
 		// ledger entry does not hold); otherwise widths change only through the settings that size the box.

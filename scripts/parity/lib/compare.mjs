@@ -278,11 +278,13 @@ export function comparePair( pair, d, l, tol ) {
 	// A hover row is a difference in what hovering changes: where neither side's hover end state moves a property off
 	// its rest value, a difference there is the rest row's (a rest colour that differs is not also a hover colour).
 	// The same judgement for the pressed state (:active, GAP-CHECKLIST.md section 23): rows of kind `active`.
+	// A border colour is judged on the border width read in the same state (the state passes read both), so an element
+	// with no border in that state is no row whatever its currentColor.
 	for ( const [ kind, field ] of [ [ 'hover', 'hover' ], [ 'active', 'active' ] ] ) {
 		if ( d[ field ] && l[ field ] ) {
 			const still = ( s, p ) => undefined !== s.styles?.[ p ] && sameValue( p, s[ field ][ p ], s.styles[ p ], tol.px );
 			for ( const p of Object.keys( d[ field ] ) ) {
-				if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, d.styles, l.styles ) || ( still( d, p ) && still( l, p ) ) ) {
+				if ( loops.has( p ) || ( mixed && GLYPH_TEXT.has( p ) ) || borderColourIrrelevant( p, { ...d.styles, ...d[ field ] }, { ...l.styles, ...l[ field ] } ) || ( still( d, p ) && still( l, p ) ) ) {
 					continue;
 				}
 				if ( ! sameValue( p, d[ field ][ p ], l[ field ][ p ], tol.px ) ) {

@@ -713,3 +713,21 @@ test( 'MUST FAIL TO DOUBLE-COUNT: two writes to one setting are one wrong settin
 	const all = [ ...lw(), { round: 1, group: 'g-x', ref: 'cr-ref-l-1', attr: 'gap', prop: 'row-gap' } ];
 	assert.deepEqual( settingRatio( all.slice( 0, 2 ), all ), { wrong: 1, total: 3 } );
 } );
+
+// A border colour on an element whose draft border is 0px wide paints nothing: the draft's value is its text colour
+// carried along by currentColor (D-65, D-66, D-88 to D-91). Solve leaves it as a not-painted gap instead of writing it.
+import { unpaintedBorder } from '../solve.mjs';
+const borderRun = ( width, style = 'solid' ) => ( { runs: [ 375, 1440 ].map( ( w ) => ( { state: 'opening', width: w, pairs: { phone: {
+	draft: { styles: { 'border-top-width': width, 'border-top-style': style, 'border-top-color': 'rgb(20, 20, 20)' }, hover: { 'border-top-color': 'rgb(119, 113, 106)' } },
+	diffs: [] } } } ) ) } );
+const borderGroup = { pair: 'phone', prop: 'border-top-color', state: 'hover', walkerStates: [ 'opening' ], pseudo: null };
+
+test( 'MUST FAIL TO WRITE PAINTLESS: a border colour whose draft border is 0px wide is a not-painted gap', () => {
+	assert.equal( unpaintedBorder( borderRun( '0px', 'none' ), borderGroup )?.gap, 'not-painted' );
+	assert.equal( unpaintedBorder( borderRun( '0px' ), borderGroup )?.gap, 'not-painted' );
+} );
+
+test( 'positive control: a painted draft border, or a non-border row, is written as before', () => {
+	assert.equal( unpaintedBorder( borderRun( '1px' ), borderGroup ), null );
+	assert.equal( unpaintedBorder( borderRun( '0px' ), { ...borderGroup, prop: 'color' } ), null );
+} );

@@ -565,3 +565,17 @@ test( 'MUST FAIL (Lenses step-1, 2026-10-07): a ::after with content but display
 	assert.equal( shown.pseudo[ '::after' ]?.height, '2px', 'a shown connector is still read' );
 	await page.close();
 } );
+
+// A text pair reads only typography at rest, but the hover pass always reads border-top-color. With no width beside
+// it, a hover border colour on an element with no border was reported (Contact 2026-10-08, gen-contact-9: D-88 to
+// D-91). The hover pass reads the width too, and the hover row is judged on the width read in that state.
+test( 'MUST FAIL TO REPORT A PAINTLESS BORDER: a hover border colour with 0px width on both sides is no row', async () => {
+	const { HOVER_PROPS } = await lib( 'collect.mjs' );
+	assert.ok( HOVER_PROPS.includes( 'border-top-width' ) && ACTIVE_PROPS.includes( 'border-top-width' ) );
+	const side = ( colour, width ) => ( { tag: 'a', text: 'Call', box: { x: 0, y: 0, w: 10, h: 10 }, styles: { color: 'rgb(20, 20, 20)' },
+		hover: { color: 'rgb(20, 20, 20)', 'border-top-color': colour, 'border-top-width': width }, motion: { animation: 'none', transition: 'none' }, keyframes: 'none' } );
+	const pair = { name: 'x', draft: '.a', live: '.a' };
+	const rows = ( w ) => comparePair( pair, side( 'rgb(111, 97, 82)', w ), side( 'rgb(20, 20, 20)', w ), TOL ).filter( ( r ) => 'border-top-color' === r.key );
+	assert.equal( rows( '0px' ).length, 0 );
+	assert.equal( rows( '1px' ).length, 1, 'positive control: a painted hover border still compares' );
+} );
