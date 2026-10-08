@@ -29,36 +29,17 @@ import {
 } from '../container/components/ContainerWrapperControls';
 // Spec 37 FR-37-16 object model (Spec 35 Phase 1.4, 2026-08-10). Replaces
 // WidthPanel + ResponsiveSpacingPanel here — see the mount below for why.
-import { ResponsiveBoxControls, MEDIA_SIZING_RATIO_OPTIONS,
-	SgsBorderControl,
-	resolveColourToken,
-	ShadowControl,
-	DesignTokenPicker,
-	ScrimControls,
+import { ResponsiveBoxControls,
 	scrimColourRow,
 } from '../../components';
-import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	RangeControl,
-	ToggleControl,
-	RadioControl,
-	Spinner,
-} from '@wordpress/components';
-// ToolsPanel/ToolsPanelItem exist only as `__experimental*` on WP 7.1 (unprefixed = undefined,
-// React error #130 on selecting the block): they must come from the primitives boundary.
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { useRef, useEffect, useMemo } from '@wordpress/element';
+import { PanelBody } from '@wordpress/components';
+import { useEffect, useMemo } from '@wordpress/element';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import SgsColourPanel from '../../components/SgsColourPanel';
-import MediaGalleryPicker from '../../components/MediaGalleryPicker';
-import ResponsiveOverride from '../../components/ResponsiveOverride';
 import {
 	colourVar,
 	resolveResponsiveTier,
 	withStableItemKeys,
-	focalPointToObjectPosition,
 	boxShorthand,
 	resolveBoxTierPreview,
 	resolveContentWidthPreview,
@@ -68,51 +49,14 @@ import {
 	wrapperBorderPreview,
 } from '../../utils';
 import { captionPreviewStyle } from './preview-style';
-import GalleryThumbnail from './components/GalleryThumbnail';
-import { resolveGalleryMedia } from './resolve-gallery-media';
-
-// -------------------------------------------------------------------------
-// Static option arrays (defined outside component to avoid re-creation)
-// -------------------------------------------------------------------------
-
-const LAYOUT_OPTIONS = [
-	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
-	{ label: __( 'Masonry', 'sgs-blocks' ), value: 'masonry' },
-	{ label: __( 'Carousel', 'sgs-blocks' ), value: 'carousel' },
-];
-
-// C19 ratio-mode adoption (2026-08-27) — reuses MediaSizingPanel's shared
-// seven-value ratio list (spaced format, "16 / 9" etc.) rather than this
-// block's own hand-rolled set. render.php's char-filter sanitiser
-// ($sgs_css_ratio) is untouched — it already accepts both spaced and
-// unspaced values safely, so no PHP change is needed here. The dropped
-// "Natural (no crop)" (value: '') option is no longer offered in the UI;
-// any post already storing '' keeps rendering with no forced ratio exactly
-// as before, since render.php's `if ( $aspect_ratio )` check is unchanged.
-const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
-
-const IMAGE_SIZE_OPTIONS = [
-	{ label: __( 'Thumbnail (150×150)', 'sgs-blocks' ), value: 'thumbnail' },
-	{ label: __( 'Medium (300×300)', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Medium large (768w)', 'sgs-blocks' ), value: 'medium_large' },
-	{ label: __( 'Large (1024×1024)', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
-];
-
-const EASING_OPTIONS = [
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-];
-
-const HOVER_EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
-	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
-	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
-];
+import useGalleryItems from './use-gallery-items';
+import ImagesPanel from './components/ImagesPanel';
+import LayoutSettingsPanel from './components/LayoutSettingsPanel';
+import GalleryHoverEffectsPanel from './components/GalleryHoverEffectsPanel';
+import GalleryContentPanel from './components/GalleryContentPanel';
+import GalleryCarouselPanel from './components/GalleryCarouselPanel';
+import GalleryCanvas from './components/GalleryCanvas';
+import GalleryBorderControl from './components/GalleryBorderControl';
 
 // -------------------------------------------------------------------------
 // Main edit component
@@ -172,85 +116,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 	}, [ items, rawMediaItems, setAttributes ] );
 
-	// Drag-to-reorder state.
-	const dragSourceIndex = useRef( null );
-
-	/**
-	 * Handle drag-start — record which index is being moved.
-	 *
-	 * @param {number} index Source index.
-	 */
-	const handleDragStart = ( index ) => {
-		dragSourceIndex.current = index;
-	};
-
-	/**
-	 * Handle drop — swap the dragged image with the target position.
-	 *
-	 * @param {number} targetIndex Drop target index.
-	 */
-	const handleDrop = ( targetIndex ) => {
-		const sourceIndex = dragSourceIndex.current;
-		if ( sourceIndex === null || sourceIndex === targetIndex ) {
-			return;
-		}
-		const next = [ ...items ];
-		const [ moved ] = next.splice( sourceIndex, 1 );
-		next.splice( targetIndex, 0, moved );
-		setAttributes( { mediaItems: next } );
-		dragSourceIndex.current = null;
-	};
-
-	/**
-	 * Remove a single item from the gallery.
-	 *
-	 * @param {number} index Index to remove.
-	 */
-	const removeImage = ( index ) => {
-		const next = items.filter( ( _, i ) => i !== index );
-		setAttributes( { mediaItems: next } );
-	};
-
-	/**
-	 * Toggle the per-item decorative flag (item 18, decorative-image-aria).
-	 * Patches only the targeted item in the mediaItems repeater — the flag is
-	 * a per-item field, not a top-level block attribute.
-	 *
-	 * @param {number}  index      Index of the item to update.
-	 * @param {boolean} decorative New decorative value.
-	 */
-	const toggleItemDecorative = ( index, decorative ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, decorative } : item
-		);
-		setAttributes( { mediaItems: next } );
-	};
-
-	/**
-	 * Patch a single item's crop fields (Spec 35 Part 4).
-	 *
-	 * @param {number} index Index of the item to update.
-	 * @param {Object} patch Partial item patch — { objectFit } and/or { focalPoint }.
-	 */
-	const updateItemCrop = ( index, patch ) => {
-		const next = items.map( ( item, i ) =>
-			i === index ? { ...item, ...patch } : item
-		);
-		setAttributes( { mediaItems: next } );
-	};
-
-	/**
-	 * Handle a selection from MediaGalleryPicker.
-	 * MediaGalleryPicker already maps each raw WP media object to the
-	 * unified SGS media-slot shape (via the resolveItem prop, bound below
-	 * to resolveGalleryMedia) so sgs_render_media() can render either an
-	 * <img> or <video> per item — this just persists the mapped array.
-	 *
-	 * @param {Object[]} mappedItems Array already resolved to the SGS media-slot shape.
-	 */
-	const onSelectImages = ( mappedItems ) => {
-		setAttributes( { mediaItems: mappedItems } );
-	};
+	const {
+		handleDragStart,
+		handleDrop,
+		removeImage,
+		toggleItemDecorative,
+		updateItemCrop,
+		onSelectImages,
+	} = useGalleryItems( { items, setAttributes } );
 
 	// Active device tier for the padding/margin/maxWidth/contentWidth/grid-layout
 	// canvas mirror below — read from the SAME source the inspector's global
@@ -401,57 +274,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 	const gridStyle = { ...previewGridStyle, ...separatorsCanvas.style };
 
-	// Carousel controls canvas mirror (CHECK A) — render.php emits real
-	// `.sgs-gallery__carousel-prev`/`-next` buttons + a `.sgs-gallery__carousel-dots`
-	// container as SIBLINGS of `.sgs-gallery__grid`, gated on carouselShowArrows/
-	// carouselShowDots respectively (only when layout === 'carousel'). The dots
-	// container is empty on the frontend (view.js populates it at runtime) — a
-	// fixed small number of placeholder dots is enough to prove the toggle adds/
-	// removes the element; it does not need to track the real slide count.
-	const carouselControlsPreview = 'carousel' === layout ? (
-		<>
-			{ carouselShowArrows && (
-				<>
-					<button
-						type="button"
-						className="sgs-gallery__carousel-prev"
-						aria-label={ __( 'Previous image', 'sgs-blocks' ) }
-						tabIndex={ -1 }
-					>
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-							<polyline points="15 18 9 12 15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
-					</button>
-					<button
-						type="button"
-						className="sgs-gallery__carousel-next"
-						aria-label={ __( 'Next image', 'sgs-blocks' ) }
-						tabIndex={ -1 }
-					>
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-							<polyline points="9 18 15 12 9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-						</svg>
-					</button>
-				</>
-			) }
-			{ carouselShowDots && (
-				<div
-					className="sgs-gallery__carousel-dots"
-					role="tablist"
-					aria-label={ __( 'Gallery navigation', 'sgs-blocks' ) }
-				>
-					{ [ 0, 1, 2, 3 ].map( ( dotIndex ) => (
-						<span
-							key={ dotIndex }
-							className={ 'sgs-gallery__dot' + ( 0 === dotIndex ? ' sgs-gallery__dot--active' : '' ) }
-							aria-hidden="true"
-						/>
-					) ) }
-				</div>
-			) }
-		</>
-	) : null;
-
 	return (
 		<>
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
@@ -521,31 +343,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					  nav-menu do.
 					*/ }
 					<ResponsiveBoxControls attributes={ attributes } setAttributes={ setAttributes } />
-					{ /* Border + radius — collapsed into this same Layout family panel
-					   (was a standalone "Border" PanelBody further down; border is a
-					   box-shape property of the same `grid` wrapper element). */ }
-					<SgsBorderControl
-						widthValues={ attributes.borderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ attributes.borderStyle }
-						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
-						colourLinked={ true }
-						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
-						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-						} }
-					/>
+					<GalleryBorderControl attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 				{ /* Lines between the grid's items (the wrapper draws them for the grid layout). */ }
 				<SeparatorsPanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -555,774 +353,47 @@ export default function Edit( { attributes, setAttributes } ) {
 			     Inspector panels — Settings tab (structural + content)
 			     ============================================================ */ }
 			<InspectorControls>
-				{ /* Panel 1: Images */ }
-				<PanelBody
-					title={ __( 'Images', 'sgs-blocks' ) }
-					initialOpen={ true }
-				>
-					<p className="sgs-gallery-editor__panel-note">
-						{ __(
-							'Select multiple images from the Media Library. Drag thumbnails to reorder.',
-							'sgs-blocks'
-						) }
-					</p>
+				<ImagesPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					items={ items }
+					onSelectImages={ onSelectImages }
+					removeImage={ removeImage }
+					handleDragStart={ handleDragStart }
+					handleDrop={ handleDrop }
+					toggleItemDecorative={ toggleItemDecorative }
+					updateItemCrop={ updateItemCrop }
+				/>
 
-					{ items.length > 0 && (
-						<div
-							className="sgs-gallery-editor__thumbs"
-							role="list"
-							aria-label={ __( 'Gallery items', 'sgs-blocks' ) }
-						>
-							{ items.map( ( image, index ) => (
-								<GalleryThumbnail
-									key={ image._key || image.id || index }
-									image={ image }
-									index={ index }
-									onRemove={ removeImage }
-									onDragStart={ handleDragStart }
-									onDragOver={ () => {} }
-									onDrop={ handleDrop }
-									onToggleDecorative={ toggleItemDecorative }
-									onUpdateCrop={ updateItemCrop }
-								/>
-							) ) }
-						</div>
-					) }
+				<LayoutSettingsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
-					<MediaGalleryPicker
-						value={ items }
-						onChange={ onSelectImages }
-						resolveItem={ ( media ) =>
-							resolveGalleryMedia( media, imageSize )
-						}
-						allowedTypes={ [ 'image', 'video' ] }
-						addLabel={ __( 'Add media', 'sgs-blocks' ) }
-						editLabel={ __( 'Edit gallery', 'sgs-blocks' ) }
-						buttonVariant="secondary"
-						className="sgs-gallery-editor__media-btn"
-					/>
+				<GalleryHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
-					{ items.length > 0 && (
-						<p
-							className="sgs-gallery-editor__panel-note"
-							style={ { marginTop: '8px' } }
-						>
-							{ items.length }{ ' ' }
-							{ items.length === 1
-								? __( 'item selected', 'sgs-blocks' )
-								: __( 'items selected', 'sgs-blocks' ) }
-						</p>
-					) }
+				<GalleryContentPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
-					<TextControl
-						label={ __( 'Message when the gallery is empty', 'sgs-blocks' ) }
-						help={ __( 'Shown on the live site. Leave empty to show nothing.', 'sgs-blocks' ) }
-						value={ attributes.emptyMessage || '' }
-						onChange={ ( val ) => setAttributes( { emptyMessage: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ /* Panel 2: Layout */ }
-				<PanelBody
-					title={ __( 'Layout', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<RadioControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						selected={ layout }
-						options={ LAYOUT_OPTIONS }
-						onChange={ set( 'layout' ) }
-					/>
-					{ /*
-						  columns is a TIER OBJECT — ONE attr holding
-						  {desktop,tablet,mobile} (Spec 35 pass 4). It must
-						  therefore use ResponsiveOverride, which reads and
-						  writes the object, NOT ResponsiveControl, which
-						  writes one flat attr per tier.
-
-						  ⛔ Do NOT revert this to `ResponsiveControl` + an
-						  attrMap of `{desktop:'columns',
-						  tablet:'columnsTablet', mobile:'columnsMobile'}`.
-						  `columnsTablet`/`columnsMobile` are no longer
-						  declared by block.json, and WordPress SILENTLY
-						  DISCARDS an attribute a block does not declare
-						  (D338) — so both tiers would save nothing. The
-						  desktop branch would be worse: it would write a
-						  NUMBER into an attr declared `"type":"object"`,
-						  which coerces to the default and drops the whole
-						  setting (D563's gap regression, same bug class).
-					*/ }
-					<ResponsiveOverride
-						label={ __( 'Columns', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( obj ) => setAttributes( { columns: obj } ) }
-					>
-						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
-							<RangeControl
-								label={ __( 'Columns', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={
-									ownValue !== ''
-										? ownValue
-										: ( effectiveValue !== '' ? effectiveValue : ( tier === 'mobile' ? 1 : 3 ) )
-								}
-								onChange={ setOwnValue }
-								min={ 1 }
-								max={ 6 }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveOverride>
-					<SelectControl
-						label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
-						value={ aspectRatio }
-						options={ ASPECT_RATIO_OPTIONS }
-						onChange={ set( 'aspectRatio' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ /* Panel 3: Hover Effects — moved ahead of Content 2026-09-08
-				     (rule 41 dom-order-vs-declared-order finding). This panel
-				     holds Image's owned attrs (imageSize/imageZoomHover/
-				     grayscaleHover; block.json supports.sgs.elements.image,
-				     order 2) alongside the block-wide hover-effect controls
-				     (effectHover/scaleHover/transitionDuration/Easing/
-				     staggerDelay/shadowHover). render.php genuinely draws
-				     <img> before <figcaption> (Image element order 2 before
-				     Caption order 3), so the panel carrying Image's controls
-				     must render before the panel carrying Caption's — moving
-				     the JSX to match the real on-page order, not the other
-				     way round (block.json's order numbers are correct and
-				     were left alone). */ }
-				<ToolsPanel
-					label={ __( 'Hover Effects', 'sgs-blocks' ) }
-					resetAll={ () =>
-						setAttributes( {
-							effectHover: 'zoom',
-							scaleHover: '',
-							imageZoomHover: true,
-							transitionDuration: '300',
-							transitionEasing: 'ease',
-							grayscaleHover: false,
-							staggerDelay: 60,
-							shadowHover: '',
-						} )
-					}
-				>
-					{ /* Moved in from the "Content" panel (D622 — an
-					     element-scoped control belongs in its own element's
-					     TIER 1 panel; "image" is a declared element whose
-					     attrMap claims imageSize alongside imageZoomHover/
-					     grayscaleHover below). */ }
-					<ToolsPanelItem
-						label={ __( 'Image size', 'sgs-blocks' ) }
-						hasValue={ () => !! imageSize && imageSize !== 'large' }
-						onDeselect={ () => setAttributes( { imageSize: 'large' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Image size', 'sgs-blocks' ) }
-							value={ imageSize }
-							options={ IMAGE_SIZE_OPTIONS }
-							onChange={ set( 'imageSize' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover effect', 'sgs-blocks' ) }
-						hasValue={ () => effectHover !== 'zoom' }
-						onDeselect={ () => setAttributes( { effectHover: 'zoom' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Hover effect', 'sgs-blocks' ) }
-							value={ effectHover }
-							options={ HOVER_EFFECT_OPTIONS }
-							onChange={ set( 'effectHover' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-						hasValue={ () => imageZoomHover !== true }
-						onDeselect={ () => setAttributes( { imageZoomHover: true } ) }
-						isShownByDefault
-					>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							checked={ imageZoomHover }
-							onChange={ set( 'imageZoomHover' ) }
-							help={ __(
-								'Zooms the image inside the card on hover.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						hasValue={ () => ( attributes.shadowHover ?? '' ) !== '' }
-						onDeselect={ () => setAttributes( { shadowHover: '' } ) }
-						isShownByDefault
-					>
-						<ShadowControl
-							label={ __( 'Hover shadow', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'shadowHover',
-							} }
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Hover scale (card)', 'sgs-blocks' ) }
-						hasValue={ () => scaleHover !== '' }
-						onDeselect={ () => setAttributes( { scaleHover: '' } ) }
-					>
-						<RangeControl
-							label={ __( 'Hover scale (card)', 'sgs-blocks' ) }
-							value={ parseFloat( scaleHover ) || 1 }
-							onChange={ ( val ) =>
-								setAttributes( { scaleHover: String( val ) } )
-							}
-							min={ 1 }
-							max={ 1.1 }
-							step={ 0.01 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						hasValue={ () => transitionDuration !== '300' }
-						onDeselect={ () =>
-							setAttributes( { transitionDuration: '300' } )
-						}
-					>
-						<RangeControl
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-							value={ parseInt( transitionDuration, 10 ) || 300 }
-							onChange={ ( val ) =>
-								setAttributes( {
-									transitionDuration: String( val ),
-								} )
-							}
-							min={ 100 }
-							max={ 1000 }
-							step={ 50 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						hasValue={ () => transitionEasing !== 'ease' }
-						onDeselect={ () =>
-							setAttributes( { transitionEasing: 'ease' } )
-						}
-					>
-						<SelectControl
-							label={ __( 'Transition easing', 'sgs-blocks' ) }
-							value={ transitionEasing }
-							options={ EASING_OPTIONS }
-							onChange={ set( 'transitionEasing' ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-						hasValue={ () => grayscaleHover !== false }
-						onDeselect={ () =>
-							setAttributes( { grayscaleHover: false } )
-						}
-					>
-						<ToggleControl
-							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
-							checked={ grayscaleHover }
-							onChange={ set( 'grayscaleHover' ) }
-							help={ __(
-								'Desaturates images at rest; restores full colour on hover.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-						hasValue={ () => staggerDelay !== 60 }
-						onDeselect={ () => setAttributes( { staggerDelay: 60 } ) }
-					>
-						<RangeControl
-							label={ __( 'Stagger delay (ms)', 'sgs-blocks' ) }
-							help={ __(
-								'Each image is delayed by a multiple of this value on entrance.',
-								'sgs-blocks'
-							) }
-							value={ staggerDelay }
-							onChange={ set( 'staggerDelay' ) }
-							min={ 0 }
-							max={ 500 }
-							step={ 25 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
-
-				{ /* Panel 4: Content */ }
-				<PanelBody
-					title={ __( 'Content', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Enable lightbox', 'sgs-blocks' ) }
-						checked={ enableLightbox }
-						onChange={ set( 'enableLightbox' ) }
-						help={ __(
-							'Open images in a full-screen lightbox on click.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					{ /* Lightbox scrim strength + blur (U-2 Addendum A, 2026-09-24) —
-					   only shown when the lightbox exists at all, since the scrim is
-					   the lightbox's own backdrop. The colour row is the SgsColourPanel
-					   row above (also gated on enableLightbox); this ToolsPanel carries
-					   only the non-colour siblings, per ScrimControls.js's own docblock. */ }
-					{ enableLightbox && (
-						<ToolsPanel
-							label={ __( 'Lightbox backdrop', 'sgs-blocks' ) }
-							resetAll={ () =>
-								// Reset to the block's own defaults (block.json) — scrimOpacity's
-								// default is desktop 0.9, the old hardcoded 90% mix, not blank.
-								setAttributes( { scrimOpacity: { desktop: 0.9 }, scrimBlur: {} } )
-							}
-						>
-							<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
-						</ToolsPanel>
-					) }
-					<ToggleControl
-						label={ __( 'Show captions', 'sgs-blocks' ) }
-						checked={ showCaptions }
-						onChange={ set( 'showCaptions' ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showCaptions && (
-						<ToggleControl
-							label={ __(
-								'Reveal caption on hover',
-								'sgs-blocks'
-							) }
-							checked={ captionReveal }
-							onChange={ set( 'captionReveal' ) }
-							help={ __(
-								'Caption slides up into view when the user hovers the image.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					) }
-					{ /* Moved in from the shared SgsColourPanel (D622 — an
-					     element-scoped colour belongs in its own element's
-					     TIER 1 panel; "caption" is a declared element whose
-					     attrMap claims captionColour/captionBgColour). */ }
-					{ showCaptions && (
-						<>
-							<DesignTokenPicker
-								label={ __( 'Caption text colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: captionColour,
-										onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
-										linked: true,
-										gradientValue: captionColourGradient,
-										onGradientChange: ( val ) => setAttributes( { captionColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: captionColourHover,
-										onChange: ( val ) => setAttributes( { captionColourHover: val ?? '' } ),
-										linked: true,
-										gradientValue: captionColourHoverGradient,
-										onGradientChange: ( val ) => setAttributes( { captionColourHoverGradient: val ?? '' } ),
-									},
-								] }
-							/>
-							<DesignTokenPicker
-								label={ __( 'Caption background colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: captionBgColour,
-										onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
-										linked: true,
-										gradientValue: captionBgColourGradient,
-										onGradientChange: ( val ) => setAttributes( { captionBgColourGradient: val ?? '' } ),
-									},
-								] }
-							/>
-						</>
-					) }
-				</PanelBody>
-
-				{ /* Panel 6: Carousel (conditional — only when layout = carousel) */ }
-				{ 'carousel' === layout && (
-					<ToolsPanel
-						label={ __( 'Carousel', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								carouselShowArrows: true,
-								carouselShowDots: true,
-								carouselAutoplay: false,
-								carouselSpeed: 5000,
-								dragToScroll: false,
-								dragMomentum: true,
-								loopCarousel: false,
-							} )
-						}
-					>
-						<ToolsPanelItem
-							label={ __( 'Show arrows', 'sgs-blocks' ) }
-							hasValue={ () => carouselShowArrows !== true }
-							onDeselect={ () => setAttributes( { carouselShowArrows: true } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Show arrows', 'sgs-blocks' ) }
-								checked={ carouselShowArrows }
-								onChange={ set( 'carouselShowArrows' ) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Show dots', 'sgs-blocks' ) }
-							hasValue={ () => carouselShowDots !== true }
-							onDeselect={ () => setAttributes( { carouselShowDots: true } ) }
-							isShownByDefault
-						>
-							<ToggleControl
-								label={ __( 'Show dots', 'sgs-blocks' ) }
-								checked={ carouselShowDots }
-								onChange={ set( 'carouselShowDots' ) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							hasValue={ () => carouselAutoplay !== false }
-							onDeselect={ () => setAttributes( { carouselAutoplay: false } ) }
-						>
-							<ToggleControl
-								label={ __( 'Autoplay', 'sgs-blocks' ) }
-								checked={ carouselAutoplay }
-								onChange={ set( 'carouselAutoplay' ) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						{ carouselAutoplay && (
-							<ToolsPanelItem
-								label={ __( 'Autoplay speed (ms)', 'sgs-blocks' ) }
-								hasValue={ () => carouselSpeed !== 5000 }
-								onDeselect={ () => setAttributes( { carouselSpeed: 5000 } ) }
-							>
-								<RangeControl
-									label={ __(
-										'Autoplay speed (ms)',
-										'sgs-blocks'
-									) }
-									value={ carouselSpeed }
-									onChange={ set( 'carouselSpeed' ) }
-									min={ 1000 }
-									max={ 10000 }
-									step={ 500 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-						) }
-						{ /*
-						 * Draggable + Inertia roster opt-in (Spec 38 FR-38-13).
-						 * Desktop-only click-and-drag upgrade over the CSS
-						 * scroll-snap this layout already renders — touch
-						 * keeps its native scroll either way, so this never
-						 * needs its own "touch" caveat in the help text.
-						 */ }
-						<ToolsPanelItem
-							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
-							hasValue={ () => dragToScroll !== false }
-							onDeselect={ () => setAttributes( { dragToScroll: false } ) }
-						>
-							<ToggleControl
-								label={ __(
-									'Drag to scroll (desktop)',
-									'sgs-blocks'
-								) }
-								checked={ dragToScroll }
-								onChange={ set( 'dragToScroll' ) }
-								help={ __(
-									'Lets visitors click and drag with a mouse to scroll the carousel, on top of the usual arrows, dots, swipe and scrollbar.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-						{ dragToScroll && (
-							<ToolsPanelItem
-								label={ __( 'Momentum', 'sgs-blocks' ) }
-								hasValue={ () => dragMomentum !== true }
-								onDeselect={ () => setAttributes( { dragMomentum: true } ) }
-							>
-								<ToggleControl
-									label={ __( 'Momentum', 'sgs-blocks' ) }
-									checked={ dragMomentum }
-									onChange={ set( 'dragMomentum' ) }
-									help={ __(
-										'Carousel keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
-										'sgs-blocks'
-									) }
-									__nextHasNoMarginBottom
-								/>
-							</ToolsPanelItem>
-						) }
-						{ /*
-						 * Infinite loop (Spec 38 §11 loop FR). Deliberately its
-						 * OWN toggle, not gated behind "Drag to scroll" —
-						 * Bean's ruling: looping is an independent control,
-						 * combinable with drag or used entirely on its own
-						 * (native swipe/scrollbar/keyboard still loop with
-						 * drag off). Default off, same as drag.
-						 */ }
-						<ToolsPanelItem
-							label={ __( 'Loop', 'sgs-blocks' ) }
-							hasValue={ () => loopCarousel !== false }
-							onDeselect={ () => setAttributes( { loopCarousel: false } ) }
-						>
-							<ToggleControl
-								label={ __( 'Loop', 'sgs-blocks' ) }
-								checked={ loopCarousel }
-								onChange={ set( 'loopCarousel' ) }
-								help={ __(
-									'Scrolling or dragging past the last image continues into the first, and back again — never a dead end.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
-				) }
+				<GalleryCarouselPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 				{ /* Border moved to the "Layout" panel in the Styles tab above
 				   (Spec 35 THE PLACEMENT RULE — border is a box-shape property
 				   of the `grid` wrapper element, grouped with padding/margin/
 				   max-width/gap rather than left as its own ungrouped panel). */ }
 			</InspectorControls>
 
-			{ /* ============================================================
-			     Live preview canvas
-			     ============================================================ */ }
-			{ /* Content band (Layer 2 / `.sgs-container__inner`) — mirrors
-			   sgs/container's edit.js: when contentWidth resolves to a real
-			   cap (or, on a block that has one, band padding is set), the
-			   frontend renders a capped inner band around the block's content
-			   rather than applying the cap to the full-bleed outer wrapper.
-			   `hasBandProps`/`bandStyle` are computed above via the shared
-			   `contentBandPreview()` util so this canvas matches. */ }
-			{ hasBandProps ? (
-				<div { ...blockProps }>
-					<div className="sgs-container__inner" style={ bandStyle }>
-						{ items.length === 0 && (
-							<div className="sgs-gallery-editor__placeholder">
-								<p>
-									{ __(
-										'No media selected. Use the "Images" panel in the sidebar to add photos or videos.',
-										'sgs-blocks'
-									) }
-								</p>
-								<MediaGalleryPicker
-									value={ [] }
-									onChange={ onSelectImages }
-									resolveItem={ ( media ) =>
-										resolveGalleryMedia( media, imageSize )
-									}
-									allowedTypes={ [ 'image', 'video' ] }
-									addLabel={ __( 'Add media', 'sgs-blocks' ) }
-									buttonVariant="primary"
-									className="sgs-gallery-editor__media-btn"
-								/>
-							</div>
-						) }
-
-						{ items.length > 0 && (
-							<div
-								ref={ separatorsCanvas.ref }
-								className="sgs-gallery__grid"
-								style={ gridStyle }
-							>
-								{ items.map( ( item, index ) => {
-									const isVideo =
-										item.type === 'video' ||
-										( item.mime &&
-											item.mime.startsWith( 'video/' ) );
-									const itemFit = item.objectFit || 'cover';
-									const wrapStyle = {
-										...( aspectRatio ? { aspectRatio } : {} ),
-										objectFit: itemFit,
-										objectPosition:
-											'cover' === itemFit
-												? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-												: undefined,
-										width: '100%',
-										display: 'block',
-									};
-									return (
-										<figure
-											key={ item._key || item.id || index }
-											className="sgs-gallery__item"
-											style={
-												aspectRatio
-													? {
-															'--sgs-aspect-ratio':
-																aspectRatio,
-													  }
-													: {}
-											}
-										>
-											<div className="sgs-gallery__img-wrap">
-												{ isVideo ? (
-													<video
-														src={ item.url }
-														className="sgs-gallery__img"
-														muted
-														loop
-														playsInline
-														style={ wrapStyle }
-													/>
-												) : (
-													<img
-														src={ item.url }
-														alt={ item.alt || '' }
-														className="sgs-gallery__img"
-														loading="lazy"
-														style={ wrapStyle }
-													/>
-												) }
-											</div>
-											{ showCaptions && item.caption && (
-												<figcaption className="sgs-gallery__caption" style={ captionStyle }>
-													{ item.caption }
-												</figcaption>
-											) }
-										</figure>
-									);
-								} ) }
-							</div>
-						) }
-						{ carouselControlsPreview }
-					</div>
-				</div>
-			) : (
-			<div { ...blockProps }>
-				{ items.length === 0 && (
-					<div className="sgs-gallery-editor__placeholder">
-						<p>
-							{ __(
-								'No media selected. Use the "Images" panel in the sidebar to add photos or videos.',
-								'sgs-blocks'
-							) }
-						</p>
-						<MediaGalleryPicker
-							value={ [] }
-							onChange={ onSelectImages }
-							resolveItem={ ( media ) =>
-								resolveGalleryMedia( media, imageSize )
-							}
-							allowedTypes={ [ 'image', 'video' ] }
-							addLabel={ __( 'Add media', 'sgs-blocks' ) }
-							buttonVariant="primary"
-							className="sgs-gallery-editor__media-btn"
-						/>
-					</div>
-				) }
-
-				{ items.length > 0 && (
-					<div
-						ref={ separatorsCanvas.ref }
-						className="sgs-gallery__grid"
-						style={ gridStyle }
-					>
-						{ items.map( ( item, index ) => {
-							const isVideo =
-								item.type === 'video' ||
-								( item.mime &&
-									item.mime.startsWith( 'video/' ) );
-							const itemFit = item.objectFit || 'cover';
-							const wrapStyle = {
-								...( aspectRatio ? { aspectRatio } : {} ),
-								objectFit: itemFit,
-								objectPosition:
-									'cover' === itemFit
-										? focalPointToObjectPosition( item.focalPoint || { x: 0.5, y: 0.5 } )
-										: undefined,
-								width: '100%',
-								display: 'block',
-							};
-							return (
-								<figure
-									key={ item._key || item.id || index }
-									className="sgs-gallery__item"
-									style={
-										aspectRatio
-											? {
-													'--sgs-aspect-ratio':
-														aspectRatio,
-											  }
-											: {}
-									}
-								>
-									<div className="sgs-gallery__img-wrap">
-										{ isVideo ? (
-											<video
-												src={ item.url }
-												className="sgs-gallery__img"
-												muted
-												loop
-												playsInline
-												style={ wrapStyle }
-											/>
-										) : (
-											<img
-												src={ item.url }
-												alt={ item.alt || '' }
-												className="sgs-gallery__img"
-												loading="lazy"
-												style={ wrapStyle }
-											/>
-										) }
-									</div>
-									{ showCaptions && item.caption && (
-										<figcaption className="sgs-gallery__caption" style={ captionStyle }>
-											{ item.caption }
-										</figcaption>
-									) }
-								</figure>
-							);
-						} ) }
-					</div>
-				) }
-				{ carouselControlsPreview }
-			</div>
-		) }
+			<GalleryCanvas
+				blockProps={ blockProps }
+				hasBandProps={ hasBandProps }
+				bandStyle={ bandStyle }
+				items={ items }
+				imageSize={ imageSize }
+				aspectRatio={ aspectRatio }
+				showCaptions={ showCaptions }
+				captionStyle={ captionStyle }
+				gridStyle={ gridStyle }
+				separatorsCanvas={ separatorsCanvas }
+				layout={ layout }
+				carouselShowArrows={ carouselShowArrows }
+				carouselShowDots={ carouselShowDots }
+				onSelectImages={ onSelectImages }
+			/>
 		</>
 	);
 }
