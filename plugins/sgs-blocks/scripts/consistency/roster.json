@@ -406,7 +406,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 4,
+        "paintDeclarations": 3,
         "replacedCoreSupports": []
       }
     },
@@ -1045,7 +1045,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 6,
+        "paintDeclarations": 5,
         "replacedCoreSupports": []
       }
     },
