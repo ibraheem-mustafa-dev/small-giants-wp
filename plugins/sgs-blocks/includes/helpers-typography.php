@@ -14,10 +14,11 @@
  *   fontSizeUnit    string   (px|em|rem|vw|vh)
  *   fontSizeTablet  number
  *   fontSizeMobile  number
- *   fontFamily      string   (e.g. 'Montserrat, sans-serif') — no responsive
- *                            tiers; matches TypographyControls' showFontFamily
- *                            picker, which stores the theme.json preset's raw
- *                            CSS font-family VALUE (not a slug — see G4).
+ *   fontFamily      string   (a theme preset slug, e.g. 'heading', or a raw
+ *                            font-family list, e.g. 'Montserrat, sans-serif') —
+ *                            no responsive tiers; TypographyControls' picker
+ *                            stores a preset's slug (typography-preview.js::
+ *                            fontFamilyStoredValue).
  *   fontWeight      string   (100–900 | '')
  *   fontStyle       string   (normal|italic | '')
  *   lineHeight      number   (e.g. 1.5)
@@ -61,11 +62,10 @@ if ( ! function_exists( 'sgs_font_family_sanitise' ) ) {
 	/**
 	 * Sanitise a font-family value for safe CSS interpolation.
 	 *
-	 * The stored value is the theme.json `typography.fontFamilies` preset's
-	 * raw CSS font-family STRING (e.g. `"Montserrat, sans-serif"` or
-	 * `'"Times New Roman", serif'`) — TypographyControls' showFontFamily
-	 * picker writes `f.fontFamily` verbatim (src/components/TypographyControls.js),
-	 * not a slug, so there is no preset-slug resolution step here. It is still
+	 * The stored value is a theme.json `typography.fontFamilies` preset SLUG
+	 * (TypographyControls' picker stores one: typography-preview.js::
+	 * fontFamilyStoredValue) or a raw CSS font-family list (e.g.
+	 * `"Montserrat, sans-serif"`, from older saves or hand-written trees). It is still
 	 * attacker-reachable through the editor (an operator could hand-author an
 	 * undeclared value, or a future control could accept free text), so it is
 	 * allowlist-sanitised rather than trusted. `sgs_css_keyword_sanitise()`

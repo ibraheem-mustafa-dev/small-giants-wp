@@ -14,6 +14,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -178,7 +179,7 @@ function buildTextStyle( attributes ) {
 			? `${ letterSpacingVal }${ letterSpacingUnit }`
 			: undefined,
 		textTransform: textTransform || undefined,
-		fontFamily: fontFamily || undefined,
+		fontFamily: fontFamilyCssValue( fontFamily ),
 		fontStyle: fontStyle || undefined,
 		textDecoration: textDecoration || undefined,
 		// render.php allowlist: wrap/nowrap/balance/pretty/stable.

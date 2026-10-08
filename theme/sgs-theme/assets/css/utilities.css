@@ -227,7 +227,11 @@ body.admin-bar html {
      class) it sweeps the links inside. 1px line by default.
    - Link-list links (sgs/icon-list) and Link-style button labels take the same
      sweep only when the client sets `settings.custom.linkSweep.thickness`;
-     unset, the line is 0px and nothing paints. */
+     unset, the line is 0px and nothing paints.
+   On a wrapper the class removes the resting underline from every link inside,
+   so keep it off links in running text (WCAG 1.4.1: a link in a paragraph must
+   not rely on colour alone). An icon-list link painted with a text gradient
+   (sibling dim) uses its background for the glyphs, so it shows no sweep. */
 :is(a, button).sgs-hover-underline-slide,
 .sgs-hover-underline-slide:not(a, button) a,
 :where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label) {
