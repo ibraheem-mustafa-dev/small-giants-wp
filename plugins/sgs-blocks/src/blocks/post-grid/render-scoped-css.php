@@ -11,7 +11,6 @@
  * @package SGS\Blocks
  */
 
-use SGS\Blocks\Post_Grid_REST;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -74,7 +73,7 @@ $responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' 
 // defaults inside :where() so these scoped rules win.
 $responsive_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-post-grid__page-btn' );
 $responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more' );
-// Card text elements (built by Post_Grid_REST::render_card, and by the editor
+// Card text elements (built by \SGS\Blocks\Post_Grid_REST::render_card, and by the editor
 // preview): meta line, image badge, plain category label, excerpt, read-more link.
 // Each type default in style.css sits in :where() so these scoped rules win.
 $responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $root_sel . ' .sgs-post-grid__meta' );
@@ -123,7 +122,7 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // `.sgs-post-grid__inner`, still within the root, and CSS applies to DOM added
 // after the stylesheet was parsed. Built by the same helper the card renderer
 // documents, so the two cannot drift apart.
-$responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
+$responsive_css .= $root_sel . ' .sgs-post-grid__card{' . \SGS\Blocks\Post_Grid_REST::card_vars_decls( $card_params ) . '}';
 
 // categoryBadgeBgColour background layer — moved to ::after (D292) so the
 // categoryBadgeColour text-colour gradient can use background-clip:text on the
@@ -145,7 +144,7 @@ if ( '' !== $badge_bg_paint_decl ) {
 // (card_params is built once above from $attributes, not per-post), NOT
 // per-post data — the badge paints a static operator-chosen colour, not a
 // value derived from the post's own category term. It still rides the
-// --sgs-pg-badge-colour custom property too (Post_Grid_REST::card_vars_decls(),
+// --sgs-pg-badge-colour custom property too (\SGS\Blocks\Post_Grid_REST::card_vars_decls(),
 // consumed by style.css's `.sgs-post-grid__badge`/`.sgs-post-grid__category`
 // fallback rules) — that legacy custom-property chain is harmless dead weight
 // now (categoryBadgeBgColour still legitimately needs it, a fill/

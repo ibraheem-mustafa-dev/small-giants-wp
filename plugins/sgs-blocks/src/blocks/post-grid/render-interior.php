@@ -11,8 +11,6 @@
  * @package SGS\Blocks
  */
 
-use SGS\Blocks\Post_Grid_REST;
-use SGS\Blocks\Grid_Pagination;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -83,7 +81,7 @@ if ( $query->have_posts() ) {
 	while ( $query->have_posts() ) {
 		$query->the_post();
 		$card_params['_card_index'] = $card_index;
-		$card_html                  = Post_Grid_REST::render_card( get_the_ID(), $card_params );
+		$card_html                  = \SGS\Blocks\Post_Grid_REST::render_card( get_the_ID(), $card_params );
 		if ( $image_decorative ) {
 			$card_html = sgs_post_grid_make_card_image_decorative( $card_html );
 		}
@@ -116,14 +114,14 @@ if ( 'carousel' === $layout ) {
 // selectors (.sgs-post-grid__page-btn / __load-more / __sentinel and their data-*
 // attributes) working. sgs/card-grid renders from the same helper in MODE_LINK, so
 // there is exactly one copy of this markup.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Grid_Pagination::render() escapes every interpolated value internally.
-echo Grid_Pagination::render(
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- \SGS\Blocks\Grid_Pagination::render() escapes every interpolated value internally.
+echo \SGS\Blocks\Grid_Pagination::render(
 	array(
 		'base_class'     => 'sgs-post-grid',
 		'type'           => $pagination,
 		'total_pages'    => $total_pages,
 		'current_page'   => (int) $current_page,
-		'mode'           => Grid_Pagination::MODE_AJAX,
+		'mode'           => \SGS\Blocks\Grid_Pagination::MODE_AJAX,
 		'nav_label'      => __( 'Posts pagination', 'sgs-blocks' ),
 		'load_more_text' => __( 'Load more', 'sgs-blocks' ),
 	)

@@ -66,7 +66,8 @@ def findings(blocks: Path) -> list[str]:
                     continue
                 for name in unresolved(src, texts[child]):
                     out.append(f"{block.name}/{child.relative_to(block.resolve()).as_posix()}: uses {name} "
-                               f"but only {f.name} imports it (add `use ...{name};` to the partial)")
+                               f"but only {f.name} imports it (write it fully qualified, as \\SGS\\Blocks\\{name}::, the card-grid "
+                               f"partials' precedent: a `use` in the partial collides with render.php's once the PHPStan gate inlines it)")
     return out
 
 
