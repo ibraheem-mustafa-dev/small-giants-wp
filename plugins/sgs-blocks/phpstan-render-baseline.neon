@@ -10,12 +10,10 @@
 #
 # TRIAGE — what each group is, and what is owed:
 #
-#   INHERITED SCOPE (a partial included from its parent) — 5 entries
-#     buybox/notify-form.php — `$buybox_post_id`, `$notify_me_label` come from the
-#     including render.php. Genuinely undefined in isolation. NOT covered by the
-#     render.php ignoreErrors, on purpose: it is a real (if benign today) coupling, and
-#     burying it in a blanket rule would hide the next partial that gets it wrong.
-#     OWED: give the partial an explicit contract (extract() guard or a docblock).
+#   INHERITED SCOPE — none. The gate analyses each render.php with the partials it
+#     pulls in by plain require/include inlined (check-render-undefined-vars.py::
+#     _template_tree), as PHP runs them, so a partial's inherited locals are defined
+#     and a typo in a partial still fails.
 #
 #   MISSING THIRD-PARTY SYMBOLS — RETIRED 2026-09-24: `php-stubs/woocommerce-stubs` is now in
 #     require-dev and scanned by phpstan-render.neon, so the six WooCommerce entries are gone.
@@ -45,18 +43,6 @@ parameters:
 			identifier: empty.variable
 			count: 1
 			path: src/blocks/brand-strip/render.php
-
-		-
-			message: '#^Variable \$buybox_post_id might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
-			path: src/blocks/buybox/notify-form.php
-
-		-
-			message: '#^Variable \$notify_me_label might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: src/blocks/buybox/notify-form.php
 
 		-
 			message: '#^Variable \$sgs_container_supports_css on left side of \?\? always exists and is not nullable\.$#'

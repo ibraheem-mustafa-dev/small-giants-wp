@@ -37,8 +37,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
@@ -71,18 +73,87 @@ def _phpstan_missing() -> bool:
     return not (PHPSTAN.exists() or PHPSTAN.with_suffix(".bat").exists())
 
 
+PARTIAL_REQUIRE_RE = re.compile(
+    r"(?<![\w$>:])(?:require|include)(?!_once)\s*\(?\s*__DIR__\s*\.\s*['\"]/([\w.-]+\.php)['\"]\s*\)?\s*;"
+)
+
+
+def _inline_partials(src, block_dir, inlined, depth=0):
+    """`src` with each plain require/include of a file in the block's own folder
+    replaced by that file's code, as PHP runs it: in the caller's scope. Partials
+    inside partials too. require_once loads a function file and is left alone."""
+    if depth > 4:
+        return src
+
+    def repl(m):
+        part = block_dir / m.group(1)
+        if not part.is_file():
+            return m.group(0)
+        inlined.add(part.name)
+        body = re.sub(r"\A\s*<\?php", "", part.read_text(encoding="utf-8", errors="replace"))
+        # `?><?php` returns to PHP mode whether the partial ended in PHP or in HTML.
+        return "\n" + _inline_partials(body, block_dir, inlined, depth + 1) + "\n?><?php\n"
+
+    return PARTIAL_REQUIRE_RE.sub(repl, src)
+
+
+def _rooted_config():
+    """This gate's config with vendor, includes and the bootstrap made absolute, so a
+    copy of it analyses another tree's src/blocks with the real symbols."""
+    return re.sub(
+        r"(?m)^(\s*-\s+)(vendor/|includes\b|sgs-blocks\.php)",
+        lambda m: m.group(1) + PLUGIN_ROOT.as_posix() + "/" + m.group(2),
+        CONFIG.read_text(encoding="utf-8"),
+    )
+
+
+def _template_tree(root):
+    """Under `root`: every block PHP file, each render.php with its plain-required
+    partials inlined and those partials left empty, plus this gate's config and
+    baseline pointing at the real vendor and includes. PHPStan reads one file at a
+    time, so a partial's inherited locals, and render.php's reads of what a partial
+    assigns, would otherwise all read as undefined."""
+    blocks = PLUGIN_ROOT / "src" / "blocks"
+    for php in sorted(blocks.rglob("*.php")):
+        dest = root / php.relative_to(PLUGIN_ROOT)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(php.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
+    for render in sorted(blocks.glob("*/render.php")):
+        inlined = set()
+        merged = _inline_partials(render.read_text(encoding="utf-8", errors="replace"), render.parent, inlined)
+        if not inlined:
+            continue
+        out_dir = root / render.parent.relative_to(PLUGIN_ROOT)
+        (out_dir / "render.php").write_text(merged, encoding="utf-8")
+        for name in inlined:
+            (out_dir / name).write_text("<?php\n", encoding="utf-8")
+    (root / CONFIG.name).write_text(_rooted_config(), encoding="utf-8")
+    (root / BASELINE.name).write_text(BASELINE.read_text(encoding="utf-8"), encoding="utf-8")
+
+
 def _run(paths=None):
     """Run PHPStan and return (exit_code, findings).
 
     Findings come from the JSON formatter, so this never depends on parsing
     human-readable output that PHPStan is free to restyle between releases.
+    With no `paths` it analyses the inlined template tree (`_template_tree`);
+    finding paths are plugin-relative either way.
     """
+    if paths:
+        return _run_in(PLUGIN_ROOT, CONFIG, paths)
+    with tempfile.TemporaryDirectory(prefix="sgs-render-vars-") as tmp:
+        root = Path(tmp)
+        _template_tree(root)
+        return _run_in(root, root / CONFIG.name, None)
+
+
+def _run_in(root, config, paths):
     cmd = [
         "php",
         str(PHPSTAN),
         "analyse",
         "-c",
-        str(CONFIG),
+        str(config),
         "--no-progress",
         "--error-format=json",
         "--memory-limit=2G",  # 2G since the 4.5 MB WooCommerce stub (2026-09-24); 1G ran out
@@ -92,7 +163,7 @@ def _run(paths=None):
 
     proc = subprocess.run(
         cmd,
-        cwd=str(PLUGIN_ROOT),
+        cwd=str(root),
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -112,6 +183,10 @@ def _run(paths=None):
     if payload:
         for path, entry in (payload.get("files") or {}).items():
             for message in entry.get("messages", []):
+                try:
+                    path = Path(path).resolve().relative_to(Path(root).resolve()).as_posix()
+                except (ValueError, OSError):
+                    pass
                 findings.append(
                     {
                         "path": path,
@@ -154,7 +229,7 @@ def check():
     if code == 0 and not findings:
         print(
             "[render-undefined-vars] OK — no new undefined variables in any block "
-            "render template (PHPStan level 1, 18 baselined)."
+            "render template (PHPStan level 1, %d baselined)." % BASELINE.read_text(encoding="utf-8").count("message:")
         )
         return 0
 
@@ -175,6 +250,30 @@ def check():
     return 1
 
 
+def _self_test_partials():
+    """A partial reads render.php's locals, and a typo inside it still fails."""
+    with tempfile.TemporaryDirectory(prefix="sgs-render-vars-selftest-") as tmp:
+        root = Path(tmp)
+        block = root / "src" / "blocks" / "x"
+        block.mkdir(parents=True)
+        render_src = "<?php\n$shared = (string) ( $attributes['a'] ?? '' );\nrequire __DIR__ . '/part.php';\necho $made;\n"
+        (block / "part.php").write_text("<?php\n$made = $shared . $shraed;\n", encoding="utf-8")
+        inlined = set()
+        (block / "render.php").write_text(_inline_partials(render_src, block, inlined), encoding="utf-8")
+        (block / "part.php").write_text("<?php\n", encoding="utf-8")
+        (root / CONFIG.name).write_text(_rooted_config().replace("  - phpstan-render-baseline.neon\n", ""), encoding="utf-8")
+        _, partial = _run_in(root, root / CONFIG.name, None)
+    messages = [f["message"] for f in partial]
+    if not any("$shraed" in m for m in messages) or any("$shared" in m or "$made" in m for m in messages):
+        sys.stderr.write(
+            "[render-undefined-vars --self-test] FAIL — partial inlining: expected only $shraed\n"
+            "  (a typo inside the partial) to be reported, got: %s\n" % messages
+        )
+        return 1
+    print("[render-undefined-vars --self-test] partial: inherited locals defined, typo caught — OK")
+    return 0
+
+
 def self_test():
     """Reintroduce the real hero defect and prove the gate reports it.
 
@@ -182,6 +281,9 @@ def self_test():
     gate reported that error unconditionally; a negative control alone would still pass
     if the gate reported nothing, ever.
     """
+    if _self_test_partials():
+        return 1
+
     if _phpstan_missing():
         sys.stderr.write(
             "[render-undefined-vars --self-test] " + INSTALL_HINT + "\n"
@@ -251,6 +353,7 @@ def self_test():
         )
         return 1
     print("[render-undefined-vars --self-test] post-restore: clean again — OK")
+
 
     print(
         "[render-undefined-vars --self-test] PASS — the gate goes red for the real defect."
