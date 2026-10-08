@@ -177,8 +177,10 @@ wrappers.forEach( ( wrapper ) => {
 			cloneParent.appendChild( clone );
 		}
 
-		// Tell CSS exactly how far to translate (pixels).
-		track.style.setProperty( '--sgs-scroll-distance', `${ scrollDistance }px` );
+		// Tell CSS exactly how far to translate (pixels). Every copy needs the value: the
+		// keyframes read it per element, and a copy without it has an invalid end transform
+		// and stays still.
+		allTracks().forEach( ( el ) => el.style.setProperty( '--sgs-scroll-distance', `${ scrollDistance }px` ) );
 
 		// Start animation only after clones are in the DOM, on every copy in the same frame
 		// so they begin in step.
