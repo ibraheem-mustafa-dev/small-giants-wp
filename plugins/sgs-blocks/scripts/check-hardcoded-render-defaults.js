@@ -4724,6 +4724,16 @@ function selfTestBareTagOnUnknownTag( assert ) {
 		[ 'CANNOT-RESOLVE' ]
 	);
 	assert(
+		'bare tag: a tag the PHP only assigns to another variable (`$wrap = \'div\'`) is not a value the tag can take (negative control)',
+		run( '.sgs-x div', "'h2', 'h3' );\n$wrap = ( 'div'", 'inside' ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'bare tag: a tag offered as a ternary branch counts as a value the tag can take',
+		run( '.sgs-x figcaption', "'h2' );\n$tag = isset( $attributes['tag'] ) ? $attributes['tag'] : 'figcaption'; $unused = array( 'x'", 'inside' ),
+		[]
+	);
+	assert(
 		'bare tag: a tag the PHP never names (`h2`) stays CANNOT-RESOLVE (negative control)',
 		run( '.sgs-x h2', "'figcaption', 'div'", 'inside' ),
 		[ 'CANNOT-RESOLVE' ]
