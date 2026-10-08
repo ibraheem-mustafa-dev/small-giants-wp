@@ -170,7 +170,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 
 	return (
 		<>
-			<InspectorControls>
+			<InspectorControls group="settings">
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
 					<SelectControl
 						label={ __( 'Options layout', 'sgs-blocks' ) }
@@ -196,7 +196,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					/>
 				</PanelBody>
 				<ProductAttributePanel attributes={ attributes } setAttributes={ setAttributes } clientId={ clientId } context={ context } />
-				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<AddonPricingPanel
 					priceGroup={ priceGroup }
 					options={ options }
@@ -351,6 +350,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 						</Button>
 					</VStack>
 				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

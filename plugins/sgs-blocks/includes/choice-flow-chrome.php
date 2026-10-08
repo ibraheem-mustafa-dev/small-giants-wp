@@ -180,17 +180,20 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_progress_colour_css' ) ) {
 	 * @return string A complete scoped CSS rule, or '' when unset.
 	 */
 	function sgs_choice_flow_chrome_progress_colour_css( array $attributes, string $root_sel ): string {
-		$raw = isset( $attributes['progressColour'] ) ? (string) $attributes['progressColour'] : '';
-		if ( '' === $raw || ! function_exists( 'sgs_colour_value' ) ) {
+		if ( ! function_exists( 'sgs_custom_property_gradient_decls' ) ) {
 			return '';
 		}
 
-		$resolved = sgs_colour_value( $raw );
-		if ( '' === $resolved ) {
+		$decls = sgs_custom_property_gradient_decls(
+			'sgs-choice-flow-progress-colour',
+			(string) ( $attributes['progressColour'] ?? '' ),
+			(string) ( $attributes['progressColourGradient'] ?? '' )
+		);
+		if ( empty( $decls ) ) {
 			return '';
 		}
 
-		return "{$root_sel} .sgs-choice-flow__progress-fill{--sgs-choice-flow-progress-colour:{$resolved};}";
+		return "{$root_sel} .sgs-choice-flow__progress-fill{" . implode( ';', $decls ) . ';}';
 	}
 }
 

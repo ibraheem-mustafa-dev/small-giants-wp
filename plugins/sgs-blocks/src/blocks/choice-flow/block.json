@@ -196,6 +196,11 @@
 			"default": "",
 			"description": "The progress bar fill's colour, a palette slug or hex. Empty = the existing default (the 'primary' token, unchanged from before this control existed)."
 		},
+		"progressColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The progress bar fill's gradient, a CSS gradient value. Wins over progressColour when set. Empty = the flat colour."
+		},
 		"stepperColour": {
 			"type": "string",
 			"default": "",
@@ -278,6 +283,11 @@
 			"default": "",
 			"description": "FR-43-24: the showcase stage's background and the chosen option card's fill. Empty uses the theme's raised background (surface-alt)."
 		},
+		"stageColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The showcase stage's and chosen option card's gradient fill. Wins over stageColour when set. Empty = the flat colour."
+		},
 		"summaryPendingLabel": {
 			"type": "string",
 			"default": "",
@@ -299,6 +309,11 @@
 			"default": "",
 			"description": "The help note icon badge's fill. Empty uses the accent colour."
 		},
+		"stageNoteIconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The help note icon badge's gradient fill. Wins over stageNoteIconColour when set. Empty = the flat colour."
+		},
 		"stageNoteBorderColour": {
 			"type": "string",
 			"default": "",
@@ -308,6 +323,11 @@
 			"type": "string",
 			"default": "",
 			"description": "The help note's background on hover. Empty keeps the background unchanged."
+		},
+		"stageNoteHoverColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "The help note's gradient background on hover. Wins over stageNoteHoverColour when set. Empty = the flat colour."
 		},
 		"headerEyebrowColour": {
 			"type": "string",

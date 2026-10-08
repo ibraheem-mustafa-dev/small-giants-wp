@@ -12,8 +12,9 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, TextControl, SelectControl, Button } from '@wordpress/components';
+import { PanelBody, ToggleControl, TextControl, Button } from '@wordpress/components';
 import { SgsColourPanel } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import fillRow from '../../components/colour-variants/fillRow';
 import textRow from '../../components/colour-variants/textRow';
 
@@ -34,7 +35,7 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 						fillRow( {
 							key: 'progress-fill',
 							label: __( 'Fill', 'sgs-blocks' ),
-							attrs: { base: 'progressColour' },
+							attrs: { base: 'progressColour', gradient: 'progressColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
@@ -122,21 +123,21 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<SelectControl
+						<ToggleGroupControl
 							label={ __( 'Close button', 'sgs-blocks' ) }
 							value={ closeStyle || 'icon' }
-							options={ [
-								{ label: __( 'Icon', 'sgs-blocks' ), value: 'icon' },
-								{ label: __( 'Text', 'sgs-blocks' ), value: 'text' },
-							] }
 							onChange={ ( val ) => setAttributes( { closeStyle: val } ) }
 							help={ __(
 								'Icon: a round 44px button. Text: a bordered rectangular button with the label then a decorative ×.',
 								'sgs-blocks'
 							) }
+							isBlock
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
+						>
+							<ToggleGroupControlOption value="icon" label={ __( 'Icon', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="text" label={ __( 'Text', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
 					</>
 				) }
 			</PanelBody>

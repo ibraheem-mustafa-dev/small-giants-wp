@@ -71,6 +71,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-variation-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-summary.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-footer.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-showcase.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-colour.php';
 
 // FR-43-6 — a linked flow renders the referenced sgs_choice_flow post's own
 // sgs/choice-flow (its steps, pricing and styling) in place of this block,
@@ -200,6 +201,7 @@ if ( '' !== $back_css ) {
 }
 $scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_sel );
 $scoped_css[] = sgs_choice_flow_showcase_css( $attributes, $root_sel );
+$scoped_css[] = sgs_choice_flow_colour_rules_css( $attributes, $root_sel );
 
 $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 

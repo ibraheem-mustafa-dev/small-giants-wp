@@ -35,10 +35,18 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 			style[ property ] = resolved;
 		}
 	};
+	const setGradient = ( property, value ) => {
+		if ( value && 'string' === typeof value ) {
+			style[ property ] = value;
+		}
+	};
 	setColour( '--sgs-choice-flow-stage', attributes.stageColour );
+	setGradient( '--sgs-choice-flow-stage-gradient', attributes.stageColourGradient );
 	setColour( '--sgs-choice-flow-note-icon', attributes.stageNoteIconColour );
+	setGradient( '--sgs-choice-flow-note-icon-gradient', attributes.stageNoteIconColourGradient );
 	setColour( '--sgs-choice-flow-note-border', attributes.stageNoteBorderColour );
 	setColour( '--sgs-choice-flow-note-hover', attributes.stageNoteHoverColour );
+	setGradient( '--sgs-choice-flow-note-hover-gradient', attributes.stageNoteHoverColourGradient );
 	setColour( '--sgs-choice-flow-eyebrow', attributes.headerEyebrowColour );
 	setColour( '--sgs-choice-flow-toggle', attributes.infoToggleColour );
 	setColour( '--sgs-choice-flow-toggle-border', attributes.infoToggleBorderColour );

@@ -6,54 +6,6 @@
   },
   "rows": [
     {
-      "id": "choice-flow.summaryNoteColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stageColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stageNoteIconColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stageNoteBorderColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stageNoteHoverColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.headerEyebrowColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.infoToggleColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.infoToggleBorderColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.progressColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stepperColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.stepperActiveColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
-      "id": "choice-flow.progressBadgeColour",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
       "id": "google-reviews.headerDividerColour",
       "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
     },

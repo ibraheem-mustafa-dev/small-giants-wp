@@ -175,12 +175,6 @@
       "reason": "The gate's proximity-window heuristic (WINDOW=900) mis-binds this attribute to the unrelated <ToggleGroupControl> that controls a DIFFERENT attribute, toggleIcon (bars/speaker) — 898 chars away, just inside the window, and closer than either real <SelectControl> in the file. Verified 2026-09-26: playerStyle's real UI is a hand-rolled <button> grid (two grouped rows, static vs audio-reactive styles, each with a name + hint line) — it uses neither ToggleGroupControl nor SelectControl, so this 8-option enum should resolve 'unresolved' (one of the 612 blind-spot enums), not as a D812 violation. Same false-bind class already fixed for card-grid.layout, media.mediaType and quote.attributionFontStyle (see find_marks() docstring) — this one is architecturally the same failure, just still inside WINDOW."
     },
     {
-      "block": "choice-flow",
-      "attr": "closeStyle",
-      "disposition": "accepted-debt",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6"
-    },
-    {
       "block": "google-reviews",
       "attr": "pagination",
       "disposition": "accepted-debt",

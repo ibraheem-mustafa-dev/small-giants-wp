@@ -112,14 +112,14 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 						fillRow( {
 							key: 'stage',
 							label: __( 'Stage and chosen card', 'sgs-blocks' ),
-							attrs: { base: 'stageColour' },
+							attrs: { base: 'stageColour', gradient: 'stageColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
 						fillRow( {
 							key: 'note-icon',
 							label: __( 'Help note icon', 'sgs-blocks' ),
-							attrs: { base: 'stageNoteIconColour' },
+							attrs: { base: 'stageNoteIconColour', gradient: 'stageNoteIconColourGradient' },
 							attributes,
 							setAttributes,
 						} ),
@@ -133,7 +133,7 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 						fillRow( {
 							key: 'note-hover',
 							label: __( 'Help note on hover', 'sgs-blocks' ),
-							attrs: { base: 'stageNoteHoverColour' },
+							attrs: { base: 'stageNoteHoverColour', gradient: 'stageNoteHoverColourGradient' },
 							attributes,
 							setAttributes,
 						} ),

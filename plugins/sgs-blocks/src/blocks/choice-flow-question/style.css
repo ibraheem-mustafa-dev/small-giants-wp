@@ -361,6 +361,7 @@
 	margin: -16px -18px 11px;
 	border-radius: 0;
 	background-color: var( --sgs-choice-flow-stage, var( --wp--preset--color--surface-alt, #F1F0EC ) );
+	background-image: var( --sgs-choice-flow-stage-gradient, none );
 }
 
 /* "Option picture size" (optionMediaSize, per device): the option's own
@@ -516,6 +517,7 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button--selected {
 	border-color: var( --wp--preset--color--text, #1a202c );
 	background-color: var( --sgs-choice-flow-stage, var( --wp--preset--color--surface-alt, #F1F0EC ) );
+	background-image: var( --sgs-choice-flow-stage-gradient, none );
 	box-shadow: none;
 }
 

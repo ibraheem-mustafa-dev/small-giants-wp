@@ -341,11 +341,11 @@
 .sgs-choice-flow__progress-fill {
 	height: 100%;
 	width: calc(var(--sgs-choice-flow-progress, 0) * 100%);
-	/* --sgs-choice-flow-progress-colour is set by render.php's own scoped
-	   <style> (choice-flow-chrome.php::sgs_choice_flow_chrome_progress_colour_css())
-	   only when the progressColour attribute is set — the default below is
-	   byte-identical to this rule's own value before that control existed. */
+	/* --sgs-choice-flow-progress-colour (and its -gradient sibling) is set by
+	   render.php's own scoped <style> (choice-flow-chrome.php::sgs_choice_flow_chrome_progress_colour_css())
+	   only when the progressColour or progressColourGradient attribute is set. */
 	background-color: var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
+	background-image: var(--sgs-choice-flow-progress-colour-gradient, none);
 	transition: width 250ms ease-out;
 }
 
@@ -1147,6 +1147,7 @@
 	border-bottom: 1px solid var(--wp--preset--color--border, #D4DBE5);
 	border-radius: 0;
 	background-color: var(--sgs-choice-flow-stage, var(--wp--preset--color--surface-alt, #F1F0EC));
+	background-image: var(--sgs-choice-flow-stage-gradient, none);
 }
 
 /* Narrow: a slim row only — 72px thumbnail, brand, name and options, and
@@ -1417,6 +1418,7 @@
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:hover {
 	background-color: var(--sgs-choice-flow-note-hover, var(--wp--preset--color--surface-alt, #fff));
+	background-image: var(--sgs-choice-flow-note-hover-gradient, none);
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--link:focus-visible {
@@ -1433,6 +1435,7 @@
 	height: 34px;
 	border-radius: 50%;
 	background-color: var(--sgs-choice-flow-note-icon, var(--wp--preset--color--accent, #F59E0B));
+	background-image: var(--sgs-choice-flow-note-icon-gradient, none);
 	color: #fff;
 }
 

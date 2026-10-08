@@ -20,7 +20,7 @@ import { firstQuestionProgress } from './preview-style';
  * @return {JSX.Element} The preview rows.
  */
 export default function ChromePreview( { attributes, questionTotal } ) {
-	const { showHeader, flowLayout, headerLogo, closeStyle, closeLabel, stepCountLabel, progressColour, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
+	const { showHeader, flowLayout, headerLogo, closeStyle, closeLabel, stepCountLabel, progressColour, progressColourGradient, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
 	const showcase = 'showcase' === flowLayout;
 	const hasHeader = !! showHeader || showcase;
 	const label = stepCountLabel && stepCountLabel.trim() ? stepCountLabel.trim() : __( 'Step', 'sgs-blocks' );
@@ -40,7 +40,13 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 	const closeText = closeLabel && closeLabel.trim() ? closeLabel.trim() : __( 'Close', 'sgs-blocks' );
 	const fillColour = colourVar( progressColour );
 	const progressStyle = { '--sgs-choice-flow-progress': firstQuestionProgress( attributes, questionTotal ) };
-	const fillStyle = fillColour ? { '--sgs-choice-flow-progress-colour': fillColour } : undefined;
+	const fillStyle =
+		fillColour || progressColourGradient
+			? {
+					...( fillColour ? { '--sgs-choice-flow-progress-colour': fillColour } : {} ),
+					...( progressColourGradient ? { '--sgs-choice-flow-progress-colour-gradient': progressColourGradient } : {} ),
+			  }
+			: undefined;
 
 	// view.js builds one circle per question (flow-progress.js::buildStepperMarkup); an empty flow shows three.
 	const stepperTotal = questionTotal > 0 ? questionTotal : 3;

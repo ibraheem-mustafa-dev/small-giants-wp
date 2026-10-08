@@ -97,41 +97,37 @@ if ( ! function_exists( 'sgs_choice_flow_option_data_attrs' ) ) {
 
 if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 	/**
-	 * The flow's scoped colour and logo-size values, consumed by style.css:
-	 * `--sgs-choice-flow-stage` (stage and chosen card), the help note's
-	 * `--sgs-choice-flow-note-icon` / `-note-border` / `-note-hover`, and
-	 * `--sgs-choice-flow-logo-height`, plus the step indicator's
-	 * `--sgs-choice-flow-stepper` (resting) and `-stepper-active` (current and
-	 * complete), the progress badge's `--sgs-choice-flow-badge-colour` and the
-	 * summary note's `--sgs-choice-flow-note-colour`. Each colour resolves a token slug or
-	 * passes a raw colour through (`sgs_colour_value()`).
+	 * The flow's scoped fill values and logo size, consumed by style.css: the
+	 * stage and chosen card's `--sgs-choice-flow-stage`, the help note's
+	 * `--sgs-choice-flow-note-icon` and `-note-hover`, and
+	 * `--sgs-choice-flow-logo-height`. Each fill is a custom property plus a
+	 * `-gradient` sibling (`sgs_custom_property_gradient_decls()`), read by the
+	 * stylesheet's `background-color` and `background-image:var(...,none)` pair.
+	 * The text and border colours are written by
+	 * `choice-flow-colour.php::sgs_choice_flow_colour_rules_css()`.
 	 *
 	 * @param array  $attributes Root block attributes.
 	 * @param string $root_sel   The instance's scoped root selector.
 	 * @return string One scoped rule, or '' when nothing is set.
 	 */
 	function sgs_choice_flow_showcase_css( array $attributes, string $root_sel ): string {
-		$decls  = array();
-		$colour = array(
-			'stageColour'            => '--sgs-choice-flow-stage',
-			'stageNoteIconColour'    => '--sgs-choice-flow-note-icon',
-			'stageNoteBorderColour'  => '--sgs-choice-flow-note-border',
-			'stageNoteHoverColour'   => '--sgs-choice-flow-note-hover',
-			'headerEyebrowColour'    => '--sgs-choice-flow-eyebrow',
-			'infoToggleColour'       => '--sgs-choice-flow-toggle',
-			'infoToggleBorderColour' => '--sgs-choice-flow-toggle-border',
-			'stepperColour'          => '--sgs-choice-flow-stepper',
-			'stepperActiveColour'    => '--sgs-choice-flow-stepper-active',
-			'progressBadgeColour'    => '--sgs-choice-flow-badge-colour',
-			'summaryNoteColour'      => '--sgs-choice-flow-note-colour',
+		$decls = array_merge(
+			sgs_custom_property_gradient_decls(
+				'sgs-choice-flow-stage',
+				(string) ( $attributes['stageColour'] ?? '' ),
+				(string) ( $attributes['stageColourGradient'] ?? '' )
+			),
+			sgs_custom_property_gradient_decls(
+				'sgs-choice-flow-note-icon',
+				(string) ( $attributes['stageNoteIconColour'] ?? '' ),
+				(string) ( $attributes['stageNoteIconColourGradient'] ?? '' )
+			),
+			sgs_custom_property_gradient_decls(
+				'sgs-choice-flow-note-hover',
+				(string) ( $attributes['stageNoteHoverColour'] ?? '' ),
+				(string) ( $attributes['stageNoteHoverColourGradient'] ?? '' )
+			)
 		);
-		foreach ( $colour as $key => $property ) {
-			$raw      = isset( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
-			$resolved = '' !== $raw && function_exists( 'sgs_colour_value' ) ? sgs_colour_value( $raw ) : '';
-			if ( '' !== $resolved ) {
-				$decls[] = "{$property}:{$resolved}";
-			}
-		}
 		$logo_height = isset( $attributes['headerLogoHeight'] ) ? (int) $attributes['headerLogoHeight'] : 32;
 		if ( 32 !== $logo_height && $logo_height >= 12 && $logo_height <= 80 ) {
 			$decls[] = "--sgs-choice-flow-logo-height:{$logo_height}px";
