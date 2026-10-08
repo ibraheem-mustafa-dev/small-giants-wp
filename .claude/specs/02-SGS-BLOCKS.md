@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.9"
+spec_version: "1.10"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: shipped
-last_verified: 2026-09-19
+last_verified: 2026-10-08
 authors: Bean + Claude
 ---
 
@@ -72,6 +72,7 @@ sgs-blocks/
 │   │   ├── pricing-table/        # Service/pricing comparison table
 │   │   ├── modal/                # Lightbox/modal overlay
 │   │   ├── google-reviews/       # Google Business Profile reviews display
+│   │   ├── google-rating-badge/  # Compact Google rating badge for headers, drawers and footers
 │   │   ├── trustpilot-reviews/   # Trustpilot reviews in the official Trustpilot visual style
 │   │   ├── star-rating/          # Star rating display with half-star support and schema.org markup
 │   │   ├── team-member/          # Team member card (photo, name, role, bio, social links)
@@ -1054,6 +1055,24 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 - The labels are the accessible text (caption then value in reading order, `aria-live` for a size change).
 - A product value follows the size picker through `@sgs/bound-sync` (`includes/class-product-field-variations.php`).
 - Colours default through `--wp--custom--measured-diagram-presets--default--<role>` (Spec 32 FR-32-9 component roles).
+
+
+### 27. Google Rating Badge (`sgs/google-rating-badge`)
+
+**Purpose:** a compact Google rating credential (G, score, stars, caption) for headers, drawers and footers, as one link to the listing. Plan: `.claude/plans/2026-10-08-google-reviews-inline-header-badge.md`.
+
+**Shape:**
+- `badgeStyle`: `pill` (one line; the shared border control sets its border and radius, so a square or frameless look is a setting), `card` (two rows, accent stripe on the leading edge) and `stacked` (a centred column).
+- Figures: the block's own `rating` and `reviewCount`, then Site Info `google_rating` and `google_review_count`, then live Google data (`dataSource` `auto` | `manual` | `synced`). Nothing renders without a rating.
+- Link: `listingUrl`, then the live `googleMapsUri`, then Site Info `socials.google`; https only, otherwise the badge is a `span`.
+- `compactBelow` (default 0, off): below that viewport width the count and four stars drop, leaving G, one star and the score. It is a viewport media rule, because a shrink-to-fit flex child with `container-type` collapses to 0.
+- `fullWidth` stretches the frame across its container; `position: floating` pins it to a viewport corner.
+
+**Google's rules it follows (verified 2026-10-08):** the G or the "Google" wordmark only, never the Maps logo; the rating is "on Google", never "Google rating"; the score sits between the G and the stars, so no star touches the logo. Live API data always shows the text " on Google Maps" (the Places policy's text form), compact mode included.
+
+**Rendering:** one `<a>` with one accessible name ("Rated 4.7 out of 5 on Google from 15 reviews"), its visible parts `aria-hidden`; 44px minimum height; the theme's focus ring; hover brightens and the shadow system supplies the lift. All instance CSS is in one scoped `<style>`. The stars come from `google-reviews-stars.php::sgs_render_stars_svg`.
+
+**Used by:** `sgs/nav-drawer`'s top-row rating item (`chromeRating*`, rendered through `render_block()`).
 
 ---
 

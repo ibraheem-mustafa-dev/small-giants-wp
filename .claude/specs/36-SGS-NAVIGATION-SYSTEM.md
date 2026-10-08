@@ -492,6 +492,13 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
   (h2 | h3 | h4 | p), `chromeSlotPlacement` after-logo | center | end, `chromeSlotShow`, the `chromeSlot`
   typography set and `chromeSlotColour`/`…Gradient`. The button type is a link (`chromeSlotUrl`,
   `chromeSlotNewTab`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix.
+- **Google rating:** its own item, beside the free slot (a wordmark heading and the rating share the row).
+  `chromeRating` (on/off), `chromeRatingPlacement` end (beside the ×) | center, `chromeRatingShow` (tier object),
+  `chromeRatingShowCount` and `chromeRatingColour`. `includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_html`
+  renders `sgs/google-rating-badge` (pill, no frame, never compact) through `render_block()`; its figures and link
+  come from Site Info or live Google data, and with no rating it renders nothing (the row can still be
+  `--close-only`). An end rating takes the auto margin and the × gives its up; a tier that hides the rating hands
+  the margin back unless an end slot already carries it.
 - **Close box:** `closeBorderWidth` (one box for every device, the border-control rule), `closeBorderStyle`,
   `closeBorderColour` (style written only with a width) and `closeIconSize` (tier); the hit area never drops
   below 44px (`::after`). `closePadding` (tier box; unset keeps `style.css`'s `padding:0`, or `0 12px` under

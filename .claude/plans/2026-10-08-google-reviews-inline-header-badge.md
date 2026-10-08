@@ -2,7 +2,7 @@
 title: Google reviews inline badge in the header row (Eye Care D7 redesign)
 project: small-giants-wp
 created: 2026-10-08
-status: decided with Bean 2026-10-08, not started
+status: framework built and on main 2026-10-08 (d1bc73352 google-reviews wordmark + badge removal, fe48bdb24 + 50aa309b2 sgs/google-rating-badge, 7e825cd0d drawer top-row rating); Eye Care trees edited, deploy and live checks in progress
 authors: Bean, Claude
 governs: Eye Care fix register D7 (.claude/plans/2026-10-02-eye-care-fix-register.md); Spec 36/37 (header family); sgs/google-reviews
 ---
@@ -17,6 +17,19 @@ D7 put the Google rating in the header, but it was built as a whole extra row ab
 - **Squeezed widths** (below about 1200px while the header is still the desktop layout): it compresses itself to the G and `★ 4.7` (count and four stars drop) so nothing wraps.
 - **Tablet and mobile (the drawer layouts, 768 and 375):** not in the header row. A slim `G ★★★★★ 4.7 · 15 reviews` line sits at the top of the nav drawer, linking to the Google listing.
 - The empty top `sgs/site-header-row` (`cr-ref-header-2`) is deleted from `header.tree.json`.
+
+## Decisions (Bean, 2026-10-08, second pass)
+- The badge is its own block, `sgs/google-rating-badge`, designed as a badge rather than the reviews block's header with parts removed. The reviews block's `badge` and `floating-badge` variants are removed; floating becomes a position option on the new block.
+- The "Maps" part of the logo goes everywhere: the reviews block's attribution logo becomes Google's "Google" wordmark, and condensed badges use the G.
+- Research (verified 2026-10-08):
+  - Google's customer-review brand rules (partnermarketinghub.withgoogle.com/brands/google/use-cases/customer-reviews) allow "the Google G or full Google wordmark". They require the rating to be described "on Google", never "Google rating", and forbid stars "by the Google name or logos". So the anatomy is G, then score, then stars, then count.
+  - The Places API policy asks for the "Google Maps" logo or, "where space is limited, the text Google Maps". That applies to live API data only, so synced data keeps the text "Google Maps" (the badge caption "on Google Maps", the reviews block's "View on Google Maps" link).
+- Three presets: `pill` (the one-liner; its border width and corner radius are controls, so a square-cornered, 0px-border pill is the chrome-free header look), `card` (two rows, accent stripe; drawers and footers), `stacked` (footer columns). There is no separate `inline` preset and no divider. Mock: https://claude.ai/artifact/C73uxE1v1Kf2qwRzZPGxHc.
+- Phone and tablet drawer: the badge never sits above the menu (it would push the primary navigation down). It goes in two places, for testing:
+  - the drawer's top row, between the logo and the ×. `sgs/nav-drawer`'s fixed chrome slot gains a Google rating type;
+  - a full-width square pill directly above the phone button in the bottom contact group.
+- The phone drawer is re-solved against the draft (Spec 47 route), keeping Bean's approved exceptions: menu items underline on hover rather than the draft's lighter text; the social buttons take the footer's social colours (register N7); the phone button gets a hover state the draft lacks.
+- Compression is a viewport `compactBelow` (default 1200px), not a container query: a shrink-to-fit flex child with `container-type: inline-size` collapses to 0.
 
 ## Design direction
 Quiet editorial credential: the header is a calm cream strip with a serif logo and small caps nav, so the badge matches that (no chrome, hairline divider, muted count). Google's own colours stay (G and gold stars) per the standing rule that Google reviews follow Google's UI. Hover brightens, never darkens; the whole thing is one link (`sgsBlockLink`) with a visible focus ring and a 44px minimum hit area.
