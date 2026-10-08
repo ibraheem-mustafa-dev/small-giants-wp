@@ -3,7 +3,7 @@
  * placeholder text. A tier that sets the key itself reports nothing.
  */
 
-import { inheritedBox, inheritedBoxValue, radiusAsCorners } from '../../src/utils/inherited-box';
+import { inheritedBox, inheritedBoxValue, inheritedValueLabel, radiusAsCorners } from '../../src/utils/inherited-box';
 
 describe( 'inheritedBoxValue', () => {
 	const tiers = {
@@ -71,5 +71,22 @@ describe( 'radiusAsCorners', () => {
 	it( 'negative control: spreading the raw string, as the unconverted control did, yields character keys', () => {
 		expect( Object.keys( { ...'8px' } ) ).toEqual( [ '0', '1', '2' ] );
 		expect( Object.keys( { ...radiusAsCorners( '8px' ) } ) ).toEqual( [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	} );
+} );
+
+describe( 'inheritedValueLabel', () => {
+	const sizes = [ { slug: '40', name: 'Medium' }, { slug: '50' } ];
+
+	it( 'names an offered preset', () => {
+		expect( inheritedValueLabel( 'var(--wp--preset--spacing--40)', sizes ) ).toBe( 'Medium' );
+	} );
+
+	it( 'falls back to the slug for a nameless preset', () => {
+		expect( inheritedValueLabel( 'var(--wp--preset--spacing--50)', sizes ) ).toBe( '50' );
+	} );
+
+	it( 'leaves a literal length and an unoffered preset as stored (negative control: it must not rename them)', () => {
+		expect( inheritedValueLabel( '24px', sizes ) ).toBe( '24px' );
+		expect( inheritedValueLabel( 'var(--wp--preset--spacing--99)', sizes ) ).toBe( 'var(--wp--preset--spacing--99)' );
 	} );
 } );

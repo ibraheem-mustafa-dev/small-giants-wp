@@ -52,6 +52,20 @@ export function inheritedBox( tierValues, tier, keys ) {
 	return out;
 }
 
+/**
+ * An inherited spacing value as the inspector words it: a preset's name when the value is a
+ * `var(--wp--preset--spacing--<slug>)` call for a preset the theme offers, the value as stored otherwise.
+ *
+ * @param {string}   value Inherited value.
+ * @param {Object[]} sizes The theme's spacing sizes, `{ slug, name }`.
+ * @return {string} The label to show.
+ */
+export function inheritedValueLabel( value, sizes ) {
+	const match = typeof value === 'string' ? value.trim().match( /^var\(\s*--wp--preset--spacing--([a-z0-9-]+)\s*\)$/i ) : null;
+	const preset = match ? ( sizes ?? [] ).find( ( size ) => size.slug === match[ 1 ] ) : undefined;
+	return preset ? preset.name || preset.slug : value;
+}
+
 const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 
 /**

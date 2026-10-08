@@ -324,6 +324,57 @@ def tier_object_attrs_from_php(path: Path) -> set:
     return found
 
 
+def context_tier_keys_from_php(path: Path) -> set:
+    """Block-context keys a consumer block unpacks per tier in one PHP file.
+
+    A provider block hands an attribute to its children through
+    `providesContext` (`"sgs/accordionHeaderPadding": "headerPadding"`), so the
+    tier unpacking sits in the child's render, which names the context key and
+    never the attribute. The key counts when the file reads it into a variable
+    (`$v = $block->context['key'] ?? ...;`) and that variable is the first
+    argument of `sgs_responsive_normalise_object( $v ...)`, or of a closure
+    whose body calls `sgs_responsive_normalise_object`. Empty set (never
+    raises) when the file is absent or unreadable.
+    """
+    if not path.is_file():
+        return set()
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    found = set()
+    assign_re = re.compile(
+        r"\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*\$block->context\[\s*['\"]([A-Za-z0-9_/-]+)['\"]\s*\]\s*(?:\?\?[^;]*)?;"
+    )
+    closure_re = re.compile(r"\$([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:static\s+)?function\s*\(")
+    tier_closures = set()
+    for closure in closure_re.finditer(text):
+        body_open = text.find('{', closure.end())
+        if body_open == -1:
+            continue
+        if "sgs_responsive_normalise_object(" in _brace_body(text, body_open):
+            tier_closures.add(closure.group(1))
+    for m in assign_re.finditer(text):
+        var_name, key = m.group(1), m.group(2)
+        direct = re.search(r"sgs_responsive_normalise_object\(\s*\$" + re.escape(var_name) + r"(?![A-Za-z0-9_])", text)
+        via_closure = any(
+            re.search(r"\$" + re.escape(fn) + r"\s*\(\s*\$" + re.escape(var_name) + r"(?![A-Za-z0-9_])", text)
+            for fn in tier_closures
+        )
+        if direct or via_closure:
+            found.add(key)
+    return found
+
+
+def _brace_body(text: str, body_open: int) -> str:
+    """The text between the `{` at `body_open` and its matching `}`."""
+    depth, i = 1, body_open + 1
+    while i < len(text) and depth:
+        depth += {'{': 1, '}': -1}.get(text[i], 0)
+        i += 1
+    return text[body_open + 1:i - 1]
+
+
 def _split_args(arg_text: str) -> list:
     """Split a PHP argument list on its top-level commas (not inside brackets or quotes)."""
     args, depth, current, quote = [], 0, '', ''

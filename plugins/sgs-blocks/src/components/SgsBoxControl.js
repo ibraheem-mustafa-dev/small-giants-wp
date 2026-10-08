@@ -65,6 +65,7 @@ import { link as linkIcon, linkOff as linkOffIcon } from '@wordpress/icons';
 import { UnitControl } from './primitives';
 import { InheritedBoxContext } from './InheritedBoxContext';
 import { flattenPresetSetting } from '../utils/presetSettings';
+import { inheritedValueLabel } from '../utils/inherited-box';
 
 const ALL_SIDES = [ 'top', 'right', 'bottom', 'left' ];
 
@@ -292,7 +293,7 @@ export default function SgsBoxControl( {
 					? sprintf(
 							/* translators: %s: the length this side takes from a wider device. */
 							__( 'Default (%s)', 'sgs-blocks' ),
-							inheritedFor( sideKey, value )
+							inheritedValueLabel( inheritedFor( sideKey, value ), filteredSizes )
 					  )
 					: __( 'Default', 'sgs-blocks' ),
 				value: '',

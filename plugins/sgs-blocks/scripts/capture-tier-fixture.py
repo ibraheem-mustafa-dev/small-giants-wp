@@ -107,12 +107,12 @@ _CSS_PROPERTY_OVERRIDES = {
     'iconSize': '--sgs-btn-icon-size',
     # separator/render.php prop_map: 'thickness' => 'border-bottom-width'.
     'thickness': 'border-bottom-width',
-    # gridItemPadding rides a CUSTOM PROPERTY, not the padding shorthand
-    # directly (class-sgs-container-wrapper.php's sgs_emit_responsive_css()
-    # emits --sgs-gi-padding, consumed elsewhere by the grid-item rule that
-    # applies it as padding — the CUSTOM PROPERTY is what the attribute's own
-    # tier values land on).
-    'gridItemPadding': '--sgs-gi-padding',
+    # gridItemPadding rides one CUSTOM PROPERTY PER SIDE PER TIER
+    # (--sgs-gi-padding-{top,right,bottom,left}, printed by
+    # helpers-responsive.php::sgs_responsive_atoms_from_spec); nothing prints a
+    # whole-box --sgs-gi-padding. This script measures one property per
+    # attribute, so it reads the top side, which is the side a fixture sets.
+    'gridItemPadding': '--sgs-gi-padding-top',
 }
 
 # Attributes that are deliberately NOT CSS-measurable. Naming them is the point:
@@ -264,6 +264,7 @@ def self_test() -> int:
         ('contentWidth', 'max-width'),                     # override, not derivable
         ('columns', 'grid-template-columns'),              # override, not derivable
         ('padding', 'padding'),
+        ('gridItemPadding', '--sgs-gi-padding-top'),       # per-side custom property
     ]
     failures = []
     for attr, expected in cases:

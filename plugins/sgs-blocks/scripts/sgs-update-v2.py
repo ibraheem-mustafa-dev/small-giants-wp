@@ -93,6 +93,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parent / "orchestrator"))
 from object_attr_shape import (  # noqa: E402
     classify_object_attr_shape,
+    context_tier_keys_from_php as _context_tier_keys_from_php,
     has_declared_tier_sibling,
     tier_object_attrs_from_php as _tier_object_attrs_from_php,
 )
@@ -606,13 +607,17 @@ _REQUIRE_SIBLING_RE = re.compile(
 )
 
 
-def _render_tier_attrs_for_block(render_path: Path) -> set:
+def _render_tier_attrs_for_block(
+    render_path: Path, scan: Callable[[Path], set] = _tier_object_attrs_from_php
+) -> set:
     """Tier-object evidence for one block: its own render.php PLUS every
     includes/*.php file reachable from it through require/require_once, at
     any depth. See the module-level comment above `_INCLUDES_DIR` for why
-    render.php alone under-detects.
+    render.php alone under-detects. `scan` reads one PHP file; the default
+    finds `$attributes` evidence, `_context_tier_keys_from_php` finds the
+    block-context keys a child unpacks per tier.
     """
-    found = set(_tier_object_attrs_from_php(render_path))
+    found = set(scan(render_path))
     if not render_path.is_file():
         return found
     try:
@@ -627,7 +632,7 @@ def _render_tier_attrs_for_block(render_path: Path) -> set:
             continue
         seen.add(name)
         include_path = _INCLUDES_DIR / name
-        found |= _tier_object_attrs_from_php(include_path)
+        found |= scan(include_path)
         if not include_path.is_file():
             continue
         try:
@@ -637,6 +642,32 @@ def _render_tier_attrs_for_block(render_path: Path) -> set:
         queue.extend(m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(include_text))
         queue.extend(m.group(1) for m in _REQUIRE_SIBLING_RE.finditer(include_text))
     return found
+
+def _context_tier_attrs_by_provider(blocks_dir: Path) -> dict:
+    """{provider slug: {attr names}} for attributes a provider hands to its children
+    through `providesContext` and a child unpacks per tier (`$block->context['key']`
+    into `sgs_responsive_normalise_object`). The provider's own render.php never names
+    the attribute, so the per-block scan misses it. Additive evidence, like the
+    scans above: it only turns a box-by-name 0 into a correct 1.
+    """
+    tiered_keys = set()
+    for block_dir in blocks_dir.iterdir():
+        if block_dir.is_dir() and (block_dir / "render.php").is_file():
+            tiered_keys |= _render_tier_attrs_for_block(
+                block_dir / "render.php", _context_tier_keys_from_php
+            )
+    by_provider = {}
+    for block_json in blocks_dir.glob("*/block.json"):
+        try:
+            data = json.loads(block_json.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        provided = data.get("providesContext") or {}
+        attrs = {attr for key, attr in provided.items() if key in tiered_keys}
+        if attrs:
+            by_provider[data.get("name", f"sgs/{block_json.parent.name}")] = attrs
+    return by_provider
+
 
 # MINOR (task-review 2nd pass): both `raise RuntimeError` calls below fire at
 # MODULE IMPORT TIME, not inside a stage function — a missing/broken wrapper
@@ -1118,6 +1149,8 @@ def _index_sgs_block_files(
         c.execute("ALTER TABLE block_attributes ADD COLUMN tier_shape TEXT")
         print("Stage 1: block_attributes.tier_shape column added")
 
+    _context_tier_attrs = _context_tier_attrs_by_provider(blocks_dir)
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -1145,7 +1178,7 @@ def _index_sgs_block_files(
         # once per block; empty set when there is no render.php.
         _render_tier_attrs = (
             _render_tier_attrs_for_block(block_dir / "render.php") if has_render else set()
-        )
+        ) | _context_tier_attrs.get(slug, set())
         has_view = any(
             (block_dir / fn).exists()
             for fn in ("view.js", "view.ts", "view.jsx", "view.tsx")
