@@ -67,7 +67,17 @@ export function writeSolveReport( outDir, r ) {
 		rows.forEach( ( x ) => L.push( `| ${ x.width } | ${ x.pair } | ${ x.ref || '' } | \`${ x.path ?? '' }\` | ${ x.kind } | ${ x.key } | ${ cell( x.draft ) }${ x.decided && ! x.decided.rule ? ' (decided ' + x.decided.id + ')' : '' } | ${ cell( x.live ) } |${ withReason ? ' ' + cell( x.reason ) + ' |' : '' }` ) );
 		L.push( '' );
 	};
-	section( 'Hardcode', r.classes.hardcode, true );
+	// Hardcode rows the tree already holds say so, name the widths that fail and pass, and name the rule that wins on the page.
+	const long = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 600 );
+	const widthsOf = ( w ) => ( w ? `differs at ${ w.fails.join( ', ' ) || 'none' }${ w.matches.length ? `; matches at ${ w.matches.join( ', ' ) }` : '' }` : '' );
+	L.push( '## Hardcode', '' );
+	if ( ! r.classes.hardcode.length ) {
+		L.push( 'None.', '' );
+	} else {
+		L.push( '| Width | Pair | Node | Element | Key | Draft | Live | Widths | Why | Winning rule |', '|---|---|---|---|---|---|---|---|---|---|' );
+		r.classes.hardcode.forEach( ( x ) => L.push( `| ${ x.width } | ${ x.pair } | ${ x.ref || '' } | \`${ x.path ?? '' }\` | ${ x.key } | ${ cell( x.draft ) } | ${ cell( x.live ) } | ${ widthsOf( x.widths ) } | ${ long( x.reason ) } | ${ long( x.winningRule ) } |` ) );
+		L.push( '' );
+	}
 	section( 'Missing setting', r.classes.missing, true );
 	section( 'Unresolved', r.classes.unresolved, true );
 	section( 'Derived box rows', r.classes.derived, false );

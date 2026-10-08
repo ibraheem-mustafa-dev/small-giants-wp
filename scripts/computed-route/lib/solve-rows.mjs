@@ -326,10 +326,38 @@ export function rowDistance( r ) {
 	return String( r.draft ) === String( r.live ) ? 0 : 1;
 }
 
-// Classifies the surviving open rows. writes: every applied write ({ group, attr }); gaps: { groupKey: { gap, detail } }.
+// What a group's tree already holds: held[ groupKey ] = [ { ref, block, attr, value } ], recorded by writeRound when a
+// setting already holds the draft value so nothing is written. The text says so, in the row's own words.
+export function heldReason( held, r ) {
+	const h = held.map( ( x ) => `${ x.block } ${ x.attr } = ${ JSON.stringify( x.value ) }` ).join( '; ' );
+	return `the tree already holds the draft value (${ h }); the paint is ${ JSON.stringify( r.live ) } where the draft is ${ JSON.stringify( r.draft ) }`;
+}
+
+// Where an open group differs, per width, among the widths the walk measured in the same state: { fails: [..], matches: [..] }.
+// A difference that follows the width (desktop only, phone only) points at how one width is written, not at the content.
+export function widthPattern( report, r ) {
+	const measured = new Set();
+	const fails = new Set();
+	for ( const run of report.runs || [] ) {
+		if ( run.state !== r.state ) {
+			continue;
+		}
+		measured.add( run.width );
+		for ( const p of Object.values( run.pairs || {} ) ) {
+			if ( ( p.diffs || [] ).some( ( d ) => ! d.accepted && d.kind === r.kind && d.key === r.key && d.ref === r.ref && ( d.path ?? '' ) === ( r.path ?? '' ) ) ) {
+				fails.add( run.width );
+			}
+		}
+	}
+	const num = ( a, b ) => a - b;
+	return { fails: [ ...fails ].sort( num ), matches: [ ...measured ].filter( ( w ) => ! fails.has( w ) ).sort( num ) };
+}
+
+// Classifies the surviving open rows. writes: every applied write ({ group, attr }); gaps: { groupKey: { gap, detail } };
+// held: { groupKey: [ { ref, block, attr, value } ] }, the groups whose setting already holds the draft value.
 // Returns { hardcode, missing, unresolved, derived, other } (intended rows are already accepted, counted apart).
 // Rows from an unmapped walker state go to `other` with their reason.
-export function classify( report, { writes, gaps, elements, stateMap } ) {
+export function classify( report, { writes, gaps, held = {}, elements, stateMap } ) {
 	const written = new Set( writes.filter( ( w ) => ! w.reverted ).map( ( w ) => w.group ) );
 	const out = { hardcode: [], missing: [], unresolved: [], derived: [], other: [] };
 	for ( const r of openRows( report ) ) {
@@ -368,7 +396,9 @@ export function classify( report, { writes, gaps, elements, stateMap } ) {
 		if ( 'breaks-layout' === gaps[ k ]?.gap ) {
 			out.hardcode.push( { ...r, reason: gaps[ k ].detail } );
 		} else if ( written.has( k ) ) {
-			out.hardcode.push( { ...r, reason: 'the setting holds the draft value; paint still differs' } );
+			out.hardcode.push( { ...r, reason: 'the setting holds the draft value; paint still differs', widths: widthPattern( report, r ) } );
+		} else if ( held[ k ] ) {
+			out.hardcode.push( { ...r, reason: heldReason( held[ k ], r ), held: held[ k ], widths: widthPattern( report, r ) } );
 		} else if ( 'no-setting' === gaps[ k ]?.gap ) {
 			out.missing.push( { ...r, reason: gaps[ k ].detail } );
 		} else if ( gaps[ k ] ) {

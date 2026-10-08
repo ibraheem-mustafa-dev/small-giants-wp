@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
@@ -15,6 +15,7 @@ import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, asser
 import { writableGroups, draftValues, usedValueTarget, classify, openRows, rowDistance, intendedCount, regressedRows, groupKey, settingState, cssProp, knownPaths, resolveContent, handoverOf, HANDOVER_OWNERS } from './lib/solve-rows.mjs';
 import { writeSolveReport } from './lib/solve-report.mjs';
 import { guardRound, closeTrials } from './lib/guard.mjs';
+import { readWinningRules } from './lib/winning-rule.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
 import { entranceStart, groupRects } from './lib/entrance.mjs';
 
@@ -178,6 +179,8 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 	const { groups, stateConflict, content } = writableGroups( report, stateMap );
 	const writes = [];
 	const gaps = {};
+	// Groups whose setting already holds the draft value, so nothing is written: holds[ groupKey ] = [ { ref, block, attr, value } ].
+	const holds = {};
 	for ( const c of stateConflict ) {
 		gaps[ c.key ] = blocked.get( c.key ) || { gap: 'state-conflict', detail: c.conflict.detail };
 	}
@@ -285,6 +288,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		for ( const w of r.writes ) {
 			const same = JSON.stringify( setAttr( structuredClone( target.node ), w ).after ) === JSON.stringify( target.node.attributes?.[ w.attr ] );
 			if ( same ) {
+				( holds[ g.key ] ||= [] ).push( { ref: target.ref, block: target.node.name, attr: w.attr, value: w.value } );
 				continue;
 			}
 			leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ).forEach( ( [ k, v ] ) => claimed.set( `${ target.ref }|${ w.attr }|${ k }`, v ) );
@@ -324,7 +328,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 		}
 	}
-	return { writes, gaps };
+	return { writes, gaps, held: holds };
 }
 
 // The regression guard (R-47-9) lives in lib/guard.mjs. This wrapper keeps the single-call form: the writes undone this
@@ -471,7 +475,22 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	} );
 	closeTrials( trials, blocked ).forEach( ( w ) => gaps[ w.group ] = blocked.get( w.group ) );
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
-	const classes = classify( report, { writes: allWrites, gaps, stateMap: s.states } );
+	// What the tree already holds for each still-open group, read against the final walk on a copy (nothing is written):
+	// a setting holding the draft value while the paint differs is a Hardcode, however many rounds ran.
+	const { held } = writeRound( report, structuredClone( tree ), { ...ctx, round: 'held', blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
+	const classes = classify( report, { writes: allWrites, gaps, held, stateMap: s.states } );
+	// The rule that wins on the live page for each Hardcode row the tree already holds (read-only; --no-rules skips it).
+	const heldRows = classes.hardcode.filter( ( r ) => r.held );
+	if ( heldRows.length && ! argv.includes( '--no-rules' ) ) {
+		try {
+			const liveUrl = ( await import( pathToFileURL( walker ).href ) ).default?.live?.url;
+			for ( const [ row, found ] of await readWinningRules( heldRows, { liveUrl } ) ) {
+				row.winningRule = found.text || found.note || null;
+			}
+		} catch ( e ) {
+			heldRows.forEach( ( row ) => ( row.winningRule = `winning rule not read: ${ String( e.message || e ).slice( 0, 120 ) }` ) );
+		}
+	}
 	const wrong = wrongWrites( allWrites, report, s.states );
 	const unmappedState = writableGroups( report, s.states ).unmappedState.length;
 	const handover = handoverOf( classes );

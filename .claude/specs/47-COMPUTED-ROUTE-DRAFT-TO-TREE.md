@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.7"
+spec_version: "0.15.8"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -290,7 +290,11 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
 
 **Classification of surviving rows:**
 - **Hardcode:** the setting holds the draft value, or its logged snap, and the paint still differs beyond the walker's
-  tolerance and the snap's distance. Framework repair.
+  tolerance and the snap's distance. Framework repair. It holds whether Solve wrote the value this run or the tree
+  already held it (`solve.mjs::writeRound` records the held groups; a measure-only run reads them against a copy of the
+  tree). The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row the
+  tree already holds, the rule that wins on the live page beside the rule that carries the draft value
+  (`lib/winning-rule.mjs`, Chrome DevTools' matched rules; `--no-rules` skips the browser read).
 - **Missing setting:** the resolver returned `no-setting`. Framework new control.
 - **Intended:** matched in `divergences.json`.
 - **Unresolved:** anything else, with its reason.
