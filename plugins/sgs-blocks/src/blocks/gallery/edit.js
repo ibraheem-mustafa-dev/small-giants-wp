@@ -379,19 +379,14 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<GalleryCanvas
+				attributes={ attributes }
 				blockProps={ blockProps }
 				hasBandProps={ hasBandProps }
 				bandStyle={ bandStyle }
 				items={ items }
-				imageSize={ imageSize }
-				aspectRatio={ aspectRatio }
-				showCaptions={ showCaptions }
 				captionStyle={ captionStyle }
 				gridStyle={ gridStyle }
 				separatorsCanvas={ separatorsCanvas }
-				layout={ layout }
-				carouselShowArrows={ carouselShowArrows }
-				carouselShowDots={ carouselShowDots }
 				onSelectImages={ onSelectImages }
 			/>
 		</>

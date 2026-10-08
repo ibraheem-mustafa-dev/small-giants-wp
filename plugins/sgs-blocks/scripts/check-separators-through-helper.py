@@ -43,6 +43,8 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 PLUGIN = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PLUGIN / "scripts" / "lib"))
+from block_source_files import edit_files  # noqa: E402
 BASELINE = Path(__file__).resolve().with_name("check-separators-through-helper-baseline.json")
 HELPER_FILES = re.compile(r"(?:^|/)(?:helpers-separators[^/]*\.php|separators(?:/[^/]+)?\.(?:js|css)|SgsSeparatorControl\.js|SeparatorAxisRow\.js)$")
 SKIP_DIRS = ("node_modules", "build", "vendor", "tests", "scripts", "stackable", "pipeline-state", "reports", "components")
@@ -144,7 +146,10 @@ def editor_findings() -> list[str]:
             continue
         if data.get("name") in EDITOR_EXEMPT:
             continue
-        text = " ".join(p.read_text(encoding="utf-8", errors="replace") for p in manifest.parent.glob("*.js"))
+        # The block's top-level scripts plus every component edit.js imports (a canvas moved to
+        # components/ still previews the lines).
+        files = sorted(set(manifest.parent.glob("*.js")) | set(edit_files(manifest.parent)))
+        text = " ".join(p.read_text(encoding="utf-8", errors="replace") for p in files)
         if not editor_preview_ok(text):
             out.append(f"{data.get('name')}: declares supports.sgs.separators but its editor canvas never previews the lines "
                        "(use useSeparatorsCanvas from src/shared/separators/)")

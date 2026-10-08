@@ -7,7 +7,7 @@ import { PanelBody, SelectControl, RangeControl, ToggleControl } from '@wordpres
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { EASING_OPTIONS } from './constants';
 
-export default function HoverEffectsPanel( { attributes, setAttributes } ) {
+export default function CardGridHoverEffectsPanel( { attributes, setAttributes } ) {
 	const {
 		transitionDuration,
 		transitionEasing,

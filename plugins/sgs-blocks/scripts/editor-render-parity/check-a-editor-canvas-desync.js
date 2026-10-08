@@ -62,7 +62,7 @@
 'use strict';
 
 const path = require( 'path' );
-const { renderSource } = require( '../lib/block-source-files' );
+const { editFiles, editSource, renderSource } = require( '../lib/block-source-files' );
 const { hasServerSideRenderWithAttributes } = require( './lib-a-control-surface' );
 const { collectDestructuredAliases, collectDestructuredFromAttributes, collectExcludedRanges, collectSetAttributesWrites, collectUsedIdentifiersOutsideExcluded } = require( './lib-a-destructure' );
 const { checkCompanionExemption, checkNoPreviewNoticeExemption, collectSetAttributesGroups } = require( './lib-a-exemptions' );
@@ -197,9 +197,16 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	// If this block uses ServerSideRender with attributes={attributes}, the
 	// editor canvas displays the actual render.php output via REST — all
 	// attributes flow into that real render, so none can be "unused" by the
-	// editor preview. Exempt the entire block.
+	// editor preview. Exempt the entire block. The ServerSideRender may sit in
+	// edit.js or in a component file of the block's own (card-grid's canvas).
 	if ( hasServerSideRenderWithAttributes( ast ) ) {
 		return [];
+	}
+	for ( const file of editFiles( dir ).slice( 1 ) ) {
+		const ownAst = safeParse( readIfExists( file ) || '' );
+		if ( ownAst && hasServerSideRenderWithAttributes( ownAst ) ) {
+			return [];
+		}
 	}
 
 	const destructured = collectDestructuredFromAttributes( ast );
@@ -229,7 +236,8 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const phpCommentMask = phpSrc ? buildCommentMask( phpSrc ) : null;
 	const attrVarMap = phpSrc ? collectAttrVarMapBroad( phpSrc ) : new Map();
 	const derivedVarMap = phpSrc ? collectDerivedVarMapAll( phpSrc, attrVarMap ) : new Map();
-	const setAttributeGroups = collectSetAttributesGroups( src );
+	// A co-write such as a panel's reset-all call can live in one of the block's own component files.
+	const setAttributeGroups = collectSetAttributesGroups( editSource( dir ) );
 	const noticeExemptSet = checkNoPreviewNoticeExemption( ast, src, declaredAttrs );
 	const liveDataPlaceholderExempt = checkLiveDataPlaceholderExemption( phpSrc, src );
 	const scrimExempt = declaresScrimSupport( dir );

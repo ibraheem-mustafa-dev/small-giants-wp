@@ -7,21 +7,24 @@ import { focalPointToObjectPosition } from '../../../utils';
 import { resolveGalleryMedia } from '../resolve-gallery-media';
 
 export default function GalleryCanvas( {
+	attributes,
 	blockProps,
 	hasBandProps,
 	bandStyle,
 	items,
-	imageSize,
-	aspectRatio,
-	showCaptions,
 	captionStyle,
 	gridStyle,
 	separatorsCanvas,
-	layout,
-	carouselShowArrows,
-	carouselShowDots,
 	onSelectImages,
 } ) {
+	const {
+		imageSize,
+		aspectRatio,
+		showCaptions,
+		layout,
+		carouselShowArrows,
+		carouselShowDots,
+	} = attributes;
 	// Carousel controls canvas mirror (CHECK A) — render.php emits real
 	// `.sgs-gallery__carousel-prev`/`-next` buttons + a `.sgs-gallery__carousel-dots`
 	// container as SIBLINGS of `.sgs-gallery__grid`, gated on carouselShowArrows/

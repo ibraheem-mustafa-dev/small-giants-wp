@@ -15,7 +15,7 @@ import ContentSourcePanel from './components/ContentSourcePanel';
 import ProductsToolsPanel from './components/ProductsToolsPanel';
 import GlyphOverlayPanels from './components/GlyphOverlayPanels';
 import GridSettingsPanel from './components/GridSettingsPanel';
-import HoverEffectsPanel from './components/HoverEffectsPanel';
+import CardGridHoverEffectsPanel from './components/CardGridHoverEffectsPanel';
 import TextStylingPanel from './components/TextStylingPanel';
 import CardSpacingStylingPanel from './components/CardSpacingStylingPanel';
 import LayoutBorderPanel from './components/LayoutBorderPanel';
@@ -212,7 +212,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				<GridSettingsPanel attributes={ attributes } setAttributes={ setAttributes } />
 
-				<HoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<CardGridHoverEffectsPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<TextStylingPanel attributes={ attributes } setAttributes={ setAttributes } isCptCollectionMode={ isCptCollectionMode } />
 
