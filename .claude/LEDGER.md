@@ -81,13 +81,13 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 3** (self-test 110/110; sandybrown deployed at `6d7ab0169`). The gate reads InnerBlocks template
+  Ceilings **CLASS-2 28, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `6d7ab0169`). The gate reads InnerBlocks template
   children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
-  (gap 4; survey byte-identical on every block). `sgs/theme-toggle` has an `iconSize` control. The drill-down drawer panel now fills the bar
-  (two causes fixed, proved live at 375 and 1440) and a draft `sgs_drawer` previews. **CANNOT-RESOLVE floor:** the cart badge (2 rows; needs three gate
-  features, verdict in §6, none built) and the media caption list's bare `figcaption`. **Open:** gaps 2, 3, 5-8, 10(a,c,d), 11, and the rest of gap 4 (a class glued
+  (gap 4), matches a bare tag to it (`scripts/lib/e14-unknown-tag.js`) and places a childless JS-built control (`e14-js-leaf.js`). `sgs/theme-toggle` has an `iconSize` control. The drill-down drawer panel now fills the bar
+  (proved live at 375 and 1440) and a draft `sgs_drawer` previews. **CANNOT-RESOLVE floor:** the cart badge (2 rows; needs three gate
+  features, verdict in §6, none built). **Open:** gaps 3 (moves no count today), 5, 7, 8, 10(a,c,d), 11, and the rest of gap 4 (a class glued
   to a placeholder). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
