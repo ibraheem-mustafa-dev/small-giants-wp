@@ -4430,6 +4430,22 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "badgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "badgeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "badgeTextColour",
       "fields": {
         "css_property": "color",
@@ -10165,6 +10181,96 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "badgeTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "badgeTextTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_layer": "OUTER",
+        "css_element": "badge-text"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -10179,6 +10285,96 @@
         "css_property": "border-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "breakdownRowTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_layer": "OUTER",
+        "css_element": "breakdown-row"
       }
     },
     {
@@ -10642,6 +10838,96 @@
         "css_property": "line-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "mapsLinkTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_layer": "OUTER",
+        "css_element": "maps-link"
       }
     },
     {
