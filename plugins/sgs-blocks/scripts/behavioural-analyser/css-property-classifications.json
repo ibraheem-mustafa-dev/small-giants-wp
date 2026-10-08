@@ -7986,6 +7986,198 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fileButtonFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileButtonWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "file-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "file-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fileStatusFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -13105,6 +13297,14 @@
     },
     {
       "slug": "sgs/label",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
@@ -14585,13 +14785,6 @@
         "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "childBtnBorderRadius",
-      "fields": {
-        "css_property": "border-radius"
       }
     },
     {
@@ -30151,14 +30344,6 @@
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/label",
-      "attr": "padding",
-      "fields": {
-        "css_property": "padding",
         "css_element": "wrapper"
       }
     },
