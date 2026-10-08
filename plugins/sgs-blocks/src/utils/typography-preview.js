@@ -68,6 +68,67 @@ const isNumericLike = ( v ) =>
 // A length already carrying its unit ("1.2rem", "clamp(...)", "var(...)") passes through.
 const hasOwnUnit = ( v ) => 'string' === typeof v && /^(-?\d*\.?\d+[a-z%]+|clamp\(.*\)|var\(.*\)|calc\(.*\))$/i.test( v.trim() );
 
+// A theme font-family preset slug: lowercase letters, digits and hyphens, the
+// shape helpers-typography.php::sgs_font_family_sanitise() turns into the
+// preset's custom property.
+const FONT_FAMILY_SLUG = /^[a-z0-9-]+$/;
+
+/**
+ * The CSS font-family a stored value paints, as the frontend paints it. A
+ * preset slug becomes its custom property, falling back to the word itself
+ * (PHP prints a lowercase word that names no preset unchanged); any other
+ * value (a font-family list) passes through.
+ *
+ * @param {string} value Stored font-family attribute value.
+ * @return {string|undefined} CSS font-family value, or undefined when unset.
+ */
+export function fontFamilyCssValue( value ) {
+	if ( ! value ) {
+		return undefined;
+	}
+	return FONT_FAMILY_SLUG.test( value )
+		? `var(--wp--preset--font-family--${ value }, ${ value })`
+		: value;
+}
+
+/**
+ * The value the core font-family picker matches its options against (each
+ * option's fontFamily CSS string), for a stored slug or font-family list.
+ *
+ * @param {string} stored   Stored attribute value.
+ * @param {Array}  families Flattened typography.fontFamilies presets.
+ * @return {string} The picker value; '' shows Default.
+ */
+export function fontFamilyPickerValue( stored, families ) {
+	if ( ! stored ) {
+		return '';
+	}
+	const preset = ( families || [] ).find( ( f ) => f.slug === stored );
+	return preset ? preset.fontFamily : stored;
+}
+
+/**
+ * The value to store for a picker choice: the preset's slug, so the setting
+ * follows the client's theme. Presets sharing one font-family list are
+ * indistinguishable in the picker's onChange, so the current slug is kept when
+ * it is one of them.
+ *
+ * @param {string} picked   The fontFamily CSS string the picker emitted.
+ * @param {Array}  families Flattened typography.fontFamilies presets.
+ * @param {string} current  The currently stored value.
+ * @return {string|undefined} Slug, raw value, or undefined for Default.
+ */
+export function fontFamilyStoredValue( picked, families, current ) {
+	if ( ! picked ) {
+		return undefined;
+	}
+	const matches = ( families || [] ).filter( ( f ) => f.slug && f.fontFamily === picked );
+	if ( ! matches.length ) {
+		return picked;
+	}
+	return ( matches.find( ( f ) => f.slug === current ) || matches[ 0 ] ).slug;
+}
+
 const tierKeys = ( tier ) => TIER_CHAIN[ tier ] || TIER_CHAIN.desktop;
 
 // The value painting at `tier` for one responsive family, whichever shape it is stored in.
@@ -121,7 +182,7 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 		style.letterSpacing = letterSpacing.trim();
 	}
 
-	const fontFamily = attributes[ attrKey( 'FontFamily' ) ];
+	const fontFamily = fontFamilyCssValue( attributes[ attrKey( 'FontFamily' ) ] );
 	if ( fontFamily ) {
 		style.fontFamily = fontFamily;
 	}
@@ -160,8 +221,11 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 // helpers-responsive.php::sgs_responsive_sanitise_unit units with `[^a-z%]/i`.
 const CSS_TEXT_BREAKOUT = /[{}<>;=\\]|url\s*\(|expression\s*\(|@import|\/\*/i;
 
-// PHP's font-family charset, applied to the whole declaration value.
-const safeFontFamily = ( v ) => String( v ).replace( /[^a-zA-Z0-9 ,"'\-]/g, '' );
+// PHP's font-family charset, applied to the whole declaration value. A preset
+// custom property from fontFamilyCssValue() is built from a checked slug and
+// passes as it is.
+const PRESET_FONT_FAMILY = /^var\(--wp--preset--font-family--([a-z0-9-]+), \1\)$/;
+const safeFontFamily = ( v ) => ( PRESET_FONT_FAMILY.test( String( v ) ) ? String( v ) : String( v ).replace( /[^a-zA-Z0-9 ,"'\-]/g, '' ) );
 
 /**
  * typographyPreviewCss — the same declarations typographyPreviewStyle() returns,

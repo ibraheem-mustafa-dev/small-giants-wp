@@ -68,6 +68,7 @@ import { ParticleTrailRowControls } from '../../components/ParticleTrailRowContr
 import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
 import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import { colourVar, resolveShadowPreviewComposed, surfaceToneClass, flattenPresetSetting, usePreviewTier, resolveTier, resolveBoxTierPreview, isCssGradient, sgsBorderPreview } from '../../utils';
+import { fontFamilyCssValue } from '../../utils/typography-preview';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -190,23 +191,6 @@ function panelBorderWidthBox( box ) {
 	return { top: b.top || '1px', right: b.right || '1px', bottom: b.bottom || '1px', left: b.left || '1px' };
 }
 
-/**
- * Resolve a font-family attribute value for editor preview — mirrors PHP
- * `sgs_font_family_sanitise()`'s bare-slug branch (helpers-typography.php): a
- * bare theme preset slug (e.g. 'mono') becomes its CSS custom property, any
- * other value (a raw font-family list) passes through unchanged.
- *
- * @param {string} value Raw brandsEyebrowFontFamily attribute value.
- * @return {string|undefined} CSS font-family value, or undefined when unset.
- */
-function eyebrowFontFamilyPreview( value ) {
-	if ( ! value ) {
-		return undefined;
-	}
-	return /^[a-z0-9-]+$/i.test( value )
-		? `var(--wp--preset--font-family--${ value })`
-		: value;
-}
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-only UI state (never saved): which tier the canvas previews. In
@@ -1500,7 +1484,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<p
 						className="sgs-mega-panel__eyebrow"
 						style={ {
-							fontFamily: eyebrowFontFamilyPreview( brandsEyebrowFontFamily ),
+							fontFamily: fontFamilyCssValue( brandsEyebrowFontFamily ),
 							fontSize: brandsEyebrowFontSize
 								? `${ brandsEyebrowFontSize }${ brandsEyebrowFontSizeUnit || 'px' }`
 								: undefined,

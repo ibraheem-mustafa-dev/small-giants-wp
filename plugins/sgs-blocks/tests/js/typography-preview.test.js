@@ -76,3 +76,40 @@ describe( 'textIndentPreviewCss', () => {
 		expect( textIndentPreviewCss( { textIndent: '1em}body{color:red' }, '', '.s' ) ).toBe( '' );
 	} );
 } );
+
+// Font family: the trees and Solve store a theme preset SLUG ('heading'), which
+// helpers-typography.php::sgs_font_family_sanitise turns into the preset's
+// custom property. The editor previews and the picker must read it the same way.
+import { fontFamilyCssValue, fontFamilyPickerValue, fontFamilyStoredValue, typographyPreviewCss } from '../../src/utils/typography-preview';
+
+const families = [
+	{ slug: 'body', name: 'Body', fontFamily: 'Outfit, system-ui, sans-serif' },
+	{ slug: 'heading', name: 'Heading', fontFamily: '"Playfair Display", serif' },
+	{ slug: 'display', name: 'Display', fontFamily: '"Playfair Display", serif' },
+];
+
+describe( 'font family slugs', () => {
+	it( 'MUST FAIL TO PAINT A SLUG LITERALLY: a bare slug previews as its preset variable', () => {
+		expect( typographyPreviewStyle( { fontFamily: 'heading' } ).fontFamily ).toBe( 'var(--wp--preset--font-family--heading, heading)' );
+		expect( typographyPreviewStyle( { fontFamily: '"Playfair Display", serif' } ).fontFamily ).toBe( '"Playfair Display", serif' );
+		expect( fontFamilyCssValue( '' ) ).toBeUndefined();
+	} );
+
+	it( 'keeps the preset variable intact in an editor <style> rule', () => {
+		expect( typographyPreviewCss( { fontFamily: 'heading' }, '', '.x' ) ).toBe( '.x{font-family:var(--wp--preset--font-family--heading, heading);}' );
+	} );
+
+	it( 'MUST FAIL TO SHOW DEFAULT: the picker shows a stored slug as its preset', () => {
+		expect( fontFamilyPickerValue( 'heading', families ) ).toBe( '"Playfair Display", serif' );
+		expect( fontFamilyPickerValue( 'Georgia, serif', families ) ).toBe( 'Georgia, serif' );
+		expect( fontFamilyPickerValue( undefined, families ) ).toBe( '' );
+	} );
+
+	it( 'a pick is stored as its preset slug, keeping the current slug when presets share a value', () => {
+		expect( fontFamilyStoredValue( 'Outfit, system-ui, sans-serif', families, undefined ) ).toBe( 'body' );
+		expect( fontFamilyStoredValue( '"Playfair Display", serif', families, 'display' ) ).toBe( 'display' );
+		expect( fontFamilyStoredValue( '"Playfair Display", serif', families, 'body' ) ).toBe( 'heading' );
+		expect( fontFamilyStoredValue( 'Georgia, serif', families, 'body' ) ).toBe( 'Georgia, serif' );
+		expect( fontFamilyStoredValue( '', families, 'body' ) ).toBeUndefined();
+	} );
+} );

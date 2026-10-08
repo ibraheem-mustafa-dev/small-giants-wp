@@ -107,6 +107,7 @@ import {
 } from './primitives';
 import { makeResponsive } from '../utils/responsive';
 import { flattenPresetSetting } from '../utils/presetSettings';
+import { fontFamilyPickerValue, fontFamilyStoredValue } from '../utils/typography-preview';
 // `flattenPresetSetting` + `useSettings` ARE imported, for `FontFamilyControl`
 // only — see the note at the top of TypographyControlsFields. `FontSizePicker`
 // still needs neither; it sources `fontSizes` itself via a settings-aware
@@ -848,16 +849,18 @@ function TypographyControlsFields( {
 			     above `fontFamiliesRaw` for why this is no longer left to the
 			     control's own internal `useSettings` fallback). Renders
 			     `Default` as its own empty option, and matches `value` against
-			     the fontFamily CSS STRING (its `option.key`) — which is exactly
-			     what this attribute stores, per the PHP helper's own docblock
-			     ("the raw CSS font-family VALUE, not a slug"). Returns null by
-			     itself when `fontFamilies` is empty. */ }
+			     the fontFamily CSS STRING (its `option.key`). The attribute
+			     stores a theme preset SLUG (sgs_font_family_sanitise() paints
+			     it as the preset's custom property, so it follows the client's
+			     theme), or a raw font-family list: fontFamilyPickerValue() shows
+			     a slug as its preset, fontFamilyStoredValue() stores a pick as
+			     its slug. Returns null by itself when `fontFamilies` is empty. */ }
 			{ showFontFamily && (
 				<FontFamilyControl
 					fontFamilies={ fontFamilies }
-					value={ attributes[ k.fontFamily ] || '' }
+					value={ fontFamilyPickerValue( attributes[ k.fontFamily ], fontFamilies ) }
 					onChange={ ( val ) =>
-						setAttributes( { [ k.fontFamily ]: val || undefined } )
+						setAttributes( { [ k.fontFamily ]: fontFamilyStoredValue( val, fontFamilies, attributes[ k.fontFamily ] ) } )
 					}
 				/>
 			) }
