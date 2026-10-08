@@ -100,6 +100,56 @@ try {
 				report( 'editor', name, w, got, want[ w ] );
 			}
 		}
+		// P2-j: the radius controls themselves. A radius stored as "8px" shows as one linked 8 (all four corners equal)
+		// and an edit saves a corner object; a fresh container's grid-item radius, typed as 8 on all corners, paints
+		// 8px on its cell after a save.
+		const sidebar = page.locator( '.interface-complementary-area' );
+		const clientIdOf = ( cls ) => page.evaluate( ( c ) => {
+			const find = ( blocks ) => blocks.reduce( ( hit, b ) => hit || ( ( b.attributes.className || '' ).split( ' ' ).includes( c ) ? b.clientId : find( b.innerBlocks ) ), '' );
+			return find( window.wp.data.select( 'core/block-editor' ).getBlocks() );
+		}, cls );
+		const select = async ( cls, tab ) => {
+			await page.evaluate( ( id ) => window.wp.data.dispatch( 'core/block-editor' ).selectBlock( id ), await clientIdOf( cls ) );
+			await page.waitForTimeout( 800 );
+			await sidebar.getByRole( 'tab', { name: tab } ).click();
+		};
+		const openPanel = async ( title ) => {
+			const toggle = sidebar.getByRole( 'button', { name: title, exact: true } );
+			if ( 'false' === await toggle.getAttribute( 'aria-expanded' ) ) {
+				await toggle.click();
+			}
+			await page.waitForTimeout( 500 );
+			return sidebar.locator( '.components-panel__body.is-opened' ).filter( { hasText: 'Border radius' } ).last();
+		};
+		const radiusOf = ( cls, tier = 'desktop', attr = 'borderRadius' ) => page.evaluate( ( [ c, t, a ] ) => {
+			const find = ( blocks ) => blocks.reduce( ( hit, b ) => hit || ( ( b.attributes.className || '' ).split( ' ' ).includes( c ) ? b : find( b.innerBlocks ) ), null );
+			return JSON.stringify( find( window.wp.data.select( 'core/block-editor' ).getBlocks() )?.attributes?.[ a ]?.[ t ] ?? null );
+		}, [ cls, tier, attr ] );
+
+		await select( 'cr6h-btn8', /Styles/i );
+		const btnBox = await openPanel( 'Border' );
+		const shown = await btnBox.locator( 'input[type="number"]' ).first().inputValue();
+		report( 'editor', 'button radius control', 'ui', shown, '8' );
+		await btnBox.locator( 'input[type="number"]' ).first().fill( '12' );
+		await page.waitForTimeout( 600 );
+		const corner = '12px';
+		report( 'editor', 'button radius saves', 'ui', await radiusOf( 'cr6h-btn8' ),
+			JSON.stringify( { topLeft: corner, topRight: corner, bottomRight: corner, bottomLeft: corner } ) );
+
+		await select( 'cr6h-fresh', /Settings/i );
+		await openPanel( 'Grid item defaults' );
+		const gridBox = sidebar.locator( '.components-panel__body.is-opened' ).filter( { hasText: 'Grid item defaults' } ).last();
+		await gridBox.locator( 'input[type="number"]' ).last().fill( '8' );
+		await page.waitForTimeout( 600 );
+		report( 'editor', 'grid radius saves', 'ui', await radiusOf( 'cr6h-fresh', 'desktop', 'gridItemBorderRadius' ),
+			JSON.stringify( { topLeft: '8px', topRight: '8px', bottomRight: '8px', bottomLeft: '8px' } ) );
+		await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).savePost() );
+		await page.waitForFunction( () => ! window.wp.data.select( 'core/editor' ).isSavingPost() && ! window.wp.data.select( 'core/editor' ).isEditedPostDirty() );
+		await page.setViewportSize( { width: 1440, height: 900 } );
+		await page.goto( url, { waitUntil: 'networkidle' } );
+		const cell = await page.$( '.cr6h-freshcell' );
+		report( 'front', 'fresh grid radius', 1440, cell ? await cell.evaluate( read, 'radius' ) : 'missing', '8 8 8 8' );
+
 		consoleErrors.forEach( ( e ) => {
 			bad += 1;
 			console.log( `FAIL editor console error: ${ e }` );
