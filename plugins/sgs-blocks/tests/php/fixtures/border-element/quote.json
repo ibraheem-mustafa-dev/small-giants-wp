@@ -1,0 +1,95 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-quote-UID.wp-block-sgs-quote::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "h_hover_flat": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px",
+            "transition:transform 300ms ease-in-out,box-shadow 300ms ease-in-out,background-color 300ms ease-in-out,color 300ms ease-in-out"
+        ],
+        " || .sgs-quote-UID.wp-block-sgs-quote:focus-within": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-quote-UID.wp-block-sgs-quote:hover": [
+            "border-color:var(--wp--preset--color--secondary,currentColor)"
+        ],
+        "@media(prefers-reduced-motion:reduce) || .sgs-quote-UID.wp-block-sgs-quote": [
+            "transform:none !important",
+            "transition:none !important"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-radius:8px"
+        ]
+    },
+    "k_radius_tiers": {
+        " || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-quote-UID.wp-block-sgs-quote": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    },
+    "l_inherit_style": []
+}

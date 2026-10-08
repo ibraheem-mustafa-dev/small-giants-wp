@@ -1,0 +1,72 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "g_gradient": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "border-style:solid",
+            "border-width:3px 3px 3px 3px",
+            "position:relative"
+        ],
+        " || .sgs-cnt-UID.wp-block-sgs-counter::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-3px",
+            "mask-composite:exclude",
+            "padding:3px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    },
+    "j_radius_uniform": [],
+    "k_radius_tiers": {
+        " || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-bottom-left-radius:4px",
+            "border-bottom-right-radius:4px",
+            "border-top-left-radius:12px",
+            "border-top-right-radius:12px"
+        ],
+        "@media(max-width:1023px) || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-top-left-radius:6px"
+        ],
+        "@media(max-width:767px) || .sgs-cnt-UID.wp-block-sgs-counter": [
+            "border-top-left-radius:2px",
+            "border-top-right-radius:3px"
+        ]
+    }
+}
