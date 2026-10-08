@@ -461,6 +461,7 @@
                   "fontSize": {
                     "desktop": "14px"
                   },
+                  "linkUnderline": "sweep",
                   "className": "cr-ref-footer-23"
                 }
               },
@@ -469,6 +470,7 @@
                 "attributes": {
                   "displayType": "phone",
                   "textColourHover": "text",
+                  "linkUnderline": "sweep",
                   "showIcon": false,
                   "fontSize": {
                     "desktop": "14px"
@@ -485,8 +487,11 @@
                 "name": "sgs/business-info",
                 "attributes": {
                   "displayType": "address",
+                  "addressLink": true,
+                  "linkUnderline": "sweep",
                   "showIcon": false,
-                  "textColour": "text-muted",
+                  "textColour": "text",
+                  "textColourHover": "text",
                   "fontSize": {
                     "desktop": "14px"
                   },
@@ -508,6 +513,7 @@
                     "desktop": "13px"
                   },
                   "hoursLayout": "condensed",
+                  "hoursRowJustify": "flex-start",
                   "className": "cr-ref-footer-26",
                   "labelColour": "text"
                 }
