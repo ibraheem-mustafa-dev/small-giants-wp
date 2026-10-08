@@ -1,1 +1,27 @@
 /* Icon — editor-only */
+
+/* A bound link Site Info leaves empty: the icon stays (dimmed by style.css) with a notice beneath it. */
+.sgs-icon.sgs-icon--hidden-empty {
+	flex-wrap: wrap;
+}
+
+.sgs-icon__notice {
+	flex-basis: 100%;
+	margin-block-start: 4px;
+	padding: 4px 8px;
+	border-inline-start: 3px solid #b26200;
+	background: #fcf9e8;
+	color: #1e1e1e;
+	font-size: 12px;
+	line-height: 1.4;
+	text-align: start;
+}
+
+.sgs-icon__notice a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.sgs-icon-bound-link {
+	margin: 0 0 8px;
+}
