@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: Phase 1 code done (51afe6807 live on sandybrown; 48f7a8a04 gap + width fix awaiting its live read); Phase A steps 1-4 done (5157247fc, b651dc5ac); steps 5-10 in progress
+status: Phase 1 done and live (Tablet placeholder read owed); Phase A steps 1-4 done (5157247fc, b651dc5ac), steps 5-10 in progress
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
@@ -48,9 +48,11 @@ status: Phase 1 code done (51afe6807 live on sandybrown; 48f7a8a04 gap + width f
 | F22 | WhatsApp digits become a dead link | Site Info stores socials through `esc_url_raw`, so `07700 900123` becomes `http://07700…`; `whatsapp:` is not an allowed protocol |
 | F23 | A third WhatsApp glyph exists | `includes/helpers-brand-glyphs.php::sgs_whatsapp_glyph_svg` (whatsapp-cta, choice-flow) beside `social-icons/brand-icons.php` |
 
-## Phase 1: Spacing control (`src/components/SgsBoxControl.js`, 75 bundles inherit it) — code shipped `51afe6807`
+## Phase 1: Spacing control (`src/components/SgsBoxControl.js`, 75 bundles inherit it) — done, live on sandybrown (`51afe6807`, `48f7a8a04`)
 Done: header line holds the label and core's small link button; side/corner icon per row; names-only preset select + value box showing the preset's size; typing flips to Custom; Custom from Default stays on Custom (F1); no slider beside presets. `tests/js/sgs-box-control.test.js` (7 cases, negative control proven).
-Open: F3 (gap above labels) is fixed only after a live read proves which rule removes it.
+F3 cause (read live): SGS controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap, so separate controls stacked flush. `assets/css/inspector-controls.css` puts 16px above each separate SGS control. In a 280px inspector the value box took the whole row, so it is now fixed at 104px.
+Read live 2026-10-08 (probe across icon, container, button, text, heading, card-grid, hero, both tabs): flush pairs between separate SGS controls 58 → 0 (the remaining sub-8px rows are a control's own label/field, joined colour rows and core font controls); Margin sits 16px under Padding; header button 24px, transparent, on the label line; preset pick stores `var(--wp--preset--spacing--40)` and the value box shows 1.5 rem; typing stores a length and the select reads Custom; Custom from Default stays Custom; zero console errors.
+Owed: the Tablet tier's inherited placeholder on the new layout, read in the Phase A batched pass.
 **Done when:** on sandybrown at 1440 the icon, container and button Spacing panels show the new layout, a preset pick stores `var(--wp--preset--spacing--x)`, a typed value stores a length, Tablet shows the inherited placeholder, zero console errors; F3 fixed and read back.
 
 ## Phase A: sgs/icon becomes the one icon block (everything the Eye Care footer needs, plus the full control set)
