@@ -16,8 +16,16 @@
  * core update. This component reproduces the same DATA MODEL (a
  * {top,right,bottom,left} box, linked/unlinked toggle) from the same native
  * primitives (`UnitControl`, `RangeControl`, `Button`) laid out in one
- * `Flex` row with `align="center"`, so the slider and icon sit exactly level
- * with the input.
+ * `Flex` row with `align="center"`, so every part of a row sits level.
+ *
+ * ── Layout (core's spacing-sizes control) ───────────────────────────────
+ * The label and a small link/unlink button share the header line. Each row
+ * starts with a side icon (`sidesAll`/`cornerAll` when linked, one side or
+ * corner when unlinked; the side's text label is the inputs' accessible
+ * name). With presets a row is a names-only preset select plus a value box
+ * with its unit, which shows the chosen preset's size; typing a value stores
+ * a length and the select reads Custom. Without presets a row is the value
+ * box plus a slider.
  *
  * ── Linked/unlinked model ──────────────────────────────────────────────
  * Mirrors core `BoxControl`'s own behaviour: `isLinked` starts true when
@@ -58,11 +66,26 @@
  * @package SGS\Blocks
  */
 import { useContext, useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
 import { __, sprintf } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
 import { BaseControl, Button, Flex, FlexBlock, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
-import { link as linkIcon, linkOff as linkOffIcon } from '@wordpress/icons';
-import { UnitControl } from './primitives';
+import {
+	Icon,
+	link as linkIcon,
+	linkOff as linkOffIcon,
+	sidesAll,
+	sidesTop,
+	sidesRight,
+	sidesBottom,
+	sidesLeft,
+	cornerAll,
+	cornerTopLeft,
+	cornerTopRight,
+	cornerBottomRight,
+	cornerBottomLeft,
+} from '@wordpress/icons';
+import { UnitControl, VStack } from './primitives';
 import { InheritedBoxContext } from './InheritedBoxContext';
 import { flattenPresetSetting } from '../utils/presetSettings';
 import { inheritedValueLabel } from '../utils/inherited-box';
@@ -75,6 +98,26 @@ const SIDE_LABELS = {
 	bottom: __( 'Bottom', 'sgs-blocks' ),
 	left: __( 'Left', 'sgs-blocks' ),
 };
+
+/** Row icons, as core's spacing and radius controls draw them; the text label stays the accessible name. */
+const KEY_ICONS = {
+	top: sidesTop,
+	right: sidesRight,
+	bottom: sidesBottom,
+	left: sidesLeft,
+	topLeft: cornerTopLeft,
+	topRight: cornerTopRight,
+	bottomRight: cornerBottomRight,
+	bottomLeft: cornerBottomLeft,
+};
+
+/**
+ * @param {ReadonlyArray<string>} keys The control's sides or corners.
+ * @return {Object} The all-corners icon for a radius, the all-sides icon otherwise.
+ */
+function allIconFor( keys ) {
+	return keys.some( ( k ) => k.startsWith( 'top' ) && k !== 'top' ) ? cornerAll : sidesAll;
+}
 
 /** Sentinel select values — mirrors SgsLengthControl.js's CUSTOM_VALUE shape. */
 const CUSTOM_VALUE = '__custom__';
@@ -217,6 +260,12 @@ export default function SgsBoxControl( {
 	} );
 
 	const firstSide = sides[ 0 ];
+	const labelId = `sgs-box-control-label-${ useInstanceId( SgsBoxControl ) }`;
+
+	// Rows whose select the client set to Custom… before typing a value (keyed by side, 'linked' for the linked row).
+	const [ customRows, setCustomRows ] = useState( {} );
+	const setRowCustom = ( rowKey, on ) =>
+		setCustomRows( ( prev ) => ( !! prev[ rowKey ] === on ? prev : { ...prev, [ rowKey ]: on } ) );
 
 	// What an unset row takes from a wider tier: the side's own inherited value, or the first side's on the
 	// linked row. '' when the row has its own value.
@@ -250,55 +299,68 @@ export default function SgsBoxControl( {
 
 	const explicitRange = min !== undefined || max !== undefined;
 
+	// Core's spacing-control link button: small, unpressed, on the label's line.
 	const linkButton = (
-		<FlexItem>
-			<Button
-				icon={ isLinked ? linkIcon : linkOffIcon }
-				label={ linkLabel }
-				aria-label={ linkLabel }
-				aria-pressed={ isLinked }
-				isPressed={ isLinked }
-				onClick={ toggleLinked }
-			/>
-		</FlexItem>
+		<Button
+			size="small"
+			icon={ isLinked ? linkIcon : linkOffIcon }
+			iconSize={ 24 }
+			label={ linkLabel }
+			onClick={ toggleLinked }
+		/>
 	);
 
+	const rowIcon = ( sideKey ) => {
+		const icon = sideKey ? KEY_ICONS[ sideKey ] : allIconFor( sides );
+		return icon ? (
+			<FlexItem className="sgs-box-control__side-icon">
+				<Icon icon={ icon } size={ 24 } />
+			</FlexItem>
+		) : null;
+	};
+
+	/** What the value box shows for a stored or inherited value: a preset's size, anything else as stored. */
+	const presetSize = ( raw ) => {
+		const slug = presetSlugFromValue( raw );
+		const preset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
+		return preset ? preset.size : raw;
+	};
+
 	/**
-	 * Preset-select + conditional number/slider row (presets branch).
-	 * Mirrors SgsLengthControl's SelectControl decision shape (option
-	 * format, Custom…/— none — semantics) — see file header.
+	 * Side icon, preset select (names only), then the value box with its unit. Picking a preset puts its size in
+	 * the value box; typing stores a length, which the select reads as Custom. `Custom…` picked from Default keeps
+	 * the select on Custom (`customRows`) until a value is typed or another option is picked.
 	 */
 	const presetRow = ( sideKey, value, onSideChange, rowLabel ) => {
+		const rowKey = sideKey || 'linked';
 		const slug = presetSlugFromValue( value );
 		const knownPreset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
 		const isUnknownPreset = !! slug && ! knownPreset; // design doc row H
 
-		const selectValue = knownPreset ? slug : isUnknownPreset ? UNKNOWN_VALUE : value ? CUSTOM_VALUE : '';
+		let selectValue = '';
+		if ( knownPreset ) {
+			selectValue = slug;
+		} else if ( isUnknownPreset ) {
+			selectValue = UNKNOWN_VALUE;
+		} else if ( value || customRows[ rowKey ] ) {
+			selectValue = CUSTOM_VALUE;
+		}
 
-		// "Default" (value: '', i.e. unset) mirrors WP core's own spacing
-		// dropdown, where the initial/default selection is a real "Default"
-		// entry rather than an explicit "None". An unset side already renders
-		// with no SGS-emitted value (the wrapper falls back to whatever the
-		// surrounding layer provides — e.g. core's `.has-global-padding`
-		// gutter for a content band), so this is a LABEL fix only: the stored
-		// value stays '', nothing about resolution/precedence changes. Do NOT
-		// read this as introducing a distinct explicit-zero "None" state —
-		// that would need its own sentinel + render-side handling and was
-		// deliberately left out (see 2026-09-07 inspector-fix report; the
-		// last hardcoded default here compounded on nesting and was reverted,
-		// D555/D706 — a speculative second state risks the same class of bug).
+		// "Default" (value '') is unset: the side paints what the block's stylesheet or a wider tier gives it,
+		// and an inherited value is named in the label. Nothing is written for it.
+		const inheritedRaw = inheritedFor( sideKey, value );
 		const options = [
 			{
-				label: inheritedFor( sideKey, value )
+				label: inheritedRaw
 					? sprintf(
 							/* translators: %s: the length this side takes from a wider device. */
 							__( 'Default (%s)', 'sgs-blocks' ),
-							inheritedValueLabel( inheritedFor( sideKey, value ), filteredSizes )
+							inheritedValueLabel( inheritedRaw, filteredSizes )
 					  )
 					: __( 'Default', 'sgs-blocks' ),
 				value: '',
 			},
-			...filteredSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
+			...filteredSizes.map( ( s ) => ( { label: s.name || s.slug, value: s.slug } ) ),
 			{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 		];
 		if ( isUnknownPreset ) {
@@ -312,26 +374,25 @@ export default function SgsBoxControl( {
 			} );
 		}
 
-		const { num, unit } = parseLength( value );
-		const unitRange = rangeForUnit( unit );
-		const rowMin = explicitRange ? min ?? 0 : unitRange.min;
-		const rowMax = explicitRange ? max ?? 300 : unitRange.max;
-		const rowStep = explicitRange ? 1 : unitRange.step;
+		const { num, unit } = parseLength( presetSize( value ) );
 
 		return (
-			<Flex align="center" gap={ 2 } key={ sideKey || 'linked' }>
-				<FlexItem style={ { width: 140 } }>
+			<Flex align="center" gap={ 2 } key={ rowKey } className="sgs-box-control__row">
+				{ rowIcon( sideKey ) }
+				<FlexBlock>
 					<SelectControl
 						label={ rowLabel }
-						hideLabelFromVision={ ! sideKey }
+						hideLabelFromVision
 						value={ selectValue }
 						options={ options }
 						onChange={ ( next ) => {
+							setRowCustom( rowKey, next === CUSTOM_VALUE );
 							if ( next === CUSTOM_VALUE ) {
-								// Row E: Custom starts from the theme's CURRENT
-								// resolved size for the preset just left, not
-								// blank — design doc row E.
-								onSideChange( knownPreset ? knownPreset.size : '' );
+								// Row E: Custom starts from the size of the preset just left; from Default it waits
+								// for a typed value.
+								if ( knownPreset ) {
+									onSideChange( knownPreset.size );
+								}
 								return;
 							}
 							if ( next === UNKNOWN_VALUE ) {
@@ -348,42 +409,27 @@ export default function SgsBoxControl( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+				</FlexBlock>
+				<FlexItem className="sgs-box-control__value">
+					<UnitControl
+						label={ rowLabel }
+						hideLabelFromVision
+						value={ num === undefined ? '' : `${ num }${ unit }` }
+						placeholder={ presetSize( inheritedRaw ) }
+						onChange={ ( raw ) => {
+							setRowCustom( rowKey, true );
+							onSideChange( raw ?? '' );
+						} }
+						units={ units }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</FlexItem>
-				{ selectValue === CUSTOM_VALUE && (
-					<>
-						<FlexItem style={ { width: 90 } }>
-							<UnitControl
-								label={ rowLabel }
-								hideLabelFromVision
-								value={ num === undefined ? '' : `${ num }${ unit }` }
-								onChange={ ( raw ) => onSideChange( raw ?? '' ) }
-								units={ units }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</FlexItem>
-						<FlexBlock>
-							<RangeControl
-								label={ rowLabel }
-								hideLabelFromVision
-								value={ num ?? 0 }
-								onChange={ ( v ) => onSideChange( `${ v }${ unit }` ) }
-								min={ rowMin }
-								max={ rowMax }
-								step={ rowStep }
-								withInputField={ false }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</FlexBlock>
-					</>
-				) }
-				{ ! sideKey && linkButton }
 			</Flex>
 		);
 	};
 
-	/** Plain number+slider row (no presets — existing behaviour, unchanged). */
+	/** Side icon, value box and slider (no presets). */
 	const plainRow = ( sideKey, value, onSideChange, rowLabel ) => {
 		const own = parseLength( value );
 		const inheritedRaw = inheritedFor( sideKey, value );
@@ -394,11 +440,12 @@ export default function SgsBoxControl( {
 		const rowMax = explicitRange ? max ?? 300 : unitRange.max;
 		const rowStep = explicitRange ? 1 : unitRange.step;
 		return (
-			<Flex align="center" gap={ 2 } key={ sideKey || 'linked' }>
-				<FlexItem style={ { width: 90 } }>
+			<Flex align="center" gap={ 2 } key={ sideKey || 'linked' } className="sgs-box-control__row">
+				{ rowIcon( sideKey ) }
+				<FlexItem className="sgs-box-control__value">
 					<UnitControl
 						label={ rowLabel }
-						hideLabelFromVision={ ! sideKey }
+						hideLabelFromVision
 						value={ own.num === undefined ? '' : `${ own.num }${ unit }` }
 						placeholder={ inheritedRaw }
 						onChange={ ( raw ) => onSideChange( raw ?? '' ) }
@@ -421,7 +468,6 @@ export default function SgsBoxControl( {
 						__next40pxDefaultSize
 					/>
 				</FlexBlock>
-				{ ! sideKey && linkButton }
 			</Flex>
 		);
 	};
@@ -429,22 +475,18 @@ export default function SgsBoxControl( {
 	const row = hasPresets ? presetRow : plainRow;
 
 	return (
-		<BaseControl label={ label } __nextHasNoMarginBottom>
-			{ isLinked
-				? row( null, values[ firstSide ] ?? '', setAllSides, label )
-				: sides.map( ( side ) =>
-						row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
-				  ) }
-			{ ! isLinked && (
-				<Flex justify="flex-end">
-					<Button
-						icon={ linkIcon }
-						label={ __( 'Link sides', 'sgs-blocks' ) }
-						aria-label={ __( 'Link sides', 'sgs-blocks' ) }
-						onClick={ toggleLinked }
-					/>
-				</Flex>
-			) }
-		</BaseControl>
+		<div className="sgs-box-control" role="group" aria-labelledby={ labelId }>
+			<Flex align="center" justify="space-between" className="sgs-box-control__header">
+				<BaseControl.VisualLabel id={ labelId }>{ label }</BaseControl.VisualLabel>
+				{ sides.length > 1 && linkButton }
+			</Flex>
+			<VStack spacing={ 2 }>
+				{ isLinked
+					? row( null, values[ firstSide ] ?? '', setAllSides, label )
+					: sides.map( ( side ) =>
+							row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
+					  ) }
+			</VStack>
+		</div>
 	);
 }
