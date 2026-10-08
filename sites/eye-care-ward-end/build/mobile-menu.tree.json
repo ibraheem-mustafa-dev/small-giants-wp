@@ -26,9 +26,9 @@
       "chromeRowPadding": {
         "desktop": {
           "top": "20px",
-          "right": "0px",
+          "right": "24px",
           "bottom": "0px",
-          "left": "0px"
+          "left": "24px"
         }
       },
       "chromeSlotType": "heading",

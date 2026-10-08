@@ -206,14 +206,22 @@
 	height: var(--sgs-grb-star-size, 14px);
 }
 
+/* The reviews block's stylesheet (on any page that also has a reviews block) paints the half star through
+   its own tokens at two classes; those tokens are defined here too, and the rules below sit at three
+   classes, so the badge's stars hold their colours whatever loads later. */
+.sgs-google-rating-badge__stars {
+	--sgs-gr-star: var(--sgs-grb-star, #fbbc04);
+	--sgs-gr-line: color-mix(in srgb, currentColor 22%, transparent);
+}
+
 /* The star markup comes from the shared sgs_render_stars_svg() helper, which names its parts with the google-reviews prefix. */
-.sgs-google-rating-badge__stars .sgs-google-reviews__star--full path,
-.sgs-google-rating-badge__stars .sgs-google-reviews__star-fill {
+.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star--full path,
+.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star-fill {
 	fill: var(--sgs-grb-star, #fbbc04);
 }
 
-.sgs-google-rating-badge__stars .sgs-google-reviews__star--empty path,
-.sgs-google-rating-badge__stars .sgs-google-reviews__star-outline {
+.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star--empty path,
+.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star-outline {
 	fill: color-mix(in srgb, currentColor 22%, transparent);
 }
 

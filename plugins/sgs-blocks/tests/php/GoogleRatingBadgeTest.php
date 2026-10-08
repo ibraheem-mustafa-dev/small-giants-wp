@@ -169,6 +169,16 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge__link\s*\{[^}]*position:\s*relative#', $css );
 	}
 
+	public function test_the_stars_keep_their_colours_beside_a_reviews_block(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
+		// google-reviews/style.css paints `.sgs-google-reviews__star--half .sgs-google-reviews__star-fill` (two classes)
+		// through --sgs-gr-star, undefined outside a reviews block: computed black (measured live, 2026-10-08).
+		$this->assertStringContainsString( '.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star-fill', $css );
+		$this->assertStringContainsString( '.sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star-outline', $css );
+		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge__stars\s*\{[^}]*--sgs-gr-star:\s*var\(--sgs-grb-star#', $css );
+		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge__stars\s*\{[^}]*--sgs-gr-line:#', $css );
+	}
+
 	public function test_the_stars_wrapper_is_a_div_so_the_helper_div_nests_validly(): void {
 		$html = $this->render( self::MANUAL );
 		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
