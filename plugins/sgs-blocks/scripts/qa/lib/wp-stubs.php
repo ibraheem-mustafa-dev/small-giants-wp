@@ -535,7 +535,16 @@ if ( ! function_exists( 'get_post' ) ) {
 
 if ( ! function_exists( 'get_option' ) ) {
 	function get_option( string $option, $default = false ) {
-		// No options table in the harness — every option is unset.
+		// No options table in the harness — every option is unset unless the caller
+		// passes SGS_QA_OPTIONS, a JSON object of option name => value (a test that
+		// needs stored Site Info sets it in the environment before the child process runs).
+		$seeded = getenv( 'SGS_QA_OPTIONS' );
+		if ( false !== $seeded && '' !== $seeded ) {
+			$options = json_decode( $seeded, true );
+			if ( is_array( $options ) && array_key_exists( $option, $options ) ) {
+				return $options[ $option ];
+			}
+		}
 		return $default;
 	}
 }

@@ -574,6 +574,30 @@ if ( 'hours' === $display_type && ! ( 'condensed' === ( $attributes['hoursLayout
 	);
 }
 
+// Opening-hours row padding: per-device custom properties on the block root, one per
+// side and printed only for a side the tier sets, so a narrower tier overrides just its
+// own sides. style.css reads each with the original 0.35em / 0 fallback, so an empty
+// setting renders as before. The one-line condensed layout keeps its own padding:0.
+if ( 'hours' === $display_type ) {
+	$sgs_bi_hrp_tiers = sgs_responsive_normalise_object( $attributes['hoursRowPadding'] ?? null, true );
+	$sgs_bi_hrp_media = array(
+		'desktop' => '',
+		'tablet'  => '@media(max-width:1023px)',
+		'mobile'  => '@media(max-width:767px)',
+	);
+	foreach ( $sgs_bi_hrp_media as $sgs_bi_hrp_tier => $sgs_bi_hrp_query ) {
+		if ( ! is_array( $sgs_bi_hrp_tiers[ $sgs_bi_hrp_tier ] ?? null ) ) {
+			continue;
+		}
+		$sgs_bi_hrp_decls = sgs_box_object_property_list( $sgs_bi_hrp_tiers[ $sgs_bi_hrp_tier ], '--sgs-bi-hours-row-pad-' );
+		if ( ! $sgs_bi_hrp_decls ) {
+			continue;
+		}
+		$sgs_bi_hrp_rule = "{$root_sel}{" . implode( ';', $sgs_bi_hrp_decls ) . ';}';
+		$scoped_css[]    = '' === $sgs_bi_hrp_query ? $sgs_bi_hrp_rule : $sgs_bi_hrp_query . '{' . $sgs_bi_hrp_rule . '}';
+	}
+}
+
 // Icon size, icon-to-text gap and the link's height floor, per device (the
 // same tier-object shape as sgs/button's iconSize/iconGap). Each unset value
 // keeps style.css's default: 1em icon, 0.5em gap, 44px touch-target link.

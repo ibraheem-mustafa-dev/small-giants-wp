@@ -301,6 +301,22 @@ export default function Edit( { attributes, setAttributes } ) {
 							</>
 						) }
 						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
+							<ResponsiveOverride
+								value={ attributes.hoursRowPadding }
+								onChange={ ( obj ) => setAttributes( { hoursRowPadding: obj } ) }
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SgsBoxControl
+										label={ __( 'Hours row padding', 'sgs-blocks' ) }
+										values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+										units={ BOX_UNITS }
+										presets
+										onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									/>
+								) }
+							</ResponsiveOverride>
+						) }
+						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
 							<SgsSeparatorControl
 								label={ __( 'Lines between rows', 'sgs-blocks' ) }
 								value={ separators }

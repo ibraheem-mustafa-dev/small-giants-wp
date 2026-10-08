@@ -105,6 +105,11 @@
 			"default": "Closed",
 			"description": "Only read when hoursLayout is 'condensed' and hoursShowClosed is on. The time-cell text for a closed day, e.g. 'Sun Closed'."
 		},
+		"hoursRowPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Only read by displayType 'hours'. Padding of each opening-hours row as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 0.35em top and bottom, 0 sides. Not applied to the one-line condensed layout, whose rows carry no padding."
+		},
 		"hoursCondensedInline": {
 			"type": "boolean",
 			"default": false,
@@ -683,6 +688,16 @@
 					},
 					"_note": "iconColour resolves via css:color (style.css `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to `iconColourGradient` — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
 					"_note_hover": "iconColourHover/iconColourHoverGradient mirror sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape."
+				},
+				"hours-row": {
+					"label": "Hours row",
+					"order": 6,
+					"clusters": [],
+					"prefix": "hoursRow",
+					"attrMap": {
+						"css:padding": "hoursRowPadding"
+					},
+					"_note": "The `<div class=\"sgs-business-hours__row\">` of the opening-hours definition list (displayType 'hours', stacked rows). hoursRowPadding reaches it as --sgs-bi-hours-row-pad-{top|right|bottom|left} on the block root; style.css reads each with the original 0.35em / 0 fallback."
 				},
 				"link": {
 					"label": "Link",

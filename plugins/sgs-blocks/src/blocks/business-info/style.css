@@ -281,7 +281,10 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 1em;
-	padding: 0.35em 0;
+	padding-top: var(--sgs-bi-hours-row-pad-top, 0.35em);
+	padding-right: var(--sgs-bi-hours-row-pad-right, 0);
+	padding-bottom: var(--sgs-bi-hours-row-pad-bottom, 0.35em);
+	padding-left: var(--sgs-bi-hours-row-pad-left, 0);
 }
 
 /* The line between rows is the shared Separators setting (`separators`), drawn on
