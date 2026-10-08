@@ -106,8 +106,8 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 - **Session D (2026-10-08):** every register row has a `Lane` (78 open = 29 Solve + 49 Fix). **Lenses at 100%.** S2, S3, S5's decided
   values: closed live. **Footer (evening):** Solve's "held" check fixed (P2-l); the bottom row is `layout: flex` + 10px gap; link
   colour P2-m live; footer Hardcode is now only the social-icon borders, which go with `plans/2026-10-08-icon-unification-and-spacing-control.md`.
-  Open: P2-n (link underline control), P2-o (size-guide walker). Untriaged Hardcode (sweep issues): home 3, mega-brands 4, shop 2 (read each
-  Winning rule first). ⚠️ A Solve write run that crashes on a host timeout leaves its writes unjudged in the tree: `git diff` it first.
+  Size-guide measures again (P2-o) and the Hardcode triage closed home, mega-brands and shop (P2-q: unmeasured sides are unresolved);
+  the link underline helper is `plans/2026-10-08-link-underline-helper.md` (batch 1 built, eye-care-test deploy pending). ⚠️ A Solve write run that crashes on a host timeout leaves its writes unjudged in the tree: `git diff` it first.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
