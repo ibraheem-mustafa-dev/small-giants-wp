@@ -4319,7 +4319,6 @@
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
-        "css_element": "item",
         "css_state": "hover"
       }
     },
