@@ -499,7 +499,7 @@
           "gridTemplateColumns": {
             "desktop": "1fr auto 1fr",
             "tablet": "1fr auto 1fr",
-            "mobile": "1fr auto 1fr"
+            "mobile": "auto 1fr auto"
           },
           "alignItems": "center",
           "gap": {
