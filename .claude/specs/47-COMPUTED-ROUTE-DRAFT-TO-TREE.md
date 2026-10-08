@@ -658,9 +658,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
        the bigger heap; `sgs/nav-bar-menu` 71 settings, 46 of its 54 dead are states the calibration page cannot show),
        CR14 (help walks every FAQ answer open) and CR25 (a template build retries the host's transient database
-       errors), CR27 (seven of the eight dead nav-bar-menu settings were calibration gaps, fixed in fixtures, the
-       reader and the markers) and CR28 (`emissionOf` reads a helper that carries its property in a variable). Open:
-       `triggerDetachBackgroundHover`, an untestable state (the chip shows only at 375 after `is-detached`).
+       errors), CR27 (all eight dead nav-bar-menu settings were calibration gaps, fixed in fixtures, the reader and the
+       markers; a state instance is untested only when hidden at every width, so the detached chip's hover reads at
+       375) and CR28 (`emissionOf` reads a helper that carries its property in a variable).
      - **CR12 — the dark-mode toggle renders nothing for any client. PARKED pending Bean, not open.** Neither a
        rendering bug nor an unbuilt feature: `theme-toggle/render.php` correctly returns early when
        `settings.custom.dark` is empty, and `scripts/derive-dark-palette.py` is already wired into
