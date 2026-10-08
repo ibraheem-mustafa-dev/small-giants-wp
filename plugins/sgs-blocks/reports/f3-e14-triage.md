@@ -154,22 +154,22 @@ Verdict key: **FIX** a control cannot reach a live element. All 26 FIX declarati
 | 21 | `sgs/google-reviews` | `.sgs-google-reviews__maps-link` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent (the 12 element controls do not include the maps link) |
 | 22 | `sgs/google-reviews` | `.sgs-google-reviews__breakdown-row` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent |
 | 23 | `sgs/google-reviews` | `.sgs-google-reviews__stars` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent |
-| 24 | `sgs/form` | `.sgs-form-field__column-heading` | 3 | CLASS-2 | DEFENSIBLE | 4 | permanent |
-| 25 | `sgs/form` | `.sgs-form-field__row-heading` | 2 | CLASS-2 | DEFENSIBLE | 4 | permanent |
-| 26 | `sgs/form` | `.sgs-form__progress-step-number` | 2 | CLASS-2 | DEFENSIBLE | 4 | permanent |
-| 27 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__arrow` | 2 | CLASS-2 | DEFENSIBLE | 2 | permanent |
+| 24 | `sgs/form` | `.sgs-form-field__column-heading` | 3 | CLASS-2 | **CLOSED `e0a22e070`** | 4 | was: permanent. Now a `gridColHeading` surface on `sgs/form`; the literals sit in `:where()` |
+| 25 | `sgs/form` | `.sgs-form-field__row-heading` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 4 | was: permanent. Now a `gridRowHeading` surface on `sgs/form`; the literals sit in `:where()` |
+| 26 | `sgs/form` | `.sgs-form__progress-step-number` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 4 | was: permanent. Now a `stepNumber` surface on `sgs/form`; the literals, including the narrow-container size, sit in `:where()` |
+| 27 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__arrow` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 2 | was: permanent. The declarations were inert (the button holds only an SVG sized by `.sgs-testimonial-slider__arrow-icon`) and are removed |
 | 28 | `sgs/post-grid` | `.sgs-post-grid__error` | 1 | CLASS-3 | DEFENSIBLE | 2 | permanent for the empty-state text |
 | 29 | `sgs/cta-section` | `.sgs-cta-section__ribbon` | 4 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 30 | `sgs/form` | `.sgs-form-field__file-button` | 4 | CLASS-2 | CLOSED `880aab178` | 1 | `fileButton` surface |
-| 31 | `sgs/notice-banner` | `.sgs-notice-banner__icon` | 2 | CLASS-2 | DEFENSIBLE | 1 | default-state only (`iconSize` owns the glyph) |
-| 32 | `sgs/notice-banner` | `.sgs-notice-banner__close` | 2 | CLASS-2 | DEFENSIBLE | 1 | permanent |
-| 33 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-icon` | 2 | CLASS-2 | DEFENSIBLE | 1 | permanent |
+| 31 | `sgs/notice-banner` | `.sgs-notice-banner__icon` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: default-state only (`iconSize` owns the glyph). The glyph size and line height sit in `:where()`; `iconSize` still owns the glyph |
+| 32 | `sgs/notice-banner` | `.sgs-notice-banner__close` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The glyph size and line height sit in `:where()` |
+| 33 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-icon` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The glyph size and line height sit in `:where()` (no surface of its own) |
 | 34 | `sgs/button` | `.sgs-button__note` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent (documented) |
 | 35 | `sgs/form` | `.sgs-form-field__file-label` | 1 | CLASS-2 | CLOSED `880aab178` | 1 | `filePrompt` surface |
 | 36 | `sgs/form` | `.sgs-form-file__progress` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 37 | `sgs/google-reviews` | `.sgs-google-reviews__badge-text` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
-| 39 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-btn` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
+| 39 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-btn` | 1 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The declaration was inert (the only child sets its own size) and is removed |
 | 40 | `sgs/business-info` | `.sgs-business-info__placeholder` | 2 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |
 | 41 | `sgs/table-of-contents` | `.sgs-toc__empty` | 1 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |
 | 42 | `sgs/cta-section` | `.sgs-cta-section__btn` | 3 | CLASS-2 | DEAD | 0 | n/a |
@@ -250,11 +250,11 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `form/style.css::.sgs-form-field__column-heading` | `font-size: 11px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__column-heading` | `letter-spacing: 0.12em` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__column-heading` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__row-heading` | `font-size: 13px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form-field__row-heading` | `font-weight: 500` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
+| `form/style.css::.sgs-form-field__column-heading` | `font-size: 11px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `form/style.css::.sgs-form-field__column-heading` | `letter-spacing: 0.12em` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `form/style.css::.sgs-form-field__column-heading` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `form/style.css::.sgs-form-field__row-heading` | `font-size: 13px` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `form/style.css::.sgs-form-field__row-heading` | `font-weight: 500` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
 | `form/style.css::.sgs-form-field__input` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `6f1963c28` |
 | `form/style.css::.sgs-form-field__label` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `6f1963c28` |
 | `form/style.css::.sgs-form-tile__icon` | `font-size: 1.5rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
@@ -267,8 +267,8 @@ Each table row is one declaration. "Competing control" is the control the gate r
 | `form/style.css::.sgs-form-field__file-button` | `text-transform: uppercase` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `880aab178` |
 | `form/style.css::.sgs-form-file__progress` | `text-align: center` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
 | `form/style.css::.sgs-form-field__consent-text` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
-| `form/style.css::.sgs-form__progress-step-number` | `font-size: 0.8125rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
-| `form/style.css::.sgs-form__progress-step-number` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | DEFENSIBLE |
+| `form/style.css::.sgs-form__progress-step-number` | `font-size: 0.8125rem` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `form/style.css::.sgs-form__progress-step-number` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `e0a22e070` |
 | `form/style.css::.sgs-form__button` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
 | `form/style.css::.sgs-form__button` | `line-height: 1.5` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
 | `form/style.css::.sgs-form-review__term` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-form` (0,2,0) | (0,1,0) | CLOSED `c9d0f7cf4` |
@@ -309,12 +309,12 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `notice-banner/style.css::.sgs-notice-banner__icon` | `font-size: 20px` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `notice-banner/style.css::.sgs-notice-banner__icon` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | DEFENSIBLE |
+| `notice-banner/style.css::.sgs-notice-banner__icon` | `font-size: 20px` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `notice-banner/style.css::.sgs-notice-banner__icon` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
 | `notice-banner/style.css::.sgs-notice-banner__text` | `line-height: 1.5` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | DEAD |
 | `notice-banner/style.css::.sgs-notice-banner__text strong` | `font-weight: 700` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,1) | DEAD |
-| `notice-banner/style.css::.sgs-notice-banner__close` | `font-size: 1.25rem` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `notice-banner/style.css::.sgs-notice-banner__close` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | DEFENSIBLE |
+| `notice-banner/style.css::.sgs-notice-banner__close` | `font-size: 1.25rem` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `notice-banner/style.css::.sgs-notice-banner__close` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-notice-banner` (0,2,0); `.sgs-notice-banner` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
 
 - `.sgs-notice-banner__icon` (DEFENSIBLE). **Reach:** `notice-banner/render.php`: `$sgs_nb_icon_classes` once per banner with an icon. **Leak:** default-state only (`iconSize` owns the glyph). **Evidence:** The block has its own `iconSize` control for the glyph (`block.json` attributes `iconSize`, `iconStyle`); a body-typography control should not resize an icon.
 - `.sgs-notice-banner__text` (DEAD). **Reach:** No current markup emits `sgs-notice-banner__text`: `notice-banner/render.php` says "FR-22-6: text content is $content (sgs/text InnerBlock). R-31-14: no fallback." Only `style.css`, `editor.css` and one conformance fixture (`scripts/tests/fixtures/conformance/sgs-notice-banner.html`) name it. **Leak:** n/a. **Evidence:** Legacy scalar-text markup. The message is an `sgs/text` child with its own controls. Two rows (`__text` and `__text strong`).
@@ -386,11 +386,11 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `testimonial-slider/style.css::.sgs-testimonial-slider__arrow` | `font-size: 24px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `testimonial-slider/style.css::.sgs-testimonial-slider__arrow` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-btn` | `font-size: 16px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-icon` | `font-size: 14px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | DEFENSIBLE |
-| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-icon` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | DEFENSIBLE |
+| `testimonial-slider/style.css::.sgs-testimonial-slider__arrow` | `font-size: 24px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `testimonial-slider/style.css::.sgs-testimonial-slider__arrow` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-btn` | `font-size: 16px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-icon` | `font-size: 14px` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
+| `testimonial-slider/style.css::.sgs-testimonial-slider__pause-icon` | `line-height: 1` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0); `.wp-block-sgs-testimonial-slider` (0,1,0) | (0,1,0) | CLOSED `e0a22e070` |
 | `testimonial-slider/style.css::.sgs-testimonial-slider__empty` | `text-align: center` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0) | (0,1,0) | DEAD |
 | `testimonial-slider/style.css::.sgs-testimonial-slider__empty` | `font-style: italic` | CLASS-2 | `.{uid}.wp-block-sgs-testimonial-slider` (0,2,0) | (0,1,0) | DEAD |
 
