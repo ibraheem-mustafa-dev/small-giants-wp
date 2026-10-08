@@ -57,12 +57,13 @@
  *
  * @package SGS\Blocks
  */
-import { useState } from '@wordpress/element';
+import { useContext, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useSettings } from '@wordpress/block-editor';
 import { BaseControl, Button, Flex, FlexBlock, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
 import { link as linkIcon, linkOff as linkOffIcon } from '@wordpress/icons';
 import { UnitControl } from './primitives';
+import { InheritedBoxContext } from './InheritedBoxContext';
 import { flattenPresetSetting } from '../utils/presetSettings';
 
 const ALL_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -187,9 +188,12 @@ export default function SgsBoxControl( {
 	min,
 	max,
 	presets = false,
-	inherited = {},
+	inherited: inheritedProp,
 	labels = SIDE_LABELS,
 } ) {
+	// A caller that knows the tiers passes `inherited`; inside a ResponsiveOverride it comes from the override.
+	const inheritedFromOverride = useContext( InheritedBoxContext );
+	const inherited = inheritedProp ?? inheritedFromOverride;
 	// Hook must run unconditionally regardless of the `presets` prop.
 	const [ spacingSizesRaw ] = useSettings( 'spacing.spacingSizes' );
 	const spacingSizes = flattenPresetSetting( spacingSizesRaw );

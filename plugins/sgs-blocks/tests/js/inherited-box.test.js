@@ -35,6 +35,13 @@ describe( 'inheritedBoxValue', () => {
 		expect( inheritedBoxValue( { base: { top: '0px' }, tablet: {} }, 'tablet', 'top' ) ).toBe( '0px' );
 	} );
 
+	it( 'reads the tiers of a ResponsiveOverride, keyed desktop, the same way', () => {
+		const overrideTiers = { desktop: { top: '10px' }, tablet: { left: '4px' } };
+		expect( inheritedBoxValue( overrideTiers, 'mobile', 'top' ) ).toBe( '10px' );
+		expect( inheritedBoxValue( overrideTiers, 'mobile', 'left' ) ).toBe( '4px' );
+		expect( inheritedBoxValue( overrideTiers, 'desktop', 'top' ) ).toBe( '' );
+	} );
+
 	it( 'negative control: a lookup that ignores the tier order is caught', () => {
 		const wrongOrder = ( values, key ) => values.base?.[ key ] ?? values.tablet?.[ key ] ?? '';
 		expect( wrongOrder( tiers, 'topRight' ) ).not.toBe( inheritedBoxValue( tiers, 'mobile', 'topRight' ) );

@@ -6,10 +6,12 @@
  * empty box; nothing is written until the client types.
  */
 
+// `base` and `desktop` name the same widest tier: the box controls call it `base`, the override control `desktop`.
 const WIDER_TIERS = {
 	base: [],
-	tablet: [ 'base' ],
-	mobile: [ 'tablet', 'base' ],
+	desktop: [],
+	tablet: [ 'base', 'desktop' ],
+	mobile: [ 'tablet', 'base', 'desktop' ],
 };
 
 const isSet = ( value ) => value !== undefined && value !== null && value !== '';

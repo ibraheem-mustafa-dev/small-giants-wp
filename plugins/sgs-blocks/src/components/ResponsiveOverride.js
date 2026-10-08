@@ -35,6 +35,8 @@ import { Button } from '@wordpress/components';
 import { link as linkIcon } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
+import { inheritedBox } from '../utils/inherited-box';
+import { InheritedBoxContext } from './InheritedBoxContext';
 
 // ⛔ Removed with the switcher (Phase 1.3): `useState` (the private tier), the
 // `DeviceTabs` import, the TIERS table, and the desktop/tablet/mobile icons that
@@ -45,6 +47,9 @@ import { makeResponsive, resolveResponsiveTier } from '../utils/responsive';
 
 // WP's native device-type names → this component's tier keys.
 const DEVICE_TO_KEY = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+
+// Every side and corner key a box control can show; the box inside this override reads the ones it has.
+const BOX_KEYS = [ 'top', 'right', 'bottom', 'left', 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 
 const TIER_ABOVE = { tablet: __( 'Desktop', 'sgs-blocks' ), mobile: __( 'Tablet', 'sgs-blocks' ) };
 
@@ -112,14 +117,16 @@ export default function ResponsiveOverride( { label, value, onChange, children }
 				className="sgs-responsive-override__field"
 				style={ inherited ? { opacity: 0.6 } : undefined }
 			>
-				{ children( {
-					tier: active,
-					ownValue: hasOwn ? ownRaw : '',
-					effectiveValue: resolved.value,
-					inherited,
-					setOwnValue,
-					resetTier,
-				} ) }
+				<InheritedBoxContext.Provider value={ inheritedBox( obj, active, BOX_KEYS ) }>
+					{ children( {
+						tier: active,
+						ownValue: hasOwn ? ownRaw : '',
+						effectiveValue: resolved.value,
+						inherited,
+						setOwnValue,
+						resetTier,
+					} ) }
+				</InheritedBoxContext.Provider>
 			</div>
 
 			{ inherited && (

@@ -124,5 +124,22 @@
         }
       }
     ]
+  },
+  {
+    "name": "sgs/text",
+    "attributes": {
+      "className": "cr6h-ph",
+      "text": "Placeholder check",
+      "borderRadius": {
+        "desktop": {
+          "topLeft": "6px"
+        }
+      },
+      "padding": {
+        "desktop": {
+          "top": "10px"
+        }
+      }
+    }
   }
 ]

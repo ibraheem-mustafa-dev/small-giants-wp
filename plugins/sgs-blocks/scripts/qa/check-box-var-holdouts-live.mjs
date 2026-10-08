@@ -35,7 +35,7 @@ const CORNERS = { 1440: '6 6 6 6', 768: '20 6 6 6', 375: '20 6 4 6' };
 const ROWS = [
 	[ 'accordion header', '.cr6h-accordion .sgs-accordion-item__header', '.cr6h-accordion .sgs-accordion-item__header', 'padding', SIDES ],
 	[ 'accordion content', '.cr6h-accordion .sgs-accordion-item__content', '.cr6h-accordion .sgs-accordion-item__content', 'padding', SIDES ],
-	[ 'multi-button radius', '.cr6h-mb .sgs-btn, .cr6h-mb .wp-block-sgs-button, .cr6h-mb a', '.cr6h-mb .sgs-btn, .cr6h-mb a', 'radius', CORNERS ],
+	[ 'multi-button radius', '.cr6h-mb .sgs-btn, .cr6h-mb .wp-block-sgs-button, .cr6h-mb a', '.cr6h-mb .cr6h-btn', 'radius', CORNERS ],
 	[ 'grid item padding', '.cr6h-cell', '.cr6h-cell', 'padding', SIDES ],
 	[ 'grid item radius', '.cr6h-cell', '.cr6h-cell', 'radius', CORNERS ],
 ];
