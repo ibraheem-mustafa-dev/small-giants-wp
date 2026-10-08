@@ -61,6 +61,9 @@
 /* ===== Icon ===== */
 .sgs-notice-banner__icon {
 	flex-shrink: 0;
+}
+
+:where(.sgs-notice-banner__icon) {
 	font-size: 20px;
 	line-height: 1;
 }
@@ -169,10 +172,13 @@
 	cursor: pointer;
 	color: inherit;
 	opacity: 0.7;
-	font-size: 1.25rem;
-	line-height: 1;
 	border-radius: 4px;
 	transition: opacity 0.15s ease;
+}
+
+:where(.sgs-notice-banner__close) {
+	font-size: 1.25rem;
+	line-height: 1;
 }
 
 .sgs-notice-banner__close:hover {

@@ -537,6 +537,69 @@
 						"css:writing-mode": "filePromptWritingMode"
 					},
 					"_note": "Typography only (filePrompt* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
+				},
+				"grid-column-heading": {
+					"label": "Grid column heading",
+					"order": 24,
+					"clusters": [ "text" ],
+					"prefix": "gridColHeading",
+					"attrMap": {
+						"css:font-size": "gridColHeadingFontSize",
+						"css:font-weight": "gridColHeadingFontWeight",
+						"css:font-style": "gridColHeadingFontStyle",
+						"css:font-family": "gridColHeadingFontFamily",
+						"css:text-transform": "gridColHeadingTextTransform",
+						"css:text-decoration": "gridColHeadingTextDecoration",
+						"css:line-height": "gridColHeadingLineHeight",
+						"css:letter-spacing": "gridColHeadingLetterSpacing",
+						"css:text-align": "gridColHeadingTextAlign",
+						"css:text-wrap": "gridColHeadingTextWrap",
+						"css:column-count": "gridColHeadingTextColumns",
+						"css:writing-mode": "gridColHeadingWritingMode"
+					},
+					"_note": "Typography only (gridColHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__column-heading). The micro-label above a field in a table-style grid."
+				},
+				"grid-row-heading": {
+					"label": "Grid row heading",
+					"order": 25,
+					"clusters": [ "text" ],
+					"prefix": "gridRowHeading",
+					"attrMap": {
+						"css:font-size": "gridRowHeadingFontSize",
+						"css:font-weight": "gridRowHeadingFontWeight",
+						"css:font-style": "gridRowHeadingFontStyle",
+						"css:font-family": "gridRowHeadingFontFamily",
+						"css:text-transform": "gridRowHeadingTextTransform",
+						"css:text-decoration": "gridRowHeadingTextDecoration",
+						"css:line-height": "gridRowHeadingLineHeight",
+						"css:letter-spacing": "gridRowHeadingLetterSpacing",
+						"css:text-align": "gridRowHeadingTextAlign",
+						"css:text-wrap": "gridRowHeadingTextWrap",
+						"css:column-count": "gridRowHeadingTextColumns",
+						"css:writing-mode": "gridRowHeadingWritingMode"
+					},
+					"_note": "Typography only (gridRowHeading* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__row-heading). The label in the gutter beside a field in a table-style grid."
+				},
+				"step-number": {
+					"label": "Progress step number",
+					"order": 26,
+					"clusters": [ "text" ],
+					"prefix": "stepNumber",
+					"attrMap": {
+						"css:font-size": "stepNumberFontSize",
+						"css:font-weight": "stepNumberFontWeight",
+						"css:font-style": "stepNumberFontStyle",
+						"css:font-family": "stepNumberFontFamily",
+						"css:text-transform": "stepNumberTextTransform",
+						"css:text-decoration": "stepNumberTextDecoration",
+						"css:line-height": "stepNumberLineHeight",
+						"css:letter-spacing": "stepNumberLetterSpacing",
+						"css:text-align": "stepNumberTextAlign",
+						"css:text-wrap": "stepNumberTextWrap",
+						"css:column-count": "stepNumberTextColumns",
+						"css:writing-mode": "stepNumberWritingMode"
+					},
+					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble."
 				}
 			}
 		}
@@ -1928,6 +1991,198 @@
 			"type": "number"
 		},
 		"filePromptWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"gridColHeadingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"gridColHeadingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"gridColHeadingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"gridColHeadingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"gridColHeadingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"gridColHeadingTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"gridColHeadingTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"gridColHeadingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"gridColHeadingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"gridColHeadingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"gridColHeadingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"gridColHeadingTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"gridColHeadingTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"gridColHeadingTextColumns": {
+			"type": "number"
+		},
+		"gridColHeadingWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"gridRowHeadingFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"gridRowHeadingFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"gridRowHeadingFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"gridRowHeadingFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"gridRowHeadingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"gridRowHeadingTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"gridRowHeadingTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"gridRowHeadingLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"gridRowHeadingLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"gridRowHeadingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"gridRowHeadingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"gridRowHeadingTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"gridRowHeadingTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"gridRowHeadingTextColumns": {
+			"type": "number"
+		},
+		"gridRowHeadingWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"stepNumberFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"stepNumberFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"stepNumberFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"stepNumberFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"stepNumberFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"stepNumberTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"stepNumberTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"stepNumberLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"stepNumberLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepNumberLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"stepNumberLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"stepNumberTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"stepNumberTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"stepNumberTextColumns": {
+			"type": "number"
+		},
+		"stepNumberWritingMode": {
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""

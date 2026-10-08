@@ -178,6 +178,10 @@
 	display: block;
 	margin-bottom: 8px;
 	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* Typography defaults at (0,0,0) so the gridColHeading control strictly wins. */
+:where(.sgs-form-field__column-heading) {
 	font-size: 11px;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -195,6 +199,10 @@
 	align-items: center;
 	width: var(--sgs-form-row-heading-gutter, 32px);
 	height: 3rem;
+}
+
+/* Typography defaults at (0,0,0) so the gridRowHeading control strictly wins. */
+:where(.sgs-form-field__row-heading) {
 	font-size: 13px;
 	font-weight: 500;
 }
@@ -856,11 +864,15 @@ select.sgs-form-field__input {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 0.8125rem;
-	font-weight: 600;
 	border: 2px solid var(--wp--preset--color--border, #ccc);
 	color: var(--wp--preset--color--text-muted, #555);
 	transition: all 0.2s;
+}
+
+/* Typography defaults at (0,0,0) so the stepNumber control strictly wins. */
+:where(.sgs-form__progress-step-number) {
+	font-size: 0.8125rem;
+	font-weight: 600;
 }
 
 .sgs-form__progress-step--active .sgs-form__progress-step-number,
@@ -907,6 +919,9 @@ select.sgs-form-field__input {
 	.sgs-form__progress-step-number {
 		width: 24px;
 		height: 24px;
+	}
+
+	:where(.sgs-form__progress-step-number) {
 		font-size: 0.75rem;
 	}
 }
