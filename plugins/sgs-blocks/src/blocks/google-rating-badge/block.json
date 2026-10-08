@@ -1,0 +1,497 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/google-rating-badge",
+	"version": "0.1.0",
+	"title": "SGS Google Rating Badge",
+	"category": "sgs-content",
+	"description": "A compact Google rating badge (logo, score, stars, review count) as one link, for headers, drawers and footers.",
+	"keywords": [
+		"google",
+		"rating",
+		"reviews",
+		"badge",
+		"stars"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "star-filled",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"gradients": false,
+			"text": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"imageControls": false,
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
+			},
+			"elements": {
+				"wrapper": {
+					"label": "Wrapper",
+					"order": 1,
+					"isWrapper": true,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {},
+					"_note": "Root <div>: alignment, floating position and offset. The badge frame is the badge element."
+				},
+				"badge": {
+					"label": "Badge",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"border"
+					],
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:border-color": "borderColourHover"
+							}
+						}
+					},
+					"_note": "The one <a> (or <span> with no link) that frames the whole badge: background, border, radius, padding, shadow, minimum height, gap."
+				},
+				"score": {
+					"label": "Score",
+					"order": 3,
+					"clusters": [
+						"text"
+					],
+					"prefix": "score",
+					"attrMap": {
+						"css:color": "scoreColour"
+					}
+				},
+				"caption": {
+					"label": "Caption",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "caption",
+					"attrMap": {
+						"css:color": "captionColour"
+					}
+				},
+				"star": {
+					"label": "Stars",
+					"order": 5,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "star",
+					"attrMap": {
+						"css:fill": "starColour",
+						"css:fill-gradient": "starColourGradient"
+					},
+					"_note": "SVG star fill. Flat colour via --sgs-grb-star; a gradient through sgs_svg_stroke_gradient(...,'fill') defs."
+				},
+				"accent-stripe": {
+					"label": "Accent stripe (card)",
+					"order": 6,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "accentStripe",
+					"attrMap": {
+						"css:background-color": "accentStripeColour",
+						"css:background-image": "accentStripeColourGradient"
+					},
+					"_note": "The 3px stripe on the leading edge of the card preset: the badge link's ::before, painted as a fill (flat or gradient)."
+				}
+			}
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-google-rating-badge"
+	},
+	"attributes": {
+		"badgeStyle": {
+			"type": "string",
+			"enum": [
+				"pill",
+				"card",
+				"stacked"
+			],
+			"default": "pill"
+		},
+		"dataSource": {
+			"type": "string",
+			"enum": [
+				"auto",
+				"manual",
+				"synced"
+			],
+			"default": "auto"
+		},
+		"rating": {
+			"type": "number",
+			"default": 0
+		},
+		"reviewCount": {
+			"type": "integer",
+			"default": 0
+		},
+		"placeId": {
+			"type": "string",
+			"default": ""
+		},
+		"listingUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"openInNewTab": {
+			"type": "boolean",
+			"default": true
+		},
+		"linkLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"showCount": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSource": {
+			"type": [
+				"boolean",
+				"null"
+			],
+			"default": null
+		},
+		"compactBelow": {
+			"type": "integer",
+			"default": 1200
+		},
+		"position": {
+			"type": "string",
+			"enum": [
+				"static",
+				"floating"
+			],
+			"default": "static"
+		},
+		"floatingCorner": {
+			"type": "string",
+			"enum": [
+				"bottom-right",
+				"bottom-left",
+				"top-right",
+				"top-left"
+			],
+			"default": "bottom-right"
+		},
+		"floatingOffset": {
+			"type": "object",
+			"default": {}
+		},
+		"alignment": {
+			"type": "string",
+			"enum": [
+				"start",
+				"center",
+				"end"
+			],
+			"default": "start"
+		},
+		"gap": {
+			"type": "object",
+			"default": {}
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"minHeight": {
+			"type": "number",
+			"default": 44
+		},
+		"scoreColour": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColour": {
+			"type": "string",
+			"default": ""
+		},
+		"starColour": {
+			"type": "string",
+			"default": ""
+		},
+		"starColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"accentStripeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"accentStripeColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"shadow": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"scoreFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"scoreFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"scoreFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"scoreLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scoreLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"scoreLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scoreTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"scoreTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"scoreTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"scoreTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"captionFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"captionFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"captionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"captionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"captionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"captionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"captionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"dataSource": "manual",
+			"rating": 4.7,
+			"reviewCount": 15
+		}
+	}
+}

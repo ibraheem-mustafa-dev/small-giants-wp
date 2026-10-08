@@ -54,6 +54,8 @@ final class Sgs_Site_Info {
 	 * socials.facebook, socials.instagram, socials.twitter, socials.linkedin,
 	 * socials.youtube, socials.tiktok, socials.whatsapp, socials.google,
 	 * copyright, tagline, vat_number, registered_office, maps_cid,
+	 * google_rating (0-5, one decimal), google_review_count (whole number): the
+	 * figures sgs/google-rating-badge shows when no live Google data is connected,
 	 * logo (media-library attachment ID of the site logo — read it with
 	 * Sgs_Site_Info_Logo::get_id(); that class owns the key's sanitiser and resolver)
 	 */
@@ -87,6 +89,8 @@ final class Sgs_Site_Info {
 		'copyright'         => 'public',
 		'tagline'           => 'public',
 		'maps_cid'          => 'public',
+		'google_rating'       => 'public',
+		'google_review_count' => 'public',
 		'logo'              => 'public',
 	);
 
@@ -143,6 +147,8 @@ final class Sgs_Site_Info {
 				'tagline'           => $text,
 				'vat_number'        => $text,
 				'maps_cid'          => array( __CLASS__, 'sanitise_maps_cid' ),
+				'google_rating'       => array( __CLASS__, 'sanitise_google_rating' ),
+				'google_review_count' => array( __CLASS__, 'sanitise_google_review_count' ),
 				'logo'              => array( __NAMESPACE__ . '\Sgs_Site_Info_Logo', 'sanitise' ),
 			),
 			// Opening hours — all days use plain-text sanitiser.
@@ -466,6 +472,36 @@ final class Sgs_Site_Info {
 	 */
 	private static function sanitise_maps_cid( $raw ): string {
 		return (string) \preg_replace( '/[^0-9]/', '', \sanitize_text_field( (string) $raw ) );
+	}
+
+	/**
+	 * Sanitise the Google star rating: a number from 0 to 5 held to one decimal.
+	 *
+	 * Empty input stays empty (nothing set); a non-numeric value becomes empty; a number outside 0-5 is clamped.
+	 *
+	 * @param  mixed $raw Raw rating value.
+	 * @return string One-decimal rating such as "4.7", or '' when unset.
+	 */
+	private static function sanitise_google_rating( $raw ): string {
+		$raw = \trim( \sanitize_text_field( (string) $raw ) );
+		if ( '' === $raw || ! \is_numeric( $raw ) ) {
+			return '';
+		}
+		return \number_format( \max( 0.0, \min( 5.0, \round( (float) $raw, 1 ) ) ), 1, '.', '' );
+	}
+
+	/**
+	 * Sanitise the Google review count: a non-negative whole number.
+	 *
+	 * @param  mixed $raw Raw count value (thousands separators are ignored).
+	 * @return string Digits only, or '' when unset or not a number.
+	 */
+	private static function sanitise_google_review_count( $raw ): string {
+		$raw = \str_replace( array( ',', ' ' ), '', \trim( \sanitize_text_field( (string) $raw ) ) );
+		if ( '' === $raw || ! \ctype_digit( $raw ) ) {
+			return '';
+		}
+		return (string) (int) $raw;
 	}
 
 	/**

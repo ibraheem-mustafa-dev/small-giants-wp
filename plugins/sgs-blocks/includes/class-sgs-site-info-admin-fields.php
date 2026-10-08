@@ -113,14 +113,26 @@ final class Sgs_Site_Info_Admin_Fields {
 		$placeholder = isset( $args['placeholder'] ) ? (string) $args['placeholder'] : '';
 		$name        = self::dot_to_name( $key );
 
+		// A number input may carry min / max / step; each is a plain numeric string.
+		$bounds = '';
+		foreach ( array( 'min', 'max', 'step' ) as $bound ) {
+			if ( isset( $args[ $bound ] ) && \is_numeric( $args[ $bound ] ) ) {
+				$bounds .= ' ' . $bound . '="' . \esc_attr( (string) $args[ $bound ] ) . '"';
+			}
+		}
+
 		printf(
-			'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" placeholder="%5$s" />',
+			'<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text" placeholder="%5$s"%6$s />',
 			\esc_attr( $type ),
 			\esc_attr( $id ),
 			\esc_attr( $name ),
 			\esc_attr( $value ),
-			\esc_attr( $placeholder )
+			\esc_attr( $placeholder ),
+			$bounds // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_attr()'d numeric values above.
 		);
+		if ( ! empty( $args['description'] ) ) {
+			echo '<p class="description">' . \esc_html( (string) $args['description'] ) . '</p>';
+		}
 	}
 
 	/**
@@ -160,6 +172,8 @@ final class Sgs_Site_Info_Admin_Fields {
 			'vat_number',
 			'registered_office',
 			'maps_cid',
+			'google_rating',
+			'google_review_count',
 			'logo',
 			'socials',
 			'opening_hours',

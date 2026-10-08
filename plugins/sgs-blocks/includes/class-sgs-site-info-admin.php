@@ -163,6 +163,37 @@ final class Sgs_Site_Info_Admin {
 				'description' => \__( 'Digits-only CID from your Google Business Profile URL.', 'sgs-blocks' ),
 			)
 		);
+		\add_settings_field(
+			'sgs_site_info_google_rating',
+			\__( 'Google rating (out of 5)', 'sgs-blocks' ),
+			array( $fields, 'render_input_field' ),
+			self::PAGE_SLUG,
+			'sgs_site_info_contact',
+			array(
+				'label_for'   => 'sgs_site_info_google_rating',
+				'key'         => 'google_rating',
+				'type'        => 'number',
+				'min'         => '0',
+				'max'         => '5',
+				'step'        => '0.1',
+				'description' => \__( 'Used by the Google rating badge when no live Google data is connected. Leave empty to show nothing.', 'sgs-blocks' ),
+			)
+		);
+		\add_settings_field(
+			'sgs_site_info_google_review_count',
+			\__( 'Number of Google reviews', 'sgs-blocks' ),
+			array( $fields, 'render_input_field' ),
+			self::PAGE_SLUG,
+			'sgs_site_info_contact',
+			array(
+				'label_for'   => 'sgs_site_info_google_review_count',
+				'key'         => 'google_review_count',
+				'type'        => 'number',
+				'min'         => '0',
+				'step'        => '1',
+				'description' => \__( 'Used by the Google rating badge when no live Google data is connected.', 'sgs-blocks' ),
+			)
+		);
 
 		// Socials.
 		\add_settings_section( 'sgs_site_info_socials', \__( 'Social media', 'sgs-blocks' ), array( $fields, 'render_socials_section' ), self::PAGE_SLUG );
@@ -271,7 +302,7 @@ final class Sgs_Site_Info_Admin {
 		}
 
 		// 1. Flat well-known scalar keys.
-		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid', 'logo' ) as $key ) {
+		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid', 'google_rating', 'google_review_count', 'logo' ) as $key ) {
 			if ( \array_key_exists( $key, $raw ) ) {
 				Sgs_Site_Info::set( $key, $raw[ $key ] );
 			}

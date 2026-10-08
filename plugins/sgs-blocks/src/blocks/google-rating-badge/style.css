@@ -1,0 +1,249 @@
+/*
+ * SGS Google Rating Badge.
+ *
+ * Structure: .wp-block-sgs-google-rating-badge (root: alignment, floating) > .sgs-google-rating-badge__link
+ * (the one <a>, or a <span> with no link: background, border, padding, shadow) > logo, score, stars, caption.
+ * Every look-and-feel default sits in a :where() rule (specificity 0) so an inspector control, which is
+ * emitted as a scoped rule by render.php, always wins.
+ */
+
+.sgs-google-rating-badge {
+	display: flex;
+	justify-content: flex-start;
+	max-width: 100%;
+}
+
+.sgs-google-rating-badge--align-center {
+	justify-content: center;
+}
+
+.sgs-google-rating-badge--align-end {
+	justify-content: flex-end;
+}
+
+/* Floating: pinned to a viewport corner, below modals (same layer as the floating WhatsApp button). */
+.sgs-google-rating-badge--floating {
+	position: fixed;
+	z-index: var(--wp--custom--z-index--floating, 200);
+	display: block;
+	margin: 0;
+	width: auto;
+}
+
+.sgs-google-rating-badge--corner-bottom-right {
+	inset-block-end: var(--sgs-grb-offset, 24px);
+	inset-inline-end: var(--sgs-grb-offset, 24px);
+}
+
+.sgs-google-rating-badge--corner-bottom-left {
+	inset-block-end: var(--sgs-grb-offset, 24px);
+	inset-inline-start: var(--sgs-grb-offset, 24px);
+}
+
+.sgs-google-rating-badge--corner-top-right {
+	inset-block-start: var(--sgs-grb-offset, 24px);
+	inset-inline-end: var(--sgs-grb-offset, 24px);
+}
+
+.sgs-google-rating-badge--corner-top-left {
+	inset-block-start: var(--sgs-grb-offset, 24px);
+	inset-inline-start: var(--sgs-grb-offset, 24px);
+}
+
+/* The frame. */
+.sgs-google-rating-badge__link {
+	position: relative;
+	box-sizing: border-box;
+	max-width: 100%;
+	text-decoration: none;
+	font-family: inherit;
+}
+
+:where(.sgs-google-rating-badge__link) {
+	color: var(--wp--preset--color--text, inherit);
+	background-color: var(--wp--preset--color--surface, #fff);
+	border: 1px solid var(--wp--preset--color--border, color-mix(in srgb, currentColor 25%, transparent));
+}
+
+/* Pill: one line. */
+:where(.sgs-google-rating-badge--pill) {
+	--sgs-grb-logo: 18px;
+	--sgs-grb-star-size: 12px;
+}
+
+:where(.sgs-google-rating-badge--pill .sgs-google-rating-badge__link) {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 14px 6px 10px;
+	border-radius: 999px;
+}
+
+:where(.sgs-google-rating-badge--pill .sgs-google-rating-badge__score) {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+:where(.sgs-google-rating-badge--pill .sgs-google-rating-badge__caption) {
+	font-size: 12.5px;
+}
+
+/* Card: G, score and stars on row one; the caption spans row two; an accent stripe on the leading edge. */
+:where(.sgs-google-rating-badge--card) {
+	--sgs-grb-logo: 22px;
+	--sgs-grb-star-size: 15px;
+}
+
+:where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link) {
+	display: inline-grid;
+	grid-template-columns: auto auto auto;
+	justify-content: start;
+	align-items: center;
+	column-gap: 10px;
+	row-gap: 6px;
+	padding: 14px 18px 14px 16px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-google-rating-badge--card .sgs-google-rating-badge__caption {
+	grid-column: 1 / -1;
+}
+
+:where(.sgs-google-rating-badge--card .sgs-google-rating-badge__score) {
+	font-size: 26px;
+	font-weight: 500;
+}
+
+:where(.sgs-google-rating-badge--card .sgs-google-rating-badge__caption) {
+	font-size: 13px;
+}
+
+/* The accent stripe: a 3px bar over the leading edge of the border box, clipped by the badge's own corner radius. */
+.sgs-google-rating-badge--card .sgs-google-rating-badge__link::before {
+	content: "";
+	position: absolute;
+	inset-block: -1px;
+	inset-inline-start: -1px;
+	width: 3px;
+	border-start-start-radius: inherit;
+	border-end-start-radius: inherit;
+}
+
+:where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)::before {
+	background-color: var(--wp--preset--color--accent, currentColor);
+}
+
+/* Stacked: a centred column. */
+:where(.sgs-google-rating-badge--stacked) {
+	--sgs-grb-logo: 22px;
+	--sgs-grb-star-size: 14px;
+}
+
+:where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__link) {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-width: 132px;
+	padding: 18px 22px;
+	text-align: center;
+	border-radius: 6px;
+}
+
+:where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__score) {
+	font-size: 34px;
+	font-weight: 500;
+}
+
+:where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__caption) {
+	font-size: 12.5px;
+}
+
+/* Pieces. */
+.sgs-google-rating-badge__logo {
+	display: block;
+	flex: none;
+	width: var(--sgs-grb-logo, 18px);
+	height: var(--sgs-grb-logo, 18px);
+}
+
+:where(.sgs-google-rating-badge__score) {
+	line-height: 1;
+}
+
+.sgs-google-rating-badge__score {
+	font-variant-numeric: tabular-nums;
+}
+
+.sgs-google-rating-badge__stars {
+	display: inline-flex;
+	align-items: center;
+}
+
+.sgs-google-rating-badge__stars > div {
+	display: inline-flex;
+	gap: 1px;
+}
+
+.sgs-google-rating-badge__stars svg {
+	display: block;
+	width: var(--sgs-grb-star-size, 14px);
+	height: var(--sgs-grb-star-size, 14px);
+}
+
+/* The star markup comes from the shared sgs_render_stars_svg() helper, which names its parts with the google-reviews prefix. */
+.sgs-google-rating-badge__stars .sgs-google-reviews__star--full path,
+.sgs-google-rating-badge__stars .sgs-google-reviews__star-fill {
+	fill: var(--sgs-grb-star, #fbbc04);
+}
+
+.sgs-google-rating-badge__stars .sgs-google-reviews__star--empty path,
+.sgs-google-rating-badge__stars .sgs-google-reviews__star-outline {
+	fill: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.sgs-google-rating-badge__caption {
+	white-space: nowrap;
+}
+
+:where(.sgs-google-rating-badge__caption) {
+	line-height: 1.2;
+	color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+/* Visually hidden: the accessible name and the "(opens in a new tab)" hint. */
+.sgs-google-rating-badge .sgs-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Interaction: hover brightens and lifts a hair; focus is a visible accent ring. */
+@media (prefers-reduced-motion: no-preference) {
+	a.sgs-google-rating-badge__link {
+		transition: filter 0.15s ease, transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+	}
+}
+
+a.sgs-google-rating-badge__link:hover {
+	filter: brightness(1.04);
+	transform: translateY(-1px);
+}
+
+a.sgs-google-rating-badge__link:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentColor);
+	outline-offset: 3px;
+}
+
+@media (forced-colors: active) {
+	.sgs-google-rating-badge__link {
+		border: 1px solid CanvasText;
+	}
+}
