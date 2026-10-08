@@ -81,12 +81,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 23, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `cdf0d80a8`). The gate reads InnerBlocks template
+  Ceilings **CLASS-2 4, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `9d8da3067`; `9ef97b909` is not yet deployed). The gate reads InnerBlocks template
   children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
   (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). **CANNOT-RESOLVE floor:** the cart badge (2 rows; Bean accepted them as the permanent floor on 2026-10-08, verdict in §6). **Open:** the
-  23 CLASS-2 rows (`sgs/form` column/row headings and progress number, `testimonial-slider`, `notice-banner`, `store-selector`, `business-info`, `button` note; google-reviews' 4 are its session's). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+  4 CLASS-2 rows, all google-reviews (its session's). The slider pause icon, banner icon and close, hours time column and button note have only a `:where()` default (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are

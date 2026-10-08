@@ -150,7 +150,7 @@ Verdict key: **FIX** a control cannot reach a live element. All 26 FIX declarati
 | 17 | `sgs/form` | `.sgs-form-field__consent-text` | 1 | CLASS-2 | **CLOSED `c9d0f7cf4`** | 1 | was: permanent. Now a `consent` surface on the parent `sgs/form` |
 | 18 | `sgs/product-card` | `.price-from-label` | 1 | CLASS-2 | **CLOSED `018d39351`** | 1 | was: no font-family control. `priceFromLabel` completed to the full surface; the typography defaults sit in `:where()` (they tied the control at (0,2,0)) and the `'Inter'` literal is deleted |
 | 19 | `sgs/table-of-contents` | `.sgs-toc__title` | 1 | CLASS-2 | **CLOSED `6d30835bd`** | 1 | was: permanent. Now a `title` surface; weight and size defaults sit in `:where()` |
-| 20 | `sgs/business-info` | `.sgs-business-hours__time` | 1 | CLASS-2 | DEFENSIBLE | 7 | permanent (no control for the time column) |
+| 20 | `sgs/business-info` | `.sgs-business-hours__time` | 1 | CLASS-2 | **CLOSED `9ef97b909`** | 7 | was: permanent (no control for the time column). The right-alignment default sits in `:where()`; the time column has no control of its own |
 | 21 | `sgs/google-reviews` | `.sgs-google-reviews__maps-link` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent (the 12 element controls do not include the maps link) |
 | 22 | `sgs/google-reviews` | `.sgs-google-reviews__breakdown-row` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent |
 | 23 | `sgs/google-reviews` | `.sgs-google-reviews__stars` | 1 | CLASS-2 | DEFENSIBLE | 5 | permanent |
@@ -161,14 +161,14 @@ Verdict key: **FIX** a control cannot reach a live element. All 26 FIX declarati
 | 28 | `sgs/post-grid` | `.sgs-post-grid__error` | 1 | CLASS-3 | DEFENSIBLE | 2 | permanent for the empty-state text |
 | 29 | `sgs/cta-section` | `.sgs-cta-section__ribbon` | 4 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 30 | `sgs/form` | `.sgs-form-field__file-button` | 4 | CLASS-2 | CLOSED `880aab178` | 1 | `fileButton` surface |
-| 31 | `sgs/notice-banner` | `.sgs-notice-banner__icon` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: default-state only (`iconSize` owns the glyph). The glyph size and line height sit in `:where()`; `iconSize` still owns the glyph |
-| 32 | `sgs/notice-banner` | `.sgs-notice-banner__close` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The glyph size and line height sit in `:where()` |
+| 31 | `sgs/notice-banner` | `.sgs-notice-banner__icon` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: default-state only (`iconSize` owns the glyph). The glyph size and line height sit in `:where()` (no surface of its own); `iconSize` still owns the glyph |
+| 32 | `sgs/notice-banner` | `.sgs-notice-banner__close` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The glyph size and line height sit in `:where()` (no surface of its own) |
 | 33 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-icon` | 2 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The glyph size and line height sit in `:where()` (no surface of its own) |
-| 34 | `sgs/button` | `.sgs-button__note` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent (documented) |
+| 34 | `sgs/button` | `.sgs-button__note` | 1 | CLASS-2 | **CLOSED `9ef97b909`** | 1 | was: permanent (documented). The weight default sits in `:where()`; the note has no control of its own |
 | 35 | `sgs/form` | `.sgs-form-field__file-label` | 1 | CLASS-2 | CLOSED `880aab178` | 1 | `filePrompt` surface |
 | 36 | `sgs/form` | `.sgs-form-file__progress` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 37 | `sgs/google-reviews` | `.sgs-google-reviews__badge-text` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
-| 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
+| 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | **CLOSED `9ef97b909`** | 1 | was: permanent. The weight default sits in `:where()`, so the link's `fontWeight` control wins |
 | 39 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-btn` | 1 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The declaration was inert (the only child sets its own size) and is removed |
 | 40 | `sgs/business-info` | `.sgs-business-info__placeholder` | 2 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |
 | 41 | `sgs/table-of-contents` | `.sgs-toc__empty` | 1 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |
@@ -187,7 +187,7 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `business-info/style.css::.sgs-business-hours__time` | `text-align: right` | CLASS-2 | `.{uid}` (0,1,0) | (0,1,0) | DEFENSIBLE |
+| `business-info/style.css::.sgs-business-hours__time` | `text-align: right` | CLASS-2 | `.{uid}` (0,1,0) | (0,1,0) | CLOSED `9ef97b909` |
 | `business-info/style.css::.sgs-business-info__placeholder` | `font-style: italic` | CLASS-2 | `.{uid}` (0,1,0) | (0,1,0) | EDITOR, moved to `editor.css` in `6d30835bd` |
 | `business-info/style.css::.sgs-business-info__placeholder` | `font-size: 0.875em` | CLASS-2 | `.{uid}` (0,1,0) | (0,1,0) | EDITOR, moved to `editor.css` in `6d30835bd` |
 - `.sgs-business-hours__time` (DEFENSIBLE). **Reach:** 1 `<dd>` per hours row, at most 7 per block (`business-info/render.php`: `'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>'`); the `--condensed-inline` variant resets it to `text-align: left`. **Leak:** permanent (no control for the time column). **Evidence:** Documented in `business-info/style.css`: "KEEP: a day/time row layout choice (day left, time right), not a content textAlign".
@@ -197,7 +197,7 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `button/style.css::.sgs-button__note` | `font-weight: 400` | CLASS-2 | `.{uid}.sgs-button` (0,2,0) | (0,1,0) | DEFENSIBLE |
+| `button/style.css::.sgs-button__note` | `font-weight: 400` | CLASS-2 | `.{uid}.sgs-button` (0,2,0) | (0,1,0) | CLOSED `9ef97b909` |
 
 - `.sgs-button__note` (DEFENSIBLE). **Reach:** 1 `<span>` per button that has a `note` (`includes/helpers-button-note.php::sgs_button_note_html`: `'<span class="sgs-button__note">'`). Markup lives outside the block directory, so the gate matched 0 instances. **Leak:** permanent (documented). **Evidence:** Documented in the helper docblock: "a short muted line beside the label ... Plain text, never uppercased". Resetting weight, spacing and case on the note is the stated design.
 
@@ -369,7 +369,7 @@ Each table row is one declaration. "Competing control" is the control the gate r
 
 | Finding (`file::selector`) | Declaration | Class | Competing control, as emitted (specificity) | Declaration specificity | Verdict |
 |---|---|---|---|---|---|
-| `store-selector/style.css::.sgs-store-selector__item a[aria-current="true"]` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-store-selector` (0,2,0) | (0,2,1) | DEFENSIBLE |
+| `store-selector/style.css::.sgs-store-selector__item a[aria-current="true"]` | `font-weight: 600` | CLASS-2 | `.{uid}.sgs-store-selector` (0,2,0) | (0,2,1) | CLOSED `9ef97b909` |
 
 - `.sgs-store-selector__item` (DEFENSIBLE). **Reach:** `store-selector/render.php`: `( $is_current ? ' aria-current="true"' : '' )`, so the selector matches 1 link per list (the current store). **Leak:** permanent. **Evidence:** State emphasis on the current item. The gate exempts `:hover` and `:focus` states (E3) but not `[aria-current]`, a gate-model gap rather than a block defect.
 
@@ -518,9 +518,9 @@ Two scales, kept apart.
 
 ## 6. What this lets a later task lower, and what it cannot
 
-`E14_OPEN_BACKLOG` is `CLASS-2: 23`, `CLASS-3: 1`, `CANNOT-RESOLVE: 2`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
+`E14_OPEN_BACKLOG` is `CLASS-2: 4`, `CLASS-3: 1`, `CANNOT-RESOLVE: 2`. The ceilings follow the gate's own output, so a ceiling moves only when findings disappear, and only in the commit that removes them. Never raise them.
 
-Measured 2026-10-07 on clean detached worktrees, from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 23/23, CLASS-3 1/1, CANNOT-RESOLVE 2/2` and 0 net-new legacy violations (each lowering measured in the commit that removed the rows: 31 to 28 at `05b5923d8`, 54 to 21 at `ea574379a`, 21 to 5 at `6ff3e3687`, 5 to 4 by gap 13, 4 to 3 by the theme-toggle `iconSize` control, 3 to 2 by the bare-tag and JS-leaf rules of gap 4; CLASS-2 28 to 23 by the `sgs/form` `fileButton` and `filePrompt` surfaces); `--self-test` reports `124/124 checks passed`.
+Measured 2026-10-07 on clean detached worktrees, from `plugins/sgs-blocks`: `node scripts/check-hardcoded-render-defaults.js --check` reports `CLASS-2 4/4, CLASS-3 1/1, CANNOT-RESOLVE 2/2` and 0 net-new legacy violations (each lowering measured in the commit that removed the rows: 31 to 28 at `05b5923d8`, 54 to 21 at `ea574379a`, 21 to 5 at `6ff3e3687`, 5 to 4 by gap 13, 4 to 3 by the theme-toggle `iconSize` control, 3 to 2 by the bare-tag and JS-leaf rules of gap 4; CLASS-2 28 to 23 by the `sgs/form` `fileButton` and `filePrompt` surfaces); `--self-test` reports `124/124 checks passed`.
 
 **Shipped in `6f1963c28` (2026-10-06).** The 10 DEAD declarations deleted with their whole rules; `sgs/form` given `label` and `field` typography surfaces; both value ladders given `valueLadder` and `valueLadderSaving` surfaces, with their duplicated markup unified into `includes/helpers-value-ladder.php::sgs_value_ladder_markup`. Every literal on an element that now owns a control sits inside `:where()`, which also repaired two real defects: the floated-label state's (0,4,0) size and weight, which no control could beat, and the ladder row weights, which blocked the ladder's own font-weight control. Unifying the ladder markup put it outside the block-directory walk, which cost 4 CANNOT-RESOLVE rows, and buybox's first `line-height` control made one pre-existing literal visible; both were absorbed by de-specifying those literals.
 
@@ -555,12 +555,14 @@ Measured 2026-10-07 on clean detached worktrees, from `plugins/sgs-blocks`: `nod
 | Returned markup placed in its caller's element | 7 gap 13 | 28 | 1 | 4 |
 | `sgs/theme-toggle` `iconSize` control | 3, 4.3 | 28 | 1 | 3 |
 | Bare tag on an unknown-tag element, childless JS-built control element | 7 gap 4 | 28 | 1 | 2 |
-| **Now: `sgs/form` `fileButton` and `filePrompt` surfaces (`880aab178`, `f21461b1a`)** | 3.2 | **23** | **1** | **2** |
-| Remaining floor | | 23 | 1 | 2: the `cart` badge (two rows; accepted floor, verdict below) |
+| `sgs/form` `fileButton` and `filePrompt` surfaces (`880aab178`, `f21461b1a`) | 3.2 | 23 | 1 | 2 |
+| Form heading and step-number surfaces; slider, banner, business-info, button and store-selector defaults (`e0a22e070`, `9ef97b909`) | 3.2 | 4 | 1 | 2 |
+| **Now: floor** | | **4** | **1** | **2** |
+| Remaining floor | | 4 | 1 | 2: the `cart` badge (two rows; accepted floor, verdict below) |
 
 The descent this section predicted was 33 / 1 / 54. The two differences are measured, not missed: the `cta-section` headline pair is DEFENSIBLE (2 CLASS-2), and the own-control reorder clears only one of its two named rows, because `media`'s caption selector list also contained a bare `figcaption` that the gate could not place (causes E and F); gap 4 now places it. The option-picker pill's row went with its dead `line-height: 1`.
 
-The 24 DEFENSIBLE findings (23 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows are CLASS 1: the gate reads its `sgs/heading` child's controls (section 7 gap 9).
+The 5 DEFENSIBLE findings (4 CLASS-2, 1 CLASS-3) are the floor of the CLASS-2 and CLASS-3 ceilings: they stay counted unless a mechanism removes them. Bean (2026-10-07) chose controls over exemptions for the `var()` rows; no marker comment or baseline entry exists. The `cta-section` headline's 3 rows are CLASS 1: the gate reads its `sgs/heading` child's controls (section 7 gap 9).
 
 **Shipped 2026-10-07 (`00994a40d`..the admission commit): every `var()` row fixed, then `var()` admitted.**
 
