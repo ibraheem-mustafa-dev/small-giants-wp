@@ -3,30 +3,25 @@ import {
 	useBlockProps,
 	useSettings,
 	MediaPlaceholder,
-	MediaUpload,
 	MediaUploadCheck,
 	InspectorControls,
 } from '@wordpress/block-editor';
 import {
-	PanelBody,
-	Button,
-	TextControl,
-	Notice,
-} from '@wordpress/components';
-import {
-	LogicalAlignControl,
 	SgsColourPanel,
 	textRow,
 	MediaPanelLayout,
 	mediaElementScopeClass,
 	mediaElementCustomProperties,
-	TypographyControls,
-	ResponsiveOverride,
 } from '../../components';
 import { MEDIA_ATOM_IDS } from '../../components/media/atoms/registry.js';
 import { fillsBox } from '../../components/media/canvasStyle.js';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, usePreviewTier, typographyPreviewStyle, textPaintPreview, resolveTier } from '../../utils';
+import { usePreviewTier, typographyPreviewStyle, textPaintPreview, resolveTier } from '../../utils';
+import TypographyPanel from './components/TypographyPanel';
+import MediaStylingPanel from './components/MediaStylingPanel';
+import VideoPanel from './components/VideoPanel';
+import SvgCanvas from './components/SvgCanvas';
+import LottieCanvas from './components/LottieCanvas';
+import VideoCanvas from './components/VideoCanvas';
 
 /**
  * Allowed CSS length units for the media styling controls. Mirrors the
@@ -243,53 +238,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					blockSlug="sgs/media"
 					previewUrl={ isImage ? imageUrl : '' }
 				/>
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* One switcher: the caption and the video player's time read-out.
-					     The read-out is built by view.js; the canvas shows a static sample. */ }
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						targets={ [
-							{
-								key: 'caption',
-								label: __( 'Caption', 'sgs-blocks' ),
-								prefix: 'caption',
-								showSize: true,
-								fontSizePresets: true,
-								showFontFamily: true,
-								showWeight: true,
-								showStyle: true,
-								showLineHeight: true,
-								showResponsive: true,
-								showDecoration: true,
-								showTransform: true,
-								showLetterSpacing: true,
-								showTextAlign: true,
-								showTextWrap: true,
-								showTextColumns: true,
-								showWritingMode: true,
-							},
-							{
-								key: 'videoTime',
-								label: __( 'Video time', 'sgs-blocks' ),
-								prefix: 'videoTime',
-								showSize: true,
-								fontSizePresets: true,
-								showFontFamily: true,
-								showWeight: true,
-								showStyle: true,
-								showLineHeight: true,
-								showResponsive: true,
-								showDecoration: true,
-								showTransform: true,
-								showLetterSpacing: true,
-								showTextWrap: true,
-								showTextColumns: true,
-								showWritingMode: true,
-							},
-						] }
-					/>
-				</PanelBody>
+				<TypographyPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 			<InspectorControls>
 				{ /* SETTINGS half of the atom layer (2026-09-07): media type,
@@ -317,65 +266,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     are the highest-frequency per-instance tweaks so they stay
 			     isShownByDefault; the rest are one click away via "+". */ }
 			{ ( isImage || isVideo ) && (
-				<ToolsPanel
-					label={ __( 'Media Styling', 'sgs-blocks' ) }
-					resetAll={ () => setAttributes( { alignment: 'start', order: {} } ) }
-				>
-					<ToolsPanelItem
-						label={ __( 'Order', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! attributes.order &&
-							Object.values( attributes.order ).some( ( v ) => '' !== v && null != v )
-						}
-						onDeselect={ () => setAttributes( { order: {} } ) }
-					>
-						<ResponsiveOverride
-							label={ __( 'Order', 'sgs-blocks' ) }
-							value={ attributes.order }
-							onChange={ ( obj ) => setAttributes( { order: obj } ) }
-						>
-							{ ( { ownValue, setOwnValue } ) => (
-								<TextControl
-									label={ __( 'Order in a flex or grid row', 'sgs-blocks' ) }
-									help={ __( 'Lower numbers come first. Empty keeps the source order.', 'sgs-blocks' ) }
-									type="number"
-									value={ ownValue ?? '' }
-									onChange={ ( v ) => setOwnValue( '' === v ? '' : parseInt( v, 10 ) ) }
-									__next40pxDefaultSize
-									__nextHasNoMarginBottom
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
-
-					{ /*
-					  * Sizing (mediaSizing/height/width/maxWidth/maxHeight/
-					  * aspectRatio), Shape and Border (radius/width/style/
-					  * colour) now render in MediaPanelLayout's own
-					  * "Box & Border" PanelBody (mounted above) via the
-					  * `box-shape` atom — one writer per attribute, not two
-					  * panels racing. object-fit/focal-point/motion render in
-					  * the "Image Styling" PanelBody, also mounted above.
-					  */ }
-
-					<ToolsPanelItem
-						label={ __( 'Alignment', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( attributes.alignment || 'start' ) !== 'start'
-						}
-						onDeselect={ () =>
-							setAttributes( { alignment: 'start' } )
-						}
-						isShownByDefault
-					>
-						<LogicalAlignControl
-							value={ attributes.alignment }
-							onChange={ ( value ) =>
-								setAttributes( { alignment: value } )
-							}
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
+				<MediaStylingPanel attributes={ attributes } setAttributes={ setAttributes } />
 			) }
 
 			{ /* Caption & link are now owned entirely by the `caption`/`link`
@@ -398,106 +289,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     Options" panel (a genuine flat list of 6 independent toggles) converts
 			     to ToolsPanel — see below. */ }
 			{ isVideo && (
-				<PanelBody
-					title={ __( 'Video', 'sgs-blocks' ) }
-					initialOpen={ true }
-				>
-					{ /* Video source (URL/media-library toggle via the `media-type`
-					     atom's VideoSourceControl) + the video/poster pickers with
-					     their tablet/mobile art-direction are now owned by the
-					     `source` atom in MediaPanelLayout (mounted above). */ }
-
-					{ /* Captions (WCAG 1.2.2, Level A — below the stated AA
-					     baseline). Gated on a video existing, not on `muted`:
-					     muted is per-device and can be switched off later, so
-					     hiding the control while it happens to be on would mean
-					     the client cannot add captions until AFTER they unmute —
-					     exactly the ordering trap that makes hero's media-type
-					     enum unreachable. Shown whenever there is a video. */ }
-					{ ( videoUrl || attributes.videoId ) && (
-						<>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											videoCaptionsId: media.id || null,
-											videoCaptionsUrl: media.url || '',
-										} )
-									}
-									allowedTypes={ [ 'text/vtt' ] }
-									value={ attributes.videoCaptionsId }
-									render={ ( { open } ) => (
-										<Button
-											variant="secondary"
-											onClick={ open }
-											__next40pxDefaultSize
-										>
-											{ attributes.videoCaptionsUrl
-												? __( 'Replace captions (.vtt)', 'sgs-blocks' )
-												: __( 'Add captions (.vtt)', 'sgs-blocks' ) }
-										</Button>
-									) }
-								/>
-							</MediaUploadCheck>
-							{ attributes.videoCaptionsUrl && (
-								<>
-									<TextControl
-										label={ __( 'Captions label', 'sgs-blocks' ) }
-										help={ __(
-											'Shown in the player’s subtitle menu, e.g. “English”.',
-											'sgs-blocks'
-										) }
-										value={ attributes.videoCaptionsLabel || '' }
-										onChange={ ( value ) =>
-											setAttributes( { videoCaptionsLabel: value } )
-										}
-										__next40pxDefaultSize
-										__nextHasNoMarginBottom
-									/>
-									<TextControl
-										label={ __( 'Captions language code', 'sgs-blocks' ) }
-										help={ __(
-											'A two- or three-letter code such as en, cy or fr.',
-											'sgs-blocks'
-										) }
-										value={ attributes.videoCaptionsSrcLang || '' }
-										onChange={ ( value ) =>
-											setAttributes( { videoCaptionsSrcLang: value } )
-										}
-										__next40pxDefaultSize
-										__nextHasNoMarginBottom
-									/>
-									<Button
-										variant="link"
-										isDestructive
-										onClick={ () =>
-											setAttributes( {
-												videoCaptionsId: null,
-												videoCaptionsUrl: '',
-											} )
-										}
-									>
-										{ __( 'Remove captions', 'sgs-blocks' ) }
-									</Button>
-								</>
-							) }
-						</>
-					) }
-
-					{ /* Video art-direction tiers + the Thumbnail/poster panel
-					     (picker + tablet/mobile art-direction) are now owned
-					     by the `source` atom in MediaPanelLayout (mounted
-					     above) — its "Poster image" row is the same
-					     ThumbnailId/Thumbnail pair, tiered the same way. */ }
-
-					{ /* Playback options are now owned entirely by the
-					     `video-behaviour` atom, mounted via MediaPanelLayout's
-					     "Playback" PanelBody (video-only) — each of the same
-					     6 bases (Autoplay/Loop/Muted/Show Controls/Plays
-					     Inline/Lazy Load) renders through the shared tiered
-					     `BooleanResponsiveControl`, matching this panel's old
-					     capability rather than falling short of it. */ }
-				</PanelBody>
+				<VideoPanel attributes={ attributes } setAttributes={ setAttributes } videoUrl={ videoUrl } />
 			) }
 			</InspectorControls>
 		</>
@@ -558,56 +350,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Canvas — SVG mode.
 	// -------------------------------------------------------------------------
 	if ( isSvg ) {
-		if ( ! svgContent ) {
-			return (
-				<div { ...blockProps }>
-					{ inspectorControls }
-					<div className="components-placeholder">
-						<div className="components-placeholder__label">
-							{ __(
-								'SGS Media — SVG / Animation',
-								'sgs-blocks'
-							) }
-						</div>
-						<div className="components-placeholder__instructions">
-							{ __(
-								'Paste your SVG markup in the block settings panel.',
-								'sgs-blocks'
-							) }
-						</div>
-					</div>
-				</div>
-			);
-		}
-
-		// Editor preview: render SVG inline via dangerouslySetInnerHTML.
-		// This is editor-only — the frontend uses the PHP-sanitised path (render.php).
-		const svgClass = [
-			'sgs-media__svg',
-			svgAnimation && 'none' !== svgAnimation
-				? `sgs-media__svg--${ svgAnimation } sgs-media__svg--speed-${
-						svgAnimationSpeed || 'medium'
-				  }`
-				: '',
-		]
-			.filter( Boolean )
-			.join( ' ' );
-
 		return (
-			<figure
-				{ ...blockProps }
-				className={ [ blockProps.className, mediaBoxClassName ].filter( Boolean ).join( ' ' ) }
-				style={ { ...blockProps.style, ...mediaBoxStyle } }
-			>
-				{ inspectorControls }
-				{ /* eslint-disable-next-line react/no-danger */ }
-				<div
-					className={ [ svgClass, 'sgs-media-el', mediaScopeClass ].filter( Boolean ).join( ' ' ) }
-					style={ { ...mediaElementStyle, ...alignMargins } }
-					aria-hidden="true"
-					dangerouslySetInnerHTML={ { __html: sanitiseSvg( svgContent ) } }
-				/>
-			</figure>
+			<SvgCanvas
+				blockProps={ blockProps }
+				inspectorControls={ inspectorControls }
+				svgContent={ svgContent }
+				svgAnimation={ svgAnimation }
+				svgAnimationSpeed={ svgAnimationSpeed }
+				mediaBoxClassName={ mediaBoxClassName }
+				mediaBoxStyle={ mediaBoxStyle }
+				mediaScopeClass={ mediaScopeClass }
+				mediaElementStyle={ mediaElementStyle }
+				alignMargins={ alignMargins }
+			/>
 		);
 	}
 
@@ -618,142 +373,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// non-playing preview in this same canvas.
 	// -------------------------------------------------------------------------
 	if ( isLottie ) {
-		const posterUrl = thumbnail || '';
-		return (
-			<div { ...blockProps }>
-				{ inspectorControls }
-				{ lottieId ? (
-					<div className="sgs-media-el sgs-media__lottie-preview" style={ { position: 'relative' } }>
-						{ posterUrl ? (
-							<img
-								src={ posterUrl }
-								alt=""
-								aria-hidden="true"
-								style={ { display: 'block', maxWidth: '100%', height: 'auto' } }
-							/>
-						) : (
-							<Notice status="warning" isDismissible={ false }>
-								{ __(
-									'Add a poster image: visitors who prefer reduced motion see it instead.',
-									'sgs-blocks'
-								) }
-							</Notice>
-						) }
-						<span
-							className="sgs-media__lottie-badge"
-							aria-hidden="true"
-							style={ {
-								position: 'absolute',
-								top: '8px',
-								left: '8px',
-								padding: '2px 6px',
-								fontSize: '10px',
-								fontWeight: 600,
-								letterSpacing: '0.05em',
-								background: 'rgba(0,0,0,0.7)',
-								color: '#fff',
-								borderRadius: '2px',
-							} }
-						>
-							{ __( 'LOTTIE', 'sgs-blocks' ) }
-						</span>
-					</div>
-				) : (
-					<div className="components-placeholder">
-						<div className="components-placeholder__label">
-							{ __( 'SGS Media — Lottie animation', 'sgs-blocks' ) }
-						</div>
-						<div className="components-placeholder__instructions">
-							{ __(
-								'Select a Lottie JSON file in the block settings panel.',
-								'sgs-blocks'
-							) }
-						</div>
-					</div>
-				) }
-			</div>
-		);
+		return <LottieCanvas blockProps={ blockProps } inspectorControls={ inspectorControls } lottieId={ lottieId } thumbnail={ thumbnail } />;
 	}
 
 	// -------------------------------------------------------------------------
 	// Canvas — video mode.
 	// -------------------------------------------------------------------------
-	const hasVideo = videoUrl || attributes.videoId;
-
-	if ( ! hasVideo ) {
-		return (
-			<div { ...blockProps }>
-				{ inspectorControls }
-				{ 'internal' === videoSource ? (
-					<MediaUploadCheck>
-						<MediaPlaceholder
-							accept="video/*"
-							allowedTypes={ [ 'video' ] }
-							onSelect={ onSelectVideo }
-							labels={ {
-								title: __( 'SGS Media — Video', 'sgs-blocks' ),
-								instructions: __(
-									'Upload or select a video from the media library.',
-									'sgs-blocks'
-								),
-							} }
-						/>
-					</MediaUploadCheck>
-				) : (
-					<div className="components-placeholder">
-						<div className="components-placeholder__label">
-							{ __( 'SGS Media — Video', 'sgs-blocks' ) }
-						</div>
-						<div className="components-placeholder__instructions">
-							{ __(
-								'Enter a YouTube, Vimeo, or direct MP4 URL in the block settings.',
-								'sgs-blocks'
-							) }
-						</div>
-					</div>
-				) }
-			</div>
-		);
-	}
-
-	// Video preview in editor — simplified; render.php drives the frontend.
 	return (
-		<figure { ...blockProps }>
-			{ inspectorControls }
-			{ videoUrl && (
-				<Notice status="info" isDismissible={ false }>
-					{ __(
-						'Video URL set. Frontend render handled by server. Preview not available in editor.',
-						'sgs-blocks'
-					) }
-					<br />
-					<code>{ videoUrl }</code>
-				</Notice>
-			) }
-			{ ! videoUrl && attributes.videoId && (
-				<Notice status="info" isDismissible={ false }>
-					{ __(
-						'Internal video selected (WP Media Library). Frontend render handled by server.',
-						'sgs-blocks'
-					) }
-				</Notice>
-			) }
-			{ /* view.js builds the player bar on the front end; a static sample of its
-			     time read-out wears the same classes so the canvas shows the client's
-			     time typography. */ }
-			<div className="sgs-video sgs-video--editor-sample" aria-hidden="true">
-				<span className="sgs-video__sample-label">
-					{ __( 'Player controls preview', 'sgs-blocks' ) }
-				</span>
-				<div className="sgs-video__bar">
-					<span
-						className="sgs-video__time"
-						style={ typographyPreviewStyle( attributes, 'videoTime', previewTier ) }
-					>
-						0:00 / 1:24
-					</span>
-				</div>
-			</div>
-		</figure>
+		<VideoCanvas
+			blockProps={ blockProps }
+			inspectorControls={ inspectorControls }
+			attributes={ attributes }
+			videoUrl={ videoUrl }
+			videoSource={ videoSource }
+			previewTier={ previewTier }
+			onSelectVideo={ onSelectVideo }
+		/>
 	);
 }
