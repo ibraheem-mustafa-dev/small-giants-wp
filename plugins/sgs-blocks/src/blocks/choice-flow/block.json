@@ -43,6 +43,18 @@
 					},
 					"_note": "Visual-QA pass (2026-09-15, design-reviewer gap #1) added maxWidth + padding only — a DELIBERATELY MINIMAL box+width shape (content-block composition_role, not wrapper-shell-kind — see seed-composition-roles.py comment for this block). No colour/typography attrs; do not extend this element toward the full SGS_Container_Wrapper capability set without a design-gate (CLAUDE.md rule 7)."
 				},
+				"info-toggle": {
+					"label": "Info toggle",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [ "text" ],
+					"prefix": "infoToggle",
+					"attrMap": {
+						"css:color": "infoToggleColour",
+						"css:border-color": "infoToggleBorderColour"
+					},
+					"_note": "The round ? button beside a showcase option (.sgs-info-toggle); its colours are painted by includes/choice-flow-colour.php::sgs_choice_flow_colour_rules_css."
+				},
 				"back": {
 					"label": "Back button",
 					"layer": "CONTENT",
