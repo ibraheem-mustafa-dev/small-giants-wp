@@ -2,7 +2,7 @@
 title: Google reviews inline badge in the header row (Eye Care D7 redesign)
 project: small-giants-wp
 created: 2026-10-08
-status: framework built and on main 2026-10-08 (d1bc73352 google-reviews wordmark + badge removal, fe48bdb24 + 50aa309b2 sgs/google-rating-badge, 7e825cd0d drawer top-row rating); Eye Care trees edited, deploy and live checks in progress
+status: done 2026-10-08 - built, council-reviewed and verified live on eye-care-test (dd32a11d2); register D7 and 13 closed
 authors: Bean, Claude
 governs: Eye Care fix register D7 (.claude/plans/2026-10-02-eye-care-fix-register.md); Spec 36/37 (header family); sgs/google-reviews
 ---
@@ -45,6 +45,11 @@ Quiet editorial credential: the header is a calm cream strip with a serif logo a
 - 768 and 375: no badge in the header; drawer top shows it; the link opens the Google listing.
 - Contrast 4.5:1 for the muted count, focus ring visible, hit area at least 44px, reduced motion respected, axe clean on the header.
 - `audit-inline-styling.js --check` exit 0; the google-reviews PHP tests and a new `inline` row test pass.
+
+## Outcome (2026-10-08)
+- Header 79px (the draft) at every desktop width; the badge shows G, 4.7 and stars from 1400px, G ★ 4.7 from 1290px and hides below (measured: nothing more fits beside the phone, About, Help and Bag; the framework hides the header phone below 1160px). A "hide only between two widths" setting would let it return from 1060 to 1160px; not built.
+- Drawer: rating beside the close button in the top row, a full-width pill with "15 reviews on Google" above the phone; the drawer's overlap was a framework bug (a full-width button's 100% flex basis in a column), fixed in sgs/button.
+- Register N7 (drawer social buttons take the footer's colours) belongs to the parallel social-icons rebuild.
 
 ## Open
 - Header cart-panel and Help footer-gap rows live in the CR6 plan (P2-e, P2-k), not here.
