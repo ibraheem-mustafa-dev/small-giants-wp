@@ -103,6 +103,9 @@ try {
 		// P2-j: the radius controls themselves. A radius stored as "8px" shows as one linked 8 (all four corners equal)
 		// and an edit saves a corner object; a fresh container's grid-item radius, typed as 8 on all corners, paints
 		// 8px on its cell after a save.
+		// The loop above leaves the canvas on Mobile, where a Desktop value is only inherited and the box is empty.
+		await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).setDeviceType( 'Desktop' ) );
+		await page.waitForTimeout( 800 );
 		const sidebar = page.locator( '.interface-complementary-area' );
 		const clientIdOf = ( cls ) => page.evaluate( ( c ) => {
 			const find = ( blocks ) => blocks.reduce( ( hit, b ) => hit || ( ( b.attributes.className || '' ).split( ' ' ).includes( c ) ? b.clientId : find( b.innerBlocks ) ), '' );
@@ -128,9 +131,10 @@ try {
 
 		await select( 'cr6h-btn8', /Styles/i );
 		const btnBox = await openPanel( 'Border' );
-		const shown = await btnBox.locator( 'input[type="number"]' ).first().inputValue();
+		const btnRadius = btnBox.getByRole( 'spinbutton', { name: 'Border radius' } ).first();
+		const shown = await btnRadius.inputValue();
 		report( 'editor', 'button radius control', 'ui', shown, '8' );
-		await btnBox.locator( 'input[type="number"]' ).first().fill( '12' );
+		await btnRadius.fill( '12' );
 		await page.waitForTimeout( 600 );
 		const corner = '12px';
 		report( 'editor', 'button radius saves', 'ui', await radiusOf( 'cr6h-btn8' ),
@@ -139,7 +143,7 @@ try {
 		await select( 'cr6h-fresh', /Settings/i );
 		await openPanel( 'Grid item defaults' );
 		const gridBox = sidebar.locator( '.components-panel__body.is-opened' ).filter( { hasText: 'Grid item defaults' } ).last();
-		await gridBox.locator( 'input[type="number"]' ).last().fill( '8' );
+		await gridBox.getByRole( 'spinbutton', { name: 'Border radius' } ).first().fill( '8' );
 		await page.waitForTimeout( 600 );
 		report( 'editor', 'grid radius saves', 'ui', await radiusOf( 'cr6h-fresh', 'desktop', 'gridItemBorderRadius' ),
 			JSON.stringify( { topLeft: '8px', topRight: '8px', bottomRight: '8px', bottomLeft: '8px' } ) );

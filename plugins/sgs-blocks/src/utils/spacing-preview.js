@@ -15,6 +15,8 @@
  * which is the failure this mirror exists to prevent.
  */
 
+import { bareLength } from './bare-length';
+
 /** The four sides of a padding/margin/border-width box, in CSS shorthand order. */
 export const BOX_SIDE_KEYS = Object.freeze( [ 'top', 'right', 'bottom', 'left' ] );
 
@@ -188,7 +190,7 @@ export function tierBoxProperties( tiers, tier, prefix ) {
 	const out = {};
 	BOX_SIDE_KEYS.forEach( ( side ) => {
 		if ( merged[ side ] ) {
-			out[ `${ prefix }${ side }` ] = merged[ side ];
+			out[ `${ prefix }${ side }` ] = bareLength( merged[ side ] );
 		}
 	} );
 	return out;

@@ -15,6 +15,8 @@
  * @package SGS\Blocks
  */
 
+import { bareLength } from './bare-length';
+
 const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 const TIER_KEYS = [ 'desktop', 'tablet', 'mobile' ];
 
@@ -101,7 +103,7 @@ export function borderRadiusProperties( borderRadius, tier, prefix ) {
 	const out = {};
 	CORNERS.forEach( ( corner ) => {
 		const value = longhands[ LONGHAND_KEYS[ corner ] ];
-		if ( undefined !== value ) out[ `${ prefix }${ CORNER_SUFFIX[ corner ] }` ] = value;
+		if ( undefined !== value ) out[ `${ prefix }${ CORNER_SUFFIX[ corner ] }` ] = bareLength( value );
 	} );
 	return out;
 }
