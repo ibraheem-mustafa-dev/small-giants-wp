@@ -121,7 +121,7 @@
                       },
                       "effectHover": "none",
                       "shadowLiftOnHover": false,
-                      "titleFontFamily": "'Playfair Display',serif",
+                      "titleFontFamily": "heading",
                       "titleFontWeight": "500",
                       "titleFontSize": {
                         "desktop": 14

@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, ratioSetting, tracksSetting, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_DIR = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
@@ -136,6 +136,13 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	}
 	if ( 'font-weight' === prop ) {
 		return { value: String( raw ) };
+	}
+	if ( 'font-family' === prop && snapshot ) {
+		// A stack whose first family is a theme preset is written as that preset's slug, so it follows the client's theme.
+		const slug = snapFontFamily( raw, snapshot, { log, where, prefer } );
+		if ( slug ) {
+			return { value: slug };
+		}
 	}
 	if ( 'background-image' === prop && [].concat( def?.type || [] ).includes( 'object' ) ) {
 		// An image setting holds { url }: a measured url(...) maps to it; a gradient or several layers cannot.

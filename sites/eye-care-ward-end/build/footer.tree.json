@@ -239,7 +239,7 @@
                     "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-8",
-                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontFamily": "body",
                   "fontWeight": "400",
                   "lineHeight": {
                     "mobile": 1.5,
@@ -334,7 +334,7 @@
                     "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-15",
-                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontFamily": "body",
                   "fontWeight": "400",
                   "lineHeight": {
                     "mobile": 1.5,
@@ -430,7 +430,7 @@
                     "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-22",
-                  "fontFamily": "Outfit, system-ui, sans-serif",
+                  "fontFamily": "body",
                   "fontWeight": "400",
                   "lineHeight": {
                     "mobile": 1.5,

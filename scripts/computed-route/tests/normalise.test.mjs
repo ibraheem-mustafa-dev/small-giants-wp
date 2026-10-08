@@ -1,7 +1,7 @@
 // Proves R-47-7: tokens before literals, exact then nearest within tolerance, every snap logged with its distance.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseLength, toPx, pxTo, parseColour, deltaE, snapColour, snapLength } from '../lib/normalise.mjs';
+import { parseLength, toPx, pxTo, parseColour, deltaE, snapColour, snapLength, snapFontFamily } from '../lib/normalise.mjs';
 
 const snapshot = {
 	palette: [ { slug: 'text', colour: parseColour( '#141414' ) }, { slug: 'text-label', colour: parseColour( '#8A8278' ) }, { slug: 'primary', colour: parseColour( '#141414' ) } ],
@@ -40,4 +40,14 @@ test( 'MUST FAIL TO SNAP: a colour just beyond ΔE 2 (2.72 from text-label) stay
 test( 'snaps lengths to spacing tokens within 0.5px, else null', () => {
 	assert.equal( snapLength( 16.4, snapshot.spacing ).slug, '30' );
 	assert.equal( snapLength( 18, snapshot.spacing ), null );
+} );
+
+test( 'MUST FAIL (Contact footnote, 2026-10-08): a measured font stack snaps to the font-family preset whose first family matches', () => {
+	const snapshot = { fontFamilies: [ { slug: 'body', family: 'outfit' }, { slug: 'heading', family: 'playfair display' }, { slug: 'outfit', family: 'outfit' } ] };
+	const log = [];
+	assert.equal( snapFontFamily( 'Outfit, sans-serif', snapshot, { log } ), 'body', 'the first preset in theme order wins a tie' );
+	assert.equal( snapFontFamily( '"Playfair Display", serif', snapshot, { log } ), 'heading', 'quotes and case are ignored' );
+	assert.equal( snapFontFamily( 'Outfit, sans-serif', snapshot, { log, prefer: 'outfit' } ), 'outfit', 'the slug the node already holds wins a tie' );
+	assert.equal( snapFontFamily( 'Georgia, serif', snapshot, { log } ), null, 'a family the theme does not define stays a literal' );
+	assert.equal( log.at( -1 ).kind, 'literal' );
 } );

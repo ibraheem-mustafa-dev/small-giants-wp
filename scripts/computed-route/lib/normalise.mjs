@@ -117,7 +117,21 @@ export function loadSnapshot( file ) {
 		palette: ( s.color?.palette || [] ).map( ( t ) => ( { slug: t.slug, colour: parseColour( t.color ) } ) ).filter( ( t ) => t.colour ),
 		spacing: len( s.spacing?.spacingSizes, 'size' ),
 		fontSizes: len( s.typography?.fontSizes, 'size' ),
+		fontFamilies: ( s.typography?.fontFamilies || [] ).map( ( t ) => ( { slug: t.slug, family: primaryFamily( t.fontFamily ) } ) ).filter( ( t ) => t.family ),
 	};
+}
+
+// The first family of a font stack, unquoted and lower-cased ("\"Playfair Display\", serif" is "playfair display").
+const primaryFamily = ( stack ) => String( stack ?? '' ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' ).toLowerCase();
+
+// Snaps a measured font stack to the font-family preset whose first family matches: `prefer` (the slug the node already
+// holds) first, then the theme's order. Returns the slug, or null (the caller writes the stack as measured). Logs it.
+export function snapFontFamily( value, snapshot, { log = [], where = '', prefer = null } = {} ) {
+	const fam = primaryFamily( value );
+	const matches = ( snapshot.fontFamilies || [] ).filter( ( t ) => t.family === fam );
+	const out = ( matches.find( ( t ) => t.slug === prefer ) || matches[ 0 ] )?.slug ?? null;
+	log.push( { where, from: value, to: out ?? value, distance: null, kind: out ? 'exact' : 'literal' } );
+	return out;
 }
 
 // Snaps a colour to a palette slug: exact first (ΔE 0, alpha equal), then nearest within ΔE 2; `prefer` (the slug the

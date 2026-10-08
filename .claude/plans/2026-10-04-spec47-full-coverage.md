@@ -150,7 +150,19 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   address line height, the business-info link's 44px tap area takes one line in the flow.
 - [ ] **Contact to 100% (Session D of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): 67 distinct issues open on the 2026-10-07 sweep (19 on 2026-10-04, before the walker's DevTools reads), 0 labelled gaps** (last Solve
   `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
-  D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). Open, all box rows:
+  D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). **Solve 2026-10-08 (`qa/solve/contact/2026-10-08T02-29-56/`,
+  3 write rounds): distinct issues 66 to 60, 0 new, 17 writes, 1 wrong (6%: cr-ref-contact-22's mobile bottom margin,
+  reverted, proven by undoing it alone).** Kept: the labels' hover colour stays their resting `text-label` (-15, -18, -19;
+  live turned them black on hover, the draft does not), the bordered cards' hover border `primary` (-27, -30), and the
+  footnote's typography (-25). Removed by hand: hover border colours on four borderless nodes (-9, -15, -18, -19), which
+  paint nothing, ledgered D-88 to D-91 (the D-65 ruling); D-87 holds the phone link's hover colour (register 131). Solve
+  had written -25's font as the literal stack `Outfit, sans-serif`; it now snaps a font stack to the theme preset whose
+  first family matches (`normalise.mjs::snapFontFamily`), and the 20 literal stacks across six Eye Care trees are now
+  preset slugs (paint unchanged; live picks them up on each surface's next rebuild: Contact is rebuilt, footer, header,
+  home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
+  contact`: 123 differences, mostly the form card's box (cr-ref-contact-24, 27 to 32: found on live only, or 432px of
+  extra top inset). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
+  likely the address width below. Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
      it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
      draft's); left: a Solve run on Contact to write the hours row gap setting. Session B's triage (2026-10-05)

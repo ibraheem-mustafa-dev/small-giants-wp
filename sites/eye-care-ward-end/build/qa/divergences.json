@@ -1270,6 +1270,54 @@
       "S2",
       "S3"
     ],
-    "decided": "2026-10-08 Bean"
+    "decided": "2026-10-08 Bean (register 131)"
+  },
+  {
+    "id": "D-88",
+    "scope": "contact",
+    "node": "cr-ref-contact-9",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+    "decided": "2026-10-08 Bean (D-65 ruling)"
+  },
+  {
+    "id": "D-89",
+    "scope": "contact",
+    "node": "cr-ref-contact-15",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+    "decided": "2026-10-08 Bean (D-65 ruling)"
+  },
+  {
+    "id": "D-90",
+    "scope": "contact",
+    "node": "cr-ref-contact-18",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+    "decided": "2026-10-08 Bean (D-65 ruling)"
+  },
+  {
+    "id": "D-91",
+    "scope": "contact",
+    "node": "cr-ref-contact-19",
+    "state": "hover",
+    "property": "border-top-color",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
+    "decided": "2026-10-08 Bean (D-65 ruling)"
   }
 ]

@@ -924,7 +924,7 @@
                 "attributes": {
                   "level": "h3",
                   "content": "Prescription sunglasses",
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 22
                   },

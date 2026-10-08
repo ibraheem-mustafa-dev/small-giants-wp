@@ -463,7 +463,8 @@
                         "mobile": 1.5,
                         "tablet": 1.5,
                         "desktop": 1.5
-                      }
+                      },
+                      "textColourHover": "text-label"
                     }
                   }
                 ]
@@ -529,7 +530,8 @@
                         "desktop": "15px"
                       },
                       "className": "cr-ref-contact-18",
-                      "labelFontWeight": "400"
+                      "labelFontWeight": "400",
+                      "textColourHover": "text-label"
                     }
                   },
                   {
@@ -539,7 +541,8 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-19"
+                      "className": "cr-ref-contact-19",
+                      "textColourHover": "text-label"
                     }
                   }
                 ]
@@ -657,7 +660,22 @@
             "name": "sgs/business-info",
             "attributes": {
               "displayType": "map",
-              "className": "cr-ref-contact-25"
+              "className": "cr-ref-contact-25",
+              "fontFamily": "body",
+              "fontSize": {
+                "mobile": 11,
+                "tablet": 11,
+                "desktop": 11
+              },
+              "fontWeight": "400",
+              "fontStyle": "normal",
+              "lineHeight": {
+                "mobile": 1.5,
+                "tablet": 1.5,
+                "desktop": 1.5
+              },
+              "textTransform": "none",
+              "textColour": "primary"
             }
           },
           {
@@ -703,7 +721,8 @@
                   },
                   "sgsChildSizing": {
                     "desktop": "fill"
-                  }
+                  },
+                  "borderColourHover": "primary"
                 },
                 "innerBlocks": [
                   {
@@ -765,7 +784,8 @@
                   },
                   "sgsChildSizing": {
                     "desktop": "fill"
-                  }
+                  },
+                  "borderColourHover": "primary"
                 },
                 "innerBlocks": [
                   {

@@ -82,7 +82,7 @@
           "sgsAnimationDuration": "900",
           "sgsAnimationEasing": "ease",
           "sgsAnimationDelay": "280",
-          "fontFamily": "'Playfair Display',serif",
+          "fontFamily": "heading",
           "fontWeight": "500",
           "fontSize": {
             "desktop": 63.36,
@@ -250,7 +250,7 @@
             }
           },
           "scrollDuration": 64,
-          "brandTextFontFamily": "'Playfair Display',serif",
+          "brandTextFontFamily": "heading",
           "brandTextFontWeight": "500",
           "brandTextFontSize": 15,
           "brandTextFontSizeUnit": "px",
@@ -369,7 +369,7 @@
                 "attributes": {
                   "level": "h2",
                   "content": "Best sellers",
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 46,
@@ -1375,7 +1375,7 @@
                 "name": "sgs/heading",
                 "attributes": {
                   "content": "Four reasons, and not one of them is a discount code.",
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 46,
                     "mobile": 32
@@ -1490,7 +1490,7 @@
               {
                 "name": "sgs/text",
                 "attributes": {
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 40
                   },
@@ -1574,7 +1574,7 @@
               {
                 "name": "sgs/text",
                 "attributes": {
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 40
                   },
@@ -1658,7 +1658,7 @@
               {
                 "name": "sgs/text",
                 "attributes": {
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 40
                   },
@@ -1742,7 +1742,7 @@
               {
                 "name": "sgs/text",
                 "attributes": {
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontSize": {
                     "desktop": 40
                   },
@@ -1884,7 +1884,7 @@
                 "attributes": {
                   "level": "h2",
                   "content": "Start with a shape",
-                  "fontFamily": "'Playfair Display',serif",
+                  "fontFamily": "heading",
                   "fontWeight": "500",
                   "fontSize": {
                     "desktop": 46,
@@ -2198,7 +2198,7 @@
             "name": "sgs/heading",
             "attributes": {
               "content": "What people say",
-              "fontFamily": "'Playfair Display',serif",
+              "fontFamily": "heading",
               "fontSize": {
                 "desktop": 46,
                 "mobile": 32
@@ -2344,7 +2344,7 @@
             "mobile": "12.5px",
             "tablet": "12.5px"
           },
-          "fontFamily": "'Roboto',Arial,sans-serif",
+          "fontFamily": "roboto",
           "footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
           "footnoteColour": "#5F6368",
           "footnoteFontSize": {
@@ -2763,7 +2763,7 @@
             "name": "sgs/heading",
             "attributes": {
               "content": "Any pair here, made to your prescription.",
-              "fontFamily": "'Playfair Display',serif",
+              "fontFamily": "heading",
               "fontSize": {
                 "desktop": 46,
                 "mobile": 32
@@ -3031,7 +3031,7 @@
             "name": "sgs/heading",
             "attributes": {
               "content": "I'm Fatima Nawaz, and I run the clinic in Birmingham.",
-              "fontFamily": "'Playfair Display',serif",
+              "fontFamily": "heading",
               "fontSize": {
                 "desktop": 46,
                 "mobile": 32
