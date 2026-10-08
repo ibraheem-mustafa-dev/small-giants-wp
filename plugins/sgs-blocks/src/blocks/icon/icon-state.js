@@ -13,6 +13,7 @@ import {
 	brandByLucideName,
 	brandPaint,
 } from '../../utils/brand-registry';
+import { borderBoxPreview } from '../../utils/border-style';
 
 /** The Site Info admin page, relative to wp-admin (both editors run there). */
 export const SITE_INFO_ADMIN_URL = 'admin.php?page=sgs-site-info';
@@ -179,4 +180,49 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	const max = { px: maxPx, rem: maxPx / 16, em: maxPx / 16, '%': 100 }[ unit ];
 	const num = Math.min( parseFloat( m[ 1 ] ), max );
 	return `${ parseFloat( num.toFixed( 3 ) ) }${ unit }`;
+}
+
+/**
+ * The group defaults a wrapping sgs/social-icons row hands this icon through block context. Twin:
+ * sgs_icon_group_context() (includes/helpers-icon.php).
+ *
+ * @param {Object} context The block's `context` prop.
+ * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean}}
+ */
+export function iconGroupContext( context ) {
+	context = context && 'object' === typeof context ? context : {};
+	const mode = context[ 'sgs/socialIconsColourMode' ];
+	const shape = context[ 'sgs/socialIconsShape' ];
+	const hidden = context[ 'sgs/socialIconsHiddenLinks' ];
+	return {
+		inGroup: undefined !== mode && null !== mode,
+		colourMode: [ 'inherit', 'theme', 'brand' ].includes( mode ) ? mode : 'inherit',
+		hidden: Array.isArray( hidden ) ? hidden.filter( ( k ) => 'string' === typeof k ) : [],
+		shape: [ 'square', 'circle', 'pill' ].includes( shape ) ? shape : '',
+		showBg: !! context[ 'sgs/socialIconsShowBackground' ],
+		border: !! borderBoxPreview( context[ 'sgs/socialIconsBorderWidth' ], context[ 'sgs/socialIconsBorderStyle' ] ).borderWidth,
+	};
+}
+
+/**
+ * The attributes the icon paints with inside a row: colour mode `inherit` takes the row's mode, the square (the
+ * default shape) takes the row's shape, and the row can switch the background on. Twin: icon/render.php.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Object} group      iconGroupContext() result.
+ * @return {Object} Effective attributes.
+ */
+export function attributesInGroup( attributes, group ) {
+	if ( ! group.inGroup ) {
+		return attributes;
+	}
+	const next = { ...attributes };
+	if ( ( attributes.colourMode || 'inherit' ) === 'inherit' ) {
+		next.colourMode = group.colourMode;
+	}
+	if ( ( attributes.shape || 'square' ) === 'square' && group.shape ) {
+		next.shape = group.shape;
+	}
+	next.showBackground = !! attributes.showBackground || group.showBg;
+	return next;
 }
