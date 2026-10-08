@@ -61,12 +61,13 @@ _LINK = '<a class="sgs-google-reviews__review-request-url" style="{s}">x</a>'
 
 
 def test_the_db_classes_the_attrs_under_test_as_box_families():
-    """The premise, read from the DB rather than assumed: object-typed box families, one
-    tier-of-boxes and one base-only, so both destination shapes are exercised."""
+    """The premise, read from the DB rather than assumed: object-typed box families, both
+    tier-of-boxes (google-reviews prints every card box per device). The base-only destination
+    shape is exercised by forcing the tier-shape gate below."""
     assert db_lookup.box_family_for(_GR, "avatarBorderRadius") is not None
     assert db_lookup.box_family_is_tier_shaped(_GR, "avatarBorderRadius") is True
     assert db_lookup.box_family_for(_GR, "cardBorderWidth") is not None
-    assert db_lookup.box_family_is_tier_shaped(_GR, "cardBorderWidth") is False
+    assert db_lookup.box_family_is_tier_shaped(_GR, "cardBorderWidth") is True
 
 
 def test_a_radius_found_by_the_selector_lookup_is_a_corner_object_in_a_tier_object():
@@ -78,7 +79,7 @@ def test_a_radius_and_width_found_by_the_first_lookup_are_objects_too():
     attrs, _ = _route(_CARD.format(s="border-radius:12px;border-width:1px"), "review")
     assert attrs == {
         "cardBorderRadius": {"desktop": _corners("12px")},
-        "cardBorderWidth": _sides("1px"),  # base-only box: the box itself, no tier wrapper
+        "cardBorderWidth": {"desktop": _sides("1px")},
     }
 
 
@@ -100,7 +101,19 @@ def test_a_tier_that_merely_inherits_the_base_adds_no_key():
     assert set(attrs["avatarBorderRadius"]) == {"desktop"}
 
 
-def test_a_base_only_box_reports_a_mobile_override_it_has_no_slot_for():
+def test_a_real_mobile_border_width_lands_under_its_own_tier_key():
+    attrs, rows = _route(
+        _CARD.format(s="border-width:1px"), "review",
+        {".sgs-google-reviews__review": {"border-width": "1px"},
+         "max-width: 767 :: .sgs-google-reviews__review": {"border-width": "3px"}})
+    assert attrs == {"cardBorderWidth": {"desktop": _sides("1px"), "mobile": _sides("3px")}}
+    assert not any("area_attr_tier_missing" in r for _p, r in rows)
+
+
+def test_a_base_only_box_reports_a_mobile_override_it_has_no_slot_for(monkeypatch):
+    """A box the DB marks base-only (forced here) holds the box itself and reports the mobile
+    value it cannot store."""
+    monkeypatch.setattr(db_lookup, "box_family_is_tier_shaped", lambda block, attr: False)
     attrs, rows = _route(
         _CARD.format(s="border-width:1px"), "review",
         {".sgs-google-reviews__review": {"border-width": "1px"},
