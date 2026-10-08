@@ -705,7 +705,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
        at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
-       Progress (Contact: the hours list's row gap and the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
+       Progress (Contact: the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
        (`lib/pairs.mjs::rootFor`, `d605bb5ba`), per-width draft finders (`mergeWidthFinders`), and off-screen
        screen-reader text in the independent check (`independent-check.mjs::srOnly`).
      - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in

@@ -164,13 +164,13 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
-- [ ] **Contact: state at the end of 2026-10-08 (Session D, after its 16:43 Solve and fixes).** Solve
+- [ ] **Contact: state at the end of 2026-10-08 (Session D, after its 16:43 BST Solve, folder `15-43-56` UTC, and fixes).** Solve
   (`qa/solve/contact/2026-10-08T15-43-56/`): whole page 45 -> 44 distinct issues, 0 new; 3 writes, wrong settings 1 of 2
   (business-info `displayType` phone -> email, reverted twice by the guard; root-fixed in `230456b91`: a setting that
   changes an element's words never answers a style row). Hours closed (register 130, `e77963c4e`). The independent check
   had read 123 differences, mostly its own (`751800ca9`: a `<br>` now separates words, unseen text adds no inset, bare-text
-  words are measured as a text run); it now reads **41 open, 3 accepted** (D-99/D-100: the draft's WhatsApp number is
-  two digits short). The 41, by cause, for the next session:
+  words are measured as a text run); it now reads **41 open, 3 accepted** (D-99's `found` row at each of 375/768/1440: the draft's WhatsApp
+  number is two digits short; D-100 holds the walker's text row). The 41, by cause, for the next session:
   1. The D-16 map (about 18 rows): live cr-ref-contact-24 holds the embedded map (no words) where the draft column holds
      a sketch with its own words, so -24's height and text inset (432px) and the cards' and their texts' positions
      (-27 to -32) follow the map. Prove they move with the map alone (one probe with the map hidden on both sides), then
@@ -183,7 +183,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   4. Small right insets on -1 and -3 at 1440 (7 against 4px).
   Then Solve (3 rounds) and the done line: fresh rebuild, 0 unexplained and 0 labelled gaps, wrong settings at most 10%,
   independent check 0 beyond the ledger, planted-fault control.
-- [ ] **Contact to 100% (Session D of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): 60 distinct issues open after the 2026-10-08 Solve run, 13 labelled gaps to prove** (run detail below). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
+- **Contact, history before the 2026-10-08 16:43 run (current state: the entry above).** (run detail below). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). **Solve 2026-10-08 (`qa/solve/contact/2026-10-08T02-29-56/`,
   3 write rounds): distinct issues 66 to 60, 0 new, 17 writes, 1 wrong (6%: cr-ref-contact-22's mobile bottom margin,
   reverted, proven by undoing it alone).** Kept, 5: the labels' hover colour `text-label` on -15, -18 and -19 (both sides
@@ -199,16 +199,15 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   it now matches a stack to the theme preset whose first family matches (`normalise.mjs::snapFontFamily`), and the 20
   literal stacks across six Eye Care trees are now preset slugs (paint unchanged; each surface picks them up on its next
   rebuild: Contact is rebuilt, footer, header, home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
-  contact`: 123 differences, mostly the form card's box (cr-ref-contact-24, 27 to 32: found on live only, or 432px of
-  extra top inset). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
+  contact` read 123 differences that morning; most were the checker's own (see the entry above). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
   likely the address width below. Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. **Cause proven
      (2026-10-08, from the 2026-10-08 run's report):** the hours text runs (gen-contact-18, -19) match the draft in
      style and differ only in position; `business-info/style.css::.sgs-business-hours__row` hardcoded `padding: 0.35em 0`
      (5.25px at 15px) with no setting. No row-gap row ever existed for this pair (rows are read only for a text run
      holding several lines; each hours line is its own run). Framework repair `9ba98f91d`: `hoursRowPadding` (per-device
-     box, element `hours-row`, fallback 0.35em), reseeded `94d9a7ce4`. Next: deploy, recalibrate `sgs/business-info`,
-     then Solve writes the draft's 0.
+     box, element `hours-row`, fallback 0.35em), reseeded `94d9a7ce4`. Closed 2026-10-08 (register 130): `hoursCondensedInline: true`
+     on cr-ref-contact-18; the inline layout prints no row padding, so no `hoursRowPadding` value is written.
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
      lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
      (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; the 2026-10-08 run found no width row open on these refs. Session B's triage
