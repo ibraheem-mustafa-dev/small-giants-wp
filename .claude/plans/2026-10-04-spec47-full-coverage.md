@@ -206,7 +206,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses: Solve and the independent check at 0 (Session D, 2026-10-08; from 67 distinct issues); register N40 (the gap above the button) still "to prove", so not yet at 100%.** Paired 28 of 29 blocks (cr-ref-lenses-28 left
+- [x] **Lenses at 100% (2026-10-08; from 67 distinct issues).** On a fresh rebuild of the committed tree (`qa/solve/lenses/2026-10-08T14-09-56/`): whole page 0 issues, 0 labelled gaps, 0 new rows, 0 writes (wrong settings 0 of 0, the rule as written); `independent-check.mjs --surface lenses` 0 differences over 27 items; planted-fault control (page container top padding +22px, 70/50px) caught by the independent check (81 differences), tree restored from git and rebuilt. Register N40 closed by measurement (28px on both sides at every width). Every Lenses register row is closed. Paired 28 of 29 blocks (cr-ref-lenses-28 left
   out: its draft element holds another block's words), `walkerFull` set. The done line, each criterion with its evidence:
   - **0 unexplained, 0 labelled gaps, 0 new rows** on a rebuild of the committed tree (`qa/solve/lenses/2026-10-07T23-42-47/`).
     The 3-round run after `titleTextWrap` (`2026-10-08T02-08-01/`) wrote nothing and left one row, cr-ref-lenses-26
