@@ -1,0 +1,36 @@
+{
+    "a_baseline": {
+        " || .sgs-container-UID": [
+            "--sgs-transition-duration:200ms"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-container-UID": [
+            "--sgs-panel-border:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-transition-duration:200ms"
+        ]
+    },
+    "m_colour_gradient_only": {
+        " || .sgs-container-UID": [
+            "--sgs-transition-duration:200ms"
+        ],
+        " || .sgs-tabs-uid-UID.wp-block-sgs-tabs .sgs-tabs__panel": [
+            "background-clip:padding-box",
+            "border-color:transparent",
+            "position:relative"
+        ],
+        " || .sgs-tabs-uid-UID.wp-block-sgs-tabs .sgs-tabs__panel::before": [
+            "-webkit-mask-composite:xor",
+            "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
+            "background:linear-gradient(90deg,#f00,#00f)",
+            "border-radius:inherit",
+            "content:\"\"",
+            "inset:0",
+            "margin:-1px",
+            "mask-composite:exclude",
+            "padding:1px",
+            "pointer-events:none",
+            "position:absolute"
+        ]
+    }
+}

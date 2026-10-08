@@ -15,8 +15,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Scoped CSS for the card variant: title/sub-line colour + typography, and
- * the border-colour override (the CSS default border in style.css applies
- * when this attribute is unset).
+ * the border override (the CSS default border in style.css applies
+ * when the border attributes are unset).
  *
  * @param array  $attributes Block attributes.
  * @param string $uid        Content-addressed scope id.
@@ -39,25 +39,24 @@ function sgs_whatsapp_cta_card_css( array $attributes, string $uid, string $root
 		sgs_typography_css_rule( $attributes, 'cardSubline', '.' . $uid . ' .sgs-whatsapp-cta__card-subline' ),
 	);
 
-	$border_colour = sgs_colour_value( $attributes['cardBorderColour'] ?? '' );
-	if ( '' !== $border_colour ) {
-		$css[] = "{$root_sel}{border-color:{$border_colour};}";
+	// Card border (width, style, colour). The card has no radius attribute of its
+	// own; the block root's `borderRadius` is printed by render.php. The base
+	// rule is a separate rule from the radius so declaration order stays free.
+	$border = sgs_border_element_decls(
+		$attributes,
+		'card',
+		$root_sel,
+		array(
+			'colour' => array(
+				'base' => 'cardBorderColour',
+			),
+			'radius' => false,
+		)
+	);
+	if ( $border['base'] ) {
+		$css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 	}
-
-	// Border width — box object, base only (Spec 35 §14, no per-device width).
-	// The card variant's zero-specificity outline (1px, style.css) applies when unset.
-	$border_width_box = is_array( $attributes['cardBorderWidth'] ?? null ) ? $attributes['cardBorderWidth'] : array();
-	$border_width_val = sgs_box_object_shorthand( $border_width_box );
-	if ( null !== $border_width_val ) {
-		$css[] = "{$root_sel}{border-width:{$border_width_val};}";
-	}
-
-	// Border style — resolved through the shared keyword helper; unset leaves
-	// style.css's own default in place.
-	$border_style_raw = (string) ( $attributes['cardBorderStyle'] ?? '' );
-	if ( '' !== $border_style_raw ) {
-		$css[] = "{$root_sel}{border-style:" . sgs_border_style_keyword( $border_style_raw ) . ';}';
-	}
+	$css = array_merge( $css, $border['rules'] );
 
 	return array_filter(
 		$css,

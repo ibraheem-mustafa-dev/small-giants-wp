@@ -1,11 +1,11 @@
 {
-  "generated": "2026-10-08T03:41:43Z",
+  "generated": "2026-10-08T04:18:25Z",
   "tool": "scripts/migrate-border-element.py --survey",
   "totals": {
-    "files": 50,
-    "elements": 72,
-    "shapes": 47,
-    "unclear_elements": 56
+    "files": 46,
+    "elements": 66,
+    "shapes": 43,
+    "unclear_elements": 51
   },
   "shapes": [
     {
@@ -69,15 +69,6 @@
         "src/blocks/buybox/render.php#(none)",
         "src/blocks/form/render.php#field",
         "src/blocks/product-search/render.php#(none)"
-      ]
-    },
-    {
-      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
-      "count": 3,
-      "elements": [
-        "src/blocks/cart/render.php#pill",
-        "src/blocks/whatsapp-cta/variant-render.php#card",
-        "includes/notice-banner-icon-badge.php#iconCircle"
       ]
     },
     {
@@ -167,10 +158,10 @@
       ]
     },
     {
-      "shape": "none|none|gradient-ring|none|none|string-concat",
+      "shape": "none|none|gradient-ring|unclear|none|string-concat",
       "count": 1,
       "elements": [
-        "src/blocks/tabs/render.php#panel"
+        "src/blocks/tabs/render.php#(none)"
       ]
     },
     {
@@ -209,13 +200,6 @@
       ]
     },
     {
-      "shape": "none|none|none|style-engine|corner-longhands|unclear",
-      "count": 1,
-      "elements": [
-        "src/blocks/whatsapp-cta/render.php#"
-      ]
-    },
-    {
       "shape": "none|none|states-css|custom-property|none|string-concat",
       "count": 1,
       "elements": [
@@ -234,6 +218,13 @@
       "count": 1,
       "elements": [
         "src/blocks/product-card/render.php#"
+      ]
+    },
+    {
+      "shape": "none|none|unclear|none|tablet:corner-longhands,mobile:none|unclear",
+      "count": 1,
+      "elements": [
+        "src/blocks/hero/render.php#splitMedia"
       ]
     },
     {
@@ -293,13 +284,6 @@
       ]
     },
     {
-      "shape": "unclear|keyword-helper|gradient-ring+literal-border-color|corner-longhands|corner-longhands|mixed",
-      "count": 1,
-      "elements": [
-        "src/blocks/hero/render.php#splitMedia"
-      ]
-    },
-    {
       "shape": "unclear|keyword-helper|literal-border-color|none|none|string-concat",
       "count": 1,
       "elements": [
@@ -342,24 +326,10 @@
       ]
     },
     {
-      "shape": "unclear|none|literal-border-color|unclear|none|decls-array",
-      "count": 1,
-      "elements": [
-        "src/blocks/product-card/render.php#attributeTag"
-      ]
-    },
-    {
       "shape": "unclear|none|none|single-length|none|string-concat",
       "count": 1,
       "elements": [
         "includes/nav-menu-submenu-link-css.php#submenu"
-      ]
-    },
-    {
-      "shape": "unclear|unclear|gradient-ring|unclear|none|string-concat",
-      "count": 1,
-      "elements": [
-        "src/blocks/google-reviews/render.php#card"
       ]
     }
   ],
@@ -542,27 +512,6 @@
       "multi_element_file": true
     },
     {
-      "file": "src/blocks/cart/render.php",
-      "block": "cart",
-      "prefix": "pill",
-      "width": "unclear",
-      "style": "keyword-helper",
-      "explicit_none_rule": false,
-      "colour": "literal-border-color",
-      "hover_gradient": false,
-      "radius_base": "single-length",
-      "radius_tiers": "none",
-      "sink": "scoped-css-array",
-      "sink_kinds": [
-        "scoped-css-array"
-      ],
-      "selector": "$pill_sel",
-      "shares_rule_with": [],
-      "line": 90,
-      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
-      "multi_element_file": false
-    },
-    {
       "file": "src/blocks/choice-flow/render.php",
       "block": "choice-flow",
       "prefix": "back",
@@ -655,29 +604,8 @@
       "sink_kinds": [],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 594,
+      "line": 613,
       "shape": "none|none|none|unclear|none|unclear",
-      "multi_element_file": true
-    },
-    {
-      "file": "src/blocks/google-reviews/render.php",
-      "block": "google-reviews",
-      "prefix": "card",
-      "width": "unclear",
-      "style": "unclear",
-      "explicit_none_rule": false,
-      "colour": "gradient-ring",
-      "hover_gradient": false,
-      "radius_base": "unclear",
-      "radius_tiers": "none",
-      "sink": "string-concat",
-      "sink_kinds": [
-        "string-concat"
-      ],
-      "selector": "$gr_card_sel",
-      "shares_rule_with": [],
-      "line": 577,
-      "shape": "unclear|unclear|gradient-ring|unclear|none|string-concat",
       "multi_element_file": true
     },
     {
@@ -697,7 +625,7 @@
       ],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 331,
+      "line": 335,
       "shape": "button-style|button-style|button-style|button-style|none|string-concat",
       "multi_element_file": true
     },
@@ -718,7 +646,7 @@
       ],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 330,
+      "line": 334,
       "shape": "button-style|button-style|button-style|button-style|none|string-concat",
       "multi_element_file": true
     },
@@ -726,22 +654,19 @@
       "file": "src/blocks/hero/render.php",
       "block": "hero",
       "prefix": "splitMedia",
-      "width": "unclear",
-      "style": "keyword-helper",
+      "width": "none",
+      "style": "none",
       "explicit_none_rule": false,
-      "colour": "gradient-ring+literal-border-color",
-      "hover_gradient": true,
-      "radius_base": "corner-longhands",
-      "radius_tiers": "corner-longhands",
-      "sink": "mixed",
-      "sink_kinds": [
-        "decls-array",
-        "string-concat"
-      ],
-      "selector": "'.' . $uid . ' .sgs-hero__split-media'",
+      "colour": "unclear",
+      "hover_gradient": false,
+      "radius_base": "none",
+      "radius_tiers": "tablet:corner-longhands,mobile:none",
+      "sink": "unclear",
+      "sink_kinds": [],
+      "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 305,
-      "shape": "unclear|keyword-helper|gradient-ring+literal-border-color|corner-longhands|corner-longhands|mixed",
+      "line": 518,
+      "shape": "none|none|unclear|none|tablet:corner-longhands,mobile:none|unclear",
       "multi_element_file": false
     },
     {
@@ -972,31 +897,8 @@
       "sink_kinds": [],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 581,
+      "line": 337,
       "shape": "none|none|unclear|none|none|unclear",
-      "multi_element_file": true
-    },
-    {
-      "file": "src/blocks/product-card/render.php",
-      "block": "product-card",
-      "prefix": "attributeTag",
-      "width": "unclear",
-      "style": "none",
-      "explicit_none_rule": false,
-      "colour": "literal-border-color",
-      "hover_gradient": false,
-      "radius_base": "unclear",
-      "radius_tiers": "none",
-      "sink": "decls-array",
-      "sink_kinds": [
-        "decls-array"
-      ],
-      "selector": "(unknown)",
-      "shares_rule_with": [
-        "colour"
-      ],
-      "line": 328,
-      "shape": "unclear|none|literal-border-color|unclear|none|decls-array",
       "multi_element_file": true
     },
     {
@@ -1016,7 +918,7 @@
       ],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 656,
+      "line": 657,
       "shape": "button-style|button-style|button-style|button-style|none|string-concat",
       "multi_element_file": true
     },
@@ -1092,7 +994,7 @@
       "sink_kinds": [],
       "selector": "(unknown)",
       "shares_rule_with": [],
-      "line": 695,
+      "line": 696,
       "shape": "none|none|none|unclear|none|unclear",
       "multi_element_file": true
     },
@@ -1139,13 +1041,13 @@
     {
       "file": "src/blocks/tabs/render.php",
       "block": "tabs",
-      "prefix": "panel",
+      "prefix": "(none)",
       "width": "none",
       "style": "none",
       "explicit_none_rule": false,
       "colour": "gradient-ring",
       "hover_gradient": false,
-      "radius_base": "none",
+      "radius_base": "unclear",
       "radius_tiers": "none",
       "sink": "string-concat",
       "sink_kinds": [
@@ -1154,47 +1056,7 @@
       "selector": "\"{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])\"",
       "shares_rule_with": [],
       "line": 95,
-      "shape": "none|none|gradient-ring|none|none|string-concat",
-      "multi_element_file": false
-    },
-    {
-      "file": "src/blocks/whatsapp-cta/render.php",
-      "block": "whatsapp-cta",
-      "prefix": "",
-      "width": "none",
-      "style": "none",
-      "explicit_none_rule": false,
-      "colour": "none",
-      "hover_gradient": false,
-      "radius_base": "style-engine",
-      "radius_tiers": "corner-longhands",
-      "sink": "unclear",
-      "sink_kinds": [],
-      "selector": "(unknown)",
-      "shares_rule_with": [],
-      "line": 148,
-      "shape": "none|none|none|style-engine|corner-longhands|unclear",
-      "multi_element_file": false
-    },
-    {
-      "file": "src/blocks/whatsapp-cta/variant-render.php",
-      "block": "whatsapp-cta",
-      "prefix": "card",
-      "width": "unclear",
-      "style": "keyword-helper",
-      "explicit_none_rule": false,
-      "colour": "literal-border-color",
-      "hover_gradient": false,
-      "radius_base": "single-length",
-      "radius_tiers": "none",
-      "sink": "scoped-css-array",
-      "sink_kinds": [
-        "scoped-css-array"
-      ],
-      "selector": "\"{$root_sel}\"",
-      "shares_rule_with": [],
-      "line": 42,
-      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
+      "shape": "none|none|gradient-ring|unclear|none|string-concat",
       "multi_element_file": false
     },
     {
@@ -1574,27 +1436,6 @@
       "shares_rule_with": [],
       "line": 317,
       "shape": "unclear|keyword-helper|literal-border-color|unclear|none|string-concat",
-      "multi_element_file": false
-    },
-    {
-      "file": "includes/notice-banner-icon-badge.php",
-      "block": "includes/notice-banner-icon-badge.php",
-      "prefix": "iconCircle",
-      "width": "unclear",
-      "style": "keyword-helper",
-      "explicit_none_rule": false,
-      "colour": "literal-border-color",
-      "hover_gradient": false,
-      "radius_base": "single-length",
-      "radius_tiers": "none",
-      "sink": "scoped-css-array",
-      "sink_kinds": [
-        "scoped-css-array"
-      ],
-      "selector": "$badge_sel",
-      "shares_rule_with": [],
-      "line": 66,
-      "shape": "unclear|keyword-helper|literal-border-color|single-length|none|scoped-css-array",
       "multi_element_file": false
     },
     {

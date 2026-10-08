@@ -22,7 +22,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-slider-nav.php';
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
 // proven sanitiser (strips everything except letters, digits, dot, %).
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$variant            = $attributes['variant'] ?? 'slider';
+$variant = $attributes['variant'] ?? 'slider';
 
 /*
  * Draggable + Inertia roster opt-in (Spec 38 FR-38-13), mirroring sgs/gallery.
@@ -58,7 +58,7 @@ $sgs_gr_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
 if ( 'slider' === $variant && $sgs_gr_loop_carousel ) {
 	$sgs_gr_list_fx_attr .= ' data-sgs-loop="1"';
 }
-$place_id           = sgs_reviews_place_id( $attributes, (string) ( Google_Reviews_Settings::get_settings()['place_id'] ?? '' ) );
+$place_id = sgs_reviews_place_id( $attributes, (string) ( Google_Reviews_Settings::get_settings()['place_id'] ?? '' ) );
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (a cast on an unresolved array
 // throws "Array to int/string conversion", the D569/D570 bug class this
@@ -112,7 +112,7 @@ if ( 'synced' === $data_source ) {
 	sgs_reviews_log_missing_attribution( $data );
 }
 
-$all_reviews   = $data['reviews'] ?? array();
+$all_reviews = $data['reviews'] ?? array();
 /*
  * The score and the count are only printed when there is a real one to print. A rating of 0 means
  * "no rating", never "0.0 out of 5" over five empty stars. Where the figure comes from:
@@ -250,7 +250,7 @@ if ( in_array( $gr_logo_position, array( 'leading', 'trailing' ), true ) && $gr_
 
 // Only the inner star colour remains as a custom CSS variable
 // (targets SVG fill on inner elements).
-$sgs_gr_star     = sgs_colour_value( $star_colour );
+$sgs_gr_star = sgs_colour_value( $star_colour );
 // Empty (the default) writes nothing, so the stars, breakdown bars and active dot stay Google's yellow.
 $gr_extra_styles = '' !== $sgs_gr_star ? array( '--sgs-gr-star-colour:' . $sgs_gr_star ) : array();
 
@@ -294,7 +294,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-style.php';
 // the font size, so a `{}` tier object would print `font-size:0px`). This block stores those as typography
 // families and tier objects, which the element rules further down write, so the helper is handed only the
 // colour, gradient and hover attributes it can read.
-$gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
+$gr_btn_attrs       = static function ( string $prefix ) use ( $attributes ): array {
 	$out = $attributes;
 	foreach ( array( 'FontSize', 'FontWeight', 'Padding', 'BorderWidth', 'BorderStyle', 'BorderRadius', 'WidthType' ) as $suffix ) {
 		unset( $out[ $prefix . $suffix ] );
@@ -319,7 +319,11 @@ $gr_btn_attrs = static function ( string $prefix ) use ( $attributes ): array {
 		'writeReview' => array( 'ColourBorderHover' => 'var(--sgs-gr-blue)' ),
 		'seeAll'      => array( 'ColourBackgroundHover' => 'var(--sgs-gr-blue-dark)' ),
 	);
-	$gradient_of    = array( 'ColourBackgroundHover' => 'ColourBackgroundHoverGradient', 'ColourBorderHover' => 'ColourBorderHoverGradient', 'ColourTextHover' => 'ColourTextHoverGradient' );
+	$gradient_of    = array(
+		'ColourBackgroundHover' => 'ColourBackgroundHoverGradient',
+		'ColourBorderHover'     => 'ColourBorderHoverGradient',
+		'ColourTextHover'       => 'ColourTextHoverGradient',
+	);
 	foreach ( $hover_defaults[ $prefix ] ?? array() as $suffix => $default ) {
 		if ( empty( $out[ $prefix . $suffix ] ) && empty( $out[ $prefix . $gradient_of[ $suffix ] ] ) ) {
 			$out[ $prefix . $suffix ] = $default;
@@ -337,7 +341,7 @@ $gr_button_lift = isset( $attributes['buttonHoverLift'] ) && is_numeric( $attrib
 	? max( 0, min( 8, (float) $attributes['buttonHoverLift'] ) )
 	: 0;
 if ( $gr_button_lift > 0 ) {
-	$gr_lift_decl = 'transform:translateY(-' . rtrim( rtrim( number_format( $gr_button_lift, 2, '.', '' ), '0' ), '.' ) . 'px)';
+	$gr_lift_decl       = 'transform:translateY(-' . rtrim( rtrim( number_format( $gr_button_lift, 2, '.', '' ), '0' ), '.' ) . 'px)';
 	$gr_responsive_css .= '@media (prefers-reduced-motion: no-preference){'
 		. sgs_hover_state_rules( $gr_root_sel . ' .sgs-google-reviews__write-review', $gr_lift_decl )
 		. sgs_hover_state_rules( $gr_root_sel . ' .sgs-google-reviews__see-all', $gr_lift_decl )
@@ -446,9 +450,9 @@ $gr_box_rule = static function ( string $selector, $raw, string $prop, array $ke
 			? 'border-' . strtolower( preg_replace( '/([A-Z])/', '-$1', $key ) ) . '-radius'
 			: $prop . '-' . $key;
 	};
-	$rules    = array();
-	$prev     = '';
-	$prev_eff = array();
+	$rules         = array();
+	$prev          = '';
+	$prev_eff      = array();
 	foreach ( $chains as $tier => $sources ) {
 		$vals = array();
 		$any  = false;
@@ -573,16 +577,31 @@ if ( '' !== $gr_star_empty ) {
 }
 
 // ── Review card. ──
-$gr_card_sel             = $gr_root_sel . ' .sgs-google-reviews__review';
-$gr_card_width           = $gr_box_rule( $gr_card_sel, $attributes['cardBorderWidth'] ?? null, 'border-width', $gr_sides );
-$gr_responsive_css      .= $gr_box_rule( $gr_card_sel, $attributes['cardPadding'] ?? null, 'padding', $gr_sides );
-$gr_responsive_css      .= $gr_card_width . $gr_border_style( $gr_card_sel, 'card', $gr_card_width );
-$gr_responsive_css      .= $gr_colour_rule( $gr_card_sel, 'border-color', $attributes['cardBorderColour'] ?? '' );
-$gr_card_border_gradient = sgs_css_gradient_value( $attributes['cardBorderColourGradient'] ?? '' );
-if ( '' !== $gr_card_border_gradient ) {
-	$gr_responsive_css .= sgs_border_gradient_css( $gr_card_sel, $gr_card_border_gradient, null, '1px' );
+$gr_card_sel        = $gr_root_sel . ' .sgs-google-reviews__review';
+$gr_responsive_css .= $gr_box_rule( $gr_card_sel, $attributes['cardPadding'] ?? null, 'padding', $gr_sides );
+// Card border (width, style, colour, gradient ring, none override, radius at
+// three tiers) through the shared assembler.
+$gr_card_border = sgs_border_element_decls(
+	$attributes,
+	'card',
+	$gr_card_sel,
+	array(
+		'colour' => array(
+			'base'     => 'cardBorderColour',
+			'gradient' => 'cardBorderColourGradient',
+		),
+	)
+);
+if ( $gr_card_border['base'] ) {
+	$gr_responsive_css .= $gr_card_sel . '{' . implode( ';', $gr_card_border['base'] ) . ';}';
 }
-$gr_responsive_css .= $gr_box_rule( $gr_card_sel, $attributes['cardBorderRadius'] ?? null, 'border-radius', $gr_corners );
+if ( $gr_card_border['tablet'] ) {
+	$gr_responsive_css .= '@media (max-width:1023px){' . $gr_card_sel . '{' . implode( ';', $gr_card_border['tablet'] ) . ';}}';
+}
+if ( $gr_card_border['mobile'] ) {
+	$gr_responsive_css .= '@media (max-width:767px){' . $gr_card_sel . '{' . implode( ';', $gr_card_border['mobile'] ) . ';}}';
+}
+$gr_responsive_css .= implode( '', $gr_card_border['rules'] );
 $gr_responsive_css .= $gr_colour_rule( $gr_card_sel, 'background-color', $attributes['cardBackground'] ?? '' );
 $gr_responsive_css .= $gr_len_rule( $gr_card_sel, $attributes['cardGap'] ?? null, array( 'gap' ) );
 // The card width is the slider's flex basis; the other variants size the card by its own width.
@@ -619,7 +638,7 @@ if ( '' !== $gr_accent ) {
 	$gr_accent_decls = '--sgs-gr-blue-dark:color-mix(in srgb,var(--sgs-gr-blue) 85%,var(--sgs-gr-ink));'
 		. '--sgs-gr-blue-tint:color-mix(in srgb,var(--sgs-gr-blue) 10%,var(--sgs-gr-surface));'
 		. '--sgs-gr-blue-tint-strong:color-mix(in srgb,var(--sgs-gr-blue) 20%,var(--sgs-gr-surface));';
-	$gr_accent_hex = sgs_colour_hex_for_contrast( (string) $attributes['accentColour'] );
+	$gr_accent_hex   = sgs_colour_hex_for_contrast( (string) $attributes['accentColour'] );
 	if ( '' !== $gr_accent_hex ) {
 		$gr_accent_decls .= '--sgs-gr-on-blue:' . sgs_wcag_text_colour_for_bg( $gr_accent_hex ) . ';';
 	}
@@ -722,8 +741,8 @@ $gr_arrow_step_raw = sgs_responsive_normalise_object( $attributes['arrowStep'] ?
 $gr_arrow_step     = array();
 $gr_arrow_prev     = 1;
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $gr_tier ) {
-	$gr_tier_val                = $gr_arrow_step_raw[ $gr_tier ] ?? null;
-	$gr_arrow_prev              = is_numeric( $gr_tier_val ) ? max( 1, min( 6, (int) $gr_tier_val ) ) : $gr_arrow_prev;
+	$gr_tier_val               = $gr_arrow_step_raw[ $gr_tier ] ?? null;
+	$gr_arrow_prev             = is_numeric( $gr_tier_val ) ? max( 1, min( 6, (int) $gr_tier_val ) ) : $gr_arrow_prev;
 	$gr_arrow_step[ $gr_tier ] = $gr_arrow_prev;
 }
 $gr_arrow_step['tabletMax'] = SGS_Breakpoints::TABLET_MAX;
@@ -833,9 +852,9 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 			$fill_width = (string) round( 24 * $fraction, 2 );
 			$half_svg   = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
 			$half_svg  .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="' . esc_attr( $fill_width ) . '" height="24"/></clipPath></defs>';
-			$half_svg .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
-			$half_svg .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
-			$half_svg .= '</svg>';
+			$half_svg  .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
+			$half_svg  .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
+			$half_svg  .= '</svg>';
 			if ( '' !== $defs_to_inject ) {
 				$half_svg       = sgs_svg_inject_defs( $half_svg, $defs_to_inject );
 				$defs_to_inject = '';
@@ -937,7 +956,7 @@ if ( '' !== $gr_place_maps_url ) {
 }
 $gr_attribution_html .= '</div>';
 $gr_is_badge          = in_array( $variant, array( 'badge', 'floating-badge' ), true );
-$gr_header_shown    = $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) && ( $has_rating || $has_count );
+$gr_header_shown      = $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) && ( $has_rating || $has_count );
 
 if ( $gr_header_shown ) :
 	?>
@@ -950,17 +969,17 @@ if ( $gr_header_shown ) :
 			<?php endif; ?>
 			<?php if ( $has_rating || $has_count ) : ?>
 			<div class="sgs-google-reviews__score-row">
-			<?php if ( $has_rating ) : ?>
+				<?php if ( $has_rating ) : ?>
 				<strong class="sgs-google-reviews__score"><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<?php endif; ?>
-			<?php
-			if ( $has_rating ) {
-				echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'], 'sgs-google-reviews__aggregate-stars' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
-			if ( $has_count ) {
-				echo '<span class="sgs-google-reviews__count">' . esc_html( $gr_count_label( $rating_count ) ) . '</span>';
-			}
-			?>
+				<?php
+				if ( $has_rating ) {
+					echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'], 'sgs-google-reviews__aggregate-stars' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+				if ( $has_count ) {
+					echo '<span class="sgs-google-reviews__count">' . esc_html( $gr_count_label( $rating_count ) ) . '</span>';
+				}
+				?>
 			</div>
 			<?php endif; ?>
 		</div>
@@ -1085,18 +1104,18 @@ else :
 		<?php foreach ( $reviews as $review ) : ?>
 			<?php
 			++$gr_card_n;
-			$author        = ( $review['authorAttribution']['displayName'] ?? '' ) ?: __( 'Anonymous', 'sgs-blocks' );
-			$author_photo  = $review['authorAttribution']['photoUri'] ?? '';
-			$author_url    = $gr_https_url( $review['authorAttribution']['uri'] ?? '' );
-			$review_maps   = $gr_https_url( $review['googleMapsUri'] ?? '' );
-			$text          = $review['text']['text'] ?? '';
+			$author       = ( $review['authorAttribution']['displayName'] ?? '' ) ?: __( 'Anonymous', 'sgs-blocks' );
+			$author_photo = $review['authorAttribution']['photoUri'] ?? '';
+			$author_url   = $gr_https_url( $review['authorAttribution']['uri'] ?? '' );
+			$review_maps  = $gr_https_url( $review['googleMapsUri'] ?? '' );
+			$text         = $review['text']['text'] ?? '';
 			// Absent for a written review with no rating: no stars are drawn for it.
 			$review_rating = $review['rating'] ?? null;
 			$publish_time  = ! empty( $review['publishTime'] ) ? strtotime( $review['publishTime'] ) : 0;
 			// Written reviews only: the date as typed, the reviewer detail line and the initials colour.
-			$date_label    = (string) ( $review['dateLabel'] ?? '' );
-			$review_meta   = (string) ( $review['meta'] ?? '' );
-			$review_url    = (string) ( $review['reviewUrl'] ?? '' );
+			$date_label  = (string) ( $review['dateLabel'] ?? '' );
+			$review_meta = (string) ( $review['meta'] ?? '' );
+			$review_url  = (string) ( $review['reviewUrl'] ?? '' );
 			if ( ! empty( $review['avatarColour'] ) ) {
 				// One scoped rule per card (the registry's nth-child pattern), never an inline style.
 				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__list > .sgs-google-reviews__review:nth-child(' . $gr_card_n . ') .sgs-google-reviews__avatar-initials{background:' . sgs_colour_value( (string) $review['avatarColour'] ) . ';}';

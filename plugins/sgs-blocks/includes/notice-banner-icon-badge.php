@@ -63,41 +63,6 @@ if ( ! function_exists( 'sgs_notice_banner_clamp_icon_circle_size' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_notice_banner_icon_circle_border_style' ) ) {
-	/**
-	 * Resolve the badge border style through the shared keyword helper. Unset
-	 * (empty string) stays empty so style.css's own framework-default fallback
-	 * (solid) keeps painting; a non-empty off-enum value resolves to 'solid'.
-	 *
-	 * @param mixed $value Raw attribute value.
-	 * @return string Allow-listed border-style keyword, or '' when unset.
-	 */
-	function sgs_notice_banner_icon_circle_border_style( $value ): string {
-		$value = is_string( $value ) ? $value : '';
-		if ( '' === $value ) {
-			return '';
-		}
-		return sgs_border_style_keyword( $value );
-	}
-}
-
-if ( ! function_exists( 'sgs_notice_banner_icon_circle_radius' ) ) {
-	/**
-	 * Sanitise a free-text border-radius value for scoped-CSS concatenation —
-	 * mirrors trust-bar's own inline sanitiser (render.php:168) exactly: letters,
-	 * digits, whitespace, `%`, `(`, `)`, `.`, `,`, `-` only. Strips `;`, `{`,
-	 * `}` and every other character, so a value can never break out of the
-	 * `border-radius:…;` declaration it is concatenated into.
-	 *
-	 * @param string $value Raw border-radius value.
-	 * @return string Sanitised value (may be '').
-	 */
-	function sgs_notice_banner_icon_circle_radius( string $value ): string {
-		$safe = preg_replace( '/[^A-Za-z0-9\s%().,\-]/', '', $value );
-		return trim( (string) $safe );
-	}
-}
-
 if ( ! function_exists( 'sgs_notice_banner_icon_badge_css' ) ) {
 	/**
 	 * Build every scoped CSS declaration for the icon glyph size + optional
@@ -173,31 +138,27 @@ if ( ! function_exists( 'sgs_notice_banner_icon_badge_css' ) ) {
 			$css[] = sgs_hover_state_rules( $badge_sel, implode( ';', $hover_decls ) );
 		}
 
-		// --- Border-radius -------------------------------------------------
-		$radius_raw = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
-		if ( '' !== $radius_raw && '50%' !== $radius_raw ) {
-			$safe_radius = sgs_notice_banner_icon_circle_radius( $radius_raw );
-			if ( '' !== $safe_radius ) {
-				$css[] = $badge_sel . '{border-radius:' . $safe_radius . ';}';
-			}
+		// --- Border (width, style, colour, radius at three tiers) ------------
+		$border = sgs_border_element_decls(
+			$attributes,
+			'iconCircle',
+			$badge_sel,
+			array(
+				'colour' => array(
+					'base' => 'iconCircleBorderColour',
+				),
+			)
+		);
+		if ( $border['base'] ) {
+			$css[] = $badge_sel . '{' . implode( ';', $border['base'] ) . ';}';
 		}
-
-		// --- Border width/style/colour --------------------------------------
-		$border_width_obj = is_array( $attributes['iconCircleBorderWidth'] ?? null ) ? $attributes['iconCircleBorderWidth'] : array();
-		$border_width_val = sgs_box_object_shorthand( $border_width_obj );
-		if ( null !== $border_width_val ) {
-			$css[] = $badge_sel . '{border-width:' . $border_width_val . ';}';
+		if ( $border['tablet'] ) {
+			$css[] = '@media(max-width:1023px){' . $badge_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 		}
-
-		$border_style = sgs_notice_banner_icon_circle_border_style( $attributes['iconCircleBorderStyle'] ?? '' );
-		if ( '' !== $border_style ) {
-			$css[] = $badge_sel . '{border-style:' . $border_style . ';}';
+		if ( $border['mobile'] ) {
+			$css[] = '@media(max-width:767px){' . $badge_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 		}
-
-		$border_colour_raw = isset( $attributes['iconCircleBorderColour'] ) ? (string) $attributes['iconCircleBorderColour'] : '';
-		if ( '' !== $border_colour_raw ) {
-			$css[] = $badge_sel . '{border-color:' . sgs_colour_value( $border_colour_raw ) . ';}';
-		}
+		$css = array_merge( $css, $border['rules'] );
 
 		// --- Shadow (base + hover-colour) -----------------------------------
 		// iconCircleShadow defaults to 'none' (Bean-ruled — a strip banner

@@ -200,9 +200,9 @@ $sgs_hero_resolve_split_poster = static function ( array $attributes, string $su
 		esc_url( $poster_url )
 	);
 };
-$split_image                  = $sgs_hero_resolve_split_image( $attributes, '' );
-$split_image_tablet           = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
-$split_image_mobile           = $sgs_hero_resolve_split_image( $attributes, 'Mobile' );
+$split_image                   = $sgs_hero_resolve_split_image( $attributes, '' );
+$split_image_tablet            = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
+$split_image_mobile            = $sgs_hero_resolve_split_image( $attributes, 'Mobile' );
 // Per-tier media TYPE (2026-08-13). The split media column may be an image on one
 // device and a video or inline SVG on another, so each tier carries its own type
 // alongside its own source. '' on a narrower tier = inherit the next wider tier,
@@ -298,26 +298,6 @@ $image_height        = $image_height_obj['desktop'] ?? null;
 $image_height_tablet = $image_height_obj['tablet'] ?? null;
 $image_height_mobile = $image_height_obj['mobile'] ?? null;
 $image_height_unit   = sgs_css_length_value( $attributes['splitMediaHeightUnit'] ?? 'px' );
-
-// Image border radius — box-object family (contract §B): base + tablet +
-// mobile, each { topLeft, topRight, bottomLeft, bottomRight }, string values
-// with the unit baked in (no separate *Unit companion any more).
-$image_border_radius_obj        = is_array( $attributes['splitMediaBorderRadius'] ?? null ) ? $attributes['splitMediaBorderRadius'] : array();
-$image_border_radius_tablet_obj = is_array( $attributes['splitMediaBorderRadiusTablet'] ?? null ) ? $attributes['splitMediaBorderRadiusTablet'] : array();
-$image_border_radius_mobile_obj = is_array( $attributes['splitMediaBorderRadiusMobile'] ?? null ) ? $attributes['splitMediaBorderRadiusMobile'] : array();
-
-// Image border — width is a box-object family (base only, no tiers, matches
-// the pre-existing base-only contract). Style/colour stay scalar attrs.
-$image_border_style     = sgs_css_keyword_sanitise( $attributes['splitMediaBorderStyle'] ?? '' );
-$image_border_width_obj = is_array( $attributes['splitMediaBorderWidth'] ?? null ) ? $attributes['splitMediaBorderWidth'] : array();
-$image_border_colour    = $attributes['splitMediaBorderColour'] ?? '';
-// D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
-$image_border_colour_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourGradient'] ?? '' );
-// Hover pair (2026-09-07), colour-only — mirrors sgs/button's own accepted
-// limitation (D636): the masked-::before gradient hover only exists when
-// the RESTING state is already a gradient (see the gradient builder below).
-$image_border_colour_hover          = $attributes['splitMediaBorderColourHover'] ?? '';
-$image_border_colour_hover_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourHoverGradient'] ?? '' );
 
 // splitMediaPadding — inner padding on the <img> element itself. Owned
 // tier-object attr {desktop,tablet,mobile}, each { top, right, bottom, left }
@@ -535,12 +515,12 @@ if ( '' !== $hover_text_colour_effective ) {
 // Root border (width, style, colour, gradient ring, hover paint, radius at
 // three tiers) through the shared assembler; emitted with the other root
 // rules further down, its hover colour joins the hover declarations here.
-$border = sgs_border_element_decls(
+$border      = sgs_border_element_decls(
 	$attributes,
 	'',
 	$root_sel,
 	array(
-		'colour'    => array(
+		'colour' => array(
 			'base'           => 'borderColour',
 			'hover'          => 'borderColourHover',
 			'gradient'       => 'borderColourGradient',
@@ -656,12 +636,12 @@ if ( $is_split ) {
 //
 // WHICH PROPERTY carries the vertical axis depends on the variant, because the
 // two variants lay the section out differently:
-//   - split is `display:grid` (.sgs-hero--split), where `align-items` is the
-//     block axis, so `align-items` is the vertical one.
-//   - standard is a flex COLUMN (.sgs-hero--standard adds
-//     `flex-direction:column`), where the block axis is the MAIN axis, so
-//     `justify-content` is the vertical one and `align-items` would move the
-//     content sideways instead.
+// - split is `display:grid` (.sgs-hero--split), where `align-items` is the
+// block axis, so `align-items` is the vertical one.
+// - standard is a flex COLUMN (.sgs-hero--standard adds
+// `flex-direction:column`), where the block axis is the MAIN axis, so
+// `justify-content` is the vertical one and `align-items` would move the
+// content sideways instead.
 // `.sgs-hero--standard` sets no `justify-content` of its own, so the scoped
 // `.uid` rule below beats it on source order (this block's CSS prints in an
 // in-body <style> after the stylesheet), which is how every other scoped
@@ -670,7 +650,7 @@ if ( $is_split ) {
 // The operator's raw `justifyContent` attribute is emitted further down for
 // non-split variants and therefore still overrides this, which is the intended
 // precedence: an explicit axis value beats the friendly position control.
-$vertical_align_map = array(
+$vertical_align_map   = array(
 	'top'    => 'flex-start',
 	'center' => 'center',
 	'bottom' => 'flex-end',
@@ -813,74 +793,48 @@ if ( $is_split ) {
 	}
 }
 
-// ── splitMediaBorderRadius: box-object family — base + tablet + mobile.
-// Gated on $is_split to match the old inline emission (which only ran inside
-// the split-image branch).
+// ── Split-media border (width, style, colour, hover, gradient ring and
+// radius at three tiers) through the shared assembler. Gated on $is_split to
+// match the old emission, which only ran inside the split-image branch. The
+// base rule prints before the tier rules so a desktop radius never beats them.
 if ( $is_split ) {
-	$img_radius_base = sgs_corner_object_longhands( $image_border_radius_obj );
-	if ( null !== $img_radius_base ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . $img_radius_base . '}';
+	$split_media_sel    = '.' . $uid . ' .sgs-hero__split-media';
+	$split_media_border = sgs_border_element_decls(
+		$attributes,
+		'splitMedia',
+		$split_media_sel,
+		array(
+			'colour' => array(
+				'base'           => 'splitMediaBorderColour',
+				'hover'          => 'splitMediaBorderColourHover',
+				'gradient'       => 'splitMediaBorderColourGradient',
+				'hover_gradient' => 'splitMediaBorderColourHoverGradient',
+			),
+			'radius' => false,
+		)
+	);
+	if ( $split_media_border['base'] ) {
+		$responsive_css .= $split_media_sel . '{' . implode( ';', $split_media_border['base'] ) . ';}';
 	}
-	$img_radius_tab = sgs_corner_object_longhands( $image_border_radius_tablet_obj );
-	if ( null !== $img_radius_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{' . $img_radius_tab . '}}';
-	}
-	$img_radius_mob = sgs_corner_object_longhands( $image_border_radius_mobile_obj );
-	if ( null !== $img_radius_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{' . $img_radius_mob . '}}';
-	}
-
-	// ── splitMediaBorderWidth / style / colour — box-object family (base only, no
-	// tiers). Moved here from the inline style="" on the <img> element
-	// (contract §A) — was previously the only remaining inline decl on the
-	// split image alongside object-fit/object-position (below).
-	// G5 (Bean, 2026-08-26): THIS is the bug that bit the hero image —
-	// 'style set, no width' fell through to the browser's initial medium
-	// (~3px) border-width. border-style is now only ever emitted alongside
-	// a real width; a width-only or colour-only declaration is unchanged
-	// (CSS's initial border-style is already 'none', so those already
-	// rendered no visible border).
-	$img_border_width_val = sgs_box_object_shorthand( $image_border_width_obj );
-	$img_border_has_width = null !== $img_border_width_val;
-	if ( 'none' !== $image_border_style || $img_border_has_width ) {
-		$img_border_decls = array();
-		if ( $img_border_has_width ) {
-			$safe_border_style     = sgs_border_style_keyword( $image_border_style );
-			$img_border_decls[]    = 'border-width:' . $img_border_width_val;
-			if ( 'none' !== $safe_border_style ) {
-				$img_border_decls[] = 'border-style:' . $safe_border_style;
-			}
+	// The radius follows the box-shape media atom's storage, one corner object
+	// per tier attribute, which the atom's control writes for every media
+	// element. The desktop rule prints before the tier rules.
+	$split_media_radius = array(
+		''                          => sgs_corner_object_longhands( $attributes['splitMediaBorderRadius'] ?? null ),
+		'@media (max-width:1023px)' => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusTablet'] ?? null ),
+		'@media (max-width:767px)'  => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusMobile'] ?? null ),
+	);
+	foreach ( $split_media_radius as $split_media_query => $split_media_decls ) {
+		if ( null === $split_media_decls ) {
+			continue;
 		}
-		if ( $image_border_colour ) {
-			$img_border_decls[] = 'border-color:' . sgs_colour_value( $image_border_colour );
-		}
-		if ( $img_border_decls ) {
-			$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . implode( ';', $img_border_decls ) . '}';
-		}
-		// Hover colour (2026-09-07), flat-only — the masked-gradient hover
-		// only exists when the resting state is already a gradient (handled
-		// below), matching sgs/button's own accepted limitation (D636): a
-		// hover gradient with a flat resting colour is unsupported here.
-		if ( $image_border_colour_hover && '' === $image_border_colour_gradient ) {
-			$responsive_css .= sgs_hover_state_rules(
-				'.' . $uid . ' .sgs-hero__split-media',
-				'border-color:' . sgs_colour_value( $image_border_colour_hover ) . ';'
-			);
-		}
+		$split_media_rule = $split_media_sel . '{' . $split_media_decls . ';}';
+		$responsive_css  .= '' === $split_media_query ? $split_media_rule : $split_media_query . '{' . $split_media_rule . '}';
 	}
-
-	// D636 border builder — masked ::before, wins over the flat border-color
-	// decl above (emitted after it so the cascade favours the mask). Hover
-	// pair (2026-09-07): hover gradient wins over hover flat colour, same
-	// ternary shape as sgs/button/render.php's own border-gradient call.
-	if ( '' !== $image_border_colour_gradient ) {
-		$responsive_css .= sgs_border_gradient_css(
-			'.' . $uid . ' .sgs-hero__split-media',
-			$image_border_colour_gradient,
-			'' !== $image_border_colour_hover_gradient ? $image_border_colour_hover_gradient : sgs_colour_value( $image_border_colour_hover ),
-			$img_border_has_width ? $img_border_width_val : '1px'
-		);
+	if ( $split_media_border['hover'] ) {
+		$responsive_css .= sgs_hover_state_rules( $split_media_sel, implode( ';', $split_media_border['hover'] ) . ';' );
 	}
+	$responsive_css .= implode( '', $split_media_border['rules'] );
 
 	// ── object-fit / object-position — Wave 6 (2026-09-01). Now emitted by the
 	// shared `object-fit`/`focal-point` atoms (prefix 'splitMedia', which
@@ -1166,10 +1120,10 @@ if ( $bg_ken_burns ) {
 		$hero_kb_decls   .= '--sgs-ken-burns-duration:' . ( $hero_kb_duration > 0 ? $hero_kb_duration : 20 ) . 's;';
 	}
 	if ( 'zoom-out-once' === ( $attributes['bgKenBurnsMode'] ?? 'loop' ) ) {
-		$classes[]         = 'sgs-hero--ken-burns-once';
-		$hero_kb_zoom      = isset( $attributes['bgZoomStart'] ) ? (float) $attributes['bgZoomStart'] : 108.0;
-		$hero_kb_zoom      = max( 100.0, min( 150.0, $hero_kb_zoom ) );
-		$hero_kb_decls    .= '--sgs-ken-burns-zoom-start:' . rtrim( rtrim( number_format( $hero_kb_zoom / 100, 3, '.', '' ), '0' ), '.' ) . ';';
+		$classes[]      = 'sgs-hero--ken-burns-once';
+		$hero_kb_zoom   = isset( $attributes['bgZoomStart'] ) ? (float) $attributes['bgZoomStart'] : 108.0;
+		$hero_kb_zoom   = max( 100.0, min( 150.0, $hero_kb_zoom ) );
+		$hero_kb_decls .= '--sgs-ken-burns-zoom-start:' . rtrim( rtrim( number_format( $hero_kb_zoom / 100, 3, '.', '' ), '0' ), '.' ) . ';';
 	}
 	if ( '' !== $hero_kb_decls ) {
 		$responsive_css .= '.' . $uid . '{' . $hero_kb_decls . '}';

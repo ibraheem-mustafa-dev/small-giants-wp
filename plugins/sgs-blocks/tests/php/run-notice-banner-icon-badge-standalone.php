@@ -24,7 +24,6 @@ declare(strict_types=1);
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 // phpcs:disable Squiz.Commenting.FunctionComment.Missing
-// phpcs:disable Squiz.PHP.Eval.Discouraged
 
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __DIR__, 2 ) . '/' );
@@ -59,6 +58,7 @@ function ok( bool $cond, string $label ): void {
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-tokens.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-hover-state.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-box.php';
+require_once __DIR__ . '/stubs/style-engine-border-radius.php';
 require_once dirname( __DIR__, 2 ) . '/includes/notice-banner-icon-badge.php';
 
 $root_sel = '.sgs-notice-banner-test.wp-block-sgs-notice-banner';
@@ -117,30 +117,67 @@ ok( false !== strpos( $circle_css_joined, 'border-radius:12px' ), 'CIRCLE: badge
 ok( array() === sgs_notice_banner_icon_badge_css( array( 'iconStyle' => 'circle' ), $root_sel ), 'CIRCLE, no other overrides: iconCircleSize=44/Background=surface/BorderRadius=50%/Shadow=none (all defaults) emit zero scoped CSS' );
 
 // ════════════════════════════════════════════════════════════════════════════
-// 3. Radius sanitiser strips a `;}` injection attempt.
+// 3. A `;}` injection in the radius cannot break out of its declaration.
+// The badge border goes through sgs_border_element_decls(); its radius reader,
+// sgs_border_radius_tiers(), runs a uniform string through sgs_css_length_value().
 // ════════════════════════════════════════════════════════════════════════════
 $malicious_radius = '50%;} body{color:red';
-$safe_radius      = sgs_notice_banner_icon_circle_radius( $malicious_radius );
-ok( false === strpos( $safe_radius, ';' ), 'RADIUS SANITISER: the semicolon of a `;}` breakout attempt is stripped' );
-ok( false === strpos( $safe_radius, '{' ) && false === strpos( $safe_radius, '}' ), 'RADIUS SANITISER: the curly braces of a `;}` breakout attempt are stripped' );
 
-$injection_css        = sgs_notice_banner_icon_badge_css(
-	array(
-		'iconStyle'              => 'circle',
-		'iconCircleBorderRadius' => $malicious_radius,
-	),
-	$root_sel
+/**
+ * True when CSS carries the breakout: the injected rule or its property.
+ *
+ * @param string $css CSS to inspect.
+ */
+function breaks_out( string $css ): bool {
+	return false !== strpos( $css, 'body{' ) || false !== strpos( $css, 'color:red' );
+}
+
+ok( null === sgs_border_radius_tiers( array( 'borderRadius' => $malicious_radius ) )['base'], 'RADIUS SANITISER: the radius reader rejects a `;}` breakout string outright (no radius)' );
+
+$injection_css_joined = implode(
+	'',
+	sgs_notice_banner_icon_badge_css(
+		array(
+			'iconStyle'              => 'circle',
+			'iconCircleBorderRadius' => $malicious_radius,
+		),
+		$root_sel
+	)
 );
-$injection_css_joined = implode( '', $injection_css );
-ok( 1 === substr_count( $injection_css_joined, '{' ) - 0 && false === strpos( $injection_css_joined, '}body' ), 'RADIUS SANITISER (through the full CSS builder): the malicious value cannot break out of the border-radius declaration it is concatenated into' );
+ok( ! breaks_out( $injection_css_joined ), 'RADIUS SANITISER (through the full CSS builder): the malicious value cannot break out of the border-radius declaration' );
+
+$legit_css = implode(
+	'',
+	sgs_notice_banner_icon_badge_css(
+		array(
+			'iconStyle'              => 'circle',
+			'iconCircleBorderRadius' => '12px',
+		),
+		$root_sel
+	)
+);
+ok( false !== strpos( $legit_css, 'border-radius:12px' ), 'RADIUS: a legitimate radius still prints' );
 
 // ════════════════════════════════════════════════════════════════════════════
-// 4. Off-enum border style falls back.
+// 4. Border style: an allow-listed style passes; an off-enum or non-string
+// value paints solid, the framework rule for a set width.
 // ════════════════════════════════════════════════════════════════════════════
-ok( '' === sgs_notice_banner_icon_circle_border_style( '' ), 'BORDER STYLE: unset (empty string) stays empty (falls through to style.css\'s own solid default)' );
-ok( 'dashed' === sgs_notice_banner_icon_circle_border_style( 'dashed' ), 'BORDER STYLE: an allow-listed value passes through unchanged' );
-ok( 'solid' === sgs_notice_banner_icon_circle_border_style( 'not-a-real-style' ), 'BORDER STYLE: an off-enum value falls back to solid, never fatals' );
-ok( '' === sgs_notice_banner_icon_circle_border_style( array( 'not', 'a', 'string' ) ), 'BORDER STYLE: a non-scalar value coerces to \'\' (treated as unset), never fatals' );
+$style_css = static function ( $style ) use ( $root_sel ): string {
+	return implode(
+		'',
+		sgs_notice_banner_icon_badge_css(
+			array(
+				'iconStyle'             => 'circle',
+				'iconCircleBorderWidth' => array( 'top' => '2px' ),
+				'iconCircleBorderStyle' => $style,
+			),
+			$root_sel
+		)
+	);
+};
+ok( false !== strpos( $style_css( 'dashed' ), 'border-style:dashed' ), 'BORDER STYLE: an allow-listed value passes through unchanged' );
+ok( false !== strpos( $style_css( 'not-a-real-style' ), 'border-style:solid' ), 'BORDER STYLE: an off-enum value falls back to solid, never fatals' );
+ok( false !== strpos( $style_css( array( 'not', 'a', 'string' ) ), 'border-style:solid' ), 'BORDER STYLE: a non-scalar value falls back to solid, never fatals' );
 
 // ════════════════════════════════════════════════════════════════════════════
 // 5. iconSize / iconCircleSize clamps.
@@ -162,48 +199,10 @@ ok( false !== strpos( $size_css_joined, 'font-size:32px' ) && false !== strpos( 
 ok( array() === sgs_notice_banner_icon_badge_css( array( 'iconSize' => 20 ), $root_sel ), 'ICON SIZE: an explicit 20 (the default) emits nothing, matching the unset case' );
 
 // ════════════════════════════════════════════════════════════════════════════
-// NEGATIVE CONTROL — with the radius guard removed, the same malicious input
-// used in test 3 must be able to break out of the declaration, proving that
-// assertion watches a real, removable guard rather than being vacuously true.
+// NEGATIVE CONTROL — the breakout check in test 3 is not vacuous: the same
+// malicious value concatenated without the sanitiser turns it RED.
 // ════════════════════════════════════════════════════════════════════════════
-$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/notice-banner-icon-badge.php' );
-
-$sanitiser_needle = "\t\t\$safe = preg_replace( '/[^A-Za-z0-9\\s%().,\\-]/', '', \$value );\n";
-ok( false !== strpos( $source, $sanitiser_needle ), 'negative control setup: the exact sanitiser line is found in the shipped source (so the mutation below is real, not a typo that no-ops)' );
-
-// Mutated function: identical to the shipped one, MINUS the sanitisation —
-// an unsafe passthrough, under a different name so it never collides with
-// the real (safe) one already loaded above.
-$mutated_source = str_replace(
-	$sanitiser_needle,
-	"\t\t\$safe = \$value; // UNSAFE_TEST_ONLY -- sanitiser deliberately removed\n",
-	$source
-);
-$mutated_source = str_replace(
-	'sgs_notice_banner_icon_circle_radius',
-	'sgs_notice_banner_icon_circle_radius_UNSAFE_TEST_ONLY',
-	$mutated_source
-);
-// Every OTHER function in the file is already loaded (function_exists-guarded
-// above) — redeclaring them under the same names would fatal, so isolate
-// just the one mutated function by extracting its body between its own
-// markers (same "extract, don't eval the whole file" discipline as
-// run-notice-message-standalone.php's extract_section()).
-$fn_start = strpos( $mutated_source, 'function sgs_notice_banner_icon_circle_radius_UNSAFE_TEST_ONLY' );
-$fn_start = strrpos( substr( $mutated_source, 0, $fn_start ), 'if ( ! function_exists' );
-ok( false !== $fn_start, 'negative control setup: the enclosing function_exists() guard is found before the mutated function' );
-$fn_end     = strpos( $mutated_source, "\n}\n", $fn_start ) + 3;
-$mutated_fn = substr( $mutated_source, $fn_start, $fn_end - $fn_start );
-
-ok( false !== strpos( $mutated_fn, 'UNSAFE_TEST_ONLY' ) && false === strpos( $mutated_fn, 'preg_replace' ), 'negative control setup: the extracted mutated function genuinely has the sanitiser removed (no preg_replace left)' );
-
-eval( $mutated_fn ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- CLI harness evaluating a deliberately-unsafe mutation for the negative control only.
-
-$unsafe_result = sgs_notice_banner_icon_circle_radius_UNSAFE_TEST_ONLY( $malicious_radius );
-ok(
-	false !== strpos( $unsafe_result, ';' ) && false !== strpos( $unsafe_result, '{' ) && false !== strpos( $unsafe_result, '}' ),
-	'NEGATIVE CONTROL: with the sanitiser removed, the SAME malicious input keeps its `;`, `{` and `}` — the "no breakout" assertion in test 3 goes RED for this mutation, proving it watches the real guard'
-);
+ok( breaks_out( $root_sel . '{border-radius:' . $malicious_radius . ';}' ), 'NEGATIVE CONTROL: an unsanitised border-radius declaration built from the same input IS caught as a breakout' );
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

@@ -81,22 +81,22 @@ $image_height   = isset( $attributes['imageHeight'] ) ? sanitize_text_field( $at
 // C7 forward: per-instance styling for the in-card option-picker labels
 // (Size/Flavour legends). Forwarded into each render_block('sgs/option-picker')
 // below; the option-picker guards on '' !== $x, so empty values are no-ops.
-$picker_label_font_size         = isset( $attributes['pickerLabelFontSize'] ) ? sanitize_text_field( $attributes['pickerLabelFontSize'] ) : '';
-$picker_label_colour            = isset( $attributes['pickerLabelColour'] ) ? sanitize_text_field( $attributes['pickerLabelColour'] ) : '';
-$picker_label_colour_gradient   = isset( $attributes['pickerLabelColourGradient'] ) ? sanitize_text_field( $attributes['pickerLabelColourGradient'] ) : '';
+$picker_label_font_size       = isset( $attributes['pickerLabelFontSize'] ) ? sanitize_text_field( $attributes['pickerLabelFontSize'] ) : '';
+$picker_label_colour          = isset( $attributes['pickerLabelColour'] ) ? sanitize_text_field( $attributes['pickerLabelColour'] ) : '';
+$picker_label_colour_gradient = isset( $attributes['pickerLabelColourGradient'] ) ? sanitize_text_field( $attributes['pickerLabelColourGradient'] ) : '';
 
 // R4 forward: pill-style attrs (R1 set) for the in-card option-picker(s). Each
 // is a no-op on the option-picker side when '' / 0 / null (its own render.php
 // guards on non-empty), so an un-set card looks unchanged. pickerColourPreset
 // defaults 'solid' — see R5 note in style.css for why (replaces the removed
 // card-scoped --sgs-op-border hardcode).
-$picker_colour_preset            = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
-$picker_show_selected_tick       = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false;
-$picker_pill_bg_colour           = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
-$picker_pill_bg_colour_gradient  = isset( $attributes['pickerPillBgColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillBgColourGradient'] ) : '';
-$picker_pill_text_colour         = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
+$picker_colour_preset             = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
+$picker_show_selected_tick        = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : false;
+$picker_pill_bg_colour            = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
+$picker_pill_bg_colour_gradient   = isset( $attributes['pickerPillBgColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillBgColourGradient'] ) : '';
+$picker_pill_text_colour          = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
 $picker_pill_text_colour_gradient = isset( $attributes['pickerPillTextColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillTextColourGradient'] ) : '';
-$picker_pill_border_colour      = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
+$picker_pill_border_colour        = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
 // Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
 // side reads them as strings, gates on '' !== and sanitises via sgs_css_length_value(),
 // so an explicit "0"/"0px" survives and empty = the picker's own default.
@@ -110,18 +110,18 @@ $picker_pill_sel_radius_raw = isset( $attributes['pickerPillSelectedBorderRadius
 // kept as one array so the 3 call-sites (typed standalone + 2 here) stay in
 // sync without repeating each key by hand.
 $picker_style_attrs = array(
-	'colourPreset'              => $picker_colour_preset,
-	'showSelectedTick'          => $picker_show_selected_tick,
-	'pillBgColour'              => $picker_pill_bg_colour,
-	'pillBgColourGradient'      => $picker_pill_bg_colour_gradient,
-	'pillTextColour'            => $picker_pill_text_colour,
-	'pillTextColourGradient'    => $picker_pill_text_colour_gradient,
-	'pillBorderColour'          => $picker_pill_border_colour,
-	'pillBorderRadius'          => $picker_pill_border_radius,
-	'pillSelectedBgColour'      => $picker_pill_sel_bg_colour,
-	'pillSelectedTextColour'    => $picker_pill_sel_text_col,
-	'pillSelectedBorderColour'  => $picker_pill_sel_border_col,
-	'pillSelectedBorderRadius'  => $picker_pill_sel_radius_raw,
+	'colourPreset'             => $picker_colour_preset,
+	'showSelectedTick'         => $picker_show_selected_tick,
+	'pillBgColour'             => $picker_pill_bg_colour,
+	'pillBgColourGradient'     => $picker_pill_bg_colour_gradient,
+	'pillTextColour'           => $picker_pill_text_colour,
+	'pillTextColourGradient'   => $picker_pill_text_colour_gradient,
+	'pillBorderColour'         => $picker_pill_border_colour,
+	'pillBorderRadius'         => $picker_pill_border_radius,
+	'pillSelectedBgColour'     => $picker_pill_sel_bg_colour,
+	'pillSelectedTextColour'   => $picker_pill_sel_text_col,
+	'pillSelectedBorderColour' => $picker_pill_sel_border_col,
+	'pillSelectedBorderRadius' => $picker_pill_sel_radius_raw,
 );
 
 // showPickers: when false, suppress all in-card option-picker renders (variable
@@ -254,7 +254,7 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'swatchMore', '.' . 
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', '.' . $sgs_card_uid . ' .value-ladder__saving' );
 // The no-photo label (includes/product-card-no-photo.php) and the space above the price row.
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label' );
+$sgs_card_typo_css        .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label' );
 $sgs_no_image_label_colour = sgs_colour_value( $attributes['noImageLabelColour'] ?? '' );
 if ( '' !== $sgs_no_image_label_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__no-image-label{color:' . $sgs_no_image_label_colour . ';}';
@@ -303,8 +303,8 @@ if ( '' !== $sgs_brand_colour ) {
 // Emitted here (shared, pre-branch-split) so one control governs the badge
 // across every render branch (R-31-9) — unlike the trial-tag box CSS, which
 // stays typed-mode-only because the trial tag itself only renders there.
-$sgs_saving_badge_radius_raw = $attributes['savingBadgeBorderRadius'] ?? '';
-$sgs_saving_badge_box_css    = sgs_label_box_css_rule(
+$sgs_saving_badge_radius_raw  = $attributes['savingBadgeBorderRadius'] ?? '';
+$sgs_saving_badge_box_css     = sgs_label_box_css_rule(
 	array(
 		'padding'    => is_array( $attributes['savingBadgePadding'] ?? null ) ? $attributes['savingBadgePadding'] : array(),
 		'radius'     => ( 0.0 !== floatval( $sgs_saving_badge_radius_raw ) ) ? $sgs_saving_badge_radius_raw : '',
@@ -321,43 +321,44 @@ $sgs_card_typo_css .= $sgs_saving_badge_box_css;
 
 // ── Frame Card attribute tag (generic, next to the title) — same shared box
 // helper as the saving badge above. Emitted here (shared, pre-branch-split)
-// so one control governs the tag across every render branch (R-31-9). Border
-// colour has no equivalent in sgs_label_box_css_rule() (background/padding/
-// radius only), so it is emitted as its own declaration alongside the text
-// colour, on the same selector.
-$sgs_attribute_tag_radius_raw = $attributes['attributeTagBorderRadius'] ?? '';
-$sgs_attribute_tag_box_css    = sgs_label_box_css_rule(
+// so one control governs the tag across every render branch (R-31-9). The
+// border (width, style, colour, radius) comes from the shared assembler below;
+// sgs_label_box_css_rule() supplies padding and background only.
+$sgs_attribute_tag_box_css     = sgs_label_box_css_rule(
 	array(
 		'padding'    => is_array( $attributes['attributeTagPadding'] ?? null ) ? $attributes['attributeTagPadding'] : array(),
-		'radius'     => ( 0.0 !== floatval( $sgs_attribute_tag_radius_raw ) ) ? $sgs_attribute_tag_radius_raw : '',
 		'background' => (string) ( $attributes['attributeTagBackgroundColour'] ?? '' ),
 		'fullWidth'  => false,
 	),
 	'.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag'
 );
-$sgs_attribute_tag_text_colour   = sgs_colour_value( $attributes['attributeTagTextColour'] ?? '' );
-$sgs_attribute_tag_border_colour = sgs_colour_value( $attributes['attributeTagBorderColour'] ?? '' );
-// Border width — 4-side object attr (Spec 32 S6), paired with the border
-// colour in the editor's SgsBorderControl. sgs_box_object_shorthand()
-// returns null when every side is empty, so an unset value leaves the
-// style.css default (width 0, solid) and the chip paints no border.
-$sgs_attribute_tag_border_width = sgs_box_object_shorthand(
-	is_array( $attributes['attributeTagBorderWidth'] ?? null ) ? $attributes['attributeTagBorderWidth'] : array()
+$sgs_attribute_tag_text_colour = sgs_colour_value( $attributes['attributeTagTextColour'] ?? '' );
+$sgs_attribute_tag_sel         = '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag';
+$sgs_attribute_tag_border      = sgs_border_element_decls(
+	$attributes,
+	'attributeTag',
+	$sgs_attribute_tag_sel,
+	array(
+		'colour' => array(
+			'base' => 'attributeTagBorderColour',
+		),
+	)
 );
-if ( '' !== $sgs_attribute_tag_text_colour || '' !== $sgs_attribute_tag_border_colour || null !== $sgs_attribute_tag_border_width ) {
-	$sgs_attribute_tag_decls = array();
-	if ( '' !== $sgs_attribute_tag_text_colour ) {
-		$sgs_attribute_tag_decls[] = 'color:' . $sgs_attribute_tag_text_colour;
-	}
-	if ( '' !== $sgs_attribute_tag_border_colour ) {
-		$sgs_attribute_tag_decls[] = 'border-color:' . $sgs_attribute_tag_border_colour;
-	}
-	if ( null !== $sgs_attribute_tag_border_width ) {
-		$sgs_attribute_tag_decls[] = 'border-width:' . $sgs_attribute_tag_border_width;
-	}
-	$sgs_attribute_tag_box_css .= '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag{' . implode( ';', $sgs_attribute_tag_decls ) . ';}';
+$sgs_attribute_tag_decls       = $sgs_attribute_tag_border['base'];
+if ( '' !== $sgs_attribute_tag_text_colour ) {
+	array_unshift( $sgs_attribute_tag_decls, 'color:' . $sgs_attribute_tag_text_colour );
 }
-$sgs_card_typo_css .= $sgs_attribute_tag_box_css;
+if ( $sgs_attribute_tag_decls ) {
+	$sgs_attribute_tag_box_css .= $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_decls ) . ';}';
+}
+if ( $sgs_attribute_tag_border['tablet'] ) {
+	$sgs_attribute_tag_box_css .= '@media(max-width:1023px){' . $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_border['tablet'] ) . ';}}';
+}
+if ( $sgs_attribute_tag_border['mobile'] ) {
+	$sgs_attribute_tag_box_css .= '@media(max-width:767px){' . $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_border['mobile'] ) . ';}}';
+}
+$sgs_attribute_tag_box_css .= implode( '', $sgs_attribute_tag_border['rules'] );
+$sgs_card_typo_css         .= $sgs_attribute_tag_box_css;
 
 // ── Text-colour gradient siblings: title / desc / price / priceNote ──────
 // Mirrors the tagTextColour/tagTextColourGradient triad below (D636 rollout)
@@ -845,7 +846,7 @@ foreach ( array(
 		$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';justify-content:' . $sgs_cta_justify . ';}';
 	}
 }
-$sgs_card_typo_tag  = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
+$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-bindings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-product-manifest.php';
@@ -1011,7 +1012,7 @@ $sgs_pc_stretched_link = sgs_stretched_link_apply(
 // `includes/hover-effects/link-overlay.php::insert_block_link_overlay`.
 $sgs_pc_title_link = true;
 
-$sgs_resolved_desc  = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )
+$sgs_resolved_desc = ( isset( $attributes['showDescription'] ) && false === $attributes['showDescription'] )
 	? ''
 	: sgs_product_card_resolve_element( $attributes, 'description', $attributes['description'] ?? '', $data['short_desc'] );
 
@@ -1615,9 +1616,9 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 							'blockName' => 'sgs/option-picker',
 							'attrs'     => array_merge(
 								array(
-									'label'           => $axis['label'],
-									'showLabel'       => true,
-									'optionItems'     => array_map(
+									'label'               => $axis['label'],
+									'showLabel'           => true,
+									'optionItems'         => array_map(
 										static function ( $t ) {
 											return array(
 												'key'   => $t['slug'],
@@ -1626,10 +1627,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 										},
 										$axis['terms']
 									),
-									'defaultSelected' => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
-									'typeKey'         => $axis['taxonomy'],
-									'labelFontSize'   => $picker_label_font_size,
-									'labelColour'     => $picker_label_colour,
+									'defaultSelected'     => $manifest['defaultAxes'][ $axis['taxonomy'] ] ?? '',
+									'typeKey'             => $axis['taxonomy'],
+									'labelFontSize'       => $picker_label_font_size,
+									'labelColour'         => $picker_label_colour,
 									'labelColourGradient' => $picker_label_colour_gradient,
 								),
 								$picker_style_attrs
@@ -1679,13 +1680,13 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php // ── Step 4: Comparative value ladder (SSR-only, no data-wp-* — KJC-B). ?>
 				<?php // showLadder gate: grid/browsing contexts set false — just price + per-item note (the note above is NOT the ladder). ?>
 				<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $context['valueLadderHidden'] ) : ?>
-				<?php
-				// PD-12: aria-current marks the row matching the DEFAULT-SELECTED combo's
-				// unitDivisor, NOT the is_target row. $def is the default combo resolved above.
-				$ladder_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
+					<?php
+					// PD-12: aria-current marks the row matching the DEFAULT-SELECTED combo's
+					// unitDivisor, NOT the is_target row. $def is the default combo resolved above.
+					$ladder_default_pack = isset( $def['unitDivisor'] ) ? (int) round( (float) $def['unitDivisor'] ) : 0;
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_value_ladder_markup() escapes every dynamic value.
-				echo sgs_value_ladder_markup( 'product-card__value-ladder', $context['valueLadder'], $ladder_default_pack, $decoy_enabled );
-				?>
+					echo sgs_value_ladder_markup( 'product-card__value-ladder', $context['valueLadder'], $ladder_default_pack, $decoy_enabled );
+					?>
 				<?php endif; ?>
 
 				<?php // ── 2d. Stock slot — hidden when in stock (default). ?>
@@ -2014,14 +2015,14 @@ echo sgs_product_card_wishlist_markup( $attributes );
 				'blockName' => 'sgs/option-picker',
 				'attrs'     => array_merge(
 					array(
-						'label'           => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
-						'showLabel'       => true,
-						'optionItems'     => $picker_options,
-						'defaultSelected' => $first_key,
-						'contentImpact'   => $picker_impacts,
-						'typeKey'         => $sgs_pill_type_key,
-						'labelFontSize'   => $picker_label_font_size,
-						'labelColour'     => $picker_label_colour,
+						'label'               => $pill_type['type_label'] ?? __( 'Choose an option', 'sgs-blocks' ),
+						'showLabel'           => true,
+						'optionItems'         => $picker_options,
+						'defaultSelected'     => $first_key,
+						'contentImpact'       => $picker_impacts,
+						'typeKey'             => $sgs_pill_type_key,
+						'labelFontSize'       => $picker_label_font_size,
+						'labelColour'         => $picker_label_colour,
 						'labelColourGradient' => $picker_label_colour_gradient,
 					),
 					$picker_style_attrs

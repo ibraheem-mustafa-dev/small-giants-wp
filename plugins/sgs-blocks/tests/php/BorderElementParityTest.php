@@ -106,6 +106,31 @@ final class BorderElementParityTest extends TestCase {
 		array( 'theme-toggle', '' ),
 		array( 'mega-aside', 'aside' ),
 		array( 'filter-search', 'input' ),
+		array( 'hero', 'splitMedia' ),
+		array( 'cart', 'pill' ),
+		array( 'product-card', 'attributeTag' ),
+		array( 'google-reviews', 'card' ),
+		array( 'notice-banner', 'iconCircle' ),
+		array( 'whatsapp-cta', 'card' ),
+		array( 'whatsapp-cta', '' ),
+		array( 'tabs', 'panel' ),
+	);
+
+	/**
+	 * Targets whose radius attribute block.json types as a string (one uniform radius, no device tiers).
+	 * WordPress rejects an object stored in a string attribute, so k_radius_tiers' tier object can never reach
+	 * their render, and neither that case nor the desktop-before-tier order test applies. j_radius_uniform
+	 * covers them.
+	 */
+	private const SCALAR_RADIUS_TARGETS = array( 'cart[pill]', 'product-card[attributeTag]', 'notice-banner[iconCircle]' );
+
+	/**
+	 * Cases that only apply to the named targets (all other cases apply to every target that declares their
+	 * attributes). Case => list of target names.
+	 */
+	private const TARGET_CASES = array(
+		'k2_radius_siblings'     => array( 'hero[splitMedia]' ),
+		'm_colour_gradient_only' => array( 'tabs[panel]' ),
 	);
 
 	/**
@@ -113,11 +138,38 @@ final class BorderElementParityTest extends TestCase {
 	 * Keyed by target name, falling back to the block folder name.
 	 */
 	private const BASES = array(
-		'quote'                 => array( 'attrs' => array( 'attribution' => 'Parity' ) ),
-		'google-reviews'        => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
-		'site-footer-row'       => array( 'content' => '<p>Parity</p>' ),
-		'site-header-row'       => array( 'content' => '<p>Parity</p>' ),
-		'card-grid'             => array(
+		'hero[splitMedia]'          => array(
+			'attrs' => array(
+				'variant'            => 'split',
+				'splitMediaType'     => 'image',
+				'splitMediaImageUrl' => 'https://example.test/parity.jpg',
+			),
+		),
+		'cart[pill]'                => array(
+			'attrs'   => array(
+				'triggerStyle' => 'pill',
+				'displayMode'  => 'link',
+			),
+			'harness' => array( 'woocommerce-class' => true ),
+		),
+		'notice-banner[iconCircle]' => array(
+			'attrs' => array(
+				'showIcon'  => true,
+				'iconStyle' => 'circle',
+			),
+		),
+		'whatsapp-cta'              => array( 'attrs' => array( 'phoneNumber' => '447000000000' ) ),
+		'whatsapp-cta[card]'        => array(
+			'attrs' => array(
+				'phoneNumber' => '447000000000',
+				'variant'     => 'card',
+			),
+		),
+		'quote'                     => array( 'attrs' => array( 'attribution' => 'Parity' ) ),
+		'google-reviews'            => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
+		'site-footer-row'           => array( 'content' => '<p>Parity</p>' ),
+		'site-header-row'           => array( 'content' => '<p>Parity</p>' ),
+		'card-grid'                 => array(
 			'attrs' => array(
 				'items' => array(
 					array(
@@ -127,17 +179,17 @@ final class BorderElementParityTest extends TestCase {
 				),
 			),
 		),
-		'testimonial'           => array(
+		'testimonial'               => array(
 			'attrs' => array(
 				'quote'          => 'Parity quote',
 				'nameFontWeight' => '700',
 			),
 		),
-		'star-rating'           => array( 'attrs' => array( 'displayMode' => 'stars-only' ) ),
-		'product-faq-item'      => array( 'attrs' => array( 'question' => 'Q?' ) ),
-		'text'                  => array( 'attrs' => array( 'text' => 'Parity' ) ),
-		'business-info'         => array( 'attrs' => array( 'displayType' => 'attribution' ) ),
-		'tabs'                  => array(
+		'star-rating'               => array( 'attrs' => array( 'displayMode' => 'stars-only' ) ),
+		'product-faq-item'          => array( 'attrs' => array( 'question' => 'Q?' ) ),
+		'text'                      => array( 'attrs' => array( 'text' => 'Parity' ) ),
+		'business-info'             => array( 'attrs' => array( 'displayType' => 'attribution' ) ),
+		'tabs'                      => array(
 			'attrs'   => array( 'tabAlignment' => 'start' ),
 			'harness' => array(
 				'inner-blocks' => array(
@@ -149,13 +201,13 @@ final class BorderElementParityTest extends TestCase {
 				),
 			),
 		),
-		'table-of-contents'     => array(
+		'table-of-contents'         => array(
 			'harness' => array( 'post-content' => '<!-- wp:sgs/heading {"level":"h2","content":"One"} /--><!-- wp:sgs/heading {"level":"h3","content":"Two"} /-->' ),
 		),
-		'trustpilot-reviews'    => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
-		'audio'                 => array( 'attrs' => array( 'audioUrl' => 'https://example.test/parity.mp3' ) ),
-		'responsive-logo'       => array( 'attrs' => array( 'logoUrl' => 'https://example.test/parity.png' ) ),
-		'store-selector'        => array(
+		'trustpilot-reviews'        => array( 'attrs' => array( 'dataSource' => 'placeholder' ) ),
+		'audio'                     => array( 'attrs' => array( 'audioUrl' => 'https://example.test/parity.mp3' ) ),
+		'responsive-logo'           => array( 'attrs' => array( 'logoUrl' => 'https://example.test/parity.png' ) ),
+		'store-selector'            => array(
 			'attrs' => array(
 				'stores' => array(
 					array(
@@ -165,23 +217,23 @@ final class BorderElementParityTest extends TestCase {
 				),
 			),
 		),
-		'nav-drawer'            => array(
+		'nav-drawer'                => array(
 			'attrs' => array(
 				'drawerAlign'  => 'start',
 				'submenuModel' => 'accordion',
 			),
 		),
-		'before-after'          => array(
+		'before-after'              => array(
 			'attrs' => array(
 				'heightUnit'     => 'px',
 				'beforeImageUrl' => 'https://example.test/before.jpg',
 				'afterImageUrl'  => 'https://example.test/after.jpg',
 			),
 		),
-		'theme-toggle'          => array(
+		'theme-toggle'              => array(
 			'harness' => array( 'global-settings' => array( 'custom' => array( 'dark' => array( 'background' => '#111111' ) ) ) ),
 		),
-		'filter-search[input]'  => array(
+		'filter-search[input]'      => array(
 			'attrs'   => array(
 				'taxonomy'  => 'product_brand',
 				'threshold' => 2,
@@ -207,7 +259,7 @@ final class BorderElementParityTest extends TestCase {
 				),
 			),
 		),
-		'social-icons[wrapper]' => array(
+		'social-icons[wrapper]'     => array(
 			'attrs' => array(
 				'icons' => array(
 					array(
@@ -257,18 +309,20 @@ final class BorderElementParityTest extends TestCase {
 	 */
 	private static function case_requirements(): array {
 		return array(
-			'a_baseline'           => array(),
-			'b_equal_sides'        => array( 'borderWidth', 'borderColour' ),
-			'c_unequal_dashed_raw' => array( 'borderWidth', 'borderStyle', 'borderColour' ),
-			'd_style_none'         => array( 'borderWidth', 'borderStyle', 'borderColour' ),
-			'e_widths_no_colour'   => array( 'borderWidth' ),
-			'f_colour_no_widths'   => array( 'borderColour' ),
-			'g_gradient'           => array( 'borderWidth', 'borderColourGradient' ),
-			'h_hover_flat'         => array( 'borderWidth', 'borderColour', 'borderColourHover' ),
-			'i_hover_gradient'     => array( 'borderWidth', 'borderColourGradient', 'borderColourHoverGradient' ),
-			'j_radius_uniform'     => array( 'borderRadius' ),
-			'k_radius_tiers'       => array( 'borderRadius' ),
-			'l_inherit_style'      => array( 'borderWidth', 'borderColour', 'inheritStyle' ),
+			'a_baseline'             => array(),
+			'b_equal_sides'          => array( 'borderWidth', 'borderColour' ),
+			'c_unequal_dashed_raw'   => array( 'borderWidth', 'borderStyle', 'borderColour' ),
+			'd_style_none'           => array( 'borderWidth', 'borderStyle', 'borderColour' ),
+			'e_widths_no_colour'     => array( 'borderWidth' ),
+			'f_colour_no_widths'     => array( 'borderColour' ),
+			'g_gradient'             => array( 'borderWidth', 'borderColourGradient' ),
+			'h_hover_flat'           => array( 'borderWidth', 'borderColour', 'borderColourHover' ),
+			'i_hover_gradient'       => array( 'borderWidth', 'borderColourGradient', 'borderColourHoverGradient' ),
+			'j_radius_uniform'       => array( 'borderRadius' ),
+			'k_radius_tiers'         => array( 'borderRadius' ),
+			'l_inherit_style'        => array( 'borderWidth', 'borderColour', 'inheritStyle' ),
+			'k2_radius_siblings'     => array( 'borderRadius', 'borderRadiusTablet', 'borderRadiusMobile' ),
+			'm_colour_gradient_only' => array( 'borderColourGradient' ),
 		);
 	}
 
@@ -368,6 +422,22 @@ final class BorderElementParityTest extends TestCase {
 						),
 					),
 				);
+			case 'k2_radius_siblings':
+				return array(
+					'borderRadius'       => array(
+						'topLeft'     => '12px',
+						'topRight'    => '12px',
+						'bottomRight' => '4px',
+						'bottomLeft'  => '4px',
+					),
+					'borderRadiusTablet' => array( 'topLeft' => '6px' ),
+					'borderRadiusMobile' => array(
+						'topLeft'  => '2px',
+						'topRight' => '3px',
+					),
+				);
+			case 'm_colour_gradient_only':
+				return array( 'borderColourGradient' => 'linear-gradient(90deg,#f00,#00f)' );
 			case 'l_inherit_style':
 				return array(
 					'borderWidth'  => $two,
@@ -390,6 +460,12 @@ final class BorderElementParityTest extends TestCase {
 			$attrs                  = self::block_attrs( $block );
 			$name                   = self::target_name( $block, $prefix );
 			foreach ( self::case_requirements() as $case => $needs ) {
+				if ( 'k_radius_tiers' === $case && in_array( $name, self::SCALAR_RADIUS_TARGETS, true ) ) {
+					continue;
+				}
+				if ( isset( self::TARGET_CASES[ $case ] ) && ! in_array( $name, self::TARGET_CASES[ $case ], true ) ) {
+					continue;
+				}
 				$needs = array_map(
 					static fn( string $n ): string => 'inheritStyle' === $n ? $n : self::attr( $prefix, $n ),
 					$needs
@@ -412,7 +488,7 @@ final class BorderElementParityTest extends TestCase {
 		foreach ( self::TARGETS as $target ) {
 			list( $block, $prefix ) = $target;
 			$name                   = self::target_name( $block, $prefix );
-			if ( in_array( self::attr( $prefix, 'borderRadius' ), self::block_attrs( $block ), true ) ) {
+			if ( ! in_array( $name, self::SCALAR_RADIUS_TARGETS, true ) && in_array( self::attr( $prefix, 'borderRadius' ), self::block_attrs( $block ), true ) ) {
 				$out[ $name ] = array( $block, $prefix );
 			}
 		}
@@ -448,7 +524,8 @@ final class BorderElementParityTest extends TestCase {
 	 * @param array<string, mixed> $context Ancestor block context.
 	 * @param string               $content Rendered inner-block HTML.
 	 * @param array<string, mixed> $extra   Harness inputs: 'inner-blocks' (list of name/attributes/html), 'post-content'
-	 *                                      (serialised global post content), 'global-settings' (settings tree), 'taxonomies' (registry).
+	 *                                      (serialised global post content), 'global-settings' (settings tree), 'taxonomies' (registry),
+	 *                                      'woocommerce-class' (true declares an empty WooCommerce class).
 	 * @return array{html: string, css: string}
 	 */
 	private function render_block_with_content( string $slug, array $attrs, array $context, string $content, array $extra = array() ): array {
@@ -459,6 +536,9 @@ final class BorderElementParityTest extends TestCase {
 		file_put_contents( $context_f, json_encode( (object) $context, JSON_THROW_ON_ERROR ) );
 		$files = array( $attrs_f, $context_f );
 		$flags = '';
+		if ( ! empty( $extra['woocommerce-class'] ) ) {
+			$flags .= ' --stub-woocommerce';
+		}
 		if ( isset( $extra['inner-blocks'] ) ) {
 			$f = tempnam( sys_get_temp_dir(), 'sgsib' );
 			file_put_contents( $f, json_encode( $extra['inner-blocks'], JSON_THROW_ON_ERROR ) );
@@ -523,7 +603,8 @@ final class BorderElementParityTest extends TestCase {
 	#[DataProvider( 'radius_targets' )]
 	public function test_desktop_radius_precedes_the_tier_radius( string $block, string $prefix ): void {
 		$name    = self::target_name( $block, $prefix );
-		$css     = $this->render_target( $block, $prefix, self::case_attrs( 'k_radius_tiers', $prefix ) )['css'];
+		$case    = isset( self::TARGET_CASES['k2_radius_siblings'] ) && in_array( $name, self::TARGET_CASES['k2_radius_siblings'], true ) ? 'k2_radius_siblings' : 'k_radius_tiers';
+		$css     = $this->render_target( $block, $prefix, self::case_attrs( $case, $prefix ) )['css'];
 		$desktop = strpos( $css, 'border-top-left-radius:12px' );
 		$tablet  = strpos( $css, 'border-top-left-radius:6px' );
 		$mobile  = strpos( $css, 'border-top-left-radius:2px' );

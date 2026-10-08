@@ -83,14 +83,10 @@ $hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 // Wave B, U-1 — text-pill trigger style. 'icon' (default) keeps the existing
 // icon+badge trigger; 'pill' swaps the icon for an editable word (pillLabel)
 // beside the live item count (same badge element, restyled — see style.css).
-$trigger_style       = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 'pill' : 'icon';
-$pill_label          = sanitize_text_field( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
-$pill_bg_colour      = (string) ( $attributes['pillBgColour'] ?? '' );
-$pill_text_colour    = (string) ( $attributes['pillTextColour'] ?? '' );
-$pill_border_colour  = (string) ( $attributes['pillBorderColour'] ?? '' );
-$pill_border_width_box = is_array( $attributes['pillBorderWidth'] ?? null ) ? $attributes['pillBorderWidth'] : array();
-$pill_border_style_raw = sanitize_key( (string) ( $attributes['pillBorderStyle'] ?? '' ) );
-$pill_border_radius  = (string) ( $attributes['pillBorderRadius'] ?? '' );
+$trigger_style     = ( 'pill' === ( $attributes['triggerStyle'] ?? 'icon' ) ) ? 'pill' : 'icon';
+$pill_label        = sanitize_text_field( $attributes['pillLabel'] ?? __( 'Cart', 'sgs-blocks' ) );
+$pill_bg_colour    = (string) ( $attributes['pillBgColour'] ?? '' );
+$pill_text_colour  = (string) ( $attributes['pillTextColour'] ?? '' );
 $sgs_count_pop_raw = $attributes['countPopAnimation'] ?? 'off';
 // The legacy boolean (before this setting had three modes) still reads correctly:
 // true was 'pop on change', and the draft also pops on load, so it maps to the full mode.
@@ -363,23 +359,28 @@ if ( 'pill' === $trigger_style ) {
 		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $pill_label_sel, $pill_text_effective );
 	}
 
-	if ( '' !== $pill_border_colour ) {
-		$scoped_css[] = $pill_sel . '{border-color:' . sgs_colour_value( $pill_border_colour ) . ';}';
+	// Border (width, style, colour, radius at three tiers) through the shared
+	// assembler. Printed before the typography and min-height rules below.
+	$pill_border = sgs_border_element_decls(
+		$attributes,
+		'pill',
+		$pill_sel,
+		array(
+			'colour' => array(
+				'base' => 'pillBorderColour',
+			),
+		)
+	);
+	if ( $pill_border['base'] ) {
+		$scoped_css[] = $pill_sel . '{' . implode( ';', $pill_border['base'] ) . ';}';
 	}
-
-	// Border width — box object, base only (Spec 35 §14, no per-device width).
-	// The CSS default (1px, style.css) applies when unset. Mirrors
-	// sgs/whatsapp-cta's cardBorderWidth (variant-render.php).
-	$pill_border_width_val = sgs_box_object_shorthand( $pill_border_width_box );
-	if ( null !== $pill_border_width_val ) {
-		$scoped_css[] = $pill_sel . '{border-width:' . $pill_border_width_val . ';}';
+	if ( $pill_border['tablet'] ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $pill_sel . '{' . implode( ';', $pill_border['tablet'] ) . ';}}';
 	}
-
-	// Border style — resolved through the shared keyword helper; unset leaves
-	// style.css's own default in place.
-	if ( '' !== (string) $pill_border_style_raw ) {
-		$scoped_css[] = $pill_sel . '{border-style:' . sgs_border_style_keyword( $pill_border_style_raw ) . ';}';
+	if ( $pill_border['mobile'] ) {
+		$scoped_css[] = '@media(max-width:767px){' . $pill_sel . '{' . implode( ';', $pill_border['mobile'] ) . ';}}';
 	}
+	$scoped_css = array_merge( $scoped_css, $pill_border['rules'] );
 
 	// Scalar length (Spec 32 S7): sgs_css_length_value() sanitises and passes
 	// the value through with its own unit; empty leaves style.css's own
@@ -432,13 +433,6 @@ if ( 'pill' === $trigger_style ) {
 		if ( '' !== $pill_text_hover_decl ) {
 			$scoped_css[] = $pill_label_sel . '{transition:color .25s ease;}';
 			$scoped_css[] = sgs_hover_state_rules( $pill_sel, $pill_text_hover_decl, ':focus-visible', ' .sgs-cart__pill-label' );
-		}
-	}
-
-	if ( '' !== $pill_border_radius ) {
-		$pill_border_radius_safe = sgs_css_length_value( $pill_border_radius );
-		if ( '' !== $pill_border_radius_safe ) {
-			$scoped_css[] = $pill_sel . '{border-radius:' . $pill_border_radius_safe . ';}';
 		}
 	}
 }

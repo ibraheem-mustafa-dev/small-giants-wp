@@ -300,6 +300,12 @@ if ( isset( $args['taxonomies-file'] ) ) {
 	}
 	$GLOBALS['sgs_qa_taxonomies'] = $taxonomy_tree;
 }
+// --stub-woocommerce: declares an empty `WooCommerce` class so a block that returns early on
+// `class_exists( 'WooCommerce' )` reaches its CSS code. No WC() function or commerce data is created, so the
+// block takes its own WooCommerce-less fallbacks (home_url() URLs). Opt-in per render; never global.
+if ( isset( $args['stub-woocommerce'] ) && ! class_exists( 'WooCommerce', false ) ) {
+	class WooCommerce {} // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- opt-in presence marker.
+}
 // --content stands in for rendered InnerBlocks (a composite block with no inner
 // content renders nothing, so its colours are never emitted).
 $content = isset( $args['content'] ) ? (string) $args['content'] : '';

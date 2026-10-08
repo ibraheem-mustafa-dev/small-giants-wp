@@ -328,7 +328,10 @@ if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 
 		$base = null;
 		if ( is_string( $desktop_raw ) && '' !== $desktop_raw ) {
-			$base = $desktop_raw;
+			// A uniform string passes the same length sanitiser as each corner
+			// below; a value it rejects (a `;}` breakout) is no radius at all.
+			$clean_string = sgs_css_length_value( $desktop_raw );
+			$base         = '' !== $clean_string ? $clean_string : null;
 		} elseif ( is_array( $desktop_raw ) ) {
 			$clean   = array();
 			$has_any = false;

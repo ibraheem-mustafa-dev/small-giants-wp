@@ -135,21 +135,6 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-// Base border-radius — block-private `borderRadius` TIER-of-BOXES envelope
-// attr {desktop,tablet,mobile}, each a corner object (topLeft/topRight/
-// bottomLeft/bottomRight). Folded 2026-09-11 from the wrong 3-sibling shape
-// (borderRadius/borderRadiusTablet/borderRadiusMobile as three separate
-// attrs) into the canonical envelope — same shape + same shared helper as
-// sgs/star-rating's already-shipped `borderRadius` migration. Retired the
-// WP-native style.border.radius read the same day __experimentalBorder
-// support was removed from block.json — ResponsiveBorderRadiusControl always
-// writes the corner-object shape, never a uniform string, so no string
-// branch is needed beyond what sgs_border_radius_tiers() already handles.
-$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
-$base_border_radius       = $border_radius_tiers['base'];
-$border_radius_tablet_obj = $border_radius_tiers['tablet'];
-$border_radius_mobile_obj = $border_radius_tiers['mobile'];
-
 // Responsive tiers — SGS custom object attrs.
 $padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
@@ -263,9 +248,9 @@ $scoped_css[] = sgs_text_states_css(
 // put glyph and label side by side on one surface, where following the label is
 // right. ---
 $icon_follows_label = 'card' !== $variant;
-$icon_colour_sel   = $root_sel . ' .sgs-whatsapp-cta__icon';
-$icon_label_flat   = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColour'] ?? '' );
-$icon_label_hover  = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourHoverGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColourHover'] ?? '' );
+$icon_colour_sel    = $root_sel . ' .sgs-whatsapp-cta__icon';
+$icon_label_flat    = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColour'] ?? '' );
+$icon_label_hover   = ! $icon_follows_label || '' !== (string) ( $attributes['labelColourHoverGradient'] ?? '' ) ? '' : (string) ( $attributes['labelColourHover'] ?? '' );
 if ( '' !== $icon_label_flat ) {
 	$scoped_css[] = $icon_colour_sel . '{color:' . sgs_colour_value( $icon_label_flat ) . ';}';
 }
@@ -289,10 +274,6 @@ if ( ! empty( $base_spacing ) ) {
 	$base_style_engine_args['spacing'] = $base_spacing;
 }
 
-if ( null !== $base_border_radius ) {
-	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-}
-
 if ( ! empty( $base_style_engine_args ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		$base_style_engine_args,
@@ -303,14 +284,21 @@ if ( ! empty( $base_style_engine_args ) ) {
 	}
 }
 
+// --- Block-root border (corner radius at three tiers) through the shared
+// assembler. The base rule prints before the tier rules so a tablet or mobile
+// radius (same specificity) wins inside its media query. ---
+$border = sgs_border_element_decls( $attributes, '', $root_sel );
+if ( $border['base'] ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
+}
+$scoped_css = array_merge( $scoped_css, $border['rules'] );
+
 // --- Responsive padding/margin/border-radius tiers — hand-built shorthand,
 // scoped @media on the SAME root selector (tablet ≤1023px, mobile ≤767px). ---
 $padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
 $padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
 $margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-$radius_tab_val  = sgs_corner_object_longhands( $border_radius_tablet_obj );
-$radius_mob_val  = sgs_corner_object_longhands( $border_radius_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -319,9 +307,7 @@ if ( null !== $padding_tab_val ) {
 if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
-if ( null !== $radius_tab_val ) {
-	$tablet_box_decls[] = "{$radius_tab_val}";
-}
+$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 if ( $tablet_box_decls ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
 }
@@ -333,9 +319,7 @@ if ( null !== $padding_mob_val ) {
 if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
-if ( null !== $radius_mob_val ) {
-	$mobile_box_decls[] = "{$radius_mob_val}";
-}
+$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 }

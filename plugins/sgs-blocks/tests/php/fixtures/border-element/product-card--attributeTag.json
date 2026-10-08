@@ -1,0 +1,26 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-pc-1 .sgs-product-card__attribute-tag": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-pc-1 .sgs-product-card__attribute-tag": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-pc-1 .sgs-product-card__attribute-tag": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-pc-1 .sgs-product-card__attribute-tag": [
+            "border-radius:8px"
+        ]
+    }
+}

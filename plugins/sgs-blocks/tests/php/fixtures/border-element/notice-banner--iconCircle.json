@@ -1,0 +1,39 @@
+{
+    "a_baseline": [],
+    "b_equal_sides": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-color:var(--wp--preset--color--primary,currentColor)",
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "c_unequal_dashed_raw": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-color:#ff0000",
+            "border-style:dashed",
+            "border-width:1px 0 0 4px"
+        ]
+    },
+    "d_style_none": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-style:none",
+            "border-width:0"
+        ]
+    },
+    "e_widths_no_colour": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-style:solid",
+            "border-width:2px 2px 2px 2px"
+        ]
+    },
+    "f_colour_no_widths": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-color:var(--wp--preset--color--primary,currentColor)"
+        ]
+    },
+    "j_radius_uniform": {
+        " || .sgs-notice-banner-UID.wp-block-sgs-notice-banner .sgs-notice-banner__icon--circle": [
+            "border-radius:8px"
+        ]
+    }
+}

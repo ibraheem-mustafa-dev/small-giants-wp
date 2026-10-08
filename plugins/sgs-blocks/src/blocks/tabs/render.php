@@ -167,7 +167,6 @@ $tab_text_decl      = sgs_text_colour_decl( $tab_text_effective );
 
 $tab_indicator_gradient        = sgs_css_gradient_value( $attributes['tabIndicatorColourGradient'] ?? '' );
 $tab_active_indicator_gradient = sgs_css_gradient_value( $attributes['tabActiveIndicatorColourGradient'] ?? '' );
-$panel_border_gradient         = sgs_css_gradient_value( $attributes['panelBorderColourGradient'] ?? '' );
 
 // ─── Scoped uid + root selector (NO-INLINE contract §A) ──────────────────────
 // Own uid, independent of the wrapper's internal uid — mirrors sgs/hero. Added
@@ -258,14 +257,21 @@ if ( '' !== $tab_active_indicator_gradient ) {
 		$tab_indicator_ring_width
 	);
 }
-if ( '' !== $panel_border_gradient ) {
-	$tabs_responsive_css .= sgs_border_gradient_css(
-		"{$root_sel} .sgs-tabs__panel",
-		$panel_border_gradient,
-		null,
-		'1px'
-	);
-}
+// Panel border gradient ring through the shared assembler. The flat panel
+// border colour stays the --sgs-panel-border custom property the stylesheet's
+// own panel border consumes, so only the gradient is mapped here.
+$panel_border         = sgs_border_element_decls(
+	$attributes,
+	'panel',
+	"{$root_sel} .sgs-tabs__panel",
+	array(
+		'colour' => array(
+			'gradient' => 'panelBorderColourGradient',
+		),
+		'radius' => false,
+	)
+);
+$tabs_responsive_css .= implode( '', $panel_border['rules'] );
 
 // Resting tab TEXT colour/gradient override (D948-follow-up) — scoped rule
 // beats the compiled stylesheet's `color: var( --sgs-tab-text, … )` default by
