@@ -242,7 +242,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:' . $sgs_nm_panel_top . ';left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 		// `full-width` placement: mega-disclosure.js publishes the panel block's own fill and bottom edge as custom-property
 		// VALUES, so the wrap (the full-width box) paints them and the capped, centred panel sits on a fill that spans the viewport.
-		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{background-color:var(--sgs-mm-wrap-bg-colour,transparent);background-image:var(--sgs-mm-wrap-bg-image,none);box-shadow:inset 0 calc(-1 * var(--sgs-mm-wrap-edge-w,0px)) 0 0 var(--sgs-mm-wrap-edge-colour,transparent);}';
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{background-color:var(--sgs-mm-wrap-bg-colour,transparent);background-image:var(--sgs-mm-wrap-bg-image,none),linear-gradient(var(--sgs-mm-wrap-edge-colour,transparent),var(--sgs-mm-wrap-edge-colour,transparent));background-repeat:no-repeat;background-size:100% 100%,100% var(--sgs-mm-wrap-edge-w,0px);background-position:0 0,0 100%;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
 		
 		/*
