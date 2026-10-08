@@ -227,13 +227,11 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - condensed hours;
   - the size guide modal lives once here (anchor `size-guide`, every page).
 - **Open, improving it to match the draft:**
-  - Replace `core/list` (banned) with SGS blocks.
+  - (Done 2026-10-08: both link lists are `sgs/icon-list`, 14px, 31px item pitch; column headings match the header nav's 13.5px uppercase text-colour style; hours and address paint the text colour.)
   - The draft is 425px tall against our 304px: about 104px top padding and 52px at the sides.
-  - Column headings in small grey Outfit capitals.
-  - Links about 31px apart.
   - A gap between the wordmark and the tagline.
   - "About Eye Care" with no underline (the draft has none; ours is underlined).
-  - The address on two lines and the hours on one grey line.
+  - The address on two lines and the hours on one line.
   - Social boxes 40px with a grey border and brand-coloured icons, in the order Instagram, Google, WhatsApp
     (`sgs/social-icons` fixes the order when its source is Site Info: a small setting).
   - A full-width hairline on the bottom bar, with Privacy and Terms on the right.
