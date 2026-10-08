@@ -202,11 +202,18 @@ switch ( $display_type ) {
 		if ( '' !== $address_raw ) {
 			// Address is stored sanitised by Sgs_Site_Info::sanitise_address()
 			// which allows only plain text + <br>. Safe to echo as-is.
-			$html = sprintf(
-				'<address class="sgs-business-info sgs-business-address">%s%s</address>',
-				$icon_html( 'map-pin' ),
-				$label_html( wp_kses( $address_raw, array( 'br' => array() ) ) )
-			);
+			$inner = $icon_html( 'map-pin' ) . $label_html( wp_kses( $address_raw, array( 'br' => array() ) ) );
+			// addressLink: the business on Google Maps, from the Maps CID, else the
+			// Google Business Profile link, else a Maps search for the address.
+			if ( ! empty( $attributes['addressLink'] ) ) {
+				$maps_cid  = (string) Sgs_Site_Info::get( 'maps_cid', '' );
+				$gbp_url   = (string) Sgs_Site_Info::get( 'socials.google', '' );
+				$maps_href = '' !== $maps_cid
+					? 'https://maps.google.com/?cid=' . rawurlencode( $maps_cid )
+					: ( '' !== $gbp_url ? $gbp_url : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( wp_strip_all_tags( str_replace( array( '<br>', '<br />', '<br/>' ), ', ', $address_raw ) ) ) );
+				$inner     = sprintf( '<a href="%s" class="sgs-business-info__link" rel="noopener">%s</a>', esc_url( $maps_href ), $inner );
+			}
+			$html = '<address class="sgs-business-info sgs-business-address">' . $inner . '</address>';
 		} else {
 			$html = $sgs_is_editor_render ? '<address class="sgs-business-info sgs-business-address">' . $placeholder . '</address>' : '';
 		}
@@ -641,6 +648,15 @@ $border = sgs_border_element_decls(
 );
 if ( $border['base'] ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
+}
+// How the block's links are underlined (phone, email, a linked address).
+$sgs_bi_link_underline = sgs_link_underline_css( $attributes, '', $root_sel );
+if ( '' !== $sgs_bi_link_underline ) {
+	$scoped_css[] = $sgs_bi_link_underline;
+}
+// hoursRowJustify: flex-start keeps each row's hours beside its day.
+if ( 'flex-start' === ( $attributes['hoursRowJustify'] ?? '' ) ) {
+	$scoped_css[] = "{$root_sel} .sgs-business-hours__row{justify-content:flex-start;}";
 }
 if ( $border['hover'] ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $border['hover'] ), ':focus-within' );

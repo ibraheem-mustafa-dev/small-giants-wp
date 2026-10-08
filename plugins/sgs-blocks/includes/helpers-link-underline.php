@@ -20,7 +20,8 @@
  * motion, and falls back to a real underline in forced-colours mode, where
  * background images are not painted. A link painted with a gradient text colour uses
  * its background for the glyphs, so the sweep is skipped there and the theme's
- * underline stays.
+ * underline stays. The line sits on the content box, so a link padded out to a 44px
+ * touch target (business-info's) draws it under its text, not under the padding.
  *
  * Canvas twin: `src/utils/link-underline.js::linkUnderlinePreviewCss`.
  *
@@ -68,7 +69,7 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 		$size = '' !== $thickness ? $thickness : 'var(--wp--custom--link-sweep--thickness, 1px)';
 
 		$css  = $link . '{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);'
-			. 'background-repeat:no-repeat;background-position:0 100%;background-size:0 ' . $size . ';'
+			. 'background-repeat:no-repeat;background-origin:content-box;background-position:0 100%;background-size:0 ' . $size . ';'
 			. 'transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}';
 		$css .= $link . ':dir(rtl){background-position:100% 100%;}';
 		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size );

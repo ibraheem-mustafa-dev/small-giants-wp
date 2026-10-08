@@ -33,7 +33,7 @@ export function linkUnderlinePreviewCss( selector, { mode = '', thickness = '', 
 	}
 	const sweep = size || 'var(--wp--custom--link-sweep--thickness, 1px)';
 	return (
-		`${ link }{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;` +
+		`${ link }{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-origin:content-box;` +
 		`background-position:0 100%;background-size:0 ${ sweep };transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}` +
 		`${ link }:dir(rtl){background-position:100% 100%;}` +
 		`${ link }:hover,${ link }:focus-visible{background-size:100% ${ sweep };}` +

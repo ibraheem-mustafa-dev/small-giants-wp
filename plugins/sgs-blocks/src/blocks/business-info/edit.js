@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, TextControl, Notice } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, SgsSeparatorControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SsrPreviewGuard, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsLengthControl, SgsSeparatorControl, LinkUnderlineControl } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -39,6 +39,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoursShowClosed,
 		hoursClosedLabel,
 		hoursCondensedInline,
+		hoursRowJustify,
+		addressLink,
+		linkUnderline,
+		linkUnderlineThickness,
 		separators,
 		copyrightPrefix,
 		textBefore,
@@ -101,6 +105,16 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
+						/* The phone, email and linked address are links; how they are
+						   underlined sits under the colour they are painted in. */
+						after: ( 'phone' === displayType || 'email' === displayType || ( 'address' === displayType && addressLink ) ) && (
+							<LinkUnderlineControl
+								mode={ linkUnderline }
+								thickness={ linkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 					{
 						key: 'icon',
@@ -165,6 +179,15 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ ICON_TYPES.has( displayType ) && (
 					<PanelBody title={ __( 'Display Options', 'sgs-blocks' ) } initialOpen={ false }>
+						{ 'address' === displayType && (
+							<ToggleControl
+								label={ __( 'Link to Google Maps', 'sgs-blocks' ) }
+								help={ __( 'Opens the business on Google Maps: the Maps CID from Site Info, else the Google Business Profile link, else a map search for the address.', 'sgs-blocks' ) }
+								checked={ !! addressLink }
+								onChange={ ( val ) => setAttributes( { addressLink: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
 						<ToggleControl
 							label={ __( 'Show icon', 'sgs-blocks' ) }
 							checked={ showIcon }
@@ -266,6 +289,19 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						{ ! ( 'condensed' === hoursLayout && hoursCondensedInline ) && (
+							<SelectControl
+								label={ __( 'Hours position', 'sgs-blocks' ) }
+								value={ hoursRowJustify || 'space-between' }
+								options={ [
+									{ label: __( 'At the end of the row', 'sgs-blocks' ), value: 'space-between' },
+									{ label: __( 'Beside the day', 'sgs-blocks' ), value: 'flex-start' },
+								] }
+								onChange={ ( val ) => setAttributes( { hoursRowJustify: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
 						{ 'condensed' === hoursLayout && (
 							<>
 								<ToggleControl

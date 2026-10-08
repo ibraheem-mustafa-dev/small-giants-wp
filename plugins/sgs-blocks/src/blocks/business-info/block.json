@@ -115,6 +115,28 @@
 			"default": false,
 			"description": "Only read when hoursLayout is 'condensed'. Renders the condensed rows on one line (style.css .sgs-business-hours--condensed-inline), separated by ' · ', instead of stacked rows."
 		},
+		"hoursRowJustify": {
+			"type": "string",
+			"enum": [ "space-between", "flex-start" ],
+			"default": "space-between",
+			"description": "Only read by displayType 'hours'. space-between puts each day at the start of its row and the hours at the end; flex-start keeps the hours beside the day."
+		},
+		"addressLink": {
+			"type": "boolean",
+			"default": false,
+			"description": "Only read by displayType 'address'. Links the address to the business on Google Maps: the Site Info Maps CID, else the Google Business Profile link (socials.google), else a Maps search for the address."
+		},
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How the block's links (phone, email, linked address) are underlined: '' unchanged, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
 		"textBefore": {
 			"type": "string",
 			"default": "",
@@ -697,7 +719,8 @@
 					],
 					"prefix": "hoursRow",
 					"attrMap": {
-						"css:padding": "hoursRowPadding"
+						"css:padding": "hoursRowPadding",
+						"css:justify-content": "hoursRowJustify"
 					},
 					"_note": "The `<div class=\"sgs-business-hours__row\">` of the opening-hours definition list (displayType 'hours', stacked rows). hoursRowPadding reaches it as --sgs-bi-hours-row-pad-{top|right|bottom|left} on the block root; style.css reads each with the original 0.35em / 0 fallback."
 				},
@@ -709,7 +732,9 @@
 					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types — phone/email always render as links (there is no use case for an unclickable phone number or email address). `attributionHoverColour`/`attributionHoverColourFallback` only paint the attribution/website-credit hover sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css), not a general phone/email link-hover. `attributionHoverColour` feeds the gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (modern browsers); `attributionHoverColourFallback` feeds the plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers). A `color:` declaration can never legally hold a CSS gradient, so the pair stays split. Both are exposed ONLY on a displayType==='attribution' control in edit.js. `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery.",
 					"attrMap": {
 						"css:background-image": "attributionHoverColour",
-						"css:color": "attributionHoverColourFallback"
+						"css:color": "attributionHoverColourFallback",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness"
 					}
 				}
 			}
