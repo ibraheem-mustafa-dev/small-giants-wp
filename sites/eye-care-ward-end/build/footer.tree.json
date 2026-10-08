@@ -201,7 +201,8 @@
                     "desktop": {
                       "top": "20px"
                     }
-                  }
+                  },
+                  "iconGlyphColourHover": "accent-text"
                 }
               }
             ]
@@ -472,7 +473,12 @@
                   "fontSize": {
                     "desktop": "14px"
                   },
-                  "className": "cr-ref-footer-24"
+                  "className": "cr-ref-footer-24",
+                  "iconGap": {
+                    "mobile": "0px",
+                    "tablet": "0px",
+                    "desktop": "0px"
+                  }
                 }
               },
               {
@@ -480,11 +486,16 @@
                 "attributes": {
                   "displayType": "address",
                   "showIcon": false,
-                  "textColour": "text",
+                  "textColour": "text-muted",
                   "fontSize": {
                     "desktop": "14px"
                   },
-                  "className": "cr-ref-footer-25"
+                  "className": "cr-ref-footer-25",
+                  "lineHeight": {
+                    "mobile": 1.5,
+                    "tablet": 1.5,
+                    "desktop": 1.5
+                  }
                 }
               },
               {
@@ -509,6 +520,12 @@
         "name": "sgs/site-footer-row",
         "attributes": {
           "rowSlot": "bottom",
+          "layout": "flex",
+          "gap": {
+            "mobile": "10px",
+            "tablet": "10px",
+            "desktop": "10px"
+          },
           "borderWidth": {
             "top": "1px"
           },
@@ -531,7 +548,12 @@
               "left": "24px"
             }
           },
-          "className": "cr-ref-footer-27"
+          "className": "cr-ref-footer-27",
+          "maxWidth": {
+            "mobile": "1440px",
+            "tablet": "1440px",
+            "desktop": "1440px"
+          }
         },
         "innerBlocks": [
           {
@@ -564,7 +586,8 @@
                   "fontSize": {
                     "desktop": "12px"
                   },
-                  "className": "cr-ref-footer-30"
+                  "className": "cr-ref-footer-30",
+                  "linkColour": "text-label"
                 }
               },
               {
@@ -574,7 +597,8 @@
                   "fontSize": {
                     "desktop": "12px"
                   },
-                  "className": "cr-ref-footer-31"
+                  "className": "cr-ref-footer-31",
+                  "linkColour": "text-label"
                 }
               }
             ]
