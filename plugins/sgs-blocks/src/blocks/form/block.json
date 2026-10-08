@@ -495,6 +495,48 @@
 						"css:writing-mode": "stepLabelWritingMode"
 					},
 					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue."
+				},
+				"file-button": {
+					"label": "File upload button",
+					"order": 22,
+					"clusters": [ "text" ],
+					"prefix": "fileButton",
+					"attrMap": {
+						"css:font-size": "fileButtonFontSize",
+						"css:font-weight": "fileButtonFontWeight",
+						"css:font-style": "fileButtonFontStyle",
+						"css:font-family": "fileButtonFontFamily",
+						"css:text-transform": "fileButtonTextTransform",
+						"css:text-decoration": "fileButtonTextDecoration",
+						"css:line-height": "fileButtonLineHeight",
+						"css:letter-spacing": "fileButtonLetterSpacing",
+						"css:text-align": "fileButtonTextAlign",
+						"css:text-wrap": "fileButtonTextWrap",
+						"css:column-count": "fileButtonTextColumns",
+						"css:writing-mode": "fileButtonWritingMode"
+					},
+					"_note": "Typography only (fileButton* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-button). The Choose file cue inside the panel-style upload zone."
+				},
+				"file-label": {
+					"label": "File upload prompt",
+					"order": 23,
+					"clusters": [ "text" ],
+					"prefix": "fileLabel",
+					"attrMap": {
+						"css:font-size": "fileLabelFontSize",
+						"css:font-weight": "fileLabelFontWeight",
+						"css:font-style": "fileLabelFontStyle",
+						"css:font-family": "fileLabelFontFamily",
+						"css:text-transform": "fileLabelTextTransform",
+						"css:text-decoration": "fileLabelTextDecoration",
+						"css:line-height": "fileLabelLineHeight",
+						"css:letter-spacing": "fileLabelLetterSpacing",
+						"css:text-align": "fileLabelTextAlign",
+						"css:text-wrap": "fileLabelTextWrap",
+						"css:column-count": "fileLabelTextColumns",
+						"css:writing-mode": "fileLabelWritingMode"
+					},
+					"_note": "Typography only (fileLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__file-label). The upload zone prompt text."
 				}
 			}
 		}
@@ -1758,6 +1800,134 @@
 			"type": "number"
 		},
 		"fileStatusWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"fileButtonFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fileButtonFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fileButtonFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fileButtonFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"fileButtonFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fileButtonTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"fileButtonTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"fileButtonLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"fileButtonLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileButtonLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"fileButtonLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileButtonTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"fileButtonTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"fileButtonTextColumns": {
+			"type": "number"
+		},
+		"fileButtonWritingMode": {
+			"type": "string",
+			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
+			"default": ""
+		},
+		"fileLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fileLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fileLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fileLabelTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"fileLabelTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"fileLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"fileLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"fileLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"fileLabelTextAlign": {
+			"type": "string",
+			"enum": [ "", "left", "center", "right", "justify" ],
+			"default": ""
+		},
+		"fileLabelTextWrap": {
+			"type": "string",
+			"enum": [ "", "wrap", "nowrap", "balance", "pretty", "stable" ],
+			"default": ""
+		},
+		"fileLabelTextColumns": {
+			"type": "number"
+		},
+		"fileLabelWritingMode": {
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""

@@ -666,9 +666,12 @@ select.sgs-form-field__input {
 	padding: 2rem;
 	border: 2px dashed var(--wp--preset--color--border, #ccc);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	text-align: center;
 	cursor: pointer;
 	transition: border-color 0.2s, background-color 0.2s;
+}
+
+:where(.sgs-form-field__file-label) {
+	text-align: center;
 }
 
 /* Hover border/background colours are client-controllable
@@ -727,6 +730,9 @@ select.sgs-form-field__input {
 	padding: 10px 20px;
 	border: 1px solid currentColor;
 	color: var(--wp--preset--color--text, #1a202c);
+}
+
+:where(.sgs-form-field__file-button) {
 	font-size: 12.5px;
 	line-height: 1.5;
 	letter-spacing: 0.12em;
