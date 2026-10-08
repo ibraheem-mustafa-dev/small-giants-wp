@@ -27575,6 +27575,14 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "hoursRowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "hours-row"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
