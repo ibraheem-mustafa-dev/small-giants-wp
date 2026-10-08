@@ -17,8 +17,8 @@
  * the theme's `.sgs-hover-underline-slide` utility, with the same
  * `--wp--custom--link-sweep--thickness` / `--duration` tokens as its defaults). It
  * starts from the inline end on a right-to-left page, shows at once under reduced
- * motion, and falls back to a real underline in forced-colours mode, where
- * background images are not painted. A link painted with a gradient text colour uses
+ * motion, and in forced-colours mode (where background images are not painted and
+ * links take the system colour) a real underline shows at rest, for 'none' too. A link painted with a gradient text colour uses
  * its background for the glyphs, so the sweep is skipped there and the theme's
  * underline stays. The line sits on the content box, so a link padded out to a 44px
  * touch target (business-info's) draws it under its text, not under the padding.
@@ -52,8 +52,10 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 		}
 
 		$link = $selector . ' a';
+		// Forced-colours mode paints links in the system colour only: the line comes back at rest.
+		$forced = '@media (forced-colors: active){' . $link . '{text-decoration:underline;}}';
 		if ( 'none' === $mode ) {
-			return $link . '{text-decoration:none;}';
+			return $link . '{text-decoration:none;}' . $forced;
 		}
 
 		$thickness = sgs_css_length_value( (string) ( $attributes[ sgs_typography_attr( $prefix, 'LinkUnderlineThickness' ) ] ?? '' ) );
@@ -74,7 +76,7 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 		$css .= $link . ':dir(rtl){background-position:100% 100%;}';
 		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size );
 		$css .= '@media (prefers-reduced-motion: reduce){' . $link . '{transition:none;}}';
-		$css .= '@media (forced-colors: active){' . $link . ':hover,' . $link . ':focus-visible{text-decoration:underline;}}';
+		$css .= $forced;
 		return $css;
 	}
 }

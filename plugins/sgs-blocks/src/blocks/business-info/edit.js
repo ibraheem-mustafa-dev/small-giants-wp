@@ -181,8 +181,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					<PanelBody title={ __( 'Display Options', 'sgs-blocks' ) } initialOpen={ false }>
 						{ 'address' === displayType && (
 							<ToggleControl
-								label={ __( 'Link to Google Maps', 'sgs-blocks' ) }
-								help={ __( 'Opens the business on Google Maps: the Maps CID from Site Info, else the Google Business Profile link, else a map search for the address.', 'sgs-blocks' ) }
+								label={ __( 'Link the address to Google', 'sgs-blocks' ) }
+								help={ __( 'Opens the business on Google: its Google Maps listing (the Maps CID in Site Info), else the Google Business Profile link in Site Info, else a map search for the address.', 'sgs-blocks' ) }
 								checked={ !! addressLink }
 								onChange={ ( val ) => setAttributes( { addressLink: val } ) }
 								__nextHasNoMarginBottom
@@ -295,7 +295,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ hoursRowJustify || 'space-between' }
 								options={ [
 									{ label: __( 'At the end of the row', 'sgs-blocks' ), value: 'space-between' },
-									{ label: __( 'Beside the day', 'sgs-blocks' ), value: 'flex-start' },
+									{ label: __( 'Next to the day name', 'sgs-blocks' ), value: 'flex-start' },
 								] }
 								onChange={ ( val ) => setAttributes( { hoursRowJustify: val } ) }
 								__nextHasNoMarginBottom

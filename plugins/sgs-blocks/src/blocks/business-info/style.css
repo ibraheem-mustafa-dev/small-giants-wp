@@ -258,6 +258,15 @@
 	margin: 0;
 }
 
+/* A linked address can run to several lines: its icon sits at the top, and the
+   vertical margins cancel the link's padding exactly, so the address takes its
+   natural height (the one-line margin calc on .sgs-business-info__link would
+   pull a second line into the next row). The 44px touch target stays. */
+.sgs-business-address .sgs-business-info__link {
+	align-items: flex-start;
+	margin-block: -0.5em;
+}
+
 /*
  * Line-height default — :where() keeps this at specificity 0 so the uid-scoped
  * lineHeight rule (sgs_typography_css_rule, emitted only when the operator

@@ -650,7 +650,12 @@ if ( $border['base'] ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
 }
 // How the block's links are underlined (phone, email, a linked address).
-$sgs_bi_link_underline = sgs_link_underline_css( $attributes, '', $root_sel );
+// The doubled class (0,2,1) outranks style.css's `.sgs-business-info__link:hover`
+// and the theme's link focus underline (0,2,0); the attribution credit draws its
+// own sweep, so only the phone, email and address links take this setting.
+$sgs_bi_link_underline = in_array( $display_type, array( 'phone', 'email', 'address' ), true )
+	? sgs_link_underline_css( $attributes, '', $root_sel . $root_sel )
+	: '';
 if ( '' !== $sgs_bi_link_underline ) {
 	$scoped_css[] = $sgs_bi_link_underline;
 }

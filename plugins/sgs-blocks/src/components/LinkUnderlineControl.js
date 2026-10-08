@@ -15,8 +15,9 @@ import { SelectControl } from '@wordpress/components';
 import SgsLengthControl from './SgsLengthControl';
 
 const MODE_HELP = {
-	none: __( 'Links show no underline, so they rely on colour alone. Keep this off links inside running text.', 'sgs-blocks' ),
-	sweep: __( 'A line sweeps in under the link on hover and keyboard focus. Links inside running text are easier to spot with an underline that stays.', 'sgs-blocks' ),
+	none: __( 'Links show no underline, so only their colour marks them. Not recommended for links inside paragraphs.', 'sgs-blocks' ),
+	sweep: __( 'No underline until the link is hovered or focused with the keyboard. Links inside paragraphs are easier to spot with Always.', 'sgs-blocks' ),
+	always: __( 'This styles the links inside the text. Text decoration under Typography styles the whole text.', 'sgs-blocks' ),
 };
 
 /**
@@ -39,7 +40,7 @@ export default function LinkUnderlineControl( { mode = '', thickness = '', onMod
 					{ label: __( 'Theme default', 'sgs-blocks' ), value: '' },
 					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 					{ label: __( 'Always', 'sgs-blocks' ), value: 'always' },
-					{ label: __( 'Sweep in on hover', 'sgs-blocks' ), value: 'sweep' },
+					{ label: __( 'Slides in on hover', 'sgs-blocks' ), value: 'sweep' },
 				] }
 				help={ MODE_HELP[ mode ] }
 				onChange={ ( next ) => onModeChange( next ) }
@@ -49,7 +50,7 @@ export default function LinkUnderlineControl( { mode = '', thickness = '', onMod
 					label={ __( 'Underline thickness', 'sgs-blocks' ) }
 					value={ thickness }
 					units={ [ { value: 'px', label: 'px', default: 1 } ] }
-					placeholder={ 'sweep' === mode ? __( 'Theme', 'sgs-blocks' ) : __( 'Auto', 'sgs-blocks' ) }
+					placeholder={ 'sweep' === mode ? __( 'Site default', 'sgs-blocks' ) : __( 'Default', 'sgs-blocks' ) }
 					onChange={ ( next ) => onThicknessChange( next ?? '' ) }
 				/>
 			) }

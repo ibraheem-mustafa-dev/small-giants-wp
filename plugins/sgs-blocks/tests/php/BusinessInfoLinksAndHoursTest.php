@@ -56,7 +56,15 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		$out = $this->render_block( 'sgs/business-info', array( 'displayType' => 'phone', 'linkUnderline' => 'sweep' ) );
 
 		$this->assertStringContainsString( 'class="sgs-business-info__link"', $out['html'] );
-		$this->assertMatchesRegularExpression( '/\.sgs-biz-[0-9a-f]{8} a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);background-repeat:no-repeat;background-origin:content-box;/', $out['css'] );
+		// The doubled class outranks style.css's `.sgs-business-info__link:hover` and the theme's focus underline.
+		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);background-repeat:no-repeat;background-origin:content-box;/', $out['css'] );
+	}
+
+	public function test_the_attribution_credit_keeps_its_own_sweep(): void {
+		$out = $this->render_block( 'sgs/business-info', array( 'displayType' => 'attribution', 'linkUnderline' => 'sweep' ) );
+
+		$this->assertStringContainsString( 'sgs-business-attribution', $out['html'], 'positive control: the credit rendered' );
+		$this->assertStringNotContainsString( 'linear-gradient(currentColor', $out['css'] );
 	}
 
 	public function test_hours_beside_the_day_and_the_default_end_of_row(): void {
