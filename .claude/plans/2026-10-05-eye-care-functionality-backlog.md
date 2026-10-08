@@ -130,8 +130,8 @@ files**.
   (2026-10-07):** `seedSides` now seeds unset sides only where a box still zero-fills.
 - **Four sibling helpers shared the identical defect.** ✅ **Fixed 2026-10-07 (CR6 P2-a/P2-c, `1b4b3f6ad`):**
   every corner site prints through `sgs_corner_object_longhands`, `helpers-button-style.php` no longer calls
-  `sgs_serialise_box_corners` (only the `--sgs-gi-radius` holdout does), and both media atoms emit one
-  custom property per side or corner.
+  `sgs_serialise_box_corners` (P2-b moved the last caller, the grid-item radius, to per-corner properties), and both
+  media atoms emit one custom property per side or corner.
 - **A precedent exists, so this is reuse not invention:** `includes/class-sgs-container-wrapper.php`
   ~2711-2736 and ~2856-2928 already emit per-side longhands for set sides only, and
   `includes/helpers-responsive.php::sgs_responsive_side_order()` gives the canonical side order.

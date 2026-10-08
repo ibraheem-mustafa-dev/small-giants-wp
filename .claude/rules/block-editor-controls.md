@@ -68,8 +68,8 @@ values the panel receives (`widthValues`, `styleValue`, `colourValue`, `colourGr
 **A radius prints only the corners a client set.** render.php prints a tier's corners through
 `includes/helpers-box.php::sgs_corner_object_longhands` (one `border-*-radius` per set corner), and the
 canvas through `src/utils/radius-preview.js::borderRadiusLonghands`, which `sgsBorderPreview` uses; an
-unset corner keeps the stylesheet's radius. `sgs_corner_object_shorthand` (unset corners `0`) stays only
-for the `var()` holdouts. Gate: `python plugins/sgs-blocks/scripts/migrate-box-longhands.py --check`
+unset corner keeps the stylesheet's radius. `sgs_corner_object_shorthand` (unset corners `0`) has no live caller;
+a custom property holding corners prints through `sgs_corner_object_property_list`. Gate: `python plugins/sgs-blocks/scripts/migrate-box-longhands.py --check`
 (fails a new zero-filling corner site). Blocks read only their own border attributes, never WordPress's
 native `style.border`.
 

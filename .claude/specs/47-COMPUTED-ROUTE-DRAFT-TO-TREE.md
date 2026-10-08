@@ -641,9 +641,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        the tablet tier's other sides (Bean). Kept on purpose: `sgs_box_object_shorthand` stays byte-identical for
        border WIDTH (where an unset side SHOULD be 0) and for the `var()` holdouts. The gate is
        `plugins/sgs-blocks/scripts/migrate-box-longhands.py --check` (in `gates.json`, a baseline ratchet, now 0).
-       **The route's half:** `lib/resolve.mjs::seedSides` now seeds unset sides only where a box still zero-fills —
-       every border width, and the census's `zeroFillPairs` (`reports/migrations/box-longhands-census.json`); with no
-       census it seeds everywhere, the safe direction. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
+       **The route's half:** `lib/resolve.mjs::seedSides` seeds unset sides only for a border width (the one box
+       that still prints 0 for an unset side); padding and margin boxes are written one side alone. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
        (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
        **Phase 2** (plan table): P2-d done (`google-reviews` padding prints set sides; `sgs_border_box_decls` holds no
        padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's

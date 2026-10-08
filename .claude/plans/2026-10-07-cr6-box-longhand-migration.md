@@ -23,7 +23,7 @@ been folded in below.
 
 | # | Decision | Source |
 |---|---|---|
-| D-1 | A NEW sibling function; the old `helpers-box.php::sgs_box_object_shorthand` stays byte-identical for the `var()` holdouts and every site this plan does not migrate | `.claude/plans/2026-10-05-eye-care-functionality-backlog.md` §CR6 (validated design) |
+| D-1 | A NEW sibling function; the old `helpers-box.php::sgs_box_object_shorthand` stays byte-identical for the border widths and every site this plan does not migrate | `.claude/plans/2026-10-05-eye-care-functionality-backlog.md` §CR6 (validated design) |
 | D-2 | A mobile tier that sets one side **inherits** the tablet tier's other sides | Bean, 2026-10-07 |
 | D-3 | THE-MIGRATION-METHOD hand-back #9 and Step 3 are met by D-1 + D-2 recorded here ("if the shape is already settled and recorded, say so and move on") | `.claude/THE-MIGRATION-METHOD.md` |
 | D-4 | **Border WIDTH is out of CR6: zero-fill is the correct meaning there.** Sites write `border-style` for all four sides and widths per side; a longhand would leave an unset side at the browser's `medium` (~3px), painting phantom borders — the G5 "no width = no border" rule, pinned by `plugins/sgs-blocks/tests/php/run-border-default-style-standalone.php` (`'.c{border-style:solid;border-width:2px 0 0 0;}'`). Padding and margin have no such companion, so an unset side there SHOULD fall to the stylesheet | risk review, verified; decided on evidence |
@@ -199,10 +199,9 @@ text below, all recorded here because a later session would otherwise rediscover
   The editor arm missed camelCase names (`contentPadding`) until fixed; cart's panel and form's wrapper previews
   were wrong before CR6 (their emitters are per-side), so P2-d closes for them. A subagent dropped an import hero
   still used; a used-but-not-imported scan across all 30 changed JS files caught it (the JS linter is broken repo-wide).
-- **GATE 3 result: narrow.** `zeroFillPairs` in the census holds 11 pairs (4 padding: `sgs/accordion` header and
-  content padding via block context, `sgs/container::gridItemPadding`, `sgs/label::padding`; 7 border widths); the
-  route also seeds every border width. `sgs/container::padding` had been over-seeded (its wrapper always printed
-  per side) and no longer is.
+- **GATE 3 result: narrow, then empty of padding.** After phase 1 `zeroFillPairs` held 11 pairs (4 padding, 7 border
+  widths); after P2-b it holds the 8 border widths only (see the P2-b GATE 3 bullet below). `sgs/container::padding`
+  had been over-seeded (its wrapper always printed per side) and no longer is.
 - **U8 DONE 2026-10-07:** sandybrown deploy of `7851261e5` (141 fast + 6 full gates, 95/95 payload), then `check-box-longhands-blocks-live.mjs` 30/30 rows, front end and editor, at 1440/768/375. Before the deploy it `node plugins/sgs-blocks/scripts/qa/check-box-longhands-blocks-live.mjs`
   read 40 0 0 0 at 768 and 375 for all five blocks (text, heading, button, label, info-box). The Eye Care
   re-measure rides on the next measure-only sweep (Task 1). **CR6 phase 1 is complete; phase 2 is below.**
@@ -249,13 +248,10 @@ SELECT block_slug, attr_name, css_property FROM block_attributes
 WHERE (box_family IS NOT NULL OR tier_shape = 'box_only')
   AND css_property IN ('padding','margin','border-width') AND source = 'sgs'
 ```
-intersected with the census's still-zero-filling blocks: the 8 holdouts, every border-width site (D-4),
-`google-reviews`, and `sgs_border_box_decls`'s callers. `container.gridItemPadding` (`--sgs-gi-padding`)
-and border width will be in it, so **the expected outcome is narrow, not delete**: `seedSides` seeds
-only for the (block, attribute) pairs in that intersection, read from the committed census JSON, and is
-deleted outright when it empties (phase 2 completes it).
+intersected with the census's still-zero-filling blocks (every border-width site, D-4, after P2-b).
+`seedSides` seeds only a border width; padding and margin boxes are written one side alone.
 **Pass:** the query's pairs that are still zero-filling equal the census's refused + excluded sites
-(by `block` + `attr`) exactly; U7 hard-codes nothing, it reads that list from the census.
+(by `block` + `attr`) exactly.
 **Fail:** a pair the route writes that is in neither list → stop; the census missed a zero-fill site.
 
 ### U7 — `seedSides` narrowed — 20 min
