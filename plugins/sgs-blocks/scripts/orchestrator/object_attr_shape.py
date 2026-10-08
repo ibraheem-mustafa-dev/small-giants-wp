@@ -321,7 +321,43 @@ def tier_object_attrs_from_php(path: Path) -> set:
         if re.search(r"'value'\s*=>\s*\$" + re.escape(var_name) + r"\b", text):
             found.add(attr_name)
     found |= _closure_dispatched_tier_attrs(text)
+    found |= _border_element_radius_attrs(text)
     return found
+
+
+def _border_element_radius_attrs(text: str) -> set:
+    """The radius attributes `sgs_border_element_decls( $attributes, '<prefix>', ..., $options )` unpacks per tier.
+
+    The helper reads `{prefix}BorderRadius` (a bare `borderRadius` for the empty prefix) through
+    `sgs_border_radius_tiers`, so the call site never names a tier. Its `radius` option swaps the attribute for a
+    literal name, or turns the radius off with `false`. A prefix or option that is not a literal gives no evidence.
+    """
+    found = set()
+    for call in _function_call_args(text, "sgs_border_element_decls"):
+        args = _split_args(call)
+        if len(args) < 2 or args[0].strip() != "$attributes":
+            continue
+        prefix = re.fullmatch(r"['\"]([A-Za-z0-9_]*)['\"]", args[1].strip())
+        if not prefix:
+            continue
+        option = re.search(
+            r"['\"]radius['\"]\s*=>\s*(false|true|['\"]([A-Za-z0-9_]+)['\"]|[^,)\s][^,)]*)",
+            args[3] if len(args) > 3 else "",
+        )
+        if option and option.group(1) == "false":
+            continue
+        if option and option.group(2):
+            found.add(option.group(2))
+        elif option and option.group(1) != "true":
+            continue
+        else:
+            found.add(prefix.group(1) + "BorderRadius" if prefix.group(1) else "borderRadius")
+    return found
+
+
+def _function_call_args(text: str, name: str) -> list:
+    """The argument text of every `name( ... )` call, parentheses balanced."""
+    return [_balanced(text, m.end()) for m in re.finditer(r"\b" + re.escape(name) + r"\s*\(", text)]
 
 
 def context_tier_keys_from_php(path: Path) -> set:
