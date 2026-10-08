@@ -11,6 +11,9 @@
  * @package SGS\Blocks
  */
 
+use SGS\Blocks\Post_Grid_REST;
+use SGS\Blocks\Grid_Pagination;
+
 defined( 'ABSPATH' ) || exit;
 
 // --- Accessible live region for screen reader announcements.

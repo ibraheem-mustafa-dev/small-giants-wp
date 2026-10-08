@@ -11,6 +11,8 @@
  * @package SGS\Blocks
  */
 
+use SGS\Blocks\Post_Grid_REST;
+
 defined( 'ABSPATH' ) || exit;
 
 // -------------------------------------------------------------------------
