@@ -72,7 +72,8 @@
 	border-radius: 3px;
 }
 
-/* Current-store emphasis default at (0,0,0), so the link's fontWeight control wins. */
+/* Current-store emphasis default at (0,0,0). The block's fontWeight control sits on the
+   root and reaches the link by inheritance, which this direct declaration still beats. */
 :where(.sgs-store-selector__item a[aria-current="true"]) {
 	font-weight: 600;
 }

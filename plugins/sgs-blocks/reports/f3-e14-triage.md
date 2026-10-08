@@ -168,7 +168,7 @@ Verdict key: **FIX** a control cannot reach a live element. All 26 FIX declarati
 | 35 | `sgs/form` | `.sgs-form-field__file-label` | 1 | CLASS-2 | CLOSED `880aab178` | 1 | `filePrompt` surface |
 | 36 | `sgs/form` | `.sgs-form-file__progress` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
 | 37 | `sgs/google-reviews` | `.sgs-google-reviews__badge-text` | 1 | CLASS-2 | DEFENSIBLE | 1 | permanent |
-| 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | **CLOSED `9ef97b909`** | 1 | was: permanent. The weight default sits in `:where()`, so the link's `fontWeight` control wins |
+| 38 | `sgs/store-selector` | `.sgs-store-selector__item` | 1 | CLASS-2 | **CLOSED `9ef97b909`** | 1 | was: permanent. The weight default sits in `:where()`; the current link has no control of its own (the root `fontWeight` reaches it only by inheritance) |
 | 39 | `sgs/testimonial-slider` | `.sgs-testimonial-slider__pause-btn` | 1 | CLASS-2 | **CLOSED `e0a22e070`** | 1 | was: permanent. The declaration was inert (the only child sets its own size) and is removed |
 | 40 | `sgs/business-info` | `.sgs-business-info__placeholder` | 2 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |
 | 41 | `sgs/table-of-contents` | `.sgs-toc__empty` | 1 | CLASS-2 | **CLOSED `6d30835bd`** (moved to `editor.css`) | 0 | n/a |

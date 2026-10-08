@@ -86,7 +86,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
   (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). **CANNOT-RESOLVE floor:** the cart badge (2 rows; Bean accepted them as the permanent floor on 2026-10-08, verdict in §6). **Open:** the
-  4 CLASS-2 rows, all google-reviews (its session's). The slider pause icon, banner icon and close, hours time column and button note have only a `:where()` default (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+  4 CLASS-2 rows, all google-reviews (its session's). Slider pause icon, banner icon and close, hours time, button note and current store link: `:where()` default only (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
   google-reviews' accent hover shades: owned by the google-reviews session.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
