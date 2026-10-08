@@ -33,7 +33,9 @@
 	-webkit-appearance: none;
 	appearance: none;
 	text-decoration: none;
-	color: var(--sgs-cart-icon-colour, var(--wp--preset--color--primary));
+	/* Unset, the trigger takes the surrounding text colour, which the theme pairs
+	   with its surface; iconColour and the pill's scoped text rule override it. */
+	color: var(--sgs-cart-icon-colour, currentColor);
 	border-radius: 4px;
 	transition:
 		color var(--wp--custom--transition--fast, 0.15s ease);
