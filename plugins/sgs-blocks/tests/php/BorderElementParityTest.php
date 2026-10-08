@@ -93,7 +93,6 @@ final class BorderElementParityTest extends TestCase {
 		array( 'container', '' ),
 		array( 'accordion', '' ),
 		array( 'product-card', '' ),
-		array( 'social-icons', 'wrapper' ),
 		array( 'form', 'field' ),
 		array( 'tabs', '' ),
 		array( 'table-of-contents', '' ),
@@ -255,16 +254,6 @@ final class BorderElementParityTest extends TestCase {
 								'name'    => 'B',
 							),
 						),
-					),
-				),
-			),
-		),
-		'social-icons[wrapper]'     => array(
-			'attrs' => array(
-				'icons' => array(
-					array(
-						'platform' => 'facebook',
-						'url'      => 'https://example.test/fb',
 					),
 				),
 			),

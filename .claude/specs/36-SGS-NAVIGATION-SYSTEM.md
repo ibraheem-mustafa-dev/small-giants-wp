@@ -142,7 +142,7 @@ FR-36-24). Neither instance reads the other's state.
 | Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | One open/close/focus/`inert`/intent-timing utility for the disclosure (dropdown + mega) + dialog (drawer) surfaces. Framework-reusable. |
 | `sgs/cart` (extend) | block (dynamic) | Header cart — count badge + mini-cart (`displayMode` link / flyout / drawer). FR-36-19. |
 | `sgs/product-search` / `filter-search` (extend) | block (dynamic) | Predictive search combobox with four display modes. FR-36-20. |
-| `sgs/social-icons` (extend) | block | Site-wide social icon list, one source rendered in header + footer + drawer. FR-36-21. |
+| `sgs/social-icons` (rebuilt) | block | Social and contact row: a wrapper of `sgs/icon` children bound to Site Info, one source rendered in header + footer + drawer. FR-36-21. |
 | `sgs/responsive-logo` (extend) | block | The logo OBJECT (per-device image, link-home, colour treatment). Lockup, favicon-sync and variants are planned. FR-36-22. |
 | `sgs/business-info` (extend) | block | The Site-Info source of truth (name/phone/email/address/hours → header + footer + contact + schema). FR-36-23. |
 
@@ -1182,19 +1182,29 @@ command-palette modes are a native `<dialog>` DIALOG on the shared `store('sgs/n
   (products) + post (content) wiring — competitors bolt this on via premium/third-party (FiboSearch).
   Result count / no-results = a live region (WCAG 4.1.3), same as the cart.
 
-### FR-36-21 — Social icons (`sgs/social-icons`, extend)
+### FR-36-21 — Social and contact row (`sgs/social-icons`, a wrapper of `sgs/icon` children)
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
-**Status: BUILT** for accessible names, custom-SVG upload and the Site-Info source. Accessible names are
-generated per icon in `plugins/sgs-blocks/src/blocks/social-icons/render.php` ("Follow us on %s", editable
-per item, glyph `aria-hidden`); `source` is `manual` | `site-info`.
-- **MUST:** curated platform set + first-class custom-SVG upload; **accessible name per icon auto-generated +
-  editable** (verb+platform, "Follow us on Instagram"; glyph `aria-hidden` — WP core omits `aria-label` by
-  default, a citable competitor gap); external new-tab links carry `rel="noopener"` automatically
-  (`plugins/sgs-blocks/includes/helpers-link.php::sgs_link_attributes`) with `nofollow` / `sponsored` / `ugc`
-  / `noreferrer` as per-item operator `rel` tokens; open-in-new-tab default-on; size/shape/spacing controls;
-  brand vs monochrome/theme colour + hover colour; keyboard-reachable + visible focus (never hover-only
-  reveal).
+**Status: BUILT** (icon plan Phase B, `.claude/plans/2026-10-08-icon-unification-and-spacing-control.md`).
+`sgs/social-icons` is a thin wrapper (`allowedBlocks: ["sgs/icon"]`) whose children are real `sgs/icon` blocks,
+each with `metadata.bindings.linkUrl = { source: "sgs/site-info", args: { key } }` and the brand registry glyph
+(`includes/data/brand-registry.json`). The bindings name Site Info keys, never a client's URL, so the same row
+works for every client: a key left empty hides its icon for visitors, and the editor shows it dimmed with a
+notice. A new row starts with one bound icon per filled Site Info key, in registry order (phone, email, address,
+WhatsApp, Facebook, Instagram, X, LinkedIn, YouTube, TikTok, Google). The inspector's Links checklist lists every
+key with its filled or empty state: unticking hides a child without deleting it (`hiddenLinks`), ticking adds a
+missing key at the end, a filled key with no icon is flagged; List View drag reorders.
+- **MUST:** registry platform set plus any glyph per child (Lucide, WordPress icons, emoji, pasted SVG);
+  **accessible name per icon**: `sgs/icon`'s `ariaLabel`, else the registry label for the bound key
+  ("Follow us on Instagram", visually hidden text), " (opens in new tab)" for `_blank`; the row is a
+  `role="list"` named by `ariaLabel` (blank: "Social media and contact") and each child a `role="listitem"`;
+  external new-tab links carry `rel="noopener noreferrer"` automatically; group defaults set once on the row
+  (`childIcon*`: glyph size, shape, background, shape size, border, glyph / background / border colours with
+  hover and gradients, colour mode) print as the `--sgs-si-*` custom properties `sgs/icon`'s stylesheet reads
+  after the icon's own value, so an icon's own setting always wins; the row's colour mode reaches icons left on
+  Automatic through block context; brand colours (D5) apply unless the row or icon says theme, and every group
+  colour beats a brand colour; 44px targets with a visible focus ring (never hover-only reveal); the row renders
+  nothing when every child is hidden.
 - **SHOULD:** ONE site-wide list rendered in header+footer+drawer, independently styled per placement (the
   structured-data-once differentiator, FR-36-25); drag-to-reorder.
 - **NICE:** explicit Follow-vs-Share as distinct components; reduced-motion-gated hover micro-interaction;
@@ -1824,7 +1834,7 @@ The biggest meet-and-exceed lever across the pieces: structured data entered ONC
 **Site-Info source** (FR-36-23), the **single social list** (FR-36-21), and the **logo object** (FR-36-22) are
 each edited once and rendered in header + footer + drawer + (for Site-Info) `LocalBusiness` schema — no
 competitor (Kadence/Blocksy/Spectra) does this cleanly; all re-enter per placement. SGS part-has it today
-(`sgs/social-icons` `source: 'site-info'`); it becomes the explicit, spec-level differentiator across all
+(`sgs/social-icons`, whose `sgs/icon` children are bound to Site Info keys); it becomes the explicit, spec-level differentiator across all
 placements in Phase 3 (§7).
 
 **Honest scope of "entered ONCE" for the LOGO.** The logo joins this claim only through FR-36-22's

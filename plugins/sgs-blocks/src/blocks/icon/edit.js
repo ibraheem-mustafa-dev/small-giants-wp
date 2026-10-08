@@ -59,6 +59,13 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs ) {
 			style[ property ] = value;
 		}
 	} );
+	// An own flat background hides a wrapping row's group gradient in that state (render.php's twin).
+	if ( attributes.backgroundColour ) {
+		style[ '--sgs-icon-bg-image' ] = 'none';
+	}
+	if ( attributes.backgroundColourHover ) {
+		style[ '--sgs-icon-bg-hover-image' ] = 'none';
+	}
 	if ( brand.paint ) {
 		const slots = {
 			ground: '--sgs-icon-brand-ground',
@@ -136,6 +143,8 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		groupBorder && 'sgs-icon--group-border',
 		brand.brandOn && 'sgs-icon--brand',
 		fillGlyph && 'sgs-icon--fill',
+		( attributes.iconColour || attributes.iconColourGradient ) && 'sgs-icon--own-colour',
+		'brand' === iconSource && brand.glyphBrand?.glyph?.svg && 'sgs-icon--mark',
 		iconAlign && 'start' !== iconAlign && `sgs-icon--align-${ iconAlign }`,
 		( link.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
 	]

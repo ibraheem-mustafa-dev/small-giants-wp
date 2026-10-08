@@ -1,637 +1,194 @@
 <?php
 /**
- * Server-side render for the SGS Social Icons block.
+ * Server-side render for the SGS Social Icons block: a row of `sgs/icon` children (role list, each child a
+ * listitem) with group defaults.
  *
- * NO-INLINE: this block emits zero inline style property declarations.
- * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
- * --check. Base padding/margin/text-colour/background-colour/typography are
- * emitted scoped via wp_style_engine_get_styles() into the block's own
- * <style> tag, mirroring sgs/heading + sgs/quote.
+ * Group defaults (icon plan Phase B): sizes and colours print here as the `--sgs-si-*` custom properties
+ * icon/style.css reads after an icon's own value, so an icon's own setting always wins. The shape, the background
+ * switch, the border and the colour mode reach the children through block context
+ * (`block.json::providesContext`, read by `sgs_icon_group_context()`); an unticked Links key
+ * (`hiddenLinks`) makes its child render nothing. The row renders nothing when no child renders.
  *
- * Typography (font-size/weight/style/line-height) routes through the shared
- * TypographyControls editor component + `sgs_typography_css_rule()` render
- * helper, root prefix '' — emitted scoped, same mechanism as color/spacing
- * above, so the wrapper stays inline-free.
- *
- * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
- * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
- * paddingMobile/marginTablet/marginMobile object attrs, hand-built shorthand,
- * scoped @media 1023/767 (contract §B2).
+ * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
+ * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content (unused - dynamic block).
- * @var \WP_Block $block      Block instance.
+ * @var string   $content    The rendered `sgs/icon` children.
+ * @var WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// padding/margin are owned tier-object attrs {desktop,tablet,mobile}.
-// Normalise once, into fresh locals only -- never write back into
-// $attributes.
-// sgs_responsive_normalise_object() lives in helpers-responsive.php,
-// which this file's own render-helpers.php require below WOULD load --
-// but too late, since these two calls run before that require executes.
-// A block whose render.php is the first SGS block PHP to run in a request
-// (e.g. the site-header navigation bar, present on every page) would
-// otherwise fatal with "Call to undefined function". Requiring the
-// defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
-$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
-$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
-
-
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
-require_once __DIR__ . '/brand-icons.php';
 
-use SGS\Blocks\Sgs_Site_Info;
-
-$source_raw  = $attributes['source'] ?? 'manual';
-$source      = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
-$icon_size   = (int) ( $attributes['iconSize'] ?? 24 );
-$show_labels = (bool) ( $attributes['showLabels'] ?? false );
-// Icon colour is one attribute PER real CSS property (background-color / border-color / color) because the
-// resting/hover token can feed up to 3 different declarations depending on
-// `iconStyle` (plain: color; filled: background; outlined/boxed: border-color
-// + color — simultaneously, both from the same value), and a single
-// gradient-capable value can't serve all three (a gradient is not a valid
-// border-color or currentColor value).
-$icon_background                = $attributes['iconBackground'] ?? 'text-muted';
-$icon_background_hover          = $attributes['iconBackgroundHover'] ?? 'primary';
-$icon_background_gradient       = $attributes['iconBackgroundGradient'] ?? '';
-$icon_background_hover_gradient = $attributes['iconBackgroundHoverGradient'] ?? '';
-$icon_border_colour             = $attributes['iconBorderColour'] ?? 'text-muted';
-$icon_border_colour_hover       = $attributes['iconBorderColourHover'] ?? 'primary';
-$icon_border_gradient           = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
-$icon_border_gradient_hover     = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
-$icon_glyph_colour              = $attributes['iconGlyphColour'] ?? 'text-muted';
-$icon_glyph_colour_hover        = $attributes['iconGlyphColourHover'] ?? 'primary-dark';
-// Icon/SVG gradient siblings — non-empty wins over the flat glyph
-// colours above at render time (helpers-svg-gradient.php).
-$icon_glyph_colour_gradient       = $attributes['iconGlyphColourGradient'] ?? '';
-$icon_glyph_colour_hover_gradient = $attributes['iconGlyphColourHoverGradient'] ?? '';
-$colour_mode_raw                  = $attributes['colourMode'] ?? 'theme';
-$colour_mode                      = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
-$style_type_raw                   = $attributes['iconStyle'] ?? 'plain';
-$gap_raw                          = $attributes['gap'] ?? '20';
-$anchor                           = $attributes['anchor'] ?? '';
-
-
-// ---------------------------------------------------------------------------
-// Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
-// byte-identical to prior behaviour. 'site-info' pulls the same 7 networks the
-// sgs/business-info 'socials' case reads from the shared Sgs_Site_Info store
-// (Appearance > SGS Site Info), so header/footer/drawer instances stay in
-// sync with one operator setting instead of duplicated per-block URLs.
-// ---------------------------------------------------------------------------
-if ( 'site-info' === $source ) {
-	// Same network slugs + same escaping (Sgs_Site_Info::get()/get_esc_url())
-	// as the sgs/business-info 'socials' case. No `label` key is set here — the
-	// items loop below auto-generates the verb+platform accessible name
-	// (sgs_social_icons_default_label()) for every item that has no explicit
-	// label, so Site-Info-sourced icons get the SAME auto-generated names as
-	// a manual-mode icon left blank; the actual href is re-escaped via
-	// esc_url() in the render loop below exactly as it is for a manual URL.
-	$site_info_networks = array( 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google' );
-
-	$icons = array();
-	foreach ( $site_info_networks as $network_slug ) {
-		$social_url = (string) Sgs_Site_Info::get( "socials.{$network_slug}", '' );
-		if ( '' === $social_url ) {
-			continue;
-		}
-		$icons[] = array(
-			'platform' => $network_slug,
-			'url'      => $social_url,
-		);
-	}
-} else {
-	$icons = $attributes['icons'] ?? array();
-}
-
-if ( empty( $icons ) ) {
+if ( '' === trim( (string) $content ) ) {
 	return;
 }
 
-// Allowlist the style variant so it can never break out of a class/selector.
-$allowed_styles = array( 'plain', 'filled', 'outlined', 'pill', 'boxed', 'circle' );
-$style_type     = in_array( $style_type_raw, $allowed_styles, true ) ? $style_type_raw : 'plain';
+$uid      = 'sgs-si-' . substr( md5( (string) wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.sgs-social-icons';
 
-$platform_icons = array(
-	'facebook'  => 'facebook',
-	'twitter'   => 'twitter',
-	'linkedin'  => 'linkedin',
-	'instagram' => 'instagram',
-	'youtube'   => 'youtube',
-	'tiktok'    => 'music',
-	'github'    => 'github',
-	'whatsapp'  => 'message-circle',
-	'email'     => 'mail',
-	'website'   => 'globe',
-	'pinterest' => 'pin',
-	'snapchat'  => 'ghost',
-	'telegram'  => 'send',
-	'discord'   => 'message-square',
-	// 'star' is the Lucide-only fallback below (reads as the review link this
-	// channel actually points at) — never reached in practice, because
-	// `sgs_social_icons_get_brand_icon()` always resolves 'google' first
-	// (brand-icons.php); kept as the safety net if that map's entry is ever
-	// removed.
-	'google'    => 'star',
+$root_decls = array();
+$tier_decls = array(
+	'tablet' => array(),
+	'mobile' => array(),
 );
 
-$platform_labels = array(
-	'facebook'  => 'Facebook',
-	'twitter'   => 'X (Twitter)',
-	'linkedin'  => 'LinkedIn',
-	'instagram' => 'Instagram',
-	'youtube'   => 'YouTube',
-	'tiktok'    => 'TikTok',
-	'github'    => 'GitHub',
-	'whatsapp'  => 'WhatsApp',
-	'email'     => 'Email',
-	'website'   => 'Website',
-	'pinterest' => 'Pinterest',
-	'snapchat'  => 'Snapchat',
-	'telegram'  => 'Telegram',
-	'discord'   => 'Discord',
-	'google'    => 'Google',
-	'custom'    => 'this link',
-);
-
-// ---------------------------------------------------------------------------
-// FR-36-21 MUST — accessible name auto-generated (verb + platform), operator-
-// editable via the per-item `label` field. WP core omits this entirely by
-// default (aria-label-less icon links) — this is the citable competitor gap.
-// A per-item `label` value ALWAYS wins (full override, not a template slot);
-// this map only supplies the DEFAULT when the operator leaves it blank.
-// ---------------------------------------------------------------------------
-$platform_verbs = array(
-	'whatsapp' => 'Message us on WhatsApp',
-	'email'    => 'Email us',
-	'website'  => 'Visit our website',
-	'google'   => 'Read our reviews on Google',
-	'custom'   => 'Follow us',
-);
-
-// function_exists() guard: render.php is `require`'d fresh per block INSTANCE
-// (not require_once) — a second sgs/social-icons on the same page (e.g. header
-// + footer, the exact FR-36-21/FR-36-25 one-source scenario this block ships
-// for) would otherwise fatal on "cannot redeclare function".
-if ( ! function_exists( 'sgs_social_icons_default_label' ) ) {
-	/**
-	 * Build the auto-generated default accessible name for a social icon item.
-	 *
-	 * @param string $platform         Platform slug.
-	 * @param array  $platform_labels  Slug => display-name map.
-	 * @param array  $platform_verbs   Slug => full custom verb-phrase map.
-	 * @return string
-	 */
-	function sgs_social_icons_default_label( string $platform, array $platform_labels, array $platform_verbs ): string {
-		if ( isset( $platform_verbs[ $platform ] ) ) {
-			return $platform_verbs[ $platform ];
-		}
-		$display_name = $platform_labels[ $platform ] ?? ucfirst( $platform );
-		/* translators: %s: social platform name, e.g. "Instagram". */
-		return sprintf( __( 'Follow us on %s', 'sgs-blocks' ), $display_name );
+// ── Per-device group sizes and the row gap ───────────────────────────────────
+$size_tiers  = sgs_responsive_normalise_object( $attributes['childIconSize'] ?? null );
+$shape_tiers = sgs_responsive_normalise_object( $attributes['childIconShapeSize'] ?? null );
+$gap_tiers   = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
+$group_shape = (string) ( $attributes['childIconShape'] ?? '' );
+$linked      = ! array_key_exists( 'childIconShapeSizeLinked', $attributes ) || ! empty( $attributes['childIconShapeSizeLinked'] );
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+	$decls = array();
+	$size  = sgs_icon_length_value( $size_tiers[ $tier ] ?? '', 512 );
+	if ( '' !== $size ) {
+		$decls[] = '--sgs-si-size:' . $size;
+	}
+	$box     = is_array( $shape_tiers[ $tier ] ?? null ) ? $shape_tiers[ $tier ] : array();
+	$shape_w = sgs_icon_length_value( $box['width'] ?? '', 640 );
+	$shape_h = 'circle' === $group_shape || $linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
+	if ( '' !== $shape_w ) {
+		$decls[] = '--sgs-si-shape-w:' . $shape_w;
+	}
+	if ( '' !== $shape_h ) {
+		$decls[] = '--sgs-si-shape-h:' . $shape_h;
+	}
+	$gap = sgs_icon_length_value( $gap_tiers[ $tier ] ?? '', 640 );
+	if ( '' !== $gap ) {
+		$decls[] = 'gap:' . $gap;
+	}
+	if ( 'desktop' === $tier ) {
+		$root_decls = $decls;
+	} else {
+		$tier_decls[ $tier ] = $decls;
 	}
 }
 
-// Brand colours (FR-36-21 MUST — "brand vs monochrome/theme colour"). Official
-// flat brand hex per platform; used only when colourMode='brand'. Hover colour
-// stays a separate, always-theme-token control regardless of colour mode.
-$platform_brand_colours = array(
-	'facebook'  => '#1877F2',
-	'twitter'   => '#000000',
-	'linkedin'  => '#0A66C2',
-	'instagram' => '#E4405F',
-	'youtube'   => '#FF0000',
-	'tiktok'    => '#000000',
-	'github'    => '#181717',
-	'whatsapp'  => '#25D366',
-	'email'     => '#6B7280',
-	'website'   => '#6B7280',
-	'pinterest' => '#E60023',
-	'snapchat'  => '#FFFC00',
-	'telegram'  => '#26A5E4',
-	'discord'   => '#5865F2',
-	'google'    => '#4285F4',
-	'custom'    => '#6B7280',
+// ── Group colours: a custom property only for a value the client set ─────────
+$group_colours = array(
+	'childIconColour'            => '--sgs-si-colour',
+	'childIconColourHover'       => '--sgs-si-colour-hover',
+	'childIconBorderColour'      => '--sgs-si-border-colour',
+	'childIconBorderColourHover' => '--sgs-si-border-colour-hover',
 );
-
-// ---------------------------------------------------------------------------
-// Security §D sanitisers — copied verbatim from sgs/heading + sgs/container.
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Box-object interface contract §B: base padding/margin (WP-native, skip-
-// serialised) + responsive tiers (SGS custom object attrs).
-// ---------------------------------------------------------------------------
-
-$base_padding_obj = array();
-if ( ! empty( $sgs_tor_padding_desktop ) ) {
-	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
-		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-			$base_padding_obj[ $spacing_side ] = $spacing_value;
-		}
-	}
-}
-$base_margin_obj = array();
-if ( ! empty( $sgs_tor_margin_desktop ) ) {
-	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
-		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-			$base_margin_obj[ $spacing_side ] = $spacing_value;
-		}
+foreach ( $group_colours as $attr => $property ) {
+	$value = sgs_colour_value( is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '' );
+	if ( '' !== $value ) {
+		$root_decls[] = $property . ':' . $value;
 	}
 }
 
-$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
-$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
-$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
-$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-
-// WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
-$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-
-// ---------------------------------------------------------------------------
-// Scoped CSS assembly — content-hash uid is a CLASS (this block has a genuine
-// multi-child root: a row of <a> icon items, so the existing container div
-// stays; contract §B3 only forbids adding a *useless* wrapper, not removing a
-// meaningful one).
-// ---------------------------------------------------------------------------
-
-$uid      = 'sgs-soc-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel = '.' . $uid;
-
-$scoped_css = array();
-
-// --- Row gap + per-item colour custom properties. ---
-// Gap is a spacing preset slug ("20") or a custom length ("11px"), validated by
-// the shared sgs_css_length_value(); an empty or unsafe value falls back to the
-// default preset.
-$gap_css      = sgs_css_length_value( $gap_raw );
-$gap_css      = '' !== $gap_css ? $gap_css : 'var(--wp--preset--spacing--20)';
-$root_decls   = array(
-	'gap:' . $gap_css,
-);
-$root_decls   = array_merge(
+// Background: flat and gradient, resting and hover (--sgs-si-bg[-hover][-gradient], read by icon/style.css). A hover
+// colour with no hover gradient clears a resting gradient on hover, so the hover colour shows.
+$root_decls = array_merge(
 	$root_decls,
-	sgs_custom_property_gradient_decls( 'sgs-social-bg', $icon_background, $icon_background_gradient ),
-	sgs_custom_property_gradient_decls( 'sgs-social-bg-hover', $icon_background_hover, $icon_background_hover_gradient ),
-	sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) ),
-	sgs_custom_property_gradient_decls( 'sgs-social-border-hover', $icon_border_colour_hover, sgs_css_gradient_value( $icon_border_gradient_hover ) ),
-	sgs_custom_property_gradient_decls( 'sgs-social-glyph', $icon_glyph_colour, '' ),
-	sgs_custom_property_gradient_decls( 'sgs-social-glyph-hover', $icon_glyph_colour_hover, '' ),
-);
-$scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
-
-// --- Wrapper border (Block Customisation Standard) — width, style, colour (flat
-// or gradient, base + hover) and the corner radius at three tiers through the
-// shared assembler. The radius lives on the unprefixed `borderRadius`
-// attribute. Distinct from the per-item border gradient block further down
-// (that one paints EACH icon link; this frames the whole row). ---
-$wrapper_border = sgs_border_element_decls(
-	$attributes,
-	'wrapper',
-	$root_sel,
-	array(
-		'colour' => array(
-			'base'           => 'wrapperBorderColour',
-			'hover'          => 'wrapperBorderColourHover',
-			'gradient'       => 'wrapperBorderColourGradient',
-			'hover_gradient' => 'wrapperBorderColourHoverGradient',
-		),
-		'radius' => 'borderRadius',
+	sgs_custom_property_gradient_decls(
+		'sgs-si-bg',
+		(string) ( $attributes['childIconBackground'] ?? '' ),
+		(string) ( $attributes['childIconBackgroundGradient'] ?? '' ),
+		(string) ( $attributes['childIconBackgroundHover'] ?? '' ),
+		(string) ( $attributes['childIconBackgroundHoverGradient'] ?? '' )
 	)
 );
-if ( $wrapper_border['base'] ) {
-	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_border['base'] ) . ';}';
-}
-$scoped_css = array_merge( $scoped_css, $wrapper_border['rules'] );
-if ( $wrapper_border['hover'] ) {
-	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $wrapper_border['hover'] ), ':focus-within' );
-}
-if ( $wrapper_border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $wrapper_border['tablet'] ) . ';}}';
-}
-if ( $wrapper_border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $wrapper_border['mobile'] ) . ';}}';
+if ( '' !== sgs_css_gradient_value( (string) ( $attributes['childIconBackgroundGradient'] ?? '' ) ) && '' !== (string) ( $attributes['childIconBackgroundHover'] ?? '' ) && '' === sgs_css_gradient_value( (string) ( $attributes['childIconBackgroundHoverGradient'] ?? '' ) ) ) {
+	$root_decls[] = '--sgs-si-bg-hover-gradient:none';
 }
 
-// --- Border gradient (border builder) — masked ::before, the two bordered
-// styles only (outlined: circular; boxed: square — see style.css). ---
-if ( '' !== $icon_border_gradient ) {
-	$scoped_css[] = sgs_border_gradient_css(
-		"{$root_sel}.sgs-social-icons--outlined .sgs-social-icons__item, {$root_sel}.sgs-social-icons--boxed .sgs-social-icons__item",
-		$icon_border_gradient,
-		'' !== $icon_border_gradient_hover ? $icon_border_gradient_hover : sgs_colour_value( $icon_border_colour_hover ),
-		'1px'
-	);
+// ── Group border (width and style; icons with their own border keep theirs) ───
+$root_decls = array_merge( $root_decls, sgs_icon_group_border_decls( $attributes['childIconBorderWidth'] ?? array(), $attributes['childIconBorderStyle'] ?? '' ) );
+
+// ── Alignment along the row (logical, so a right-to-left site flips) ─────────
+$align = (string) ( $attributes['rowAlign'] ?? 'start' );
+if ( 'center' === $align ) {
+	$root_decls[] = 'justify-content:center';
+} elseif ( 'end' === $align ) {
+	$root_decls[] = 'justify-content:flex-end';
 }
 
-// Icon/SVG gradient — one rule per state paints every icon's stroke
-// (mirrors the single --sgs-social-glyph* custom properties above; a
-// gradient def is injected once into the FIRST rendered item's SVG below so
-// no duplicate #id exists in the DOM).
-$sgs_social_stroke_grad       = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_gradient, $uid . '-ig', "{$root_sel} .sgs-social-icons__item svg" );
-$sgs_social_stroke_grad_hover = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_hover_gradient, $uid . '-igh', "{$root_sel} .sgs-social-icons__item:hover svg" );
-if ( '' !== $sgs_social_stroke_grad['css'] ) {
-	$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad['css'] . ';}';
-}
-if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {
-	$scoped_css[] = sgs_hover_guarded_rule( "{$root_sel} .sgs-social-icons__item:hover svg", $sgs_social_stroke_grad_hover['css'] );
-}
-$sgs_social_defs_injected = false;
-
-// --- Per-icon-item size. ---
-// WCAG 2.5.8 target size: the clickable box (`.sgs-social-icons__item`) is
-// floored at 44px regardless of the requested icon size, but the SVG glyph
-// itself keeps rendering at the operator-chosen `iconSize` (fixed px, not a
-// 100%-of-parent stretch) so a small glyph gets extra transparent padding
-// instead of being blown up to fill the enlarged hit area.
-// `circle`: iconSize is the painted disc diameter (a ::before, style.css), the
-// glyph is half of it, and the item box stays >= 44px so a 38px disc keeps a
-// 44px hit area.
-$circle_glyph_size = (int) ( $attributes['circleGlyphSize'] ?? 0 );
-$glyph_size        = $icon_size;
-if ( 'circle' === $style_type ) {
-	$glyph_size = $circle_glyph_size > 0 ? min( $circle_glyph_size, $icon_size ) : (int) round( $icon_size * 0.5 );
-}
-if ( 'circle' === $style_type ) {
-	$item_size    = max( 44, $icon_size );
-	$scoped_css[] = "{$root_sel}.sgs-social-icons--circle{--sgs-social-circle:{$icon_size}px;}";
-} else {
-	$item_size = max( 44, $icon_size + ( 'plain' === $style_type ? 0 : 16 ) );
-}
-if ( $show_labels ) {
-	// A visible label needs the item box to grow with its text rather than
-	// stay a fixed icon-only square — height keeps the same touch-target
-	// maths as the icon-only box; width goes auto, horizontal padding +
-	// icon/label gap replace the icon-only box's uniform padding.
-	$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:auto;height:{$item_size}px;padding-inline:16px;gap:8px;}";
-} else {
-	$scoped_css[] = "{$root_sel} .sgs-social-icons__item{width:{$item_size}px;height:{$item_size}px;}";
-}
-$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$glyph_size}px;height:{$glyph_size}px;}";
-
-// --- Base spacing (padding/margin) + WP colour support — skip-serialised in
-// block.json, emitted scoped via the stable core style engine (contract §B). ---
-
-$base_style_engine_args = array();
-
-$base_spacing = array();
-if ( ! empty( $base_padding_obj ) ) {
-	$base_spacing['padding'] = $base_padding_obj;
-}
-if ( ! empty( $base_margin_obj ) ) {
-	$base_spacing['margin'] = $base_margin_obj;
-}
-if ( ! empty( $base_spacing ) ) {
-	$base_style_engine_args['spacing'] = $base_spacing;
+$scoped_css = array();
+if ( $root_decls ) {
+	$scoped_css[] = $root_sel . '{' . implode( ';', $root_decls ) . ';}';
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
+// ── Group glyph gradient: outline glyphs of icons with no colour of their own (a filled brand mark keeps its paint) ─
+$glyph_sel  = ' .sgs-icon:not(.sgs-icon--own-colour):not(.sgs-icon--mark) .sgs-icon__svg svg';
+$grad       = sgs_icon_gradient_css( 'lucide', (string) ( $attributes['childIconColourGradient'] ?? '' ), $uid . '-g', $root_sel . $glyph_sel );
+$grad_hover = sgs_icon_gradient_css( 'lucide', (string) ( $attributes['childIconColourHoverGradient'] ?? '' ), $uid . '-gh', $root_sel . $glyph_sel );
+if ( '' !== $grad['css'] ) {
+	$scoped_css[] = $root_sel . $glyph_sel . '{' . $grad['css'] . ';}';
 }
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
+if ( '' !== $grad_hover['css'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-icon:not(.sgs-icon--own-colour):not(.sgs-icon--mark) .sgs-icon__link', $grad_hover['css'], ':focus-visible', ' .sgs-icon__svg svg' );
 }
-if ( ! empty( $color_args ) ) {
-	$base_style_engine_args['color'] = $color_args;
-}
+$defs = $grad['defs'] . $grad_hover['defs'];
 
-if ( ! empty( $base_style_engine_args ) ) {
-	$base_scoped_styles = wp_style_engine_get_styles(
-		$base_style_engine_args,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $base_scoped_styles['css'] ) ) {
-		$scoped_css[] = $base_scoped_styles['css'];
+// ── Spacing: padding and margin around the row ───────────────────────────────
+$padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$margin_tiers  = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$spacing       = array();
+foreach ( array(
+	'padding' => $padding_tiers['desktop'],
+	'margin'  => $margin_tiers['desktop'],
+) as $family => $box ) {
+	$sides = array();
+	foreach ( is_array( $box ) ? $box : array() as $side => $value ) {
+		if ( is_string( $value ) && '' !== $value ) {
+			$sides[ $side ] = $value;
+		}
+	}
+	if ( $sides ) {
+		$spacing[ $family ] = $sides;
+	}
+}
+if ( $spacing ) {
+	$spacing_css = wp_style_engine_get_styles( array( 'spacing' => $spacing ), array( 'selector' => $root_sel ) );
+	if ( ! empty( $spacing_css['css'] ) ) {
+		$scoped_css[] = $spacing_css['css'];
+	}
+}
+foreach ( array(
+	'tablet' => '1023px',
+	'mobile' => '767px',
+) as $tier => $max ) {
+	$decls = $tier_decls[ $tier ];
+	foreach ( array( 'padding', 'margin' ) as $family ) {
+		$tiers    = 'padding' === $family ? $padding_tiers : $margin_tiers;
+		$longhand = sgs_box_object_longhands( is_array( $tiers[ $tier ] ?? null ) ? $tiers[ $tier ] : array(), $family );
+		if ( null !== $longhand ) {
+			$decls[] = $longhand;
+		}
+	}
+	if ( $decls ) {
+		$scoped_css[] = '@media(max-width:' . $max . '){' . $root_sel . '{' . implode( ';', $decls ) . ';}}';
 	}
 }
 
-// --- Responsive padding/margin tiers — hand-built shorthand, scoped @media
-// on the same wrapper selector (contract §B2: tablet 1023px, mobile 767px). ---
-$padding_tab_val = sgs_box_object_longhands( $padding_tablet_obj, 'padding' );
-$padding_mob_val = sgs_box_object_longhands( $padding_mobile_obj, 'padding' );
-$margin_tab_val  = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
-$margin_mob_val  = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
-
-$tablet_box_decls = array();
-if ( null !== $padding_tab_val ) {
-	$tablet_box_decls[] = "{$padding_tab_val}";
-}
-if ( null !== $margin_tab_val ) {
-	$tablet_box_decls[] = "{$margin_tab_val}";
-}
-if ( $tablet_box_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+$aria_label = trim( (string) ( $attributes['ariaLabel'] ?? '' ) );
+if ( '' === $aria_label ) {
+	$aria_label = __( 'Social media and contact', 'sgs-blocks' );
 }
 
-$mobile_box_decls = array();
-if ( null !== $padding_mob_val ) {
-	$mobile_box_decls[] = "{$padding_mob_val}";
-}
-if ( null !== $margin_mob_val ) {
-	$mobile_box_decls[] = "{$margin_mob_val}";
-}
-if ( $mobile_box_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+if ( $scoped_css ) {
+	// wp_strip_all_tags (not esc_html) blocks a </style> breakout and keeps CSS combinators. Every value is
+	// pre-sanitised: sgs_icon_length_value(), sgs_colour_value(), the box and border-style helpers, the style engine.
+	printf( '<style>%s</style>', wp_strip_all_tags( implode( '', $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style>.
 }
 
-// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (font-size/weight/style/line-height).
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
-
-// Alignment: the root is a flex row, so `text-align` alone cannot move the
-// icons; the textAlign control is painted as the row's justify-content.
-$sgs_si_justify_map = array(
-	'left'    => 'flex-start',
-	'center'  => 'center',
-	'right'   => 'flex-end',
-	'justify' => 'space-between',
-);
-$sgs_si_align       = (string) ( $attributes['textAlign'] ?? '' );
-if ( isset( $sgs_si_justify_map[ $sgs_si_align ] ) ) {
-	$scoped_css[] = "{$root_sel}{justify-content:{$sgs_si_justify_map[ $sgs_si_align ]};}";
-}
-
-// ---------------------------------------------------------------------------
-// Root element classes + attributes. NO 'style' key is passed to
-// get_block_wrapper_attributes() — the root carries ZERO inline property
-// declarations (contract §A); everything is in the scoped <style> above.
-// ---------------------------------------------------------------------------
-
-$root_classes = array(
-	'sgs-social-icons',
-	'sgs-social-icons--' . $style_type,
-	$uid,
-);
-if ( $show_labels ) {
-	$root_classes[] = 'sgs-social-icons--has-labels';
-}
-
-// Preset colour slugs — the `color` support is skip-serialised, so re-add the
-// standard has-* classes manually (they set the colour from the theme palette).
-if ( '' !== $preset_text_slug ) {
-	$root_classes[] = 'has-text-color';
-	$root_classes[] = 'has-' . $preset_text_slug . '-color';
-}
-if ( '' !== $preset_bg_slug ) {
-	$root_classes[] = 'has-background';
-	$root_classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
-
-$root_attr_args = array(
-	'class' => implode( ' ', $root_classes ),
-);
-if ( $anchor ) {
-	$root_attr_args['id'] = $anchor;
-}
-
-$wrapper_attributes = get_block_wrapper_attributes( $root_attr_args );
-
-$items_html   = '';
-$rendered_pos = 0;
-foreach ( $icons as $icon_item ) {
-	if ( empty( $icon_item['url'] ) ) {
-		continue;
-	}
-	++$rendered_pos;
-
-	$platform     = $icon_item['platform'] ?? 'website';
-	$label_raw    = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
-	$link_url_raw = 'email' === $platform ? 'mailto:' . $icon_item['url'] : $icon_item['url'];
-	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35)
-	// resolved via sgs_link_attributes() — opensInNewTab defaults to
-	// true when unset on an item.
-	$link_attrs_str = sgs_link_attributes(
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- wrapper attributes from WP core; $content is the rendered sgs/icon children.
+printf(
+	'<div %s>%s</div>',
+	get_block_wrapper_attributes(
 		array(
-			'url'           => $link_url_raw,
-			'opensInNewTab' => ! isset( $icon_item['opensInNewTab'] ) || (bool) $icon_item['opensInNewTab'],
-			'rel'           => $icon_item['rel'] ?? '',
+			'class'      => 'sgs-social-icons ' . $uid,
+			'role'       => 'list',
+			'aria-label' => $aria_label,
 		)
-	);
-	$custom_url     = '';
-	if ( 'custom' === $platform ) {
-		// Prefer resolving fresh from the attachment ID (survives a later media
-		// library edit/regenerate); fall back to the stored URL for a custom SVG
-		// not in the media library (external URL entered directly).
-		$custom_icon_id = absint( $icon_item['customIconId'] ?? 0 );
-		$custom_url     = $custom_icon_id ? (string) wp_get_attachment_url( $custom_icon_id ) : '';
-		if ( '' === $custom_url ) {
-			$custom_url = (string) ( $icon_item['customIconUrl'] ?? '' );
-		}
-	}
-
-	// FR-36-21 MUST — first-class custom-SVG upload. A custom item with no
-	// uploaded glyph yet falls back to the generic 'link' Lucide icon so the
-	// row never renders a blank slot mid-authoring.
-	if ( '' !== $custom_url ) {
-		// Spec 35 item 18 — default true (matches this glyph's existing,
-		// always-correct behaviour: it sits inside an aria-hidden span below,
-		// with the real accessible name on the wrapping <a>'s aria-label).
-		$icon_decorative = (bool) ( $icon_item['iconDecorative'] ?? true );
-		$custom_icon_alt = $icon_decorative ? '' : sanitize_text_field( $label_raw );
-		$glyph_html      = sprintf( '<img src="%s" alt="%s" width="%d" height="%d" />', esc_url( $custom_url ), esc_attr( $custom_icon_alt ), $icon_size, $icon_size );
-	} else {
-		// Brand-mark override (Google/WhatsApp/TikTok/X) — see brand-icons.php
-		// for why these four platforms can't use their Lucide entry as-is.
-		// Every other platform keeps resolving through the Lucide map below,
-		// unchanged.
-		// The circle style paints a brand-coloured disc behind the glyph, so the
-		// glyph must be a flat (currentColor, white) mark: the four-colour Google
-		// "G" would vanish into the red disc.
-		$brand_icon_svg = sgs_social_icons_get_brand_icon( $platform, 'circle' === $style_type ? 'theme' : $colour_mode );
-		if ( '' !== $brand_icon_svg ) {
-			$glyph_html = $brand_icon_svg;
-		} else {
-			$icon_name  = $platform_icons[ $platform ] ?? 'link';
-			$glyph_html = sgs_get_lucide_icon( $icon_name );
-		}
-		if ( ! $sgs_social_defs_injected ) {
-			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad['defs'] );
-			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad_hover['defs'] );
-			$sgs_social_defs_injected = true;
-		}
-	}
-
-	// FR-36-21 MUST — decorative glyph hidden from assistive tech (Spec 36).
-	// The link's accessible name comes solely from `aria-label` above; without
-	// this the raw <svg>/<img> is exposed a second time, doubling the
-	// announcement in some screen readers. Matches the house pattern used by
-	// sgs/cart (`<span class="sgs-cart__icon" aria-hidden="true">`) and
-	// sgs/business-info.
-	// Descendant selectors only (`.sgs-social-icons__item svg`/`img` in
-	// style.css + the scoped per-instance <style> below) so the extra span
-	// changes nothing visually.
-	$glyph_html = sprintf( '<span class="sgs-social-icons__icon" aria-hidden="true">%s</span>', $glyph_html );
-
-	// FR-36-21 MUST — brand vs monochrome/theme colour. Brand mode overrides
-	// ONLY the resting colour per item (nth-child, no inline style, contract
-	// §A); hover colour stays the single theme-token control in both modes.
-	if ( 'brand' === $colour_mode ) {
-		// Overrides all THREE resting custom properties for this item (not just
-		// glyph colour), so a per-item brand hex reaches background/border/glyph
-		// whichever property the active iconStyle uses.
-		$brand_hex    = $platform_brand_colours[ $platform ] ?? $platform_brand_colours['custom'];
-		$brand_value  = sgs_colour_value( $brand_hex );
-		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$brand_value};--sgs-social-border:{$brand_value};--sgs-social-glyph:{$brand_value};}";
-	}
-
-	// Per-item colour override (icons[].colour / .colourHover): wins over the
-	// brand/theme value for this item only, scoped nth-child, no inline style.
-	$item_colour       = isset( $icon_item['colour'] ) && is_string( $icon_item['colour'] ) ? trim( $icon_item['colour'] ) : '';
-	$item_colour_hover = isset( $icon_item['colourHover'] ) && is_string( $icon_item['colourHover'] ) ? trim( $icon_item['colourHover'] ) : '';
-	if ( '' !== $item_colour ) {
-		$item_value   = sgs_colour_value( $item_colour );
-		$scoped_css[] = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg:{$item_value};--sgs-social-border:{$item_value};--sgs-social-glyph:{$item_value};}";
-	}
-	if ( '' !== $item_colour_hover ) {
-		$item_hover_value = sgs_colour_value( $item_colour_hover );
-		$scoped_css[]     = "{$root_sel} .sgs-social-icons__item:nth-child({$rendered_pos}){--sgs-social-bg-hover:{$item_hover_value};--sgs-social-border-hover:{$item_hover_value};--sgs-social-glyph-hover:{$item_hover_value};}";
-	}
-
-	if ( $show_labels ) {
-		// The visible label IS the accessible name once it renders — no
-		// aria-label alongside it (would double-announce the same string).
-		$label_html  = sprintf( '<span class="sgs-social-icons__label">%s</span>', esc_html( $label_raw ) );
-		$items_html .= sprintf(
-			'<a%s class="sgs-social-icons__item">%s%s</a>',
-			$link_attrs_str,
-			$glyph_html,
-			$label_html
-		);
-	} else {
-		$items_html .= sprintf(
-			'<a%s class="sgs-social-icons__item" aria-label="%s">%s</a>',
-			$link_attrs_str,
-			esc_attr( $label_raw ),
-			$glyph_html
-		);
-	}
-}
-
-// Per-item custom-SVG <img> glyph sizing — mirrors the existing SVG glyph
-// rule so an uploaded image renders at the same operator-chosen iconSize.
-$scoped_css[] = "{$root_sel} .sgs-social-icons__item img{width:{$icon_size}px;height:{$icon_size}px;}";
-?>
-<?php if ( $scoped_css ) : ?>
-	<?php
-	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
-	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() /
-	// allowlists / wp_style_engine_get_styles / sgs_colour_value), so no
-	// un-sanitised value survives here.
-	?>
-<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
-<?php endif; ?>
-<?php printf( '<div %s>%s</div>', $wrapper_attributes, $items_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from get_block_wrapper_attributes(); $items_html built from esc_url/esc_attr'd fragments + trusted SVG. ?>
+	),
+	( '' !== $defs ? '<svg class="sgs-social-icons__defs" aria-hidden="true" focusable="false">' . $defs . '</svg>' : '' ) . $content
+);
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -326,7 +326,7 @@
 				"manual",
 				"product-brands"
 			],
-			"description": "Where the brand list comes from. 'manual' is the existing hand-typed logos[] repeater (unchanged default — existing sites render identically). 'product-brands' queries WooCommerce's core `product_brand` taxonomy live and ignores logos[]. Naming follows the block.json 'source' convention already used by sgs/card-grid, sgs/social-icons and sgs/icon-list (never 'sourceMode', which is a distinct semantic reserved for sgs/product-card's live-configurator modes)."
+			"description": "Where the brand list comes from. 'manual' is the existing hand-typed logos[] repeater (unchanged default — existing sites render identically). 'product-brands' queries WooCommerce's core `product_brand` taxonomy live and ignores logos[]. Naming follows the block.json 'source' convention already used by sgs/card-grid and sgs/icon-list (never 'sourceMode', which is a distinct semantic reserved for sgs/product-card's live-configurator modes)."
 		},
 		"brandOrder": {
 			"type": "string",

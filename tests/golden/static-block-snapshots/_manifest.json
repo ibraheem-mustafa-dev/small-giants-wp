@@ -109,7 +109,7 @@
     "sgs/post-grid": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/pricing-table": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/reading-progress": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
-    "sgs/social-icons": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/social-icons": "No snapshot needed: save emits only InnerBlocks.Content (the sgs/icon children, each dynamic with a null save), no wrapper markup (sgs_db_type=dynamic)",
     "sgs/star-rating": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
     "sgs/tab": "No snapshot needed: save returns null (sgs_db_type=static)",
     "sgs/table-of-contents": "No snapshot needed: save returns null (sgs_db_type=dynamic)",

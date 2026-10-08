@@ -2117,13 +2117,6 @@
 			}
 		},
 		{
-			"slug": "sgs/social-icons",
-			"attr": "icons",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
 			"slug": "sgs/team-member",
 			"attr": "socialLinks",
 			"fields": {
@@ -6874,6 +6867,90 @@
 				"css_property": "mix-blend-mode"
 			},
 			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconColour",
+			"fields": {
+				"css_property": "color",
+				"css_element": "shape"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconColourHover",
+			"fields": {
+				"css_property": "color",
+				"css_element": "shape",
+				"css_state": "hover"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconBackground",
+			"fields": {
+				"css_property": "background-color",
+				"css_element": "shape"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconBackgroundHover",
+			"fields": {
+				"css_property": "background-color",
+				"css_element": "shape",
+				"css_state": "hover"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconBorderColour",
+			"fields": {
+				"css_property": "border-color",
+				"css_element": "shape"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconBorderColourHover",
+			"fields": {
+				"css_property": "border-color",
+				"css_element": "shape",
+				"css_state": "hover"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconBorderWidth",
+			"fields": {
+				"css_property": "border-width",
+				"css_element": "shape"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconSize",
+			"fields": {
+				"css_property": "width",
+				"css_element": "glyph"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconShapeSize",
+			"fields": {
+				"css_property": "width",
+				"css_element": "shape"
+			},
+			"_why": "sgs/social-icons/render.php prints this group default as a --sgs-si-* custom property on the row; it is resolved to the real CSS property only inside sgs/icon's style.css (.sgs-icon__shape / .sgs-icon__svg read --sgs-si-* after the icon's own value), a cross-block custom-property hand-off the per-block classifier scan never crosses (the sgs/multi-button childBtn* precedent)."
 		}
 	]
 }

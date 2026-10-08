@@ -1,9 +1,9 @@
 <?php
 /**
- * Render helpers for sgs/icon: the length allowlist its scoped CSS accepts, its link's accessible name, and whether
- * a render is the editor's.
+ * Render helpers for sgs/icon: the length allowlist its scoped CSS accepts, its link's accessible name, whether a
+ * render is the editor's, and the group defaults a wrapping `sgs/social-icons` row hands its icons.
  *
- * Shared by `src/blocks/icon/render.php` and the `sgs/social-icons` wrapper that groups icons (icon plan Phase B).
+ * Shared by `src/blocks/icon/render.php` and `src/blocks/social-icons/render.php`.
  *
  * @package SGS\Blocks
  */
@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-css-safety.php';
 require_once __DIR__ . '/helpers-brand-glyphs.php';
+require_once __DIR__ . '/helpers-box.php';
+require_once __DIR__ . '/helpers-border-style.php';
 
 if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 	/**
@@ -129,5 +131,52 @@ if ( ! function_exists( 'sgs_icon_is_editor_render' ) ) {
 		}
 		$context = isset( $_GET['context'] ) && is_string( $_GET['context'] ) ? strtolower( (string) preg_replace( '/[^a-z]/i', '', $_GET['context'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read-only context flag, reduced to letters; the capability check decides.
 		return 'edit' === $context && function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_group_context' ) ) {
+	/**
+	 * The group defaults a wrapping `sgs/social-icons` hands its `sgs/icon` children through block context
+	 * (`social-icons/block.json::providesContext`). The row is present when its colour-mode key is in the context:
+	 * the attribute has a default, so core always passes it.
+	 *
+	 * @param mixed $context The icon's block context (`$block->context`).
+	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool}
+	 */
+	function sgs_icon_group_context( $context ): array {
+		$context  = is_array( $context ) ? $context : array();
+		$in_group = array_key_exists( 'sgs/socialIconsColourMode', $context );
+		$mode     = (string) ( $context['sgs/socialIconsColourMode'] ?? '' );
+		$hidden   = is_array( $context['sgs/socialIconsHiddenLinks'] ?? null ) ? array_values( array_filter( $context['sgs/socialIconsHiddenLinks'], 'is_string' ) ) : array();
+		$shape    = (string) ( $context['sgs/socialIconsShape'] ?? '' );
+		$width    = is_array( $context['sgs/socialIconsBorderWidth'] ?? null ) ? $context['sgs/socialIconsBorderWidth'] : array();
+		return array(
+			'in_group'    => $in_group,
+			'colour_mode' => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
+			'hidden'      => $hidden,
+			'shape'       => in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : '',
+			'show_bg'     => ! empty( $context['sgs/socialIconsShowBackground'] ),
+			'border'      => array() !== sgs_icon_group_border_decls( $width, $context['sgs/socialIconsBorderStyle'] ?? '' ),
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_group_border_decls' ) ) {
+	/**
+	 * The group border a `sgs/social-icons` row gives its icons, as the custom properties icon/style.css reads
+	 * (`--sgs-si-border-width`, `--sgs-si-border-style`), or none. A width with no chosen style paints solid; no width,
+	 * or the style `none`, paints nothing. Editor twin: `sgsBorderPreview()` (border-preview.js) in social-icons/edit.js.
+	 *
+	 * @param mixed $width_box Stored `{top,right,bottom,left}` widths.
+	 * @param mixed $style     Stored border style.
+	 * @return string[] Declarations.
+	 */
+	function sgs_icon_group_border_decls( $width_box, $style ): array {
+		$width = sgs_box_object_shorthand( is_array( $width_box ) ? $width_box : array() );
+		$style = sgs_border_style_keyword( $style );
+		if ( null === $width || 'none' === $style ) {
+			return array();
+		}
+		return array( '--sgs-si-border-width:' . $width, '--sgs-si-border-style:' . $style );
 	}
 }

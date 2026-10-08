@@ -200,8 +200,8 @@ if ( ! function_exists( 'sgs_header_ink_mode_rule' ) ) {
 			$inherit   = '{color:inherit !important;-webkit-text-fill-color:currentColor !important;}';
 			$css      .= sgs_header_ink_not_hover_rule( $hoverable, $inherit )
 				. $on . ' .wp-block-sgs-business-info:not(.is-style-button),' . $on . ' .sgs-cart,'
-				. $on . ' .sgs-social-icons:not(.sgs-social-icons--filled):not(.sgs-social-icons--pill) .sgs-social-icons__item'
-				. '{--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-social-glyph:currentColor !important;}';
+				. $on . ' .sgs-social-icons .sgs-icon:not(.sgs-icon--has-bg)'
+				. '{--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-icon-colour:currentColor !important;}';
 		}
 
 		if ( 'tone-fill' === $mode || 'tone-fill-transparent' === $mode ) {

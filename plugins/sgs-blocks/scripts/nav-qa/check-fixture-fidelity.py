@@ -27,7 +27,7 @@ HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[3]
 DEFAULT_PLAN = HERE / "poc-content-plan.json"
 DEFAULT_LABELS = REPO_ROOT / ".claude" / "reports" / "2026-07-28-drawer-code-extraction"
-NON_COPY_KEYS = {"url", "link", "platform", "iconSource", "iconName"}
+NON_COPY_KEYS = {"url", "link", "linkUrl", "platform", "iconSource", "iconName", "brandName", "block"}
 
 
 class InputError(Exception):
@@ -131,7 +131,7 @@ def check_variant(variant: dict, harvests: dict, limits: list) -> dict:
             f"label '{text}' " + ("differs" if not found else "differs [KNOWN-LIMIT]"))
     if not row["missing"] and not row["extra"] and labels != expected:
         row["failures"].append(f"label order differs: plan {labels} vs harvest {expected}")
-    pieces = collect_copy([c.get("attrs", {}) for c in variant.get("children", [])], [])
+    pieces = collect_copy([[c.get("attrs", {}), c.get("innerBlocks", [])] for c in variant.get("children", [])], [])
     sec_fail, row["not_carried"], row["skipped"] = check_secondary(desktop, pieces, limits, key)
     for message in sec_fail:
         (row["known_limits"] if "[KNOWN-LIMIT]" in message else row["failures"]).append(message)

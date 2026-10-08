@@ -22,7 +22,6 @@ final class SGS_Blocks {
 
 	private function __construct() {
 		add_action( 'init', [ $this, 'register_blocks' ] );
-		add_action( 'init', [ $this, 'register_block_styles' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
 		// STYLES are a separate hook from the editor SCRIPT above, deliberately.
@@ -587,22 +586,5 @@ final class SGS_Blocks {
 				SGS_BLOCKS_VERSION
 			);
 		}
-	}
-
-	/**
-	 * Register block style variations for SGS blocks.
-	 *
-	 * Styles are registered here so the compiled block style-index.css
-	 * (which is enqueued automatically by register_block_type) loads the
-	 * scoped CSS for each variation without a separate stylesheet.
-	 */
-	public function register_block_styles(): void {
-		register_block_style(
-			'sgs/social-icons',
-			array(
-				'name'  => 'social-icons-footer',
-				'label' => __( 'Footer (plain, light)', 'sgs-blocks' ),
-			)
-		);
 	}
 }

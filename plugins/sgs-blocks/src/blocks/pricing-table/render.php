@@ -207,7 +207,7 @@ foreach ( $plans as $plan_index => $plan ) {
 	// scoped rule on the block root. FR-32-4 (D345) forbids inline
 	// `style="--x:y"`; instead the resolved colour is emitted into a
 	// `:nth-child(N)` scoped rule (same mechanism as
-	// sgs/social-icons' per-item brand colour, social-icons/render.php ~458) —
+	// sgs/trust-bar's per-item badge colour) —
 	// N is this plan's 1-based position among ALL plan cards (every plan
 	// renders its `.sgs-pricing-table__plan` wrapper unconditionally, so the
 	// position is stable regardless of which plans show a ribbon). style.css /

@@ -17,6 +17,14 @@
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "heart",
+	"usesContext": [
+		"sgs/socialIconsColourMode",
+		"sgs/socialIconsHiddenLinks",
+		"sgs/socialIconsShape",
+		"sgs/socialIconsShowBackground",
+		"sgs/socialIconsBorderWidth",
+		"sgs/socialIconsBorderStyle"
+	],
 	"supports": {
 		"align": [
 			"left",

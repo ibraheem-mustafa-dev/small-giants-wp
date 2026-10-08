@@ -1450,7 +1450,7 @@
         "sgs-social-icons",
         "wp-block-sgs-social-icons"
       ],
-      "tag": "section"
+      "tag": "div"
     },
     "source": "sgs"
   },

@@ -115,29 +115,6 @@ const TARGET_ROWS = [
 			"\t$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );\n" +
 			'}',
 	},
-	{
-		block: 'social-icons',
-		attr: 'iconGlyphColourGradient+Hover',
-		note: 'Consistency swap — lucide-only, no functional bug (Bean’s direction: match the shared convention). Both base AND hover still on the old call; the custom (uploaded image) icon platform is a separate, unfixable-here gap (no <svg>/<span> to paint) — not touched by this row.',
-		oldStmt:
-			"$sgs_social_stroke_grad       = sgs_svg_stroke_gradient( $icon_glyph_colour_gradient, $uid . '-ig' );\n" +
-			"$sgs_social_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_glyph_colour_hover_gradient, $uid . '-igh' );\n" +
-			"if ( '' !== $sgs_social_stroke_grad['css'] ) {\n" +
-			'\t$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad[\'css\'] . \';}\';\n' +
-			'}\n' +
-			"if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {\n" +
-			'\t$scoped_css[] = sgs_hover_guarded_rule( "{$root_sel} .sgs-social-icons__item:hover svg", $sgs_social_stroke_grad_hover[\'css\'] );\n' +
-			'}',
-		newStmt:
-			'$sgs_social_stroke_grad       = sgs_icon_gradient_css( \'lucide\', $icon_glyph_colour_gradient, $uid . \'-ig\', "{$root_sel} .sgs-social-icons__item svg" );\n' +
-			'$sgs_social_stroke_grad_hover = sgs_icon_gradient_css( \'lucide\', $icon_glyph_colour_hover_gradient, $uid . \'-igh\', "{$root_sel} .sgs-social-icons__item:hover svg" );\n' +
-			"if ( '' !== $sgs_social_stroke_grad['css'] ) {\n" +
-			'\t$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad[\'css\'] . \';}\';\n' +
-			'}\n' +
-			"if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {\n" +
-			'\t$scoped_css[] = sgs_hover_guarded_rule( "{$root_sel} .sgs-social-icons__item:hover svg", $sgs_social_stroke_grad_hover[\'css\'] );\n' +
-			'}',
-	},
 ];
 
 // Rows in this backlog that do NOT match this shape — named so nobody

@@ -222,7 +222,7 @@ function sgs_svg_inject_defs( string $svg_markup, string $defs ): string {
 
 /**
  * Icon gradient composer — the ONE call site every icon-source-aware block
- * (`sgs/icon`, and eventually icon-list/notice-banner/trust-bar/social-icons/
+ * (`sgs/icon`, `sgs/social-icons`' group glyph gradient, and eventually icon-list/notice-banner/trust-bar/
  * button/cart/google-reviews/accordion-item/business-info/star-rating, all of
  * which share `IconPicker`'s 4-source contract) should make instead of
  * hand-rolling the branch itself.

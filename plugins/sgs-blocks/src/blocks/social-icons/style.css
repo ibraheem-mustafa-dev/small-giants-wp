@@ -1,183 +1,25 @@
-/* ===== SGS Social Icons ===== */
+/* ===== SGS Social Icons — style.css =====
+ *
+ * Markup (render.php): root .sgs-social-icons (role list) > sgs/icon children (role listitem).
+ * The row is a wrapping flex row; render.php's scoped rule sets the gap and alignment per device and the
+ * --sgs-si-* group defaults that icon/style.css reads after each icon's own value.
+ */
 
 .sgs-social-icons {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
 }
 
-.sgs-social-icons__item {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	/* WCAG 2.5.8 target size floor — the scoped per-block <style> (render.php)
-	 * sets the authoritative width/height, but min-width/min-height stay here
-	 * as a safety net for any style variant (e.g. the footer variation below)
-	 * that sets an explicit smaller width/height: the glyph can render small,
-	 * the clickable hit area never can. */
-	min-width: 44px;
-	min-height: 44px;
-	color: var(--sgs-social-glyph, currentColor);
-	text-decoration: none;
-	transition: var(--wp--custom--transition--fast, 0.15s ease);
+.sgs-social-icons > .wp-block-sgs-icon {
+	margin: 0;
 }
 
-.sgs-social-icons__item svg {
-	display: block;
-	/* Fixed glyph size set by the scoped per-block <style> (render.php); this
-	 * 100% fallback only applies before that scoped rule loads/matches. */
-	width: 100%;
-	height: 100%;
-	/* showLabels: the icon does not fill the whole item box
-	 * once a label sits beside it -- flex-shrink:0 keeps the glyph at its
-	 * fixed render.php-set size instead of the flex row squashing it. */
-	flex-shrink: 0;
-}
-
-/* showLabels -- a real visible text label beside
- * the icon (e.g. "Instagram", "WhatsApp"). Colour/typography
- * are inherited from the item's own colour token + the wrapper's typography
- * attrs (sgs_typography_css_rule()) -- no separate label-colour attribute,
- * matching this block's one-colour-per-state contract. */
-.sgs-social-icons__label {
-	white-space: nowrap;
-}
-
-.sgs-social-icons__item:hover {
-	color: var(--sgs-social-glyph-hover, currentColor);
-	transform: scale(1.1);
-}
-
-.sgs-social-icons__item:focus-visible {
-	outline: 2px solid var(--wp--custom--focus-ring--color-primary, var(--wp--preset--color--accent));
-	outline-offset: 2px;
-	border-radius: 4px;
-}
-
-/* Filled style */
-.sgs-social-icons--filled .sgs-social-icons__item {
-	background: var(--sgs-social-bg);
-	background-image: var(--sgs-social-bg-gradient, none);
-	color: var(--wp--preset--color--text-inverse, #fff);
-	border-radius: 50%;
-	padding: 8px;
-}
-
-.sgs-social-icons--filled .sgs-social-icons__item:hover {
-	background: var(--sgs-social-bg-hover);
-	background-image: var(--sgs-social-bg-hover-gradient, none);
-}
-
-/* Outlined style */
-.sgs-social-icons--outlined .sgs-social-icons__item {
-	border: 1px solid var(--sgs-social-border);
-	border-radius: 50%;
-	padding: 8px;
-}
-
-.sgs-social-icons--outlined .sgs-social-icons__item:hover {
-	border-color: var(--sgs-social-border-hover);
-	color: var(--sgs-social-glyph-hover);
-}
-
-/* Boxed style — outlined's square sibling. A bordered square box around
- * each glyph (e.g. a footer + mobile-menu social row),
- * rather than outlined's circle. Reads the same --sgs-social-border custom
- * property as outlined; the only difference is border-radius. */
-.sgs-social-icons--boxed .sgs-social-icons__item {
-	border: 1px solid var(--sgs-social-border);
-	border-radius: 0;
-	padding: 8px;
-}
-
-.sgs-social-icons--boxed .sgs-social-icons__item:hover {
-	border-color: var(--sgs-social-border-hover);
-	color: var(--sgs-social-glyph-hover);
-}
-
-/* Circle style. A brand/ground-coloured disc of --sgs-social-circle diameter
- * (= iconSize) painted by ::before and centred in an item box that stays
- * >= 44px, so a 38px disc keeps a WCAG 2.5.8 hit area. Reads the same
- * --sgs-social-bg property as filled/pill (brand mode sets it per item). */
-.sgs-social-icons--circle .sgs-social-icons__item {
-	position: relative;
-	isolation: isolate;
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-.sgs-social-icons--circle .sgs-social-icons__item::before {
-	content: "";
+/* Holds the group glyph gradient's definitions (render.php); takes no room in the row. */
+.sgs-social-icons__defs {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: -1;
-	width: var(--sgs-social-circle, 38px);
-	height: var(--sgs-social-circle, 38px);
-	transform: translate(-50%, -50%);
-	border-radius: 50%;
-	background: var(--sgs-social-bg);
-	background-image: var(--sgs-social-bg-gradient, none);
-	transition: inherit;
-}
-
-.sgs-social-icons--circle .sgs-social-icons__item:hover {
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-.sgs-social-icons--circle .sgs-social-icons__item:hover::before {
-	background: var(--sgs-social-bg-hover);
-	background-image: var(--sgs-social-bg-hover-gradient, none);
-}
-
-/* Pill style. Reads the same --sgs-social-bg custom property as the other
- * shaped styles (filled/outlined/pill); render.php emits it from
- * iconBackground/iconBackgroundGradient, so an operator's chosen background
- * colour applies to a pill-styled row. */
-.sgs-social-icons--pill .sgs-social-icons__item {
-	background: var(--sgs-social-bg, var(--wp--preset--color--surface-alt, #f5f7f7));
-	background-image: var(--sgs-social-bg-gradient, none);
-	border-radius: 999px;
-	padding: 8px;
-}
-
-.sgs-social-icons--pill .sgs-social-icons__item:hover {
-	background: var(--sgs-social-bg-hover);
-	background-image: var(--sgs-social-bg-hover-gradient, none);
-	color: var(--wp--preset--color--text-inverse, #fff);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-social-icons__item {
-		transition: none;
-	}
-}
-
-/* Footer variation — plain icons, no background, light colour, hover accent
- * Replicates the Astra footer social icon style from the reference site:
- * 25px SVG, transparent bg, inherits footer text colour, accent on hover.
- */
-.is-style-social-icons-footer.sgs-social-icons {
-	gap: 15px; /* matches lightsalmon reference: 7.5px margin each side */
-}
-
-.is-style-social-icons-footer .sgs-social-icons__item {
-	background: none;
-	border: none;
-	border-radius: 0;
-	padding: 0;
-	width: 25px;
-	height: 25px;
-	color: currentColor; /* inherits footer text colour */
-	transition: color 0.2s ease, transform 0.1s ease;
-}
-
-.is-style-social-icons-footer .sgs-social-icons__item svg {
-	width: 25px;
-	height: 25px;
-}
-
-.is-style-social-icons-footer .sgs-social-icons__item:hover {
-	color: var(--wp--preset--color--accent, #F87A1F);
-	opacity: 1;
-	transform: scale(1.1);
+	inline-size: 0;
+	block-size: 0;
+	overflow: hidden;
 }

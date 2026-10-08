@@ -17,6 +17,11 @@
  * A link bound to a Site Info key that holds nothing renders nothing for a visitor (step 8); the editor shows it
  * dimmed with a notice instead.
  *
+ * Inside an `sgs/social-icons` row (block context, `sgs_icon_group_context()`): the root is a listitem; a key the row's
+ * Links checklist unticked renders nothing; colour mode `inherit` takes the row's mode; a square (the default shape)
+ * takes the row's shape; the row can switch the background on and give every icon a border, and an icon's own border
+ * wins.
+ *
  * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
  * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
  *
@@ -40,6 +45,10 @@ $bound_link_key   = (string) sgs_bound_site_info_key( is_object( $sgs_icon_block
 $is_editor_render = sgs_icon_is_editor_render();
 $is_hidden_empty  = '' !== $bound_link_key && sgs_bound_site_info_is_empty( $sgs_icon_block, 'linkUrl' );
 if ( $is_hidden_empty && ! $is_editor_render ) {
+	return;
+}
+$group = sgs_icon_group_context( $block->context ?? array() );
+if ( $group['in_group'] && '' !== $bound_link_key && in_array( $bound_link_key, $group['hidden'], true ) ) {
 	return;
 }
 
@@ -71,14 +80,20 @@ $key_brand    = '' !== $bound_link_key ? sgs_brand_by_site_info_key( $bound_link
 $colour_brand = null !== $key_brand && '' !== $key_brand['colour'] ? $key_brand : ( null !== $glyph_brand && '' !== $glyph_brand['colour'] ? $glyph_brand : null );
 $colour_mode  = (string) ( $attributes['colourMode'] ?? 'inherit' );
 $colour_mode  = in_array( $colour_mode, array( 'inherit', 'theme', 'brand' ), true ) ? $colour_mode : 'inherit';
-$brand_on     = 'theme' !== $colour_mode && null !== $colour_brand;
-$draw_fixed   = $brand_on && 'brand' === $icon_source && null !== $glyph_brand && $glyph_brand['slug'] === $colour_brand['slug'] && ! empty( $glyph_brand['glyphBrand'] );
-$brand_paint  = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed ) : null;
+if ( 'inherit' === $colour_mode && $group['in_group'] ) {
+	$colour_mode = $group['colour_mode'];
+}
+$brand_on    = 'theme' !== $colour_mode && null !== $colour_brand;
+$draw_fixed  = $brand_on && 'brand' === $icon_source && null !== $glyph_brand && $glyph_brand['slug'] === $colour_brand['slug'] && ! empty( $glyph_brand['glyphBrand'] );
+$brand_paint = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed ) : null;
 
 // ── Shape, background, border ────────────────────────────────────────────────
-$shape   = (string) ( $attributes['shape'] ?? 'square' );
-$shape   = in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : 'square';
-$show_bg = ! empty( $attributes['showBackground'] ) || $brand_on;
+$shape = (string) ( $attributes['shape'] ?? 'square' );
+$shape = in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : 'square';
+if ( 'square' === $shape && '' !== $group['shape'] ) {
+	$shape = $group['shape'];
+}
+$show_bg = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
 
 // ── Link ─────────────────────────────────────────────────────────────────────
 $link_url    = trim( (string) ( $attributes['linkUrl'] ?? '' ) );
@@ -121,7 +136,8 @@ if ( 'square' !== $shape ) {
 		$border[ $border_tier ] = array_values( preg_grep( '/radius\s*:/', $border[ $border_tier ], PREG_GREP_INVERT ) );
 	}
 }
-$has_border = (bool) preg_grep( '/^border(-(top|right|bottom|left))?-width\s*:/', array_merge( $border['base'], $border['tablet'], $border['mobile'] ) );
+$has_border   = (bool) preg_grep( '/^border(-(top|right|bottom|left))?-width\s*:/', array_merge( $border['base'], $border['tablet'], $border['mobile'] ) );
+$group_border = ! $has_border && $group['border'];
 
 $icon_align = (string) ( $attributes['iconAlign'] ?? 'start' );
 $icon_align = in_array( $icon_align, array( 'start', 'center', 'end' ), true ) ? $icon_align : 'start';
@@ -129,11 +145,21 @@ $classes    = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source, 'sgs-icon--
 if ( $show_bg ) {
 	$classes[] = 'sgs-icon--has-bg';
 }
-if ( $show_bg || $has_border ) {
+if ( $show_bg || $has_border || $group_border ) {
 	$classes[] = 'sgs-icon--boxed';
+}
+if ( $group_border ) {
+	$classes[] = 'sgs-icon--group-border';
 }
 if ( $brand_on ) {
 	$classes[] = 'sgs-icon--brand';
+}
+// A wrapping row's group glyph gradient skips an icon with a colour of its own and a filled mark.
+if ( '' !== (string) ( $attributes['iconColour'] ?? '' ) || '' !== (string) ( $attributes['iconColourGradient'] ?? '' ) ) {
+	$classes[] = 'sgs-icon--own-colour';
+}
+if ( 'fill' === $glyph_kind ) {
+	$classes[] = 'sgs-icon--mark';
 }
 if ( ! empty( $attributes['iconFill'] ) && 'fill' !== $glyph_kind && in_array( $icon_source, array( 'lucide', 'brand', 'wp-icon', 'custom' ), true ) ) {
 	$classes[] = 'sgs-icon--fill';
@@ -189,6 +215,13 @@ foreach ( $own_colours as $attr => $property ) {
 	if ( '' !== $value ) {
 		$root_decls[] = $property . ':' . $value;
 	}
+}
+// An own flat background (resting or hover) hides a wrapping row's group gradient in that state.
+if ( '' !== (string) ( $attributes['backgroundColour'] ?? '' ) ) {
+	$root_decls[] = '--sgs-icon-bg-image:none';
+}
+if ( '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ) {
+	$root_decls[] = '--sgs-icon-bg-hover-image:none';
 }
 
 if ( null !== $brand_paint ) {
@@ -356,7 +389,8 @@ if ( 'dashicon' === $icon_source ) {
 	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $icon_grad_hover['defs'] );
 	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
 }
-$output = '<span class="sgs-icon__shape">' . $glyph_html . '</span>';
+$image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
+$output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $glyph_html . '</span>';
 
 // ── Accessible name and link (step 10) ───────────────────────────────────────
 $wrapper_extra = array( 'class' => implode( ' ', $classes ) );
@@ -375,10 +409,13 @@ if ( '' !== $link_url ) {
 		$output,
 		$label_html
 	);
-} elseif ( '' !== $aria_label ) {
-	// An unlinked icon with a label is an image with that name; without one it is decorative.
+} elseif ( '' !== $aria_label && ! $group['in_group'] ) {
+	// An unlinked icon with a label is an image with that name (inside a row, its shape is); without one it is decorative.
 	$wrapper_extra['role']       = 'img';
 	$wrapper_extra['aria-label'] = $aria_label;
+}
+if ( $group['in_group'] ) {
+	$wrapper_extra['role'] = 'listitem';
 }
 
 if ( $scoped_css ) {

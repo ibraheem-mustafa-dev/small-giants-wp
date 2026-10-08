@@ -339,7 +339,7 @@ enforcement stack.
 - [x] **State capability via `SgsColourPanel`'s tab-toggle mechanism** — blocks pass `states:` to the
       colour control (`DesignTokenPicker.js`). There is no separate state-toggle component (Part I)
 - [x] **decorative-image + ARIA-label where needed** — rule `18-decorative-image-aria` (advisory).
-      `sgs/cta-section`, `sgs/nav-drawer` and `sgs/social-icons` carry real toggles + ARIA wiring;
+      `sgs/cta-section` and `sgs/nav-drawer` carry real toggles + ARIA wiring;
       `sgs/media`'s `imageDecorative` and `sgs/decorative-image`'s hardcoded `aria-hidden` complete it
 - [x] **help text linked via `aria-describedby`** (Part F) — rule `44-help-text-not-described`
       (advisory, whole-tree scope — its candidates are shared `src/components/*.js` files, not one

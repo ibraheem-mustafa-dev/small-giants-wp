@@ -17,8 +17,8 @@
  * line-endpoint conversion, colour-stop parsing) so a client setting an icon
  * or star colour to a gradient sees it on the canvas instead of a flat/blank
  * preview — CHECK A (`check-editor-render-parity.js`) flags exactly this gap
- * for `sgs/social-icons` `iconGlyphColourGradient` and `sgs/star-rating`
- * `starColourGradient`/`emptyColourGradient`.
+ * (`sgs/star-rating` `starColourGradient`/`emptyColourGradient`); `sgs/social-icons`
+ * draws its group glyph gradient's defs with `SvgGradientDefs`.
  *
  * ⛔ Keep the parsing rules in step with `sgs_svg_stroke_gradient()`. Scope
  * deliberately matches the picker's own output — linear/radial only, no

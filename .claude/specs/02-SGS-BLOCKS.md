@@ -87,7 +87,7 @@ sgs-blocks/
 │   │   ├── image-sequence/       # Agency-only scroll-scrubbed canvas frame sequence (hidden from the inserter)
 │   │   ├── physics-canvas/       # Section whose decorative children become throwable physics bodies
 │   │   ├── separator/            # Styleable horizontal divider (line, gradient, optional icon or label)
-│   │   ├── social-icons/         # Row of social platform icons with links
+│   │   ├── social-icons/         # Social/contact row: sgs/icon children bound to Site Info
 │   │   ├── responsive-logo/      # Three-slot logo (desktop / tablet / mobile) with optional SVG animation
 │   │   ├── breadcrumbs/          # Auto-generated breadcrumb navigation
 │   │   ├── table-of-contents/    # Auto-generated table of contents (smooth scroll, scroll spy, collapsible)

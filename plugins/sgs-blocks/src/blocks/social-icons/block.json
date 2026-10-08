@@ -2,20 +2,32 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/social-icons",
-	"version": "0.2.0",
+	"version": "1.0.0",
 	"title": "SGS Social Icons",
 	"category": "sgs-content",
-	"description": "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, WhatsApp, and more, plus a custom-SVG platform for anything else. Configurable size, style, theme-vs-brand colour, and hover colour; each icon's link (open-in-new-tab, rel) is set per-item via the shared SgsLinkControl; a Site-Info source mode renders the SAME list edited once in Appearance > SGS Site Info everywhere the block is placed (header/footer/drawer). Each icon item shape: { platform: string, url: string, label?: string, customIconUrl?: string, customIconId?: number, opensInNewTab?: boolean, rel?: string }. The accessible name (aria-label, WCAG 2.2 SC 4.1.2) is auto-generated per platform (e.g. \"Follow us on Instagram\") and always operator-editable via the label field.",
+	"description": "A row of SGS Icon blocks linked to Site Info: phone, email, address and every social network, each hidden while its Site Info field is empty. Sets the icons' size, shape, background, border and colours once for the whole row; any icon can still set its own.",
 	"keywords": [
 		"social",
 		"icons",
 		"links",
+		"contact",
 		"facebook",
-		"twitter",
-		"instagram"
+		"instagram",
+		"whatsapp"
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "share",
+	"allowedBlocks": [
+		"sgs/icon"
+	],
+	"providesContext": {
+		"sgs/socialIconsColourMode": "colourMode",
+		"sgs/socialIconsHiddenLinks": "hiddenLinks",
+		"sgs/socialIconsShape": "childIconShape",
+		"sgs/socialIconsShowBackground": "childIconShowBackground",
+		"sgs/socialIconsBorderWidth": "childIconBorderWidth",
+		"sgs/socialIconsBorderStyle": "childIconBorderStyle"
+	},
 	"supports": {
 		"align": false,
 		"anchor": true,
@@ -23,20 +35,15 @@
 		"color": {
 			"background": false,
 			"gradients": false,
-			"text": false,
-			"__experimentalSkipSerialization": true
+			"text": false
 		},
 		"sgs": {
-			"colourExemptions": {
-				"icon-bg-hover": {
-					"rule": "states",
-					"reason": "CLASSIFIER FALSE POSITIVE — edit.js branches on colourMode via a ternary; the 'theme' branch already has a real 2-state icon-bg row (normal+hover, fully wired), and this row is the OTHER branch's own deliberately hover-only row for a different display mode where the resting background comes from a CSS preset class, not a custom attribute. The census's ConditionalExpression handling concatenates both ternary branches as if they coexisted. This block's colour coverage is complete."
-				}
+			"siteInfoLinkRow": {
+				"bindingSource": "sgs/site-info",
+				"bindAttr": "linkUrl",
+				"_note": "The cloning converter (scripts/converter/resolvers/array_content.py::lift_site_info_link_row) lifts each draft link into an allowedBlocks child bound through this source and attribute when the brand registry knows its platform."
 			},
-			"collection": true,
 			"imageControls": false,
-			"_imageControlsNote": "Deliberate opt-out (FR-36-21). The universal image-controls extension (object-position/max-width/height) targets ONE block-level image; this block's optional custom-SVG upload is a PER-ITEM glyph inside a repeater (mirrors sgs/icon's own imageControls:false). Size is governed by the existing iconSize control instead.",
-			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
 					"padding"
@@ -45,103 +52,66 @@
 					"margin"
 				],
 				"borderWidth": [
-					"borderWidth"
-				],
-				"borderRadius": [
-					"borderRadius"
-				],
-				"wrapperBorderWidth": [
-					"wrapperBorderWidth"
+					"childIconBorderWidth"
 				]
 			},
 			"elements": {
 				"wrapper": {
-					"label": "Wrapper",
+					"label": "Row",
 					"order": 1,
 					"clusters": [
-						"text",
-						"fill",
 						"layout"
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:font-size": "fontSize",
-						"css:font-weight": "fontWeight",
-						"css:font-style": "fontStyle",
-						"css:line-height": "lineHeight",
-						"css:padding": "padding",
-						"css:margin": "margin",
 						"css:gap": "gap",
-						"css:border-width": "wrapperBorderWidth",
-						"css:border-style": "wrapperBorderStyle",
-						"css:border-color": "wrapperBorderColour",
-						"css:border-radius": "borderRadius",
-						"css:border-color-gradient": "wrapperBorderColourGradient",
-						"css:font-family": "fontFamily",
-						"css:text-transform": "textTransform",
-						"css:text-decoration": "textDecoration",
-						"css:letter-spacing": "letterSpacing",
-						"css:text-align": "textAlign",
-						"css:text-wrap": "textWrap",
-						"css:column-count": "textColumns"
+						"css:justify-content": "rowAlign",
+						"css:padding": "padding",
+						"css:margin": "margin"
 					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-color": "wrapperBorderColourHover",
-								"css:border-color-gradient": "wrapperBorderColourHoverGradient"
-							}
-						}
-					},
-					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography routes through the shared TypographyControls/sgs_typography_css_rule() mechanism, root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). textAlign is painted as the flex row's justify-content (render.php), because `text-align` alone is inert on a `display:flex` root."
+					"_note": "The row (`.sgs-social-icons`, role list): a wrapping flex row of sgs/icon children. Gap per device, alignment along the row, Spacing padding and margin."
 				},
-				"icon": {
-					"label": "Icon",
+				"shape": {
+					"label": "Icon shapes",
 					"order": 2,
-					"clusters": [
-						"text"
-					],
-					"prefix": "icon",
-					"_note": "Per-item <span class=\"sgs-social-icons__icon\" aria-hidden=\"true\"> — the decorative glyph itself (svg/img). Carries no colour attrMap: the `item` element's background/border/glyph attrs (below) do NOT paint this span, they paint the surrounding link box."
-				},
-				"label": {
-					"label": "Label",
-					"order": 4,
-					"clusters": [],
-					"prefix": "",
-					"_note": "Per-item <span class=\"sgs-social-icons__label\"> — the visible text beside the icon, rendered only when `showLabels` (block-wide) is true. Carries no attrMap of its own: colour/typography inherit from the `item` element's own colour tokens + this block's shared typography attrs (sgs_typography_css_rule()), matching this block's one-colour-per-state contract rather than adding a duplicate label-colour control — an honest gap, not an oversight."
-				},
-				"item": {
-					"label": "Icon Link",
-					"order": 3,
 					"clusters": [
 						"text",
 						"fill",
 						"layout"
 					],
+					"prefix": "childIcon",
 					"attrMap": {
-						"css:color": "iconGlyphColour",
-						"css:stroke": "iconGlyphColourGradient",
-						"css:background-color": "iconBackground",
-						"css:background-image": "iconBackgroundGradient",
-						"css:border-color": "iconBorderColour",
-						"css:border-color-gradient": "iconBorderColourGradient"
+						"css:color": "childIconColour",
+						"css:stroke": "childIconColourGradient",
+						"css:background-color": "childIconBackground",
+						"css:background-image": "childIconBackgroundGradient",
+						"css:border-color": "childIconBorderColour",
+						"css:border-width": "childIconBorderWidth",
+						"css:border-style": "childIconBorderStyle",
+						"css:width": "childIconShapeSize"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconGlyphColourHover",
-								"css:stroke": "iconGlyphColourHoverGradient",
-								"css:background-color": "iconBackgroundHover",
-								"css:background-image": "iconBackgroundHoverGradient",
-								"css:border-color": "iconBorderColourHover",
-								"css:border-color-gradient": "iconBorderColourHoverGradient"
+								"css:color": "childIconColourHover",
+								"css:stroke": "childIconColourHoverGradient",
+								"css:background-color": "childIconBackgroundHover",
+								"css:background-image": "childIconBackgroundHoverGradient",
+								"css:border-color": "childIconBorderColourHover"
 							}
 						}
 					},
-					"_note": "The clickable <a class=\"sgs-social-icons__item\"> link box — each real CSS property has its own attribute (`iconBackground`/`iconBorderColour`/`iconGlyphColour`, each with a matching `*Hover` pair), defaulting to text-muted resting / primary hover. The colour depends on `iconStyle` (plain: color only; filled: background; outlined/boxed: border-color AND color simultaneously, since the base rule's `color` is not overridden by the outlined/boxed selector), and a single gradient-capable value cannot serve background/border/currentColor at once, hence one attribute per property. `boxed` is `outlined`'s square sibling (style.css `--boxed` selector sets `border-radius:0` instead of `50%`) — same attributes, same states, no new attrMap entry needed. clusters is text+fill+layout: background-color lives in the fill cluster and border-color in the layout cluster, and declaring both is what makes the attrMap entries for css:background-color and css:border-color bind."
+					"_note": "Group defaults for every child's `.sgs-icon__shape`, printed on the row as --sgs-si-* custom properties that icon/style.css reads after the icon's own value; a child that sets its own value wins."
+				},
+				"glyph": {
+					"label": "Icon glyphs",
+					"order": 3,
+					"clusters": [],
+					"prefix": "childIcon",
+					"attrMap": {
+						"css:width": "childIconSize"
+					},
+					"_note": "Group default glyph size (--sgs-si-size) for every child's `.sgs-icon__svg`."
 				}
 			}
 		}
@@ -150,6 +120,137 @@
 		"root": ".wp-block-sgs-social-icons"
 	},
 	"attributes": {
+		"ariaLabel": {
+			"type": "string",
+			"default": "",
+			"description": "The row's accessible name (it is a list). Blank: \"Social media and contact\"."
+		},
+		"hiddenLinks": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Site Info keys whose icon is kept in the row but not shown (the Links checklist's unticked rows)."
+		},
+		"colourMode": {
+			"type": "string",
+			"default": "inherit",
+			"enum": [
+				"inherit",
+				"theme",
+				"brand"
+			],
+			"description": "Colours for icons left on Automatic: inherit gives a brand icon its brand colours, theme never does, brand always does. An icon's own choice and any colour set here or on the icon win."
+		},
+		"childIconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Glyph size per device {desktop,tablet,mobile} for every icon: a CSS length (px, rem, em, %) or a theme spacing preset."
+		},
+		"childIconShape": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"square",
+				"circle",
+				"pill"
+			],
+			"description": "Shape for every icon left on the square. '' leaves each icon's own shape."
+		},
+		"childIconShowBackground": {
+			"type": "boolean",
+			"default": false,
+			"description": "Paints a background behind every icon."
+		},
+		"childIconShapeSize": {
+			"type": "object",
+			"default": {},
+			"description": "Shape size per device {desktop:{width,height},…} for every icon. Circle uses width only; height follows width while childIconShapeSizeLinked."
+		},
+		"childIconShapeSizeLinked": {
+			"type": "boolean",
+			"default": true
+		},
+		"childIconColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painting every outline glyph (wins over childIconColour); an icon with its own colour or a filled brand mark keeps its own paint."
+		},
+		"childIconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painting every icon's background (wins over childIconBackground); an icon with its own background keeps it."
+		},
+		"childIconBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width {top,right,bottom,left} for every icon's shape. An icon's own border wins."
+		},
+		"childIconBorderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "Group default: '' paints solid when a width is set."
+		},
+		"gap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between icons per device {desktop,tablet,mobile}: a CSS length or a theme spacing preset. Unset = spacing-20."
+		},
+		"rowAlign": {
+			"type": "string",
+			"default": "start",
+			"enum": [
+				"start",
+				"center",
+				"end"
+			]
+		},
 		"padding": {
 			"type": "object",
 			"default": {
@@ -161,274 +262,6 @@
 			"default": {
 				"desktop": {}
 			}
-		},
-		"icons": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object",
-				"properties": {
-					"platform": {
-						"type": "string",
-						"role": "icon-slug"
-					},
-					"url": {
-						"type": "string",
-						"role": "url-href"
-					},
-					"label": {
-						"type": "string"
-					},
-					"customIconUrl": {
-						"type": "string",
-						"role": "url-href"
-					},
-					"customIconId": {
-						"type": "number"
-					},
-					"opensInNewTab": {
-						"type": "boolean"
-					},
-					"rel": {
-						"type": "string"
-					},
-					"colour": {
-						"type": "string",
-						"_comment": "Per-item disc/background colour override (any CSS colour or palette slug). When set it replaces the brand/theme --sgs-social-bg (and border/glyph resting colours) for this item only."
-					},
-					"colourHover": {
-						"type": "string",
-						"_comment": "Per-item hover disc/background colour override; when empty the block-level hover colour applies."
-					},
-					"iconDecorative": {
-						"type": "boolean",
-						"default": true,
-						"_comment": "Spec 35 item 18 / {element}Decorative convention, scoped to the repeater item. Default true documents render.php's existing, always-correct WCAG pattern: the glyph <img>/<svg> is wrapped in an aria-hidden span (never announced), while the real accessible name lives on the wrapping <a>'s aria-label (built from `label`, above). Exposing a per-item override to make the glyph itself announced would double-announce alongside the link's own aria-label, so this is documented architecture rather than a client-facing toggle."
-					}
-				}
-			}
-		},
-		"source": {
-			"type": "string",
-			"enum": [
-				"manual",
-				"site-info"
-			],
-			"default": "manual"
-		},
-		"iconSize": {
-			"type": "number",
-			"default": 24
-		},
-		"circleGlyphSize": {
-			"type": "number",
-			"default": 0,
-			"description": "Circle style only: glyph size in px inside the disc. 0 = auto (half the disc diameter)."
-		},
-		"iconBackground": {
-			"type": "string",
-			"default": "text-muted"
-		},
-		"iconBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"iconBackgroundHover": {
-			"type": "string",
-			"default": "primary"
-		},
-		"iconBackgroundHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"iconBorderColour": {
-			"type": "string",
-			"default": "text-muted"
-		},
-		"iconBorderColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"iconBorderColourHover": {
-			"type": "string",
-			"default": "primary"
-		},
-		"iconBorderColourHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"iconGlyphColour": {
-			"type": "string",
-			"default": "text-muted"
-		},
-		"iconGlyphColourGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting every icon's stroke instead of a flat colour. Non-empty wins over iconGlyphColour at render time."
-		},
-		"iconGlyphColourHover": {
-			"type": "string",
-			"default": "primary-dark"
-		},
-		"iconGlyphColourHoverGradient": {
-			"type": "string",
-			"default": "",
-			"description": "Hover-state sibling of iconGlyphColourGradient. Non-empty wins over iconGlyphColourHover on :hover."
-		},
-		"colourMode": {
-			"type": "string",
-			"enum": [
-				"theme",
-				"brand"
-			],
-			"default": "theme"
-		},
-		"iconStyle": {
-			"type": "string",
-			"default": "plain"
-		},
-		"showLabels": {
-			"type": "boolean",
-			"default": false,
-			"description": "Renders each item's `label` text visibly beside its icon (a real 'Instagram' / 'WhatsApp' pill button) instead of the label existing only as the link's aria-label. Block-wide, matching iconStyle/colourMode's scope. render.php drops the redundant aria-label when a visible label renders (the text is the link's accessible name), so nothing double-announces."
-		},
-		"gap": {
-			"type": "string",
-			"default": "20"
-		},
-		"fontSize": {
-			"type": "object",
-			"default": {}
-		},
-		"fontSizeUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"fontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"fontStyle": {
-			"type": "string",
-			"default": ""
-		},
-		"lineHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"lineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"wrapperBorderColour": {
-			"type": "string",
-			"default": ""
-		},
-		"wrapperBorderColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"wrapperBorderColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"wrapperBorderColourHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"wrapperBorderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid"
-		},
-		"wrapperBorderWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadius": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"fontFamily": {
-			"type": "string",
-			"default": ""
-		},
-		"textTransform": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"uppercase",
-				"lowercase",
-				"capitalize"
-			],
-			"default": ""
-		},
-		"textDecoration": {
-			"type": "string",
-			"enum": [
-				"",
-				"none",
-				"underline",
-				"line-through"
-			],
-			"default": ""
-		},
-		"letterSpacing": {
-			"type": "object",
-			"default": {}
-		},
-		"letterSpacingUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
-		},
-		"textWrap": {
-			"type": "string",
-			"enum": [
-				"",
-				"wrap",
-				"nowrap",
-				"balance",
-				"pretty",
-				"stable"
-			],
-			"default": ""
-		},
-		"textColumns": {
-			"type": "number"
-		},
-		"writingMode": {
-			"type": "string",
-			"enum": [
-				"",
-				"horizontal-tb",
-				"vertical-rl",
-				"vertical-lr"
-			],
-			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -437,22 +270,29 @@
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"iconSize": 24,
-			"iconStyle": "plain",
-			"icons": [
-				{
-					"platform": "facebook",
-					"url": "https://facebook.com"
-				},
-				{
-					"platform": "instagram",
-					"url": "https://instagram.com"
-				},
-				{
-					"platform": "linkedin",
-					"url": "https://linkedin.com"
+			"childIconSize": {
+				"desktop": "20px"
+			},
+			"childIconShowBackground": true,
+			"childIconShape": "circle"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "brand",
+					"brandName": "facebook",
+					"linkUrl": "https://facebook.com"
 				}
-			]
-		}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "brand",
+					"brandName": "instagram",
+					"linkUrl": "https://instagram.com"
+				}
+			}
+		]
 	}
 }

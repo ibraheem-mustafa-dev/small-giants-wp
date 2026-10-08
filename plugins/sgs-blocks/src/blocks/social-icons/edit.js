@@ -1,649 +1,417 @@
+/**
+ * sgs/social-icons editor: a row of sgs/icon children (a new row starts with one bound icon per filled Site Info
+ * key), the Links checklist, and the group defaults the children read: sizes, colours and the group border as
+ * --sgs-si-* custom properties on the canvas root (render.php's twin), shape, background and colour mode through
+ * block context.
+ *
+ * @package SGS\Blocks
+ */
+
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, useSettings } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings, store as blockEditorStore } from '@wordpress/block-editor';
+import { createBlock } from '@wordpress/blocks';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useMemo } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { CheckboxControl, PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import {
-	PanelBody,
-	SelectControl,
-	TextControl,
-	RangeControl,
-	ToggleControl,
-	Button,
-	Flex,
-	Notice,
-} from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
-import { gapVar, borderPaintPreview, typographyPreviewStyle, usePreviewTier,  tierBoxLonghands, isCssGradient, sgsBorderPreview } from '../../utils';
-import BrandIconGlyph from './brand-icons';
+	SgsColourPanel,
+	fillRow,
+	textRow,
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+	SgsBoxControl,
+	SgsBorderControl,
+	LogicalAlignControl,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+} from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { colourVar, tierBoxLonghands, usePreviewTier, resolveTier, sgsBorderPreview, flattenPresetSetting, patchTier, isCssGradient } from '../../utils';
+import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
+import { iconLengthValue } from '../icon/icon-state';
+import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
 
-// Site Info mode pulls from this fixed set of networks (same 8 slugs the
-// sgs/business-info 'socials' case reads from Sgs_Site_Info — Appearance >
-// SGS Site Info) so the editor preview can list what will render without a
-// server round-trip.
-const SITE_INFO_NETWORKS = [
-	'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok', 'whatsapp', 'google',
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'em', label: 'em' },
 ];
 
-const SOURCE_OPTIONS = [
-	{ label: __( 'Manual URLs', 'sgs-blocks' ), value: 'manual' },
-	{ label: __( 'From Site Info settings', 'sgs-blocks' ), value: 'site-info' },
+const COLOUR_MODES = [
+	{ label: __( 'Automatic (brand colours for a brand)', 'sgs-blocks' ), value: 'inherit' },
+	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
+	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
 ];
 
-const PLATFORMS = [
-	'facebook', 'twitter', 'linkedin', 'instagram', 'youtube',
-	'tiktok', 'github', 'whatsapp', 'email', 'website',
-	'pinterest', 'snapchat', 'telegram', 'discord', 'google', 'custom',
-];
-
-const PLATFORM_LABELS = {
-	facebook: 'Facebook', twitter: 'X (Twitter)', linkedin: 'LinkedIn', instagram: 'Instagram',
-	youtube: 'YouTube', tiktok: 'TikTok', github: 'GitHub', whatsapp: 'WhatsApp', email: 'Email',
-	website: 'Website', pinterest: 'Pinterest', snapchat: 'Snapchat', telegram: 'Telegram',
-	discord: 'Discord', google: 'Google', custom: 'Custom',
-};
-
-// Mirrors render.php's $platform_icons EXACTLY —
-// the editor canvas resolves the SAME Lucide slug render.php does, via the
-// shared IconPreview component (src/components/IconPicker/IconPreview.js),
-// instead of reinventing icon-name resolution a second time.
-const PLATFORM_ICONS = {
-	facebook: 'facebook',
-	twitter: 'twitter',
-	linkedin: 'linkedin',
-	instagram: 'instagram',
-	youtube: 'youtube',
-	tiktok: 'music',
-	github: 'github',
-	whatsapp: 'message-circle',
-	email: 'mail',
-	website: 'globe',
-	pinterest: 'pin',
-	snapchat: 'ghost',
-	telegram: 'send',
-	discord: 'message-square',
-	google: 'star',
-};
-
-// Mirrors render.php's sgs_social_icons_default_label() — editor-preview only
-// (the server value is authoritative), so the operator sees the exact default
-// they're overriding when they type into the Accessible label field.
-const PLATFORM_VERBS = {
-	whatsapp: 'Message us on WhatsApp',
-	email: 'Email us',
-	website: 'Visit our website',
-	google: 'Read our reviews on Google',
-	custom: 'Follow us',
-};
-
-function defaultAccessibleLabel( platform ) {
-	if ( PLATFORM_VERBS[ platform ] ) {
-		return PLATFORM_VERBS[ platform ];
+/**
+ * The canvas root's style at the previewed device: render.php's root rule.
+ *
+ * @param {Object}   attributes  Block attributes.
+ * @param {string}   tier        Previewed device.
+ * @param {Array}    palette     Theme colour palette.
+ * @param {string[]} presetSlugs Theme spacing preset slugs.
+ * @return {Object} React style.
+ */
+export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
+	const {
+		childIconSize,
+		childIconShapeSize,
+		childIconShape,
+		childIconShapeSizeLinked = true,
+		childIconColour,
+		childIconColourHover,
+		childIconBackground,
+		childIconBackgroundGradient,
+		childIconBackgroundHover,
+		childIconBackgroundHoverGradient,
+		childIconBorderColour,
+		childIconBorderColourHover,
+		childIconBorderWidth,
+		childIconBorderStyle,
+		gap,
+		rowAlign,
+	} = attributes;
+	const style = {};
+	const size = iconLengthValue( resolveTier( childIconSize, tier ).value, 512, presetSlugs );
+	if ( size ) {
+		style[ '--sgs-si-size' ] = size;
 	}
-	return __( 'Follow us on', 'sgs-blocks' ) + ' ' + ( PLATFORM_LABELS[ platform ] || platform );
+	const box = resolveTier( childIconShapeSize, tier ).value;
+	const width = iconLengthValue( box?.width, 640, presetSlugs );
+	const height = 'circle' === childIconShape || childIconShapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
+	if ( width ) {
+		style[ '--sgs-si-shape-w' ] = width;
+	}
+	if ( height ) {
+		style[ '--sgs-si-shape-h' ] = height;
+	}
+	const gapValue = iconLengthValue( resolveTier( gap, tier ).value, 640, presetSlugs );
+	if ( gapValue ) {
+		style.gap = gapValue;
+	}
+	const groupColours = [
+		[ '--sgs-si-colour', childIconColour ],
+		[ '--sgs-si-colour-hover', childIconColourHover ],
+		[ '--sgs-si-bg', childIconBackground ],
+		[ '--sgs-si-bg-hover', childIconBackgroundHover ],
+		[ '--sgs-si-border-colour', childIconBorderColour ],
+		[ '--sgs-si-border-colour-hover', childIconBorderColourHover ],
+	];
+	groupColours.forEach( ( [ property, slug ] ) => {
+		const value = colourVar( slug );
+		if ( value ) {
+			style[ property ] = value;
+		}
+	} );
+	if ( isCssGradient( childIconBackgroundGradient ) ) {
+		style[ '--sgs-si-bg-gradient' ] = childIconBackgroundGradient;
+	}
+	if ( isCssGradient( childIconBackgroundHoverGradient ) ) {
+		style[ '--sgs-si-bg-hover-gradient' ] = childIconBackgroundHoverGradient;
+	} else if ( isCssGradient( childIconBackgroundGradient ) && childIconBackgroundHover ) {
+		style[ '--sgs-si-bg-hover-gradient' ] = 'none';
+	}
+	const border = sgsBorderPreview( { widthValues: childIconBorderWidth, styleValue: childIconBorderStyle }, tier, palette );
+	if ( border.borderWidth ) {
+		style[ '--sgs-si-border-width' ] = border.borderWidth;
+		style[ '--sgs-si-border-style' ] = border.borderStyle;
+	}
+	if ( 'center' === rowAlign ) {
+		style.justifyContent = 'center';
+	} else if ( 'end' === rowAlign ) {
+		style.justifyContent = 'flex-end';
+	}
+	Object.assign( style, tierBoxLonghands( attributes.padding, tier, 'padding' ) );
+	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );
+	return style;
 }
 
-const STYLE_OPTIONS = [
-	{ label: __( 'Plain', 'sgs-blocks' ), value: 'plain' },
-	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
-	{ label: __( 'Outlined', 'sgs-blocks' ), value: 'outlined' },
-	{ label: __( 'Boxed', 'sgs-blocks' ), value: 'boxed' },
-	{ label: __( 'Pill', 'sgs-blocks' ), value: 'pill' },
-	{ label: __( 'Circle (icon size = disc diameter)', 'sgs-blocks' ), value: 'circle' },
-];
+/**
+ * The group glyph gradient on the canvas: render.php's defs block and stroke rules, scoped to this row.
+ *
+ * @param {string} scope          The row's canvas class.
+ * @param {string} gradient       childIconColourGradient.
+ * @param {string} hoverGradient  childIconColourHoverGradient.
+ * @return {{gradients:Array<{id:string, gradient:Object}>, css:string}} The gradient definitions and the rules.
+ */
+export function rowGlyphGradientPreview( scope, gradient, hoverGradient ) {
+	const glyph = `.${ scope } .sgs-icon:not(.sgs-icon--own-colour):not(.sgs-icon--mark)`;
+	const rest = svgStrokeGradientPreview( gradient, `${ scope }-g` );
+	const hover = svgStrokeGradientPreview( hoverGradient, `${ scope }-gh` );
+	let css = '';
+	const gradients = [];
+	if ( rest.css ) {
+		css += `${ glyph } .sgs-icon__svg svg{${ rest.css }}`;
+		gradients.push( { id: `${ scope }-g`, gradient: parseSvgGradient( gradient ) } );
+	}
+	if ( hover.css ) {
+		css += `${ glyph } .sgs-icon__link:hover .sgs-icon__svg svg{${ hover.css }}`;
+		gradients.push( { id: `${ scope }-gh`, gradient: parseSvgGradient( hoverGradient ) } );
+	}
+	return { gradients, css };
+}
 
-const COLOUR_MODE_OPTIONS = [
-	{ label: __( 'Theme colour', 'sgs-blocks' ), value: 'theme' },
-	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
-];
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const tier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
+	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
+	const presetSlugs = flattenPresetSetting( spacingSizes ).map( ( s ) => s.slug );
+	const siteInfo = window.sgsBlocksData?.siteInfo;
 
-// Mirrors render.php's $platform_brand_colours — used for the editor-preview
-// per-item colour when colourMode='brand'.
-const PLATFORM_BRAND_COLOURS = {
-	facebook: '#1877F2',
-	twitter: '#000000',
-	linkedin: '#0A66C2',
-	instagram: '#E4405F',
-	youtube: '#FF0000',
-	tiktok: '#000000',
-	github: '#181717',
-	whatsapp: '#25D366',
-	email: '#6B7280',
-	website: '#6B7280',
-	pinterest: '#E60023',
-	snapchat: '#FFFC00',
-	telegram: '#26A5E4',
-	discord: '#5865F2',
-	google: '#4285F4',
-	custom: '#6B7280',
-};
-
-export default function Edit( { attributes, setAttributes } ) {
 	const {
-		source,
-		icons,
-		iconSize,
-		circleGlyphSize,
-		iconBackground,
-		iconBackgroundGradient,
-		iconBackgroundHover,
-		iconBackgroundHoverGradient,
-		iconBorderColour,
-		iconBorderColourGradient,
-		iconBorderColourHover,
-		iconBorderColourHoverGradient,
-		iconGlyphColour,
-		iconGlyphColourGradient,
-		iconGlyphColourHover,
-		iconGlyphColourHoverGradient,
+		ariaLabel,
+		hiddenLinks,
 		colourMode,
-		iconStyle,
-		showLabels,
+		childIconSize,
+		childIconShape = '',
+		childIconShowBackground,
+		childIconShapeSize,
+		childIconShapeSizeLinked = true,
+		childIconBorderWidth,
+		childIconBorderStyle,
+		childIconBorderColour,
+		childIconBorderColourHover,
 		gap,
-		wrapperBorderColour,
-		wrapperBorderColourGradient,
-		wrapperBorderColourHover,
-		wrapperBorderColourHoverGradient,
-		wrapperBorderStyle,
-		wrapperBorderWidth,
+		rowAlign,
 	} = attributes;
 
-	const isSiteInfoSource = 'site-info' === source;
-	const [ palette ] = useSettings( 'color.palette' );
+	const children = useSelect( ( select ) => select( blockEditorStore ).getBlocks( clientId ), [ clientId ] );
+	const { insertBlock } = useDispatch( blockEditorStore );
+	// The template applies only to an empty row, so it never rewrites existing children.
+	const template = useMemo( () => templateFromSiteInfo( siteInfo ), [ siteInfo ] );
 
-	// Base padding/margin preview — padding/margin are owned tier-object
-	// attrs { desktop, tablet, mobile }, read directly by render.php.
-	// NOTE: `style` here is WP's native style-support object attribute (holds
-	// only style.color, not spacing) — distinct from this block's own
-	// `iconStyle` attribute (plain/filled/outlined/pill variant).
-	const previewTier = usePreviewTier();
-	// The root's typography (render.php prints it on the root selector).
-	const previewStyle = { ...typographyPreviewStyle( attributes, '', previewTier ) };
-	// Mirrors render.php: textAlign is the flex row's justify-content.
-	const justifyPreview = { left: 'flex-start', center: 'center', right: 'flex-end', justify: 'space-between' }[ attributes.textAlign ];
-	if ( justifyPreview ) {
-		previewStyle.justifyContent = justifyPreview;
-	}
-	const paddingLonghands = tierBoxLonghands( attributes.padding, previewTier, 'padding' );
-	Object.assign( previewStyle, paddingLonghands );
-	const marginLonghands = tierBoxLonghands( attributes.margin, previewTier, 'margin' );
-	Object.assign( previewStyle, marginLonghands );
-	Object.assign( previewStyle, sgsBorderPreview( { widthValues: wrapperBorderWidth, styleValue: wrapperBorderStyle, colourValue: wrapperBorderColour, colourGradientValue: wrapperBorderColourGradient, radiusValues: attributes.borderRadius }, previewTier, palette ) );
-	if ( gap ) {
-		previewStyle.gap = gapVar( gap );
-	}
-	// 'theme' mode drives every item's resting background/border/glyph colour
-	// via these 3 custom properties (style.css .sgs-social-icons__item{color:
-	// var(--sgs-social-glyph)} etc); 'brand' mode overrides per item
-	// instead (applied on each item below).
-	if ( 'theme' === colourMode ) {
-		// The DesignTokenPickers here have no `linked` prop, so they always
-		// store a raw CSS value, never a slug -- resolveColourToken() (not
-		// colourVar(), which is slug-only) is the correct resolver.
-		if ( iconBackground ) {
-			previewStyle[ '--sgs-social-bg' ] = resolveColourToken( iconBackground, palette );
-		}
-		if ( iconBorderColour ) {
-			previewStyle[ '--sgs-social-border' ] = resolveColourToken( iconBorderColour, palette );
-		}
-		if ( iconGlyphColour ) {
-			previewStyle[ '--sgs-social-glyph' ] = resolveColourToken( iconGlyphColour, palette );
-		}
-	}
-	// Hover colours are written UNCONDITIONALLY (independent of colourMode,
-	// matching render.php + style.css's `:hover` rules) so a real mouse hover
-	// on the editor canvas (a live DOM, not a static screenshot) shows the
-	// same colour the frontend does.
-	// The gradient background rides its own custom property, written in either
-	// colour mode (render.php's sgs_custom_property_gradient_decls()).
-	if ( isCssGradient( iconBackgroundGradient ) ) {
-		previewStyle[ '--sgs-social-bg-gradient' ] = iconBackgroundGradient;
-	}
-	if ( iconBackgroundHover ) {
-		previewStyle[ '--sgs-social-bg-hover' ] = resolveColourToken( iconBackgroundHover, palette );
-	}
-	if ( iconBorderColourHover ) {
-		previewStyle[ '--sgs-social-border-hover' ] = resolveColourToken( iconBorderColourHover, palette );
-	}
-	if ( iconGlyphColourHover ) {
-		previewStyle[ '--sgs-social-glyph-hover' ] = resolveColourToken( iconGlyphColourHover, palette );
-	}
-
-	// Mirrors render.php's $item_size — the clickable hit area is
-	// floored at 44px (WCAG 2.5.8) and grows past the glyph size for the
-	// filled/outlined/pill variants (extra padding), while the glyph itself
-	// always renders at the operator-chosen iconSize. Using the real value
-	// here (not a fixed box) means a real SVG at iconSize always fits inside
-	// a box floored at 44px.
-	const itemSize = 'circle' === iconStyle ? Math.max( 44, iconSize ) : Math.max( 44, iconSize + ( 'plain' === iconStyle ? 0 : 16 ) );
-	const glyphSize = 'circle' === iconStyle
-		? ( circleGlyphSize > 0 ? Math.min( circleGlyphSize, iconSize ) : Math.round( iconSize * 0.5 ) )
-		: iconSize;
-
-	// iconBorderColourGradient real mechanism (render.php): a masked
-	// `::before` ring via `sgs_border_gradient_css()`, scoped to
-	// `.sgs-social-icons--outlined .sgs-social-icons__item,
-	// .sgs-social-icons--boxed .sgs-social-icons__item` — the gradient
-	// border only ever paints on the two bordered style variants (outlined:
-	// circular; boxed: square); plain/filled/pill have no border to gradient
-	// at all. `borderPaintPreview()`'s `border-image` is the same documented
-	// approximation `sgs/container` already uses for a masked-ring border
-	// (real technique needs a `::before` pseudo-element a plain inline style
-	// cannot reach) — applied only when the style variant actually has a
-	// visible border, mirroring the frontend's selector gate exactly.
-	const itemBorderGradientPreview = ( 'outlined' === iconStyle || 'boxed' === iconStyle )
-		? borderPaintPreview( iconBorderColour, iconBorderColourGradient, palette )
-		: {};
-	const itemBorderImage = itemBorderGradientPreview.borderImage;
-
+	const scope = `sgs-si-canvas-${ useInstanceId( Edit ) }`;
+	const glyphGradient = rowGlyphGradientPreview( scope, attributes.childIconColourGradient, attributes.childIconColourHoverGradient );
 	const blockProps = useBlockProps( {
-		className: `sgs-social-icons sgs-social-icons--${ iconStyle }${ showLabels ? ' sgs-social-icons--has-labels' : '' }`,
-		style: previewStyle,
+		className: `sgs-social-icons ${ scope }`,
+		style: rowCanvasStyle( attributes, tier, palette, presetSlugs ),
+	} );
+	const innerBlocksProps = useInnerBlocksProps( blockProps, {
+		allowedBlocks: [ 'sgs/icon' ],
+		template: children.length ? undefined : template,
+		templateLock: false,
+		orientation: 'horizontal',
 	} );
 
-	// Mirrors render.php's showLabels branch: width goes auto (grows with the
-	// label text) instead of a fixed icon-only square, height keeps the same
-	// touch-target maths.
-	const itemBoxSizeStyle = showLabels
-		? { width: 'auto', height: itemSize, paddingInline: 16, gap: 8 }
-		: { width: itemSize, height: itemSize };
-
-	const updateIcon = ( index, field, value ) => {
-		const updated = [ ...icons ];
-		updated[ index ] = { ...updated[ index ], [ field ]: value };
-		setAttributes( { icons: updated } );
-	};
-
-	const addIcon = () => {
-		setAttributes( { icons: [ ...icons, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
-	};
-
-	const removeIcon = ( index ) => {
-		setAttributes( { icons: icons.filter( ( _, i ) => i !== index ) } );
-	};
-
-	// Up/down reorder — a keyboard- and touch-reachable equivalent to drag
-	// (FR-36-21 NICE: "drag-to-reorder if cheap"). True pointer-drag needs a
-	// parallel keyboard path to stay WCAG-reachable anyway, so two buttons
-	// give the same reordering outcome without a drag library dependency.
-	const moveIcon = ( index, direction ) => {
-		const target = index + direction;
-		if ( target < 0 || target >= icons.length ) {
-			return;
+	const rows = checklistRows( children, hiddenLinks, siteInfo );
+	const onToggle = ( key, checked ) => {
+		const next = toggleLink( key, checked, children, hiddenLinks );
+		setAttributes( { hiddenLinks: next.hiddenLinks } );
+		if ( next.append ) {
+			insertBlock( createBlock( 'sgs/icon', next.append ), children.length, clientId, false );
 		}
-		const updated = [ ...icons ];
-		[ updated[ index ], updated[ target ] ] = [ updated[ target ], updated[ index ] ];
-		setAttributes( { icons: updated } );
+	};
+
+	const writeShapeSize = ( t, side, value ) => {
+		const current = childIconShapeSize?.[ t ] && 'object' === typeof childIconShapeSize[ t ] ? childIconShapeSize[ t ] : {};
+		const next = { ...current, [ side ]: value || undefined };
+		patchTier( attributes, setAttributes, 'childIconShapeSize', t, next.width || next.height ? next : undefined );
 	};
 
 	return (
 		<>
-			{ /* ONE grouped, SGS-OWNED colour panel (own PanelBody,
-			   Styles tab), rendered FIRST so it sits at the top of the inspector.
-			   Icon colour is 3 attribute pairs — one per real CSS property this
-			   block paints (background-color / border-color / color) — so each
-			   can carry its own gradient option without one value having to serve
-			   3 different CSS techniques at once. The native `color` support
-			   sub-flags are false so WordPress generates no competing native
-			   colour UI. The colour mode (theme vs brand) gates whether the
-			   resting rows are user-controllable: 'theme' mode shows all 3
-			   resting+hover rows, 'brand' mode omits the resting half
-			   (per-platform override, no user control) but keeps hover
-			   editable (independent of mode). */ }
 			<SgsColourPanel
 				rows={ [
-					...( 'theme' === colourMode ? [
-						{
-							key: 'icon-bg',
-							label: __( 'Icon background', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconBackground,
-									onChange: ( val ) => setAttributes( { iconBackground: val ?? '' } ),
-									linked: true,
-									gradientValue: iconBackgroundGradient,
-									onGradientChange: ( val ) => setAttributes( { iconBackgroundGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconBackgroundHover,
-									onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
-									linked: true,
-									gradientValue: iconBackgroundHoverGradient,
-									onGradientChange: ( val ) => setAttributes( { iconBackgroundHoverGradient: val ?? '' } ),
-								},
-							],
-						},
-						{
-							key: 'icon-border',
-							label: __( 'Icon border colour', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconBorderColour,
-									onChange: ( val ) => setAttributes( { iconBorderColour: val ?? '' } ),
-									linked: true,
-									gradientValue: iconBorderColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconBorderColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconBorderColourHover,
-									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
-									linked: true,
-									gradientValue: iconBorderColourHoverGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconBorderColourHoverGradient: val ?? '' } ),
-								},
-							],
-						},
-						{
-							key: 'icon-glyph',
-							label: __( 'Icon colour', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconGlyphColour,
-									onChange: ( val ) => setAttributes( { iconGlyphColour: val ?? '' } ),
-									linked: true,
-									gradientValue: iconGlyphColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconGlyphColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconGlyphColourHover,
-									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
-									linked: true,
-									gradientValue: iconGlyphColourHoverGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconGlyphColourHoverGradient: val ?? '' } ),
-								},
-							],
-						},
-					] : [
-						{
-							key: 'icon-bg-hover',
-							label: __( 'Background hover', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconBackgroundHover,
-									onChange: ( val ) => setAttributes( { iconBackgroundHover: val ?? '' } ),
-									linked: true,
-									gradientValue: iconBackgroundHoverGradient,
-									onGradientChange: ( val ) => setAttributes( { iconBackgroundHoverGradient: val ?? '' } ),
-								},
-							],
-						},
-						{
-							key: 'icon-border-hover',
-							label: __( 'Border colour hover', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconBorderColourHover,
-									onChange: ( val ) => setAttributes( { iconBorderColourHover: val ?? '' } ),
-									gradientValue: attributes.iconBorderColourHoverGradient,
-									onGradientChange: ( val ) => setAttributes( { iconBorderColourHoverGradient: val ?? '' } ),
-									linked: true,
-								},
-							],
-						},
-						{
-							key: 'icon-glyph-hover',
-							label: __( 'Icon colour hover', 'sgs-blocks' ),
-							states: [
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: iconGlyphColourHover,
-									onChange: ( val ) => setAttributes( { iconGlyphColourHover: val ?? '' } ),
-									linked: true,
-									gradientValue: iconGlyphColourHoverGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconGlyphColourHoverGradient: val ?? '' } ),
-								},
-							],
-						},
-					] ),
+					textRow( {
+						key: 'icon',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						attrs: { base: 'childIconColour', hover: 'childIconColourHover', gradient: 'childIconColourGradient', hoverGradient: 'childIconColourHoverGradient' },
+						attributes,
+						setAttributes,
+					} ),
+					childIconShowBackground &&
+						fillRow( {
+							key: 'background',
+							label: __( 'Background colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'childIconBackground',
+								hover: 'childIconBackgroundHover',
+								gradient: 'childIconBackgroundGradient',
+								hoverGradient: 'childIconBackgroundHoverGradient',
+							},
+							attributes,
+							setAttributes,
+						} ),
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Link source', 'sgs-blocks' ) }>
+				<PanelBody title={ __( 'Links', 'sgs-blocks' ) }>
+					<p className="components-base-control__help">
+						{ __( 'Each icon links to its Site Info field and hides while that field is empty. Untick to hide an icon; drag icons in List View to reorder them.', 'sgs-blocks' ) }
+					</p>
+					{ rows.map( ( row ) => (
+						<div key={ row.key } className="sgs-social-icons-links__row">
+							<CheckboxControl
+								label={ row.label }
+								checked={ row.checked }
+								onChange={ ( value ) => onToggle( row.key, value ) }
+								__nextHasNoMarginBottom
+							/>
+							{ row.missing && (
+								<p className="sgs-social-icons-links__flag">
+									{ __( 'Filled in Site Info but not in this row: tick it to add it.', 'sgs-blocks' ) }
+								</p>
+							) }
+						</div>
+					) ) }
+				</PanelBody>
+				<PanelBody title={ __( 'Icons', 'sgs-blocks' ) }>
 					<SelectControl
-						label={ __( 'Link source', 'sgs-blocks' ) }
-						value={ source }
-						options={ SOURCE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { source: val } ) }
-						help={ isSiteInfoSource
-							? __( 'Links are pulled automatically from Appearance > SGS Site Info. No manual URLs are used.', 'sgs-blocks' )
-							: __( 'Add and manage each link below.', 'sgs-blocks' )
-						}
+						label={ __( 'Colours', 'sgs-blocks' ) }
+						help={ __( 'For icons left on Automatic. A colour set here or on an icon always wins.', 'sgs-blocks' ) }
+						value={ colourMode || 'inherit' }
+						options={ COLOUR_MODES }
+						onChange={ ( value ) => setAttributes( { colourMode: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<ResponsiveControl label={ __( 'Icon size', 'sgs-blocks' ) }>
+						{ ( t ) => (
+							<SgsLengthControl
+								label={ __( 'Icon size', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ childIconSize?.[ t ] ?? '' }
+								units={ LENGTH_UNITS }
+								presets
+								help={ __( 'Every icon without its own size. Blank: 32px.', 'sgs-blocks' ) }
+								onChange={ ( value ) => patchTier( attributes, setAttributes, 'childIconSize', t, value || undefined ) }
+							/>
+						) }
+					</ResponsiveControl>
+				</PanelBody>
+				<PanelBody title={ __( 'Icon shape', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleGroupControl
+						label={ __( 'Shape', 'sgs-blocks' ) }
+						help={ __( 'For icons left on the square. Each icon: keep every icon’s own shape.', 'sgs-blocks' ) }
+						value={ childIconShape }
+						onChange={ ( value ) => setAttributes( { childIconShape: value ?? '' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						<ToggleGroupControlOption value="" label={ __( 'Each icon', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="square" label={ __( 'Square', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="circle" label={ __( 'Circle', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="pill" label={ __( 'Pill', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
+					<ToggleControl
+						label={ __( 'Background', 'sgs-blocks' ) }
+						help={ __( 'Paints a shape behind every icon.', 'sgs-blocks' ) }
+						checked={ !! childIconShowBackground }
+						onChange={ ( value ) => setAttributes( { childIconShowBackground: value } ) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
-
-				<PanelBody title={ __( 'Appearance', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Style', 'sgs-blocks' ) }
-						value={ iconStyle }
-						options={ STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { iconStyle: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Icon size (px)', 'sgs-blocks' ) }
-						value={ iconSize }
-						onChange={ ( val ) => setAttributes( { iconSize: val } ) }
-						min={ 16 }
-						max={ 64 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ 'circle' === iconStyle && (
-						<RangeControl
-							label={ __( 'Glyph size in circle (px)', 'sgs-blocks' ) }
-							help={ __( '0 = automatic (half the circle size).', 'sgs-blocks' ) }
-							value={ circleGlyphSize || 0 }
-							onChange={ ( val ) => setAttributes( { circleGlyphSize: val ?? 0 } ) }
-							min={ 0 }
-							max={ 48 }
+				<PanelBody title={ __( 'Shape size', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveControl label={ __( 'Shape size', 'sgs-blocks' ) }>
+						{ ( t ) => (
+							<>
+								<SgsLengthControl
+									label={ 'circle' === childIconShape || childIconShapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
+									value={ childIconShapeSize?.[ t ]?.width ?? '' }
+									units={ LENGTH_UNITS }
+									presets
+									help={ __( 'Blank: the icon size plus a little room each side.', 'sgs-blocks' ) }
+									onChange={ ( value ) => writeShapeSize( t, 'width', value ) }
+								/>
+								{ 'circle' !== childIconShape && ! childIconShapeSizeLinked && (
+									<SgsLengthControl
+										label={ __( 'Height', 'sgs-blocks' ) }
+										value={ childIconShapeSize?.[ t ]?.height ?? '' }
+										units={ LENGTH_UNITS }
+										presets
+										onChange={ ( value ) => writeShapeSize( t, 'height', value ) }
+									/>
+								) }
+							</>
+						) }
+					</ResponsiveControl>
+					{ 'circle' !== childIconShape && (
+						<ToggleControl
+							label={ __( 'Same width and height', 'sgs-blocks' ) }
+							checked={ childIconShapeSizeLinked }
+							onChange={ ( value ) => setAttributes( { childIconShapeSizeLinked: value } ) }
 							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					) }
-					<SpacingControl
-						custom
-						label={ __( 'Gap', 'sgs-blocks' ) }
-						value={ gap }
-						onChange={ ( val ) => setAttributes( { gap: val } ) }
+				</PanelBody>
+				<PanelBody title={ __( 'Icon border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ childIconBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { childIconBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ childIconBorderStyle }
+						onStyleChange={ ( value ) => setAttributes( { childIconBorderStyle: value ?? '' } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: childIconBorderColour,
+								linked: true,
+								onChange: ( value ) => setAttributes( { childIconBorderColour: value ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: childIconBorderColourHover,
+								linked: true,
+								onChange: ( value ) => setAttributes( { childIconBorderColourHover: value ?? '' } ),
+							},
+						] }
 					/>
-					<SelectControl
-						label={ __( 'Icon colour source', 'sgs-blocks' ) }
-						value={ colourMode }
-						options={ COLOUR_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { colourMode: val } ) }
-						help={ 'brand' === colourMode
-							? __( 'Each icon uses its official brand colour (Facebook blue, Instagram pink, etc.) at rest.', 'sgs-blocks' )
-							: __( 'Every icon uses the theme colour below at rest. Edit in the Colour panel at the top.', 'sgs-blocks' )
-						}
+				</PanelBody>
+				<PanelBody title={ __( 'Row', 'sgs-blocks' ) } initialOpen={ false }>
+					<ResponsiveControl label={ __( 'Gap between icons', 'sgs-blocks' ) }>
+						{ ( t ) => (
+							<SgsLengthControl
+								label={ __( 'Gap between icons', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ gap?.[ t ] ?? '' }
+								units={ LENGTH_UNITS }
+								presets
+								onChange={ ( value ) => patchTier( attributes, setAttributes, 'gap', t, value || undefined ) }
+							/>
+						) }
+					</ResponsiveControl>
+					<LogicalAlignControl
+						label={ __( 'Alignment', 'sgs-blocks' ) }
+						value={ rowAlign }
+						onChange={ ( value ) => setAttributes( { rowAlign: value || 'start' } ) }
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'List name', 'sgs-blocks' ) }
+						help={ __( 'What screen readers call this row of links.', 'sgs-blocks' ) }
+						placeholder={ __( 'Social media and contact', 'sgs-blocks' ) }
+						value={ ariaLabel }
+						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Show labels', 'sgs-blocks' ) }
-						help={ __( 'Renders each link’s label as visible text beside its icon (e.g. "Instagram"), instead of only in the accessible name.', 'sgs-blocks' ) }
-						checked={ !! showLabels }
-						onChange={ ( val ) => setAttributes( { showLabels: val } ) }
-						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>
-
-			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
-				{ /* NOTE: "Social Links" appears TWICE in this file — once here
-				   (Site Info source: read-only notice) and once below (manual
-				   source: the full icon-list editor). The ternary on
-				   `isSiteInfoSource` means exactly one of the two ever mounts;
-				   both are reachable by toggling "Link source" above. */ }
-				{ isSiteInfoSource ? (
-					<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
-						<Notice status="info" isDismissible={ false }>
-							{ __( 'Pulling social links from Site Info settings. Any network left blank in Appearance > SGS Site Info is skipped automatically.', 'sgs-blocks' ) }
-						</Notice>
-					</PanelBody>
-				) : (
-				<PanelBody title={ __( 'Social Links', 'sgs-blocks' ) }>
-					{ /* Each control runs FULL-WIDTH, stacked vertically, because a
-					   ~248px sidebar cannot fit 3-across (help text would wrap
-					   6 lines). Only the small icon-button row at the
-					   bottom stays horizontal — those don't need full width. */ }
-					{ icons.map( ( icon, index ) => (
-						<div key={ index } className="sgs-social-icons-editor__item">
-							<SelectControl
-								label={ __( 'Platform', 'sgs-blocks' ) }
-								value={ icon.platform }
-								options={ PLATFORMS.map( ( p ) => ( { label: PLATFORM_LABELS[ p ] || p, value: p } ) ) }
-								onChange={ ( val ) => updateIcon( index, 'platform', val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							{ /* Spec 35 §2 LINK: the canonical popover LINK control.
-							   targetMode="boolean" maps
-							   this block's stored `opensInNewTab` boolean onto
-							   LinkPopoverField's linkTarget shape. */ }
-							<LinkPopoverField
-								label={ __( 'Link', 'sgs-blocks' ) }
-								value={ {
-									url: icon.url || '',
-									linkTarget: icon.opensInNewTab !== false ? '_blank' : '_self',
-									rel: icon.rel || '',
-								} }
-								targetMode="boolean"
-								showDownload={ false }
-								onChange={ ( next ) => {
-									const updated = [ ...icons ];
-									const item = { ...updated[ index ] };
-									if ( undefined !== next.url ) {
-										item.url = next.url || '';
-									}
-									if ( undefined !== next.linkTarget ) {
-										item.opensInNewTab = '_blank' === next.linkTarget;
-									}
-									if ( undefined !== next.rel ) {
-										item.rel = next.rel || '';
-									}
-									updated[ index ] = item;
-									setAttributes( { icons: updated } );
-								} }
-							/>
-							<TextControl
-								label={ __( 'Accessible label', 'sgs-blocks' ) }
-								value={ icon.label || '' }
-								onChange={ ( val ) => updateIcon( index, 'label', val ) }
-								placeholder={ defaultAccessibleLabel( icon.platform ) }
-								help={ __( 'Accessible name (aria-label), auto-generated. Edit to override — leave empty to keep the auto default shown above.', 'sgs-blocks' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<DesignTokenPicker
-								label={ __( 'Icon colour (this icon only)', 'sgs-blocks' ) }
-								help={ __( 'Overrides the brand or theme colour for this icon. Leave empty to keep it.', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: icon.colour || '',
-										onChange: ( val ) => updateIcon( index, 'colour', val ?? '' ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: icon.colourHover || '',
-										onChange: ( val ) => updateIcon( index, 'colourHover', val ?? '' ),
-									},
-								] }
-							/>
-							{ 'custom' === icon.platform && (
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) => {
-											updateIcon( index, 'customIconId', media.id );
-											updateIcon( index, 'customIconUrl', media.url );
-										} }
-										allowedTypes={ [ 'image/svg+xml', 'image' ] }
-										value={ icon.customIconId }
-										render={ ( { open } ) => (
-											<Button variant="secondary" onClick={ open } className="sgs-social-icons-editor__upload">
-												{ icon.customIconUrl ? __( 'Replace icon', 'sgs-blocks' ) : __( 'Upload custom icon (SVG)', 'sgs-blocks' ) }
-											</Button>
-										) }
-									/>
-								</MediaUploadCheck>
-							) }
-							<Flex justify="flex-end" gap={ 1 } className="sgs-social-icons-editor__actions">
-								<Button icon="arrow-up-alt2" onClick={ () => moveIcon( index, -1 ) } disabled={ 0 === index } label={ __( 'Move up', 'sgs-blocks' ) } />
-								<Button icon="arrow-down-alt2" onClick={ () => moveIcon( index, 1 ) } disabled={ index === icons.length - 1 } label={ __( 'Move down', 'sgs-blocks' ) } />
-								<Button icon="trash" isDestructive onClick={ () => removeIcon( index ) } label={ __( 'Remove', 'sgs-blocks' ) } />
-							</Flex>
-						</div>
-					) ) }
-					<Button variant="secondary" onClick={ addIcon }>
-						{ __( 'Add social link', 'sgs-blocks' ) }
-					</Button>
-				</PanelBody>
-				) }
-
-				{ /* Typography — the shared TypographyControls component +
-				   sgs_typography_css_rule() render.php helper. Root prefix "" —
-				   the block has no rendered text label (aria-label only), so the
-				   root is the only sensible typography target. */ }
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showWritingMode
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-					/>
-				</PanelBody>
-
-				{ /* ── Spacing panel ── padding/margin are each a single block-owned
-				   tier-object attr { desktop, tablet, mobile }, written via
-				   ResponsiveOverride + SgsBoxControl; read directly by this
-				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveOverride
-						value={ attributes.padding }
-						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
-					>
+					<ResponsiveOverride value={ attributes.padding } onChange={ ( obj ) => setAttributes( { padding: obj } ) }>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveOverride
-						value={ attributes.margin }
-						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
-					>
+					<ResponsiveOverride value={ attributes.margin } onChange={ ( obj ) => setAttributes( { margin: obj } ) }>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Margin', 'sgs-blocks' ) }
-								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
@@ -651,131 +419,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
-
-				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsBorderControl
-						widthValues={ wrapperBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { wrapperBorderWidth: next } ) }
-						widthPresets={ [ '10', '20', '30' ] }
-						styleValue={ wrapperBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { wrapperBorderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourStates={ [
-							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: wrapperBorderColour,
-							  onChange: ( val ) => setAttributes( { wrapperBorderColour: val ?? '' } ),
-							  gradientValue: wrapperBorderColourGradient,
-							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourGradient: val ?? '' } ) },
-							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: wrapperBorderColourHover,
-							  onChange: ( val ) => setAttributes( { wrapperBorderColourHover: val ?? '' } ),
-							  gradientValue: wrapperBorderColourHoverGradient,
-							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourHoverGradient: val ?? '' } ) },
-						] }
-						radiusValues={ {
-							base: attributes.borderRadius?.desktop ?? {},
-							tablet: attributes.borderRadius?.tablet ?? {},
-							mobile: attributes.borderRadius?.mobile ?? {},
-						} }
-						onRadiusChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-						} }
-					/>
-				</PanelBody>
 			</InspectorControls>
-
-			<div { ...blockProps }>
-				{ isSiteInfoSource ? (
-					// Editor-only preview: the real network list is resolved server-side
-					// (Sgs_Site_Info) from what the operator has actually filled in, so
-					// this canvas preview shows every possible network rather than
-					// guessing which ones currently have a URL saved.
-					SITE_INFO_NETWORKS.map( ( platform ) => (
-						<span
-							key={ platform }
-							className="sgs-social-icons__item"
-							style={ {
-								...itemBoxSizeStyle,
-								color: 'brand' === colourMode
-									? ( PLATFORM_BRAND_COLOURS[ platform ] || PLATFORM_BRAND_COLOURS.custom )
-									: undefined,
-								borderImage: itemBorderImage,
-							} }
-						>
-							<span className="sgs-social-icons__icon" aria-hidden="true">
-								{ /* iconGlyphColourGradient real mechanism (render.php):
-								   `sgs_svg_stroke_gradient()` builds an SVG
-								   `stroke:url(#id)` declaration + `<linearGradient>` def —
-								   NOT a background-image/currentColor technique. IconPreview
-								   itself accepts a `gradient` prop and applies this exact
-								   technique (`withSvgStrokeGradient()`,
-								   src/utils/svg-gradient-preview.js) via its own
-								   loadLucide()/withInlineFillStroke() path — pass it through
-								   rather than reimplementing it here. */ }
-								<BrandIconGlyph
-									platform={ platform }
-									size={ glyphSize }
-									colourMode={ colourMode }
-									fallback={ (
-										<IconPreview
-											source="lucide"
-											name={ PLATFORM_ICONS[ platform ] || 'link' }
-											size={ glyphSize }
-											gradient={ iconGlyphColourGradient }
-										/>
-									) }
-								/>
-							</span>
-							{ showLabels && (
-								<span className="sgs-social-icons__label">
-									{ PLATFORM_LABELS[ platform ] || platform }
-								</span>
-							) }
-						</span>
-					) )
-				) : icons.length === 0 ? (
-					<p style={ { opacity: 0.5 } }>{ __( 'Add social links in the sidebar…', 'sgs-blocks' ) }</p>
-				) : (
-					icons.map( ( icon, i ) => (
-						<span
-							key={ i }
-							className="sgs-social-icons__item"
-							style={ {
-								...itemBoxSizeStyle,
-								color: icon.colour
-									? resolveColourToken( icon.colour, palette )
-									: ( 'brand' === colourMode
-										? ( PLATFORM_BRAND_COLOURS[ icon.platform ] || PLATFORM_BRAND_COLOURS.custom )
-										: undefined ),
-								borderImage: itemBorderImage,
-							} }
-						>
-							<span className="sgs-social-icons__icon" aria-hidden="true">
-								{ 'custom' === icon.platform && icon.customIconUrl ? (
-									<img src={ icon.customIconUrl } alt="" width={ glyphSize } height={ glyphSize } />
-								) : (
-									<BrandIconGlyph
-										platform={ icon.platform }
-										size={ glyphSize }
-										colourMode={ colourMode }
-										fallback={ (
-											<IconPreview
-												source="lucide"
-												name={ PLATFORM_ICONS[ icon.platform ] || 'link' }
-												size={ glyphSize }
-												gradient={ iconGlyphColourGradient }
-											/>
-										) }
-									/>
-								) }
-							</span>
-							{ showLabels && (
-								<span className="sgs-social-icons__label">
-									{ icon.label || PLATFORM_LABELS[ icon.platform ] || icon.platform }
-								</span>
-							) }
-						</span>
-					) )
+			<div { ...innerBlocksProps }>
+				{ glyphGradient.gradients.length > 0 && (
+					<svg className="sgs-social-icons__defs" aria-hidden="true" focusable="false">
+						<defs>
+							{ glyphGradient.gradients.map( ( g ) => (
+								<SvgGradientDefs key={ g.id } id={ g.id } gradient={ g.gradient } />
+							) ) }
+						</defs>
+					</svg>
 				) }
+				{ glyphGradient.css && <style>{ glyphGradient.css }</style> }
+				{ innerBlocksProps.children }
 			</div>
 		</>
 	);

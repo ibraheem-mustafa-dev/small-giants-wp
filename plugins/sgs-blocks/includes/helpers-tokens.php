@@ -942,12 +942,9 @@ function sgs_block_background_layer_css( string $selector, string $paint_decl, s
  *
  * ⭐ OPTIONAL HOVER PAIR (2026-09-06) — `$hover_flat`/`$hover_gradient` fold a
  * hover state into the SAME call, emitting `--{var}-hover` /
- * `--{var}-hover-gradient` alongside the resting pair. This is the EXACT
- * naming convention `sgs/social-icons` and `sgs/option-picker` already used
- * by calling this function TWICE by hand (`'sgs-social-bg'` +
- * `'sgs-social-bg-hover'`) — folding it in removes that duplication for any
- * NEW/migrated caller without touching either of those two working call
- * sites. Unlike the icon-gradient primitive (`sgs_icon_gradient_css()`),
+ * `--{var}-hover-gradient` alongside the resting pair (`sgs/social-icons`
+ * prints its group background this way as `sgs-si-bg`; `sgs/option-picker`
+ * still calls this function twice by hand). Unlike the icon-gradient primitive (`sgs_icon_gradient_css()`),
  * there was never a structural reason for this one to stay single-state: it
  * returns bare declaration strings with no unique-id/defs-injection side
  * effect and builds no selector itself (the block's own static `style.css`

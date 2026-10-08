@@ -637,7 +637,7 @@ foreach ( $items as $tb_item_index => $item ) {
 			// colour) and already escapes the value. fillColour VARIES per item, so
 			// (FR-32-4, D345) it cannot be a single scoped rule on the block root —
 			// emitted into a `:nth-child(N)` scoped rule instead (same mechanism as
-			// sgs/social-icons' per-item brand colour). Every item renders its
+			// sgs/pricing-table's per-plan ribbon colour). Every item renders its
 			// `.sgs-trust-bar__badge` wrapper unconditionally, so the badge's own
 			// 1-based position is $tb_item_index + 1 — PLUS $tb_badge_offset, which
 			// accounts for any non-badge element sibling sharing the badges' parent

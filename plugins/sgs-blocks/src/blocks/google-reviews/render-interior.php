@@ -140,7 +140,7 @@ if ( $show_breakdown && ! empty( $all_reviews ) ) :
 				// gr_pct VARIES per star row (FR-32-4, D345), so it cannot be a
 				// single scoped rule on the block root; emitted into a
 				// `:nth-child(N)` scoped rule instead (same mechanism as
-				// sgs/social-icons' / sgs/pricing-table's per-item values) — every
+				// sgs/pricing-table's per-item values) — every
 				// row renders `.sgs-google-reviews__breakdown-row` unconditionally
 				// (all 5 star tiers), so position is stable.
 				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . sgs_css_length_sanitise( $gr_pct ) . '%;}';

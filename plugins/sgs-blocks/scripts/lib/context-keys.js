@@ -49,6 +49,17 @@ function readsContextKey( code, key ) {
 	return bracket.test( code ) || destructured.test( code ) || param.test( code ) || dot;
 }
 
+/**
+ * Whether front-end PHP hands its whole block context to a helper: `fn( ..., $block->context )`, or the null-safe
+ * `fn( $block->context ?? array() )` a render.php uses when it may also receive a plain parsed-block array.
+ *
+ * @param {string} code Source with comments stripped.
+ * @return {boolean} True when the context is delegated.
+ */
+function delegatesContext( code ) {
+	return /\(\s*[^()]*\$block->context\s*(?:\?\?\s*(?:array\(\s*\)|\[\s*\]))?\s*[,)]/.test( code );
+}
+
 function listFiles( dir ) {
 	const out = [];
 	for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
@@ -99,8 +110,7 @@ function contextKeyConsumers( opts = {} ) {
 		const files = listFiles( dir );
 		const front = readCode( files.filter( isFrontEnd ) );
 		const editor = readCode( files.filter( ( f ) => ! isFrontEnd( f ) ) );
-		// The block hands its whole context to a helper: `fn( ..., $block->context )`.
-		const delegates = /\(\s*[^()]*\$block->context\s*[,)]/.test( front );
+		const delegates = delegatesContext( front );
 		const name = meta.name || path.basename( dir );
 		for ( const key of used ) {
 			const entry = out.get( key ) || { users: new Set(), editor: new Set(), frontend: new Set() };
@@ -150,8 +160,18 @@ function selfTest() {
 	];
 	const fails = cases.filter( ( [ code, key, want ] ) => readsContextKey( code, key ) !== want );
 	fails.forEach( ( [ code, key, want ] ) => process.stdout.write( `FAIL ${ key } in ${ JSON.stringify( code ) } expected ${ want }\n` ) );
-	process.stdout.write( `[context-keys] self-test ${ fails.length ? 'FAILED' : 'OK' } (${ cases.length } cases)\n` );
-	return fails.length ? 1 : 0;
+	const delegation = [
+		[ '$x = helper( $attributes, $block->context );', true ],
+		[ '$x = helper( $block->context ?? array() );', true ],
+		[ '$x = helper( $block->context ?? [] );', true ],
+		[ '$x = helper( $block->context ?? $fallback );', false ],
+		[ '$x = $block->context;', false ],
+	];
+	const delegationFails = delegation.filter( ( [ code, want ] ) => delegatesContext( code ) !== want );
+	delegationFails.forEach( ( [ code, want ] ) => process.stdout.write( `FAIL delegation in ${ JSON.stringify( code ) } expected ${ want }\n` ) );
+	const total = fails.length + delegationFails.length;
+	process.stdout.write( `[context-keys] self-test ${ total ? 'FAILED' : 'OK' } (${ cases.length + delegation.length } cases)\n` );
+	return total ? 1 : 0;
 }
 
 if ( require.main === module ) {
@@ -165,4 +185,4 @@ if ( require.main === module ) {
 	process.stdout.write( JSON.stringify( json, null, process.argv.includes( '--json' ) ? 0 : 1 ) + '\n' );
 }
 
-module.exports = { readsContextKey, contextKeyConsumers, consumedContextKeys, stripComments };
+module.exports = { readsContextKey, delegatesContext, contextKeyConsumers, consumedContextKeys, stripComments };

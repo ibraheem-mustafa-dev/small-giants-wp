@@ -394,7 +394,7 @@ $card_grid_per_item_tag = $card_grid_per_item_css ? '<style>' . wp_strip_all_tag
 
 // FR-32-4a (no-inline contract): the scoped <style> tags are emitted BEFORE
 // the wrapper — siblings of the block ROOT, not of the items — exactly as
-// sgs/gallery, sgs/google-reviews and sgs/social-icons do, so $inner_html holds
+// sgs/gallery and sgs/google-reviews do, so $inner_html holds
 // ONLY the card items and an item's position among its siblings is its real
 // position (the per-tile entrance stagger counts it). Relative order of the
 // tags is preserved, and each is a `.{uid}`-scoped rule, so moving them earlier

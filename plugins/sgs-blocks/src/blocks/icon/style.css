@@ -10,7 +10,8 @@
  *
  * Group defaults a wrapper may set (inherited by every child icon): --sgs-si-size, --sgs-si-shape-w,
  * --sgs-si-shape-h, --sgs-si-colour, --sgs-si-colour-hover, --sgs-si-bg, --sgs-si-bg-hover,
- * --sgs-si-border-colour, --sgs-si-border-colour-hover.
+ * --sgs-si-border-colour, --sgs-si-border-colour-hover, and --sgs-si-border-width / --sgs-si-border-style, painted
+ * only on an icon render.php marks .sgs-icon--group-border (inside a row with a group border, no border of its own).
  */
 
 .wp-block-sgs-icon {
@@ -84,6 +85,8 @@
 
 .sgs-icon--has-bg .sgs-icon__shape {
 	background-color: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface))));
+	/* A wrapper's group gradient; render.php sets --sgs-icon-bg-image:none for an icon with its own background. */
+	background-image: var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none));
 }
 
 .sgs-icon--shape-circle .sgs-icon__shape {
@@ -97,6 +100,13 @@
 
 .sgs-icon--shape-pill .sgs-icon__shape {
 	border-radius: 9999px;
+}
+
+/* A wrapping row's group border, for an icon with no border of its own (its own border prints on a more specific
+ * scoped rule and wins). */
+.sgs-icon--group-border .sgs-icon__shape {
+	border-width: var(--sgs-si-border-width, 0);
+	border-style: var(--sgs-si-border-style, solid);
 }
 
 /* ── Glyph ──────────────────────────────────────────────────────────────── */
@@ -174,6 +184,7 @@
 .sgs-icon--has-bg .sgs-icon__link:focus-visible .sgs-icon__shape {
 	color: var(--sgs-icon-colour-hover, var(--sgs-si-colour-hover, var(--sgs-icon-brand-glyph-hover, var(--wp--preset--color--surface))));
 	background-color: var(--sgs-icon-bg-hover, var(--sgs-si-bg-hover, var(--sgs-icon-brand-ground-hover, var(--wp--preset--color--primary))));
+	background-image: var(--sgs-icon-bg-hover-image, var(--sgs-si-bg-hover-gradient, var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none))));
 }
 
 /* The link's name, read by screen readers, never shown. */

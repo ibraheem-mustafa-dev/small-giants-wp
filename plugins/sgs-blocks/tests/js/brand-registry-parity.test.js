@@ -3,8 +3,7 @@
  * includes/data/brand-registry.json and derive the same things from it. Runs the PHP side
  * (tests/php/fixtures/brand-registry-dump.php) and compares, value for value, with the JS twins: the registry as
  * read, each brand's D5 paint, the accessible-name chain and the length allowlist. Also asserts no shipped source
- * outside the registry carries the brand path or colour list (the old social-icons copies are deleted in Phase B
- * and are the only exemption).
+ * outside the registry carries the brand path or colour list.
  *
  * Negative control: 'a planted divergence is caught' feeds the comparison a changed paint and expects it to differ.
  */
@@ -92,8 +91,7 @@ describe( 'brand registry parity', () => {
 		};
 		walk( path.join( PLUGIN, 'src' ) );
 		walk( path.join( PLUGIN, 'includes' ) );
-		// social-icons' own copies are deleted with the block's rebuild (plan Phase B step 1).
-		expect( offenders.filter( ( f ) => ! f.startsWith( 'src/blocks/social-icons/' ) ) ).toEqual( [] );
+		expect( offenders ).toEqual( [] );
 	} );
 
 	it( 'the Brands picker tab is opt-in', () => {

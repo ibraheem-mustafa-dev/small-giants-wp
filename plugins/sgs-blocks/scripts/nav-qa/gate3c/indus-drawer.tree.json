@@ -291,41 +291,66 @@
         "name": "sgs/social-icons",
         "attributes": {
           "colourMode": "brand",
-          "iconStyle": "circle",
-          "iconSize": 38,
-          "circleGlyphSize": 15,
-          "gap": "6px",
-          "textAlign": "center",
+          "childIconShape": "circle",
+          "childIconShowBackground": true,
+          "childIconSize": {
+            "desktop": "15px"
+          },
+          "childIconShapeSize": {
+            "desktop": {
+              "width": "38px"
+            }
+          },
+          "gap": {
+            "desktop": "6px"
+          },
+          "rowAlign": "center",
           "margin": {
             "desktop": {
               "top": "26px"
             }
-          },
-          "icons": [
-            {
-              "platform": "linkedin",
-              "url": "#",
-              "label": "LinkedIn"
-            },
-            {
-              "platform": "facebook",
-              "url": "#",
-              "label": "Facebook"
-            },
-            {
-              "platform": "google",
-              "colour": "#EA4335",
-              "url": "#",
-              "label": "Google"
-            },
-            {
-              "platform": "instagram",
-              "colour": "#E1306C",
-              "url": "#",
-              "label": "Instagram"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconSource": "brand",
+              "brandName": "linkedin",
+              "linkUrl": "#",
+              "ariaLabel": "LinkedIn"
             }
-          ]
-        }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconSource": "brand",
+              "brandName": "facebook",
+              "linkUrl": "#",
+              "ariaLabel": "Facebook"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconSource": "brand",
+              "brandName": "google",
+              "linkUrl": "#",
+              "ariaLabel": "Google",
+              "backgroundColour": "#EA4335"
+            }
+          },
+          {
+            "name": "sgs/icon",
+            "attributes": {
+              "iconSource": "brand",
+              "brandName": "instagram",
+              "linkUrl": "#",
+              "ariaLabel": "Instagram",
+              "backgroundColour": "#E1306C"
+            }
+          }
+        ]
       }
     ]
   }

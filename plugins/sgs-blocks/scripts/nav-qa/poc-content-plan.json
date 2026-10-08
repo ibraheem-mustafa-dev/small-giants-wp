@@ -2,7 +2,7 @@
   "_doc": "POC content plan for the sgs/nav-drawer variant exit gate (Spec 36 FR-36-6). Consumed by build-poc-fixtures.py. Every label and every line of copy here was HARVESTED LIVE from the reference site's open drawer and is recorded in labels-<site>.json in .claude/reports/2026-07-28-drawer-code-extraction/. Nothing here is invented: the design gate's §6 rule is that POC fixtures are exact clones INCLUDING content, so a visual difference between our variant and the reference is attributable to the BLOCK, never to content drift. Genericising this copy is a named pre-production step, never a POC step.",
   "_navMenuAttrs_note": "Authoring block markup directly does NOT apply the seeded child attributes a look carries — those only fire when an operator inserts the look itself. So each variant's sgs/nav-drawer-menu attrs are restated here to match the corresponding drawer pattern (theme/sgs-theme/patterns/drawer-<name>.php) exactly.",
   "_known_fidelity_limits": [
-    "sgs/social-icons has no Vimeo or Dribbble platform slug (render.php $platform_icons). buck uses Vimeo, dogstudio uses Dribbble — both mapped to platform 'website' with a label override. This is a real framework gap vs the references, recorded not hidden.",
+    "The brand registry (includes/data/brand-registry.json) has no Vimeo or Dribbble mark. buck uses Vimeo, dogstudio uses Dribbble — both drawn as the Lucide globe with the label as the accessible name. This is a real framework gap vs the references, recorded not hidden.",
     "dogstudio's decorative index numbers (01-05) beside each link are out of scope by the design gate's own out-of-scope list.",
     "the reference site's 'What we do' has a collapsed submenu (Branding/Websites/E-commerce/Marketing) at height:0 — excluded, as it is not part of the default open state.",
     "Two harvested values are dynamic, not fixed strings (studionamma's live city+clock, the reference site's rotating tagline); the mechanism was recorded in the harvest and a stable snapshot is used here."
@@ -80,18 +80,7 @@
       },
       "children": [
         { "block": "sgs/text", "attrs": { "text": "Watch our Showreel" } },
-        {
-          "block": "sgs/social-icons",
-          "attrs": {
-            "icons": [
-              { "platform": "facebook", "url": "#", "label": "Facebook" },
-              { "platform": "instagram", "url": "#", "label": "Instagram" },
-              { "platform": "website", "url": "#", "label": "Dribbble" },
-              { "platform": "twitter", "url": "#", "label": "Twitter" },
-              { "platform": "email", "url": "#", "label": "Newsletter" }
-            ]
-          }
-        },
+        {"block": "sgs/social-icons", "attrs": {}, "innerBlocks": [{"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "facebook", "linkUrl": "#", "ariaLabel": "Facebook"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "instagram", "linkUrl": "#", "ariaLabel": "Instagram"}}, {"block": "sgs/icon", "attrs": {"iconSource": "lucide", "iconName": "globe", "linkUrl": "#", "ariaLabel": "Dribbble"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "x", "linkUrl": "#", "ariaLabel": "Twitter"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "email", "linkUrl": "#", "ariaLabel": "Newsletter"}}]},
         { "block": "sgs/text", "attrs": { "text": "We Make Good Shit" } }
       ]
     },
@@ -149,16 +138,7 @@
       "children": [
         { "block": "sgs/text", "attrs": { "text": "© 2026 BUCK" } },
         { "block": "sgs/text", "attrs": { "text": "Privacy Policy" } },
-        {
-          "block": "sgs/social-icons",
-          "attrs": {
-            "icons": [
-              { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
-              { "platform": "instagram", "url": "#", "label": "Instagram" },
-              { "platform": "website", "url": "#", "label": "Vimeo" }
-            ]
-          }
-        }
+        {"block": "sgs/social-icons", "attrs": {}, "innerBlocks": [{"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "linkedin", "linkUrl": "#", "ariaLabel": "LinkedIn"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "instagram", "linkUrl": "#", "ariaLabel": "Instagram"}}, {"block": "sgs/icon", "attrs": {"iconSource": "lucide", "iconName": "globe", "linkUrl": "#", "ariaLabel": "Vimeo"}}]}
       ]
     },
     {
@@ -219,16 +199,7 @@
           }
         },
         { "block": "sgs/text", "attrs": { "text": "Keep up to date" } },
-        {
-          "block": "sgs/social-icons",
-          "attrs": {
-            "icons": [
-              { "platform": "twitter", "url": "#", "label": "X (Twitter)" },
-              { "platform": "linkedin", "url": "#", "label": "LinkedIn" },
-              { "platform": "instagram", "url": "#", "label": "Instagram" }
-            ]
-          }
-        },
+        {"block": "sgs/social-icons", "attrs": {}, "innerBlocks": [{"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "x", "linkUrl": "#", "ariaLabel": "X (Twitter)"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "linkedin", "linkUrl": "#", "ariaLabel": "LinkedIn"}}, {"block": "sgs/icon", "attrs": {"iconSource": "brand", "brandName": "instagram", "linkUrl": "#", "ariaLabel": "Instagram"}}]},
         {
           "block": "sgs/card-grid",
           "attrs": {

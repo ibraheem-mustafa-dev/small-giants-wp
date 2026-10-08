@@ -32,6 +32,15 @@
 
 <!-- wp:sgs/business-info /-->
 
-<!-- wp:sgs/social-icons /-->
+<!-- wp:sgs/social-icons -->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"whatsapp","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.whatsapp"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"facebook","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.facebook"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"instagram","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.instagram"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"x","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.twitter"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"linkedin","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.linkedin"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"youtube","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.youtube"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"tiktok","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.tiktok"}}}}} /-->
+<!-- wp:sgs/icon {"iconSource":"brand","brandName":"google","metadata":{"bindings":{"linkUrl":{"source":"sgs/site-info","args":{"key":"socials.google"}}}}} /-->
+<!-- /wp:sgs/social-icons -->
 <!-- /wp:sgs/container -->
 <!-- /wp:sgs/nav-drawer -->

@@ -1,21 +1,12 @@
 /* Social Icons — editor-only */
 
-/* Inspector UX: repeater item controls run full-width and
- * stacked, not squeezed 3-across in the sidebar. */
-.sgs-social-icons-editor__item {
-	margin-bottom: 16px;
-	padding-bottom: 16px;
-	border-bottom: 1px solid #e0e0e0;
+/* The Links checklist: one row per Site Info key. */
+.sgs-social-icons-links__row {
+	margin-block-end: 8px;
 }
 
-.sgs-social-icons-editor__item > * + * {
-	margin-top: 8px;
-}
-
-.sgs-social-icons-editor__upload {
-	margin-top: 4px;
-}
-
-.sgs-social-icons-editor__actions {
-	margin-top: 8px;
+.sgs-social-icons-links__flag {
+	margin-block: 0 8px;
+	color: #b26200;
+	font-size: 12px;
 }

@@ -715,42 +715,42 @@
   "sgs/social-icons": {
     "core/social-link": {
       "label": {
-        "reason": "Per-icon label lives inside the `icons` repeater objects — nested, invisible to the flat attr-name scan.",
+        "reason": "Each social link is an sgs/icon child of sgs/social-icons, so core/social-link maps to sgs/icon: its accessible name is the icon's `ariaLabel` (blank: the registry label for the bound Site Info key).",
         "wave": "over-report"
       },
       "rel": {
-        "reason": "No explicit per-icon rel control; deferred (verify whether rel=noopener is auto-applied at render).",
-        "wave": "Wave-parity-1"
+        "reason": "Each social link is an sgs/icon child of sgs/social-icons, so core/social-link maps to sgs/icon: the icon's `linkRel` (noopener noreferrer is added for a new tab).",
+        "wave": "over-report"
       },
       "service": {
-        "reason": "Per-icon service/platform lives inside the `icons` repeater objects — nested.",
+        "reason": "Each social link is an sgs/icon child of sgs/social-icons, so core/social-link maps to sgs/icon: the platform is the icon's `brandName` glyph and the Site Info key its link is bound to.",
         "wave": "over-report"
       },
       "url": {
-        "reason": "Per-icon URL lives inside the `icons` repeater objects — nested.",
+        "reason": "Each social link is an sgs/icon child of sgs/social-icons, so core/social-link maps to sgs/icon: the icon's `linkUrl`, bound to Site Info.",
         "wave": "over-report"
       }
     },
     "core/social-links": {
       "iconBackgroundColor": {
-        "reason": "No separate icon-shape background-colour control distinct from `iconColour` (foreground); deferred.",
-        "wave": "Wave-parity-1"
-      },
-      "openInNewTab": {
-        "reason": "No global open-all-links-in-new-tab toggle; deferred.",
-        "wave": "Wave-parity-1"
-      },
-      "showLabels": {
-        "reason": "No global toggle to show text labels alongside icons; deferred.",
-        "wave": "Wave-parity-1"
-      },
-      "size": {
-        "reason": "Equivalent to `iconSize`.",
+        "reason": "Equivalent to the row's `childIconBackground` group default.",
         "wave": "over-report"
       },
       "iconColor": {
-        "reason": "Genuine SGS equivalent under a different name, and SPLIT into three controls by D643 (2026-08-16). Core's single `iconColor` maps to `iconGlyphColour` (the SVG glyph, painted via `color` + `stroke=\"currentColor\"`); the split also added `iconBackground` and `iconBorderColour`, which core has no equivalent for at all - so SGS now exceeds core here rather than lagging it. The split was required because one attribute driving background + border + glyph cannot take a gradient: a gradient valid as a background is meaningless as a glyph colour. Hover variants exist for all three. This finding appeared the moment the rename landed, which is the audit matching core attr names literally - the capability never went missing.",
+        "reason": "Equivalent to the row's `childIconColour` group default (the glyph).",
         "wave": "over-report"
+      },
+      "size": {
+        "reason": "Equivalent to the row's `childIconSize` group default.",
+        "wave": "over-report"
+      },
+      "openInNewTab": {
+        "reason": "No row-wide toggle: each sgs/icon child sets its own `linkTarget`; deferred.",
+        "wave": "Wave-parity-1"
+      },
+      "showLabels": {
+        "reason": "The row shows icons only (each link's name is visually hidden text); no visible-label option; deferred.",
+        "wave": "Wave-parity-1"
       }
     }
   },

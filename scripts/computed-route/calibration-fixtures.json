@@ -91,14 +91,38 @@
   },
   "sgs/social-icons": {
     "attributes": {
-      "source": "site-info",
-      "iconStyle": "boxed",
-      "iconSize": 18
+      "childIconShowBackground": true,
+      "childIconBorderWidth": {
+        "top": "1px",
+        "right": "1px",
+        "bottom": "1px",
+        "left": "1px"
+      }
     },
+    "inner": [
+      {
+        "name": "sgs/icon",
+        "attributes": {
+          "iconSource": "brand",
+          "brandName": "facebook",
+          "linkUrl": "https://example.com/",
+          "ariaLabel": "Facebook"
+        }
+      },
+      {
+        "name": "sgs/icon",
+        "attributes": {
+          "iconSource": "brand",
+          "brandName": "instagram",
+          "linkUrl": "https://example.com/",
+          "ariaLabel": "Instagram"
+        }
+      }
+    ],
     "variants": [
       {},
       {
-        "iconStyle": "filled"
+        "childIconShape": "circle"
       }
     ]
   },

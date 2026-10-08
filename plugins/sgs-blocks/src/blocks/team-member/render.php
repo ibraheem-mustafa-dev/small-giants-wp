@@ -328,7 +328,7 @@ $bio_html  = ( $bio && ! $is_compact ) ? sprintf( '<p class="sgs-team-member__bi
 // ---------------------------------------------------------------------------
 // 9. Social links — rendered as nested elements from the socialLinks scalar
 // attr. NOT from $content (pure leaf block). Hidden in Compact mode.
-// Platform -> Lucide icon name mapping (mirrors sgs/social-icons render.php).
+// Platform -> Lucide icon name mapping.
 // ---------------------------------------------------------------------------
 $social_html = '';
 if ( ! $is_compact && ! empty( $social_links ) ) {

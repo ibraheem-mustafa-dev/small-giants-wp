@@ -486,7 +486,7 @@ ob_start();
 				// `aspect-ratio: var(...)` rule. VARIES per item (FR-32-4, D345),
 				// so it cannot be a single scoped rule on the block root; emitted
 				// into a `:nth-child(N)` scoped rule instead (same mechanism as
-				// sgs/social-icons' / sgs/card-grid's per-item values) — every
+				// sgs/card-grid's per-item values) — every
 				// image renders `.sgs-gallery__item` unconditionally, so position
 				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
 				// aspect-ratio grammar needs (e.g. "16/9"). No `style` attribute

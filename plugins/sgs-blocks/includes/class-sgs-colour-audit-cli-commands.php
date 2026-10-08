@@ -125,7 +125,7 @@ final class Sgs_Colour_Audit_Cli_Commands {
 		'sgs/site-footer-row'    => array( 'backgroundColour', 'backgroundColourHover', 'borderColour', 'borderColourGradient', 'textColour', 'textColourHover' ),
 		'sgs/site-header'        => array( 'backgroundColour', 'backgroundColourGradient', 'backgroundColourScrolled', 'backgroundColourScrolledGradient', 'backgroundOverlayColour', 'backgroundOverlayColourHover', 'borderColour', 'borderColourGradient', 'shadowColour', 'textColour', 'textColourScrolled' ),
 		'sgs/site-header-row'    => array( 'backgroundColour', 'backgroundColourHover', 'borderColour', 'borderColourGradient', 'textColour', 'textColourHover' ),
-		'sgs/social-icons'       => array( 'iconBackground', 'iconBackgroundHover', 'iconBorderColour', 'iconBorderColourGradient', 'iconBorderColourHover', 'iconBorderColourHoverGradient', 'iconGlyphColour', 'iconGlyphColourHover', 'wrapperBorderColour', 'wrapperBorderColourGradient', 'wrapperBorderColourHover', 'wrapperBorderColourHoverGradient' ),
+		'sgs/social-icons'       => array( 'childIconBackground', 'childIconBackgroundHover', 'childIconBorderColour', 'childIconBorderColourHover', 'childIconColour', 'childIconColourHover' ),
 		'sgs/star-rating'        => array( 'backgroundColour', 'borderColour', 'borderColourGradient', 'borderColourHover', 'borderColourHoverGradient', 'textColour', 'textColourGradient', 'textColourHover', 'textColourHoverGradient' ),
 		'sgs/tab'                => array( 'backgroundColour', 'borderColour', 'borderColourGradient', 'textColour', 'textColourHover' ),
 		'sgs/table-of-contents'  => array( 'activeLinkColour', 'borderColour', 'borderColourGradient', 'linkColour', 'titleColour', 'titleColourHover' ),

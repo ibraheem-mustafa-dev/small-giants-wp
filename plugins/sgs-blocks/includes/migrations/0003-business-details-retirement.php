@@ -14,7 +14,7 @@
  *    (e.g. "+447700000000", sanitised with a digits/+/spaces/hyphens/
  *    parentheses filter) — directly into `socials.whatsapp`, which Site
  *    Info's admin UI presents as a `type="url"` field and every reader
- *    (sgs/social-icons via Sgs_Site_Info::get('socials.whatsapp')) treats as
+ *    (the sgs/site-info binding behind sgs/icon's linkUrl) treats as
  *    a full URL to `esc_url()` into an `href`. A bare phone number is not a
  *    valid URL, so the WhatsApp icon/link silently broke on every site 0002
  *    ran on. This migration converts the legacy phone number into a proper

@@ -2774,7 +2774,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// $grid_sel already resolves to the correct
 			// `.$uid>.sgs-container__inner` selector — the SAME selector +
 			// mechanism as $base_grid_real_decls immediately above. Unlike a
-			// per-grid-ITEM repeater (social-icons/card-grid, which need
+			// per-grid-ITEM repeater (card-grid, which needs
 			// `:nth-child()` because N items share one parent), there is exactly
 			// ONE `.sgs-container__inner` per container instance, so a single
 			// scoped rule is sufficient — no positional selector required.
