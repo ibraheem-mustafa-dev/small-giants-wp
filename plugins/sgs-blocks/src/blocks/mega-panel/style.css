@@ -43,6 +43,8 @@
 .wp-block-sgs-mega-panel {
 	display: block;
 	width: 100%;
+	/* A panel capped by its max-width centres in the box that holds it. */
+	margin-inline: auto;
 	/* Custom-property fallbacks consumed by the preset rules below. render.php
 	   overrides --sgs-mm-soft / --sgs-mm-soft-image / --sgs-mm-card (and the
 	   full colour set) per instance on the frontend; edit.js sets the

@@ -343,6 +343,29 @@ function measurePanelContentWidth( panel, wrapWidth, scale = 1 ) {
 	return found && widest > 0 ? widest : wrapWidth;
 }
 
+const WRAP_FILL_PROPS = [ '--sgs-mm-wrap-bg-colour', '--sgs-mm-wrap-bg-image', '--sgs-mm-wrap-edge-w', '--sgs-mm-wrap-edge-colour' ];
+
+/**
+ * Under `full-width` placement the wrap spans the viewport while the mega panel block inside it keeps its own capped,
+ * centred width. The wrap takes over the panel block's fill and bottom edge, read as computed values and published as
+ * custom-property VALUES (Spec 32), so the page behind never shows beside a capped panel. Any other placement clears them.
+ *
+ * @param {HTMLElement} wrap The panel wrap.
+ * @param {boolean}     full True under `full-width` placement.
+ */
+function publishWrapFill( wrap, full ) {
+	const block = full ? wrap.querySelector( ':scope > .wp-block-sgs-mega-panel' ) : null;
+	if ( ! block ) {
+		WRAP_FILL_PROPS.forEach( ( prop ) => wrap.style.removeProperty( prop ) );
+		return;
+	}
+	const cs = window.getComputedStyle( block );
+	wrap.style.setProperty( '--sgs-mm-wrap-bg-colour', cs.backgroundColor );
+	wrap.style.setProperty( '--sgs-mm-wrap-bg-image', cs.backgroundImage );
+	wrap.style.setProperty( '--sgs-mm-wrap-edge-w', cs.borderBottomWidth );
+	wrap.style.setProperty( '--sgs-mm-wrap-edge-colour', cs.borderBottomColor );
+}
+
 /**
  * Reposition a panel that overflows the right viewport edge — expressed purely
  * as CSS custom-property VALUES (`--sgs-mm-overflow-left/-right`), never a
@@ -524,6 +547,7 @@ function repositionPanel( root ) {
 		} else {
 			panel.style.removeProperty( '--sgs-mm-panel-width' );
 		}
+		publishWrapFill( panel, ! isDropdown && 'full-width' === align );
 		panel.style.setProperty( '--sgs-mm-tx', '0px' );
 		panel.style.setProperty(
 			'--sgs-mm-overflow-left',
