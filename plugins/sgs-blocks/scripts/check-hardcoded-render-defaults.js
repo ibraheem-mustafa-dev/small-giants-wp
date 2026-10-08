@@ -1600,7 +1600,7 @@ const E14_BLOCKS_BUILD = false;
 // block's editor template) is a front-end element, and the child's own root
 // controls own it (collectTemplateChildOwners).
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        7,
+	'CLASS-2':        4,
 	'CLASS-3':        1,
 	'CANNOT-RESOLVE': 2,
 };

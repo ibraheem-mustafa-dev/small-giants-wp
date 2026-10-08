@@ -325,7 +325,12 @@
 .sgs-button__note {
 	flex-shrink: 0;
 	color: inherit;
-	font-weight: 400;
 	letter-spacing: 0;
 	text-transform: none;
+}
+
+/* Weight default at (0,0,0): the note stays regular beside a bold label, yet any
+   weight set on the note element wins. */
+:where(.sgs-button__note) {
+	font-weight: 400;
 }
