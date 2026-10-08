@@ -35,6 +35,7 @@ export default function ChromeRatingControls( { attributes, setAttributes } ) {
 				<>
 					<ToggleGroupControl
 						label={ __( 'Rating position in the row', 'sgs-blocks' ) }
+						help={ __( 'End sits beside the close button.', 'sgs-blocks' ) }
 						value={ 'center' === chromeRatingPlacement ? 'center' : 'end' }
 						onChange={ ( value ) => setAttributes( { chromeRatingPlacement: value } ) }
 						isBlock
@@ -42,7 +43,7 @@ export default function ChromeRatingControls( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					>
 						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="end" label={ __( 'Beside the close button', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
 					</ToggleGroupControl>
 					<TierShow
 						label={ __( 'Show the Google rating', 'sgs-blocks' ) }
