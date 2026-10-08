@@ -67,6 +67,9 @@ export function readPage( list ) {
 		for ( const n of el.childNodes ) {
 			if ( 3 === n.nodeType ) {
 				t += n.textContent;
+			} else if ( 1 === n.nodeType && 'BR' === n.tagName ) {
+				// A line break separates words as a new line does.
+				t += ' ';
 			} else if ( 1 === n.nodeType && ! /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test( n.tagName ) ) {
 				const c = getComputedStyle( n );
 				if ( 'none' !== c.display && 'hidden' !== c.visibility && ! srOnly( n ) ) {
@@ -113,6 +116,28 @@ export function readPage( list ) {
 			// "Choose a frame" is not the earlier step title "Choose a frame and tap ..." that merely holds its words.
 			el = ( it.own && candidates.find( ( e ) => textOf.get( e ) === N( it.own ) ) ) || candidates[ 0 ] || null;
 		}
+		if ( ! el && it.own ) {
+			// Own words that exist only as bare text inside an element another block already claims (a card's <a> holding
+			// "<span>Instagram</span>@handle"): measured as their own text run, as the walker's paint.mjs::textRun does.
+			const tw = document.createTreeWalker( document.body, NodeFilter.SHOW_TEXT );
+			let node = null;
+			for ( let n = tw.nextNode(); n && ! node; n = tw.nextNode() ) {
+				if ( N( n.textContent ) === N( it.own ) && n.parentElement && ! skip( n.parentElement ) && visible( n.parentElement ) ) {
+					node = n;
+				}
+			}
+			if ( node ) {
+				const rg = document.createRange();
+				rg.selectNodeContents( node );
+				const b = rg.getBoundingClientRect();
+				const pc = getComputedStyle( node.parentElement );
+				const runBox = { x: Math.round( b.left + scrollX ), y: Math.round( b.top + scrollY ), w: Math.round( b.width ), h: Math.round( b.height ) };
+				out.push( { ref: it.ref, found: true, run: true, box: runBox, textBox: runBox,
+					inset: { top: 0, right: 0, bottom: 0, left: 0 }, ground: null, border: null, gap: null,
+					font: { size: px( pc.fontSize ), weight: pc.fontWeight, lineHeight: 'normal' === pc.lineHeight ? 'normal' : px( pc.lineHeight ), letterSpacing: pc.letterSpacing, color: pc.color, transform: pc.textTransform } } );
+				continue;
+			}
+		}
 		if ( ! el ) {
 			out.push( { ref: it.ref, found: false } );
 			continue;
@@ -127,7 +152,8 @@ export function readPage( list ) {
 		const tw = document.createTreeWalker( el, NodeFilter.SHOW_TEXT );
 		let tr = null;
 		for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
-			if ( ! n.textContent.trim() ) {
+			// Text no one sees (screen-reader-only, or parked off the page like a skip link) paints nowhere.
+			if ( ! n.textContent.trim() || ! visible( n.parentElement ) ) {
 				continue;
 			}
 			const rg = document.createRange();
@@ -149,6 +175,8 @@ export function readPage( list ) {
 			ref: it.ref,
 			found: true,
 			box: { x: Math.round( r.left + scrollX ), y: Math.round( r.top + scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
+			// Where its words paint (compared instead of the box when the other side is a text run).
+			textBox: tr ? { x: Math.round( tr.left + scrollX ), y: Math.round( tr.top + scrollY ), w: Math.round( tr.right - tr.left ), h: Math.round( tr.bottom - tr.top ) } : null,
 			inset,
 			ground,
 			border,
@@ -171,16 +199,24 @@ export function compare( d, l, width ) {
 	if ( ! d.found || ! l.found ) {
 		return d.found !== l.found ? [ { ref: d.ref, width, prop: 'found', draft: d.found, live: l.found } ] : diffs;
 	}
-	for ( const k of [ 'x', 'y', 'w', 'h' ] ) {
-		Math.abs( d.box[ k ] - l.box[ k ] ) > PX_TOL && add( `box.${ k }`, d.box[ k ], l.box[ k ] );
+	// A text run (own words that are bare text on one side) has no box of its own: compare where the words paint, and
+	// their type, and nothing that belongs to an element (inset, ground, border, gap).
+	if ( d.run || l.run ) {
+		for ( const k of [ 'x', 'y', 'w', 'h' ] ) {
+			d.textBox && l.textBox && Math.abs( d.textBox[ k ] - l.textBox[ k ] ) > PX_TOL && add( `text.${ k }`, d.textBox[ k ], l.textBox[ k ] );
+		}
+	} else {
+		for ( const k of [ 'x', 'y', 'w', 'h' ] ) {
+			Math.abs( d.box[ k ] - l.box[ k ] ) > PX_TOL && add( `box.${ k }`, d.box[ k ], l.box[ k ] );
+		}
 	}
-	for ( const k of [ 'top', 'right', 'bottom', 'left' ] ) {
+	for ( const k of ( d.run || l.run ) ? [] : [ 'top', 'right', 'bottom', 'left' ] ) {
 		Math.abs( d.inset[ k ] - l.inset[ k ] ) > PX_TOL && add( `padding.${ k }`, d.inset[ k ], l.inset[ k ] );
 	}
-	for ( const k of [ 'ground', 'border' ] ) {
+	for ( const k of ( d.run || l.run ) ? [] : [ 'ground', 'border' ] ) {
 		d[ k ] !== l[ k ] && add( k, d[ k ], l[ k ] );
 	}
-	gapKey( d.gap ) !== gapKey( l.gap ) && add( 'gap', d.gap, l.gap );
+	! ( d.run || l.run ) && gapKey( d.gap ) !== gapKey( l.gap ) && add( 'gap', d.gap, l.gap );
 	if ( d.font && l.font ) {
 		Math.abs( d.font.size - l.font.size ) > FONT_TOL && add( 'font-size', d.font.size, l.font.size );
 		const lh = ( f ) => ( 'normal' === f.lineHeight ? 'normal' : Math.round( f.lineHeight ) );
@@ -286,7 +322,10 @@ async function main() {
 			const o = d.findIndex( ( row, i ) => row.found && l[ i ].found );
 			for ( const [ side, ref ] of [ [ d, d[ o ] ], [ l, l[ o ] ] ] ) {
 				const base = ref ? { x: ref.box.x, y: ref.box.y } : { x: 0, y: 0 };
-				side.filter( ( row ) => row.found ).forEach( ( row ) => ( row.box = { ...row.box, x: row.box.x - base.x, y: row.box.y - base.y } ) );
+				side.filter( ( row ) => row.found ).forEach( ( row ) => {
+					row.box = { ...row.box, x: row.box.x - base.x, y: row.box.y - base.y };
+					row.textBox = row.textBox && { ...row.textBox, x: row.textBox.x - base.x, y: row.textBox.y - base.y };
+				} );
 			}
 			d.forEach( ( row, i ) => diffs.push( ...compare( row, l[ i ], width ) ) );
 			await ctx.close();

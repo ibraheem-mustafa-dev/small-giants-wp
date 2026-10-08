@@ -111,3 +111,75 @@ test( 'MUST FAIL (Lenses gap, 2026-10-08): a block with no gap and a flex gap of
 	assert.equal( real[ 0 ].prop, 'gap' );
 	assert.equal( compare( row( '0px 16px' ), row( null ), 375 ).length, 1, 'a one-axis gap is still a gap' );
 } );
+
+// Contact, 2026-10-08: the draft's hours are "Hours" + "Mon–Sat 9.30–17.30<br>Collections by arrangement" in one div. A
+// <br> separates words as a line break does; painted() ran "17.30" into "Collections", so the line was never found and
+// the hours container fell back to its label, which pushed the "Hours" label onto a social card holding "hours".
+test( 'MUST FAIL (Contact hours, 2026-10-08): a <br> separates words, so text after it is found', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><div id="hrs"><div>Hours</div>Mon–Sat 9.30–17.30<br>Collections by arrangement</div>
+			<a href="#g" style="display:block;border:1px solid #ccc;padding:18px">Google reviews &amp; hours</a></main>` );
+		const rows = await page.evaluate( readPage, [
+			{ ref: 'box', block: 'sgs/container', own: null, texts: [ 'hours', 'collections by arrangement' ], field: null },
+			{ ref: 'label', block: 'sgs/text', own: 'hours', texts: [], field: null },
+		] );
+		assert.equal( rows[ 0 ].found, true );
+		assert.ok( rows[ 0 ].box.h > 30, 'the container is the whole hours block, not its label' );
+		assert.equal( rows[ 1 ].border, null, 'the label is the Hours label, not the bordered card' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+// A container's painted inset is measured to its rendered text; a skip link parked at -9999px inside it is text no one
+// sees (Contact page containers read padding-left -9979px).
+test( 'MUST FAIL (Contact page inset, 2026-10-08): text parked off the page does not count in a container\'s inset', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><div style="padding:0 20px"><a href="#f" style="position:absolute;left:-9999px">Skip to the form</a>
+			<p>Hello there</p><p>Second line</p></div></main>` );
+		const rows = await page.evaluate( readPage, [ { ref: 'c', block: 'sgs/container', own: null, texts: [ 'hello there', 'second line' ], field: null } ] );
+		assert.equal( rows[ 0 ].inset.left, 20 );
+	} finally {
+		await browser.close();
+	}
+} );
+
+// Contact social cards, 2026-10-08: the draft's card is <a><span>Instagram</span>@eyecare.birmingham</a>; the card block
+// claims the <a>, so the handle block's own words exist only as bare text inside a claimed element. They are measured
+// as their own text run (the walker's paint.mjs::textRun), never reported as not found.
+test( 'MUST FAIL (Contact cards, 2026-10-08): own words that are bare text inside a claimed element are measured as a text run', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><a href="#ig" style="display:flex;flex-direction:column;width:300px;padding:16px;border:1px solid #ccc;font-size:14px"><span>Instagram</span>@eyecare.birmingham</a></main>` );
+		const rows = await page.evaluate( readPage, [
+			{ ref: 'card', block: 'sgs/container', own: null, texts: [ 'instagram', 'eyecare birmingham' ], field: null },
+			{ ref: 'handle', block: 'sgs/text', own: 'eyecare birmingham', texts: [], field: null },
+		] );
+		assert.equal( rows[ 0 ].found, true );
+		assert.equal( rows[ 1 ].found, true, 'the handle is measured as its own words' );
+		assert.ok( rows[ 1 ].box.w < 300 && rows[ 1 ].box.h < 30, 'its box is the words, not the card' );
+		assert.equal( rows[ 1 ].font.size, 14 );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'a text run against an element compares where the words paint and their type, not the element\'s box or inset', async () => {
+	const { compare } = await import( CHECK );
+	const font = { size: 14, weight: '400', lineHeight: 21, letterSpacing: 'normal', color: 'rgb(20, 20, 20)', transform: 'none' };
+	const run = { ref: 'h', found: true, run: true, box: { x: 10, y: 100, w: 120, h: 17 }, textBox: { x: 10, y: 100, w: 120, h: 17 }, inset: { top: 0, right: 0, bottom: 0, left: 0 }, ground: null, border: null, gap: null, font };
+	const el = { ref: 'h', found: true, box: { x: 10, y: 98, w: 300, h: 21 }, textBox: { x: 10, y: 100, w: 120, h: 17 }, inset: { top: 2, right: 180, bottom: 2, left: 0 }, ground: null, border: null, gap: null, font };
+	assert.deepEqual( compare( run, el, 768 ), [] );
+	assert.deepEqual( compare( run, { ...el, textBox: { ...el.textBox, y: 120 } }, 768 ).map( ( x ) => x.prop ), [ 'text.y' ], 'negative control: moved words still differ' );
+} );
