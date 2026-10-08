@@ -98,6 +98,7 @@
 				},
 				"star": {
 					"label": "Stars",
+					"layer": "OUTER",
 					"order": 5,
 					"clusters": [
 						"fill"

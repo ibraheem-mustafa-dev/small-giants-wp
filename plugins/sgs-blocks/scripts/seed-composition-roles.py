@@ -510,6 +510,14 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Google rating badge (2026-10-08, plan 2026-10-08-google-reviews-inline-header-badge):
+    # a leaf that paints its own link, logo, score, stars and caption; no children.
+    {
+        "block_slug": "sgs/google-rating-badge",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
