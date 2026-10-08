@@ -151,19 +151,6 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
-					<RangeControl
-						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
-						help={ __( 'Turns the icon and its shape without changing the space it takes up.', 'sgs-blocks' ) }
-						value={ iconRotate ?? 0 }
-						onChange={ ( value ) => setAttributes( { iconRotate: value ?? 0 } ) }
-						min={ -180 }
-						max={ 180 }
-						step={ 5 }
-						allowReset
-						resetFallbackValue={ 0 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<SelectControl
 						label={ __( 'Colours', 'sgs-blocks' ) }
 						help={
@@ -257,6 +244,19 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						value={ textAlign }
 						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( value ) => setAttributes( { textAlign: value } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+						help={ __( 'Turns the icon and its shape without changing the space it takes up.', 'sgs-blocks' ) }
+						value={ iconRotate ?? 0 }
+						onChange={ ( value ) => setAttributes( { iconRotate: value ?? 0 } ) }
+						min={ -180 }
+						max={ 180 }
+						step={ 5 }
+						allowReset
+						resetFallbackValue={ 0 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
