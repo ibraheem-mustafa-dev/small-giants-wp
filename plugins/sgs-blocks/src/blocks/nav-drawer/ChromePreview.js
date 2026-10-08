@@ -8,6 +8,7 @@
  * @package SGS\Blocks
  */
 
+import ServerSideRender from '../../components/ServerSideRender';
 import { resolveTier, tierLengthPreview } from '../../utils';
 import { chromeRowStyle, chromeSlotStyle } from './chrome-preview-style';
 
@@ -26,6 +27,31 @@ function logoUrlFor( attributes, tier ) {
 }
 
 /**
+ * The `sgs/google-rating-badge` attributes for the google-rating slot; the
+ * same object includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_attrs sends.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {Object} The badge's attributes.
+ */
+function ratingBadgeAttributes( attributes ) {
+	const badge = {
+		badgeStyle: 'pill',
+		compactBelow: 0,
+		showCount: !! attributes.chromeSlotBadgeShowCount,
+		borderStyle: 'none',
+		borderWidth: { top: '0', right: '0', bottom: '0', left: '0' },
+		backgroundColour: 'transparent',
+		padding: { desktop: { right: '0', left: '0' } },
+	};
+	const colour = ( attributes.chromeSlotColour || '' ).trim();
+	if ( colour ) {
+		badge.scoreColour = colour;
+		badge.captionColour = colour;
+	}
+	return badge;
+}
+
+/**
  * @param {Object}  props            Props.
  * @param {Object}  props.attributes Block attributes.
  * @param {string}  props.deviceTier The active editor device tier.
@@ -39,9 +65,10 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
 	const type = attributes.chromeSlotType || '';
 	const text = ( attributes.chromeSlotText || '' ).trim();
+	const isRating = 'google-rating' === type;
 	const showSlot =
 		'' !== type &&
-		'' !== text &&
+		( isRating || '' !== text ) &&
 		( 'button' !== type || !! attributes.chromeSlotUrl ) &&
 		false !== resolveTier( attributes.chromeSlotShow, tier, true ).value;
 	const placement = attributes.chromeSlotPlacement || 'after-logo';
@@ -76,7 +103,14 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 					/>
 				</LogoTag>
 			) }
-			{ showSlot && (
+			{ showSlot && isRating && (
+				<div
+					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--google-rating sgs-nav-drawer__chrome-slot--at-${ placement }` }
+				>
+					<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
+				</div>
+			) }
+			{ showSlot && ! isRating && (
 				<SlotTag
 					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--${ type } sgs-nav-drawer__chrome-slot--at-${ placement }` }
 					style={ chromeSlotStyle( attributes, tier, palette ) }

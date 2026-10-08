@@ -232,7 +232,7 @@
 						"tag": "chromeSlotHeadingLevel",
 						"css:display": "chromeSlotShow"
 					},
-					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text or button; chromeSlotText is its words). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
+					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text, button or google-rating; chromeSlotText is its words, and the google-rating badge needs none: it reads Site Info). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
 				},
 				"chromeButton": {
 					"label": "Top row button",
@@ -500,9 +500,15 @@
 				"heading",
 				"label",
 				"text",
-				"button"
+				"button",
+				"google-rating"
 			],
-			"description": "The top row's one free slot: none, a heading, a label, a line of text or a button."
+			"description": "The top row's one free slot: none, a heading, a label, a line of text, a button or a Google rating badge (rating, review count and link from Site Info, or live Google data; nothing is shown when there is no rating)."
+		},
+		"chromeSlotBadgeShowCount": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the number of reviews beside the rating when the slot is a Google rating badge. Off by default: the top row is narrow."
 		},
 		"chromeSlotText": {
 			"type": "string",

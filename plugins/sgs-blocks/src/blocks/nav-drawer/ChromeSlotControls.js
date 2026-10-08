@@ -25,6 +25,7 @@ const TYPE_OPTIONS = [
 	{ label: __( 'Label', 'sgs-blocks' ), value: 'label' },
 	{ label: __( 'Text', 'sgs-blocks' ), value: 'text' },
 	{ label: __( 'Button', 'sgs-blocks' ), value: 'button' },
+	{ label: __( 'Google rating', 'sgs-blocks' ), value: 'google-rating' },
 ];
 
 const LEVEL_OPTIONS = [ 'h2', 'h3', 'h4', 'p' ].map( ( level ) => ( {
@@ -53,6 +54,7 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 		chromeSlotNewTab,
 		chromeSlotPlacement,
 		chromeSlotShow,
+		chromeSlotBadgeShowCount,
 		chromeButtonBorderWidth,
 		chromeButtonBorderStyle,
 		chromeButtonBorderRadius,
@@ -60,6 +62,7 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 	} = attributes;
 	const type = chromeSlotType || '';
 	const isButton = 'button' === type;
+	const isRating = 'google-rating' === type;
 
 	return (
 		<>
@@ -73,13 +76,24 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 			/>
 			{ '' !== type && (
 				<>
-					<TextControl
-						label={ isButton ? __( 'Button label', 'sgs-blocks' ) : __( 'Words', 'sgs-blocks' ) }
-						value={ chromeSlotText || '' }
-						onChange={ ( value ) => setAttributes( { chromeSlotText: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					{ ! isRating && (
+						<TextControl
+							label={ isButton ? __( 'Button label', 'sgs-blocks' ) : __( 'Words', 'sgs-blocks' ) }
+							value={ chromeSlotText || '' }
+							onChange={ ( value ) => setAttributes( { chromeSlotText: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					{ isRating && (
+						<ToggleControl
+							label={ __( 'Show the number of reviews', 'sgs-blocks' ) }
+							help={ __( 'The rating, review count and link come from Site Info (Settings > Site Info), or live Google data when connected.', 'sgs-blocks' ) }
+							checked={ !! chromeSlotBadgeShowCount }
+							onChange={ ( value ) => setAttributes( { chromeSlotBadgeShowCount: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					{ 'heading' === type && (
 						<SelectControl
 							label={ __( 'Heading level', 'sgs-blocks' ) }
@@ -122,20 +136,22 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 						value={ chromeSlotShow }
 						onChange={ ( obj ) => setAttributes( { chromeSlotShow: obj } ) }
 					/>
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						targets={ [
-							{
-								key: 'chromeSlot',
-								label: __( 'Extra item text', 'sgs-blocks' ),
-								prefix: 'chromeSlot',
-								showFontFamily: true,
-								showTransform: true,
-								showLetterSpacing: true,
-							},
-						] }
-					/>
+					{ ! isRating && (
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							targets={ [
+								{
+									key: 'chromeSlot',
+									label: __( 'Extra item text', 'sgs-blocks' ),
+									prefix: 'chromeSlot',
+									showFontFamily: true,
+									showTransform: true,
+									showLetterSpacing: true,
+								},
+							] }
+						/>
+					) }
 					{ isButton ? (
 						<>
 							<SgsColourPanel
@@ -200,7 +216,9 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 								textRow( {
 									key: 'chromeSlotColour',
 									label: __( 'Extra item colour', 'sgs-blocks' ),
-									attrs: { base: 'chromeSlotColour', gradient: 'chromeSlotColourGradient' },
+									attrs: isRating
+										? { base: 'chromeSlotColour' }
+										: { base: 'chromeSlotColour', gradient: 'chromeSlotColourGradient' },
 									attributes,
 									setAttributes,
 								} ),
