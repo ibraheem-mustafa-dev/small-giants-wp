@@ -6420,15 +6420,6 @@
     },
     {
       "slug": "sgs/counter",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/counter",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -11773,15 +11764,6 @@
     },
     {
       "slug": "sgs/heading",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -12739,15 +12721,6 @@
         "css_property": "background-color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/icon-list",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
       }
     },
     {
@@ -18725,25 +18698,6 @@
       "attr": "backgroundColourHoverGradient",
       "fields": {
         "css_property": "background-color-gradient",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "borderColourHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -25379,15 +25333,6 @@
     },
     {
       "slug": "sgs/timeline",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -28881,6 +28826,15 @@
     },
     {
       "slug": "sgs/counter",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/counter",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -30185,6 +30139,15 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -30425,6 +30388,15 @@
       "fields": {
         "css_property": "transform",
         "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -33954,10 +33926,29 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -36098,6 +36089,15 @@
         "role": "color",
         "css_element": "label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
