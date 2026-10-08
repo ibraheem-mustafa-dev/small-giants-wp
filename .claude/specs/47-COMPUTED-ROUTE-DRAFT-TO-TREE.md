@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.10"
+spec_version: "0.15.11"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -623,7 +623,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - About: at 100% with full coverage (F2 below).
      - Lenses: 67 distinct issues to 0, independent check 0 (2026-10-08); register N40 closed by measurement (plan, Lenses entry).
      - Contact: 66 to 60 distinct issues on the 2026-10-08 Solve run (plan, Contact entry);
-       the contact form 94 to 46, 58 on the sweep (plan Progress).
+       the contact form 94 to 46, 58 on the sweep.
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
        from its committed tree; it re-runs with full coverage.
      - An independent Playwright check (its own finders, 375/768/1440) confirmed Lenses 9 of 9.
@@ -639,7 +639,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
        negative control. Lenses (2026-10-08): 67 distinct issues to 0, independent check 0, register N40 closed; its wrong-write ratio is judged per setting (0.15.7) and the fresh run wrote nothing (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
-       issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep (open causes in the plan's Progress).
+       issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep.
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
      - F5 whole-page score in the solve report: built.
@@ -685,8 +685,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - First (plan `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): Session 0 (2026-10-05) repaired what the route data
        audit (`.claude/reports/2026-10-04-route-data-audit/README.md`) proved and recalibrated every block. Session A
        (2026-10-05) measured every surface from `1ea514ae8` without writing: 2,373 distinct open issues across 17
-       surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`; per surface in the plan
-       `2026-10-04-spec47-full-coverage.md` Progress), and every fix-register item carries a sweep status (77 still
+       surfaces (`sites/eye-care-ward-end/build/qa/sweep/2026-10-05/sweep.json`, per surface), and every fix-register item carries a sweep status (77 still
        open, 63 not walker-measurable, 19 closed earlier, 15 partly measured, 27 clean on the walker; each still-open
        verdict cites one exact element row and its values). Session B (2026-10-05) sorted every one of the 2,373 into
        one class with proof, **audited**: W 1,710, F 163, T 447, U 28, D 17, deferred 8. The committed
@@ -708,10 +707,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
        at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
-       Progress (Contact: the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
+       Contact and Contact form sections (Contact: the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
        (`lib/pairs.mjs::rootFor`, `d605bb5ba`), per-width draft finders (`mergeWidthFinders`), and off-screen
        screen-reader text in the independent check (`independent-check.mjs::srOnly`).
-     - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in
+     - Built on 2026-10-04: enclosing-block settings, extension settings in
        the framework DB (`source='sgs-ext'`), calibration `reaches` and `_tag`, the per-round `conflict` rule, grid
        tracks as proportions (CR16), aspect ratio (CR10, live proof on the first image-heavy surface).
      - Calibration: every block was re-calibrated on 2026-10-05 (94 cache files, on the local WSL mirrors). CR17's
@@ -882,3 +881,10 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
 | Should §3.2's text read cover `role` `text-content` (235 rows) as well as `role` `content` (84)? **Answered 2026-10-05: read both, 319 settings.** Most of the Eye Care register's words live in `text-content`, so the read as specified would have left register items S7, N27, N31, 91 and N28 unreachable. The cost is calibration time, which is chunked and cached. §3.2 carries it. | Closed |
 | Which surfaces are canvases, for FR-47-8's `canvas: true` flag? **Answered 2026-10-05 (Bean): every CPT and every theme page template.** On Eye Care that is **12 of the 17 surfaces** — `header`, `footer`, `mobile-menu`, the four mega menus, `size-guide`, `lens`, `contact-form` (posts of `sgs_header`, `sgs_footer`, `sgs_drawer`, `sgs_mega_menu`, `sgs_modal`, `sgs_choice_flow`, `sgs_form`; all registered in `plugins/sgs-blocks/includes/class-sgs-block-cpts.php` and `class-sgs-mega-menu-cpt.php`), plus the theme templates `shop` and `product`. The five ordinary pages (`home`, `about`, `lenses`, `help`, `contact`) are not canvases. **This includes the header and footer**, which an earlier draft of the roster excluded on the grounds that the route writes their trees itself; Bean overrode that. The flag is one manifest field per surface, so the roster changes with no code change. | Closed |
 | Which noindex mechanism does each site already have for the calibration page? | Answered 2026-10-03: none per page (the plugin noindexes only WooCommerce utility pages). The calibration page is built private instead (§3.2). | Closed |
+
+## 7. Deferred
+
+- **Creating a client's targets.** Nothing creates the empty pages, templates and template parts that
+  `sites/<client>/build/surfaces.json` names as targets; today they are made by hand when a client is set up, and R-47-11
+  limits the route to targets that already exist. A step that creates each target from the draft's screens and writes its
+  ID into `surfaces.json` would make a whole-site clone start from the draft alone.

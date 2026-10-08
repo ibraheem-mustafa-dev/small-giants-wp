@@ -8,11 +8,8 @@ last_updated: 2026-10-06
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**DRAFT STANDARDISATION: council done, plan approved (D1132). Read `.claude/plans/2026-09-20-draft-standardisation-plan.md`.**
-Plan: (A) wire and extend existing functions, no new stage; (B) a small draft standard only for what code cannot derive,
-written into the draft by Claude Design; (C) a deterministic checker as the second layer. A1 DONE (D1132): the width
-evaluator is wired in. A2 DONE (D1134): the draft's links and loop copy fill in from its own script. Ticker and reviews card
-equal the draft at every width (D1139-D1145). Open: 36 raw placeholders (plan A3, Track D). Detail: D1132-D1145.
+**Draft standardisation: closed (2026-10-08).** A1 and A2 are built (D1132, D1134); the rest retired because every
+script-rendered draft now takes the Spec 47 route. Plan: `plans/archive/2026-09-20-draft-standardisation-plan.md`.
 
 **Eye Care: now built by hand first (D1149, 2026-09-24).** The Eye Care site is built by hand to client-ready
 from Claude Design's gap map; the finished site becomes the pipeline's answer key. Every surface is built and live
@@ -117,7 +114,8 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 **Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
-groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
+groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`; google-reviews icons and `autoScroll` from the manifest
+route, and the Business Profile sync; nothing creates a client's empty pages and templates before `surfaces.json` names them (Spec 47 §7).
 
 ### Spec 36+37 merged track (after Front F)
 
@@ -262,7 +260,7 @@ does not produce real matches on real data for it to consume.
 | **Form CPT + choice-flow** — COMPLETE: Phases 0-5 and the v1.8.0 follow-up live on sandybrown, eye-care-test and indus-test (all at 31c2ed4c5; Phase 5: in-use forms and flows can't be trashed or deleted from any surface; outside a saved form, `sgs/form` only picks, creates or converts to a saved form). Parked: cloning-pipeline gap and analytics in `plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` | `specs/42-SGS-FORM-CPT-AND-PRICING.md` + `specs/43-SGS-CHOICE-FLOW.md` + `plans/archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Nav menu colour/state system | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | **Snooza product configurator — planned, not started** | `plans/2026-08-03-snooza-configurator-build-plan.md` |
-| **Page-conversion routing (manifest routing, annotation stage) — designed, not started** (its reviews written mode is built) | `plans/2026-09-21-manifest-routing-and-reviews-inline-design.md` |
+| **Page-conversion routing (manifest routing, annotation stage) + reviews written mode — built** | `plans/archive/2026-09-21-manifest-routing-and-reviews-inline-design.md`; FR-31-31 |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |

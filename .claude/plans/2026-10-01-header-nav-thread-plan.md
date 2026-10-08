@@ -97,7 +97,7 @@ on either side.
 ### 2.4 The last mile (deferred by Bean, 2026-10-01; do when Gate 3C is closed formally)
 
 1. Write the dated accepts into `plugins/sgs-blocks/scripts/nav-qa/gate3c/parity-indus.mjs` and
-   `parity-lamalama.mjs` (`accept: []`) for every row §2.3 marks accepted.
+   `parity-lamalama.mjs` for every row §2.3 marks accepted (Indus holds `accept: []`; lamalama holds one, dated 2026-09-28).
 2. Show Bean the jitter rows (§2.3: the three panels' opacity 30ms into opening, which moves between runs).
    Bean decides accept or fix.
 3. Close every §2.3 violation with a tree setting or a real control; rebuild the trees with `scripts/wp-build-page.js`.
@@ -111,7 +111,7 @@ on either side.
 ### 2.5 Framework items still open from the copies (verify each against current code before building)
 
 - `widthType: fit` and a label's `fullWidth: false` do not hold inside a stretching flex column.
-- `sgs/mega-aside` has no alignment control (worked around with flex-row wrappers).
+- `sgs/mega-aside` has no horizontal alignment control; `asideJustify` sets vertical alignment only (worked around with flex-row wrappers).
 - No block draws the Indus draft's flat white Google G, so the drawer's fourth social is Twitter.
 - lamalama's drawer menu: no hairline under the pill's top row, and no trailing glyph for a plain item.
 - D-5: `itemTextIndent` on drawer rows is a paragraph indent and cannot move a menu row.
@@ -126,7 +126,7 @@ on either side.
 | Wave 1 | Bean's eye on the mega motion (R-31-13); the cart and search screenshot set (numeric probes only so far) | Bean / session |
 | U-1, U-2, U-5, U-9+U-11, U-3+U-8 | Bean's eye: dark-surface shadow and ring strength, scrim screenshots, shapes, gallery arrows, three patterns with imagery | Bean |
 | W2-f | FR-37-42 column-shape picker (site-header row writes `gridTemplateColumns`, incl. `1fr auto 1fr`): live and eye verification | session + Bean |
-| W2-i | `labels-<site>.json` for Away, ButcherBox and rabbit.tech (after Step 0c); must precede any Wave 4 evidence | session |
+| W2-i | `labels-<site>.json` for ButcherBox and rabbit.tech, and a re-read of Away's (`.claude/reports/2026-07-28-drawer-code-extraction/labels-away.json`), after Step 0c; must precede any Wave 4 evidence | session |
 | W3-b | Simplicity finding 2: canvas-click selection | session, 1h |
 | W3-c | FR-37-6: prove every live site renders header and footer from its own CPTs (sandybrown, indus-test) | session, 45m |
 | W3-d | FR-37-26 blind-tester arm: a screen-recorded non-coder session, the authoritative half of the FAIL verdict | Bean |
@@ -195,11 +195,7 @@ does not block Gate 3C. lamalama's "This is Us" button (G-8) is parked with it.
 **Reopen when** the lamalama copy is rebuilt on the reference-capture method, or a client build needs a card pinned
 to a screen corner.
 
-**Why the first attempt stopped.** It lifted an in-page `sgs/container` out of the block tree and printed it at
-`wp_footer`; two reviewers returned NO GO on 2026-09-27: the container wrapper has no editor branch, so
-`position: fixed` covers the canvas, and a pinned container's output can carry three or more `<style>` tags that a
-single front-split strands away from the CSS collector. Full verdicts and what a rebuild needs:
-`.claude/reports/2026-09-27-u18-g6-g8-design.md` §3, §8, §9.
+**Why the first attempt stopped:** two reviewers returned NO GO on 2026-09-27; verdicts and what a rebuild needs are in `.claude/reports/2026-09-27-u18-g6-g8-design.md` §3, §8, §9.
 
 **The task**, run as a fresh design gate:
 1. Read the design report §3, §8, §9; `.claude/specs/18-SGS-FLOATING-UI.md`;

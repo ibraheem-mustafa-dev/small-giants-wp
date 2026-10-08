@@ -3,7 +3,7 @@ doc_type: plan
 plan_id: eye-care
 project: small-giants-wp
 spec_id: client build (Front F, D1149)
-status: BUILD IN PROGRESS (2026-10-07)
+status: BUILD IN PROGRESS (2026-10-08)
 ---
 
 # Eye Care Birmingham: the one plan
@@ -14,16 +14,6 @@ status: BUILD IN PROGRESS (2026-10-07)
 - Every gap closes as a general framework setting with an editor control, never an Eye Care hardcode.
 - Once finished, the site becomes the cloning pipeline's answer key (Phase 7).
 
-This doc replaces six plans (now in `plans/archive/`):
-- `2026-09-24-eye-care-hand-build-design.md`
-- `2026-09-24-eye-care-findings-1-8-9-design.md`
-- `2026-09-25-eye-care-product-page.md`
-- `2026-09-25-eye-care-bag-checkout-prescription.md`
-- `2026-09-28-eye-care-product-page-parity.md`
-- `2026-10-01-eye-care-cloud-handover.md`
-
-Every "built" line below was checked against the code or the live site on 2026-10-02 (three checkers, five
-re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-care-review-phase-plan.md` (done).
 
 - **Draft:** https://mintcream-lyrebird-224487.hostingersite.com/
   - Source: `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap Handoff/`. `Eye Care Birmingham.dc.html` is the
@@ -31,7 +21,7 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
   - The older `design_handoff_ward_end_eye_care_v2/` is the clone pipeline's input, not the build's.
 - **Test site:** https://darkcyan-grouse-898606.hostingersite.com
   - Credentials: `.claude/secrets/eye-care-test.env`.
-  - Deploy target `eye-care-test`, running 4ba8be0f1 (the same plugin build as `main` on 2026-10-03).
+  - Deploy target `eye-care-test`; its running build is recorded in `.claude/LEDGER.md` (blocks `ec51d6cf1` on 2026-10-08).
 - **Client context:** `sites/eye-care-ward-end/CLAUDE.md`.
 
 ## Status
@@ -106,263 +96,149 @@ re-run by hand). The process for this review was `plans/archive/2026-10-01-eye-c
 - **Overtaken, recorded for Bean:** the 2026-09-25 bag plan said "live has a quantity box, keep it". The Eye Care
   header tree now sets `itemShowQty: false`, which matches the draft (no quantity box).
 
-## Walker (the matching tool), upgraded 2026-10-02
 
-- **What it is.** `scripts/parity/draft-live-walk.mjs`, method in `scripts/parity/GAP-CHECKLIST.md`, configs in
-  `sites/eye-care-ward-end/build/qa/parity/`.
-- **How it compares.** It compares what paints (computed styles, boxes, words, motion samples), so a draft effect
-  made with a script and ours made with CSS are judged on the result.
-- **Added 2026-10-02 (sections 13-15):**
-  - underlines, text shadow, rest-state transforms, outlines, left/right border colours and icon colours;
-  - a keyboard focus pass;
-  - a links check (dead `#` links, broken targets, the draft's real tel/WhatsApp/social links, and a per-config
-    `links` table of where each label must go);
-  - load entrances sampled by paint;
-  - a reveal sweep before full-page shots.
-- **Configs:** every Eye Care surface has a filled config (header scrolled state, toast and count pop, hero motion,
-  product states, shop filter states, image hovers, reveal sections), 2026-10-02.
-- **Added 2026-10-03 (section 16):** ref tracing (`refPrefix`: each row names its layout node and element) and the
-  divergence ledger (`sites/eye-care-ward-end/build/qa/divergences.json`). Benchmark 5 of 5. (The "0 noise rows" reading here is superseded: a full 10-run `--noise` pass on a quiet host on 2026-10-06 read 5 noise rows, every one a phase artefact — `reports/2026-10-06-session-c2/BENCHMARK-NOISE-RESULT.md`. A run reading 0 was never evidence of absence, because every cause is phase-dependent.)
-- **Walker and flow upgrades — BUILT 2026-10-05** (Session C sitting i): FR-47-6 item 2 (1920 in every run), item 4 (link coverage), item 5 (line counts during transitions) and the focus and active half of item 3, each with a GAP-CHECKLIST section (20 to 26) and a planted fault; plus all of FR-47-7 (the four shopping flows as scripted tests, in `scripts/parity/flows/`, run live in Wave 3). Item 1 (pseudo-element paint) was already built. Detail: Spec 47 §3.6 and §3.7.
-  interactive element, link coverage, line counts during transitions) and FR-47-7 (shopping flows as scripted tests). Bean's review found the misses that motivate each (register "Walker
-  improvements").
+## Walker (the matching tool)
+
+`scripts/parity/draft-live-walk.mjs`; method in `scripts/parity/GAP-CHECKLIST.md`; configs in
+`sites/eye-care-ward-end/build/qa/parity/` (one per Eye Care surface); divergence ledger in
+`sites/eye-care-ward-end/build/qa/divergences.json`. It compares what paints (computed styles, boxes, words, motion
+samples, focus, links), so a draft effect made with a script and ours made with CSS are judged on the result. The
+four shopping flows run as scripted tests from `scripts/parity/flows/` (Spec 47 §3.6 and §3.7).
 
 ## Surfaces
 
-Each section: what is built (checked), what is open, and a Review heading that the walk and classification fill.
+Each section: what is built, and what is open.
 
 ### Header (`sgs_header` 199, `build/header.tree.json`)
-- **Built:**
-  - the draft's values: middle row 20/28px at 1440 wide, nav links 24px apart, logo 48px shrinking to 40px, wordmark
-    18px shrinking to 15px, 2-bar burger, the bag pill's "0" bubble;
-  - the scrolled header as row settings (padding when shrunk, speed, curve);
-  - the logo group never wraps;
-  - phone link hidden below 1160px;
-  - menu trigger icon then "Menu" at desktop and tablet, icon only at 375.
-- **Fixed 2026-10-02 (acc2a3b6d, live on eye-care-test and the canary):** the header row had collapsed to 56px
-  wide at every width, the logo, nav and phone stacked over each other. The header outer is a column flex
-  container; a row with a width cap carries centring auto margins, which cancel the stretch, and its
-  `container-type: inline-size` leaves it no content width. Rows are now full width at zero specificity
-  (`includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css`). Any client with a capped header row had it.
-- **Open:** confirm on the walk that the white space under the trust bar is gone (fixed in the tree).
-- **Found while writing the configs (classified in step 7):** the live ticker text is 14px against 12.5px.
-- **Review:** see "Review results" below.
+- **Built:** the draft's values (middle row, nav spacing, shrinking logo and wordmark, 2-bar burger, the bag pill's
+  "0" bubble); the scrolled header as row settings; full-width header rows
+  (`includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css`); phone link hidden below 1160px; menu trigger
+  icon then "Menu" at desktop and tablet, icon only at 375.
+- **Open:**
+  - confirm on the walk that the white space under the trust bar is gone (fixed in the tree);
+  - the live ticker text is 14px against the draft's 12.5px.
 
 ### Mega menus (Sunglasses 165, Brands 176, Lenses 183, Help 186)
-- **Built:**
-  - all four mapped to the draft (`build/qa/parity/mapping-*.md`);
-  - the £ sign fixed;
-  - column widths and full-width panels;
-  - Lenses cards are each one link to /prescription-lenses/;
-  - Brands is a card grid with all 40 logos (Ferrari: attachment 625);
-  - panels are opaque by default.
+- **Built:** all four mapped to the draft (`build/qa/parity/mapping-*.md`); column widths and full-width panels;
+  Lenses cards are each one link to /prescription-lenses/; Brands is a card grid with all 40 logos; panels are opaque
+  by default.
 - **Open:**
-  - Sunglasses promo: an unproven report that `sgs/media` in a grid row stretches its figure to the row height.
-    Check on the walk.
-  - Mega links to the shop's filters: the new links check proves where each one goes.
+  - Sunglasses promo: an unproven report that `sgs/media` in a grid row stretches its figure to the row height. Check
+    on the walk.
+  - Mega links to the shop's filters: the links check proves where each one goes.
   - The same brand reaches two pages: mega Brands links go to `/shop/?brands=<slug>`, the home brand strip to
-    `/brand/<slug>/` (both confirmed on live 2026-10-02).
-- **Review:** see "Review results" below.
+    `/brand/<slug>/`.
 
 ### Phone drawer (`sgs_drawer` 203, `build/mobile-menu.tree.json`)
-- **Built:**
-  - Shop links (Sunglasses, Brands, Prescription lenses, Glasses with "SOON") as `sgs/button`s in an `sgs/container`
-    (`<nav aria-label="Shop">`);
-  - icon-list links;
-  - phone box;
-  - Instagram, Google, WhatsApp and phone buttons with the draft's SVG logos (`iconSvg`);
-  - item stagger 50ms, 500ms, 18px.
-- **Open, foundational gap: nested stagger.**
-  - The drawer staggers only `sgs/nav-drawer-menu` top-level items. Every other body child arrives at
-    `--sgs-nd-last-i` (0 here), so the four Shop links arrive together. The draft staggers each:
-    .05/.1/.15/.2s, then .3s and .36s.
-  - Fix: a CSS-only `sgs/nav-drawer` setting, "Stagger items inside groups" (default off).
-  - Each body group's children get `--sgs-i` = the group's offset + `sibling-index() - 1`, with the existing
-    nth-child ladder as the fallback. Siblings after a group start after its last item, through the existing
-    `--sgs-nd-last-i` `:has()` ladder.
-  - The in-animation fill becomes `backwards`, so a link still fading in is never an invisible focus target.
-  - Files: `nav-drawer/block.json` and its inspector, `includes/helpers-nav-drawer-motion.php`, the stagger section
-    of `nav-drawer-menu/style.css`, and `tests/php/run-u5-motion-standalone.php`. Then the tree toggle, rebuild, and
-    re-walk the header at `--widths 375 --states drawer-open`.
-  - Research: `~/.claude/memory/research/2026-10-02-nested-drawer-stagger.md`.
-- **Review:** see "Review results" below.
+- **Built:** Shop links as `sgs/button`s in an `sgs/container` (`<nav aria-label="Shop">`); icon-list links; phone
+  box; Instagram, Google, WhatsApp and phone buttons with the draft's SVG logos (`iconSvg`); item stagger 50ms, 500ms,
+  18px, including inside groups (`staggerInsideGroups`).
+- **Open:** re-walk at `--widths 375 --states drawer-open`.
 
 ### Nav menu blocks (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`)
-- **Built:**
-  - link minimum height and link padding (`itemPadding`);
-  - the badge's text and box;
-  - burger bar thickness and the burger-to-label gap;
-  - `triggerMode` per tier with `triggerIconPosition`;
-  - the mega body padding can be overridden.
+- **Built:** link minimum height and padding (`itemPadding`); the badge's text and box; burger bar thickness and
+  burger-to-label gap; `triggerMode` per tier with `triggerIconPosition`; the mega body padding can be overridden.
 - **Open (parked in LEDGER):** a nav-drawer-menu badge and a disabled item.
-- **Review:** see "Review results" below.
 
 ### Bag drawer (`sgs/cart` drawer in the header tree)
-- **Built:**
-  - Three bands: the head row, a scrolling item list, and a footer with the subtotal, the free-delivery line and
-    bar, Checkout, then a note.
-  - Item rows: square image; the brand (Store API `items[].extensions.sgs.brand`, `includes/cart-item-extensions.php`)
-    with the line price; the name; the details; Remove as a text link.
-  - Every value is a setting: 168 `sgs/cart` attributes in all.
-  - The panel keeps its scope class when the nav store moves the `<dialog>` to `<body>`.
-  - Eye Care values:
-    - 460px cream panel, "Bag (0)" in Playfair 22px;
-    - "Nothing in here yet." above "SHOP SUNGLASSES";
-    - free delivery at £75 with a 2px bar;
-    - 54px Checkout and the Klarna note;
-    - the 400ms slide-in and a 45% backdrop;
-    - no quantity box, as the draft.
+- **Built:** head row, scrolling item list and footer (subtotal, free-delivery line and bar, Checkout, note); item rows
+  with the brand from the Store API (`includes/cart-item-extensions.php`); every value is a setting; the panel keeps
+  its scope class when the nav store moves the `<dialog>` to `<body>`; Eye Care values match the draft, with no
+  quantity box.
 - **Open:**
-  - **Bean decides:** the draft's "Add prescription lenses" link on a frame-only line (the drawer cannot yet tell
-    that a product has a configurator).
+  - **Bean decides:** the draft's "Add prescription lenses" link on a frame-only line (the drawer cannot yet tell that
+    a product has a configurator).
   - **Bean decides:** retention for uploaded prescriptions, including uploads in bags that were never ordered.
   - The Klarna amount divides the cart total, where the draft divides subtotal plus shipping. The two agree at
     checkout.
-- **Review:** see "Review results" below.
 
 ### Footer (`sgs_footer` 182, `build/footer.tree.json`)
-- **Built:**
-  - the active footer, carrying the floating WhatsApp button;
-  - "© 2026 Eye Care Birmingham…" through `sgs/business-info` `copyrightPrefix`;
-  - condensed hours;
-  - the size guide modal lives once here (anchor `size-guide`, every page).
-- **Open, improving it to match the draft:**
-  - (Done 2026-10-08: both link lists are `sgs/icon-list`, 14px, 31px item pitch; column headings match the header nav's 13.5px uppercase text-colour style; hours and address paint the text colour.)
-  - The draft is 425px tall against our 304px: about 104px top padding and 52px at the sides.
-  - A gap between the wordmark and the tagline.
-  - "About Eye Care" with no underline (the draft has none; ours is underlined).
-  - The address on two lines and the hours on one line.
-  - Social boxes 40px with a grey border and brand-coloured icons, in the order Instagram, Google, WhatsApp
-    (`sgs/social-icons` fixes the order when its source is Site Info: a small setting).
+- **Built:** the active footer carrying the floating WhatsApp button; "© 2026 Eye Care Birmingham…" through
+  `sgs/business-info` `copyrightPrefix`; condensed hours; the size guide modal lives once here (anchor `size-guide`,
+  every page); both link lists are `sgs/icon-list`; column headings match the header nav's style. Walker config:
+  `build/qa/parity/footer.mjs`.
+- **Open:**
+  - The draft is 425px tall against our 304px (about 104px top padding and 52px at the sides), with a gap between
+    the wordmark and the tagline.
   - A full-width hairline on the bottom bar, with Privacy and Terms on the right.
-- **Walker config:** `build/qa/parity/footer.mjs` (new 2026-10-02, 32 pairs).
-- **Found by the config's first run:**
-  - `/privacy` and `/terms` return 404 on live;
-  - the draft's address links to Google Maps, where live's is plain text;
-  - the Google social link's label differs from the draft's ("Read our reviews on Google" against "Google
-    Business profile").
-- **Review:** see "Review results" below.
+  - `/privacy` and `/terms` return 404 on live (content, below).
+  - Link underline, address, hours and social icons: owned by the sessions working on the link-underline helper and the
+    icon-unification plan.
 
 ### Home (page 208, front page, `build/home.tree.json`)
-- **Built:**
-  - four parity rounds (3,003 open rows down to 586 at the last cloud walk);
-  - the brand strip as a logo row in the draft's order;
-  - the prescription-strip photo as `sgs/media` with hover zoom;
-  - equal-height tiles and review arrows;
-  - "Why buy" divider lines from the container's `separators`;
-  - five parents stagger their blocks at 70ms.
+- **Built:** the brand strip as a logo row in the draft's order; the prescription-strip photo as `sgs/media` with hover
+  zoom; equal-height tiles and review arrows; "Why buy" divider lines from the container's `separators`; five parents
+  stagger their blocks at 70ms.
 - **Open:**
   - re-walk;
-  - a real clinic photo (carried).
-- **Found while writing the configs:**
-  - live has no Ken Burns and no translated parallax on the hero;
-  - the draft's hero buttons fade in, ours are static;
-  - "Message me on WhatsApp" adds a `?text=` prefill the draft does not have (also about, contact, lens).
-- **Review:** see "Review results" below.
+  - a real clinic photo (carried);
+  - live has no Ken Burns and no translated parallax on the hero, and the draft's hero buttons fade in where ours are
+    static.
 
 ### Shop (`archive-product` site template, `build/archive-product.tree.json`)
-- **Built:**
-  - the walker exited 0 on 2026-09-28;
-  - the motion batch is deployed: cards at 460ms, 26px, 70ms stagger, cap 7;
-  - the brand filter uses `?brands=`;
-  - Customizer settings for the filter column's gap under the header and the panel heading size.
+- **Built:** card motion (460ms, 26px, 70ms stagger, cap 7); the brand filter uses `?brands=`; Customizer settings for
+  the filter column's gap under the header and the panel heading size.
 - **Open:** re-walk with the new checks.
-- **Review:** see "Review results" below.
 
 ### Product page (`single-product` template 423, `build/single-product.tree.json`)
-- **Built:**
-  - F1 to F12, all live:
-    - size bands and "Which size am I?" at the right of the Size label;
-    - picker labels in small capitals with the chosen value;
-    - add to bag in capitals, 56px;
-    - the stock line under a hairline;
-    - the "Save £… off RRP" badge on the photo;
-    - a 732px gallery;
-    - the price line height;
-    - variation photos as swatches;
-    - tab headings;
-    - an empty related section hides;
-    - the size guide pop-up 720px.
-  - Details tab: 18 rows.
-  - Description as plain lists.
-  - Breadcrumb separator spacing.
-  - "Add my prescription · from +£59.00" opens the lens configurator.
+- **Built:** F1 to F12 live (size bands and "Which size am I?", small-caps pickers, 56px add to bag, stock line,
+  "Save £… off RRP" badge, 732px gallery, variation photos as swatches, tab headings, empty related section hides,
+  720px size guide pop-up); Details tab with 18 rows; description as plain lists; breadcrumb separator spacing;
+  "Add my prescription · from +£59.00" opens the lens configurator.
 - **Open:**
   - re-walk;
   - colourway photos (carried; a launch gate);
   - lens height and the Sizing tab's frame diagrams (carried; no data);
   - the reviews-present state;
-  - the Klarna and wallets line (Phase 6).
-- **Found while writing the configs:**
-  - the product sections have no scroll reveal on live;
-  - add to bag confirms with inline text where the draft shows a floating toast;
-  - live has one frame size where the draft shows S/M/L for the Gucci.
-- **Review:** see "Review results" below.
+  - the Klarna and wallets line (Phase 6);
+  - the product sections have no scroll reveal on live; add to bag confirms with inline text where the draft shows a
+    floating toast; live has one frame size where the draft shows S/M/L for the Gucci.
 
 ### Lens configurator (Choice Flow 463 in a fullscreen `sgs/modal`, Spec 43)
-- **Built:**
-  - Four questions (use, thickness, finish, "Your prescription": send later, upload or type it in).
-  - The add-on price list is the only price authority.
-  - One bag line per pair (the £268 path on product 71).
-  - Uploads are private, with a staff download link.
-  - Walker exit 0 on 2026-09-28.
+- **Built:** four questions (use, thickness, finish, "Your prescription": send later, upload or type it in); the
+  add-on price list is the only price authority; one bag line per pair (the £268 path on product 71); uploads are
+  private, with a staff download link.
 - **Open:** four 2026-09-26 PROPOSED accepts to confirm on Bean's eye check:
   - the '?' glyph fades on hover;
   - its hover colour is #FAF8F5;
   - the 768 prescription cards run the description full width;
   - no clipped "POLARIS" label on the 375 stage thumbnail.
-- **Review:** see "Review results" below.
 
 ### Lenses (page 168, `/prescription-lenses/`)
 - **Built:** the page, with divider lines from `separators` (`/lenses/` is a 404, as intended).
 - **Open:** re-walk.
-- **Review:** see "Review results" below.
 
 ### About (page 187)
 - **Built:** the page with the credentials column and `separators`.
-- **Open:**
-  - re-walk;
-  - a real photo of Fatima (carried).
-- **Review:** see "Review results" below.
+- **Open:** re-walk; a real photo of Fatima (carried).
 
 ### Help (page 171)
-- **Built:**
-  - the FAQ accordion (400 weight);
-  - "Call the clinic on {phone}…" as one `sgs/business-info` line;
-  - Call as an outline button to the phone.
+- **Built:** the FAQ accordion (400 weight); "Call the clinic on {phone}…" as one `sgs/business-info` line; Call as an
+  outline button to the phone.
 - **Open:** re-walk.
-- **Review:** see "Review results" below.
 
 ### Contact (page 190)
-- **Built:**
-  - the 2x2 labelled grid;
-  - the form on `sgs_form` 285 (a real submission returns the success message).
+- **Built:** the 2x2 labelled grid; the form on `sgs_form` 285 (a real submission returns the success message).
 - **Open:** re-walk.
-- **Review:** see "Review results" below.
 
 ### Checkout (WooCommerce block checkout, `parts/sgs-checkout-content.html`)
-- **Built:**
-  - UK only, with three methods: Tracked £3.95, Free over £75, Collect in Birmingham;
-  - County hidden for the UK;
-  - lens rows in the order summary;
-  - no second prescription step, by design.
+- **Built:** UK only, with three methods (Tracked £3.95, Free over £75, Collect in Birmingham); County hidden for the
+  UK; lens rows in the order summary; no second prescription step, by design.
 - **Open:**
   - the look against the draft's express, contact, delivery, prescription and payment sections;
   - no payment gateway installed yet (Phase 6).
-- **Review:** see "Review results" below.
 
 ### Order confirmation
 - **Open:** walk it with one test order (Bean 2026-10-02), then cancel the order.
-- **Review:** see "Review results" below.
 
-## Carried items (not this review's work; the work plan schedules them)
+## Carried items
 
 - **Photos:**
   - Real colourway photos for one photographed frame (Gucci 76, Holbrook 81, Wayfarer 90, Round Metal 98). The brand
     shots on the test site must be replaced before launch.
   - Real photos of the clinic (Home) and of Fatima (About).
-- **File splits owed:** `plugins/sgs-blocks/src/blocks/buybox/render.php` (1,430 lines) and
-  `plugins/sgs-blocks/assets/js/animation-observer.js` (602 lines).
+- **File splits owed:** `plugins/sgs-blocks/src/blocks/buybox/render.php` and
+  `plugins/sgs-blocks/assets/js/animation-observer.js`.
 - **Data-gated:** lens height and frame diagrams wait for frame-measurements data. `sgs/product-specs` was not needed
   (bindings do it).
 - **Phase 6, launch readiness:** payment plugins in test mode, an accessibility audit, a performance audit, the
@@ -377,102 +253,36 @@ Each section: what is built (checked), what is open, and a Review heading that t
   - Clone-run notes: `plans/archive/2026-09-24-eye-care-hand-build-design.md` section 7 and
     `plans/archive/2026-09-24-eye-care-findings-1-8-9-design.md`.
 
-## Review results (walked 2026-10-02 with the upgraded walker)
-
-- **The walks.** Every surface was walked at 375, 768 and 1440 (the header as three runs: megas, drawer, resting
-  and scrolled). The confirmation page was walked on a test order (652, cancelled after the walk). 1920 shots are in
-  `build/qa/parity/out-1920/`.
-- **The reports.** `build/qa/parity/out/<surface>/report.md` (gitignored). No surface logged a live console error.
-- **The classification.** Open rows were de-duplicated (14,400 raw rows, 3,263 unique), then classified by six Sonnet
-  agents.
-- **The QC (QA Gate 2).**
-  - Every foundational gap was checked against the code.
-  - Five random same-paint accepts were re-judged: four held, and one moved to violation (the bag Close "×" stroke
-    is visibly thinner on live).
-  - Three classifier calls were corrected:
-    - The Help accordion's 140 rows are a repair, not a missing control. The block declares `fontSize`, `padding`
-      and `gap`, but `accordion/style.css` hardcodes the header's size, padding and gap, and `render.php` never
-      emits them.
-    - The product gallery zoom is an opt-in of the shared hover-effects image zoom, not a new control.
-    - The Brands mega tiles show a 32px logo *and* the name and frame count in the draft
-      (`build/qa/parity/mapping-mega-brands-lenses.md`). Live hides the name and count, so the fix keeps the logos.
-- **Bean's eye check (step 6):** the 4-width sheets (59 pages) were sent on 2026-10-02. Bean's own list (2026-10-03,
-  about 60 new points) is merged into the register.
-
-| Surface | Report | Open rows | Unique | Accepted (decided / blind / same paint) | Violations | Foundational | Jitter |
-|---|---|---|---|---|---|---|---|
-| Header: megas | `out/header-megas` | 284 | 275 | 102 (0/1/101) | 171 | 2 | 0 |
-| Header: phone drawer | `out/header-drawer` | 59 | 59 | 48 (4/1/43) | 5 | 6 | 0 |
-| Header: resting and scrolled | `out/header-resting` | 58 | 53 | 37 (0/0/37) | 11 | 5 | 0 |
-| Footer | `out/footer` | 782 | 372 | 153 (21/0/132) | 197 | 22 | 0 |
-| Bag drawer | `out/bag` | 469 | 147 | 107 (12/5/90) | 24 | 16 | 0 |
-| Home | `out/home` | 869 | 192 | 164 (22/3/139) | 17 | 11 | 0 |
-| Shop | `out/shop` | 308 | 100 | 81 (6/18/57) | 19 | 0 | 0 |
-| Product | `out/product` | 5,466 | 735 | 206 (118/4/84) | 401 | 128 | 0 |
-| Lens pop-up | `out/lens` | 132 | 21 | 6 (0/1/5) | 15 | 0 | 0 |
-| Lenses | `out/lenses` | 303 | 101 | 26 (0/5/21) | 75 | 0 | 0 |
-| About | `out/about` | 523 | 136 | 59 (0/0/59) | 74 | 3 | 0 |
-| Help | `out/help` | 1,178 | 298 | 56 (0/6/50) | 90 | 140 | 12 |
-| Contact | `out/contact` | 2,010 | 291 | 87 (5/47/35) | 165 | 35 | 4 |
-| Checkout | `out/checkout` | 1,903 | 449 | 57 (22/20/15) | 54 | 338 | 0 |
-| Confirmation | `out/confirmation` | 98 | 34 | 4 (0/0/4) | 30 | 0 | 0 |
-
-Each row's classes sum to its unique count. Most violations are "moved" knock-on rows filed under the one cause that
-shifts the layout, so the cause lists below are short.
-
 ## Work plan
 
 **Order.** Framework first (universal, and every client gains), then each surface's tree settings in build order
-(header, phone drawer, nav menus, mega menus, bag, footer, home, shop, product and lens, then the content pages),
-then content and data. Each tree change is applied with `scripts/wp-build-page.js` and re-walked. Any deploy that
-adds a setting is followed by rebuilding every tree that uses it before measuring.
+(header, phone drawer, nav menus, mega menus, bag, footer, home, shop, product and lens, then the content pages), then
+content and data. Each tree change is applied with `scripts/wp-build-page.js` and re-walked. Any deploy that adds a
+setting is followed by rebuilding every tree that uses it before measuring.
 
 **Times.** Low estimates.
 
-### 1-2. The items: `plans/2026-10-02-eye-care-fix-register.md`
-
-The register is the work list. It holds every fix, by surface in build order, each with its fix, type and status.
-- **How it was made:**
-  - **Version 1 (2026-10-02):** the walker's classified causes, re-verified against code, trees and screenshots.
-  - **Version 2 (2026-10-03):** merges Bean's review of version 1 (about 60 new points and a ruling on every item). Each
-    cause was re-traced by six investigators, three of them testing live, then QC-councilled (structure, rules,
-    coverage).
-- **What changed in version 2:**
-  - Twelve site-wide fixes (S1 to S12) replace many per-item fixes: button hover, link hover, phone hover, WhatsApp,
-    accordion, page padding, reviews, pennies, brand logos, stretched links, custom gaps, focus underline.
-  - Bean's choices win over the draft where he chose (black link text with a sweep underline, 3px lift on every
-    button, live icon sizes).
-  - New proven bugs:
-    - the add-to-bag route drops a second product, and a 30s cooldown blocks a second pair;
-    - the gallery ignores WooCommerce's own product gallery;
-    - the shop filters leave empty groups behind after a filter is cleared;
-    - the hero's vertical position writes to the wrong axis;
-    - the phone drawer body overflows by its title-row height.
-  - Step 0: the live header is older than `header.tree.json`, so every tree is rebuilt before any item is judged.
+The work list is `plans/2026-10-02-eye-care-fix-register.md`: every fix, by surface in build order, each with its fix,
+type and status. Bean's choices win over the draft where he chose (black link text with a sweep underline, 3px lift on
+every button, live icon sizes).
 
 **Build order:**
-1. Step 0: rebuild every tree from its current file. Done 2026-10-03.
-2. Spec 47 stage 3: Solve on every built surface with full coverage, in the order of Spec 47 §5 stage 3; each surface's
-   state is in `plans/2026-10-04-spec47-full-coverage.md` "Progress".
-3. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
+1. Spec 47 stage 3: Solve on every built surface with full coverage, in the order of Spec 47 §5 stage 3; each
+   surface's state is in `plans/2026-10-04-spec47-full-coverage.md`.
+2. Every framework repair and new setting in the register (S-fixes first), then one deploy, then rebuild every tree that
    uses a new setting.
-4. The tree settings Solve could not write, surface by surface in the register's order, re-walking each surface after
+3. The tree settings Solve could not write, surface by surface in the register's order, re-walking each surface after
    its trees are applied.
-5. Content and data.
+4. Content and data.
 
-### 3. Content and data
+### Content and data
 
 Listed in the register (Type "content"): Privacy and Terms pages, the Site Info address line break and copyright text,
 menu URLs for the mega parents, the empty product spec rows, lens-height data, size labels without the box symbol,
 shipping wording.
 
-### 4. Decisions for Bean
+### Decisions for Bean
 
-D1 to D9 in the register's "Decisions for you", each with a recommendation. Decided on 2026-10-03: keep the
-WhatsApp prefill, keep the contact form's empty-submit messages, keep the checkout's coupon, notes and terms (each
-switchable), and hide ".00" on whole-pound prices across the shop pages (this replaces the 2026-09-25/27 rule that
-the product page, cart and checkout always show pennies).
-
-### 5. Carried (unchanged)
-
-See "Carried items" above.
+D1 to D9 in the register's "Decisions for you", each with a recommendation. Decided on 2026-10-03: keep the WhatsApp
+prefill, keep the contact form's empty-submit messages, keep the checkout's coupon, notes and terms (each switchable),
+and hide ".00" on whole-pound prices across the shop pages.

@@ -1,6 +1,6 @@
 # Declared routing from the draft manifest + a written mode for `sgs/google-reviews` (v2, after /qc-council, 2026-09-21)
 
-Status: the written mode in `sgs/google-reviews` is BUILT and live-verified (D1137, commits `065fe5de6`, `6d2d1984e`); Bean chose it over the Business Profile sync, which is deferred. The routing design below (manifest annotation, boundary rule, spec note) is still DESIGN for Bean's approval; nothing of it is built. v1 of this file (same day) was run through a five-rater council; three of its five fixes did not survive. This v2 is what survived plus what the council's experiments proved instead. Follows A2 (D1134).
+Status: done 2026-09-21 - the written mode in `sgs/google-reviews` (D1137, `065fe5de6`, `6d2d1984e`) and the manifest routing (annotation stage, class-section boundary, decision log, FR-31-31; `d3449f798`, extended by `7b67a34a2` and `1667bbe8a`) are built. Parked in LEDGER: the reviews icons and `autoScroll` follow-up, and the Business Profile sync.
 
 ## Facts (verified 2026-09-20/21)
 

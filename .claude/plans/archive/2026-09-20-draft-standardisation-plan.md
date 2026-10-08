@@ -1,6 +1,6 @@
 # Draft normalisation council: revised plan (2026-09-20, v2)
 
-Status: APPROVED by Bean 2026-09-20 (D1132). No pipeline code built yet. Written for Bean; plain English first.
+Status: done 2026-10-08 - A1 (`faaf79f0d`) and A2 (`3d0117569`) built; A3 to A9 and Tracks B, C and D retired, because Spec 31 sends every script-rendered draft to the Spec 47 computed route, whose `sites/<client>/build/surfaces.json` and block trees carry the page kind, target and collection decisions. Written for Bean; plain English first.
 v1 of this plan misread the brief (it proposed rewriting drafts to Mama's shape and a new normalise stage) and was rejected. This v2 answers what you actually asked, after a five-part council over the real drafts and code.
 
 ## 1. Your questions, answered

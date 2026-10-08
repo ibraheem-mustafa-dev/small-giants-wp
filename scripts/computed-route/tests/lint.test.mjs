@@ -55,6 +55,13 @@ test( 'register ids come from table first cells and leading bullet ids, never pr
 	assert.deepEqual( [ ...registerIds( REGISTER ) ].sort(), [ '104', '126', '132', '137', '141', 'D1', 'S1' ] );
 } );
 
+test( 'a numbered range row holds the range and each number in it; a reversed or lettered range holds nothing', () => {
+	const ids = registerIds( [ '| # | Item |', '|---|---|', '| 39-43 | Social icons |', '| 50-48 | Reversed |', '| 6-7a | Lettered |' ].join( '\n' ) );
+	assert.deepEqual( [ ...ids ].sort(), [ '39', '39-43', '40', '41', '42', '43' ] );
+	assert.deepEqual( lintLedger( [ lentry( { register: [ '39-43' ] } ), lentry( { id: 'D-3', register: [ '41' ] } ) ], ids ), [] );
+	assert.match( lintLedger( [ lentry( { register: [ '44' ] } ) ], ids ).join(), /cites register item 44/ );
+} );
+
 test( 'MUST FAIL TO PASS: an entry citing an item the register does not hold, or citing none, fails', () => {
 	const ids = registerIds( REGISTER );
 	assert.match( lintLedger( [ lentry( { register: [ '418' ] } ) ], ids ).join(), /cites register item 418/ );

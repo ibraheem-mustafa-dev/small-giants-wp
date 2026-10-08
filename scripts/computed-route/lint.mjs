@@ -116,6 +116,8 @@ export function lintSkeleton( tree, db, label = 'skeleton' ) {
 
 // A register item id: a number, or letters then a number (S1, CR15, N16a, N36C).
 const ITEM_ID = /^[A-Z]{0,3}\d+[A-Za-z]{0,2}$/;
+// A numbered range one row covers ("39-43"): the range itself and each number in it are ids.
+const ITEM_RANGE = /^(\d+)-(\d+)$/;
 
 // Every item id a fix register holds: each table row's first cell (comma-separated ids, "126, 137") and the ids that
 // lead a bullet ("- 132, 141 map strip ...", "- D1: a general ...").
@@ -126,8 +128,14 @@ export function registerIds( markdown ) {
 		const bullet = line.match( /^- ([A-Za-z0-9]+(?:,\s*[A-Za-z0-9]+)*)[\s:]/ );
 		const first = cell?.[ 1 ] ?? bullet?.[ 1 ];
 		for ( const id of first ? first.split( ',' ).map( ( s ) => s.trim() ) : [] ) {
+			const range = id.match( ITEM_RANGE );
 			if ( ITEM_ID.test( id ) ) {
 				ids.add( id );
+			} else if ( range && Number( range[ 1 ] ) < Number( range[ 2 ] ) ) {
+				ids.add( id );
+				for ( let n = Number( range[ 1 ] ); n <= Number( range[ 2 ] ); n++ ) {
+					ids.add( String( n ) );
+				}
 			}
 		}
 	}
