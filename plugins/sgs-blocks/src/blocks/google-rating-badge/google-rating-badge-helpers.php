@@ -170,6 +170,23 @@ if ( ! function_exists( 'sgs_grb_count_label' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_grb_hide_below_css' ) ) {
+	/**
+	 * The badge hidden below a viewport width (a crowded header row), as one scoped media rule.
+	 *
+	 * @param string $root_sel   The instance's scoped root selector.
+	 * @param int    $hide_below Viewport width in px; 0 or less emits nothing.
+	 * @return string CSS, or '' when off.
+	 */
+	function sgs_grb_hide_below_css( string $root_sel, int $hide_below ): string {
+		if ( $hide_below <= 0 ) {
+			return '';
+		}
+		$max = rtrim( rtrim( number_format( $hide_below - 0.02, 2, '.', '' ), '0' ), '.' );
+		return '@media (max-width:' . $max . 'px){' . $root_sel . '{display:none;}}';
+	}
+}
+
 if ( ! function_exists( 'sgs_grb_compact_css' ) ) {
 	/**
 	 * The one scoped media rule that shrinks a badge below the compact breakpoint:

@@ -187,6 +187,11 @@
 			"type": "integer",
 			"default": 0
 		},
+		"hideBelow": {
+			"type": "integer",
+			"default": 0,
+			"description": "Below this viewport width (px) the badge is hidden, for a crowded header row where even the compact badge does not fit. 0 keeps it at every width."
+		},
 		"position": {
 			"type": "string",
 			"enum": [

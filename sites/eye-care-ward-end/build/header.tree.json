@@ -357,8 +357,8 @@
                 "name": "sgs/google-rating-badge",
                 "attributes": {
                   "badgeStyle": "pill",
-                  "compactBelow": 1200,
-                  "showCount": true,
+                  "compactBelow": 1400,
+                  "showCount": false,
                   "borderStyle": "none",
                   "borderWidth": {
                     "top": "0px",
@@ -377,7 +377,8 @@
                   },
                   "scoreColour": "text",
                   "captionColour": "text-soft",
-                  "sgsCollapseVisibility": "hide"
+                  "sgsCollapseVisibility": "hide",
+                  "hideBelow": 1290
                 },
                 "innerBlocks": []
               },

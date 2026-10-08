@@ -77,6 +77,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showCount,
 		showSource,
 		compactBelow,
+		hideBelow,
 		position,
 		floatingCorner,
 		alignment,
@@ -284,6 +285,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 2000 }
 						step={ 10 }
 						help={ __( 'Below this width the badge shows the G, one star and the score only. 0 turns it off.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<RangeControl
+						label={ __( 'Hide below (px)', 'sgs-blocks' ) }
+						value={ hideBelow }
+						onChange={ ( value ) => setAttributes( { hideBelow: value ?? 0 } ) }
+						min={ 0 }
+						max={ 2000 }
+						step={ 10 }
+						help={ __( 'Below this width the badge is hidden, for a crowded header where even the compact badge does not fit. 0 keeps it at every width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

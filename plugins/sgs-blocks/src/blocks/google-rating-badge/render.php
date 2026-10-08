@@ -225,6 +225,8 @@ $grb_css[]          = sgs_typography_css_rule( $attributes, 'caption', $grb_root
 
 // Compact mode below the chosen viewport width.
 $grb_css[] = sgs_grb_compact_css( $grb_root_sel, (int) ( $attributes['compactBelow'] ?? 0 ), $grb_synced );
+// Hidden below the chosen viewport width.
+$grb_css[] = sgs_grb_hide_below_css( $grb_root_sel, (int) ( $attributes['hideBelow'] ?? 0 ) );
 
 $grb_css = array_filter( $grb_css, 'strlen' );
 

@@ -155,6 +155,13 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression( '#:where\(\.sgs-google-rating-badge__link\)\s*\{[^}]*(?<!-)color:#', $css );
 	}
 
+	public function test_hide_below_hides_the_badge_under_the_chosen_width(): void {
+		$css = $this->render_full( self::MANUAL + array( 'hideBelow' => 1290 ) )['css'];
+		$this->assertMatchesRegularExpression( '#@media \(max-width:1289\.98px\)\{\.sgs-grb-[0-9a-f]+\.wp-block-sgs-google-rating-badge\{display:none;\}\}#', $css );
+		// Negative control: off by default.
+		$this->assertStringNotContainsString( 'display:none;}}', $this->render_full( self::MANUAL )['css'] );
+	}
+
 	public function test_the_stars_wrapper_is_a_div_so_the_helper_div_nests_validly(): void {
 		$html = $this->render( self::MANUAL );
 		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
