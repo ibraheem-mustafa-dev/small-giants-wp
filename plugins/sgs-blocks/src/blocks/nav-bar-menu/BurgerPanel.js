@@ -381,6 +381,7 @@ export default function BurgerPanel( {
 
 			<ResponsiveBoxControl
 				label={ __( 'Button padding', 'sgs-blocks' ) }
+				presets
 				values={ {
 					base: burgerPadding?.desktop ?? {},
 					tablet: burgerPadding?.tablet ?? {},

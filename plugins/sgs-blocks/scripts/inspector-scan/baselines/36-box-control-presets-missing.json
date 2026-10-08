@@ -3,24 +3,5 @@
     "rule": "36-box-control-presets-missing",
     "ruleVersion": 1
   },
-  "entries": [
-    {
-      "key": "36-box-control-presets-missing|sgs/nav-bar-menu|plugins/sgs-blocks/src/blocks/nav-bar-menu/BurgerPanel.js|box-control-presets-missing|382",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
-      "seededAt": "2026-10-08",
-      "expires": null
-    },
-    {
-      "key": "36-box-control-presets-missing|sgs/nav-drawer|plugins/sgs-blocks/src/blocks/nav-drawer/ChromePanel.js|box-control-presets-missing|146",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
-      "seededAt": "2026-10-08",
-      "expires": null
-    },
-    {
-      "key": "36-box-control-presets-missing|sgs/nav-drawer|plugins/sgs-blocks/src/blocks/nav-drawer/CloseBoxControls.js|box-control-presets-missing|43",
-      "reason": "pre-existing; surfaced 2026-10-08 when the gate began reading component/partial files (block-source-files); tracked in plugins/sgs-blocks/reports/f3-e14-triage.md section 6",
-      "seededAt": "2026-10-08",
-      "expires": null
-    }
-  ]
+  "entries": []
 }

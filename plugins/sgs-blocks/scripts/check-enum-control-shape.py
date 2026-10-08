@@ -223,6 +223,36 @@ def find_marks(src: str, attr: str) -> list[int]:
     return marks
 
 
+_PROP_VALUE_HEAD = re.compile(r"([A-Za-z_][\w]*)\s*=\s*\{\s*$")
+
+
+def _enclosing_tag(src: str, pos: int) -> str | None:
+    """Name of the JSX component whose prop VALUE starts at `pos`
+    (`prop={ <pos>`), or None when `pos` is not the head of a prop value.
+    Walks back from the prop name over sibling props at brace depth 0 to the
+    opening `<Name`; gives up at a `>` that is not an arrow (tag already
+    closed, so `pos` is not inside an opening tag)."""
+    head = _PROP_VALUE_HEAD.search(src[max(0, pos - 80):pos])
+    if not head:
+        return None
+    i = pos - 80 + head.start() if pos >= 80 else head.start()
+    depth = 0
+    limit = max(0, i - 4000)
+    while i > limit:
+        i -= 1
+        ch = src[i]
+        if ch == "}":
+            depth += 1
+        elif ch == "{":
+            depth -= 1
+        elif 0 == depth and ">" == ch and "=" != src[i - 1]:
+            return None
+        elif 0 == depth and "<" == ch:
+            m = re.match(r"<([A-Za-z][\w.]*)", src[i:i + 80])
+            return m.group(1) if m else None
+    return None
+
+
 def resolve_control(src: str, attr: str) -> tuple[str, int | None]:
     """Same heuristic as the census. Returns (verdict, tag_start_pos).
 
@@ -245,6 +275,20 @@ def resolve_control(src: str, attr: str) -> tuple[str, int | None]:
     marks = find_marks(src, attr)
     if not marks:
         return "unresolved", None
+    # DELEGATION: an attribute passed as a prop VALUE to a non-primitive
+    # component (`styleValue={ borderStyle }` on <SgsBorderControl>) is
+    # rendered by that component, not by any primitive nearby. Unless a
+    # primitive takes the attribute as its own prop, the binding is shared.
+    own_prop = False
+    delegated = False
+    for mk in marks:
+        tag = _enclosing_tag(src, mk)
+        if tag in PRIMITIVES:
+            own_prop = True
+        elif tag is not None and tag[:1].isupper():
+            delegated = True
+    if delegated and not own_prop:
+        return "shared", None
     found: dict[str, int] = {}
     best_dist: dict[str, int] = {}
     for prim in PRIMITIVES:
@@ -660,13 +704,39 @@ def self_test() -> int:
             f"instead of the closer datePosition control at {correct_tag_pos}"
         )
 
+    # [12] REGRESSION (modal.borderStyle, nav-drawer.chromeButtonBorderStyle):
+    # an attribute handed to a SHARED component as a prop value
+    # (`styleValue={ borderStyle }` on <SgsBorderControl>) is owned by that
+    # component. An unrelated <ToggleGroupControl> / <SelectControl> sitting
+    # within WINDOW of the destructure must NOT capture the binding. The
+    # attribute must resolve as "shared" (skipped), never as the neighbour.
+    src12 = (
+        "const { closeStyle, borderStyle } = attributes;\n"
+        "<ToggleGroupControl value={ closeStyle } "
+        "onChange={ (v) => setAttributes({ closeStyle: v }) }>"
+        "<ToggleGroupControlOption value=\"icon\" label={ __( 'Icon', 'x' ) } />"
+        "<ToggleGroupControlOption value=\"glyph\" label={ __( 'Glyph', 'x' ) } />"
+        "</ToggleGroupControl>\n"
+        "<SgsBorderControl styleValue={ borderStyle } "
+        "onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) } />"
+    )
+    verdict12, _pos12 = resolve_control(src12, "borderStyle")
+    if verdict12 != "shared":
+        failures.append(
+            f"[12] attr delegated to a shared component bound to a neighbour: {verdict12!r}"
+        )
+    # [12b] positive: a primitive that takes the attr as its OWN prop still binds.
+    verdict12b, _p12b = resolve_control(src12, "closeStyle")
+    if verdict12b != "ToggleGroupControl":
+        failures.append(f"[12b] a primitive's own prop binding was lost: {verdict12b!r}")
+
     for f in failures:
         print("  FAIL " + f)
     if failures:
         print(f"\n  self-test: {len(failures)} failure(s).")
         return 1
-    print(f"  self-test: 11 case(s) passed, including a watched-failing negative "
-          f"control and a closest-mark-wins regression case. "
+    print(f"  self-test: 12 case(s) passed, including a watched-failing negative "
+          f"control, a closest-mark-wins case and a shared-delegation case. "
           f"Corpus: {len(live_rows)} declared enums.")
     return 0
 
