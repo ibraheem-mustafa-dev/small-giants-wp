@@ -141,5 +141,36 @@
         }
       }
     }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "className": "cr6h-gi24",
+      "layout": "grid",
+      "gridItemPadding": {
+        "desktop": {
+          "top": "24"
+        }
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "className": "cr6h-cell24",
+          "text": "Bare number cell"
+        }
+      }
+    ]
+  },
+  {
+    "name": "sgs/button",
+    "attributes": {
+      "className": "cr6h-btn8",
+      "label": "Eight",
+      "borderRadius": {
+        "desktop": "8px"
+      }
+    }
   }
 ]

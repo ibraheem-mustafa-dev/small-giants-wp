@@ -17,13 +17,17 @@
    Only text colour reaches a cell's children (by ordinary `color` inheritance). The
    variables themselves stop at the cell: its children reset them, so a grid nested
    inside a cell never inherits the outer grid's defaults (its own --sgs-gi-* values,
-   set on its own scope class, still win over this zero-specificity reset). */
+   set on its own scope class, still win over this zero-specificity reset).
+
+   Each padding side falls back to 0. The build's minifier folds the four sides into one
+   `padding` shorthand, and a shorthand with one unset custom property is invalid and
+   paints no padding at all, so a box that sets only its top would lose that top too. */
 :where( .sgs-container--grid > :not( .sgs-container__inner ):not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ),
 :where( .sgs-container--grid > .sgs-container__inner > :not( [aria-hidden="true"] ):not( .sgs-container__lottie-bg ):not( style ):not( script ):not( .block-list-appender ) ) {
-	padding-top: var( --sgs-gi-padding-top );
-	padding-right: var( --sgs-gi-padding-right );
-	padding-bottom: var( --sgs-gi-padding-bottom );
-	padding-left: var( --sgs-gi-padding-left );
+	padding-top: var( --sgs-gi-padding-top, 0 );
+	padding-right: var( --sgs-gi-padding-right, 0 );
+	padding-bottom: var( --sgs-gi-padding-bottom, 0 );
+	padding-left: var( --sgs-gi-padding-left, 0 );
 	background: var( --sgs-gi-bg );
 	border-top-left-radius: var( --sgs-gi-radius-top-left );
 	border-top-right-radius: var( --sgs-gi-radius-top-right );

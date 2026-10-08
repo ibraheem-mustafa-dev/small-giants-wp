@@ -38,6 +38,9 @@ const ROWS = [
 	[ 'multi-button radius', '.cr6h-mb .sgs-btn, .cr6h-mb .wp-block-sgs-button, .cr6h-mb a', '.cr6h-mb .cr6h-btn', 'radius', CORNERS ],
 	[ 'grid item padding', '.cr6h-cell', '.cr6h-cell', 'padding', SIDES ],
 	[ 'grid item radius', '.cr6h-cell', '.cr6h-cell', 'radius', CORNERS ],
+	// P2-j (0b22745ec): a bare number prints with px; a radius stored as one length paints four equal corners.
+	[ 'grid item bare 24', '.cr6h-cell24', '.cr6h-cell24', 'padding-top', { 1440: '24', 768: '24', 375: '24' } ],
+	[ 'button radius "8px"', '.cr6h-btn8, a.cr6h-btn8, .cr6h-btn8 a', '.cr6h-btn8', 'radius', { 1440: '8 8 8 8', 768: '8 8 8 8', 375: '8 8 8 8' } ],
 ];
 
 const build = ( tree ) => execFileSync( process.execPath, [ path.join( REPO, 'scripts/wp-build-page.js' ),
@@ -46,6 +49,9 @@ const build = ( tree ) => execFileSync( process.execPath, [ path.join( REPO, 'sc
 // Runs in the page: the four values of one box, rounded to px, in CSS order.
 const read = ( el, prop ) => {
 	const s = getComputedStyle( el );
+	if ( 'padding-top' === prop ) {
+		return String( Math.round( parseFloat( s.paddingTop ) ) );
+	}
 	const v = 'radius' === prop
 		? [ s.borderTopLeftRadius, s.borderTopRightRadius, s.borderBottomRightRadius, s.borderBottomLeftRadius ]
 		: [ s.paddingTop, s.paddingRight, s.paddingBottom, s.paddingLeft ];
