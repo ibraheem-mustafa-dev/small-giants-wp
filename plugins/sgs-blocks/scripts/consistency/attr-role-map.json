@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13292,
+    "row_count": 13294,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -8086,7 +8086,9 @@
     "sgs/nav-drawer::chromeButtonColourBorder": "color",
     "sgs/nav-drawer::chromeButtonColourBorderHover": "color",
     "sgs/nav-drawer::chromeButtonColourText": "color",
+    "sgs/nav-drawer::chromeButtonColourTextGradient": "colour-gradient",
     "sgs/nav-drawer::chromeButtonColourTextHover": "color",
+    "sgs/nav-drawer::chromeButtonColourTextHoverGradient": "colour-gradient",
     "sgs/nav-drawer::chromeButtonPadding": "layout",
     "sgs/nav-drawer::chromeLogoAlt": "text-content",
     "sgs/nav-drawer::chromeLogoId": "enum-class-probe",

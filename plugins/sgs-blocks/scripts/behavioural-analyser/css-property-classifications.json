@@ -11011,6 +11011,16 @@
     },
     {
       "slug": "sgs/google-reviews",
+      "attr": "headerDividerColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "header"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
       "attr": "headerDividerWidth",
       "fields": {
         "css_property": "border-width",
@@ -30177,16 +30187,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "headerDividerColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "header"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "headerGap",
       "fields": {
         "css_property": "gap",
@@ -32640,6 +32640,23 @@
         "css_property": "color",
         "role": "color",
         "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "chromeButton",
+        "css_state": "hover"
       }
     },
     {
