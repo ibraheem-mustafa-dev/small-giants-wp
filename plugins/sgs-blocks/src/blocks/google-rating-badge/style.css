@@ -65,8 +65,14 @@
 	font-family: inherit;
 }
 
-:where(.sgs-google-rating-badge__link) {
+/* Text colour at two classes: WordPress global styles give every link the theme's link colour
+   (a:where(:not(.wp-element-button)), later in the page), which beats a zero-specificity default.
+   scoreColour and captionColour still win through their scoped rules. */
+.sgs-google-rating-badge .sgs-google-rating-badge__link {
 	color: var(--wp--preset--color--text, inherit);
+}
+
+:where(.sgs-google-rating-badge__link) {
 	background-color: var(--wp--preset--color--surface, #fff);
 	border: 1px solid var(--wp--preset--color--border, color-mix(in srgb, currentColor 25%, transparent));
 }

@@ -148,6 +148,13 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertStringContainsString( '@media (max-width:1199.98px)', $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'] );
 	}
 
+	public function test_the_link_text_colour_outranks_the_theme_link_colour(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
+		// Two classes beat global styles' a:where(:not(.wp-element-button)) (0,0,1); a :where() default would lose to it.
+		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge \.sgs-google-rating-badge__link\s*\{[^}]*color:\s*var\(--wp--preset--color--text#', $css );
+		$this->assertDoesNotMatchRegularExpression( '#:where\(\.sgs-google-rating-badge__link\)\s*\{[^}]*(?<!-)color:#', $css );
+	}
+
 	public function test_the_stars_wrapper_is_a_div_so_the_helper_div_nests_validly(): void {
 		$html = $this->render( self::MANUAL );
 		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );
