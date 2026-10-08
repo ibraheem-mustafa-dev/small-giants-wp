@@ -1,49 +1,206 @@
 <?php
 /**
- * Brand glyphs a block draws itself (never a Lucide icon: Lucide ships no
- * brand marks). One source per glyph, so every block shows the same mark.
+ * The brand and contact registry reader: brand glyphs, colours, Site Info keys and accessible names.
  *
- * Used by `sgs/whatsapp-cta` (render.php) and `sgs/choice-flow`'s stage help
- * card (`includes/choice-flow-summary.php`).
+ * One list, `includes/data/brand-registry.json`, read here by PHP and imported by the editor through
+ * `src/utils/brand-registry.js`; no block keeps its own copy. `sgs/icon` draws brand glyphs and brand colours
+ * from it; `sgs/whatsapp-cta` (render.php) and `sgs/choice-flow`'s stage help card
+ * (`includes/choice-flow-showcase.php`) draw the WhatsApp mark through `sgs_whatsapp_glyph_svg()`.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-colour-wcag.php';
+
+if ( ! defined( 'SGS_BRAND_DARK_GLYPH' ) ) {
+	/** The near-black glyph a light brand colour gets when white fails 3:1 on it (D5). */
+	define( 'SGS_BRAND_DARK_GLYPH', '#1E1E1E' );
+}
+
+if ( ! function_exists( 'sgs_brand_registry' ) ) {
+	/**
+	 * Every registry entry, keyed by slug, in the registry's order. Entries with an unsafe slug or colour are
+	 * dropped, so a bad edit to the JSON can never reach a stylesheet or a class attribute.
+	 *
+	 * @return array<string,array{slug:string,label:string,siteInfoKey:string,autoLabel:string,colour:string,glyph:array,glyphBrand?:array,ground?:string}>
+	 */
+	function sgs_brand_registry(): array {
+		static $brands = null;
+		if ( null !== $brands ) {
+			return $brands;
+		}
+		$brands = array();
+		$raw    = @file_get_contents( __DIR__ . '/data/brand-registry.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPress.PHP.NoSilencedErrors.Discouraged -- a local plugin data file; a missing file leaves an empty registry.
+		$data   = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		$list   = is_array( $data['brands'] ?? null ) ? $data['brands'] : array();
+		foreach ( $list as $entry ) {
+			$slug   = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
+			$colour = is_string( $entry['colour'] ?? null ) ? $entry['colour'] : '';
+			$ground = is_string( $entry['ground'] ?? null ) ? $entry['ground'] : '';
+			if ( ! preg_match( '/^[a-z0-9-]+$/', $slug ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $colour ) || ! preg_match( '/^(#[0-9A-Fa-f]{6})?$/', $ground ) || ! is_array( $entry['glyph'] ?? null ) ) {
+				continue;
+			}
+			$brands[ $slug ] = array(
+				'slug'        => $slug,
+				'label'       => (string) ( $entry['label'] ?? $slug ),
+				'siteInfoKey' => (string) ( $entry['siteInfoKey'] ?? '' ),
+				'autoLabel'   => (string) ( $entry['autoLabel'] ?? '' ),
+				'colour'      => $colour,
+				'glyph'       => $entry['glyph'],
+				'glyphBrand'  => is_array( $entry['glyphBrand'] ?? null ) ? $entry['glyphBrand'] : array(),
+				'ground'      => $ground,
+			);
+		}
+		return $brands;
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_by_slug' ) ) {
+	/**
+	 * One registry entry by its slug.
+	 *
+	 * @param string $slug Registry slug ('whatsapp', 'phone').
+	 * @return array|null The entry, or null.
+	 */
+	function sgs_brand_by_slug( string $slug ): ?array {
+		return sgs_brand_registry()[ $slug ] ?? null;
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_by_site_info_key' ) ) {
+	/**
+	 * The registry entry a Site Info key links to.
+	 *
+	 * @param string $key Site Info key ('phone', 'socials.whatsapp').
+	 * @return array|null The entry whose value that key holds, or null.
+	 */
+	function sgs_brand_by_site_info_key( string $key ): ?array {
+		foreach ( sgs_brand_registry() as $brand ) {
+			if ( '' !== $key && $brand['siteInfoKey'] === $key ) {
+				return $brand;
+			}
+		}
+		return null;
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_by_lucide_name' ) ) {
+	/**
+	 * The brand a Lucide icon draws, when that icon is a brand's own mark (Instagram's `instagram`). Contact
+	 * entries (phone, email, address) carry no brand colour and are never matched: a phone glyph is not a brand.
+	 *
+	 * @param string $name Lucide icon name.
+	 * @return array|null The brand entry, or null.
+	 */
+	function sgs_brand_by_lucide_name( string $name ): ?array {
+		foreach ( sgs_brand_registry() as $brand ) {
+			if ( '' !== $brand['colour'] && ( $brand['glyph']['lucide'] ?? null ) === $name ) {
+				return $brand;
+			}
+		}
+		return null;
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_glyph_svg' ) ) {
+	/**
+	 * A registry glyph as inline SVG, decorative (`aria-hidden`): the caller's text or label names the action.
+	 *
+	 * @param array  $brand      Registry entry.
+	 * @param string $class_name The `<svg>` element's class ('' for none).
+	 * @param int    $size       Width and height attributes of an SVG mark, in px (a Lucide glyph keeps its own 24).
+	 * @param bool   $branded    Draw the entry's fixed-colour `glyphBrand` mark when it has one.
+	 * @return string SVG markup, or '' when the glyph cannot be drawn.
+	 */
+	function sgs_brand_glyph_svg( array $brand, string $class_name = '', int $size = 24, bool $branded = false ): string {
+		$glyph = $branded && ! empty( $brand['glyphBrand'] ) ? $brand['glyphBrand'] : ( $brand['glyph'] ?? array() );
+		if ( isset( $glyph['lucide'] ) && is_string( $glyph['lucide'] ) ) {
+			require_once __DIR__ . '/lucide-icons.php';
+			$svg = (string) sgs_get_lucide_icon( $glyph['lucide'] );
+			if ( '' === $svg || '' === $class_name ) {
+				return $svg;
+			}
+			return (string) preg_replace( '/<svg class="/', '<svg class="' . esc_attr( $class_name ) . ' ', $svg, 1 );
+		}
+		$svg = isset( $glyph['svg'] ) && is_string( $glyph['svg'] ) ? $glyph['svg'] : '';
+		if ( 0 !== strpos( $svg, '<svg ' ) ) {
+			return '';
+		}
+		$attrs = ( '' !== $class_name ? ' class="' . esc_attr( $class_name ) . '"' : '' )
+			. ' width="' . absint( $size ) . '" height="' . absint( $size ) . '" aria-hidden="true" focusable="false"';
+		return '<svg' . $attrs . substr( $svg, 4 );
+	}
+}
+
+if ( ! function_exists( 'sgs_brand_paint' ) ) {
+	/**
+	 * The colours a brand paints an icon with (Bean decision D5): the brand colour as the ground and border, a white
+	 * glyph when white reaches 3:1 on it, else a near-black glyph when that reaches 3:1, else no glyph colour (the
+	 * theme's own glyph colour shows). Hover swaps glyph and ground. When the icon draws the brand's fixed-colour
+	 * mark (`glyphBrand`), the mark sits on the brand's `ground` and keeps it on hover; it takes no glyph paint.
+	 *
+	 * @param array $brand      Registry entry.
+	 * @param bool  $fixed_mark The icon draws the entry's `glyphBrand` mark.
+	 * @return array{ground:string,glyph:string,border:string,ground_hover:string,glyph_hover:string,fixed:bool} Hex
+	 *         colours ('' = no brand value for that slot); empty slots throughout for an entry with no colour.
+	 */
+	function sgs_brand_paint( array $brand, bool $fixed_mark = false ): array {
+		$none   = array(
+			'ground'       => '',
+			'glyph'        => '',
+			'border'       => '',
+			'ground_hover' => '',
+			'glyph_hover'  => '',
+			'fixed'        => false,
+		);
+		$colour = (string) ( $brand['colour'] ?? '' );
+		if ( '' === $colour ) {
+			return $none;
+		}
+		if ( $fixed_mark && ! empty( $brand['glyphBrand'] ) ) {
+			$ground = '' !== (string) ( $brand['ground'] ?? '' ) ? (string) $brand['ground'] : $colour;
+			return array_merge(
+				$none,
+				array(
+					'ground'       => $ground,
+					'border'       => $colour,
+					'ground_hover' => $ground,
+					'fixed'        => true,
+				)
+			);
+		}
+		$glyph = '';
+		if ( sgs_wcag_contrast_ratio( '#FFFFFF', $colour ) >= 3.0 ) {
+			$glyph = '#FFFFFF';
+		} elseif ( sgs_wcag_contrast_ratio( SGS_BRAND_DARK_GLYPH, $colour ) >= 3.0 ) {
+			$glyph = SGS_BRAND_DARK_GLYPH;
+		}
+		return array_merge(
+			$none,
+			array(
+				'ground'       => $colour,
+				'glyph'        => $glyph,
+				'border'       => $colour,
+				'ground_hover' => $glyph,
+				'glyph_hover'  => '' !== $glyph ? $colour : '',
+			)
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_whatsapp_glyph_svg' ) ) {
 	/**
-	 * The WhatsApp logo (official brand path), filled with `currentColor` so
-	 * CSS sets its colour. Decorative: the caller's own text names the action.
+	 * The WhatsApp mark from the registry, filled with `currentColor` so CSS sets its colour. Decorative: the
+	 * caller's own text names the action.
 	 *
 	 * @param string $class_name The `<svg>` element's class.
 	 * @param int    $size       Width and height attributes, in px.
-	 * @return string SVG markup (a fixed constant plus the escaped class).
+	 * @return string SVG markup, or '' when the registry has no WhatsApp entry.
 	 */
 	function sgs_whatsapp_glyph_svg( string $class_name, int $size = 24 ): string {
-		$path  = 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15';
-		$path .= '-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15';
-		$path .= '-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297';
-		$path .= '-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497';
-		$path .= '.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207';
-		$path .= '-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01';
-		$path .= '-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479';
-		$path .= ' 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487';
-		$path .= '.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118';
-		$path .= '.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413';
-		$path .= '-.074-.124-.272-.198-.57-.347';
-		$path .= 'm-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214';
-		$path .= '-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26';
-		$path .= 'c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898';
-		$path .= 'a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884';
-		$path .= 'm8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892';
-		$path .= 'c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654';
-		$path .= 'a11.882 11.882 0 0 0 5.683 1.448h.005';
-		$path .= 'c6.554 0 11.89-5.335 11.893-11.893';
-		$path .= 'a11.821 11.821 0 0 0-3.48-8.413';
-
-		return '<svg class="' . esc_attr( $class_name ) . '" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"'
-			. ' width="' . absint( $size ) . '" height="' . absint( $size ) . '" fill="currentColor" aria-hidden="true"'
-			. ' focusable="false"><path d="' . $path . '"/></svg>';
+		$brand = sgs_brand_by_slug( 'whatsapp' );
+		return null === $brand ? '' : sgs_brand_glyph_svg( $brand, $class_name, $size );
 	}
 }

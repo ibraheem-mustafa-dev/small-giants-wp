@@ -32,7 +32,7 @@ import {
 import IconGrid from './IconGrid';
 import IconPreview, { withInlineFillStroke } from './IconPreview';
 import { withSgsCategory } from './sgs-group';
-import { loadLucide, loadEmoji, loadWpIcons, ICON_SOURCES, DASHICONS } from './icon-data';
+import { loadLucide, loadEmoji, loadWpIcons, enabledIconSources, DASHICONS } from './icon-data';
 import './editor.css';
 import { sanitiseSvg } from '../../utils';
 
@@ -142,24 +142,22 @@ function useWindowed( allItems ) {
  * @param {Object}   props.value     { source, name } — current selection.
  * @param {Function} props.onChange  ({ source, name }) => void.
  * @param {string}   [props.label]   Inspector control label. Default "Icon".
- * @param {string[]} [props.sources] Enabled source keys. Default all four.
+ * @param {string[]} [props.sources] Enabled source keys. Default every source except the opt-in Brands.
+ * @param {Array}    [props.brands]  Brand registry entries for the Brands tab (src/utils/brand-registry.js BRANDS),
+ *                                   passed in by the one block that draws them so the registry is not bundled into
+ *                                   every block that shares this picker.
  */
 export default function IconPicker( {
 	value = {},
 	onChange,
 	label = __( 'Icon', 'sgs-blocks' ),
 	sources,
+	brands = [],
 } ) {
 	// Coerce null → empty object so destructuring value.source/value.name below
 	// never throws when a block passes value={ icon ? { source, name } : null }.
 	value = value || {};
-	const enabledSources = useMemo(
-		() =>
-			ICON_SOURCES.filter(
-				( s ) => ! sources || sources.includes( s.key )
-			),
-		[ sources ]
-	);
+	const enabledSources = useMemo( () => enabledIconSources( sources ), [ sources ] );
 
 	const [ isOpen, setIsOpen ] = useState( false );
 	const [ activeSource, setActiveSource ] = useState(
@@ -189,7 +187,7 @@ export default function IconPicker( {
 			? emoji
 			: 'wp-icon' === activeSource
 			? wpIcons
-			: 'dashicon'; // static — always ready
+			: 'dashicon'; // static — always ready (Dashicons and Brands)
 	const isLoading = isOpen && ! error && ! sourceData;
 
 	// Trigger the active source's fetch on first need. Each loader caches its
@@ -304,6 +302,16 @@ export default function IconPicker( {
 			);
 		}
 
+		if ( 'brand' === activeSource ) {
+			return brands.filter(
+				( b ) => ! q || b.slug.includes( q ) || b.label.toLowerCase().includes( q )
+			).map( ( b ) => ( {
+				key: b.slug,
+				label: b.label,
+				render: () => <IconPreview source="brand" name={ b.slug } size={ 24 } brands={ brands } />,
+			} ) );
+		}
+
 		if ( 'dashicon' === activeSource ) {
 			return ( q
 				? DASHICONS.filter( ( s ) => s.includes( q ) )
@@ -316,7 +324,7 @@ export default function IconPicker( {
 		}
 
 		return [];
-	}, [ activeSource, activeCategory, query, lucide, emoji, wpIcons, lucideCategories, emojiCategories ] );
+	}, [ activeSource, activeCategory, query, lucide, emoji, wpIcons, lucideCategories, emojiCategories, brands ] );
 
 	const { visible, sentinelRef, hasMore } = useWindowed( allItems );
 
@@ -373,7 +381,7 @@ export default function IconPicker( {
 						dangerouslySetInnerHTML={ { __html: sanitiseSvg( value.svg ) } }
 					/>
 				) : (
-					<IconPreview source={ value.source } name={ value.name } size={ 24 } />
+					<IconPreview source={ value.source } name={ value.name } size={ 24 } brands={ brands } />
 				) }
 				<span className="sgs-icon-picker__trigger-label">
 					{ ( 'custom' === value.source && value.svg

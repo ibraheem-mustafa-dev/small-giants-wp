@@ -103,10 +103,14 @@ export function loadWpIcons() {
 
 /**
  * Icon sources offered by the picker, in tab order.
- * `key` matches the sgs/icon block's `iconSource` enum.
+ * `key` matches the sgs/icon block's `iconSource` enum. An `optIn` source shows only when the caller lists it.
  */
 export const ICON_SOURCES = [
 	{ key: 'lucide', label: 'Lucide' },
+	// Brand and contact marks from the shared registry (includes/data/brand-registry.json). Opt-in: only a block
+	// whose render.php draws the 'brand' source (sgs/icon) lists it in `sources`; a picker with no `sources` prop
+	// leaves it out, because that block's render cannot draw it.
+	{ key: 'brand', label: __( 'Brands', 'sgs-blocks' ), optIn: true },
 	{ key: 'emoji', label: 'Emoji' },
 	{ key: 'wp-icon', label: 'WordPress' },
 	{ key: 'dashicon', label: 'Dashicons' },
@@ -117,6 +121,16 @@ export const ICON_SOURCES = [
 	// { source: 'custom', svg } rather than { source, name }.
 	{ key: 'custom', label: __( 'Custom SVG', 'sgs-blocks' ) },
 ];
+
+/**
+ * The sources a picker shows: the caller's list, else every source that is not opt-in.
+ *
+ * @param {string[]|undefined} sources The picker's `sources` prop.
+ * @return {Array<{key:string,label:string,optIn?:boolean}>} Sources in tab order.
+ */
+export function enabledIconSources( sources ) {
+	return ICON_SOURCES.filter( ( s ) => ( sources ? sources.includes( s.key ) : ! s.optIn ) );
+}
 
 /**
  * Curated Dashicons slugs (font-rendered in admin — no SVG payload needed).

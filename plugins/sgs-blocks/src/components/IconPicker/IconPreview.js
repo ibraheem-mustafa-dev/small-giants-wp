@@ -52,8 +52,10 @@ export function withInlineFillStroke( svgString ) {
 
 /**
  * @param {Object} props
- * @param {string} props.source   One of lucide | emoji | wp-icon | dashicon | custom.
- * @param {string} props.name     Icon identifier (lucide/wp slug, dashicon slug, or emoji char).
+ * @param {string} props.source   One of lucide | brand | emoji | wp-icon | dashicon | custom.
+ * @param {string} props.name     Icon identifier (lucide/wp slug, brand registry slug, dashicon slug, or emoji char).
+ * @param {boolean} [props.branded] Brand source only: draw the brand's fixed-colour mark when it has one.
+ * @param {Array}   [props.brands]  Brand registry entries (src/utils/brand-registry.js BRANDS), from the caller.
  * @param {string} [props.svg]    Raw SVG markup — only read when source is 'custom'.
  * @param {number} [props.size]   Pixel size of the preview box. Default 24.
  * @param {string} [props.gradient] Optional `iconColourGradient`-style CSS
@@ -67,16 +69,21 @@ export function withInlineFillStroke( svgString ) {
  *   only stroke-based sources); emoji/dashicon ignore it, matching the
  *   frontend's `$icon_svg` scoping.
  */
-export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '' } ) {
+export default function IconPreview( { source, name, size = 24, gradient = '', svg: customSvg = '', branded = false, brands = [] } ) {
 	const [ svg, setSvg ] = useState( '' );
 	const gradientId = useInstanceId( IconPreview, 'sgs-icon-preview-grad' );
+
+	// A brand drawn from a Lucide icon previews as that icon; a registry SVG mark needs no load.
+	const brandEntry = 'brand' === source ? brands.find( ( b ) => b.slug === name ) : null;
+	const brandMark = brandEntry ? ( branded && brandEntry.glyphBrand ) || brandEntry.glyph || {} : null;
+	const lucideName = brandMark ? brandMark.lucide : name;
 
 	useEffect( () => {
 		let active = true;
 		setSvg( '' );
-		if ( 'lucide' === source && name ) {
+		if ( ( 'lucide' === source || 'brand' === source ) && lucideName ) {
 			loadLucide()
-				.then( ( { map } ) => active && setSvg( withInlineFillStroke( map[ name ] || '' ) ) )
+				.then( ( { map } ) => active && setSvg( withInlineFillStroke( map[ lucideName ] || '' ) ) )
 				.catch( () => {} );
 		} else if ( 'wp-icon' === source && name ) {
 			loadWpIcons()
@@ -86,7 +93,7 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 		return () => {
 			active = false;
 		};
-	}, [ source, name ] );
+	}, [ source, name, lucideName ] );
 
 	const box = {
 		width: size,
@@ -105,6 +112,18 @@ export default function IconPreview( { source, name, size = 24, gradient = '', s
 			>
 				{ name || '⭐' }
 			</span>
+		);
+	}
+
+	if ( brandMark?.svg ) {
+		return (
+			<span
+				className="sgs-icon-preview__svg"
+				style={ box }
+				aria-hidden="true"
+				// eslint-disable-next-line react/no-danger
+				dangerouslySetInnerHTML={ { __html: sanitiseSvg( brandMark.svg ) } }
+			/>
 		);
 	}
 

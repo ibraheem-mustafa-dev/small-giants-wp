@@ -62,6 +62,23 @@ function sgs_wcag_relative_luminance( string $hex ): float {
 }
 
 /**
+ * WCAG 2.1 contrast ratio between two hex colours (1.0 to 21.0). The JS twin is
+ * `src/utils/wcag-contrast.js::calculateContrastRatio`.
+ *
+ * @param string $hex_a First colour, hex.
+ * @param string $hex_b Second colour, hex.
+ * @return float The ratio, or 0.0 when either colour is not a hex.
+ */
+function sgs_wcag_contrast_ratio( string $hex_a, string $hex_b ): float {
+	$l_a = sgs_wcag_relative_luminance( $hex_a );
+	$l_b = sgs_wcag_relative_luminance( $hex_b );
+	if ( $l_a < 0 || $l_b < 0 ) {
+		return 0.0;
+	}
+	return ( max( $l_a, $l_b ) + 0.05 ) / ( min( $l_a, $l_b ) + 0.05 );
+}
+
+/**
  * Whether white beats black for WCAG contrast against a background of the given
  * relative luminance (WCAG 2.1 §1.4.3: ratio = (L_lighter+0.05)/(L_darker+0.05);
  * prefer the candidate reaching >= 4.5:1, else the higher ratio). The shared
