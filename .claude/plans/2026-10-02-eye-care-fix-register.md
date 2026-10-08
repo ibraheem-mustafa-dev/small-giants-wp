@@ -76,7 +76,7 @@
 - **37.** Yes: the address can link to the Google Business link stored in Site Info.
 - **62.** The WooCommerce filter block already has a "show counts" switch in its settings, so clients can turn it back on.
 - **N22, shape tile borders.** The draft code gives the tiles a light border (#E6E1DA) at rest and a slightly darker one (#CFC7BB) on hover. Your call: match the draft (item N22).
-- **N39, side margins.** At 1440 the text starts at the same spot on both pages, so your 128 against 85.2 was probably measured at another width. The top spacing is the main fault and is fixed by S6; the sides are re-measured at 1280, 1366 and 1920 (item N39).
+- **N39, side margins.** At 1440 the text starts at the same spot on both pages, so your 128 against 85.2 was probably measured at another width. The top spacing was the main fault and is fixed by S6; the sides, measured at 375, 768, 1280, 1366 and 1920 on Lenses, About and Contact, match the draft at every width (item N39).
 
 ## Site-wide fixes (one change, many items)
 
@@ -272,7 +272,7 @@
 | 101 | Gap under section headings 16px too big | The two column stacks take gap 0: the draft spaces those children with their own margins (heading 16px, button 28px), and live's 16px stack gap added to the heading's 16px margin | tree | Solve wrote it 2026-10-07 (`1f58918cd`) | closed 2026-10-07: no heading-gap row open on the rebuilt page; the columns' remaining height rows follow the steps (102) |
 | 102 | Step numbers large and bold; text not aligned with its number | numbers 15.5px, weight 500, line height 1.5; steps 15px apart; each title at line height 1.5 and 16px from its number (`titleLineHeight`, `numberGap`) | tree | numbers and step gap written by Solve 2026-10-07 (`1f58918cd`); titles' line height and number gap in the tree (`0070c8d4a`) | closed 2026-10-07: numbers and titles live; the steps match the draft's height at 375 and 1440 (`qa/solve/lenses/2026-10-07T21-11-54/`) |
 | 103 | "Choose a frame" text too bold | weight 400 | tree | closed (2026-10-03): weight 400, with the button's draft padding box (0 26px) and 50px height | closed earlier |
-| N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | top: S6's 48/90px (28/60px mobile) in the Lenses tree and live (`1f58918cd`); sides to prove | top closed on Lenses 2026-10-07; sides still open |
+| N39 | Content starts too low | S6 (the top spacing is the main fault: it pushes every page down). Side margins: re-measure at 1280, 1366 and 1920 and fix only if they differ. | tree | top: S6's 48/90px (28/60px mobile) in the Lenses tree and live (`1f58918cd`); sides: none needed, main's side padding and the h1's left edge match the draft on Lenses, About and Contact at 375/768/1280/1366/1920 (20px mobile, 52px from 768; Playwright probe 2026-10-08) | closed 2026-10-08 (top 2026-10-07, sides 2026-10-08) |
 | N40 | Gap above the button too big | Match the draft's gap (same cause as 101: a default heading/text bottom margin) | tree | to prove | still open |
 | N41 | "Choose a frame" does not lift | S1 | | | closed 2026-10-05: the lift is Bean's S1 decision against the draft, ledgered as `D-34` and `D-35` on `cr-ref-lenses-28` |
 

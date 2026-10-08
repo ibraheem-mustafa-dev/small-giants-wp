@@ -1239,5 +1239,20 @@
     },
     "reason": "The draft's scroll reveal never fires below 1440: the section stays at opacity 0 and 26px down, so the draft paints it blank (lenses.mjs notes for 375 and 768) and every row below it reads 26px off; live shows it, which is right.",
     "decided": "2026-10-07 Bean"
+  },
+  {
+    "id": "D-86",
+    "scope": "lenses",
+    "node": "cr-ref-lenses-26",
+    "state": "opening",
+    "property": "y-from-benefits-list",
+    "widths": [
+      375
+    ],
+    "expected": {
+      "value": "281"
+    },
+    "reason": "The draft's scroll reveal is caught part-way at 375: in this walk the steps column had revealed and the benefits list had not, so the draft read 255 (281 less the reveal's 26px). With every reveal fired, draft and live both measure 281 from the benefits list's top to the steps heading (40px row gap both sides, probe 2026-10-08); live is right. Same ruling as D-72 to D-81.",
+    "decided": "2026-10-08 Bean"
   }
 ]

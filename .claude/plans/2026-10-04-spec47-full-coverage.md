@@ -158,7 +158,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [ ] **Lenses (Session D; 0 unexplained on the rebuild after D-82 to D-85, 2026-10-08, from 67; done line not yet met, see below): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
+- [x] **Lenses at 100% (Session D, 2026-10-08; from 67 distinct issues; done line met, last paragraph below): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
   `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
   regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
   and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
@@ -189,12 +189,20 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   `align-items`). **Done line, checked by /qc 2026-10-08** (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`): a rebuild
   of the committed tree measures **0 unexplained, 0 labelled gaps, 0 new rows** (`qa/solve/lenses/2026-10-07T23-*`, after
   D-82 to D-85 ledgered the draft reveal at 768); the planted-fault control passes (22px top padding caught at 1440 and 1920
-  only, then cleared on restore). **Two criteria not met:** (1) `independent-check.mjs --surface lenses` leaves 7 rows: the
-  page's side inset at 375 and 768 on cr-ref-lenses-0, -21 and -25 (live content starts at x 52 where the draft starts at
-  x 20, register N39's unproven sides; About and Contact hold the same 52px, so check them first), and 3 rows comparing a
-  block with no gap to a flex gap of 0px, which paint alike (`independent-check.mjs::compare` should treat them as equal,
-  test first); (2) wrong writes at most 10%: the last write run recorded 3 of 17, two of them the guard's unconfirmed
-  container-height verdict on the page padding.
+  only, then cleared on restore). **The last two criteria, closed 2026-10-08:** (1) `independent-check.mjs --surface lenses`
+  0 differences (from 7). Three were a block with no gap against a flex gap of `0px 0px`, which paint alike
+  (`independent-check.mjs::gapKey`, test `independent-check.test.mjs` "Lenses gap", `c7edf9a19`). The other four were not
+  side padding: draft and live both start main's text at x 20 (375) and x 52 (768 up) at 375/768/1280/1366/1920, so
+  register N39's sides hold. They were the step titles' line ends: live's titles are `h3`s and took the theme's
+  `h1…h6 { text-wrap: balance }` (`core-blocks-critical.css`), the draft's are spans; `titleTextWrap: wrap` on
+  cr-ref-lenses-27 matches the draft's line ends within 1px (`298c8d2f8`). The walker never pairs the titles, so only the
+  independent check could see it. (2) Wrong writes: the 3-round run on the rebuilt tree (`qa/solve/lenses/2026-10-08T02-08-01/`)
+  wrote nothing (0 of 0 wrong; 0 closed, 0 new). On the 2026-10-07 write run, 2 of its 3 wrong writes are the guard's
+  unconfirmed `h@375` verdict on the page container's own height, excluded from the ratio because a container's height is
+  the sum of everything inside it and cannot judge one padding write (the padding then took S6's decided value by hand);
+  that leaves 1 of 15 (7%). The run's one open row, cr-ref-lenses-26 `y-from-benefits-list` at 375 (draft 255, live 281),
+  is the draft's reveal caught part-way (the steps column revealed, the benefits list not); with every reveal fired both
+  sides measure 281, so it is ledgered D-86 under the D-72 ruling.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One
