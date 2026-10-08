@@ -38,7 +38,6 @@
 //     control tags — same double-counting behaviour as the OLD script,
 //     which used the identical unscoped nodePath.traverse pattern.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 // \b would not exclude a name ending differently, so this stays a $-anchored
@@ -64,11 +63,13 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// See 04-colour-alpha.js's identical comment — `this.id` is not usable
 		// inside a nested Babel visitor callback (doubly so here, two levels
 		// deep); captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const parsed = ctx.ast( editFile );
 		if ( ! parsed.ok ) return [];

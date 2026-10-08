@@ -11,6 +11,7 @@ const os = require( 'os' );
 const { SourceCache } = require( './sources' );
 const { applyBaseline } = require( './baseline' );
 const components = require( './components' );
+const { blockSourceCtx } = require( './block-files' );
 
 function copyDirSync( src, dest ) {
 	fs.mkdirSync( dest, { recursive: true } );
@@ -64,6 +65,7 @@ function buildTestCtx( cache, tmpBase ) {
 		text: ( f ) => cache.text( f ),
 		stripped: ( f ) => cache.strippedText( f ),
 		json: ( f ) => cache.json( f ),
+		...blockSourceCtx( tmpBase, cache ),
 	};
 }
 

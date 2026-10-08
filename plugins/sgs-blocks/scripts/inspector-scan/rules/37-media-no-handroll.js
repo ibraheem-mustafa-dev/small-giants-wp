@@ -522,7 +522,6 @@ module.exports = {
 		const ruleId = this.id;
 		const blockDir = path.join( ctx.blocksDir, block.tail );
 		const blockJsonFile = path.join( blockDir, 'block.json' );
-		const renderFile = path.join( blockDir, 'render.php' );
 		const styleFile = path.join( blockDir, 'style.css' );
 
 		const blockJson = ctx.json( blockJsonFile );
@@ -565,15 +564,20 @@ module.exports = {
 
 		// ── Condition 2: direct CSS-property write, not via the shared emitter ──
 		if ( ! adopted ) {
-			const renderText = ctx.stripped( renderFile );
+			// render.php and every partial it requires: a shared-emitter call in
+			// any of them adopts the layer for the whole render side.
+			const renderAdoptedByCall = callsSharedEmitter( ctx.renderStripped( block.tail ) );
 			const styleText = ctx.stripped( styleFile );
-			const renderAdoptedByCall = callsSharedEmitter( renderText );
 			const styleAdoptedByCall = callsSharedEmitter( styleText );
 
-			const sources = [
-				{ file: renderFile, text: renderText, fileAdopted: renderAdoptedByCall },
-				{ file: styleFile, text: styleText, fileAdopted: styleAdoptedByCall },
-			];
+			const sources = ctx
+				.renderFiles( block.tail )
+				.map( ( file ) => ( {
+					file,
+					text: ctx.stripped( file ),
+					fileAdopted: renderAdoptedByCall,
+				} ) )
+				.concat( [ { file: styleFile, text: styleText, fileAdopted: styleAdoptedByCall } ] );
 
 			for ( const source of sources ) {
 				if ( ! source.text || source.fileAdopted ) continue;

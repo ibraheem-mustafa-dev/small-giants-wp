@@ -143,12 +143,14 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// See 04/24's identical comment: `this.id` is not usable inside a nested
 		// Babel visitor callback (Babel invokes visitor methods as plain
 		// functions, so `this` resolves to the Node.js global object there,
 		// confirmed empirically) — captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const blockJson = ctx.cache.json( path.join( ctx.blocksDir, block.tail, 'block.json' ) );
 		// cache.json() returns a { ok, error, data } WRAPPER, never the parsed
 		// object — reading .attributes straight off it yields undefined and makes

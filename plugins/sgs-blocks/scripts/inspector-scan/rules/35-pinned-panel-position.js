@@ -54,7 +54,6 @@
 // extension that actually owns the guarantee. A narrow rule that is always
 // right beats a broad rule that is sometimes wrong.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 // Matches <PanelBody ...title="X"...> or <ToolsPanel ...title="X"...> with
@@ -84,7 +83,9 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'stripped:edit.js' ],
 	run( ctx, block ) {
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		const text = ctx.stripped( editFile );
 		if ( text == null ) return [];
 

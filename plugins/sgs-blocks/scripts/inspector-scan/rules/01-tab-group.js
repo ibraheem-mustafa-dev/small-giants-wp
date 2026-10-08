@@ -220,8 +220,11 @@ module.exports = {
 	needs: [ 'stripped:edit.js', 'ast:edit.js', 'components' ],
 	run( ctx, block ) {
 		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
-		const rawStripped = ctx.stripped( editFile );
-		if ( rawStripped == null ) return [];
+		// edit.js plus the components it imports from inside the block folder:
+		// panels and group props are counted across all of them.
+		const editFiles = ctx.editFiles( block.tail );
+		if ( editFiles.length === 0 ) return [];
+		const rawStripped = ctx.editStripped( block.tail );
 
 		const hasAdvancedRouting = /<InspectorAdvancedControls\b/.test( rawStripped );
 		// Content already routed to Advanced does not count toward "unrouted
@@ -239,11 +242,15 @@ module.exports = {
 			blockJsonWrapper && blockJsonWrapper.ok && blockJsonWrapper.data && blockJsonWrapper.data.attributes
 				? Object.keys( blockJsonWrapper.data.attributes )
 				: [];
-		const { ok: astOk, panels } = findPanelElements( ctx, editFile, new Set( tagNames ) );
-		const { exemptCount, exemptTitles } =
-			astOk && panels.length
-				? findExemptPanels( ctx, block, editFile, rawStripped, panels, declaredAttrs )
-				: { exemptCount: 0, exemptTitles: [] };
+		let exemptCount = 0;
+		let exemptTitles = [];
+		for ( const file of editFiles ) {
+			const { ok: astOk, panels } = findPanelElements( ctx, file, new Set( tagNames ) );
+			if ( ! astOk || ! panels.length ) continue;
+			const exempt = findExemptPanels( ctx, block, file, ctx.stripped( file ), panels, declaredAttrs );
+			exemptCount += exempt.exemptCount;
+			exemptTitles = exemptTitles.concat( exempt.exemptTitles );
+		}
 		const requiredPanelCount = Math.max( 0, panelCount - Math.min( exemptCount, panelCount ) );
 		if ( requiredPanelCount < 2 ) return []; // exemption removed the genuine routing decision
 

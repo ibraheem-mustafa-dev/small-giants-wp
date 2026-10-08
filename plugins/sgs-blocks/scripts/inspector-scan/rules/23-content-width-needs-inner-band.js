@@ -204,8 +204,8 @@ module.exports = {
 			];
 		}
 
-		const rawStripped = ctx.stripped( renderFile );
-		if ( rawStripped == null ) return [];
+		// render.php plus the partials it requires, so a band built in a partial counts.
+		const rawStripped = ctx.renderStripped( block.tail );
 		const text = stripLineComments( rawStripped );
 
 		const callsWrapper = WRAPPER_CALL_RE.test( text );

@@ -38,7 +38,6 @@
 //     jsxAttrStringValue elsewhere in this port (string literal / __() call
 //     / template literal) — a dynamically composed label is invisible.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 function jsxName( openingElement ) {
@@ -81,10 +80,12 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// See 04-colour-alpha.js's identical comment — `this.id` is not usable
 		// inside a nested Babel visitor callback; captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const ok = ctx.cache.traverse( editFile, {
 			JSXOpeningElement( nodePath ) {

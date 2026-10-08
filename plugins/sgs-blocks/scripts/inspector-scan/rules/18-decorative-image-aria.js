@@ -75,8 +75,10 @@ module.exports = {
 		// render. Caught live by this rule's own negative-control fixture during
 		// self-test (2026-08-03): the fixture's own explanatory comment contained
 		// the literal substring "<img" and false-positived on raw text.
-		const text = ctx.stripped( editFile );
-		if ( text == null ) return [];
+		// Joined across edit.js and its in-block components, so an <img> that
+		// lives in the block's own components/ folder counts.
+		const text = ctx.editStripped( block.tail );
+		if ( text === '' ) return [];
 
 		const componentNames = imageWrappingComponentNames( ctx );
 		if ( ! rendersAnImage( text, componentNames ) ) return []; // no <img>, direct or via a shared component

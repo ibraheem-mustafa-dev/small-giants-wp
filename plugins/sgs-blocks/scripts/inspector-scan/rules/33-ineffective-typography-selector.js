@@ -373,20 +373,24 @@ module.exports = {
 		const saveFile = path.join( blockDir, 'save.js' );
 		const renderFile = path.join( blockDir, 'render.php' );
 
-		const templateOwnedRanges = fs.existsSync( editFile )
-			? findTemplateOwnedRanges( ctx, editFile, token )
-			: [];
-		const templateOwned = templateOwnedRanges.length > 0;
-
+		// edit.js plus the components it imports from inside the block folder;
+		// the render side is render.php plus the partials it requires.
+		let templateOwned = false;
+		let templateFile = editFile;
 		let domFound = false;
-		if ( fs.existsSync( editFile ) ) {
-			domFound = domFound || hasDomEmission( scanText( ctx, editFile ), token, templateOwnedRanges );
+		for ( const file of ctx.editFiles( block.tail ) ) {
+			const ranges = findTemplateOwnedRanges( ctx, file, token );
+			if ( ranges.length > 0 && ! templateOwned ) {
+				templateOwned = true;
+				templateFile = file;
+			}
+			domFound = domFound || hasDomEmission( scanText( ctx, file ), token, ranges );
 		}
 		if ( fs.existsSync( saveFile ) ) {
 			domFound = domFound || hasDomEmission( scanText( ctx, saveFile ), token, null );
 		}
-		if ( fs.existsSync( renderFile ) ) {
-			domFound = domFound || hasDomEmission( scanText( ctx, renderFile ), token, null );
+		for ( const file of ctx.renderFiles( block.tail ) ) {
+			domFound = domFound || hasDomEmission( scanText( ctx, file ), token, null );
 		}
 		if ( ! domFound ) {
 			const includesDir = sharedIncludesDir( ctx.blocksDir );
@@ -408,9 +412,9 @@ module.exports = {
 				makeFinding( {
 					rule: this.id,
 					block: block.slug,
-					file: editFile,
+					file: templateFile,
 					severity: 'warn',
-					detail: `${ block.slug } — declared typography selector "${ selectorString }" is set ONLY as an InnerBlocks TEMPLATE child's className (${ editFile }), never emitted by ${ block.slug }'s own rendered markup. Any scoped rule block.json's ${ explicit ? 'selectors.typography' : 'selectors.root' } generates (e.g. "<root> ${ selectorString }") sits at CSS specificity (0,2,0) and cannot beat the child block's own inline typography styles at (1,0,0,0) — the native typography controls this selector backs are silent no-ops (Spec 35A F.1).`,
+					detail: `${ block.slug } — declared typography selector "${ selectorString }" is set ONLY as an InnerBlocks TEMPLATE child's className (${ templateFile }), never emitted by ${ block.slug }'s own rendered markup. Any scoped rule block.json's ${ explicit ? 'selectors.typography' : 'selectors.root' } generates (e.g. "<root> ${ selectorString }") sits at CSS specificity (0,2,0) and cannot beat the child block's own inline typography styles at (1,0,0,0) — the native typography controls this selector backs are silent no-ops (Spec 35A F.1).`,
 					fix: `Retarget block.json's selectors.typography to ${ block.slug }'s own root element (matching cta-section/info-box/notice-banner's fix), not the InnerBlocks child's class. If the child block genuinely owns the typography, move the native typography support to that child block instead of declaring it here.`,
 					keyParts: [ 'child-owned-selector', token ],
 				} ),

@@ -89,9 +89,10 @@ module.exports = {
 		for ( const marker of DURABILITY_MARKERS ) {
 			let jsCount = 0;
 			const jsFiles = [];
-			for ( const name of marker.js ) {
-				const file = path.join( blockDir, name );
-				if ( ! fs.existsSync( file ) ) continue;
+			// The marker may be emitted by edit.js or by a component it imports
+			// from inside the block folder.
+			for ( const file of ctx.editFiles( block.tail ) ) {
+				const name = path.relative( blockDir, file ).split( path.sep ).join( '/' );
 				// strippedText: a marker inside a comment is a DELETED fix.
 				const stripped = ctx.cache.strippedText( file );
 				const n = countIn(

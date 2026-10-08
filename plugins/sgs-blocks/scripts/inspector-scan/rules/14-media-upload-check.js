@@ -35,7 +35,6 @@
 //     behaviour for this port (a widening would need its own measured
 //     before/after, not a silent addition during a verbatim port).
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 function jsxName( openingElement ) {
@@ -55,18 +54,27 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
+		// The gate may sit in a different file of the block than the uploader
+		// (edit.js plus its in-block components), so usage is pooled per block.
+		const editFiles = ctx.editFiles( block.tail );
 		let mediaUploadUsed = false;
 		let mediaUploadCheckUsed = false;
-		const ok = ctx.cache.traverse( editFile, {
-			JSXOpeningElement( nodePath ) {
-				const name = jsxName( nodePath.node );
-				if ( name === 'MediaUpload' ) mediaUploadUsed = true;
-				if ( name === 'MediaUploadCheck' ) mediaUploadCheckUsed = true;
-			},
-		} );
-		if ( ! ok ) return [];
+		let uploadFile = null;
+		for ( const file of editFiles ) {
+			const ok = ctx.cache.traverse( file, {
+				JSXOpeningElement( nodePath ) {
+					const name = jsxName( nodePath.node );
+					if ( name === 'MediaUpload' ) {
+						mediaUploadUsed = true;
+						uploadFile = uploadFile || file;
+					}
+					if ( name === 'MediaUploadCheck' ) mediaUploadCheckUsed = true;
+				},
+			} );
+			if ( ! ok ) return [];
+		}
 		if ( ! mediaUploadUsed || mediaUploadCheckUsed ) return [];
+		const editFile = uploadFile;
 
 		return [
 			makeFinding( {

@@ -20,6 +20,7 @@ const { makeFinding } = require( './core/finding' );
 const { printHuman, printJson } = require( './core/report' );
 const { testRule, runLiveInformational } = require( './core/selftest' );
 const components = require( './core/components' );
+const { blockSourceCtx } = require( './core/block-files' );
 
 const RULES_JSON_PATH = path.resolve( __dirname, 'rules.json' );
 const RULES_DIR = path.resolve( __dirname, 'rules' );
@@ -127,6 +128,7 @@ function buildCtx( cache, rosterInfo ) {
 		text: ( f ) => cache.text( f ),
 		stripped: ( f ) => cache.strippedText( f ),
 		json: ( f ) => cache.json( f ),
+		...blockSourceCtx( BLOCKS_DIR, cache ),
 	};
 }
 

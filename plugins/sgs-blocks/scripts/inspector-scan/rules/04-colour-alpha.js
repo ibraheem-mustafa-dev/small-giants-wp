@@ -42,7 +42,6 @@
 //   - Native `supports.color` (theme.json) is out of scope by design — this
 //     targets COMPONENT pickers, not the native colour support panel.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 const RAW_COLOUR_PICKER_NAMES = new Set( [
@@ -75,6 +74,9 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// Captured here, NOT read as `this.id` inside the nested visitor below —
 		// Babel invokes visitor methods as plain functions, so `this` inside
 		// `JSXOpeningElement(nodePath){...}` is NOT bound to this rule module
@@ -82,7 +84,6 @@ module.exports = {
 		// object). Every other rule in this port makes the same closure-capture
 		// choice for the same reason.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const ok = ctx.cache.traverse( editFile, {
 			JSXOpeningElement( nodePath ) {

@@ -260,11 +260,13 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// `this` is not reliably usable inside a nested Babel visitor callback
 		// (Babel invokes visitor methods as plain functions) — captured here
 		// instead, matching rules 04/24's identical documented workaround.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 
 		// Signal (C) needs a whole-file view (setter declared in one place,

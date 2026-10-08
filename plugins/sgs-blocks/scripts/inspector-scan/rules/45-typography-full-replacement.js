@@ -208,18 +208,14 @@ function stripPhpLineComments( text ) {
 		.join( '\n' );
 }
 
-function usesTypographyControlsInEdit( ctx, editFile ) {
-	const fs = require( 'fs' );
-	if ( ! fs.existsSync( editFile ) ) return false;
-	const text = ctx.cache.strippedText( editFile ) || '';
-	return /\bTypographyControls\b/.test( text );
+// edit.js plus the components it imports from inside the block folder.
+function usesTypographyControlsInEdit( ctx, tail ) {
+	return /\bTypographyControls\b/.test( ctx.editStripped( tail ) );
 }
 
-function callsSharedHelperInRender( ctx, renderFile ) {
-	const fs = require( 'fs' );
-	if ( ! fs.existsSync( renderFile ) ) return false;
-	const raw = ctx.cache.strippedText( renderFile ) || '';
-	const text = stripPhpLineComments( raw );
+// render.php plus the partials it requires.
+function callsSharedHelperInRender( ctx, tail ) {
+	const text = stripPhpLineComments( ctx.renderStripped( tail ) );
 	return /\bsgs_typography_css_rule\s*\(/.test( text );
 }
 
@@ -271,8 +267,8 @@ module.exports = {
 		// (B)/(C) only apply to a block with real typography-bearing content.
 		if ( ! hasRealTypographyElement( blockJson ) ) return findings;
 
-		const hasEditControl = usesTypographyControlsInEdit( ctx, editFile );
-		const hasRenderHelper = callsSharedHelperInRender( ctx, renderFile );
+		const hasEditControl = usesTypographyControlsInEdit( ctx, block.tail );
+		const hasRenderHelper = callsSharedHelperInRender( ctx, block.tail );
 
 		if ( hasEditControl && hasRenderHelper ) return findings; // conformant.
 

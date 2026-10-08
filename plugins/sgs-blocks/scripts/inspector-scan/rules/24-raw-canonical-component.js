@@ -102,7 +102,6 @@
 //     resolves a literal `JSXIdentifier`/`JSXMemberExpression`, same
 //     limitation as rules 04/08's identical helper.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 // Exact JSX tag names only — a Babel `JSXIdentifier.name` is the WHOLE
@@ -161,12 +160,14 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// See 04-colour-alpha.js's identical comment: `this.id` is not usable
 		// inside a nested Babel visitor callback (Babel invokes visitor methods
 		// as plain functions, so `this` there resolves to the Node.js global
 		// object, confirmed empirically) — captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const ok = ctx.cache.traverse( editFile, {
 			JSXOpeningElement( nodePath ) {

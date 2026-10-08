@@ -38,7 +38,6 @@
 //     non-navigational purpose (e.g. a webhook config URL) still flags, and
 //     is the reason the baseline/exception path exists at all.
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 // S10 fix (2026-09-02): these two blocks' <TextControl type="url"> fields are
@@ -101,11 +100,13 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		if ( EXEMPT_BLOCKS.has( block.slug ) ) return [];
 		// See 04-colour-alpha.js's identical comment — `this.id` is not usable
 		// inside a nested Babel visitor callback; captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const ok = ctx.cache.traverse( editFile, {
 			JSXOpeningElement( nodePath ) {

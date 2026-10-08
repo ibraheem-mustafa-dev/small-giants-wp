@@ -41,7 +41,6 @@
 // absence here is safe (rule 35's own stated discipline: "a narrow rule that
 // is always right beats a broad rule that is sometimes wrong").
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 /**
@@ -95,8 +94,10 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 
 		const ok = ctx.cache.traverse( editFile, {

@@ -42,7 +42,6 @@
 //     `jsxName()`-based rule in this directory (only resolves a literal `JSXIdentifier`/
 //     `JSXMemberExpression`).
 
-const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 
 function jsxName( openingElement ) {
@@ -87,11 +86,13 @@ module.exports = {
 	scope: 'per-block',
 	needs: [ 'ast:edit.js' ],
 	run( ctx, block ) {
+		return ctx.editFiles( block.tail ).flatMap( ( editFile ) => this.runFile( ctx, block, editFile ) );
+	},
+	runFile( ctx, block, editFile ) {
 		// See 04/24/30's identical comment: `this.id` is not usable inside a nested Babel
 		// visitor callback (Babel invokes visitor methods as plain functions, so `this`
 		// resolves to the Node.js global object there) — captured here instead.
 		const ruleId = this.id;
-		const editFile = path.join( ctx.blocksDir, block.tail, 'edit.js' );
 		const findings = [];
 		const ok = ctx.cache.traverse( editFile, {
 			JSXOpeningElement( nodePath ) {

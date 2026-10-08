@@ -297,8 +297,9 @@ function helperDerivedAttrs( corpus ) {
 	return out;
 }
 
-// Files that constitute a block's own RENDER surface — what the framework paints.
-const OWN_RENDER_FILES = [ 'render.php', 'view.js', 'save.js', 'style.css' ];
+// Files that constitute a block's own RENDER surface — what the framework paints —
+// beside render.php and the partials it requires (ctx.renderFiles()).
+const OWN_RENDER_FILES = [ 'view.js', 'save.js', 'style.css' ];
 
 // ── Dynamic key-construction shapes ─────────────────────────────────────────
 // Each captures a LITERAL fragment sitting against a concatenation or
@@ -970,6 +971,7 @@ function controlCorpus( ctx, block ) {
 function renderCorpus( ctx, block ) {
 	const dir = path.join( ctx.blocksDir, block.tail );
 	let own = '';
+	for ( const f of ctx.renderFiles( block.tail ) ) own += '\n' + readIfExists( ctx, f );
 	for ( const f of OWN_RENDER_FILES ) own += '\n' + readIfExists( ctx, path.join( dir, f ) );
 
 	// Fixture-local `_includes` mirrors selftest.js's `_theme` convention, so the

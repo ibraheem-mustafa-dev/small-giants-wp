@@ -277,57 +277,60 @@ module.exports = {
 	run( ctx, block ) {
 		const ruleId = this.id;
 		const blockDir = path.join( ctx.blocksDir, block.tail );
-		const editFile = path.join( blockDir, 'edit.js' );
 		const renderFile = path.join( blockDir, 'render.php' );
 		const findings = [];
 
 		// ── Condition 1: JS-side dangerouslySetInnerHTML ──────────────────
-		const editText = ctx.stripped( editFile );
-		if ( editText ) {
-			const loci = findDangerousHtmlLoci( editText );
-			// Detect variables assigned from svgBackgroundPreview() — these
-			// delegate sanitisation internally, so their .markup property is safe
-			const svgPreviewVars = findSvgBackgroundPreviewVars( editText );
-			loci.forEach( ( locus, i ) => {
-				if ( ! /svg/i.test( locus ) ) return; // not SVG-shaped, out of scope
-				if ( locus.indexOf( 'sanitiseSvg(' ) !== -1 ) return; // already wrapped
+		// edit.js and the components it imports from inside the block folder.
+		for ( const editFile of ctx.editFiles( block.tail ) ) {
+			const editText = ctx.stripped( editFile );
+			if ( editText ) {
+				const loci = findDangerousHtmlLoci( editText );
+				// Detect variables assigned from svgBackgroundPreview() — these
+				// delegate sanitisation internally, so their .markup property is safe
+				const svgPreviewVars = findSvgBackgroundPreviewVars( editText );
+				loci.forEach( ( locus, i ) => {
+					if ( ! /svg/i.test( locus ) ) return; // not SVG-shaped, out of scope
+					if ( locus.indexOf( 'sanitiseSvg(' ) !== -1 ) return; // already wrapped
 
-				// Check for delegate pattern: { __html: varName.markup } where
-				// varName is assigned from svgBackgroundPreview(...)
-				// Regex: capture varName from pattern like "{ __html: varName.markup }"
-				// or variants with whitespace. The .markup suffix is the key
-				// indicator of the svgBackgroundPreview delegate return shape.
-				const delegateMatch = locus.match( /\{\s*__html\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*markup\s*\}/ );
-				if ( delegateMatch && svgPreviewVars.has( delegateMatch[ 1 ] ) ) {
-					// This is { __html: varName.markup } where varName is from
-					// svgBackgroundPreview() — the markup is already sanitised
-					return;
-				}
+					// Check for delegate pattern: { __html: varName.markup } where
+					// varName is assigned from svgBackgroundPreview(...)
+					// Regex: capture varName from pattern like "{ __html: varName.markup }"
+					// or variants with whitespace. The .markup suffix is the key
+					// indicator of the svgBackgroundPreview delegate return shape.
+					const delegateMatch = locus.match( /\{\s*__html\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*markup\s*\}/ );
+					if ( delegateMatch && svgPreviewVars.has( delegateMatch[ 1 ] ) ) {
+						// This is { __html: varName.markup } where varName is from
+						// svgBackgroundPreview() — the markup is already sanitised
+						return;
+					}
 
-				findings.push(
-					makeFinding( {
-						rule: ruleId,
-						block: block.slug,
-						file: editFile,
-						severity: 'error',
-						kind: 'unsanitised-dangerously-set-inner-html',
-						detail:
-							'`dangerouslySetInnerHTML` mounts SVG-shaped content in the editor without ' +
-							'wrapping the value in `sanitiseSvg(...)` — a Contributor-supplied SVG payload ' +
-							"(<script>, an on* event handler) can execute in an admin's browser the moment " +
-							'they open this block in the editor.',
-						fix:
-							"Import `sanitiseSvg` from '../../utils' and wrap the mounted value: " +
-							'`dangerouslySetInnerHTML={ { __html: sanitiseSvg( yourSvgValue ) } }` — the same ' +
-							'pattern sgs/media, sgs/hero and sgs/timeline already use.',
-						keyParts: [ 'unsanitised-dangerously-set-inner-html', String( i ) ],
-					} )
-				);
-			} );
+					findings.push(
+						makeFinding( {
+							rule: ruleId,
+							block: block.slug,
+							file: editFile,
+							severity: 'error',
+							kind: 'unsanitised-dangerously-set-inner-html',
+							detail:
+								'`dangerouslySetInnerHTML` mounts SVG-shaped content in the editor without ' +
+								'wrapping the value in `sanitiseSvg(...)` — a Contributor-supplied SVG payload ' +
+								"(<script>, an on* event handler) can execute in an admin's browser the moment " +
+								'they open this block in the editor.',
+							fix:
+								"Import `sanitiseSvg` from '../../utils' and wrap the mounted value: " +
+								'`dangerouslySetInnerHTML={ { __html: sanitiseSvg( yourSvgValue ) } }` — the same ' +
+								'pattern sgs/media, sgs/hero and sgs/timeline already use.',
+							keyParts: [ 'unsanitised-dangerously-set-inner-html', String( i ) ],
+						} )
+					);
+				} );
+			}
 		}
 
 		// ── Condition 2: PHP-side render.php echo ─────────────────────────
-		const renderText = ctx.stripped( renderFile );
+		// render.php plus the partials it requires: a sanitiser call in any of them counts.
+		const renderText = ctx.renderStripped( block.tail );
 		if ( renderText ) {
 			const svgAttrsInBlockJson = new Set();
 			const blockJsonFile = path.join( blockDir, 'block.json' );
