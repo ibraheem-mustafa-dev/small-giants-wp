@@ -280,10 +280,13 @@ def classify_block(block_dir):
     # The block's OWN editor modules count too: a block that moves a panel out of
     # edit.js into a sibling component (to keep edit.js under the file-length budget)
     # still mounts the control. edit.js alone missed sgs/whatsapp-cta's card-fields.js
-    # (2026-09-24). Front-end/serialisation modules are not editor code.
+    # (2026-09-24), and a top-level-only listing missed sgs/post-grid's
+    # components/BorderPanel.js, so subfolders are walked too. Front-end and
+    # serialisation modules are not editor code.
     own_editor_js = ''.join(
-        _read(os.path.join(block_dir, name))
-        for name in sorted(os.listdir(block_dir))
+        _read(os.path.join(dirpath, name))
+        for dirpath, _dirs, names in sorted(os.walk(block_dir))
+        for name in sorted(names)
         if name.endswith('.js') and name not in ('edit.js', 'view.js', 'save.js', 'deprecated.js')
     ) if os.path.isdir(block_dir) else ''
     uses_sgs_border_control = (

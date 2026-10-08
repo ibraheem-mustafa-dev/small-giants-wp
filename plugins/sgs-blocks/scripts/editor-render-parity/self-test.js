@@ -8,6 +8,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const os = require( 'os' );
 const { runCheckABasic } = require( './self-test-a-basic' );
+const { runCheckAOwnComponent } = require( './self-test-a-own-component' );
 const { runCheckAContext } = require( './self-test-a-context' );
 const { runCheckAExemptions } = require( './self-test-a-exemptions' );
 const { runCheckB } = require( './self-test-b-keyword' );
@@ -32,6 +33,7 @@ function runSelfTest() {
 
 	log( '[check-editor-render-parity --self-test] CHECK A (editor-canvas desync)\n' );
 	runCheckABasic( ctx );
+	runCheckAOwnComponent( ctx );
 	runCheckAExemptions( ctx );
 	runCheckAContext( ctx );
 	runCheckB( ctx );

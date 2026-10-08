@@ -489,8 +489,11 @@ def _raster_image_blocks() -> set[str]:
     for block_json_path in sorted(BLOCKS_DIR.glob("*/block.json")):
         block_dir = block_json_path.parent
         renders_image = False
-        for source_name in ("render.php", "edit.js"):
-            source = block_dir / source_name
+        # Every PHP file in the block folder (render.php requires its partials from
+        # there, e.g. buybox/gallery-col.php) plus edit.js. Inspector components are
+        # not read: an <img> there is a settings thumbnail, not the block's output.
+        sources = sorted(block_dir.rglob("*.php")) + [block_dir / "edit.js"]
+        for source in sources:
             if not source.exists():
                 continue
             try:

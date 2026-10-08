@@ -79,12 +79,14 @@ EXCLUDE = {
     ('src/blocks/testimonial/render.php', 'quote_line_height'),
     # (2) bare number + caller-supplied unit: $gr_pct is round(0..100) and the
     # caller appends '%' itself -- `--sgs-gr-pct:` . value . '%'.
-    ('src/blocks/google-reviews/render.php', 'gr_pct'),
+    ('src/blocks/google-reviews/render-interior.php', 'gr_pct'),
 }
 
 
 def targets():
-    out = sorted(glob.glob(os.path.join(ROOT, 'src', 'blocks', '*', 'render.php')))
+    # Every PHP file of a block, not only render.php: a render split into partials
+    # (google-reviews/render-interior.php) keeps the same call sites.
+    out = sorted(glob.glob(os.path.join(ROOT, 'src', 'blocks', '*', '*.php')))
     out += sorted(glob.glob(os.path.join(ROOT, 'includes', '*.php')))
     return out
 

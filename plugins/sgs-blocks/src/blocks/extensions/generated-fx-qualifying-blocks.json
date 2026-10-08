@@ -37,7 +37,8 @@
 		"morph",
 		"motion-path",
 		"particles",
-		"scrub"
+		"scrub",
+		"surface-treatment"
 	],
 	"sgs/choice-flow-result": [
 		"lottie",

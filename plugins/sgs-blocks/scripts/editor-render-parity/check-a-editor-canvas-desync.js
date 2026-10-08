@@ -138,6 +138,49 @@ function foldSharedComponentAttrSets( src, destructured, written ) {
 	return { destructured, written };
 }
 
+/**
+ * A block's OWN component (imported from a relative path, e.g. post-grid's
+ * `./components/PreviewCard`) that edit.js mounts OUTSIDE the inspector is
+ * canvas code moved to its own file: the identifiers it reads outside its own
+ * control ranges count as canvas usage, exactly as they did inside edit.js.
+ * A component mounted only inside InspectorControls stays inspector content.
+ *
+ * @param {Object}        ast            edit.js AST.
+ * @param {string}        src            edit.js source.
+ * @param {string}        dir            Block directory.
+ * @param {Array}         excludedRanges edit.js control ranges.
+ * @param {Set<string>}   used           Mutated: gains the components' canvas reads.
+ */
+function foldOwnCanvasComponents( ast, src, dir, excludedRanges, used ) {
+	const own = new Map();
+	for ( const node of ast.program.body ) {
+		if ( 'ImportDeclaration' !== node.type || ! node.source.value.startsWith( '.' ) ) {
+			continue;
+		}
+		for ( const spec of node.specifiers ) {
+			own.set( spec.local.name, node.source.value );
+		}
+	}
+	const seen = new Set();
+	const re   = /<([A-Z][A-Za-z0-9_]*)\b/g;
+	let m;
+	while ( ( m = re.exec( src ) ) !== null ) {
+		const rel = own.get( m[ 1 ] );
+		if ( ! rel || seen.has( rel ) || excludedRanges.some( ( [ s, e ] ) => m.index >= s && m.index < e ) ) {
+			continue;
+		}
+		seen.add( rel );
+		const file   = path.resolve( dir, /\.js$/.test( rel ) ? rel : rel + '.js' );
+		const compSrc = readIfExists( file );
+		const compAst = compSrc ? safeParse( compSrc ) : null;
+		if ( compAst ) {
+			for ( const n of collectUsedIdentifiersOutsideExcluded( compAst, collectExcludedRanges( compAst ) ) ) {
+				used.add( n );
+			}
+		}
+	}
+}
+
 function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContextAttrs ) {
 	providesContextAttrs = providesContextAttrs || new Set();
 	const editJsPath = path.join( dir, 'edit.js' );
@@ -163,6 +206,7 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	const written = collectSetAttributesWrites( src );
 	const excludedRanges = collectExcludedRanges( ast );
 	const usedOutsideControls = collectUsedIdentifiersOutsideExcluded( ast, excludedRanges );
+	foldOwnCanvasComponents( ast, src, dir, excludedRanges, usedOutsideControls );
 
 	// R3-a: a control can be destructured + written entirely inside a SHARED
 	// component file (e.g. `container/components/WidthPanel.js` destructures

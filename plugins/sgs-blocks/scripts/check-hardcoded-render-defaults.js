@@ -2268,6 +2268,33 @@ function classValueTokens( value ) {
 	return out;
 }
 
+/**
+ * The files whose markup is the block's own template: render.php, plus every file
+ * it (or such a file) pulls in with a plain `require`/`include`, which runs the
+ * partial in render.php's own scope as part of the template. `require_once` loads
+ * a function file instead, whose markup only counts where its functions are called.
+ */
+function renderTemplateFiles( files ) {
+	const known = new Set( files.map( ( f ) => path.resolve( f.file ) ) );
+	const main  = new Set( files.filter( ( f ) => /(?:^|[\\/])render\.php$/.test( f.file ) ).map( ( f ) => path.resolve( f.file ) ) );
+	for ( let grew = true; grew; ) {
+		grew = false;
+		for ( const f of files ) {
+			if ( ! main.has( path.resolve( f.file ) ) ) {
+				continue;
+			}
+			for ( const m of f.src.matchAll( /(?<![\w$>:])(?:require|include)(?!_once)\b\s*([^;]+);/g ) ) {
+				const target = resolveRequirePath( m[ 1 ], f.file );
+				if ( target && known.has( target ) && ! main.has( target ) ) {
+					main.add( target );
+					grew = true;
+				}
+			}
+		}
+	}
+	return main;
+}
+
 /** Literal-HTML markup tree of the block: instances with their class sets and parent links. */
 function buildMarkupModel( files, rootClasses ) {
 	const instances = [];
@@ -2275,6 +2302,7 @@ function buildMarkupModel( files, rootClasses ) {
 	// (`<<?php echo esc_attr( $level ); ?> class="x">`). The last two are an
 	// element of unknown tag (`*`) that still carries its class.
 	const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9-]*\b|%(?:\d+\$)?s|<\?(?:php|=)[\s\S]*?\?>)((?:"[^"]*"|'[^']*'|<\?[\s\S]*?\?>|[^<>"'])*?)(\/?)>/g;
+	const mainFiles = renderTemplateFiles( files );
 	for ( const [ fileIdx, f ] of files.entries() ) {
 		const stack = [];
 		let m;
@@ -2316,7 +2344,7 @@ function buildMarkupModel( files, rootClasses ) {
 				classes,
 				root,
 				dynamic,
-				mainFile: /(?:^|[\\/])render\.php$/.test( f.file ),
+				mainFile: mainFiles.has( path.resolve( f.file ) ),
 				parent:   stack.length ? stack[ stack.length - 1 ] : -1,
 				fileIdx,
 				pos:      m.index,
@@ -3817,6 +3845,7 @@ function selfTestE12() {
 
 	selfTestE14( assert );
 	selfTestRequireHop( assert );
+	selfTestRenderTemplateFiles( assert );
 	selfTestParamBinding( assert );
 	selfTestMarkupSplice( assert );
 	selfTestUnknownTag( assert );
@@ -4246,6 +4275,28 @@ function selfTestE14( assert ) {
 // B and B requires C; both directions are asserted, because a test of the
 // positive alone passes identically for a transitive follower.
 // ---------------------------------------------------------------------------
+
+function selfTestRenderTemplateFiles( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] render.php partials\n\n' );
+	const dir   = path.join( os.tmpdir(), 'sgs-partial-selftest', 'blocks', 'x' );
+	const files = [
+		{ file: path.join( dir, 'render.php' ), src: "<?php\nrequire_once __DIR__ . '/fns.php';\nrequire __DIR__ . '/part.php';\n?>\n<div class=\"x-own\"></div>\n" },
+		{ file: path.join( dir, 'part.php' ), src: "<?php\ninclude __DIR__ . '/deeper.php';\n?>\n<p class=\"x-part\"></p>\n" },
+		{ file: path.join( dir, 'deeper.php' ), src: '<?php ?>\n<b class="x-deeper"></b>\n' },
+		{ file: path.join( dir, 'fns.php' ), src: '<?php ?>\n<i class="x-fns"></i>\n' },
+		{ file: path.join( dir, 'stray.php' ), src: '<?php ?>\n<u class="x-stray"></u>\n' },
+	];
+	const main = renderTemplateFiles( files );
+	const has  = ( name ) => main.has( path.resolve( path.join( dir, name ) ) );
+	assert( 'render.php is the template', has( 'render.php' ), true );
+	assert( 'a partial render.php requires is part of the template', has( 'part.php' ), true );
+	assert( 'a partial included by a partial is part of the template', has( 'deeper.php' ), true );
+	assert( 'a require_once function file is not (negative control)', has( 'fns.php' ), false );
+	assert( 'a file nothing requires is not (negative control)', has( 'stray.php' ), false );
+	const inst = buildMarkupModel( files, new Set() );
+	assert( "a partial's top-level markup is main-file markup", inst.find( ( i ) => i.classes.has( 'x-part' ) ).mainFile, true );
+	assert( "a function file's markup is not", inst.find( ( i ) => i.classes.has( 'x-fns' ) ).mainFile, false );
+}
 
 function selfTestRequireHop( assert ) {
 	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] require one-hop\n\n' );
