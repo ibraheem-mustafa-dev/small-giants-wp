@@ -3014,6 +3014,42 @@
 			"_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, '', $scope ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
+			"slug": "sgs/text",
+			"attr": "linkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "text-link"
+			},
+			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-line on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $scope ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+		},
+		{
+			"slug": "sgs/text",
+			"attr": "linkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "text-link"
+			},
+			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $scope ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+		},
+		{
+			"slug": "sgs/heading",
+			"attr": "linkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "content-link"
+			},
+			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-line on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+		},
+		{
+			"slug": "sgs/heading",
+			"attr": "linkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "content-link"
+			},
+			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on `{selector} a` via sgs_link_underline_css() (includes/helpers-link-underline.php), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). The attribute key is built by sgs_typography_attr() inside the shared helper, the same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+		},
+		{
 			"slug": "sgs/timeline",
 			"attr": "descriptionLinkColour",
 			"fields": {

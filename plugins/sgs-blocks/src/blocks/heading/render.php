@@ -419,6 +419,7 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 // Two-state link colour (Task 3, 2026-09-07) — the heading's own RichText
 // content permits `core/link`, so a linked selection needs its own colour.
 $scoped_css[] = sgs_link_colour_css( $attributes, '', $root_sel );
+$scoped_css[] = sgs_link_underline_css( $attributes, '', $root_sel );
 
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {

@@ -1,0 +1,79 @@
+<?php
+/**
+ * How the links inside a block's text are underlined.
+ *
+ * One setting beside a block's link colour, read from `{prefix}LinkUnderline`:
+ *   ''       the theme's own link underline (nothing is emitted)
+ *   'none'   no underline
+ *   'always' an underline at rest
+ *   'sweep'  no underline at rest; on hover or keyboard focus a line sweeps in left
+ *            to right and plays back on leave
+ * `{prefix}LinkUnderlineThickness` sets the line's thickness for 'always' and 'sweep'.
+ * The line is in the link's own colour (currentColor), so the block's link colour
+ * row, normal and hover, colours it too.
+ *
+ * The sweep is a background line, not a border or a positioned pseudo-element, so on
+ * an inline link it runs along every wrapped line in reading order (the technique of
+ * the theme's `.sgs-hover-underline-slide` utility, with the same
+ * `--wp--custom--link-sweep--thickness` / `--duration` tokens as its defaults). It
+ * starts from the inline end on a right-to-left page, shows at once under reduced
+ * motion, and falls back to a real underline in forced-colours mode, where
+ * background images are not painted. A link painted with a gradient text colour uses
+ * its background for the glyphs, so the sweep is skipped there and the theme's
+ * underline stays.
+ *
+ * Canvas twin: `src/utils/link-underline.js::linkUnderlinePreviewCss`.
+ *
+ * @package SGS\Blocks
+ */
+
+declare( strict_types = 1 );
+
+defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/helpers-hover-state.php';
+require_once __DIR__ . '/helpers-css-safety.php';
+require_once __DIR__ . '/helpers-typography.php';
+
+if ( ! function_exists( 'sgs_link_underline_css' ) ) {
+	/**
+	 * CSS for how the links inside `$selector` are underlined.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Attribute prefix ('' for the block's own text), as sgs_link_colour_css.
+	 * @param string $selector   Scoped selector of the element holding the links (not the `a`).
+	 * @return string CSS, or '' when the setting is unset or unknown.
+	 */
+	function sgs_link_underline_css( array $attributes, $prefix, $selector ): string {
+		$mode = (string) ( $attributes[ sgs_typography_attr( $prefix, 'LinkUnderline' ) ] ?? '' );
+		if ( ! in_array( $mode, array( 'none', 'always', 'sweep' ), true ) || '' === trim( (string) $selector ) ) {
+			return '';
+		}
+
+		$link = $selector . ' a';
+		if ( 'none' === $mode ) {
+			return $link . '{text-decoration:none;}';
+		}
+
+		$thickness = sgs_css_length_value( (string) ( $attributes[ sgs_typography_attr( $prefix, 'LinkUnderlineThickness' ) ] ?? '' ) );
+
+		if ( 'always' === $mode ) {
+			return $link . '{text-decoration-line:underline;' . ( '' !== $thickness ? 'text-decoration-thickness:' . $thickness . ';' : '' ) . '}';
+		}
+
+		// 'sweep': a gradient link colour already owns the link's background.
+		if ( '' !== (string) ( $attributes[ sgs_typography_attr( $prefix, 'LinkColourGradient' ) ] ?? '' ) ) {
+			return '';
+		}
+		$size = '' !== $thickness ? $thickness : 'var(--wp--custom--link-sweep--thickness, 1px)';
+
+		$css  = $link . '{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);'
+			. 'background-repeat:no-repeat;background-position:0 100%;background-size:0 ' . $size . ';'
+			. 'transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}';
+		$css .= $link . ':dir(rtl){background-position:100% 100%;}';
+		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size );
+		$css .= '@media (prefers-reduced-motion: reduce){' . $link . '{transition:none;}}';
+		$css .= '@media (forced-colors: active){' . $link . ':hover,' . $link . ':focus-visible{text-decoration:underline;}}';
+		return $css;
+	}
+}

@@ -12,10 +12,10 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, tierBoxLonghands, usePreviewTier, typographyPreviewStyle, resolveShadowPreviewComposed, isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -254,6 +254,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkColourHover,
 		linkColourGradient,
 		linkColourHoverGradient,
+		linkUnderline,
+		linkUnderlineThickness,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
@@ -309,13 +311,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// scope class lands directly on the element the RichText content's own
 	// `a` descendants are inside.
 	const linkPreviewUid = `sgs-hdg-link-preview-${ clientId }`;
-	const linkPreviewCss = linkColourPreviewCss(
-		`.${ linkPreviewUid }`,
-		linkColour,
-		linkColourHover,
-		linkColourGradient,
-		linkColourHoverGradient
-	);
+	const linkPreviewCss =
+		linkColourPreviewCss(
+			`.${ linkPreviewUid }`,
+			linkColour,
+			linkColourHover,
+			linkColourGradient,
+			linkColourHoverGradient
+		) +
+		linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
+			mode: linkUnderline,
+			thickness: linkUnderlineThickness,
+			linkGradient: linkColourGradient,
+		} );
 
 	const blockProps = useBlockProps( {
 		className: [
@@ -385,6 +393,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onGradientChange: ( val ) => setAttributes( { linkColourHoverGradient: val ?? '' } ),
 							},
 						],
+						after: (
+							<LinkUnderlineControl
+								mode={ linkUnderline }
+								thickness={ linkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 					{
 						key: 'background',

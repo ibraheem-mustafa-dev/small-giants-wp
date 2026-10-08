@@ -1466,6 +1466,51 @@
 			"notes": "Sibling to css:color-link the same way css:color-gradient is sibling to css:color — a link's gradient colour is a distinct concept from its flat colour, so 'LinkColourGradient' needs its own member rather than falling through to css:color-gradient's 'ColourGradient' suffix (which would misclaim it as the element's own text-gradient). Real mechanism: background-clip:text scoped to `{selector} a`, same as css:color-gradient but on the link."
 		},
 		{
+			"setting_key": "css:text-decoration-link",
+			"category": "css-property",
+			"label": "Link underline",
+			"optimal_control": {
+				"component": "LinkUnderlineControl (SelectControl: Theme default / None / Always / Sweep in on hover), in the after slot of SgsColourPanel's Link colour row",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "n/a",
+				"dropdown_completeness": "four modes: '', none, always, sweep",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "Theme default option",
+				"a11y": "help text warns that None and Sweep leave links in running text relying on colour (WCAG 1.4.1)"
+			},
+			"shared_component": "LinkUnderlineControl",
+			"spec_ref": "CR6 plan P2-n, 2026-10-08",
+			"current_state": "sgs/text, sgs/heading, 2026-10-08 build",
+			"divergence": "none — first rollout",
+			"divergence_severity": "low",
+			"notes": "Sibling to css:color-link: the same `{selector} a` scope. The line is in the link's own colour, so css:color-link colours it. Emitter: sgs_link_underline_css() (includes/helpers-link-underline.php); canvas twin src/utils/link-underline.js."
+		},
+		{
+			"setting_key": "css:text-decoration-thickness-link",
+			"category": "css-property",
+			"label": "Link underline thickness",
+			"optimal_control": {
+				"component": "SgsLengthControl (px), shown by LinkUnderlineControl for Always and Sweep",
+				"props": {},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": false,
+				"multi_value": "n/a",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "empty field falls back to the theme's link-sweep thickness (Sweep) or the browser's (Always)"
+			},
+			"shared_component": "LinkUnderlineControl",
+			"spec_ref": "CR6 plan P2-n, 2026-10-08",
+			"current_state": "sgs/text, sgs/heading, 2026-10-08 build",
+			"divergence": "none — first rollout",
+			"divergence_severity": "low",
+			"notes": "Thickness of the css:text-decoration-link line. Emitter: sgs_link_underline_css()."
+		},
+		{
 			"setting_key": "css:display",
 			"category": "css-property",
 			"label": "Display type",

@@ -92,6 +92,7 @@ export { default as SurfaceGroundControls } from './SurfaceGroundControls';
 export { default as ScrimControls, scrimColourRow } from './ScrimControls';
 export { default as SgsSeparatorControl } from './SgsSeparatorControl';
 export { default as SweepAngleControl } from './SweepAngleControl';
+export { default as LinkUnderlineControl } from './LinkUnderlineControl';
 export {
 	default as MotionEasingControl,
 	MOTION_EASING_OPTIONS,

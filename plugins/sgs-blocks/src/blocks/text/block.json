@@ -58,6 +58,8 @@
 						"css:font-style": "fontStyle",
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
@@ -188,6 +190,17 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover-state gradient sibling of linkColourHover. Non-empty wins over linkColourHover on :hover/:focus-visible."
+		},
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How links in the text are underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
 		},
 		"fontSize": {
 			"type": "object",

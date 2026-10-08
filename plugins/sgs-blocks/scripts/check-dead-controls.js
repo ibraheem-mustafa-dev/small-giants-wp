@@ -863,6 +863,10 @@ const PREFIXED_HELPER_SUFFIXES = {
 	// this checker's SIX-corpus literal scan cannot see either end without this
 	// entry.
 	sgs_link_colour_css: [ 'LinkColour', 'LinkColourHover', 'LinkColourGradient', 'LinkColourHoverGradient' ],
+	// sgs_link_underline_css() (includes/helpers-link-underline.php) reads
+	// `{prefix}LinkUnderline` / `{prefix}LinkUnderlineThickness` through the same
+	// sgs_typography_attr( $prefix, 'Suffix' ) convention.
+	sgs_link_underline_css: [ 'LinkUnderline', 'LinkUnderlineThickness' ],
 	// Added 2026-09-15 — false-positive fix for P-NAV-HOVER-TYPOGRAPHY-CONTROLS.
 	// `sgs_nav_shared_typography_hover_rule( $attributes, $prefix, $selector,
 	// $sweep_hover_colour = '' )` (nav-bar-menu/render.php + nav-drawer-menu/

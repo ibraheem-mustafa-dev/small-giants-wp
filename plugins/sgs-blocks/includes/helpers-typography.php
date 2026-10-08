@@ -43,6 +43,9 @@ require_once __DIR__ . '/helpers-css-safety.php';
 // sgs_hover_state_rules() — the touch-safe hover pair sgs_link_colour_css()
 // below builds its hover state from.
 require_once __DIR__ . '/helpers-hover-state.php';
+// sgs_link_underline_css() — how the links sgs_link_colour_css() colours are
+// underlined; loaded here so every caller of one has the other.
+require_once __DIR__ . '/helpers-link-underline.php';
 
 if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	/**

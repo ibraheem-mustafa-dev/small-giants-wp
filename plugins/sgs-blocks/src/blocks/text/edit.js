@@ -35,12 +35,13 @@ import {
 // ⛔ ResponsiveControl is deliberately NOT imported any more: the only mount was
 // the bolted-on "Line height (tablet / mobile)" pair, now replaced by the shared
 // TypographyControls' own tier-aware line-height field.
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
 	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
 	typographyPreviewStyle,
 	usePreviewTier,
 	tierBoxLonghands,
@@ -308,6 +309,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkColourHover,
 		linkColourGradient,
 		linkColourHoverGradient,
+		linkUnderline,
+		linkUnderlineThickness,
 		scaleHover,
 		customWidth,
 		customWidthUnit,
@@ -331,13 +334,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview CSS for the link-colour row below (Task 3,
 	// 2026-09-07). Extended to include linkColourGradient and
 	// linkColourHoverGradient as new params (2026-09-07).
-	const linkPreviewCss = linkColourPreviewCss(
-		`.${ linkPreviewUid }`,
-		linkColour,
-		linkColourHover,
-		linkColourGradient,
-		linkColourHoverGradient
-	);
+	const linkPreviewCss =
+		linkColourPreviewCss(
+			`.${ linkPreviewUid }`,
+			linkColour,
+			linkColourHover,
+			linkColourGradient,
+			linkColourHoverGradient
+		) +
+		linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
+			mode: linkUnderline,
+			thickness: linkUnderlineThickness,
+			linkGradient: linkColourGradient,
+		} );
 
 	// Contrast check for text colour — warn if text fails WCAG AA contrast
 	// against the text block's own background. When the text has no background
@@ -428,6 +437,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onGradientChange: ( val ) => setAttributes( { linkColourHoverGradient: val ?? '' } ),
 							},
 						],
+						after: (
+							<LinkUnderlineControl
+								mode={ linkUnderline }
+								thickness={ linkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 				] }
 			/>

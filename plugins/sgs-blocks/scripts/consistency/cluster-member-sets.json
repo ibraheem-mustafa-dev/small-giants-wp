@@ -151,6 +151,22 @@
 					"note": "Added 2026-09-07, Task 3 addendum (sgs_link_colour_css() gradient support). Sibling to css:color-link the way css:color-gradient is sibling to css:color — a link's gradient colour is a distinct concept from its flat colour, and 'LinkColourGradient' would otherwise fall through to css:color-gradient's own 'ColourGradient' suffix (misclaiming it as the ELEMENT's own text-gradient rather than the link's). Real mechanism: background-clip:text scoped to `{selector} a`, same as css:color-gradient but on the link, not the element."
 				},
 				{
+					"key": "css:text-decoration-link",
+					"label": "Link underline",
+					"suffixes": [
+						"LinkUnderline"
+					],
+					"note": "Added 2026-10-08 (CR6 P2-n). How the links inside an element's text are underlined: theme default, none, always, or a line that sweeps in on hover. A SEPARATE member from css:text-decoration, which decorates the element itself: a block-root text-decoration does not reach a descendant link's own underline. Emitter: sgs_link_underline_css() (includes/helpers-link-underline.php), scoped to `{selector} a`."
+				},
+				{
+					"key": "css:text-decoration-thickness-link",
+					"label": "Link underline thickness",
+					"suffixes": [
+						"LinkUnderlineThickness"
+					],
+					"note": "Added 2026-10-08 (CR6 P2-n). Thickness of the css:text-decoration-link line (text-decoration-thickness for 'always', the background line's height for 'sweep'). Emitter: sgs_link_underline_css()."
+				},
+				{
 					"key": "css:text-align",
 					"label": "Text align",
 					"suffixes": [
