@@ -63,8 +63,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   relabelling it closes nothing, while Solve's writable rows (`T resolver-writes`, 435) close their ~750 knock-ons with them.
   Walker gap 2 (transition timings, 51 rows) is fixed (`0070c8d4a`); its rows fall on each surface's next walk.
 - **Register items owed as tree values:**
-  - 131 / S3: before Contact's next Solve run, ledger `textColourHover` `text` on cr-ref-contact-9 against the draft's taupe
-    (none exists; Solve would otherwise write the taupe back). The visible hover cue waits for S2's underline sweep.
+  - 131 / S3: the Contact phone link's visible hover cue waits for S2's underline sweep (its hover colour is ledgered D-87).
   - The mobile drawer's links (mobile-menu surface): the draft fades and rises each link in when the drawer opens, live
     shows them at once; 14 rows open (2026-10-05 sweep), but the walker does not sample the rise, so they cannot be judged.
     Taken with the mobile-menu surface's Solve pass: first make the walker sample an entrance inside the `drawer-open` state.
@@ -94,7 +93,8 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     The nav groups wait for the nav-bar-menu recalibration another session was running on 2026-10-08 (it rewrites their caches).
     **hero and cta-section diagnosed 2026-10-08 (13 rows, code and cache reading, not yet proven by a render):**
     - Block code, 4 rows. `hero/style.css::section.sgs-hero{max-width:none}` out-ranks the wrapper's scoped `max-width`
-      (`maxWidth`). `cta-section/style.css::.sgs-cta-section` reads the button-preset `hover-transition` token before
+      (`maxWidth`): the known real gap in the backlog; that rule stays (D725, full-bleed sections), so the fix is the
+      emitted rule's specificity, never removing it. `cta-section/style.css::.sgs-cta-section` reads the button-preset `hover-transition` token before
       `--sgs-transition-duration`, and Eye Care's snapshot sets that token to 0.25s, so `transitionDuration` never wins.
       `cta-section/render.php` nulls `backgroundImage` for the wrapper, so its tier images (`backgroundImageTablet/Mobile`)
       have no `::before` layer to paint on.
@@ -158,8 +158,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   property or every width (`ledger.mjs accept --rule --every-width --every-property`). Framework: the form's Field style
   group (register N45), label-less fields without the floating-label gap, business-info `labelFontWeight` and the
   address line height, the business-info link's 44px tap area takes one line in the flow.
-- [ ] **Contact to 100% (Session D of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): 67 distinct issues open on the 2026-10-07 sweep (19 on 2026-10-04, before the walker's DevTools reads), 0 labelled gaps** (last Solve
-  `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
+- [ ] **Contact to 100% (Session D of `plans/archive/2026-10-04-eye-care-sweep-audit-fix.md`): 60 distinct issues open after the 2026-10-08 Solve run, 13 labelled gaps to prove** (run detail below). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). **Solve 2026-10-08 (`qa/solve/contact/2026-10-08T02-29-56/`,
   3 write rounds): distinct issues 66 to 60, 0 new, 17 writes, 1 wrong (6%: cr-ref-contact-22's mobile bottom margin,
   reverted, proven by undoing it alone).** Kept, 5: the labels' hover colour `text-label` on -15, -18 and -19 (both sides
@@ -178,12 +177,13 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   likely the address width below. Open, all box rows:
   1. The hours list (cr-ref-contact-16, 18, 19): rows 5 to 6px further apart than the draft. The walker now measures
      it (`f7d9003f5`: a text run's rows give a `row-gap` row from the space between line boxes, and Solve reads the
-     draft's); left: a Solve run on Contact to write the hours row gap setting. Session B's triage (2026-10-05)
+     draft's). The 2026-10-08 run had no `row-gap` row open on these refs, only box rows (cr-ref-contact-16 `h`, -18 `w`,
+     -18/-19 `y-after-*`), so it wrote nothing; why the row-gap row is gone is not yet checked. Session B's triage (2026-10-05)
      found the row gap is a confirmed framework gap: `sgs/business-info` has no gap control for the hours row, so it
      is in a Session C2 finding (the old group label G1) (`hoursRowGap`, css_element `hours-row`).
   2. The address (cr-ref-contact-13, 15, 17): the draft's address text is 168px wide at every width and wraps to two
      lines at 375; live fills its column. The walker now reads the draft's declared width from its matched rules
-     (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; left: a Solve run on Contact. Session B's triage
+     (`f7d9003f5`, `devtools.mjs::declaredValues`) and Solve writes a declared width; the 2026-10-08 run found no width row open on these refs. Session B's triage
      (2026-10-05) answered the open question: **no width row remains open** on cr-ref-contact-13, 15 or 17, so the
      declared-width write holds and no business-info width control is needed. What is left on those refs is box rows
      (`w`, `h`, `y-after-*`) that close with the spacing above them.
@@ -197,54 +197,25 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [x] **Lenses at 100% (Session D, 2026-10-08; from 67 distinct issues; done line met, last paragraph below): paired 28 of 29 blocks (cr-ref-lenses-28 left out: its draft element holds another block's words),
-  `walkerFull` set.** First Solve (`qa/solve/lenses/2026-10-04T11-32-37/`): 57 to 33 distinct issues, but 3 rows
-  regressed (a `gap: 0` write on cr-ref-lenses-22 shrank its parent cr-ref-lenses-21 at 375; the process-steps padding
-  and step gap writes moved the next item 16px at 1440) and only one write round ran; the tree was restored from git
-  and rebuilt. Also seen: cr-ref-lenses-25's gap setting holds 0 yet its inner band paints a 16px column gap (Hardcode
-  class). **Diagnosed 2026-10-07: none of the three is a defect; each is an artefact of that run's single write round.**
-  The draft's two columns (gen-lenses-22, -25) are block flow whose children carry the spacing as margins (read on the
-  draft at 375 and 1440: h2 `margin-bottom:16px`, the list 0, the "Choose a frame" button `margin-top:28px`); live's
-  stacks add a 16px gap on top of the heading's 16px margin (32px under each heading, register 101). So `gap: 0` is the
-  right write; the h@375 "regression" that reverted it was marked unconfirmed (the run ended before the next walk), and
-  the Hardcode row compared the new tree value with a page measured before the rebuild (the live rule is on the inner
-  band, `.sgs-container-<uid>>.sgs-container__inner{gap}`, so 0 paints 0). Register 100 (price margins, gen-lenses-11/15/19)
-  and 102 (step numbers on cr-ref-lenses-27) are open as `T resolver-writes` on the 2026-10-07 measure-only sweep.
-  **Solve run 2026-10-07 (`qa/solve/lenses/2026-10-07T20-06-48/`, eye-care-test at `430545e06`): distinct issues 67 to
-  25, 42 closed, 0 new; 17 writes** (the price lines' 10px/6px margins, register 100; the step numbers at 15.5px weight 500
-  line-height 1.5, the steps' 15px gap and zero padding, register 102; both columns' stack gap 0, the draft's spacing
-  being its children's margins; the lens-card ground). The guard reverted the page container's padding (S6) on an
-  unconfirmed `h@375 780→684` reading of the page container's own height (the sum of everything in it, a weak signal for
-  one padding write) and then cycled one suspect per round through round 9; round 10's rebuild failed ("editor did not
-  load", the host's bot challenge after nine builds). The page container then took S6's decided value by hand, the same
-  as About and Contact (48/90px desktop and tablet, 28/60px mobile). Then, each measured on a rebuild of the committed tree
-  (`qa/solve/lenses/2026-10-07T21-*`): 26 issues; 20 once walker gap 2 (`compare.mjs::timingIrrelevant`, transition timings on
-  an element that changes in no state) and the steps' titles (`titleLineHeight` 1.5, `numberGap` 16px, the walker never
-  pairs the titles) went live (`0070c8d4a`); 16 once the button took the draft's 28px top margin back (the 2026-10-03 run
-  had zeroed it while the stack gap still sat on top); 9 once the hand config's live finders followed the cards' and
-  steps' current markup and read the grid and steps column on their container section, the walker stopped reading a
-  `display:none` pseudo layer, and straight and curly quotes compared as one character (`5bebb2b6d`). The 9 paint nothing
-  and are ledgered D-72 to D-81 (the draft's scroll reveal never fires below 1440; the steps' flex-grow, gap shorthand and
-  `align-items`). **Done line, checked by /qc 2026-10-08** (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`): a rebuild
-  of the committed tree measures **0 unexplained, 0 labelled gaps, 0 new rows** (`qa/solve/lenses/2026-10-07T23-*`, after
-  D-82 to D-85 ledgered the draft reveal at 768); the planted-fault control passes (22px top padding caught at 1440 and 1920
-  only, then cleared on restore). **The last two criteria, closed 2026-10-08:** (1) `independent-check.mjs --surface lenses`
-  0 differences (from 7). Three were a block with no gap against a flex gap of `0px 0px`, which paint alike
-  (`independent-check.mjs::gapKey`, test `independent-check.test.mjs` "Lenses gap", `c7edf9a19`). The other four were not
-  side padding: draft and live both start main's text at x 20 (375) and x 52 (768 up) at 375/768/1280/1366/1920, so
-  register N39's sides hold. They were the step titles' line ends: live's titles are `h3`s and took the theme's
-  `h1…h6 { text-wrap: balance }` (`core-blocks-critical.css`), the draft's are spans; `titleTextWrap: wrap` on
-  cr-ref-lenses-27 matches the draft's line ends within 1px (`298c8d2f8`). The walker never pairs the titles, so only the
-  independent check could see it. (2) Wrong writes: the 3-round run on the rebuilt tree (`qa/solve/lenses/2026-10-08T02-08-01/`)
-  wrote nothing (0 of 0 wrong; 0 closed, 0 new), so it proves nothing about the ratio. The 2026-10-07 write run counts
-  3 of 17 (17.6%) under Spec 47 as written, which counts every revert. 2 of the 3 are the guard's unconfirmed `h@375`
-  verdict on the page container's own height (`2026-10-07T20-06-48/solve-report.md`: "unconfirmed: the run ended before
-  the next walk"); a container's height is the sum of everything inside it and cannot judge one padding write, and the
-  padding then took S6's decided value by hand. Leaving those two out gives 1 of 15 (7%). **The exclusion rests on Bean's
-  2026-10-08 session brief, not on the spec**; whether Spec 47 §6 takes it as a rule is open with Bean. The run's one open
-  row, cr-ref-lenses-26 `y-from-benefits-list` at 375 (draft 255, live 281), read 281 on the walk before on the same layout;
-  with every draft reveal fired both sides measure 281, so it is ledgered D-86 (why that walk read 255 is not proven). The
-  planted-fault control (`stage-6-report.md`) ran on 2026-10-08 before `titleTextWrap`, `gapKey` and D-86 to D-91.
+- [x] **Lenses at 100% (Session D, 2026-10-08; from 67 distinct issues).** Paired 28 of 29 blocks (cr-ref-lenses-28 left
+  out: its draft element holds another block's words), `walkerFull` set. The done line, each criterion with its evidence:
+  - **0 unexplained, 0 labelled gaps, 0 new rows** on a rebuild of the committed tree (`qa/solve/lenses/2026-10-07T23-42-47/`).
+    The 3-round run after `titleTextWrap` (`2026-10-08T02-08-01/`) wrote nothing and left one row, cr-ref-lenses-26
+    `y-from-benefits-list` at 375 (draft 255, live 281): the walk before on the same layout read 281, and with every draft
+    reveal fired both sides measure 281, so it is ledgered D-86 (why that walk read 255 is not proven). The draft's scroll
+    reveal below 1440 and the steps' unpainted layout rows are D-72 to D-85.
+  - **Independent check 0** (from 7): a no-gap box against a `0px 0px` flex gap now compares equal
+    (`independent-check.mjs::gapKey`, `c7edf9a19`); the step titles are `h3`s and took the theme's
+    `h1…h6 { text-wrap: balance }` (`core-blocks-critical.css`) where the draft's are spans, so `titleTextWrap: wrap` on
+    cr-ref-lenses-27 (`298c8d2f8`) matches the draft's line ends within 1.3px at every width. The walker never pairs the
+    titles, so only the independent check saw it. Side padding matches (register N39 closed).
+  - **Wrong writes at most 10%: met only with an exclusion.** The last write run (`2026-10-07T20-06-48/`) counts 3 of 17
+    (17.6%) under Spec 47 as written. 2 of the 3 are the guard's unconfirmed `h@375` verdict on the page container's own
+    height ("the run ended before the next walk"), which sums everything inside it and cannot judge one padding write; the
+    padding then took S6's decided value by hand. Without them, 1 of 15 (7%). **The exclusion rests on Bean's 2026-10-08
+    session brief, not on the spec; whether Spec 47 §6 takes it as a rule is open with Bean.**
+  - **Planted-fault control** passed on 2026-10-08 (`~/.claude/pipeline-state/qc/2026-10-08-2b-session/stage-6-report.md`:
+    22px top padding caught at 1440 and 1920 only), before `titleTextWrap`, `gapKey` and D-86 to D-91.
 - [x] **Every surface paired and measured (Session A sweep, 2026-10-05, from `1ea514ae8`).** Every surface has
   `walkerFull`; panel surfaces pair with their walker state open on both sides (`pairs.mjs --state --width --recheck`)
   and a surface inside the header or footer landmark pairs its own words (`lib/pairs.mjs::liftExclusions`). One

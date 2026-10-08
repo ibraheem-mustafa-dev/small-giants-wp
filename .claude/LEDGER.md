@@ -62,8 +62,8 @@ with live proof in their rows; N36S is live: the four-row Sizing table and the D
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the "Ask us" cell) and Q12 (the gallery grid) are closed live; their open edges are in their backlog rows. Q1 is decided, not building.
 
-**Spec 47 (v0.15.4): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
-compares a built page with the draft and writes block settings. Every surface is paired; **about is at 100%**. Always
+**Spec 47 (v0.15.5): the computed route** (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`). "Solve"
+compares a built page with the draft and writes block settings. Every surface is paired; **about and Lenses are at 100%**. Always
 read per-surface counts from `qa/triage/*.json`, never a cached figure. **Everything except stage 5 (a second draft)
 is built.** Route defects with owners are in §5 Residual. Run host tools with `SGS_HEADED=1`, one job at a time
 (dev-setup.md); local WSL mirrors at localhost:8081/8082 if Hostinger shows a captcha (`scripts/local-wp/README.md`).
@@ -108,8 +108,10 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-07):** Solve writes first, per surface (Bean). Lenses: 0 unexplained (/qc); done line misses the
-  independent check (7 rows, N39 tablet sides) and the 10% wrong-write ratio. Register 87, 100-102 closed live. Calibration lock and three checker/walker fixes built. Detail: the plan.
+- **Session D (2026-10-08):** Solve writes first, per surface (Bean). **Lenses at 100%**; its wrong-write ratio passes
+  only with two unconfirmed reverts left out (3 of 17 by the spec): open with Bean. N39 closed. **Contact:** 60 issues
+  (from 66); 11 of 17 Solve writes painted nothing, removed. Font slugs vs the editor's raw values: open with Bean.
+  Lenses (168) and Contact (190) rebuilt on eye-care-test. Detail: the plan.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 

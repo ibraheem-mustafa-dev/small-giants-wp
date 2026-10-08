@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.4"
+spec_version: "0.15.5"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
-last_verified: 2026-10-07
+last_verified: 2026-10-08
 status: draft
 references:
   - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
@@ -58,7 +58,7 @@ framework database, the parity walker and the page builder, and no code. Spec 31
 | **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. |
 | **R-47-5 Write only what differs** | A setting is written only where the draft's value differs from what the node already shows: its calibrated default paint (§3.2) for non-inherited properties, or its parent's measured live value for inherited ones (colour, font family, size, weight, line height, letter spacing, text transform). Inherited values are never repeated on descendants. |
 | **R-47-6 Calibration is the slot truth** | Which rendered element a setting paints, and each block's default paint, come from calibration (§3.2). The database's `css_element` and `derived_selector` seed calibration; they never replace it. |
-| **R-47-7 Tokens before literals** | Values snap to the site's tokens, read from `sites/<client>/theme-snapshot.json`, in a fixed order: exact token, then nearest within tolerance (colour ΔE ≤ 2, lengths ±0.5px), then a literal flagged in the report. Every snap is logged with its distance. |
+| **R-47-7 Tokens before literals** | Values snap to the site's tokens, read from `sites/<client>/theme-snapshot.json`, in a fixed order: exact token, then nearest within tolerance (colour ΔE ≤ 2, lengths ±0.5px), then a literal flagged in the report. A font stack takes the font-family preset whose first family matches (the slug the node already holds wins a tie, then theme order; `lib/normalise.mjs::snapFontFamily`), else it is written as measured. Every snap is logged with its distance. |
 | **R-47-8 Divergences are data** | Intentional differences live in the site's `divergences.json` (§3.5), read by Fill, Solve and the walker. |
 | **R-47-9 Bounded loop** | Solve runs at most three write rounds. After each round, a row that got worse (`lib/solve-rows.mjs::regressedRows`) is pinned on its own node, top-down (`lib/guard.mjs::guardRound`): a setting whose calibration explains the row (the property itself, a calibrated side effect, or a discovered layout effect) is reverted at once; otherwise one suspect setting is undone at a time (layout-mode settings first, then layout properties, then the latest) and the next walk decides, restoring an innocent one. A row on a node with no write of its own takes as suspects the writes inside that node and inside the pair a distance row is measured from (`guard.mjs::anchorRef`). Reverted settings are blocked and classified Hardcode, and only they count as wrong writes. A guard round is not a write round. A setting written in round N is rewritten later only if the match improves at every width. A write needs the row's element to be one calibration ties to that setting. |
 | **R-47-10 Gates** | Every tree passes `scripts/wp-build-page.js --dry-run` before a real build. The resolver writes only settings with `block_attributes.source = 'sgs'`; never a core `style` attribute or a `native_wp` setting, because those serialise as inline `style="…"` (Spec 32). `lint.mjs` enforces this on every tree the route writes, and fails a Fill skeleton that carries any attribute whose `css_property` is not null. Route code passes `python scripts/check-no-client-names.py --check`. Ref classes use the `cr-ref-` prefix, never `sgs-`. |
@@ -609,9 +609,8 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
    - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
      box issues from `solve-report.mjs::wholePage`, appears from the next runs):
      - About: at 100% with full coverage (F2 below).
-     - Lenses (hand config): 6 of 6 handled; 0 regressions; 314 to 80. With full coverage (28 of 29 blocks, 2026-10-04)
-       its first Solve closed 25 of 57 distinct issues but regressed 3 rows, so its tree was restored (plan Progress).
-     - Contact: 134 to 19 distinct issues (2026-10-04), 27 on the 2026-10-05 sweep (the walker now reads DevTools values);
+     - Lenses: at 100% (2026-10-08; 67 distinct issues to 0, independent check 0; plan, Lenses entry).
+     - Contact: 66 to 60 distinct issues on the 2026-10-08 Solve run (plan, Contact entry);
        the contact form 94 to 46, 58 on the sweep (plan Progress).
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
        from its committed tree; it re-runs with full coverage.
@@ -627,7 +626,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
-       negative control. Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
+       negative control. **Lenses is at 100%** (2026-10-08): 67 distinct issues to 0, independent check 0; its wrong-write ratio meets 10% only with two unconfirmed container-height reverts left out (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
        issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep (open causes in the plan's Progress).
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).
@@ -696,8 +695,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        its full config (2026-10-05; panel surfaces pair with their walker state open). Done per surface: on a fresh
        rebuild of the committed tree, 0 unexplained and 0 labelled gaps in the whole-page line, 0 new rows, wrong writes
        at most 10%, the independent check agreeing, the register marked. The open causes per surface are in the plan's
-       Progress (Contact: the hours list's row gap and the address width; the form: the select's height; Lenses: three
-       regressions to diagnose). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
+       Progress (Contact: the hours list's row gap and the address width; the form: the select's height). The three measuring gaps found on 2026-10-05 are fixed: the open phone drawer's words
        (`lib/pairs.mjs::rootFor`, `d605bb5ba`), per-width draft finders (`mergeWidthFinders`), and off-screen
        screen-reader text in the independent check (`independent-check.mjs::srOnly`).
      - Built on 2026-10-04 (the plan's Universal tool log lists each): enclosing-block settings, extension settings in
