@@ -660,7 +660,8 @@
               "burgerTextGap": {
                 "desktop": "10px"
               },
-              "className": "cr-ref-header-4"
+              "className": "cr-ref-header-4",
+              "itemBorderHoverTreatment": "sweep"
             }
           },
           {
@@ -856,7 +857,8 @@
                   "itemMinHeight": {
                     "desktop": "0px"
                   },
-                  "className": "cr-ref-header-12"
+                  "className": "cr-ref-header-12",
+                  "itemBorderHoverTreatment": "sweep"
                 }
               },
               {

@@ -1319,5 +1319,69 @@
     },
     "reason": "The node has no border (no width or style set), so its hover border colour paints nothing; the draft's value is its text colour carried along by currentColor. Same as D-65/D-66 on the footer. Solve wrote borderColourHover here on 2026-10-08; removed, since an unpainted setting would surprise a later border.",
     "decided": "2026-10-08 Bean (D-65 ruling)"
+  },
+  {
+    "id": "D-92",
+    "scope": "header",
+    "node": "cr-ref-header-4",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-93",
+    "scope": "header",
+    "node": "cr-ref-header-4",
+    "state": "hover",
+    "property": "border-bottom-color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-94",
+    "scope": "header",
+    "node": "cr-ref-header-12",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 2 / S2 (Bean's decision): header menu words stay black on hover; the draft's taupe hover colour is not applied.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-95",
+    "scope": "header",
+    "node": "cr-ref-header-12",
+    "state": "hover",
+    "property": "border-bottom-color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 2 / S2 (Bean's decision): a 1px underline sweeps in left to right on hover and retracts right to left (itemBorderHoverTreatment sweep); the draft draws no underline.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
   }
 ]
