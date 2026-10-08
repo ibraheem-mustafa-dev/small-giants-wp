@@ -14774,14 +14774,17 @@
       "slug": "sgs/multi-button",
       "attr": "childBtnBorderColour",
       "fields": {
-        "css_property": "border-color"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "button"
       }
     },
     {
       "slug": "sgs/multi-button",
       "attr": "childBtnBorderWidth",
       "fields": {
-        "css_property": "border-width"
+        "css_property": "border-width",
+        "css_element": "button"
       }
     },
     {
@@ -31095,6 +31098,22 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "childBtnBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "button"
       }
     },
     {
