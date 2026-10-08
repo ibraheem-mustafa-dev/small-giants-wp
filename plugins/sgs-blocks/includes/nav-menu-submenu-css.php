@@ -240,9 +240,6 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		}
 
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:' . $sgs_nm_panel_top . ';left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
-		// `full-width` placement: mega-disclosure.js publishes the panel block's own fill and bottom edge as custom-property
-		// VALUES, so the wrap (the full-width box) paints them and the capped, centred panel sits on a fill that spans the viewport.
-		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{background-color:var(--sgs-mm-wrap-bg-colour,transparent);background-image:var(--sgs-mm-wrap-bg-image,none),linear-gradient(var(--sgs-mm-wrap-edge-colour,transparent),var(--sgs-mm-wrap-edge-colour,transparent));background-repeat:no-repeat;background-size:100% 100%,100% var(--sgs-mm-wrap-edge-w,0px);background-position:0 0,0 100%;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
 		
 		/*
@@ -345,7 +342,12 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * `submenuShadow` is non-empty, so a fresh install ships no shadow until an
 		 * operator opts in.
 		 */
-		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);width:var(--sgs-mm-panel-width, auto);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
+		// The panel and its wrap read the radius one corner at a time: a corner the client set, else the 8px token.
+		$sgs_nm_radius_read = '';
+		foreach ( array( 'top-left', 'top-right', 'bottom-right', 'bottom-left' ) as $sgs_nm_corner ) {
+			$sgs_nm_radius_read .= 'border-' . $sgs_nm_corner . '-radius:var(--sgs-nm-submenu-radius-' . $sgs_nm_corner . ', var(--wp--custom--border-radius--medium, 8px));';
+		}
+		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);width:var(--sgs-mm-panel-width, auto);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;' . $sgs_nm_radius_read . 'filter:var(--sgs-nm-submenu-filter, none);}';
 
 
 		/*
@@ -449,18 +451,16 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 *     `submenuShadowColour` via the shared `sgs_shadow_value_composed()`,
 		 *     same unset-fallback discipline.
 		 *
-		 * `--sgs-nm-submenu-radius` reads the object-typed `submenuBorderRadius`:
-		 * the `var()` is kept, the writer is wired to the real attribute, and the
-		 * unset fallback keeps an untouched nav unchanged.
+		 * `--sgs-nm-submenu-radius-{top-left|top-right|bottom-right|bottom-left}` read the
+		 * object-typed `submenuBorderRadius`, one property per corner the client set.
 		 * `submenuBorderRadius` is a FLAT corner object, read through
-		 * `sgs_corner_object_shorthand()` — NOT the side-keyed box helper — matching
-		 * `itemBorderRadius`'s own precedent above in nav-menu-css.php. Its declared
-		 * default is `{}` (empty), so an untouched panel writes no property at all and
-		 * the chained token fallback below applies.
+		 * `sgs_corner_object_property_list()`. Its declared default is `{}` (empty), so an
+		 * untouched panel writes no property at all, and a corner left unset keeps the
+		 * chained token fallback in `$sgs_nm_radius_read`.
 		 */
 		$sgs_nm_submenu_border_style  = sgs_css_keyword_sanitise( $attributes['submenuBorderStyle'] ?? '' );
 		$sgs_nm_submenu_border_w      = $sgs_nm_submenu_border_box ? sgs_box_object_shorthand( $sgs_nm_submenu_border_box ) : null;
-		$sgs_nm_submenu_radius_shorthand = sgs_corner_object_shorthand( $attributes['submenuBorderRadius'] ?? null );
+		$sgs_nm_submenu_radius_props  = sgs_corner_object_property_list( $attributes['submenuBorderRadius'] ?? null, '--sgs-nm-submenu-radius-' );
 		$sgs_nm_submenu_shadow        = sgs_shadow_value_composed(
 			(string) ( $attributes['submenuShadow'] ?? '' ),
 			(string) ( $attributes['submenuShadowColour'] ?? '' )
@@ -478,8 +478,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		if ( '' !== $sgs_nm_submenu_border_style ) {
 			$sgs_nm_panel_vars .= '--sgs-nm-submenu-border-style:' . $sgs_nm_submenu_border_style . ';';
 		}
-		if ( null !== $sgs_nm_submenu_radius_shorthand && '' !== $sgs_nm_submenu_radius_shorthand ) {
-			$sgs_nm_panel_vars .= '--sgs-nm-submenu-radius:' . $sgs_nm_submenu_radius_shorthand . ';';
+		if ( $sgs_nm_submenu_radius_props ) {
+			$sgs_nm_panel_vars .= implode( ';', $sgs_nm_submenu_radius_props ) . ';';
 		}
 		if ( '' !== $sgs_nm_submenu_filter ) {
 			$sgs_nm_panel_vars .= '--sgs-nm-submenu-filter:' . $sgs_nm_submenu_filter . ';';
@@ -518,7 +518,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 			. 'border-width:var(--sgs-nm-submenu-border-width, 1px);'
 			. 'border-style:var(--sgs-nm-submenu-border-style, solid);'
 			. 'border-color:var(--wp--preset--color--border, transparent);'
-			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));}';
+			. $sgs_nm_radius_read . '}';
 
 		/*
 		 * The drill-down mode's full-panel-overlay background — uid-scoped to match

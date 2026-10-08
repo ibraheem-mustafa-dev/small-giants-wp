@@ -809,3 +809,28 @@
 	cursor: not-allowed;
 	pointer-events: none;
 }
+
+/*
+ * Full-width mega placement: the wrap spans the viewport while the mega panel block inside it keeps its own capped,
+ * centred width. mega-disclosure.js::publishWrapFill reads the panel block's fill, bottom edge and shadow as computed
+ * values and publishes them as custom properties, so the wrap paints them across the whole width and the inner block
+ * paints none of its own. Every property resolves to nothing unless that placement is open.
+ */
+.sgs-nav-bar-menu__mega-panel-wrap {
+	background-color: var(--sgs-mm-wrap-bg-colour, transparent);
+	background-image: var(--sgs-mm-wrap-bg-image, none), linear-gradient(var(--sgs-mm-wrap-edge-colour, transparent), var(--sgs-mm-wrap-edge-colour, transparent));
+	background-repeat: no-repeat;
+	background-size: 100% 100%, 100% var(--sgs-mm-wrap-edge-w, 0);
+	background-position: 0 0, 0 100%;
+	box-shadow: var(--sgs-mm-wrap-shadow, none);
+}
+
+.sgs-nav-bar-menu__mega-panel-wrap[data-sgs-mm-bleed] > .wp-block-sgs-mega-panel {
+	box-shadow: none;
+}
+
+@media (forced-colors: active) {
+	.sgs-nav-bar-menu__mega-panel-wrap[data-sgs-mm-bleed] {
+		border-bottom: 1px solid CanvasText;
+	}
+}

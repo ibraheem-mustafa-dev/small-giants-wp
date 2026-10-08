@@ -343,11 +343,11 @@ function measurePanelContentWidth( panel, wrapWidth, scale = 1 ) {
 	return found && widest > 0 ? widest : wrapWidth;
 }
 
-const WRAP_FILL_PROPS = [ '--sgs-mm-wrap-bg-colour', '--sgs-mm-wrap-bg-image', '--sgs-mm-wrap-edge-w', '--sgs-mm-wrap-edge-colour' ];
+const WRAP_FILL_PROPS = [ '--sgs-mm-wrap-bg-colour', '--sgs-mm-wrap-bg-image', '--sgs-mm-wrap-edge-w', '--sgs-mm-wrap-edge-colour', '--sgs-mm-wrap-shadow' ];
 
 /**
  * Under `full-width` placement the wrap spans the viewport while the mega panel block inside it keeps its own capped,
- * centred width. The wrap takes over the panel block's fill and bottom edge, read as computed values and published as
+ * centred width. The wrap takes over the panel block's fill, bottom edge and shadow, read as computed values and published as
  * custom-property VALUES (Spec 32), so the page behind never shows beside a capped panel. Any other placement clears them.
  *
  * @param {HTMLElement} wrap The panel wrap.
@@ -357,13 +357,18 @@ function publishWrapFill( wrap, full ) {
 	const block = full ? wrap.querySelector( ':scope > .wp-block-sgs-mega-panel' ) : null;
 	if ( ! block ) {
 		WRAP_FILL_PROPS.forEach( ( prop ) => wrap.style.removeProperty( prop ) );
+		wrap.removeAttribute( 'data-sgs-mm-bleed' );
 		return;
 	}
+	// The attribute silences the block's own shadow, so it comes off before the block is read.
+	wrap.removeAttribute( 'data-sgs-mm-bleed' );
 	const cs = window.getComputedStyle( block );
 	wrap.style.setProperty( '--sgs-mm-wrap-bg-colour', cs.backgroundColor );
 	wrap.style.setProperty( '--sgs-mm-wrap-bg-image', cs.backgroundImage );
 	wrap.style.setProperty( '--sgs-mm-wrap-edge-w', cs.borderBottomWidth );
 	wrap.style.setProperty( '--sgs-mm-wrap-edge-colour', cs.borderBottomColor );
+	wrap.style.setProperty( '--sgs-mm-wrap-shadow', cs.boxShadow );
+	wrap.setAttribute( 'data-sgs-mm-bleed', '' );
 }
 
 /**
