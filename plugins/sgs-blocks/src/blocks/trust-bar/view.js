@@ -12,7 +12,8 @@
  *  4. If track width > container width (overflow): clone items, set
  *     --sgs-scroll-distance, add --ready class to start CSS animation.
  *  5. If no overflow: do nothing (badges display statically).
- *  6. Pause on hover if data-auto-scroll-pause="true", and ALWAYS pause while keyboard
+ *  6. Pause while the pointer is over the bar (mouse hover, or a finger pressed on it) if
+ *     data-auto-scroll-pause="true", and ALWAYS pause while keyboard
  *     focus is inside the bar (WCAG 2.2.2: moving content needs a way to stop it that
  *     does not depend on a pointer). Clones are inert, so focus never enters them.
  *
@@ -32,8 +33,8 @@
  * Marquee and drop coexist: while the marquee runs every badge is in the scrolling track
  * (restoreDropped() runs before cloning, so no clone inherits a hidden badge). Leaving the
  * range removes the clones and the row class, and overflow-drop.js then drops what does not
- * fit. A visible pause/play button (WCAG 2.2.2) is un-hidden only while the scroll runs; a
- * user pause persists over hover-out and focus-out.
+ * fit. The optional pause/play button (off by default; autoScrollPauseButton) is un-hidden
+ * only while the scroll runs; a user pause persists over hover-out and focus-out.
  *
  * Loaded as a viewScriptModule (ES module, frontend only — never runs in editor).
  */
@@ -77,6 +78,13 @@ wrappers.forEach( ( wrapper ) => {
 	// a later narrowing must still be able to start the scroll.
 	let measured = false;
 	let widthWatch = null;
+
+	// The original track plus its clones: every copy must carry the animation and the
+	// paused state, or the row tears apart.
+	const allTracks = () => [
+		track,
+		...cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ),
+	];
 
 	/**
 	 * Wait for all images inside the track to finish loading before measuring.
@@ -123,7 +131,7 @@ wrappers.forEach( ( wrapper ) => {
 
 		// Idempotent: a re-run never stacks a second set of clones on the first.
 		cloneParent.querySelectorAll( ':scope > [data-sgs-marquee-clone]' ).forEach( ( old ) => old.remove() );
-		track.classList.remove( 'sgs-trust-bar__track--ready' );
+		track.classList.remove( 'sgs-trust-bar__track--ready', 'is-paused' );
 
 		const containerWidth = wrapper.offsetWidth;
 		const trackWidth     = track.getBoundingClientRect().width;
@@ -161,16 +169,20 @@ wrappers.forEach( ( wrapper ) => {
 			clone.querySelectorAll( 'a, button, input, select, textarea, [tabindex]' ).forEach( ( el ) => {
 				el.setAttribute( 'tabindex', '-1' );
 			} );
-			// Remove the ready class from clones — only the original gets it.
-			clone.classList.remove( 'sgs-trust-bar__track--ready' );
+			// The clone must run the same animation as the original, in lockstep: the whole
+			// row shifts one cycle and loops invisibly. A clone that stays still leaves empty
+			// space behind the original once it has scrolled past. The copied track carries the
+			// original's classes, so the ready class is added below with the original's.
+			clone.classList.remove( 'sgs-trust-bar__track--ready', 'is-paused' );
 			cloneParent.appendChild( clone );
 		}
 
 		// Tell CSS exactly how far to translate (pixels).
 		track.style.setProperty( '--sgs-scroll-distance', `${ scrollDistance }px` );
 
-		// Start animation only after clones are in the DOM.
-		track.classList.add( 'sgs-trust-bar__track--ready' );
+		// Start animation only after clones are in the DOM, on every copy in the same frame
+		// so they begin in step.
+		allTracks().forEach( ( el ) => el.classList.add( 'sgs-trust-bar__track--ready' ) );
 		setPauseButtonVisible( true );
 		syncPause();
 		// The clones live in the overflow-hidden bar, so the bar's width should not move; if
@@ -206,8 +218,10 @@ wrappers.forEach( ( wrapper ) => {
 	let focused = false;
 	let userPaused = false;
 	let userPlayed = false;
-	const syncPause = () =>
-		track.classList.toggle( 'is-paused', userPaused || ( ! userPlayed && ( hovered || focused ) ) );
+	const syncPause = () => {
+		const paused = userPaused || ( ! userPlayed && ( hovered || focused ) );
+		allTracks().forEach( ( el ) => el.classList.toggle( 'is-paused', paused ) );
+	};
 	const releasePlay = () => {
 		if ( ! hovered && ! focused ) {
 			userPlayed = false;
@@ -230,11 +244,14 @@ wrappers.forEach( ( wrapper ) => {
 	}
 
 	if ( pauseOnHover ) {
-		wrapper.addEventListener( 'mouseenter', () => {
+		// Pointer events, not mouse events: a mouse pauses while over the bar, and a finger
+		// pauses it while pressed (pointerleave fires on lift), with no sticky hover left
+		// behind after a tap.
+		wrapper.addEventListener( 'pointerenter', () => {
 			hovered = true;
 			syncPause();
 		} );
-		wrapper.addEventListener( 'mouseleave', () => {
+		wrapper.addEventListener( 'pointerleave', () => {
 			hovered = false;
 			releasePlay();
 			syncPause();

@@ -191,8 +191,8 @@ export function TrustBarMarqueeControls( { attributes, setAttributes } ) {
 			/>
 			<ToggleControl
 				label={ __( 'Show pause button', 'sgs-blocks' ) }
-				help={ __( 'A visible pause / play button on the scrolling row, so visitors can stop the movement (accessibility). It only appears while the row is actually scrolling.', 'sgs-blocks' ) }
-				checked={ attributes.autoScrollPauseButton ?? true }
+				help={ __( 'Off by default: the row already pauses when hovered, pressed or focused. Turn on to add a visible pause / play button for visitors who cannot hover (a stricter accessibility reading). It only appears while the row is actually scrolling.', 'sgs-blocks' ) }
+				checked={ attributes.autoScrollPauseButton ?? false }
 				onChange={ ( val ) => setAttributes( { autoScrollPauseButton: val } ) }
 				__nextHasNoMarginBottom
 			/>

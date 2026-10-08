@@ -687,8 +687,8 @@
 		},
 		"autoScrollPauseButton": {
 			"type": "boolean",
-			"default": true,
-			"description": "Show a visible pause / play button while the marquee is running (WCAG 2.2.2: moving content longer than 5 seconds needs a way to stop it). Needs autoScroll on; never shown when nothing moves."
+			"default": false,
+			"description": "Show a visible pause / play button while the marquee is running (off by default: the row already pauses on hover, press and keyboard focus). Turn on where a stricter WCAG 2.2.2 reading is needed. Needs autoScroll on; never shown when nothing moves."
 		},
 		"autoScrollBelow": {
 			"type": "number",

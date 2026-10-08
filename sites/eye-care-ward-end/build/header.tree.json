@@ -45,7 +45,7 @@
       "autoScrollBelow": 768,
       "autoScrollDuration": 30,
       "autoScrollPauseOnHover": true,
-      "autoScrollPauseButton": true
+      "autoScrollPauseButton": false
     }
   },
   {

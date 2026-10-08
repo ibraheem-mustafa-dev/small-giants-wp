@@ -105,7 +105,7 @@ $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHov
 $auto_scroll       = ! empty( $attributes['autoScroll'] );
 $auto_scroll_speed = sanitize_html_class( $attributes['autoScrollSpeed'] ?? 'medium' );
 $auto_scroll_pause = isset( $attributes['autoScrollPauseOnHover'] ) ? (bool) $attributes['autoScrollPauseOnHover'] : true;
-$auto_scroll_btn   = isset( $attributes['autoScrollPauseButton'] ) ? (bool) $attributes['autoScrollPauseButton'] : true;
+$auto_scroll_btn   = isset( $attributes['autoScrollPauseButton'] ) ? (bool) $attributes['autoScrollPauseButton'] : false;
 $tb_marquee_below  = sgs_trust_bar_marquee_below( $attributes['autoScrollBelow'] ?? 0 );
 
 // --- Overflow mode ('wrap' default / 'drop') ----------------------------------
