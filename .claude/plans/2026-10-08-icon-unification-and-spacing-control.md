@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: Phase 1 live on sandybrown 2026-10-08 (layout + 16px control gap, 48f7a8a04); Phase A steps 1-4 done (5157247fc, b651dc5ac); steps 5-10 in progress
+status: Phase 1 code done (51afe6807 live on sandybrown; 48f7a8a04 gap + width fix awaiting its live read); Phase A steps 1-4 done (5157247fc, b651dc5ac); steps 5-10 in progress
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
