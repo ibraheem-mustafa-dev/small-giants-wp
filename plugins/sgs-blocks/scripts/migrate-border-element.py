@@ -707,6 +707,9 @@ def assembler_findings(text, manifest=None):
         if options and not options.startswith('array('):
             out.append(('options are not a literal array( ... ): %s' % options, line))
             continue
+        if re.search(r"'colour_default'\s*=>\s*[^'\s]", options):
+            out.append(('colour_default is not a string literal (it prints unsanitised)', line))
+            continue
         prefix = m.group(1)
         keys = {prefixed(prefix, b) for b in ('BorderWidth', 'BorderStyle')}
         radius = RADIUS_ENTRY.search(options)
@@ -911,6 +914,10 @@ $decls = array_merge( $decls, $border['base'] );
         ('assembler: radius false leaves the prefixed radius to other code',
          "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, array( 'radius' => false ) );\n"
          "$r = $attributes['borderRadius'];\n", 0),
+        ('assembler: a literal colour_default is accepted',
+         "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, array( 'colour_default' => 'currentColor' ) );\n", 0),
+        ('assembler: a colour_default built from a variable is refused',
+         "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, array( 'colour_default' => $attributes['x'] ) );\n", 1),
         ('assembler: a variable prefix is refused', "<?php\n$b = sgs_border_element_decls( $attributes, $p, $s );\n", 1),
         ('assembler: a variable options array is refused', "<?php\n$b = sgs_border_element_decls( $attributes, '', $s, $opts );\n", 1),
         ('assembler: the definition is not a call',

@@ -96,18 +96,18 @@ function extract_section( string $source, string $start_marker, string $end_mark
 // ── Extract the real close-control sections from the CURRENT (shipped)
 // render.php — TWO spans, because "$classes = array(…)" (uid class list, not
 // under test) sits physically between them:
-//   A: closeStyle/closePlacement/closeOffset/closeRadius resolution + CSS
-//      (style tiers, the FR-36-6 predicate, per-tier sizing, placement, radius).
-//   B: the close-button markup (variant spans, aria-label, $close_html).
+// A: closeStyle/closePlacement/closeOffset/closeRadius resolution + CSS
+// (style tiers, the FR-36-6 predicate, per-tier sizing, placement, radius).
+// B: the close-button markup (variant spans, aria-label, $close_html).
 // A change to either shipped span is a change to what is tested here.
-$render_path     = dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/render.php';
-$current_source  = (string) file_get_contents( $render_path );
-$section_a       = extract_section(
+$render_path    = dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/render.php';
+$current_source = (string) file_get_contents( $render_path );
+$section_a      = extract_section(
 	$current_source,
 	'$sgs_nd_allowed_close_styles = array(',
 	'$classes = array('
 );
-$section_b       = extract_section(
+$section_b      = extract_section(
 	$current_source,
 	'$sgs_nd_close_label = trim(',
 	'Spec 35 item 18 — the visually-hidden note'
@@ -164,7 +164,16 @@ ok(
 	'non-modal + trigger (desktop tier, no override): the cascade also hides the × at tablet AND mobile (both inherit trigger)'
 );
 
-$nonmodal_trigger_mobile = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'trigger' ) ), 'non-modal' );
+$nonmodal_trigger_mobile = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array(
+			'desktop' => 'separate-x',
+			'mobile'  => 'trigger',
+		),
+	),
+	'non-modal'
+);
 ok(
 	false !== strpos( $nonmodal_trigger_mobile['css'], '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__close{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live] .sgs-nav-drawer__chrome--close-only{display:none;}.sgs-nav-drawer-test[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}}' ),
 	'non-modal + trigger (mobile tier only): hide rule scoped inside the MOBILE media query'
@@ -199,7 +208,7 @@ $edit_js      = (string) file_get_contents( $edit_js_path );
 // IS BINDING routes it to the object-cascade primitive) — the closing tag
 // this extraction hunts for moved with it.
 $show_as_start = strpos( $edit_js, "label={ __( 'Show as', 'sgs-blocks' ) }" );
-$show_as_end   = strpos( $edit_js, "</ResponsiveOverride>", $show_as_start );
+$show_as_end   = strpos( $edit_js, '</ResponsiveOverride>', $show_as_start );
 $show_as_block = substr( $edit_js, $show_as_start, $show_as_end - $show_as_start );
 preg_match_all( '/ToggleGroupControlOption value="([a-z-]+)"/', $show_as_block, $matches );
 $edit_js_values = $matches[1] ?? array();
@@ -232,7 +241,15 @@ ok(
 // §4.1 — variant spans + per-tier sizing.
 // ════════════════════════════════════════════════════════════════════════════
 
-$mixed = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'text-swap', 'mobile' => 'separate-x' ) ) );
+$mixed = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array(
+			'desktop' => 'text-swap',
+			'mobile'  => 'separate-x',
+		),
+	)
+);
 ok( false !== strpos( $mixed['close_html'], 'sgs-nav-drawer__close-variant--text-swap' ) && false !== strpos( $mixed['close_html'], 'sgs-nav-drawer__close-variant--separate-x' ), 'desktop text-swap + mobile separate-x: BOTH variant spans render' );
 ok( false !== strpos( $mixed['css'], '.sgs-nav-drawer__close-variant--text-swap{display:inline-flex' ), 'the desktop variant shows at base scope (no media query)' );
 ok(
@@ -254,13 +271,34 @@ ok( false === strpos( $same_everywhere['css'], '@media (max-width:' . SGS_Breakp
 // Accessible name — checked across all three tiers.
 // ════════════════════════════════════════════════════════════════════════════
 
-$aria_mobile_text = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x', 'mobile' => 'text-swap' ), 'closeLabel' => 'Dismiss' ) );
+$aria_mobile_text = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array(
+			'desktop' => 'separate-x',
+			'mobile'  => 'text-swap',
+		),
+		'closeLabel' => 'Dismiss',
+	)
+);
 ok( false !== strpos( $aria_mobile_text['close_html'], 'aria-label="Dismiss"' ), 'a text-bearing tier ANYWHERE (mobile only here) drives the aria-label, even though desktop is icon-only' );
 
-$aria_glyph_only = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'separate-x' ), 'closeLabel' => 'Dismiss' ) );
+$aria_glyph_only = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array( 'desktop' => 'separate-x' ),
+		'closeLabel' => 'Dismiss',
+	)
+);
 ok( false !== strpos( $aria_glyph_only['close_html'], 'aria-label="Close menu"' ), 'no tier is text-bearing: the generic name is kept, the operator\'s label is ignored' );
 
-$aria_empty_label = run_close_section( $section, array( 'closeStyle' => array( 'desktop' => 'text-swap' ), 'closeLabel' => '' ) );
+$aria_empty_label = run_close_section(
+	$section,
+	array(
+		'closeStyle' => array( 'desktop' => 'text-swap' ),
+		'closeLabel' => '',
+	)
+);
 ok( false !== strpos( $aria_empty_label['close_html'], 'aria-label="Close menu"' ) && false === strpos( $aria_empty_label['close_html'], 'aria-label=""' ), 'an empty operator label falls back to the generic name, never an empty aria-label' );
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -273,10 +311,31 @@ ok( false !== strpos( $same_slot_modal['css'], 'top:var(--sgs-nav-close-y, 34px)
 $same_slot_nonmodal = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'same-slot' ) ), 'non-modal' );
 ok( false === strpos( $same_slot_nonmodal['css'], '--sgs-nav-close-x' ), 'same-slot under NON-MODAL resolves to top-row-end (falls back, no var() position emitted)' );
 
-$offset_clamped = run_close_section( $section, array( 'closeOffset' => array( 'desktop' => array( 'x' => 999, 'y' => -999 ) ) ) );
+$offset_clamped = run_close_section(
+	$section,
+	array(
+		'closeOffset' => array(
+			'desktop' => array(
+				'x' => 999,
+				'y' => -999,
+			),
+		),
+	)
+);
 ok( false !== strpos( $offset_clamped['css'], 'translate(40px,-40px)' ), 'closeOffset is clamped to -40..40 (999 -> 40, -999 -> -40)' );
 
-$offset_start = run_close_section( $section, array( 'closePlacement' => array( 'desktop' => 'top-row-start' ), 'closeOffset' => array( 'desktop' => array( 'x' => 5, 'y' => 2 ) ) ) );
+$offset_start = run_close_section(
+	$section,
+	array(
+		'closePlacement' => array( 'desktop' => 'top-row-start' ),
+		'closeOffset'    => array(
+			'desktop' => array(
+				'x' => 5,
+				'y' => 2,
+			),
+		),
+	)
+);
 ok( false !== strpos( $offset_start['css'], 'order:-1' ) && false !== strpos( $offset_start['css'], 'translate(5px,2px)' ), 'top-row-start orders the × first in the chrome row and carries its own offset translate' );
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -298,8 +357,8 @@ ok( false === strpos( $section, 'style="' ), 'the section writes no inline style
 // ════════════════════════════════════════════════════════════════════════════
 
 $git_head_source = shell_exec( 'git show c36105939~1:plugins/sgs-blocks/src/blocks/nav-drawer/render.php 2>&1' );
-$old_section      = is_string( $git_head_source )
-	? extract_section( $git_head_source, "\$sgs_nd_allowed_close_styles = array(", '$classes = array(' )
+$old_section     = is_string( $git_head_source )
+	? extract_section( $git_head_source, '$sgs_nd_allowed_close_styles = array(', '$classes = array(' )
 	: '';
 
 if ( '' === $old_section ) {
@@ -389,7 +448,7 @@ $edge_start   = strpos( $current_source, '// ── Default edge (Bean, 2026-09-
 $edge_end     = strpos( $current_source, '// ── Background image media layer' );
 $edge_section = ( false !== $edge_start && false !== $edge_end && $edge_end > $edge_start ) ? substr( $current_source, $edge_start, $edge_end - $edge_start ) : '';
 ok( '' !== $edge_section, 'the default-edge section is found in the CURRENT render.php' );
-$run_edge = function ( array $attributes, string $modality ) use ( $edge_section ): string {
+$run_edge     = function ( array $attributes, string $modality ) use ( $edge_section ): string {
 	$css                    = '';
 	$root_sel               = '.t.wp-block-sgs-nav-drawer';
 	$sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'side-start', 'side-end', 'container', 'trigger', 'centred' );
@@ -403,16 +462,30 @@ ok( false !== strpos( $edge_trigger, 'forced-colors:active' ), 'the default shad
 $edge_fs_nonmodal = $run_edge( array(), 'non-modal' );
 ok( false !== strpos( $edge_fs_nonmodal, 'box-shadow:var(--wp--preset--shadow--floating)' ) && false !== strpos( $edge_fs_nonmodal, 'border-radius:0;' ), 'non-modal full-screen: floating shadow (the line under the burger row), square corners' );
 ok( '' === $run_edge( array(), 'modal' ), 'NEGATIVE CONTROL: modal full-screen gets no default edge at all' );
-$edge_operator = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger' ), 'shadow' => 'soft' ), 'non-modal' );
+$edge_operator = $run_edge(
+	array(
+		'anchor' => array( 'desktop' => 'trigger' ),
+		'shadow' => 'soft',
+	),
+	'non-modal'
+);
 ok( false === strpos( $edge_operator, 'box-shadow' ) && false !== strpos( $edge_operator, 'border-radius:20px;' ), 'an operator shadow replaces the default shadow (the default emits none), corners still default' );
-$edge_mixed = $run_edge( array( 'anchor' => array( 'desktop' => 'trigger', 'mobile' => 'full-screen' ) ), 'modal' );
+$edge_mixed = $run_edge(
+	array(
+		'anchor' => array(
+			'desktop' => 'trigger',
+			'mobile'  => 'full-screen',
+		),
+	),
+	'modal'
+);
 ok( false !== strpos( $edge_mixed, '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){.t.wp-block-sgs-nav-drawer{box-shadow:none;border-radius:0;border:0;box-sizing:border-box;}}' ), 'mixed tiers: a modal full-screen mobile tier resets the card edge' );
-$radius_pos = strpos( $current_source, '$radius_tiers      = sgs_border_radius_tiers( $attributes );' );
+$radius_pos = strpos( $current_source, '$border = sgs_border_element_decls(' );
 ok( false !== $radius_pos && $edge_start < $radius_pos, 'the default edge is emitted BEFORE the operator radius rule, so an operator radius wins by source order' );
 
 ok( false !== strpos( $edge_trigger, 'border:1px solid var(--wp--preset--color--primary);' ), 'trigger card: 1px primary border all round by default' );
 ok( false !== strpos( $edge_fs_nonmodal, 'border:0;border-top:1px solid var(--wp--preset--color--primary);' ), 'non-modal full-screen: a 1px primary line along the top only' );
-$border_pos = strpos( $current_source, '// ── Block-private border: width / style / colour (Shape B).' );
+$border_pos = strpos( $current_source, '$border = sgs_border_element_decls(' );
 ok( false !== $border_pos && $edge_start < $border_pos, 'the default border is emitted BEFORE the operator border rules, so an operator border wins by source order' );
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

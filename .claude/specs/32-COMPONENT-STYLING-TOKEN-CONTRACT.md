@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.15"
+spec_version: "1.16"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
@@ -260,11 +260,12 @@ closure is duplication to migrate, not a local choice.
 | 4-side (`top/right/bottom/left`) | `sgs_box_object_shorthand( array $box ): ?string` | top right bottom left |
 | **4-corner** (`topLeft/topRight/bottomRight/bottomLeft`) | **`sgs_corner_object_shorthand( $box ): ?string`** | TL TR BR BL |
 
-**For a device tier, print longhands, not a shorthand** (the two shorthand helpers above are now for border width and the `var()` holdouts only). A shorthand prints `0` for every unset side
+**For a device tier, print longhands, not a shorthand** (the side shorthand above is now for border width only; the corner shorthand has no caller, and a custom property holding corners prints one property per corner through `sgs_corner_object_property_list`). A shorthand prints `0` for every unset side
 or corner, wiping the stylesheet's value and the wider tier's (CR6). Tier rules use
 `sgs_box_object_longhands( $box, 'padding'|'margin' )` and `sgs_corner_object_longhands( $box )`, which
-print one declaration per SET side or corner and return `null` when none is; the shorthands above stay for
-border width (an unset side SHOULD be 0) and the `var()` holdouts. Gate:
+print one declaration per SET side or corner and return `null` when none is; the side shorthand stays for
+border width (an unset side SHOULD be 0). A whole element border goes through
+`includes/helpers-border-style.php::sgs_border_element_decls`. Gate:
 `plugins/sgs-blocks/scripts/migrate-box-longhands.py --check`.
 
 Both return `null` when every key is empty, so the caller skips the declaration entirely rather

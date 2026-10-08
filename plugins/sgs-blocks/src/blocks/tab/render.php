@@ -171,14 +171,10 @@ $tab_responsive_css .= sgs_text_states_css(
 	)
 );
 
-// The native style-engine colour path is GONE, deliberately. Text colour now
-// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
-// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
-// gradient (background-clip:text is not a colour value). The border half was
-// already removed by the Shape-B migration, so nothing was left to feed the
-// engine and its guards were provably dead -- check-render-undefined-vars
-// caught them as always-falsy. Do not reinstate: an empty args array emits no
-// CSS, so this was dead code, not a safety net.
+// Text colour renders through sgs_resolve_text_colour_or_gradient() +
+// sgs_text_colour_decl() above, not wp_style_engine_get_styles(): the engine's
+// color.text input cannot carry a gradient (background-clip:text is not a
+// colour value).
 
 // Output the block's own scoped color/border CSS (if any). wp_strip_all_tags
 // (NOT esc_html) blocks a </style> breakout while leaving CSS combinators
@@ -191,7 +187,7 @@ $border = sgs_border_element_decls(
 	'',
 	$root_sel,
 	array(
-		'colour'    => array(
+		'colour' => array(
 			'base'     => 'borderColour',
 			'gradient' => 'borderColourGradient',
 		),

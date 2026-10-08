@@ -21,8 +21,8 @@ require_once __DIR__ . '/stubs/style-engine-border-radius.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-border-style.php';
 
 $sgs_cases = array(
-	'uniform' => array( array( 'borderRadius' => '8px' ), '', array() ),
-	'tiers'   => array(
+	'uniform'  => array( array( 'borderRadius' => '8px' ), '', array() ),
+	'tiers'    => array(
 		array(
 			'borderRadius' => array(
 				'desktop' => array(
@@ -39,8 +39,10 @@ $sgs_cases = array(
 		'',
 		array(),
 	),
-	'off'     => array( array( 'borderRadius' => '8px' ), '', array( 'radius' => false ) ),
-	'named'   => array(
+	'off'      => array( array( 'borderRadius' => '8px' ), '', array( 'radius' => false ) ),
+	'number'   => array( array( 'borderRadius' => 8 ), '', array() ),
+	'breakout' => array( array( 'borderRadius' => '50%;} body{color:red' ), '', array() ),
+	'named'    => array(
 		array(
 			'borderRadius'       => '6px',
 			'wrapperBorderWidth' => array( 'top' => '1px' ),
@@ -48,7 +50,7 @@ $sgs_cases = array(
 		'wrapper',
 		array( 'radius' => 'borderRadius' ),
 	),
-	'prefix'  => array(
+	'prefix'   => array(
 		array(
 			'cardBorderWidth'  => array( 'top' => '1px' ),
 			'cardBorderStyle'  => 'dotted',

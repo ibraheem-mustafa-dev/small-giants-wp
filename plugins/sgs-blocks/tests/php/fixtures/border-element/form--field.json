@@ -56,6 +56,10 @@
         " || .sgs-form-UID": [
             "--sgs-field-edge-colour:var(--wp--preset--color--primary,currentColor)"
         ],
+        " || .sgs-form-UID .sgs-form-field__input": [
+            "border-style:none",
+            "border-width:0"
+        ],
         " || .sgs-form-UID .sgs-form__progress": [
             "--sgs-progress-colour:var(--wp--preset--color--primary,currentColor)"
         ]

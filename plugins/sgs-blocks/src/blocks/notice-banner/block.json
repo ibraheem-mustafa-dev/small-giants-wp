@@ -377,8 +377,8 @@
 		},
 		"iconCircleBorderRadius": {
 			"type": "string",
-			"default": "50%",
-			"description": "50% makes a circle; a px value makes a rounded square."
+			"default": "",
+			"description": "Unset keeps the stylesheet circle (50%); a px value makes a rounded square."
 		},
 		"iconCircleShadow": {
 			"type": "string",

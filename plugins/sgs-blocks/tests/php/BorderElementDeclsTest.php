@@ -219,9 +219,29 @@ final class BorderElementDeclsTest extends TestCase {
 		);
 		$this->assertSame( array(), $out['hover'] );
 		$this->assertSame(
-			array( sgs_hover_media_wrap( sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . self::SEL . ':hover', $grad, null, '1px' ) ) ),
+			array(
+				sgs_hover_media_wrap( sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . self::SEL . ':hover', $grad, null, '1px' ) ),
+				sgs_border_gradient_css( self::SEL . ':focus-within', $grad, null, '1px' ),
+			),
 			$out['rules']
 		);
+	}
+
+	/**
+	 * A tier-object width prints each device tier into its own list.
+	 */
+	public function test_tiered_width_prints_each_tier(): void {
+		$out = $this->decls(
+			array(
+				'borderWidth' => array(
+					'desktop' => array( 'top' => '2px' ),
+					'tablet'  => array( 'left' => '3px' ),
+				),
+			)
+		);
+		$this->assertSame( array( 'border-style:solid', 'border-width:2px 0 0 0' ), $out['base'] );
+		$this->assertSame( array( 'border-style:solid', 'border-width:0 0 0 3px' ), $out['tablet'] );
+		$this->assertSame( array(), $out['mobile'] );
 	}
 
 	/**
@@ -251,6 +271,9 @@ final class BorderElementDeclsTest extends TestCase {
 		$this->assertSame( array( 'border-top-left-radius:2px;border-bottom-left-radius:3px' ), $r['tiers']['mobile'] );
 
 		$this->assertSame( array(), $r['off']['base'] );
+
+		$this->assertSame( array( 'border-radius:8px' ), $r['number']['base'] );
+		$this->assertSame( array(), $r['breakout']['base'] );
 
 		$this->assertSame( array( 'border-style:solid', 'border-width:1px 0 0 0', 'border-radius:6px' ), $r['named']['base'] );
 

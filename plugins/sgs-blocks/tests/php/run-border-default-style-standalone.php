@@ -105,7 +105,8 @@ $css = $run_container( array( 'borderWidth' => $two_sides, 'borderColour' => '#f
 echo "      container dashed        => {$css}\n";
 ok( false !== strpos( $css, 'border-style:dashed' ), 'container: explicit dashed wins', $css );
 $css = $run_container( array( 'borderWidth' => array(), 'borderColour' => '#ff0000', 'borderStyle' => '' ) );
-ok( '' === $css, 'container: no width emits no border at all', $css );
+ok( false === strpos( $css, 'border-width' ) && false === strpos( $css, 'border-style' ), 'container: no width emits no width and no style (no border paints)', $css );
+ok( false !== strpos( $css, 'border-color:#ff0000' ), 'container: a colour set without a width still prints, for a variant stylesheet border to take', $css );
 
 // 4) Button-element helper (product-card CTA, choice-flow back, modal close …).
 $cta = sgs_button_element_style_css( array( 'ctaBorderWidth' => array( 'bottom' => '3px' ), 'ctaBorderStyle' => '' ), 'cta', '.x' );

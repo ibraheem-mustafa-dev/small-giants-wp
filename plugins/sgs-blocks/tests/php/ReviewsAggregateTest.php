@@ -91,11 +91,16 @@ final class ReviewsAggregateTest extends TestCase {
 		$json = json_decode( (string) file_get_contents( self::BLOCK . '/block.json' ), true, 512, JSON_THROW_ON_ERROR );
 		$this->assertSame( 'slider', $json['attributes']['variant']['default'] );
 		$this->assertContains( 'slider', $json['attributes']['variant']['enum'] );
-		$this->assertStringContainsString( "\$variant            = \$attributes['variant'] ?? 'slider';", (string) file_get_contents( self::BLOCK . '/render.php' ) );
+		$this->assertMatchesRegularExpression( "/\\\$variant\\s*=\\s*\\\$attributes\\['variant'\\] \\?\\? 'slider';/", (string) file_get_contents( self::BLOCK . '/render.php' ) );
 	}
 
 	public function test_a_block_saved_without_a_variant_renders_the_slider_markup(): void {
-		$html = $this->render( array( 'dataSource' => 'inline', 'reviews' => array( $this->review( 'A', 5 ), $this->review( 'B', 4 ) ) ) );
+		$html = $this->render(
+			array(
+				'dataSource' => 'inline',
+				'reviews'    => array( $this->review( 'A', 5 ), $this->review( 'B', 4 ) ),
+			)
+		);
 
 		$this->assertStringContainsString( 'sgs-google-reviews--slider', $html );
 		$this->assertStringNotContainsString( 'sgs-google-reviews--grid', $html, 'no variant must not fall back to the grid' );
@@ -110,7 +115,13 @@ final class ReviewsAggregateTest extends TestCase {
 	}
 
 	public function test_an_explicit_variant_is_still_honoured(): void {
-		$html = $this->render( array( 'variant' => 'grid', 'dataSource' => 'inline', 'reviews' => array( $this->review( 'A', 5 ), $this->review( 'B', 4 ) ) ) );
+		$html = $this->render(
+			array(
+				'variant'    => 'grid',
+				'dataSource' => 'inline',
+				'reviews'    => array( $this->review( 'A', 5 ), $this->review( 'B', 4 ) ),
+			)
+		);
 		$this->assertStringContainsString( 'sgs-google-reviews--grid', $html );
 		$this->assertStringNotContainsString( 'sgs-google-reviews--slider', $html );
 	}
@@ -149,7 +160,13 @@ final class ReviewsAggregateTest extends TestCase {
 	}
 
 	public function test_a_set_count_shows_and_a_zero_average_is_still_treated_as_no_rating(): void {
-		$html = $this->render( array( 'reviews' => array( $this->review( 'A', null ) ), 'averageRating' => 0, 'reviewCount' => 13 ) );
+		$html = $this->render(
+			array(
+				'reviews'       => array( $this->review( 'A', null ) ),
+				'averageRating' => 0,
+				'reviewCount'   => 13,
+			)
+		);
 		$this->assertStringNotContainsString( '0.0', $html );
 		$this->assertSame( 0, $this->aggregateStars( $html ) );
 		$this->assertStringContainsString( '13 reviews', $html );
@@ -157,7 +174,13 @@ final class ReviewsAggregateTest extends TestCase {
 
 	public function test_neither_a_rating_nor_a_count_omits_the_whole_aggregate_row(): void {
 		// Google returned written reviews with no rating and no count: nothing to aggregate.
-		$html = $this->render( array( 'dataSource' => 'synced', 'placeId' => 'ChIJblock' ), 'unrated' );
+		$html = $this->render(
+			array(
+				'dataSource' => 'synced',
+				'placeId'    => 'ChIJblock',
+			),
+			'unrated'
+		);
 		$this->assertStringContainsString( 'Unrated Google Reviewer', $html, 'the review still renders' );
 		$this->assertStringNotContainsString( 'sgs-google-reviews__aggregate', $html );
 		$this->assertStringNotContainsString( '0.0', $html );
@@ -165,18 +188,33 @@ final class ReviewsAggregateTest extends TestCase {
 	}
 
 	public function test_the_badge_variants_follow_the_same_rule(): void {
-		$html = $this->render( array( 'variant' => 'badge', 'reviews' => array( $this->review( 'A', null ) ) ) );
+		$html = $this->render(
+			array(
+				'variant' => 'badge',
+				'reviews' => array( $this->review( 'A', null ) ),
+			)
+		);
 		$this->assertStringNotContainsString( '0.0', $html );
 		$this->assertSame( 0, $this->aggregateStars( $html ) );
 		$this->assertStringContainsString( '1 review', $html );
 
-		$rated = $this->render( array( 'variant' => 'badge', 'reviews' => array( $this->review( 'A', 4 ) ) ) );
+		$rated = $this->render(
+			array(
+				'variant' => 'badge',
+				'reviews' => array( $this->review( 'A', 4 ) ),
+			)
+		);
 		$this->assertStringContainsString( '<strong>4.0</strong>', $rated );
 		$this->assertSame( 5, $this->aggregateStars( $rated ) );
 	}
 
 	public function test_show_aggregate_off_hides_all_of_it(): void {
-		$html = $this->render( array( 'showAggregate' => false, 'reviews' => array( $this->review( 'A', 5 ) ) ) );
+		$html = $this->render(
+			array(
+				'showAggregate' => false,
+				'reviews'       => array( $this->review( 'A', 5 ) ),
+			)
+		);
 		$this->assertStringNotContainsString( 'sgs-google-reviews__aggregate', $html );
 		$this->assertStringNotContainsString( '<strong class="sgs-google-reviews__score">5.0</strong>', $html );
 	}

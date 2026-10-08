@@ -949,7 +949,7 @@
 		"galleryThumbBorderRadius": {
 			"type": "object",
 			"default": {},
-			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_shorthand(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
+			"description": "Corner radius of every gallery thumbnail, a flat {topLeft, topRight, bottomRight, bottomLeft} corner object of CSS lengths (not a tier envelope), read by sgs_corner_object_longhands(). Empty keeps the stylesheet's inheritance of the main image's radius (--sgs-buybox-img-radius, 8px). The selected thumbnail's border follows it, being on the same element."
 		},
 		"thumbSelectedScale": {
 			"type": "number",

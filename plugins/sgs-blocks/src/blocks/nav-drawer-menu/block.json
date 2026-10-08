@@ -822,7 +822,7 @@
 		"submenuBorderRadius": {
 			"type": "object",
 			"default": {},
-			"description": "The open accordion section's corner radius, the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, read by sgs_corner_object_shorthand()). Default EMPTY: the section keeps its square corners."
+			"description": "The open accordion section's corner radius, the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, read by sgs_corner_object_longhands()). Default EMPTY: the section keeps its square corners."
 		},
 		"submenuShadow": {
 			"type": "string",
@@ -1169,7 +1169,7 @@
 				"bottomRight": "8px",
 				"bottomLeft": "8px"
 			},
-			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_shorthand(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
+			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_longhands(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
 		},
 		"itemBorderColour": {
 			"type": "string",

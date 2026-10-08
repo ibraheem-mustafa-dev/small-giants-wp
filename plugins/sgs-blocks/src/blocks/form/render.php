@@ -403,6 +403,8 @@ if ( $sgs_field_border['tablet'] ) {
 if ( $sgs_field_border['mobile'] ) {
 	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{' . implode( ';', $sgs_field_border['mobile'] ) . ';}}';
 }
+// The explicit `none` override, so a chosen "no border" also clears the stylesheet's field border.
+$sgs_field_css .= implode( '', $sgs_field_border['rules'] );
 
 $sgs_field_vars   = array();
 $sgs_field_edge   = sgs_colour_value( (string) ( $attributes['fieldBorderColour'] ?? '' ) );

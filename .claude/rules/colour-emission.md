@@ -85,8 +85,8 @@ Precondition: the element must NOT also paint a background on the same selector
 (`background-clip:text` clips the whole background painting area to the glyph shapes). If both are
 needed, move the background to `sgs_block_background_layer_css( string $selector, string
 $paint_decl, string $hover_paint_decl = '' )` (`helpers-tokens.php`) — moves the background onto a
-`::after` pseudo-element (not `::before`, which `sgs_border_gradient_css()` already owns on every
-block this applies to). Blocks needing this precondition solved: any element declaring both a
+`::after` pseudo-element (not `::before`, which a gradient border's ring owns: `sgs_border_element_decls()`
+builds it through `sgs_border_gradient_css()`). Blocks needing this precondition solved: any element declaring both a
 `css:color*` and a genuinely separate `css:background*` member on the same
 `supports.sgs.elements` entry — detected via
 `scripts/inspector-scan/rules/31-golden-colour-control.js::textSharesElementWithBackground`

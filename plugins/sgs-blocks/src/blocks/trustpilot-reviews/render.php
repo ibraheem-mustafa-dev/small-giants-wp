@@ -361,14 +361,10 @@ $tp_responsive_css .= sgs_text_states_css(
 	)
 );
 
-// The native style-engine colour path is GONE, deliberately. Text colour now
-// renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
-// above, because wp_style_engine_get_styles()'s color.text input cannot carry a
-// gradient (background-clip:text is not a colour value). The border half was
-// already removed by the Shape-B migration, so nothing was left to feed the
-// engine and its guards were provably dead -- check-render-undefined-vars
-// caught them as always-falsy. Do not reinstate: an empty args array emits no
-// CSS, so this was dead code, not a safety net.
+// Text colour renders through sgs_resolve_text_colour_or_gradient() +
+// sgs_text_colour_decl() above, not wp_style_engine_get_styles(): the engine's
+// color.text input cannot carry a gradient (background-clip:text is not a
+// colour value).
 
 $tp_extra_styles = array(
 	sprintf(

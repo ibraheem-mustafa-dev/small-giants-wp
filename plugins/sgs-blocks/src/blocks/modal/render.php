@@ -152,16 +152,16 @@ if ( '' !== $dialog_width ) {
 	$dialog_rules[] = 'width:' . $dialog_width;
 	$dialog_rules[] = 'max-width:calc(100vw - 2rem)';
 }
-// Dialog border (width, style, colour) through the shared assembler, on the
-// same selector as the background above. Style 'none' (default) emits nothing,
-// leaving style.css's `border: none` look unchanged; the block has no radius or
-// hover border attribute.
-$border = sgs_border_element_decls(
+// Dialog border (width, style, colour, gradient ring) through the shared
+// assembler, on the same selector as the background above. With no width set
+// it prints no width or style, so style.css's `border: none` look holds; the
+// block declares no radius or hover border attribute.
+$border       = sgs_border_element_decls(
 	$attributes,
 	'',
 	$root_sel . ' .sgs-modal__dialog',
 	array(
-		'colour'    => array(
+		'colour' => array(
 			'base'     => 'borderColour',
 			'gradient' => 'borderColourGradient',
 		),
@@ -230,8 +230,8 @@ if ( $trigger_bg_css ) {
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
 }
-// Dialog border rules: the gradient ring (the explicit none override is off —
-// style.css's `border: none` is the default look).
+// Dialog border rules: the gradient ring and, for an explicit none style, the
+// none override.
 $scoped_css_rules = array_merge( $scoped_css_rules, $border['rules'] );
 // Dialog shadow — only when the operator has set one; empty leaves
 // style.css's hardcoded box-shadow untouched

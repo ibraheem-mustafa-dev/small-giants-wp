@@ -372,7 +372,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								iconStyle: 'bare',
 								iconCircleSize: 44,
 								iconCircleBackground: 'surface',
-								iconCircleBorderRadius: '50%',
+								iconCircleBorderRadius: '',
 								iconCircleShadow: 'none',
 							} )
 						}

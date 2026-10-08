@@ -1132,7 +1132,7 @@
 				"bottomRight": "8px",
 				"bottomLeft": "8px"
 			},
-			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_shorthand(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
+			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_longhands(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
 		},
 		"itemBorderColour": {
 			"type": "string",
@@ -1311,7 +1311,7 @@
 		"submenuBorderRadius": {
 			"type": "object",
 			"default": {},
-			"description": "The submenu panel's corner radius — the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, read by sgs_corner_object_shorthand()). Its default stays EMPTY: the panel already renders its own radius from --sgs-nm-submenu-radius with a token fallback, so there is no behaviour here for a default to preserve."
+			"description": "The submenu panel's corner radius — the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, printed as one custom property per corner by sgs_corner_object_property_list()). Its default stays EMPTY: the panel already renders its own radius from --sgs-nm-submenu-radius with a token fallback, so there is no behaviour here for a default to preserve."
 		},
 		"submenuBorderColour": {
 			"type": "string",

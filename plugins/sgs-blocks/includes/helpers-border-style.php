@@ -1,6 +1,7 @@
 <?php
 /**
- * Border style resolution — the one rule every SGS border emitter follows.
+ * Border assembly: the style rule every SGS border follows, and
+ * sgs_border_element_decls(), which builds one element's whole border.
  *
  * Rule: a border the client gave a width paints SOLID unless they chose
  * another style. An explicit style (dashed, dotted, none …) always wins.
@@ -15,8 +16,7 @@
  *
  * A width is still required before any style is emitted (G5, Bean
  * 2026-08-26): a style with no width would fall through to the browser's
- * initial `medium` (~3px) width. Callers keep that gate; this file only
- * decides WHICH style a width paints with.
+ * initial `medium` (~3px) width. sgs_border_box_decls() applies that gate.
  *
  * Editor twin: `src/utils/border-style.js` (same allow-list, same fallback).
  *
@@ -101,21 +101,28 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *
 	 * Rules it applies:
 	 * - Width and style print only when a side has a width (G5); unset sides
-	 *   print 0 (D-4).
+	 *   print 0 (D-4); a width with no chosen style paints solid. A width stored
+	 *   as a tier object ({desktop, tablet, mobile}) prints each tier into its
+	 *   own list.
 	 * - An explicit `none` style prints no colour, no ring and no hover, and a
 	 *   `{border-style:none;border-width:0}` override so a variant's stylesheet
 	 *   border stops painting too (G5 corollary, Bean 2026-08-26).
 	 * - A flat colour is a plain `border-color` declaration. A gradient cannot be
 	 *   a border-color value, so it paints through the masked ::before ring
 	 *   (a standalone rule), which takes the hover paint with it. A flat resting
-	 *   border with a hover gradient gets a hover-only ring.
+	 *   border with a hover gradient gets a hover-only ring. Both rings pair
+	 *   :hover with :focus-within; a caller printing `hover` declarations pairs
+	 *   them the way its element's other hover states are paired.
 	 * - Ring thickness is the top width when set, else `ring_width`.
 	 *
 	 * Attribute names: width, style and radius are `{prefix}BorderWidth`,
 	 * `{prefix}BorderStyle` and `{prefix}BorderRadius` (prefix '' gives
 	 * `borderWidth`); an element whose radius attribute does not follow the
-	 * prefix names it in the `radius` option. Colour names come from the caller's LITERAL `colour` map
-	 * so the behavioural analyser keeps routing each colour attribute.
+	 * prefix names it in the `radius` option. Colour names come from the
+	 * caller's literal `colour` map. The behavioural analyser cannot derive these
+	 * attributes from this body, so every one the call reads is mapped in the
+	 * block's supports.sgs.elements manifest (scripts/migrate-border-element.py
+	 * --check enforces it).
 	 *
 	 * @param array  $attributes The block's attributes.
 	 * @param string $prefix     Attribute prefix ('' for the block root).
@@ -144,12 +151,19 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			'rules'  => array(),
 		);
 
-		$width_box = $attributes[ sgs_typography_attr( $prefix, 'BorderWidth' ) ] ?? null;
+		$width_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderWidth' ) ] ?? null;
 		$style_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderStyle' ) ] ?? '';
 		$is_none   = 'none' === sgs_border_style_keyword( $style_raw );
 
-		$width_decls = sgs_border_box_decls( $width_box, $style_raw );
-		$out['base'] = $width_decls;
+		// A width box, or a tier object holding one box per device.
+		$is_tiered = is_array( $width_raw ) && ( isset( $width_raw['desktop'] ) || isset( $width_raw['tablet'] ) || isset( $width_raw['mobile'] ) );
+		$width_box = $is_tiered ? ( $width_raw['desktop'] ?? null ) : $width_raw;
+
+		$width_decls   = sgs_border_box_decls( $width_box, $style_raw );
+		$out['base']   = $width_decls;
+		$out['tablet'] = $is_tiered ? sgs_border_box_decls( $width_raw['tablet'] ?? null, $style_raw ) : array();
+		$out['mobile'] = $is_tiered ? sgs_border_box_decls( $width_raw['mobile'] ?? null, $style_raw ) : array();
+		$has_width     = $width_decls || $out['tablet'] || $out['mobile'];
 
 		if ( $is_none ) {
 			$out['rules'][] = $selector . '{border-style:none;border-width:0;}';
@@ -174,13 +188,14 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			} else {
 				if ( '' !== $flat ) {
 					$out['base'][] = 'border-color:' . sgs_colour_value( $flat );
-				} elseif ( $width_decls && '' !== (string) ( $options['colour_default'] ?? '' ) ) {
+				} elseif ( $has_width && '' !== (string) ( $options['colour_default'] ?? '' ) ) {
 					$out['base'][] = 'border-color:' . $options['colour_default'];
 				}
 				if ( '' !== $hover_grad ) {
 					$out['rules'][] = sgs_hover_media_wrap(
 						sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . $selector . ':hover', $hover_grad, null, $ring_width )
 					);
+					$out['rules'][] = sgs_border_gradient_css( $selector . ':focus-within', $hover_grad, null, $ring_width );
 				} elseif ( '' !== $hover_flat ) {
 					$out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat );
 				}

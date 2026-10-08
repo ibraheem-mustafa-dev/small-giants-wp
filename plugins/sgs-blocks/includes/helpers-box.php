@@ -197,7 +197,7 @@ if ( ! function_exists( 'sgs_corner_object_longhand_list' ) ) {
 		);
 		$decls   = array();
 		foreach ( $corners as $key => $property ) {
-			$value = sgs_css_length_value( $box[ $key ] ?? '' );
+			$value = is_scalar( $box[ $key ] ?? null ) ? sgs_css_length_value( $box[ $key ] ) : '';
 			if ( '' !== $value ) {
 				$decls[] = $property . ':' . $value;
 			}
@@ -327,16 +327,16 @@ if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 		}
 
 		$base = null;
-		if ( is_string( $desktop_raw ) && '' !== $desktop_raw ) {
-			// A uniform string passes the same length sanitiser as each corner
-			// below; a value it rejects (a `;}` breakout) is no radius at all.
+		if ( ( is_string( $desktop_raw ) && '' !== $desktop_raw ) || is_int( $desktop_raw ) || is_float( $desktop_raw ) ) {
+			// A uniform string or number passes the same length sanitiser as each
+			// corner below; a value it rejects (a `;}` breakout) is no radius at all.
 			$clean_string = sgs_css_length_value( $desktop_raw );
 			$base         = '' !== $clean_string ? $clean_string : null;
 		} elseif ( is_array( $desktop_raw ) ) {
 			$clean   = array();
 			$has_any = false;
 			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				$clean[ $corner ] = isset( $desktop_raw[ $corner ] ) ? sgs_css_length_value( $desktop_raw[ $corner ] ) : '';
+				$clean[ $corner ] = is_scalar( $desktop_raw[ $corner ] ?? null ) ? sgs_css_length_value( $desktop_raw[ $corner ] ) : '';
 				if ( '' !== $clean[ $corner ] ) {
 					$has_any = true;
 				}

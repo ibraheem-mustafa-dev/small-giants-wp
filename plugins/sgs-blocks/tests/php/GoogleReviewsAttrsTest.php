@@ -243,13 +243,13 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			),
 			'buttons' => array(
 				array(
-					'reviewRequestUrl'      => 'https://example.com/write',
-					'seeAllUrl'             => 'https://example.com/all',
-					'seeAllColourBackground' => '#1A73E8',
-					'seeAllColourText'      => '#ffffff',
-					'seeAllBorderRadius'    => $c4( '20px' ),
-					'seeAllPadding'         => $b4( '22px' ),
-					'seeAllMinHeight'       => array( 'desktop' => 40 ),
+					'reviewRequestUrl'        => 'https://example.com/write',
+					'seeAllUrl'               => 'https://example.com/all',
+					'seeAllColourBackground'  => '#1A73E8',
+					'seeAllColourText'        => '#ffffff',
+					'seeAllBorderRadius'      => $c4( '20px' ),
+					'seeAllPadding'           => $b4( '22px' ),
+					'seeAllMinHeight'         => array( 'desktop' => 40 ),
 					'writeReviewColourBorder' => '#DADCE0',
 					'writeReviewBorderWidth'  => array(
 						'top'    => '1px',
@@ -287,7 +287,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	public function test_each_attribute_group_emits_its_scoped_css( array $attrs, array $needles ): void {
 		$css = $this->render( $attrs )['css'];
 		foreach ( $needles as $needle ) {
-			$this->assertStringContainsString( $needle, $css );
+			$this->assertSelectorHas( $needle, $css );
 		}
 	}
 
@@ -396,10 +396,10 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		// The button helper runs absint() on a font size; an object would print font-size:0px / 1px.
 		$css = $this->render(
 			array(
-				'reviewRequestUrl'  => 'https://example.com/w',
+				'reviewRequestUrl'    => 'https://example.com/w',
 				'writeReviewFontSize' => array( 'desktop' => 14 ),
-				'seeAllUrl'         => 'https://example.com/a',
-				'seeAllFontSize'    => array(),
+				'seeAllUrl'           => 'https://example.com/a',
+				'seeAllFontSize'      => array(),
 			)
 		)['css'];
 		$this->assertStringContainsString( self::R . ' .sgs-google-reviews__write-review{font-size:14px;}', $css );
@@ -599,6 +599,32 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	// ── Precedence: a look is two classes, an author's value is three ──────────────────────────────────────
 
 	/** Number of classes in a selector (pseudo-classes and pseudo-elements do not count). */
+	/**
+	 * Assert the CSS gives a selector every declaration of a `selector{decl;decl;}`
+	 * needle, in any rule for that exact selector and in any order. Any other
+	 * needle (no braces, or a rule nested in a media query) is a substring check.
+	 *
+	 * @param string $needle `selector{declarations}` or a plain fragment.
+	 * @param string $css    Rendered CSS.
+	 */
+	private function assertSelectorHas( string $needle, string $css ): void {
+		if ( substr_count( $needle, '{' ) !== 1 || ! preg_match( '/^(.+?)\{(.*)\}$/s', $needle, $n ) ) {
+			$this->assertStringContainsString( $needle, $css );
+			return;
+		}
+		$want = array_filter( array_map( 'trim', explode( ';', $n[2] ) ) );
+		$have = array();
+		preg_match_all( '/([^{}]+)\{([^{}]*)\}/', $css, $rules, PREG_SET_ORDER );
+		foreach ( $rules as $rule ) {
+			if ( trim( $rule[1] ) === trim( $n[1] ) ) {
+				$have = array_merge( $have, array_map( 'trim', explode( ';', $rule[2] ) ) );
+			}
+		}
+		foreach ( $want as $decl ) {
+			$this->assertContains( $decl, $have, 'selector ' . trim( $n[1] ) . ' lacks ' . $decl );
+		}
+	}
+
 	private function classCount( string $selector ): int {
 		return (int) preg_match_all( '/\.[A-Za-z_][\w-]*/', $selector );
 	}
@@ -622,14 +648,14 @@ final class GoogleReviewsAttrsTest extends TestCase {
 	}
 
 	public function test_an_authors_value_beats_a_look_by_class_count(): void {
-		$css = $this->render(
+		$css       = $this->render(
 			array(
 				'cardStyle'        => 'elevated',
 				'cardBorderRadius' => $this->corners( '8px' ),
 			)
 		)['css'];
 		$attr_rule = self::R . ' .sgs-google-reviews__review{border-top-left-radius:8px;border-top-right-radius:8px;border-bottom-right-radius:8px;border-bottom-left-radius:8px;}';
-		$this->assertStringContainsString( $attr_rule, $css );
+		$this->assertSelectorHas( $attr_rule, $css );
 		$attr_selector = self::R . ' .sgs-google-reviews__review';
 		$look_selector = '.sgs-google-reviews--card-elevated .sgs-google-reviews__review';
 		$this->assertSame( 3, $this->classCount( $attr_selector ) );
@@ -658,8 +684,8 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				),
 			)
 		)['css'];
-		$this->assertStringContainsString( self::R . '.sgs-google-reviews{border-color:#123456;}', $css );
-		$this->assertStringContainsString( self::R . '.sgs-google-reviews{border-style:solid;border-width:2px 2px 2px 2px;}', $css );
+		$this->assertSelectorHas( self::R . '.sgs-google-reviews{border-color:#123456;}', $css );
+		$this->assertSelectorHas( self::R . '.sgs-google-reviews{border-style:solid;border-width:2px 2px 2px 2px;}', $css );
 	}
 
 	// ── The stylesheet no longer hardcodes what an attribute owns ──────────────────────────────────────────
@@ -688,14 +714,14 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
 
 		$named = array(
-			'.sgs-google-reviews__avatar'                                         => array( 'width: 40px', 'height: 40px', 'border-radius: 50%' ),
-			'.sgs-google-reviews__avatar-initials'                                => array( 'border-radius: 50%', 'font-weight: 700' ),
-			'.sgs-google-reviews__text'                                           => array( '-webkit-line-clamp: 8' ),
-			'.sgs-google-reviews--slider .sgs-google-reviews__list'               => array( 'scrollbar-width' ),
+			'.sgs-google-reviews__avatar'          => array( 'width: 40px', 'height: 40px', 'border-radius: 50%' ),
+			'.sgs-google-reviews__avatar-initials' => array( 'border-radius: 50%', 'font-weight: 700' ),
+			'.sgs-google-reviews__text'            => array( '-webkit-line-clamp: 8' ),
+			'.sgs-google-reviews--slider .sgs-google-reviews__list' => array( 'scrollbar-width' ),
 			'.sgs-google-reviews--slider .sgs-google-reviews__list::-webkit-scrollbar' => array( 'display: none' ),
-			'.sgs-google-reviews__arrow'                                          => array( 'width:', 'height:', 'border-radius: 50%' ),
-			'.sgs-google-reviews__write-review'                                   => array( 'padding: 0 22px', 'font-weight: 500' ),
-			'.sgs-google-reviews__review'                                         => array( 'padding: 20px', 'border-radius: 8px', 'gap: 12px' ),
+			'.sgs-google-reviews__arrow'           => array( 'width:', 'height:', 'border-radius: 50%' ),
+			'.sgs-google-reviews__write-review'    => array( 'padding: 0 22px', 'font-weight: 500' ),
+			'.sgs-google-reviews__review'          => array( 'padding: 20px', 'border-radius: 8px', 'gap: 12px' ),
 		);
 		foreach ( $named as $selector => $literals ) {
 			foreach ( $this->bareRuleBodies( $css, $selector ) as $body ) {
