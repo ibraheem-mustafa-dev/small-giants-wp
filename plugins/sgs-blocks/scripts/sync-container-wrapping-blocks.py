@@ -478,6 +478,11 @@ def main() -> int:
             "sgs/choice-flow", "sgs/choice-flow-question", "sgs/form-step",
             "sgs/nav-drawer-menu", "sgs/notice-banner", "sgs/process-steps",
             "sgs/wishlist-panel",
+            # sgs/measured-diagram added 2026-10-08: it hosts sgs/diagram-dimension children through
+            # InnerBlocks (block.json `allowedBlocks`) and is their structural parent, so the detector
+            # reports it for the right reasons (InnerBlocks | structural-parent); the roster had not
+            # been refreshed since the block was added.
+            "sgs/measured-diagram",
             # sgs/content-collection is not in this roster: `src/blocks/content-collection/`
             # does not exist and the DB has no `sgs/content-collection` row.
         },

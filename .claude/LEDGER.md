@@ -86,7 +86,6 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   submodules through `scripts/lib/block-source-files.js` / `block_source_files.py`; `check-partial-use-imports.py` stops a partial calling a
   class only render.php imports. The component-aware gates' pre-existing defects are fixed and their shrink-only entries deleted (the older accepted-debt enum entries remain; enum detector no longer binds a shared component's prop to a neighbouring control); only the advisory backlogs rule 03 and rule 31 remain (triage §6).
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
-- **Stage 10 fails:** `sync-container-wrapping-blocks.py` flags `sgs/measured-diagram`; confirm it and update the script's roster.
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
   (Spec 47 §5 "Route"): after any sweep, re-measure every canvas citation with `confirm-canvas.mjs --candidates`
