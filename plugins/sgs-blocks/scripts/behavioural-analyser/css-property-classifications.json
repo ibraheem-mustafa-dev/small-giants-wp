@@ -32606,6 +32606,23 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "chromeRatingColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeRating"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeRatingShow",
+      "fields": {
+        "css_property": "display",
+        "css_element": "chromeRating"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "chromeRowBg",
       "fields": {
         "css_property": "background-color",
