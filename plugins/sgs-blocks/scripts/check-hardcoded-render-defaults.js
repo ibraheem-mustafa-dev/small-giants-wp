@@ -112,6 +112,8 @@ const path = require( 'path' );
 const os   = require( 'os' );
 
 const { spliceFragments } = require( './lib/e14-markup-splice' );
+const { bareTagMatchesUnknownTag } = require( './lib/e14-unknown-tag' );
+const { isJsLeafClass } = require( './lib/e14-js-leaf' );
 
 const ROOT      = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -1583,8 +1585,8 @@ const E14_BLOCKS_BUILD = false;
 // - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
 //   intent).
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 3: the cart badge (two rows; its trigger markup is unseen,
-//   CANNOT-TELL) and the media caption list's bare `figcaption` member.
+// - CANNOT-RESOLVE 2: the cart badge (two rows; its trigger markup is unseen,
+//   CANNOT-TELL).
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
@@ -1600,7 +1602,7 @@ const E14_BLOCKS_BUILD = false;
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        28,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 3,
+	'CANNOT-RESOLVE': 2,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */
@@ -2361,8 +2363,12 @@ function buildElementModel( blockDir, meta, declaredAttrs, hasSelectorsTypograph
 		wildcardProps,
 		rootClasses,
 		instances,
+		files,
 		childOwners: withChildren ? collectTemplateChildOwners( blockDir ) : new Map(),
 		isEditorOnlyClass: ( cls ) => isEditorOnlyClass( cls, blockDir, files ),
+		isJsLeafClass: ( cls ) => isJsLeafClass( cls, listSourceFiles( blockDir, [ '.js' ] )
+			.filter( ( f ) => 'edit.js' !== path.basename( f ) && ! /\.test\.js$/.test( f ) )
+			.map( ( f ) => fs.readFileSync( f, 'utf8' ) ) ),
 	};
 }
 
@@ -2583,6 +2589,12 @@ function hasFullyLiteralAncestry( model, i ) {
  */
 function relateElements( a, bChain, model ) {
 	const b = lastCompound( bChain );
+	if ( a.classes.length > 0 && ! isRootCompound( a, model ) && ! a.classes.some( ( cl ) => b.classes.includes( cl ) )
+		&& 0 === matchInstances( a, model ).length && a.classes.every( ( cl ) => model.isJsLeafClass( cl ) ) ) {
+		// The control's element is built by front-end JS and can hold no child, so
+		// no element of the PHP markup sits inside it, and it is none of them.
+		return 'unrelated';
+	}
 	if ( 0 === b.classes.length && ! b.inst ) {
 		// A bare tag (`.x__label span`): strictly inside the nearest classed ancestor.
 		if ( bChain.length < 2 ) {
@@ -2591,6 +2603,17 @@ function relateElements( a, bChain, model ) {
 		const rel = relateElements( a, bChain.slice( 0, -1 ), model );
 		if ( 'same' === rel || 'control-above' === rel ) {
 			return 'control-above';
+		}
+		// The control's element is built with a run-time tag the PHP can set to
+		// this bare tag, and sits inside an element the prefix names: it is the
+		// element itself. Everything a block prints sits inside its root element,
+		// so a root prefix holds for any instance, placed or not (an instance that is itself the root was settled as 'same' above).
+		const prefix           = lastCompound( bChain.slice( 0, -1 ) );
+		const prefixInstances  = matchInstances( prefix, model );
+		const isBareTagElement = ( i ) => bareTagMatchesUnknownTag( b.tag, model.instances[ i ], model.files )
+			&& ( isRootCompound( prefix, model ) || prefixInstances.some( ( p ) => isDescendantInstance( model, i, p ) ) );
+		if ( matchInstances( a, model ).some( isBareTagElement ) ) {
+			return 'same';
 		}
 		return 'unrelated' === rel ? 'unrelated' : 'unknown';
 	}
@@ -3800,6 +3823,7 @@ function selfTestE12() {
 	selfTestParamBinding( assert );
 	selfTestMarkupSplice( assert );
 	selfTestUnknownTag( assert );
+	selfTestBareTagOnUnknownTag( assert );
 
 	process.stdout.write( `\n${ checks - failures }/${ checks } checks passed\n` );
 	process.exit( failures > 0 ? 1 : 0 );
@@ -4651,6 +4675,121 @@ function selfTestUnknownTag( assert ) {
 		'unknown tag: a close tag written differently from the open tag still ends it, so a following sibling is not inside it (negative control)',
 		verdict( "<<?php echo esc_attr( \$level ); ?> class=\"sgs-x__link\">t</<?php echo esc_attr( \$tag ); ?>><span class=\"sgs-x__cap\">t</span>\n" ),
 		[]
+	);
+}
+
+/**
+ * A bare tag in a declaring selector (`.x figcaption`) names an element the
+ * markup may build with a run-time tag (`<%1$s class="x__cap">`). When the
+ * block's own PHP names that tag as a quoted value, the controlled element can
+ * be it, so the member is the same element as the control.
+ */
+function selfTestBareTagOnUnknownTag( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] a bare tag can be an element of unknown tag\n\n' );
+	const control = '$css .= sgs_typography_css_rule( $attributes, \'item\', "{$root_sel} .sgs-x__cap" );\n';
+	const run     = ( selector, tagValues, placement ) => {
+		const css    = `${ selector } {\n\tline-height: 1;\n}\n`;
+		const values = tagValues ? `$allowed = array( ${ tagValues } );\n$tag = $allowed[0];\n` : '$tag = $attributes[\'tag\'];\n';
+		const cap    = '<?php printf( \'<%1$s class="sgs-x__cap">t</%1$s>\', $tag ); ?>\n';
+		const body   = 'inside' === placement ? '<div class="sgs-x__wrap">' + cap + '</div>\n' : '<div class="sgs-x__wrap">t</div>\n' + cap;
+		const render = E14_FIXTURE_PHP_HEAD + control + values + E14_FIXTURE_ROOT_OPEN + body + '</div>\n';
+		const r = runE14Fixture( [ 'itemLineHeight', 'tag' ], render, css );
+		return r.findings.filter( ( f ) => 'line-height' === f.property ).map( ( f ) => f.class );
+	};
+	assert(
+		'bare tag: under the block root, `.sgs-x figcaption` is the unknown-tag element when the PHP names `figcaption` as a value',
+		run( '.sgs-x figcaption', "'figcaption', 'div'", 'inside' ),
+		[]
+	);
+	const unplaced = () => {
+		const render = E14_FIXTURE_PHP_HEAD + control + "$allowed = array( 'figcaption', 'div' );\n$tag = $allowed[0];\n"
+			+ '$cap = sprintf( \'<%1$s class="sgs-x__cap">t</%1$s>\', $tag );\n'
+			+ E14_FIXTURE_ROOT_OPEN + '<?php echo $cap; ?>\n</div>\n';
+		const r = runE14Fixture( [ 'itemLineHeight', 'tag' ], render, '.sgs-x figcaption {\n\tline-height: 1;\n}\n' );
+		return r.findings.filter( ( f ) => 'line-height' === f.property ).map( ( f ) => f.class );
+	};
+	assert(
+		'bare tag: a root prefix holds for the unknown-tag element built in a variable and not placed in the markup',
+		unplaced(),
+		[]
+	);
+	assert(
+		'bare tag: under a classed element the unknown-tag element sits in, `.sgs-x__wrap figcaption` is that element',
+		run( '.sgs-x__wrap figcaption', "'figcaption', 'div'", 'inside' ),
+		[]
+	);
+	assert(
+		'bare tag: the same selector with no `figcaption` value in the PHP stays CANNOT-RESOLVE (negative control)',
+		run( '.sgs-x figcaption', null, 'inside' ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'bare tag: a tag the PHP never names (`h2`) stays CANNOT-RESOLVE (negative control)',
+		run( '.sgs-x h2', "'figcaption', 'div'", 'inside' ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'bare tag: an unknown-tag element outside a classed prefix element cannot be the member (negative control)',
+		run( '.sgs-x__wrap figcaption', "'figcaption', 'div'", 'outside' ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+
+	// A second control on an element only front-end JS builds. Unplaced, it keeps
+	// the declaration CANNOT-RESOLVE; as a childless leaf it is unrelated to PHP markup.
+	const timeControl = '$css .= sgs_typography_css_rule( $attributes, \'time\', $id_wrap . \' .sgs-x__time\' );\n';
+	const withTime    = ( viewJs ) => {
+		const capControl = '$id_wrap = sgs_scope_id( $attributes );\n$css .= sgs_typography_css_rule( $attributes, \'item\', $id_wrap . \' .sgs-x__cap\' );\n';
+		const render = E14_FIXTURE_PHP_HEAD + capControl + timeControl + "$allowed = array( 'figcaption', 'div' );\n$tag = $allowed[0];\n"
+			+ E14_FIXTURE_ROOT_OPEN + '<?php printf( \'<%1$s class="sgs-x__cap">t</%1$s>\', $tag ); ?>\n</div>\n';
+		const r = runE14Fixture( [ 'itemLineHeight', 'timeLineHeight' ], render, '.sgs-x figcaption {\n\tline-height: 1;\n}\n', null === viewJs ? {} : { 'view.js': viewJs } );
+		return r.findings.filter( ( f ) => 'line-height' === f.property ).map( ( f ) => f.class );
+	};
+	assert(
+		'js leaf: a control on a childless element front-end JS builds does not block the verdict',
+		withTime( "const time = el( 'span', 'sgs-x__time', '0:00' );\ntime.textContent = 'x';\n" ),
+		[]
+	);
+	assert(
+		'js leaf: the same element given a child by the script stays CANNOT-RESOLVE (negative control)',
+		withTime( "const time = el( 'span', 'sgs-x__time', '0:00' );\ntime.appendChild( other );\n" ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'js leaf: a class no script creates stays CANNOT-RESOLVE (negative control)',
+		withTime( null ),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	const phpTime = ( render, css, viewJs ) => {
+		const head = E14_FIXTURE_PHP_HEAD + '$css .= sgs_typography_css_rule( $attributes, \'time\', "{$root_sel} .sgs-x__time" );\n';
+		const r    = runE14Fixture( [ 'timeLineHeight' ], head + render, css, viewJs ? { 'view.js': viewJs } : {} );
+		return r.findings.filter( ( f ) => 'line-height' === f.property ).map( ( f ) => f.class );
+	};
+	assert(
+		'js leaf: a class the PHP markup also emits is not treated as a leaf (negative control)',
+		phpTime(
+			E14_FIXTURE_ROOT_OPEN + '<div class="sgs-x__time"><span class="sgs-x__inner">t</span></div>\n</div>\n',
+			'.sgs-x__inner {\n\tline-height: 1;\n}\n',
+			"const time = el( 'span', 'sgs-x__time', '0:00' );\n"
+		),
+		[ 'CLASS-2' ]
+	);
+	assert(
+		'bare tag: a literal-tag element is not an unknown-tag element, whatever the PHP names (negative control)',
+		phpTime(
+			"$allowed = array( 'figcaption' );\n" + E14_FIXTURE_ROOT_OPEN + '<span class="sgs-x__time">t</span>\n</div>\n',
+			'.sgs-x figcaption {\n\tline-height: 1;\n}\n',
+			null
+		),
+		[ 'CANNOT-RESOLVE' ]
+	);
+	assert(
+		'bare tag: the root element built with a run-time tag is not inside the root prefix, so a bare tag below it stays a descendant (negative control)',
+		phpTime(
+			"$allowed = array( 'figcaption' );\n?>\n<<?php echo esc_attr( $tag ); ?> <?php echo get_block_wrapper_attributes( array( 'class' => $uid . ' sgs-x sgs-x__time' ) ); ?>>t</<?php echo esc_attr( $tag ); ?>>\n",
+			'.sgs-x figcaption {\n\tline-height: 1;\n}\n',
+			null
+		),
+		[ 'CLASS-2' ]
 	);
 }
 
