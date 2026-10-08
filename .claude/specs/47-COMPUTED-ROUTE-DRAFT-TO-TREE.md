@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.15.8"
+spec_version: "0.15.9"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -296,6 +296,10 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
   tree already holds, the rule that wins on the live page beside the rule that carries the draft value
   (`lib/winning-rule.mjs`, Chrome DevTools' matched rules; `--no-rules` skips the browser read).
 - **Missing setting:** the resolver returned `no-setting`. Framework new control.
+- **Issue and cause views:** the report also lists each surviving style or hover row's issue (one element, property and
+  state, with every width it differs at and that width's own draft and live values, and the widths where it matches) and
+  each cause (issues sharing a class, a property and the winning rule or the same values, every element listed with its
+  widths). No row is merged away: the per-width tables stay (`lib/solve-groups.mjs`, test `tests/solve-groups.test.mjs`).
 - **Intended:** matched in `divergences.json`.
 - **Unresolved:** anything else, with its reason.
 - **Handover:** a text, presence or link row that no block setting could hold because the content lives outside the

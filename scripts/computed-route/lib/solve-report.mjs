@@ -6,6 +6,7 @@ import { openRows } from './solve-rows.mjs';
 // The counted row kinds and the issue key are shared with lib/sweep.mjs and lib/triage.mjs: wholePage's count, a
 // surface's sweep count and its triage count are the same number, so all three read one definition (C0.5).
 import { isIssue, issueKey } from './issue-classes.mjs';
+import { issueGroups, causeGroups, groupsMarkdown } from './solve-groups.mjs';
 
 const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringify( v ) : v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' ).slice( 0, 160 );
 
@@ -35,7 +36,9 @@ export function writeSolveReport( outDir, r ) {
 	const page = wholePage( r.before, r.after, r.classes, `cr-ref-${ r.surface }-` );
 	const handover = r.handover || [];
 	const content = ( fate ) => r.classes.other.filter( ( x ) => fate === x.contentClass ).length;
-	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, handover, before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
+	const issues = issueGroups( r.after, r.classes );
+	const causes = causeGroups( issues );
+	fs.writeFileSync( path.join( outDir, 'solve-report.json' ), JSON.stringify( { ...r, handover, issues, causes: causes.map( ( c ) => ( { class: c.class, key: c.key, label: c.label, issues: c.issues.length } ) ), before: undefined, after: undefined, openBefore: openRows( r.before ).length, openAfter: openRows( r.after ).length, wholePage: page }, null, 1 ) );
 	const L = [ `# Solve: ${ r.surface }`, '',
 		`Refs added: ${ r.refsAdded }. Write rounds: ${ r.rounds }${ r.roundThreeWrote ? ' (round 3 still wrote: a kill condition)' : '' }. Open rows before: ${ openRows( r.before ).length }, after: ${ openRows( r.after ).length }. Intended (accepted): ${ r.intended }.`, '',
 		`**Whole page (distinct style, hover, box, text, presence and link-coverage issues, any width or state):** ${ page.before } before, ${ page.after } after: ${ page.closed } closed, ${ page.new } new; of those open, ${ page.labelledGap } labelled a gap by Solve (to prove) and ${ page.unexplained } with no label.`, '',
@@ -57,6 +60,7 @@ export function writeSolveReport( outDir, r ) {
 		'## Wrong writes', '', ...( r.wrong.length ? r.wrong.map( ( w ) => `- round ${ w.round } ${ w.ref } ${ w.block } ${ w.attr } = ${ cell( w.after ) }${ w.reverted ? ' (reverted: ' + cell( w.revertReason ) + ')' : '' }` ) : [ 'None.' ] ), '',
 		'## Token snaps', '', '| Where | From | To | Distance | Kind |', '|---|---|---|---|---|',
 		...r.snaps.map( ( s ) => `| ${ s.where } | ${ s.from } | ${ s.to } | ${ s.distance ?? '' } | ${ s.kind } |` ), '' ];
+	L.splice( L.indexOf( '## Handover' ), 0, ...groupsMarkdown( issues, causes ) );
 	const section = ( title, rows, withReason ) => {
 		L.push( `## ${ title }`, '' );
 		if ( ! rows.length ) {
