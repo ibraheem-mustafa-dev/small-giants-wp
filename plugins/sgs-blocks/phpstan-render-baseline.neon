@@ -1,20 +1,14 @@
 # PHPStan baseline for the render-template undefined-variable gate.
 #
-# 18 pre-existing findings, frozen 2026-08-21 so the gate could ship the same day it was
+# Pre-existing findings, frozen 2026-08-21 so the gate could ship the same day it was
 # written. Deliberately SMALL and reviewable — this is a triage list, not a dumping
 # ground. Every entry was read before it was frozen; the triage is below. If this file
 # ever grows past ~25 entries, something is being hidden rather than recorded.
 #
-# ⚠ `count:` is load-bearing. A SECOND `$bwt` defect in heading/render.php raises the
-# count to 2 and FAILS the gate. Baselined does not mean unguarded.
+# ⚠ `count:` is load-bearing. A SECOND defect in a baselined file raises the count and
+# FAILS the gate. Baselined does not mean unguarded.
 #
 # TRIAGE — what each group is, and what is owed:
-#
-#   FALSE POSITIVE (correlated guards PHPStan cannot track) — 2 entries
-#     heading/render.php:501, icon-list/render.php:458 — `$has_border_width ? $bwt : '1px'`.
-#     `$bwt` is assigned inside `if ( $has_border_width )`, so it exists whenever it is
-#     read. PHPStan does not correlate the two conditions. Verified by reading both
-#     sites 2026-08-21. Nothing owed.
 #
 #   INHERITED SCOPE (a partial included from its parent) — 5 entries
 #     buybox/notify-form.php — `$buybox_post_id`, `$notify_me_label` come from the
@@ -75,18 +69,6 @@ parameters:
 			identifier: constant.notFound
 			count: 2
 			path: src/blocks/google-reviews/render.php
-
-		-
-			message: '#^Variable \$bwt might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: src/blocks/heading/render.php
-
-		-
-			message: '#^Variable \$bwt might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: src/blocks/icon-list/render.php
 
 		-
 			message: '#^Variable \$base_style_engine_args in empty\(\) always exists and is always falsy\.$#'
