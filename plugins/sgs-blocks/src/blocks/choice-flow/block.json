@@ -47,7 +47,7 @@
 					"label": "Info toggle",
 					"layer": "CONTENT",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "layout" ],
 					"prefix": "infoToggle",
 					"attrMap": {
 						"css:color": "infoToggleColour",
