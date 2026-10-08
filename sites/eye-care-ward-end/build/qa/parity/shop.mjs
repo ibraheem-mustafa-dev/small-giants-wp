@@ -299,6 +299,7 @@ export default {
 		} ) ),
 		{ pair: 'card-photo', kind: 'style', reason: 'The same photo: the draft paints it as a div background, live as an <img> with object-fit cover' },
 		{ pair: 'card-brand', kind: 'style', key: 'background-image', reason: 'The same gradient written with and without the 0% and 100% stops', when: ( d ) => d.live.includes( '62%' ) },
+		{ pair: 'card-brand', reason: 'Register S9 (Bean): live shows the brand logo image with the brand name as its alt text where the draft types the name, so the badge has no text and its text styles paint nothing (read live 2026-10-08: brand-logo-gucci.jpg)', when: ( d ) => 'text' === d.kind || ( 'style' === d.kind && null == d.live ) },
 		{ pair: 'card-name', reason: 'The title link is inline live and block in the draft; the text and its position match', when: ( d ) => [ 'display', 'w' ].includes( d.key ) },
 		{ pair: 'style-chip', kind: 'style', key: 'border-radius', reason: 'A 999px or 9999px radius paints the same pill' },
 		{ pair: 'style-chip', kind: 'style', key: 'line-height', reason: 'One line of text inside the chip’s 44px minimum height: the line height moves nothing' },
