@@ -34,6 +34,12 @@
 .sgs-slider-nav__rail {
 	grid-area: rail;
 	min-width: 0;
+
+	/* The rail is the scroll container, so it must also be the containing block
+	 * of its absolutely-positioned descendants (the visually-hidden link labels):
+	 * otherwise they sit at their off-screen slide offsets outside the rail's
+	 * clip and widen the whole document. */
+	position: relative;
 }
 
 .sgs-slider-nav__lead {
