@@ -143,6 +143,7 @@ export function planInstances( block, { rows, enumRows = [], schema, snapshot, f
 						trigger: triggerFor( row.css_state ),
 						target: stateTarget( block, row ),
 						stateClass: STATE_CLASSES[ row.css_state ] || null,
+						companionClass: fixture.companionClass || null,
 						baseKey,
 					} );
 				}

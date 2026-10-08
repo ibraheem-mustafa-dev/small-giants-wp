@@ -1616,6 +1616,7 @@
     ]
   },
   "sgs/nav-bar-menu": {
+    "companionClass": "is-detached",
     "attributes": {
       "ref": 96,
       "splitAfterItemId": "id:195",

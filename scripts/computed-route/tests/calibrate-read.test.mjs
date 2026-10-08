@@ -74,3 +74,22 @@ test( 'MUST FAIL (51 untested hover states): an opener outside the instance that
 		await browser.close();
 	}
 } );
+
+test( 'MUST FAIL (triggerDetachBackgroundHover): a companion printed outside the root is targeted by its BEM prefix and shown through the fixture\'s companion class', async () => {
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<style>.sgs-x__detach{display:none}.sgs-x__detach.is-detached{display:block;width:40px;height:40px}</style>
+			<nav class="cr-ref-cal-0 sgs-x-0d52a6d2"><a class="sgs-x__item" href="#">Home</a></nav>
+			<div class="sgs-x-0d52a6d2 sgs-x__detach"><button>chip</button></div>` );
+		const without = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__detach-chip' ] );
+		assert.equal( without.visible, false, 'no companion class: the companion is found and stays hidden, so the instance is reported missed' );
+		assert.equal( await page.evaluate( () => document.querySelector( '[data-cr-target]' )?.className ), 'sgs-x-0d52a6d2 sgs-x__detach' );
+		const shown = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__detach-chip', 'is-detached' ] );
+		assert.equal( shown.visible, true );
+		assert.equal( await page.evaluate( () => document.querySelector( '[data-cr-target]' )?.className ), 'sgs-x-0d52a6d2 sgs-x__detach is-detached', 'the companion, not the root, is the target' );
+	} finally {
+		await browser.close();
+	}
+} );

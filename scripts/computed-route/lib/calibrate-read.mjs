@@ -67,14 +67,27 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 // In-page: marks the element a state trigger acts on (the instance's styled element, searched in the instance and its
 // controlled panels, else the root) with data-cr-target, and says whether it is visible and whether the instance has a
 // closed panel toggle it could open.
-export function markTargetInPage( [ prefix, n, selector ] ) {
+export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	document.querySelectorAll( '[data-cr-target]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-target' ) );
 	const root = document.querySelector( `.${ prefix }${ n }` );
 	if ( ! root ) {
 		return null;
 	}
 	const panels = [ ...root.querySelectorAll( '[aria-controls]' ) ].map( ( e ) => document.getElementById( e.getAttribute( 'aria-controls' ) ) ).filter( Boolean );
-	const el = ( selector && [ root, ...panels ].map( ( s ) => ( s.matches( selector ) ? s : s.querySelector( selector ) ) ).find( Boolean ) ) || root;
+	let el = ( selector && [ root, ...panels ].map( ( s ) => ( s.matches( selector ) ? s : s.querySelector( selector ) ) ).find( Boolean ) ) || null;
+	if ( ! el && selector ) {
+		// An element the block prints outside its root (a companion carrying the root's uid class, e.g. the detached
+		// burger chip): the selector names its element, its BEM class may be a shorter prefix of it (detach-chip -> detach).
+		const uid = [ ...root.classList ].find( ( c ) => /^sgs-[a-z0-9-]+-[0-9a-f]{8}$/.test( c ) );
+		const [ base, token ] = selector.split( '__' );
+		const parts = ( token || '' ).split( '-' );
+		for ( let k = parts.length; uid && k > 0 && ! el; k-- ) {
+			el = [ ...document.querySelectorAll( `.${ uid }` ) ].find( ( c ) => ! root.contains( c ) && ! c.contains( root ) && c.matches( `${ base }__${ parts.slice( 0, k ).join( '-' ) }` ) ) || null;
+		}
+		// The companion shows only in a state of its own (a class the block's script adds); the calibration adds it.
+		el && companionClass && el.classList.add( companionClass );
+	}
+	el = el || root;
 	el.setAttribute( 'data-cr-target', '1' );
 	const r = el.getBoundingClientRect();
 	const visible = r.width > 0 && r.height > 0 && 'hidden' !== getComputedStyle( el ).visibility;
@@ -137,13 +150,13 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		await page.evaluate( ( [ sel, cls ] ) => document.querySelector( sel )?.parentElement?.classList.remove( cls ), [ `.${ CAL_PREFIX }${ n }`, inst.stateClass ] );
 		return read;
 	}
-	let mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target ] );
+	let mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	let opened = false;
 	if ( mark && ! mark.visible && mark.toggle ) {
 		await openToggle( page );
 		await page.waitForTimeout( 500 );
 		opened = true;
-		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target ] );
+		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	}
 	let read = null;
 	if ( mark?.visible ) {
@@ -168,6 +181,9 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	if ( opened ) {
 		await page.keyboard.press( 'Escape' );
 		await page.waitForTimeout( 300 );
+	}
+	if ( inst.companionClass ) {
+		await page.evaluate( ( cls ) => document.querySelectorAll( `.${ cls }` ).forEach( ( e ) => e.classList.remove( cls ) ), inst.companionClass );
 	}
 	return read;
 }
