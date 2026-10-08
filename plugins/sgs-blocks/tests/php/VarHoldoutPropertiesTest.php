@@ -97,6 +97,22 @@ final class VarHoldoutPropertiesTest extends TestCase {
 		$this->assertSame( 2, substr_count( $css, '--sgs-gi-radius-bottom-right:' ) );
 	}
 
+	public function test_grid_item_bare_numbers_print_with_px_and_a_flat_corner_box_is_the_desktop_tier(): void {
+		$out = $this->render_block(
+			'sgs/container',
+			array(
+				'layout'               => 'grid',
+				'gridItemPadding'      => array( 'desktop' => array( 'top' => '24' ) ),
+				'gridItemBorderRadius' => array( 'topLeft' => '5' ),
+			)
+		);
+		$css = $out['css'];
+
+		$this->assertStringContainsString( '--sgs-gi-padding-top:24px', $css );
+		$this->assertStringContainsString( '--sgs-gi-radius-top-left:5px', $css );
+		$this->assertDoesNotMatchRegularExpression( '/--sgs-gi-padding-top:24;/', $css );
+	}
+
 	public function test_multi_button_radius_prints_the_corners_each_tier_sets(): void {
 		$out = $this->render_block(
 			'sgs/multi-button',

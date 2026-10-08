@@ -68,7 +68,7 @@
 import { __ } from '@wordpress/i18n';
 import ResponsiveControl from './ResponsiveControl';
 import SgsBoxControl from './SgsBoxControl';
-import { inheritedBox } from '../utils/inherited-box';
+import { inheritedBox, radiusAsCorners } from '../utils/inherited-box';
 
 /** Map ResponsiveControl's device-switcher breakpoint keys to the contract's tier keys. */
 const TIER_BY_BREAKPOINT = {
@@ -206,9 +206,9 @@ export function ResponsiveBorderRadiusControl( {
 	showResponsive = true,
 } ) {
 	const tierValues = {
-		base: values.base ?? {},
-		tablet: values.tablet ?? {},
-		mobile: values.mobile ?? {},
+		base: radiusAsCorners( values.base ),
+		tablet: radiusAsCorners( values.tablet ),
+		mobile: radiusAsCorners( values.mobile ),
 	};
 
 	if ( ! showResponsive ) {

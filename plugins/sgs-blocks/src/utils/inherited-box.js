@@ -51,3 +51,19 @@ export function inheritedBox( tierValues, tier, keys ) {
 	} );
 	return out;
 }
+
+const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+
+/**
+ * A radius tier stored as one length (`"8px"`, the uniform shape the canvas and the front end both read as four
+ * corners) as the corner box the radius control edits; a corner box passes through, anything else is empty.
+ *
+ * @param {Object|string|undefined} value One tier of a radius.
+ * @return {Object} Corner box.
+ */
+export function radiusAsCorners( value ) {
+	if ( 'string' === typeof value && '' !== value ) {
+		return Object.fromEntries( CORNER_KEYS.map( ( corner ) => [ corner, value ] ) );
+	}
+	return value && 'object' === typeof value ? value : {};
+}

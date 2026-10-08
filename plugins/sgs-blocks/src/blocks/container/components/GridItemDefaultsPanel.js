@@ -84,6 +84,17 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 		gridItemTextColourHoverGradient = '',
 	} = attributes;
 
+	// gridItemBorderRadius is a tier object like gridItemPadding: each tier a corner box. A flat corner box (no tier key)
+	// is the desktop tier, as the renderer reads it.
+	const radiusStored = gridItemBorderRadius && 'object' === typeof gridItemBorderRadius ? gridItemBorderRadius : {};
+	const radiusIsTiered = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => key in radiusStored );
+	const gridItemRadiusTiers = {
+		stored: radiusIsTiered ? radiusStored : {},
+		desktop: radiusIsTiered ? radiusStored.desktop : radiusStored,
+		tablet: radiusStored.tablet,
+		mobile: radiusStored.mobile,
+	};
+
 	if ( layout !== 'grid' ) {
 		return null;
 	}
@@ -160,9 +171,19 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     uses on heading/quote/text. */ }
 			<ResponsiveBorderRadiusControl
 				label={ __( 'Border radius', 'sgs-blocks' ) }
-				showResponsive={ false }
-				values={ { base: gridItemBorderRadius ?? {} } }
-				onChange={ ( _tier, next ) => setAttributes( { gridItemBorderRadius: next } ) }
+				values={ {
+					base: gridItemRadiusTiers.desktop,
+					tablet: gridItemRadiusTiers.tablet,
+					mobile: gridItemRadiusTiers.mobile,
+				} }
+				onChange={ ( tier, next ) =>
+					setAttributes( {
+						gridItemBorderRadius: {
+							...gridItemRadiusTiers.stored,
+							[ 'base' === tier ? 'desktop' : tier ]: normaliseResponsiveBox( next ),
+						},
+					} )
+				}
 			/>
 			{ /* ⛔ WAS a raw <TextControl __next40pxDefaultSize > taking a CSS border shorthand — the
 			     exact banned lookalike in contract §14.3 ("a TextControl taking a

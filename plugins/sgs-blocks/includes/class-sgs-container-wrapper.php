@@ -3633,16 +3633,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// the four sides, `corners` the four corners (topLeft … bottomLeft).
 				if ( isset( $attributes['gridItemPadding'] ) && is_array( $attributes['gridItemPadding'] ) ) {
 					$obj_inner_props[] = array(
-						'value' => $attributes['gridItemPadding'],
-						'css'   => '--sgs-gi-padding',
-						'box'   => true,
+						'value'        => $attributes['gridItemPadding'],
+						'css'          => '--sgs-gi-padding',
+						'box'          => true,
+						'unit_default' => 'px',
 					);
 				}
 				if ( isset( $attributes['gridItemBorderRadius'] ) && is_array( $attributes['gridItemBorderRadius'] ) ) {
 					$obj_inner_props[] = array(
-						'value'   => $attributes['gridItemBorderRadius'],
-						'css'     => '--sgs-gi-radius',
-						'corners' => true,
+						'value'        => $attributes['gridItemBorderRadius'],
+						'css'          => '--sgs-gi-radius',
+						'corners'      => true,
+						'unit_default' => 'px',
 					);
 				}
 				if ( isset( $attributes['gridItemBackground'] ) && is_array( $attributes['gridItemBackground'] ) ) {

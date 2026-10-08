@@ -32,8 +32,8 @@
 /* ─── HEADER ─── */
 
 /*
- * Nothing on the header is a fixed value: it reads headerPadding through
- * --sgs-accordion-header-pad (falling back to the per-variant base below),
+ * Nothing on the header is a fixed value: it reads headerPadding side by side through
+ * --sgs-accordion-header-pad-{top|right|bottom|left} (each falling back to the per-variant base below),
  * headerGap through --sgs-accordion-header-gap, headerMinHeight through
  * --sgs-accordion-header-min-h, and inherits font-size and line-height from
  * the accordion's own typography setting, so every device follows the editor.

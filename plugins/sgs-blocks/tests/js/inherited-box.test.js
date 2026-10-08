@@ -3,7 +3,7 @@
  * placeholder text. A tier that sets the key itself reports nothing.
  */
 
-import { inheritedBox, inheritedBoxValue } from '../../src/utils/inherited-box';
+import { inheritedBox, inheritedBoxValue, radiusAsCorners } from '../../src/utils/inherited-box';
 
 describe( 'inheritedBoxValue', () => {
 	const tiers = {
@@ -52,5 +52,24 @@ describe( 'inheritedBox', () => {
 	it( 'collects only the keys that inherit a value', () => {
 		const tiers = { base: { top: '8px', left: '2px' }, tablet: { left: '5px' }, mobile: {} };
 		expect( inheritedBox( tiers, 'mobile', [ 'top', 'right', 'bottom', 'left' ] ) ).toEqual( { top: '8px', left: '5px' } );
+	} );
+} );
+
+describe( 'radiusAsCorners', () => {
+	it( 'reads one length as all four corners, so the control shows it and inherits it', () => {
+		expect( radiusAsCorners( '8px' ) ).toEqual( { topLeft: '8px', topRight: '8px', bottomRight: '8px', bottomLeft: '8px' } );
+		expect( inheritedBoxValue( { base: radiusAsCorners( '8px' ), tablet: {} }, 'tablet', 'topRight' ) ).toBe( '8px' );
+	} );
+
+	it( 'passes a corner box through and turns anything else into an empty box', () => {
+		const box = { topLeft: '2px' };
+		expect( radiusAsCorners( box ) ).toBe( box );
+		expect( radiusAsCorners( undefined ) ).toEqual( {} );
+		expect( radiusAsCorners( '' ) ).toEqual( {} );
+	} );
+
+	it( 'negative control: spreading the raw string, as the unconverted control did, yields character keys', () => {
+		expect( Object.keys( { ...'8px' } ) ).toEqual( [ '0', '1', '2' ] );
+		expect( Object.keys( { ...radiusAsCorners( '8px' ) } ) ).toEqual( [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	} );
 } );
