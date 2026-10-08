@@ -1490,5 +1490,23 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 161
+  },
+  {
+    "id": "block-source-files-py-selftest",
+    "cmd": "python scripts/lib/block_source_files.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 108,
+    "order": 163
+  },
+  {
+    "id": "block-source-files-js-selftest",
+    "cmd": "node scripts/lib/block-source-files.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 80,
+    "order": 164
   }
 ]
