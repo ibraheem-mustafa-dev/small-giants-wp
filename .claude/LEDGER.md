@@ -81,7 +81,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 4, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `9d8da3067`; `9ef97b909` is not yet deployed). The gate reads InnerBlocks template
+  Ceilings **CLASS-2 4, CLASS-3 1, CANNOT-RESOLVE 2** (self-test 124/124; sandybrown at `6a1628906`). The gate reads InnerBlocks template
   children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
   literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
   `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
