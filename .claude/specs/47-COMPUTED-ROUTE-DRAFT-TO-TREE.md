@@ -609,7 +609,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
    - **Results under the new guard** (scored items from the register; the whole-page line, distinct style, hover and
      box issues from `solve-report.mjs::wholePage`, appears from the next runs):
      - About: at 100% with full coverage (F2 below).
-     - Lenses: at 100% (2026-10-08; 67 distinct issues to 0, independent check 0; plan, Lenses entry).
+     - Lenses: 67 distinct issues to 0, independent check 0 (2026-10-08); register N40 still to prove (plan, Lenses entry).
      - Contact: 66 to 60 distinct issues on the 2026-10-08 Solve run (plan, Contact entry);
        the contact form 94 to 46, 58 on the sweep (plan Progress).
      - Help (old guard) and the footer: as recorded in the register. Home was stopped at walk 5 on 2026-10-04 and rebuilt
@@ -626,7 +626,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        nearest first (CR21). **About is at 100%** (2026-10-04): 50 distinct issues to 0 on a fresh rebuild, 0 wrong writes,
        12 ledger entries citing register 104 / S1 / S4, confirmed by an independent check
        (`sites/eye-care-ward-end/build/qa/independent-check.mjs`, 0 differences at 375/768/1440) and a planted-fault
-       negative control. **Lenses is at 100%** (2026-10-08): 67 distinct issues to 0, independent check 0; its wrong-write ratio meets 10% only with two unconfirmed container-height reverts left out (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
+       negative control. Lenses (2026-10-08): 67 distinct issues to 0, independent check 0, register N40 still to prove; its wrong-write ratio meets 10% only with two unconfirmed container-height reverts left out (plan, Lenses entry). Contact pairs 31 of 32 blocks (the map is register items 132 and 141) and its form 6 of 6; its distinct
        issues went from 134 to 19 on 2026-10-04 and read 27 on the 2026-10-05 sweep (open causes in the plan's Progress).
      - F3 calibration paths: measured, mostly not needed (Help's link rows are a block swap, register 120/121; Contact's
        form rows belong to the contact-form surface); one fixture gap (CR17).

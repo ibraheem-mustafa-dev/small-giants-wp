@@ -197,7 +197,7 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   (the per-round `conflict` rule, tag matching). Still open before it can run clean: the draft's select is not the
   inputs' 52px height, so `fieldMinHeight` (input and select) moved the textarea 6px; decide the select's own height
   (a `fieldSelectMinHeight`, or the select measured against the inputs) at the framework, then re-run Solve.
-- [x] **Lenses at 100% (Session D, 2026-10-08; from 67 distinct issues).** Paired 28 of 29 blocks (cr-ref-lenses-28 left
+- [ ] **Lenses: Solve and the independent check at 0 (Session D, 2026-10-08; from 67 distinct issues); register N40 (the gap above the button) still "to prove", so not yet at 100%.** Paired 28 of 29 blocks (cr-ref-lenses-28 left
   out: its draft element holds another block's words), `walkerFull` set. The done line, each criterion with its evidence:
   - **0 unexplained, 0 labelled gaps, 0 new rows** on a rebuild of the committed tree (`qa/solve/lenses/2026-10-07T23-42-47/`).
     The 3-round run after `titleTextWrap` (`2026-10-08T02-08-01/`) wrote nothing and left one row, cr-ref-lenses-26
