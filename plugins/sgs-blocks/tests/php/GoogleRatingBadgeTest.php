@@ -162,6 +162,13 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertStringNotContainsString( 'display:none;}}', $this->render_full( self::MANUAL )['css'] );
 	}
 
+	public function test_the_tap_target_stays_44px_whatever_the_visible_height(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/google-rating-badge/style.css' );
+		$this->assertMatchesRegularExpression( '#a\.sgs-google-rating-badge__link::after\s*\{[^}]*width:\s*max\(100%,\s*44px\)[^}]*height:\s*max\(100%,\s*44px\)#', $css );
+		// The link is the containing block for that box.
+		$this->assertMatchesRegularExpression( '#\.sgs-google-rating-badge__link\s*\{[^}]*position:\s*relative#', $css );
+	}
+
 	public function test_the_stars_wrapper_is_a_div_so_the_helper_div_nests_validly(): void {
 		$html = $this->render( self::MANUAL );
 		$this->assertStringContainsString( '<div class="sgs-google-rating-badge__stars" aria-hidden="true">', $html );

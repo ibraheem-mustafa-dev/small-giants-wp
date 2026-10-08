@@ -180,6 +180,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 120 }
 						__nextHasNoMarginBottom
+						help={ __( 'The tap area stays at least 44px tall whatever the visible height.', 'sgs-blocks' ) }
 						__next40pxDefaultSize
 					/>
 				</PanelBody>

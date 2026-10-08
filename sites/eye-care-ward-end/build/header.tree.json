@@ -378,7 +378,8 @@
                   "scoreColour": "text",
                   "captionColour": "text-soft",
                   "sgsCollapseVisibility": "hide",
-                  "hideBelow": 1290
+                  "hideBelow": 1290,
+                  "minHeight": 0
                 },
                 "innerBlocks": []
               },

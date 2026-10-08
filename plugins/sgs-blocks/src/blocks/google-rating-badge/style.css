@@ -247,6 +247,18 @@
 	}
 }
 
+/* The tap target never drops below 44x44, even when the visible frame is shorter (minHeight 0 in a slim
+   header row): an invisible box centred on the link, as the drawer's close button does. */
+a.sgs-google-rating-badge__link::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%; /* centring: direction-agnostic, paired with the -50% translate */
+	width: max(100%, 44px);
+	height: max(100%, 44px);
+	translate: -50% -50%;
+}
+
 a.sgs-google-rating-badge__link:hover {
 	filter: brightness(1.04);
 }
