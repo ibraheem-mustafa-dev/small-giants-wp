@@ -410,7 +410,11 @@
           "gap": {
             "desktop": "20px"
           },
-          "className": "cr-ref-help-16"
+          "className": "cr-ref-help-16",
+          "iconSize": {
+            "desktop": 18
+          },
+          "iconRotation": 45
         },
         "innerBlocks": [
           {

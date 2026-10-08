@@ -2341,7 +2341,7 @@
                     "name": "sgs/accordion",
                     "attributes": {
                       "accordionStyle": "flush",
-                      "allowMultiple": false,
+                      "allowMultiple": true,
                       "defaultOpen": -1,
                       "openIcon": "plus",
                       "closeIcon": "x",
@@ -2349,7 +2349,11 @@
                       "headerColour": "text",
                       "headerFontWeight": "400",
                       "headerFontWeightOpen": "400",
-                      "className": "cr-ref-product-90"
+                      "className": "cr-ref-product-90",
+                      "iconSize": {
+                        "desktop": 18
+                      },
+                      "iconRotation": 45
                     },
                     "innerBlocks": [
                       {
