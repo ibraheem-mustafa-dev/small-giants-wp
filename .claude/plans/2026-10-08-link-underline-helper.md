@@ -4,7 +4,7 @@ project: small-giants-wp
 created: 2026-10-08
 status: batch 1 built (sgs/text, sgs/heading, sgs/business-info) and committed; eye-care-test deploy and live read pending; batches 2 (icon-list, label) and 3 (collapsible-text, quote, testimonial, timeline, product-card) open
 authors: Bean, Claude (small-giants-wp-57)
-governs: register CR6 P2-n (moved here from .claude/plans/2026-10-07-cr6-box-longhand-migration.md, which is box-longhand work only)
+governs: register CR6 P2-n (moved here from .claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md, which is box-longhand work only)
 ---
 
 # Link underline helper for text blocks

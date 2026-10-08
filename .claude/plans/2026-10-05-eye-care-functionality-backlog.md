@@ -2,7 +2,7 @@
 title: "Eye Care: the functionality and feature backlog pulled out of the fix register"
 project: small-giants-wp
 created: 2026-10-05
-status: Tier 1 built (CR6 phase 1 shipped and verified live 2026-10-07; phase 2 in plans/2026-10-07-cr6-box-longhand-migration.md); Tier 2 shop-journey group built (2026-10-06, see the group marker below) and S8, 17 and 64 done 2026-10-07; the rest of Tier 2 and Tiers 3-4 not started
+status: Tier 1 built; Tier 2 partly built (open rows below); Tiers 3-4 open except 73
 governs: what to build next, after the register-proven repairs track closed
 references:
   - .claude/plans/2026-10-02-eye-care-fix-register.md
@@ -13,409 +13,120 @@ references:
 
 **Written for:** Bean, and whoever picks this up next session.
 
-**What this is.** The fix register holds every Eye Care fix, about 200 rows, and most of them are
-*values* — a spacing, a colour, a font weight — which belong to the page trees and to Solve. This
-document pulls out only the rows that change what the site can **do**: a feature that does not exist, a
-control that exists but paints nothing, or a behaviour that is broken. Nothing here is a new decision;
-every item is already decided in the register, and the register stays the source of truth. If an item
-below disagrees with its register row, the register wins.
+**What this is.** The fix register holds every Eye Care fix, and most of them are *values* (a spacing, a
+colour, a weight) which belong to the page trees and to Solve. This document holds only the open rows that
+change what the site can **do**: a feature that does not exist, a control that exists but paints nothing, or
+a behaviour that is broken. Every item is already decided in the register, which stays the source of truth;
+if an item below disagrees with its register row, the register wins. Page-tree values, content, pure styling
+and the Spec 47 measuring route are excluded.
 
-**What was deliberately excluded:** page-tree values (sizes, spacing, colours, weights), content
-(product data, copy, missing pages), pure styling, the Spec 47 measuring route and its calibration
-findings (another session owns those). Also excluded:
-everything already built — S1, S5, S11, S12, 15, 38, 68, 76, 87, N3/17B, N11(b), N17b, N25, N46, and
-the framework half of N45.
+CR6 (padding and margin longhands) is done, see `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
 
-**How to read the tiers.** Tier 1 stops a shopper finishing a task. Tier 2 is a feature that does not
-exist. Tier 3 is a control that exists and does nothing — these are cheap and they remove the
-"why doesn't this setting work" questions. Tier 4 is small setting additions. Within a tier, the order
-is the order I would build in.
+**How to read the tiers.** Tier 2 is a feature that does not exist. Tier 3 is a control that exists and does
+nothing. Tier 4 is small setting additions. Within a tier, the order is the order to build in.
 
 ---
 
-## Validated before dispatch (`/qc-council`, 2026-10-05)
+## Tier 2: features that do not exist yet
 
-Three Tier 1 proposals went through an empirical pre-dispatch gate. **One was falsified as written**,
-and building it as stated would have produced invalid CSS across ~160 call sites. Each row below gives
-the predicted outcome, the baseline, the validation command and the commit gate. Do not re-derive these.
-
-### N11(a) — VALIDATED. The mechanism is proven and the fix is one line.
-
-The register's wording ("the route builds the bag without loading the saved one") is crude but right,
-and an early grep wrongly cleared it because `class-cart-proxy.php` does call `wc_load_cart()`. That
-call only CONSTRUCTS `WC_Cart` and the session; it does not read the saved items. Verified against the
-**installed WooCommerce 11.1.0** on the canary, not trunk (the canary has since been upgraded to 11.1.2, so no 11.1.0 install remains on either site):
-
-- `class-wc-cart.php:663-665` — the saved items load lazily: `if ( ! did_action( 'woocommerce_load_cart_from_session' ) ) { $this->session->get_cart_from_session(); }`
-- `class-wc-cart.php:132` — `add_action( 'woocommerce_add_to_cart', array( $this, 'calculate_totals' ), 20, 0 )`
-- `add_to_cart()` reads `$this->cart_contents` directly and never triggers that load
-
-So: the new line is written into an unloaded cart; `woocommerce_add_to_cart` fires; `calculate_totals()`
-calls `is_empty()` → `get_cart()`, the FIRST such call, which runs `get_cart_from_session()`; that
-calls `set_cart_contents()` from the saved session and **replaces the in-memory contents, discarding the
-new line**; `set_session` at priority 1000 then saves the old-only bag. It fits every facet: the first
-add survives (saved bag empty, the `! empty()` guard skips the replacement), the second is dropped, the
-success flag is still `true` because `add_to_cart()` returned a key, and WooCommerce's own route is
-immune because `CartController::load_cart()` calls `get_cart()` BEFORE adding.
-
-- **Fix shape:** load the saved bag before adding — call `WC()->cart->get_cart()` in
-  `includes/class-cart-proxy.php` before `WC()->cart->add_to_cart()`, mirroring `CartController::load_cart()`.
-- **Baseline (run it first, as a guest in a private window):** add product A, read `/wp-json/wc/store/v1/cart`, add a different product B, read again. Expect `[A]` both times.
-- **Predicted post-fix:** the second read returns `[A, B]`.
-- **Negative control that must come back negative:** a **stock-managed** product B should NOT show the
-  bug even before the fix, because `add_to_cart()` calls `get_cart_item_quantities()` → `get_cart()`
-  (`class-wc-cart.php:883`), which loads the saved bag first. If a stock-managed B is also dropped, this
-  mechanism is refuted — stop and re-diagnose.
-- **Commit gate:** do not commit unless the bag holds both products after two sequential adds, AND a
-  third add of a product at the global cap still returns 429 (proving the other rate limit survives).
-
-> **MEASURED 2026-10-06 on BOTH sites, and it does NOT reproduce on either. The condition it was diagnosed
-> under no longer exists anywhere, so it cannot now be settled by measurement.**
-> Two sequential adds through the PROXY itself (`POST /wp-json/sgs/v1/cart/add-item`, all four calls 200) as a
-> GUEST in a fresh browser context, using NON-stock-managed variations - the condition this row says should
-> expose the bug, since its own negative control notes a stock-managed B would be immune. Both bags held both
-> lines: eye-care-test `["EA4033", "Chelsea"]`, canary `["QA Photo Swap Target", "Classic Lactation Cookies"]`.
-> Two sites, two independent datasets, same result.
-> **The catch:** this row's mechanism was derived against the installed **WooCommerce 11.1.0**, and Bean
-> upgraded the canary on 2026-10-06, so BOTH sites now run **11.1.2** (confirmed by `wp plugin get woocommerce`
-> on each). There is no longer an 11.1.0 install to reproduce the original analysis on. A non-reproduction on
-> 11.1.2 is evidence about 11.1.2 only; it does not prove the 11.1.0 mechanism wrong.
-> **Disposition - needs Bean, and it is small.** The user-visible defect is absent on every site we run, so
-> there is nothing to fix here today. The one-line fix shape stays on record because it would still matter for
-> a client pinned to 11.1.0 or earlier. It is deliberately NOT built: with the behaviour working on both sites
-> the cause can no longer be proven, and this project does not commit a cause-specific fix for an unproven
-> cause (`~/.claude/rules/prove-the-cause-before-fix.md`).
-> Two earlier attempts of mine were VACUOUS and are recorded so they are not repeated: the first used a
-> simple product as B, which adds through WooCommerce's own classic form and never touches the proxy; the
-> second produced no cart POST at all. Only an add that POSTs to `/sgs/v1/cart/add-item` tests this row.
-
-### 52 — VALIDATED mechanism, TWO causes, and a cause-agnostic fix
-
-The register names one cause; the code holds two, and both are live:
-
-1. `brand-strip/view.js::init()` waits on every image with `Promise.all(pending)` and **no timeout**,
-   resolving only on `load`/`error`. The logos are lazy: `includes/helpers-media.php:29` sets
-   `'loading' => 'lazy'` and passes it to `wp_get_attachment_image()` at line 37. Below the fold, nothing
-   fetches, so `measure()` never runs.
-2. `view.js::measure()` returns early when `setWidth === 0` with **no retry**, so a single zero reading
-   (a collapsed or hidden ancestor) stops the strip permanently.
-
-Cause 1 alone predicts "starts late, once scrolled into view", not "never". So **measure before fixing**:
-
-- **Baseline:** load the canary page carrying the strip WITHOUT scrolling, read whether the animation is
-  running and whether `measure()` ran; then scroll the strip into view and read again. Two readings
-  separate "never" from "late" and tell you which cause is live.
-- **Predicted post-fix:** the strip animates without the viewer having to scroll to it.
-- **Fix shape (cause-agnostic, so it is safe even if the baseline is ambiguous):** give the image wait a
-  timeout fallback, and make `measure()` retry instead of bailing permanently at zero width (a
-  `ResizeObserver` or a bounded retry). Permitted without a single proven cause because it helps
-  whichever of the two is live (`~/.claude/rules/prove-the-cause-before-fix.md`).
-- **Commit gate:** do not commit unless the strip animates on first paint with the strip off-screen, AND
-  still animates when the images are warm in cache (the path where `img.complete` is already true).
-
-### CR6 — **FALSIFIED as written. Do not build the fix in the backlog's words.**
-
-The diagnosis is confirmed (`helpers-box.php::sgs_box_object_shorthand` lines 184-187 fill unset sides
-with `0`). **The fix shape was wrong**, and the blast radius is measured: **182 call sites across 57
-files**.
-
-- **157 call sites** interpolate the value after the property name — `"padding:" . $v`. A longhand
-  return would emit `padding:padding-top:12px`, invalid CSS the browser drops entirely. The helper has
-  **no test coverage at all**.
-- **Sites that stored the shorthand in one CSS custom property** (read as `padding: var(--x)`) now print one property
-  per set side or corner (the media atoms in CR6 P2-c, the six holdouts in P2-b); the four border widths stay
-  zero-filled by design.
-- **A JS consumer encodes the zero-fill deliberately**: `scripts/computed-route/lib/resolve.mjs::seedSides`,
-  with a test named **"MUST FAIL TO ZERO"** asserting the zero-fill. ✅ **Landed with the helper change
-  (2026-10-07):** `seedSides` now seeds unset sides only where a box still zero-fills.
-- **Four sibling helpers shared the identical defect.** ✅ **Fixed 2026-10-07 (CR6 P2-a/P2-c, `1b4b3f6ad`):**
-  every corner site prints through `sgs_corner_object_longhands`, `helpers-button-style.php` no longer calls
-  `sgs_serialise_box_corners` (P2-b moved the last caller, the grid-item radius, to per-corner properties), and both
-  media atoms emit one custom property per side or corner.
-- **A precedent exists, so this is reuse not invention:** `includes/class-sgs-container-wrapper.php`
-  ~2711-2736 and ~2856-2928 already emit per-side longhands for set sides only, and
-  `includes/helpers-responsive.php::sgs_responsive_side_order()` gives the canonical side order.
-- **One behavioural decision is owed before any block migrates:** today a mobile tier setting one side
-  resets the others, so it wipes a tablet tier's values. Longhands would let them inherit. That is
-  arguably better, but it is a silent change for any block relying on the reset.
-
-**Validated shape:** a NEW sibling function returning a declaration list (or an array keyed by
-property), with the old function retained for the `var()` consumers until they get per-side variables, so
-the 157 sites migrate deliberately rather than all at once.
-
-**Commit gate:** do not commit until the new function has a standalone test with a negative control, the
-old function is byte-identical, and `scripts/computed-route/` has been coordinated with its owning
-session.
-
-**Built:** CR6 phase 1 shipped and is verified live (`7851261e5`). The validated shape in this section is the
-design it follows: padding and margin print only the sides a client set, the border-width helper and the `var()`
-holdouts keep the zero-fill, and the route's half (`scripts/computed-route/lib/resolve.mjs::seedSides`) landed with
-it. Phase 2 is in `plans/2026-10-07-cr6-box-longhand-migration.md`: corner radius, the media atoms and the
-google-reviews copy are done; the `var()` holdouts and the shared border function are open. Swapping the existing helper's return
-type is never the shape, because 157 sites interpolate after the property name and the `var()` consumers cannot
-take a longhand at all.
-
-## Found by the QC passes (2026-10-06 and 2026-10-07)
-
-Full pass with evidence: `.claude/reports/2026-10-06-qc-eye-care-tier1/README.md`.
-15 of 17 adversarial scenarios passed. One failure was this session's own defect and is fixed
-(`82f54f351`). These two are **pre-existing**, proven so by diff, and are new items:
-
-| Ref | What a user (or an abuser) hits | What to build | Tier |
-|---|---|---|---|
-| **Q1** | **A single guest request can put 9,999 units in the basket** (GBP 94,990.50, measured live). There is no upper bound at all on a product with stock tracking off, which is every canary product and any client product not tracking stock | `class-cart-proxy.php::Cart_Proxy::handle` sets `$stock_qty = PHP_INT_MAX` for unmanaged stock, which skips the clamp branch, and `class-cart-limits.php::enforce_add_to_cart_limits` returns early for unmanaged stock. Two guards both opt out. **Researched 2026-10-06, full finding in `~/.claude/memory/research/2026-10-06-woocommerce-maximum-quantity-cap.md`:** WooCommerce core has NO maximum-quantity setting — only `_sold_individually` (forces 1) and stock as an implicit ceiling. The root cause is in core, not in SGS: verified in the INSTALLED 11.1.0, `abstract-wc-product.php:2143` has `get_max_purchase_quantity()` return **-1, meaning unlimited**, whenever stock is unmanaged or backorders are allowed, so every stock-off product in WooCommerce is uncapped and SGS inherited it. The canonical hook is `woocommerce_quantity_input_max`, which the widget, the classic cart and the Store API's `QuantityLimits` all derive from; `woocommerce_add_to_cart_validation` does fire on the Store API path (`StoreApi/Utilities/CartController.php:335`) but **not** inside `WC_Cart::add_to_cart()`, so our own proxy must clamp for itself. ⚠️ `woocommerce_store_api_cart_item_quantity_validation` is 11.2-only and **absent on 11.1.0** — do not design around it. Build shape: filter `woocommerce_quantity_input_max` as the single source of truth, have the proxy and cart-limits read `get_max_purchase_quantity()` instead of their own stock maths, and treat core's `-1` as ‘apply the fallback cap’. Setting home: core offers none, the paid Min/Max extension is ~GBP 38/year PER SITE (poor for a framework shipped to many clients, and reviews report mini-cart and wishlist breakage), so a field on Product data → Inventory where the owner already looks, plus a store-wide fallback. **Suggested default 10 per line — judgement, not sourced; Bean's call.** Also reconsider `floor(stock * 0.3)` when building: it makes the cap move as stock moves. And note quantity caps are a stock/order-sanity control, NOT a fraud control. **Decided 2026-10-06 (Bean), on the research: no custom maximum for items with no limit.** WooCommerce's own position is that an unmanaged-stock product is unlimited (`-1`), which is a deliberate statement that the shop can always supply more, and SGS will not override it with an invented commercial cap. So the per-product field and the store-wide fallback are NOT being built. **Residual, recorded not actioned:** a single guest request can therefore still create a 9,999-unit line (GBP 94,990.50 measured live). That is an order-sanity and typo exposure rather than a stock one, and the cheap version if it is ever wanted is a high sanity ceiling in `class-cart-proxy.php` (a few hundred, not a commercial limit) that only stops a fat finger or a bot, leaving genuine bulk orders alone. The separate rate limit on that route is unaffected and still fires | closed — decided, not building |
-
-Both are fix-shape proposals, so per `/qc`'s own rule they go through `/qc-council` before any
-implementer is dispatched.
-
-Found 2026-10-07 while closing the walker-blind rows (both pre-existing, neither built):
-
-| Ref | What is wrong | What to do first | Tier |
-|---|---|---|---|
-| **Q3** | The standard hero's "Zoom background on hover" probably paints nothing. `includes/container-bg-hover-zoom.php::sgs_container_bg_hover_zoom_css` targets the wrapper's own `.sgs-container__image-bg` or `::before`, but the standard hero paints a private `<img class="sgs-hero__bg-img">` and nulls its background attributes before the wrapper. The classifier regeneration in faf517bbe also dropped `sgs/hero::bgHoverZoomScale` (css_property transform), the only removal. **Hypothesis, not proven.** | **DONE 2026-10-07 (9256e97a8, live on eye-care-test 3e54d6f08).** Cause proven first on a temporary canary page: hovering left .sgs-hero__bg-img at scale none. The hero now emits the shared zoom rule at its own <img> with the individual scale property. Live: a temporary eye-care-test hero read scale none at rest, 1.2 on hover (setting 120); page deleted. | 3 |
-| **Q4** | `plugins/sgs-blocks/tests/php/run-u5-motion-standalone.php` fails 1 of 61: "the bar scrim fades with the panels", which reads `nav-bar-menu/render.php` (unchanged this session) | **DONE 2026-10-07 (7e2e0703e).** The render change was deliberate (U-18 scrim-fade control, b769e818b); the test drifted. Assertion now reads the scrim-fade fallback: 61/61. | 4 |
-| **Q5** | The bag's add-item request names each attribute by its display LABEL (`product-card/view.js` posts `axis.label`; the buybox posts "Colour" / "Size"), and `includes/class-cart-proxy.php` maps labels back to taxonomies. Two attributes sharing a label broke every Eye Care frame add (fixed by a candidate fallback, 7cb60d4f4); two variation axes sharing one label would still be rejected. Measured 0 of 16 live variable products today, so latent | **DONE 2026-10-07 (f71ce7ca0, live 3e54d6f08).** Every sender posts the taxonomy (the buybox runs the product card's addToCart; choice-flow already did); the proxy resolves slug forms only and the label fallback is gone. Live EA4033 add: 200, body [{attribute:pa_colour},{attribute:pa_frame-size,value:56-17-140}]. | 3 |
-| **Q6** | Eye Care's Organization schema carries no street address: live JSON-LD is `"address":{"@type":"PostalAddress","addressCountry":"GB"}`. `includes/class-org-website-schema.php` uses the WooCommerce store address first, and `build_address()` returns a value as soon as `woocommerce_default_country` is set, so the Site Info address is never read; even if it were, `parse_multiline_address` cannot split a 'Birmingham B8 2HQ' line (it wants a postcode-only line). No LocalBusiness upgrade either. Pre-existing | **DONE 2026-10-07 (be3ed478e, live 3e54d6f08).** build_address() needs a street or city, and the parser splits "Birmingham B8 2HQ". Live JSON-LD: streetAddress 644 Washwood Heath Rd, addressLocality Birmingham, postalCode B8 2HQ, addressCountry GB; the node is now LocalBusiness. | 2 |
-| **Q7** | The Shield's one-size term `99-0-130` shows '99 · 0 · 130' on its product page: placeholder seed data with a 0 bridge | **DONE 2026-10-07 (f5aef9f07).** Real figures from jpopticians (BB0095S is 53-19-135); the live term was renamed in place, variations kept. Live product page reads "53 · 19 · 135". | 4 |
-| **Q8** | A trust-bar loaded inside its marquee range at a width where every item fits never starts the marquee (or drops) when narrowed further within the range: `trust-bar/view.js::measure` only re-runs on the breakpoint `matchMedia` change, and there is no ResizeObserver. Latent; not a regression | **DONE 2026-10-07 (579dd987a, live 3e54d6f08).** width-watch.js re-measures on any wrapper width change in range. Live: loaded at 767px (fits, static), narrowed to 700px (scrolls, 2 clones), widened to 767px (static again). | 4 |
-
-Found 2026-10-07 while building N36S and judging the register (none built):
-
-| Ref | What is wrong | What to do first | Tier |
-|---|---|---|---|
-| **Q9** | **Closed, not a gap (2026-10-07).** The draft's "This pair, measured" rows (name, value, description) are already built from the responsive grid settings: each row is an outer grid of `212px 1fr` that becomes `1fr` on mobile, holding an inner grid of `120px 74px` that becomes `1fr auto` on mobile (`sites/eye-care-ward-end/build/single-product.tree.json`, the Sizing rows). The inner grid exists because name and value must stay on one line together while the description drops below. A per-child span-all-columns setting would only remove that wrapper | Nothing to build. Revisit only if a layout needs one child to span the columns of a grid whose other children cannot be grouped | closed |
-| **Q10** | A bound text field with no value renders nothing, so a row whose value is missing still shows its label: the Sizing table's Lens height row on the 5 frames jpopticians does not carry (Prada PR 17WS, Versace VE4361, Ferrari FZ6001, Police SPL872, D&G DG4268) and Carrera 1055/S (page has no measurements) | **DONE 2026-10-07 (`77c9746c1`, restyled in `100a6c41b`, live on eye-care-test d358e1026 plus the Single Product template).** The `sgs-product/field` binding takes `fallback` and `fallback_link` arguments; Eye Care's Lens height value reads "Ask us", linked to the business's WhatsApp, when a frame has no figure. Live at 375, 768 and 1440: /product/prada-symbole/'s Lens height cell is a whole-cell button reading "Ask us" (`a.sgs-field-fallback`, 74 by 44px filling its cell, 52 by 44px at 375, no underline, hover brightens `#141414` to about `#484848`, 3px accent focus ring), painted from the primary button preset in `assets/css/extensions.css`; /product/emporio-armani-ea4033/ reads "43 mm" as plain text. The client's real number, 07960 597847, is in Site Info (`wa.me/447960597847`) and no loaded page serves the old `wa.me/4479605978`; the help mega menu and mobile menu buttons read it through `linkSource: whatsapp`. **Open:** the binding's `fallback` and `fallback_link` arguments have no inspector control (they live only in the Single Product template's markup, and `src/bindings/product-field.js::getValues` returns '' so the canvas never shows "Ask us"; core Block Bindings offers no UI for source arguments beyond the field; products use WooCommerce's classic edit screen, so the template is the cell's only editor surface; found 2026-10-07). The lens flow's `stageNoteLink` is `{url,text,source}`: `source` (url, phone, email, whatsapp) resolves through `includes/helpers-link-source.php::sgs_resolve_link_source` like a button, and the Eye Care lens tree sets `whatsapp` with the typed number as the fallback; the inspector offers it through `src/shared/link-source-options.js`. Live on eye-care-test (`70072ad8c`, lens flow post 463 rebuilt from its tree, no invalid blocks): the server's own `sgs_choice_flow_stage_note_html`, given a different typed URL, returns Site Info's WhatsApp link for `whatsapp`, the typed URL for `url`, for no source (old data) and for an unknown source, and `tel:` for `phone`. On those six frames the measured diagram's own Lens height dimension is hidden (`display:none`, verified live by the D1 session); the size-picker " mm" edge is a D1 deferral below | 4 |
-| **Q11** | The product gallery's selected thumbnail sits at `scale(1.05)` and every thumbnail has a 2px border (read 1.6px) where the draft has no scale and a hairline (read 0.8px) (sweep rows on `cr-ref-product-4`, `.sgs-buybox__gallery-col > div:nth-of-type(2) > button`); in no register row | **DONE 2026-10-07 (a49e09cb6, b8b94073f, live 3e54d6f08).** The thumbnail look was hardcoded; buybox gained individual thumbnail border controls and `thumbSelectedScale`; Q12 replaced the border ones with the shared border panel (`galleryThumbBorder*`), and `thumbSelectedScale` stays. Eye Care: 1px, border, text, 100. Live: hairline border (0.8px at 125% scaling, as the draft reads), #141414 selected, no scale. | 3 |
-| **Q12** | The gallery thumbnails were 64px square where the draft's grid (`repeat(4,1fr)`, 2px gap, square cells, the strip 2px under the main image) makes them 78.5px at 375 and 179.74px at 1440. The strip also clipped the selected thumbnail's scale lift and the focus ring on three sides and scrolled vertically by the lift, and the thumbnails carried four bespoke border controls instead of the shared border panel | **DONE 2026-10-07 (`2efd80d0f`, `f270a965a`, `fc475a262`, `f1527a858`, `a3800aa67`; live on eye-care-test d358e1026 plus the Single Product template).** Cause proven live: `overflow-x:auto` forces `overflow-y:auto` and the strip had no padding. sgs/buybox gains `thumbsPerRow` (a per-device tier object; 0 keeps the fixed 64px rail), `thumbGap` and `thumbStripOffset`, and the thumbnails use `SgsBorderControl` through `galleryThumbBorderWidth/Style/Colour/ColourHover/ColourCurrent/Radius` (the four bespoke controls and a manual pixel size were removed; columns drive the size, as WooCommerce core and Shopify Dawn do). `sgs_border_states_css` gains an optional `current_aria` key. Eye Care: 4/4/4 columns, 2px gap, 2px strip offset, 1px solid, square corners. Live at 375, 768 and 1440: 78.5px, 160.7px and 179.74px thumbnails, 2px gap, square, no scrollbar, selected border `#141414`. At 768 the draft's thumbnails are 176.7px because its gallery column is 712.8px against our 648.8px (the column's side padding, not the strip). A Hover colour on the selected thumbnail stays painted while it keeps focus after a click (the shared helper's `:focus-within` rule); Eye Care sets none. **Editor pass done 2026-10-07 (eye-care-test, marker d358e1026, Single Product template 423, nothing saved):** the Gallery thumbnails panel (Settings tab) holds per-device Thumbnails per row, Thumbnail gap, Space above thumbnails, the shared border panel (width, style, Normal/Hover/Selected colour, radius) and the selected scale; every input has an accessible name (`<label for>`). Typed in the inspector, gap 10, offset 20 and desktop 3 per row wrote the attribute and the canvas followed (10px, 20px, three 212px columns). Per device 5/3/2 painted 5, 3 and 2 columns at Desktop, Tablet and Mobile preview; desktop 4 alone was inherited by tablet and mobile; 0 gave the fixed 64px scrolling rail. Border 3px dashed accent with an 8px radius, Selected accent (#9C8B78) and Hover border (#E6E1DA) all painted on the canvas. On load the canvas matched the front end (four columns, 2px gap and offset, hairline, selected #141414). **Safari fallback verified** in Playwright WebKit, which lacks `overflow-clip-margin` (`CSS.supports` false), on /product/gucci-oversized-cat-eye/ (the only frame with gallery images; Prada Symbole has one image, so its strip is hidden): the padded scrolling rail's negative margin cancels its padding, so the thumbnails are 82.25, 164.5 and 181.92px at 375, 768 and 1440 (Chromium's exact widths), 2px above the strip, no vertical or horizontal scroll, the selected thumbnail's 2px focus ring inside the clip box, no page side-scroll | 4 |
-
-## D1 measured-diagram block (parallel session, 2026-10-07)
-
-Decision D1 (register): a general "measured diagram" block. Plan and current state:
-`plans/archive/2026-10-07-measured-diagram-block.md`, which this section summarises.
-
-- **Built and on origin/main:**
-  - `sgs/measured-diagram` + `sgs/diagram-dimension` (28e8ef1db, gate fixes fa98de877 and 9422a8ad8), reseeded (4ae959e16);
-  - bound product values that follow the size picker (203213357, live on eye-care-test since f89b016f9: the table reads 62/14/54/140 after picking 62-14-140);
-  - the Wave 0 shape fixes (3042900e6);
-  - the walker and route reads for diagrams (28f968250, 345d8982c).
-- **Eye Care:**
-  - the drawings are uploaded (attachments 1293, 1294);
-  - the diagram card is in `single-product.tree.json` above the table, bound to `meta._sgs_frame_eye/bridge/height/temple`, from geometry measured off the draft (`build/insert_sizing_diagram.py`, ed5af2458);
-  - the colours are in the snapshot's `measuredDiagramPresets`.
-- **Live and verified 2026-10-07:**
-  - canary page 4971: label anchors, numbered phone layout, no reflow overflow, axe clean, and a non-product binding (`sgs/site-info`);
-  - eye-care-test: the Ray-Ban Sizing tab reads 14/58/50/135 and 14/62/54/140 after picking 62-14-140; axe is clean at 1440 and 375; the fade is off under reduced motion (on without it).
-- **Deferred, each with its trigger** (moved here from the archived plan's §G):
-  - An angle `kind` for `sgs/diagram-dimension` (an arc plus degrees). Trigger: the first client needing angles.
-  - A conditional-visibility rule for product category or field, so one template can hold one diagram per product shape. Trigger: the first shop selling two product shapes.
-  - Number formatting (`decimals`, units) and a shopper mm/inch toggle. Trigger: the first non-mm client.
-  - Stock text in the `sgs-variation-change` detail. Trigger: a bound stock value that must follow the size.
-  - Mixed per-size values on a plain bound text: switching to a size with no value hides the value but leaves the " mm" after-text showing. Fix by wrapping before/after inside the span when the value can vary. Trigger: the first product whose sizes disagree on having a value (the diagram itself is unaffected).
-  - Skip a diagram dimension on the server when no size of the product has its value. Today `includes/helpers-measured-diagram.php::sgs_diagram_dimension_empty_marker` prints a hidden marker whenever the key can vary, so the six no-lens-height frames carry a `display:none` dimension (correct on screen and for screen readers, but dead markup). Fix by checking that some variation has a non-empty value before printing it. Trigger: the next change to that helper.
-  - Consolidating the shared screen-reader-only class (4 duplicate `.sgs-sr-only` definitions). Trigger: the next block that needs one.
-
-## Open items with no other home
-
-Open items with no other home. Each names its evidence; the register stays the source of truth for fixes.
-
-| Ref | What is open | Evidence and what to do first | Tier |
-|---|---|---|---|
-| **P0-4** | The wiring gate's L5 tracer misses a value that passes through a normalising variable and then a ternary | `sgs/google-reviews::scrollbarStyle`, still listed in `wiring-fingerprint-baseline.json`. Extend the tracer to follow the variable, then clear the baseline entry | 4 |
-| **P0-5** | 34 structural borders have no control: post-grid card, pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels | Add a border control per block (every customisable property needs an inspector control) | 3 |
-| **P0-7** | The gradient regex is duplicated in `src/utils/tokens.js` and `surface-tone.js`, because `surface-tone.js` cannot import it without a circular import with background-preview | Move the regex to a leaf module both import | 4 |
-| **P0-8** | Unread: does the container load the svg-bg and shape-divider CSS on a page with a hero but no container? | One live read on such a page | 4 |
-| **N25** | Register-proven repairs, measurement limit 3: never reproduced; the invariant holds | Nothing to build unless it reproduces | 4 |
-| **148** | The checkout sections' CSS fade-up stays a CSS-tier fix | Fix in the stylesheet, not through a setting | 3 |
-| **sgs/hero maxWidth** | A real framework gap: `section.sgs-hero{max-width:none}` beats the wrapper's uid rule (`353b9b4ed`, `HERO-DEAD-SETTINGS.md`) | Never remove the `max-width:none` (D725); give maxWidth a path that wins on the hero | 3 |
-| **Tier background, no base image** | A tier background with no base image may paint nothing (candidate live gap, `HERO-DEAD-SETTINGS.md`) | `class-sgs-container-wrapper.php`'s tier rule against the `::before` box guarded by `$has_bg_image`. Proof: an instance with `backgroundImageTablet` set and `backgroundImage` empty, then read `getComputedStyle(root,'::before')` `content` and `background-image` at 768 | 3 |
-| **sgs/hero gridTemplateColumns** | The live path is still undetermined (`HERO-DEAD-SETTINGS.md`) | Find the rule that writes it before deciding it is dead | 4 |
-| **Spacing rows (Session C2)** | Cause 1: `sgs/container` margin against core `is-layout-constrained` (the class-list read is not done). Cause 2: `sgs/site-footer::margin-top`, the cause is refuted and no replacement is proven | `reports/2026-10-06-session-c2/FACT-CHECK-RESULTS.md`. Read the class list, then prove the cause | 3 |
-
-## Tier 1 — a shopper cannot finish the job (build these first)
-
-> **Built and verified on the sandybrown canary, 2026-10-05** (`65573118c`, plus `c06f71ea6` for the
-> tabs correction): **N11(a)**, **52**, **75/82/158** and **91**. Each one's register row carries the
-> commit hash, what was measured and what was not. **CR6** shipped as phase 1 on 2026-10-07 (see its
-> entry above for the shape it followed); phase 2 is in its own plan.
->
-> Three findings from building them that change what the rows above say:
->
-> - **52's cause was neither of the two the gate listed.** The strip's logos are outside the viewport
->   **horizontally** - one set is 2784px wide inside a 1440px `overflow: hidden` strip - so a lazy
->   image there is never fetched and no amount of scrolling reveals it. That is why the symptom is
->   never rather than late. The zero-width cause was measured and is NOT live (`setWidth` was 2784).
->   The cited line was wrong too: the strip uses `sgs_render_media()`, not `sgs_responsive_image()`.
-> - **N11(a)'s stock-managed negative control cannot be run on the canary at all.** Every canary
->   product has `stock = NULL`, and `class-cart-limits.php::enforce_add_to_cart_limits` returns early
->   for unmanaged stock, so no canary product can ever reach the global cap and the commit gate's 429
->   is unreachable there. Rate limiting was proven intact by a different route instead - see the
->   register row. A cheaper, read-only control replaced it: A then A again survives (that path already
->   called `get_cart()`), while A then a different B did not.
-> - **Compensating a changed border width with padding does not work**, which cost a second deploy.
->   Browsers snap a border to whole device pixels while padding keeps its full value, so the two never
->   cancel. Keep the border width constant and change only its colour, as the draft does.
-
-
-| Ref | What a user hits | What to build | Prove first? |
-|---|---|---|---|
-| **N11(a)** | **A second, different product never reaches the bag.** Says "added", then the line is dropped when the bag already holds something. This is the single worst item in the register | The register's leading theory: the shop's add-to-bag route builds the bag without loading the saved one. Load the saved bag before adding | **Yes.** Symptom is proven live, the mechanism is not. Test on the canary: add A, add B, read the bag |
-| **75, 82, 158** | **Product gallery thumbnails and colour-swatch photos do not show, although the photos are set up.** Your data is right and the framework ignores it | Three parts: (1) the gallery reads the variation's photo **plus** WooCommerce's own product gallery, without duplicates — today it reads an SGS-only field and never WooCommerce's; (2) turn on swatch photos; (3) any variation with its own photo shows it. Today a photo equal to the main image is skipped, which is why Ivory stays flat | No — proven live |
-| **91** | A product with stock tracking off shows no availability at all in the Details tab | Fall back to "In stock" / "Out of stock" when stock is not tracked | No |
-| **52** | The brand logo strip never starts scrolling | Thought to be waiting on off-screen images before starting | **Yes.** Read the live page first |
-| **CR6** | **Setting one side of a padding or margin box silently zeroes the other three**, wiping the block's own default. The About WhatsApp button lost its 24px sides when only the top was set | `includes/helpers-box.php::sgs_box_object_shorthand` prints `0` for every unset side. It reaches **every block that uses the helper**, so this is the widest-blast-radius bug in the register | No — proven live. **FIXED and verified live 2026-10-07** (`7851261e5`; box-longhands live checks 18/18 and 30/30): padding and margin print only the sides a client set, across 41 blocks. Phase 2 is in `plans/2026-10-07-cr6-box-longhand-migration.md` |
-
-**Why CR6 is in Tier 1 despite looking like a styling bug:** it is not a value being wrong, it is a
-control destroying three values the operator never touched. Every client hits it, on any block, the
-first time they set one side of a box.
-
----
-
-## Tier 2 — features that do not exist yet
-
-Each is already decided in the register. Grouped so one sitting can close a theme.
-
-### The shop and bag journey
-
-> **The five recommended items are BUILT and deployed to the canary (2026-10-06):** 18 (`c8c2c4162`, closing 93),
-> 20+23 (`e4735072d` + `e7a1ebfa7`), 59/61 (`5a9e28ee5`), S10 (`80b9deaa4`) and S9 (`2b4122c77`). Each register
-> row carries its hash, the readings taken at 375/768/1440 with their negative controls, and what was explicitly
-> NOT measured. **Nothing in this group is open any more (2026-10-06):** both S10 defects are fixed (`6cb273a18`
-> for the heart and the swatches, which the same cause hid; `e62f45952` for the tab stop, where Bean approved
-> rebuilding the stretched-link pattern so the block's own visible link owns the surface), the
-> `Product_Manifest` "divergence" turned out to be two different 48-variation products with near-identical names
-> and the photo swap is verified on a realistic fixture, and 20+23 is verified on eye-care-test with the client's
-> wording, a real order and a foreign-row negative control. **S8, 17 and 64 are done (2026-10-07, see their rows) and 65B below is untouched**; it
-> is what remains of Tier 2's shop group. Two register rows were also wrong to call their
-> work new: S10's stretched link already existed as the `blockLink` extension and S9's brand-logo lookup already
-> existed in `brand-strip`, so both became reuse plus adaptation.
-
-| Ref | The feature | Notes |
-|---|---|---|
-| **18** | **"Added to bag" toast.** One shared toast: polite screen-reader announcement, a "View bag" action, closes after 5s, pauses on hover or focus, respects reduced motion. Errors use the same toast in error colours and stay until closed. Replaces the red inline notice and the "Added to your basket." strip | Check first whether `sgs/notice-banner` can be the shell. Also closes **93** |
-| **20 + 23** | **One server-built bag line summary**, used by the bag, cart, checkout and emails alike. Frame only: "Frame only · Size: M · Colour: Gold". With lenses: two lines. Drops "Your prescription", "What they're for", "Options:", the lens thickness number and the lens width shown as the size | The framework builds it from labels; the **wording lives in Eye Care's lens pop-up layout file**, so no optician words end up in framework code. Also: "Add my prescription" hides once that frame has lenses |
-| **59, 61** | **Card colour swatches become real buttons.** Today they cannot be focused or clicked. A swatch changes only its own card's photo, and clicking the card then opens the product with that colour already chosen | Baymard-standard behaviour, and an accessibility fix as much as a feature |
-| **S10** (N26, N2A) | **One shared "stretched link" piece.** The main link covers the whole card or logo row, while buttons inside it (wishlist, swatches) sit above and keep working | Used by product cards and the header logo. This is the piece 59/61 needs to not fight the card link **N26 DONE 2026-10-06 (`3db77f090`)** on product-card via a new `supports.sgs.blockLinkAlways` flag, which makes the whole-card link permanent (Bean: not switchable off); 99% clickable live. N2A still to verify. |
-| **S9** (N10, N27-brand, N33A) | **Brand logos instead of typed brand names.** One shared lookup prints the brand logo with the brand name as its text alternative, on product cards, the product page top and bag lines, falling back to the name when a brand has no logo | All 40 brands already have a logo saved. Pairs with **D8**: the logo above the product name, linking to the brand page |
-| **S8** (N9, N34) | **One switch hides ".00"** on whole-pound prices across the product page, cards, bag, lens pop-up and the shop's price text. Emails and admin keep pennies | Checkout total lines keep pennies per D4 **DONE 2026-10-07** (111bcd98b, 473b42694): `includes/price-trim-zeros.php`; live proof on register row S8. |
-| **17** | The bag count pop becomes **off / on change / on load and change** (today just on/off), and takes the draft's shape | Check it plays at 0. **DONE, verified live 2026-10-07 at `0cc773b19`** (register row 17) |
-| **65B** | **The shop goes to a single column below 400px.** Today its "narrow layout: grid" floors each column at 50%, so it can never reach one column | Also fixes 65A and 65C as a side effect |
-| **64** | **Pin the filter drawer's top bar**, like the bottom one already is | **DONE, verified live 2026-10-07 at `0cc773b19`** (register row 64) |
-
-### The lens pop-up
+### The shop
 
 | Ref | The feature |
 |---|---|
-| **N37** | **"Advance on pick, keep Continue" mode.** Picking an option moves to the next step (except the last); Back then Continue returns without re-picking; each step change is announced to screen readers **DONE 2026-10-07** (111bcd98b): `advanceMode: pick` + step announcer; live proof on register row N37. |
-| **N38** | **"Skip adds to bag".** "Skip the lenses" adds the frame straight to the bag using the existing add-to-bag function, instead of opening an extra step **DONE 2026-10-07** (111bcd98b): `skipAddsToBag`; `lens-skip-to-bag.mjs` PASS. |
+| **65B** | **The shop goes to a single column below 400px.** Its "narrow layout: grid" floors each column at 50%, so it can never reach one column. Also fixes 65A and 65C |
 
 ### Menus, header and drawer
 
 | Ref | The feature |
 |---|---|
-| **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown already renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern, the button discreet and still 44px. Then add the page links to Sunglasses, Lenses and Help (Brands stays button-only) |
-| **N5** | **New mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
-| **N4** | **Top bar becomes a moving strip when its items no longer fit.** Below 768 the bar scrolls on a 30s loop; at 768 and above, items that do not fit are dropped. The scroll settings already exist; the repair is that turning scrolling on currently switches dropping off at every width. Pauses while hovered (mouse), pressed (touch) and keyboard-focused; the visible pause button is an opt-in setting (`autoScrollPauseButton`, off by default). **DONE 2026-10-07** (111bcd98b): drop and scroll coexist. **Revised 2026-10-08** (175cbc29f, a0527daca): the marquee copies now animate and carry `--sgs-scroll-distance` so the loop has no gap; the button defaults off and the Eye Care header tree sets it false; live proof on register row N4. |
-| **14** | **New drawer setting: "stagger items inside groups".** CSS only, replays on every open. Draft movement: rise 18px, 0.5s ease **DONE 2026-10-07** (111bcd98b `staggerInsideGroups`; 077f7dbec moves the stagger CSS into `nav-drawer/style.css`, because a drawer with no menu block never loaded it): live proof on register row 14. |
-| **N7** | Swap the drawer's three hand-styled social buttons for the same `sgs/social-icons` block the footer uses, with a **new "fill the row" option** to keep the full-width buttons |
+| **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern (button discreet, still 44px), then add page links to Sunglasses, Lenses and Help (Brands stays button-only) |
+| **N5** | **Mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
+| **N7** | Swap the drawer's three hand-styled social buttons for the `sgs/social-icons` block the footer uses, with a **"fill the row" option** to keep the full-width buttons |
 
 ### Motion on Home
 
 | Ref | The feature |
 |---|---|
-| **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the current fixed-background parallax where the photo stands still. **Off under reduced motion** |
-| **51** | **Hero "zoom out once on load" mode**, with duration and start size — a one-off 3s zoom from 108% to 100%. Two parts: the existing ken-burns effect **paints nothing at all** on the standard hero (a repair), and it is a 20s loop where the draft wants a single pass (the new mode) **DONE 2026-10-07** (111bcd98b): `bgKenBurnsMode` zoom-out-once + `bgZoomStart`; the paint repaired; live proof on register row 51. |
+| **53** | **Hero "drift" mode.** The photo moves at a set share of the scroll speed (draft 0.18), replacing the fixed-background parallax where the photo stands still. Off under reduced motion |
 
 ### Footer and site furniture
 
 | Ref | The feature |
 |---|---|
-| **39-43** | **Social icons: a brand-colour variant that colours only the glyph** — Google in its four colours, Instagram in its gradient (needs a new glyph), WhatsApp green — with the box staying white with a light border. Hover gives a border and a 1px ring in the network's colour, no scale-up. Plus a **new "networks" setting** for order. Boxes stay 44px, not the draft's 40px, to keep the touch-target rule |
-| **37** | **New `sgs/business-info` setting: address link — none / Google Business profile / directions.** The Google Business link is already in Site Info |
-| **N13** | **The floating WhatsApp button steps aside** while the footer's bottom strip is on screen, so it stops covering the bottom-right links. Extend its existing "hide near another WhatsApp button" watcher with a generic opt-in on the footer row **CLOSED 2026-10-06 — no work needed.** This already worked: `floatingHideNearInline` defaults to true and the footer holds a real `sgs/whatsapp-cta`, which the watcher matches. Measured hiding at the footer live. |
-| **135** | The contact form's narrow-width stretch becomes **switchable**, so the Send button can be full width on a phone |
-| **N24** | **The Google logo on each review card becomes a link** to that review, falling back to the listing — Google's display rules require each review to show its source with a link back. Today the per-card logo is `<img alt="" aria-hidden="true">`, correctly decorative; once it is a link it needs a real accessible name, so this is an accessibility change as well as a functional one. `showReviewLink` (a separate "Read the full review" text link, default off) does not cover it | `sgs/google-reviews` is **no longer owned by a separate track** (2026-10-05) — it is available to build. Its colours and sizes still follow Google's own interface, which is an accepted difference and never a gap **DONE 2026-10-07 (`4aa477507`):** each card logo is anchored to `reviewUrl`, falling back to `seeAllUrl`, with an `sgs-sr-only` name; 13 of 13 verified live at `0cc773b19`. |
-| **S2** | **One text-link underline mechanism.** An underline sweeps in left to right on hover and retracts right to left, in the link's own colour. **Built and live 2026-10-08** (`a04e63ebd`, `ae6b1c00a`): `utilities.css` `.sgs-hover-underline-slide` redrawn as a background line (follows wrapped links, plays back on leave), switched on for link lists and Link-style buttons by `custom.linkSweep.thickness`; the plugin's duplicate `.sgs-underline-slide` deleted; header menus use `itemBorderHoverTreatment: sweep`. Closed in the register | Covers 2, 6, 7, 32, 33, 44, 131 |
+| **39-43** | **Social icons: a brand-colour variant that colours only the glyph** (Google in four colours, Instagram in its gradient, which needs a new glyph, WhatsApp green), the box staying white with a light border. Hover gives a border and a 1px ring in the network's colour, no scale-up. Plus a **"networks" setting** for order. Boxes stay 44px |
+| **37** | **`sgs/business-info` setting: address link, none / Google Business profile / directions.** The Google Business link is already in Site Info |
+| **135** | The contact form's narrow-width stretch becomes **switchable**, so Send can be full width on a phone |
 
 ### Checkout and confirmation
 
-This is the least-started area and the one with a real unknown in it. Note the scope: Eye Care gets its
-own checkout template. Nothing here changes the checkout every other SGS client gets.
+The least-started area. Eye Care gets its own checkout template; nothing here changes the checkout other SGS
+clients get.
 
 | Ref | The feature | Notes |
 |---|---|---|
-| **154 + 149 + 150** | **Build the draft's checkout as Eye Care's own checkout template.** One job, not three. It becomes the checkout template for **this site only** and must not become the template every SGS site gets. That covers the draft's look (numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards), the "Pay now" label with the price on the right, and Eye Care's secure-payment note | **Open question to answer first: can `wp-build-page.js` build a template or template part?** If it cannot, this needs another route — WordPress does save a Site Editor edit of a part per site. **Scope separately, do not fold in:** the draft's prescription step and express-pay row need the planned plugin work |
-| **156** | **Build the confirmation screen**: tick icon, "Thank you", short message, "Back to the shop", centred. The order table is deliberately left out; the email carries the details | Wording per client |
-| **157** | The confirmation grid **collapses to one column when the shipping box is empty**, instead of leaving the billing box alone in the right half | Small |
-| **155** | **Hide WooCommerce's collapsed top summary on phones**, so the order summary appears once, below the form | Needs the selector proving first |
-| **148** | Checkout sections fade up on scroll, from tokens | Small |
+| **154 + 149 + 150** | **Build the draft's checkout as Eye Care's own checkout template** (numbered small uppercase step headings, white fields, flat summary card, 1200px column, delivery cards, "Pay now" with the price on the right, the secure-payment note). One job; this site only | **Answer first: can `wp-build-page.js` build a template or template part?** If not, WordPress saves a Site Editor edit of a part per site. The draft's prescription step and express-pay row need planned plugin work, so scope them separately |
+| **156** | **Confirmation screen**: tick icon, "Thank you", short message, "Back to the shop", centred. No order table; the email carries the details | Wording per client |
+| **157** | The confirmation grid **collapses to one column when the shipping box is empty**, instead of leaving billing alone in the right half | Small |
+| **155** | **Hide WooCommerce's collapsed top summary on phones**, so the order summary appears once, below the form | Prove the selector first |
+| **148** | Checkout sections fade up on scroll, from tokens. A CSS-tier fix in the stylesheet, not through a setting | Small |
 
-### A new block
+### Measured diagram (D1) deferrals
 
-| Ref | The feature |
-|---|---|
-| **D1** | **A general "measured diagram" block**: a drawing uploaded as media, labels bound to product measurements, following the size picker. Built 2026-10-07; live rollout in progress, see the "D1 measured-diagram block" section above |
+The block is built and live (plan `plans/archive/2026-10-07-measured-diagram-block.md`). Deferred, each with its trigger:
+
+- An angle `kind` for `sgs/diagram-dimension` (an arc plus degrees). Trigger: the first client needing angles.
+- A conditional-visibility rule for product category or field, so one template holds one diagram per product shape. Trigger: the first shop selling two product shapes.
+- Number formatting (`decimals`, units) and a shopper mm/inch toggle. Trigger: the first non-mm client.
+- Stock text in the `sgs-variation-change` detail. Trigger: a bound stock value that must follow the size.
+- Mixed per-size values on a plain bound text: switching to a size with no value hides the value but leaves the " mm" after-text. Fix by wrapping before/after inside the span when the value can vary. Trigger: the first product whose sizes disagree on having a value.
+- Skip a diagram dimension on the server when no size has its value: `includes/helpers-measured-diagram.php::sgs_diagram_dimension_empty_marker` prints a hidden marker whenever the key can vary, so the six no-lens-height frames carry a dead `display:none` dimension. Check that some variation has a non-empty value first. Trigger: the next change to that helper.
+- Consolidate the four duplicate `.sgs-sr-only` definitions. Trigger: the next block that needs one.
 
 ---
 
-## Tier 3 — controls that exist and paint nothing
-
-These are the cheap wins. Each one is a setting a client can already see and change, which does
-nothing — so each is a support question waiting to happen.
+## Tier 3: controls that exist and paint nothing
 
 | Ref | The dead control | Where |
 |---|---|---|
-| **CR12** | **The dark-mode toggle renders nothing for any current client.** `theme-toggle/render.php` returns early with no derived dark palette, and no `sites/*/theme-snapshot.json` has one. So the whole feature is inert | Decide whether to derive a dark palette per client or hide the toggle until one exists |
-| **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | A control-plumbing job |
+| **CR12** | **The dark-mode toggle renders nothing for any current client.** `theme-toggle/render.php` returns early with no derived dark palette, and no `sites/*/theme-snapshot.json` has one | Decide whether to derive a dark palette per client or hide the toggle until one exists |
+| **71** | The product block does not pass text styling through to the colour and size options, so swatch names cannot be sized or weighted | Control plumbing |
 | **CR10** | `sgs/media`'s `aspectRatio` has no `css_property` in the framework DB, so it can never be resolved or written | Small, DB-side |
 
 ---
 
-## Tier 4 — small setting additions
-
-Worth doing in one sitting together, since each is a single control plus a reader.
+## Tier 4: small setting additions
 
 | Ref | The setting |
 |---|---|
 | **67** | Tabs gain a panel padding setting (Eye Care sets 0) |
-| **73** | A new entrance setting for the gallery photo on the product block (fade in on load) **DONE 2026-10-07** (111bcd98b): `photoEntrance`; live proof on register row 73. |
 | **94** | The gallery photo joins the shared hover zoom |
 | **77** | A selected-tile border width setting (Eye Care wants 2px against 1px) |
 | **49** | A "collapsed icon size" setting on the floating WhatsApp button, so the icon stays 28px or larger once it collapses to a circle |
 | **19** | A bar fill duration setting on the free-delivery bar |
 | **117, 123, 69, 81, N29** | The size pop-up: a **padding setting**, a header bar built as a container in the pop-up's own layout file (title, divider, sticky), a **screen-edge gap token** (32px above phone, 16px on a phone), and a square transparent close button |
-| **9** | The Ferrari brand tile reads its name twice to screen readers — clear either its title or its image's text alternative |
+| **9** | The Ferrari brand tile reads its name twice to screen readers: clear either its title or its image's text alternative |
 | **152** | Confirm coupon, order note and terms can each be switched off without code (order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part). A verification task, not a build |
 
 ---
 
-## Checked and needing no build
+## Open items with no other home
 
-| Ref | The question | The answer, from the code |
-|---|---|---|
-| **D7** | Can the Google rating badge be placed on its own, without the review cards and without being a sticky/floating feature? | **Yes: `sgs/google-rating-badge`** (built 2026-10-08), a block of its own with pill, card and stacked presets and a floating position; its figures and link come from Site Info. `sgs/google-reviews` no longer has badge variants. Eye Care uses it beside the header phone and in the drawer (plan `plans/archive/2026-10-08-google-reviews-inline-header-badge.md`, register D7). |
+Each names its evidence; the register stays the source of truth for fixes.
 
-## What I would do first, and why
+| Ref | What is open | Evidence and what to do first | Tier |
+|---|---|---|---|
+| **Q10** | The product field binding's `fallback` and `fallback_link` arguments (the "Ask us" cell on frames with no lens height) have no inspector control; they live only in the Single Product template's markup, and `src/bindings/product-field.js::getValues` returns '' so the canvas never shows "Ask us". Core Block Bindings has no UI for source arguments, and products use the classic edit screen, so the template is the only editor surface | Give the arguments an editor surface | 4 |
+| **P0-4** | The wiring gate's L5 tracer misses a value that passes through a normalising variable and then a ternary | `sgs/google-reviews::scrollbarStyle`, still in `wiring-fingerprint-baseline.json`. Extend the tracer to follow the variable, then clear the baseline entry | 4 |
+| **P0-5** | 34 structural borders have no control: post-grid card, pricing plan, trustpilot card, wishlist row, product-search panel, choice-flow showcase panels | Add a border control per block | 3 |
+| **P0-7** | The gradient regex is duplicated in `src/utils/tokens.js` and `surface-tone.js`, because `surface-tone.js` cannot import it without a circular import with background-preview | Move the regex to a leaf module both import | 4 |
+| **P0-8** | Unread: does the container load the svg-bg and shape-divider CSS on a page with a hero but no container? | One live read on such a page | 4 |
+| **sgs/hero maxWidth** | `section.sgs-hero{max-width:none}` beats the wrapper's uid rule (`353b9b4ed`, `HERO-DEAD-SETTINGS.md`) | Never remove the `max-width:none` (D725); give maxWidth a path that wins on the hero | 3 |
+| **Tier background, no base image** | A tier background with no base image may paint nothing (candidate gap, `HERO-DEAD-SETTINGS.md`) | `class-sgs-container-wrapper.php`'s tier rule against the `::before` box guarded by `$has_bg_image`. Proof: an instance with `backgroundImageTablet` set and `backgroundImage` empty, then read `getComputedStyle(root,'::before')` `content` and `background-image` at 768 | 3 |
+| **sgs/hero gridTemplateColumns** | The live path is undetermined (`HERO-DEAD-SETTINGS.md`) | Find the rule that writes it before deciding it is dead | 4 |
+| **Spacing rows (Session C2)** | Cause 1: `sgs/container` margin against core `is-layout-constrained` (the class-list read is not done). Cause 2: `sgs/site-footer::margin-top`, cause refuted, no replacement proven | `reports/2026-10-06-session-c2/FACT-CHECK-RESULTS.md`. Read the class list, then prove the cause | 3 |
 
-Tier 1 is built: N11(a), 75/82/158, 52, 91 and CR6 phase 1 (the one bug every future client would hit on
-every block) are verified live.
+## Deferred: product-manifest transient is never purged
 
-If you want the biggest felt improvement for Eye Care specifically: **18, 20+23, 59/61, S10 and S9 as
-one "shop journey" sitting.** Those five together are what makes the shop feel finished rather than
-functional, and S10 is a dependency of 59/61, so they belong in the same pass.
+`includes/class-product-manifest.php` writes the transient `sgs_manifest_v8_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. It is not the cause of the imageless Eye Care shop cards (those are 12 products carrying `photo-to-come.png`).
 
-Three items need an answer before they can be built, and none of them needs you: N11(a)'s mechanism
-(test on the canary), 52's cause (read the live page), and the checkout item's template question (check
-whether `wp-build-page.js` can build a template or template part).
-
-## Effort
-
-Tier 1 is about 2 hours in total if the three investigations land where expected. Tier 2 is the real
-body of work: the shop-journey group is a session on its own, checkout another, and the rest splits
-into half-sessions by theme. Tier 3 is about an hour. Tier 4 is
-one sitting of roughly an hour for the lot.
-
-## Deferred: product-manifest transient is never purged (found 2026-10-06, untracked until now)
-
-`includes/class-product-manifest.php` writes the transient `sgs_manifest_v8_<id>_<tax-fingerprint>`, while `includes/class-cart-cache-purge.php::purge_by_product_id` and `seed-48-sku-fixture-v2.php` delete `sgs_manifest_<id>`. The purge key can never match the write key, so a product's manifest is never purged on change and expires only on TTL: an edited product can keep serving its old variations, swatches and availability. **It is NOT the cause of the imageless Eye Care shop cards** (that was investigated and withdrawn: those are 12 products carrying `photo-to-come.png`). 
-
-Fix shape: make the purge delete the versioned key, which means it needs the tax fingerprint, or delete by prefix. Prove it first with a negative control: edit a variable product's variation, confirm the shop card is stale before the fix and fresh after it.
+Fix shape: make the purge delete the versioned key, which needs the tax fingerprint, or delete by prefix. Prove it first with a negative control: edit a variable product's variation, confirm the shop card is stale before the fix and fresh after it.

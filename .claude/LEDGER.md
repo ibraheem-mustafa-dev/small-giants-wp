@@ -70,7 +70,7 @@ real, so every surface's page is rebuilt from its tree file. It writes no solver
 **The live Eye Care plans (one job each):** `plans/2026-10-02-eye-care-plan.md` (decisions, surfaces, what is owed);
 the fix register (fixes; its Sweep column re-judged on the 2026-10-07 measure-only sweep); `plans/2026-10-04-spec47-full-coverage.md`
 (Session D: route and per-surface Solve work, including the register's owed tree values); `plans/2026-10-05-eye-care-functionality-backlog.md`
-(features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2).
+(features, controls, the QC finds and the D1 measured-diagram block); `plans/archive/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2).
 **Measured state:** read the counts from `qa/triage/*.json` (all 17 surfaces), never a cached figure. The W-to-F reclassification is
 applied (`ffac809ce`, `844ee7bf2`) with every canvas citation read live (`canvas-confirm.json`), and the mega
 panels, shop and product are re-paired (2026-10-08 sweep: 1,829 open issues, hardcode 21; size-guide stale, P2-o). ⚠️ Never compare a raw triage count with an
@@ -95,7 +95,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
 - **Box alignment is logical (2026-10-07, `8671c0e64`):** icon, media, separator, nav-drawer and tabs store `start|center|end` (`stretch` kept on drawer and tabs) via `LogicalAlignControl`; gate `check:box-alignment`. Live on sandybrown, eye-care-test, indus-test (`2adf0dd06`); measured at 375/768/1440, LTR and RTL; editor pass `check-box-alignment-editor.js` passes. Media's editor canvas paints alignment on the image (`50449c17e`). **Owed:** indus-test's next deploy carries `b90def34b`, `50449c17e` and the picker/button-note colours (`afae93d66`); the front-end separator at a numeric 40% width is not yet read in LTR and RTL.
-- **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2 is live (`967bb7136`, P2-k `46d6a3994`). P2-e: 157 of 161 Eye Care zero-side boxes match the draft; the cart free-delivery bar is unmeasured (`plans/2026-10-07-cr6-box-longhand-migration.md`). Solve's report now lists issues and causes and names the winning rule (`scripts/computed-route/lib/solve-groups.mjs`); a fresh sweep is owed (Spec 47 sweep).
+- **Routing:** the 31 held rows stay NULL (deliberate). CR6 phase 2 is live (`967bb7136`, P2-k `46d6a3994`). P2-e: 157 of 161 Eye Care zero-side boxes match the draft; the cart free-delivery bar is unmeasured (`plans/archive/2026-10-07-cr6-box-longhand-migration.md`). Solve's report now lists issues and causes and names the winning rule (`scripts/computed-route/lib/solve-groups.mjs`); a fresh sweep is owed (Spec 47 sweep).
 - **Register repairs, backlog Tier 1 and Tier 2's shop-journey group** are built, verified and pushed; each register
   row carries its hash. The stretched link was rebuilt so a block's OWN visible link owns the surface. `brandUseLogo`
   ships `true` (a cross-client default).

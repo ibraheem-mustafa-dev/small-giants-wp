@@ -32,7 +32,7 @@ status: BUILD IN PROGRESS (2026-10-08)
 - Route and per-surface work (Spec 47, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`) lives in
   `plans/2026-10-04-spec47-full-coverage.md` (Session D).
 - Features and controls that change what the site can do live in `plans/2026-10-05-eye-care-functionality-backlog.md`.
-- CR6 phase 2 (box longhands) has its own plan, `plans/2026-10-07-cr6-box-longhand-migration.md`.
+- CR6 phase 2 (box longhands) has its own plan, `plans/archive/2026-10-07-cr6-box-longhand-migration.md`.
 
 **Owed:**
 - P0-6: rebuild the sandybrown pages 2742, 3405 and 3448 from their trees, then delete the 6 testimonial-slider

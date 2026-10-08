@@ -646,7 +646,7 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
      - Speed: lean walks, the draft cache and four widths at once (step 2 above).
    - **Residual:**
      - **CR6 — setting one side of a padding or margin box zeroed the other three. FIXED and verified live
-       2026-10-07** (plan `.claude/plans/2026-10-07-cr6-box-longhand-migration.md`). Padding and margin now print
+       2026-10-07** (plan `.claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md`). Padding and margin now print
        only the sides a client set (`includes/helpers-box.php::sgs_box_object_longhands`), across 41 blocks, in the
        editor canvas too (`src/utils/spacing-preview.js::tierBoxLonghands`); a mobile tier that sets one side keeps
        the tablet tier's other sides (Bean). Kept on purpose: `sgs_box_object_shorthand` stays byte-identical for
