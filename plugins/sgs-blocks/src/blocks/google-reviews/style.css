@@ -142,7 +142,7 @@
 	color: var( --sgs-gr-ink-muted );
 }
 
-/* The Google attribution (Places API policy): the official Maps logo at a fixed 18px (policy range 16-19px) and
+/* The Google attribution (Places API policy): Google's "Google" wordmark at a fixed 18px (policy range 16-19px) and
    LEADING (before the caption) unless `logoPosition` says trailing. Clear space around it: 10px left, right and
    top, 5px below. It prints on every render, so it has no settings of its own. */
 .sgs-google-reviews__attribution {

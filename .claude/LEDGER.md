@@ -54,10 +54,10 @@ Bean's-eye check.
 Draft: https://mintcream-lyrebird-224487.hostingersite.com/ (source `sites/eye-care-ward-end/Ward End Eye Care - SGS Gap
 Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `.claude/secrets/eye-care-test.env`).
 
-**Now (2026-10-07).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
+**Now (2026-10-08).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, four build rules.
-No blockers. **eye-care-test runs `70072ad8c` and the sandybrown canary `6d7ab0169`** (markers). ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
+No blockers. **eye-care-test runs `dd32a11d2` and the sandybrown canary `44e2c9d0f`** (markers); sandybrown gets `731ec6232`/`dd32a11d2` with its next deploy. ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the "Ask us" cell) and Q12 (the gallery grid) are closed live; their open edges are in their backlog rows. Q1 is decided, not building.
@@ -107,11 +107,12 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   ships `true` (a cross-client default).
 - The wiring gate blocks new gaps only (count: `scripts/wiring-fingerprint-baseline.json`).
 
-- **Session D (2026-10-08):** every register row has a `Lane` (79 open = 30 Solve + 49 Fix). **Lenses at 100%.**
+- **D7 closed live (2026-10-08):** `sgs/google-rating-badge` beside the header phone and in the drawer; header 79px.
+  Drawer Solve (`solve.mjs --surface mobile-menu --rounds 0`): 219 rows, all unresolved.
+- **Session D (2026-10-08):** every register row has a `Lane` (78 open = 29 Solve + 49 Fix). **Lenses at 100%.**
   S2 (underline sweep, `custom.linkSweep`), S3, S5's decided values: closed live. Contact: hours closed; 41 independent-
   check rows left, grouped in the plan. Route fixes: guard judges own rows (Spec 47 0.15.7), borderless border colour is
-  no row, checker reads `<br>`/text runs. **Not live anywhere:** `85f07d38a` (heading canvas font slug); HEAD's gates
-  must pass first, and eye-care-test deploys wait for session 79's header rebuild (google-reviews badge removed).
+  no row, checker reads `<br>`/text runs. `85f07d38a` (heading canvas font slug) is live on eye-care-test.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 

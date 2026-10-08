@@ -243,8 +243,9 @@ from the deployed one.
 
 Input: a surface from `surfaces.json`.
 
-**Step 0.** Add a `cr-ref-<surface>-<n>` class to every node that lacks one (`lib/tree.mjs`). `<n>` is the node's
-depth-first index; it is appended to any existing `className`. Then rebuild once. Step 0 is not one of the rounds.
+**Step 0.** Add a `cr-ref-<surface>-<n>` class to every node that lacks one (`lib/tree.mjs`). `<n>` continues past
+the surface's highest number (on an unnumbered tree, the node's depth-first index), so a node added later never
+reuses a number; it is appended to any existing `className`. Then rebuild once. Step 0 is not one of the rounds.
 
 **Each round:**
 1. Build: `node scripts/wp-build-page.js --env-file <envFile> --env-key <envKey> --tree <tree> --post-id <id>` (or

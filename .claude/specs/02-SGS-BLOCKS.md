@@ -1059,18 +1059,19 @@ Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested
 
 ### 27. Google Rating Badge (`sgs/google-rating-badge`)
 
-**Purpose:** a compact Google rating credential (G, score, stars, caption) for headers, drawers and footers, as one link to the listing. Plan: `.claude/plans/2026-10-08-google-reviews-inline-header-badge.md`.
+**Purpose:** a compact Google rating credential (G, score, stars, caption) for headers, drawers and footers, as one link to the listing. Plan: `.claude/plans/archive/2026-10-08-google-reviews-inline-header-badge.md`.
 
 **Shape:**
 - `badgeStyle`: `pill` (one line; the shared border control sets its border and radius, so a square or frameless look is a setting), `card` (two rows, accent stripe on the leading edge) and `stacked` (a centred column).
 - Figures: the block's own `rating` and `reviewCount`, then Site Info `google_rating` and `google_review_count`, then live Google data (`dataSource` `auto` | `manual` | `synced`). Nothing renders without a rating.
 - Link: `listingUrl`, then the live `googleMapsUri`, then Site Info `socials.google`; https only, otherwise the badge is a `span`.
 - `compactBelow` (default 0, off): below that viewport width the count and four stars drop, leaving G, one star and the score. It is a viewport media rule, because a shrink-to-fit flex child with `container-type` collapses to 0.
+- `hideBelow` (default 0, off) hides the badge below a viewport width, for a crowded header row where even the compact badge does not fit.
 - `fullWidth` stretches the frame across its container; `position: floating` pins it to a viewport corner.
 
 **Google's rules it follows (verified 2026-10-08):** the G or the "Google" wordmark only, never the Maps logo; the rating is "on Google", never "Google rating"; the score sits between the G and the stars, so no star touches the logo. Live API data always shows the text " on Google Maps" (the Places policy's text form), compact mode included.
 
-**Rendering:** one `<a>` with one accessible name ("Rated 4.7 out of 5 on Google from 15 reviews"), its visible parts `aria-hidden`; 44px minimum height; the theme's focus ring; hover brightens and the shadow system supplies the lift. All instance CSS is in one scoped `<style>`. The stars come from `google-reviews-stars.php::sgs_render_stars_svg`.
+**Rendering:** one `<a>` with one accessible name ("Rated 4.7 out of 5 on Google from 15 reviews"), its visible parts `aria-hidden`; `minHeight` (default 44px) sets the visible frame, and an invisible `::after` box keeps the tap target at least 44x44 even at `minHeight` 0; the theme's focus ring; hover brightens and the shadow system supplies the lift. All instance CSS is in one scoped `<style>`. The stars come from `google-reviews-stars.php::sgs_render_stars_svg`; the badge's star rules sit at three classes and define `--sgs-gr-star`/`--sgs-gr-line`, so google-reviews' stylesheet (loaded by a reviews block on the same page) cannot repaint them.
 
 **Used by:** `sgs/nav-drawer`'s top-row rating item (`chromeRating*`, rendered through `render_block()`).
 

@@ -192,7 +192,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `readTree(file)`, `writeTree(file, tree)`.
 - `walk(tree, fn)`: depth-first, `fn(node, index, parent)`.
 - `refOf(node)` → the node's ref class or null.
-- `addRefs(tree, surface)` → count added (`cr-ref-<surface>-<n>`, n = depth-first index).
+- `addRefs(tree, surface)` → count added (`cr-ref-<surface>-<n>`; n continues past the surface's highest ref, so a node added to a numbered tree never reuses a number; on an unnumbered tree it is the depth-first index).
 - `stripRefs(tree)`: removes every ref class (a final build).
 - `nodeByRef(tree, ref)` → the node.
 - `setAttr(node, write)` → `{ before, after }` (deep merges keep other tiers and sides).
