@@ -116,11 +116,6 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
    register the variant-selector attr name to the `blocks.variant_attr` DB column via
    `/sgs-update` (FR-31-20, Spec 31 §13).
 
-Border controls (`SgsBorderControl`), the lines between a list's items (`SgsSeparatorControl`), colour controls (`SgsColourPanel`,
-`supports.sgs.colourExemptions`), hover controls, the editor-canvas mirror pattern and grid-item
-qualification: `.claude/rules/block-editor-controls.md`. Colour-emission helpers, shadows, scrims
-and hover-guard build step: `.claude/rules/colour-emission.md`.
-
 ## Utility Functions
 
 ```js
@@ -187,13 +182,13 @@ A render partial names classes fully qualified (`\SGS\Blocks\X::`), never throug
 
 ## Where the rest of this file moved
 
-- Border/colour editor controls, editor-canvas mirrors, grid-item qualification:
-  `.claude/rules/block-editor-controls.md`
-- Colour-emission helpers, precedent registry, shadows, scrims, touch-safe hover:
-  `.claude/rules/colour-emission.md`
-- Backend integrations (Google Reviews, Trustpilot, Font Collection): `.claude/rules/backend-integrations.md`
-- Migration/survey script triad, tier-object taxonomy, S1–S5 doctrine: `.claude/rules/migration-scripts.md`
-- Live motion QA + canary fixture pages: `.claude/rules/motion-qa.md`
-- WooCommerce loop pinning, undeclared-attribute drop, no-deprecations reasoning:
-  `.claude/rules/block-authoring.md`
+Seven path-scoped rule files in `.claude/rules/` load when you touch their paths:
+
+- `block-authoring.md`: saved-defaults channels, no deprecations, undeclared attributes, WooCommerce loop pinning
+- `block-editor-controls.md`: border, separator, colour and alignment controls, editor-canvas mirrors, grid-item qualification
+- `colour-emission.md`: colour-emission helpers, precedent registry, shadows, scrims, touch-safe hover
+- `cloning-pipeline.md`: the Spec 31 converter's binding rules and fidelity measures
+- `migration-scripts.md`: migration/survey script triad, tier-object taxonomy, S1-S5 doctrine
+- `motion-qa.md`: live motion QA and canary fixture pages
+- `backend-integrations.md`: Google Reviews, Trustpilot, Font Collection
 - No-dead-controls (HC2): `.claude/specs/02-SGS-BLOCKS.md` § Block Customisation Standard

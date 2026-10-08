@@ -2,7 +2,7 @@
 
 SGS is a standalone WordPress block framework and AI website-builder: theme + blocks plugin (with forms) + booking, client-notes, accessibility and configurator plugins. It competes with Kadence / Spectra / GenerateBlocks and delivers client builds with Bean as QC only. Everything must work for ANY client ("a restaurant, a wedding planner AND a law firm"): client colours, copy, imagery and structure live in `sites/<client>/` only, never in the theme or plugins.
 
-**Where things live:** current status, fronts and parked work → `.claude/LEDGER.md` · specs → `.claude/specs/README.md` (the one roster) · plans → `.claude/plans/` · build/deploy/SSH detail → `.claude/dev-setup.md` · architecture → `.claude/architecture.md` · client design context → `sites/<client>/CLAUDE.md` · each plugin/theme has its own CLAUDE.md. Cloning-pipeline and block-authoring rules load automatically from `.claude/rules/` when you touch those files.
+**Where things live:** current status, fronts and parked work → `.claude/LEDGER.md` · specs → `.claude/specs/README.md` (the one roster) · plans → `.claude/plans/` · build/deploy/SSH detail → `.claude/dev-setup.md` · architecture → `.claude/architecture.md` · client design context → `sites/<client>/CLAUDE.md` · each plugin/theme has its own CLAUDE.md. Seven path-scoped rule files in `.claude/rules/` (block authoring, editor controls, colour emission, cloning pipeline, migration scripts, motion QA, backend integrations) load automatically when you touch their paths.
 
 ## How to work here
 

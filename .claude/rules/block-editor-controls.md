@@ -1,7 +1,6 @@
 ---
 paths:
   - "plugins/sgs-blocks/src/blocks/**/edit.js"
-  - "plugins/sgs-blocks/src/blocks/**/*.control.js"
   - "plugins/sgs-blocks/src/components/**"
 ---
 
@@ -51,7 +50,7 @@ dotted, `none` …) wins, and no width paints nothing. Resolve the style through
 hand-rolled `in_array(…) ? $raw : 'none'` or `borderStyle && borderStyle !== 'none'`. Gate:
 `scripts/check-border-width-without-style.py` (the inverse of `check-border-style-without-width.py`).
 
-**Border defaults (Bean, 2026-10-05):** a border-style attribute defaults to `solid` (never '' or
+**Border defaults (Bean):** a border-style attribute defaults to `solid` (never '' or
 `none`), so the panel shows Solid selected; the one exception is a group-default attribute where ''
 means "no override" (`multi-button::childBtnBorderStyle`). A border-width attribute defaults to 0
 (unset) except on an exceptional type whose border is part of what it is: an outline or ghost button
@@ -175,8 +174,7 @@ that wraps, auto-fits, or whose items it does not own (native `column-rule` / `r
 `scripts/check-separators-through-helper-baseline.json`; adopting a block deletes its entry). A composite that mirrors
 `sgs/container` (Spec 31 §13.6) declares `separators` and mounts `SeparatorsPanel`; the wrapper reads `separators` for the
 block's own grid, so a block's OTHER list takes its own name (`featureSeparators`), and a block whose grid is a child element
-(post-grid, gallery) calls the helper itself and hands the wrapper no `separators`. Design and measurements:
-`.claude/plans/archive/2026-10-01-separators-plan.md`.
+(post-grid, gallery) calls the helper itself and hands the wrapper no `separators`.
 
 ## Box alignment — `LogicalAlignControl` is the one control
 
@@ -187,3 +185,22 @@ A block's horizontal alignment is stored as `start | center | end` (plus `stretc
 `justify-content`/`align-items`, which already follow the direction. Detector and gate: `scripts/migrate-box-alignment.py`
 (`--survey`/`--fix`/`--check`/`--self-test`, registered in `scripts/gates.json`); it covers `icon.iconAlign`,
 `media.alignment`, `separator.alignment`, `nav-drawer.drawerAlign` and `tabs.tabAlignment`.
+
+## Spacing — `SgsBoxControl` is the one padding/margin control
+
+Every block's padding and margin (and any other four-side or four-corner box) mounts `<SgsBoxControl>`
+(`src/components/SgsBoxControl.js`), inside `<ResponsiveOverride>` for a per-device value, never core's `BoxControl`
+directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core's spacing control:
+- **Header line:** the label and core's small link button (`size="small"`, `iconSize={ 24 }`, unpressed) sit on one
+  line; linked shows one row with the `sidesAll` / `cornerAll` icon, unlinked one row per side or corner, each
+  starting with its side icon from `@wordpress/icons`.
+- **Preset select + value box:** with `presets`, each row is a select listing the theme spacing presets by NAME only
+  (no measurements, no slider) plus `Custom…`, and a 104px value box (`SgsBoxControl.js::VALUE_BOX_STYLE`) showing the
+  picked preset's size. Picking a preset stores `var(--wp--preset--spacing--<slug>)`; typing in the box stores a
+  length and flips the select to Custom. Choosing `Custom…` from Default stays on Custom until a value is typed
+  (per-row state, `customRows`).
+- **Untouched sides:** show the value inherited from a wider device tier as the placeholder, through `inherited`
+  (or the surrounding `ResponsiveOverride`); the stored attribute stays empty.
+- **Inspector spacing:** separate SGS controls stack 16px apart (`assets/css/inspector-controls.css`), because SGS
+  controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap.
+Test: `tests/js/sgs-box-control.test.js`.

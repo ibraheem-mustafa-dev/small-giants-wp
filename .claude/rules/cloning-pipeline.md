@@ -2,6 +2,7 @@
 paths:
   - "plugins/sgs-blocks/scripts/converter/**"
   - "plugins/sgs-blocks/scripts/orchestrator/**"
+  - "plugins/sgs-blocks/scripts/oracle/**"
   - "plugins/sgs-blocks/scripts/parity/**"
   - "plugins/sgs-blocks/scripts/cheat-gate/**"
   - "plugins/sgs-blocks/scripts/excluded-gate/**"
@@ -14,7 +15,9 @@ paths:
 
 # Cloning pipeline rules
 
-**Success:** the pipeline CONVERTS any SGS-BEM draft into native SGS blocks driven by their attributes, faithful to the draft on the real homepage, with zero cheats. Read `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` in full before pipeline work — its binding rules R-31-1…15 (§13.1) are the authoritative list; the seven below are the ones that gate every change.
+**Scope:** this rule governs the Spec 31 converter only. Script-rendered drafts and static classless drafts take the Spec 47 computed route (`scripts/computed-route/` at the repo root, `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`), which shares no code with this converter (R-47-1).
+
+**Success:** the Spec 31 converter CONVERTS any SGS-BEM draft into native SGS blocks driven by their attributes, faithful to the draft on the real homepage, with zero cheats. Read `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` in full before pipeline work — its binding rules R-31-1…15 (§13.1) are the authoritative list; the seven below are the ones that gate every change.
 
 1. **Convert, don't mirror** — no emitted block `className` carries a draft BEM element class (`sgs-x__y`). Enforced by `orchestrator/check_no_mirror.py` after every clone.
 2. **No cheats** — no `sourceMode='bound'` emit, no echo-`$content` passthrough, no shallow-test workaround. The only legitimate `sourceMode` values are the WC configurator's `'wc-product'` / `'sgs-cpt'` on `sgs/product-card`; `sgs/trust-bar` has no `sourceMode` at all.

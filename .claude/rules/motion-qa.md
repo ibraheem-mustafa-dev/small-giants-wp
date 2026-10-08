@@ -2,7 +2,7 @@
 paths:
   - "plugins/sgs-blocks/scripts/motion-qa/**"
   - "plugins/sgs-blocks/src/blocks/**/view.js"
-  - "plugins/sgs-blocks/includes/**motion**"
+  - "plugins/sgs-blocks/includes/**/*motion*"
 ---
 
 # Motion QA

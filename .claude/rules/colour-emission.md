@@ -90,7 +90,10 @@ builds it through `sgs_border_gradient_css()`). Blocks needing this precondition
 `css:color*` and a genuinely separate `css:background*` member on the same
 `supports.sgs.elements` entry — detected via
 `scripts/inspector-scan/rules/31-golden-colour-control.js::textSharesElementWithBackground`
-(reads the element manifest; never hand-derive a block list). Sizeable backlog (button, container,
+(reads the element manifest; never hand-derive a block list). A second, separate definition of the same name lives in
+`scripts/colour-codemod/classify-end-shape.js::textSharesElementWithBackground` (reads `block.json` for the codemod's
+own classifier); `includes/nav-menu-item-border-featured-css.php` only cites it in comments. Change the rule and the
+codemod classifier together. Sizeable backlog (button, container,
 hero, product-card, trust-bar, cta-section, info-box, more) — its own project, not a quick follow-up.
 
 **Icon/SVG gradient where the icon's source can vary:**

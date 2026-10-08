@@ -10,18 +10,13 @@ title: SGS WordPress Framework — System Architecture
 
 SGS is an AI website-builder built by Small Giants Studio: a WordPress block theme
 (`sgs-theme`) + a Gutenberg blocks plugin (`sgs-blocks`, including forms) + a booking plugin
-(`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus a **cloning pipeline**
-(`/sgs-clone`) that converts an SGS-BEM-authored HTML draft into native, attribute-driven SGS
-blocks on a real WordPress page. It competes with Kadence, Spectra and GenerateBlocks — every
-block must be fully configurable by a non-technical client through the block editor alone (root
-`CLAUDE.md` "Client experience is primary"). The framework is client-agnostic by design: no
-client colour, copy, imagery or structure may be hard-coded into the base theme or blocks
-plugin — see root `CLAUDE.md` "SGS is a standalone framework, not a client project".
-
-**The 7 non-negotiable rules** (convert-don't-mirror, no cheats, universal-no-carve-outs,
-no-skipping, verify-on-the-real-homepage, responsive-values-in-attributes-not-inline-CSS,
-design-gate-sensitive-changes) are stated in full in root `CLAUDE.md` and gate every session —
-not restated here to avoid a second copy that drifts.
+(`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus two draft-to-page routes (§4): the
+computed route (Spec 47) and the converter (`/sgs-clone`, Spec 31). It competes with Kadence, Spectra
+and GenerateBlocks, so every block must be fully configurable by a non-technical client through the
+block editor alone (root `CLAUDE.md` "Non-negotiables"). The framework is client-agnostic: no client
+colour, copy, imagery or structure is hard-coded into the base theme or blocks plugin (root
+`CLAUDE.md` intro and "Non-negotiables"). The working rules that gate every session are in root
+`CLAUDE.md` "How to work here", not restated here.
 
 **Counts, rosters, D-ceilings are DB- or repo-authoritative — never hard-coded in this file.**
 Query them live:
@@ -39,9 +34,9 @@ Query them live:
 | Blocks plugin | `sgs-blocks` | Dynamic (render.php-driven) blocks; extensions in `src/blocks/extensions/` |
 | Block build | `@wordpress/scripts` | `--experimental-modules --webpack-copy-php` (PHP `render.php` copied to `build/`) |
 | Frontend JS | Vanilla ES modules + WordPress Interactivity API | No jQuery anywhere. `viewScriptModule` for interactive blocks |
-| Motion | Four-tier doctrine (V/G/H/W) — see §6 | All npm-bundled, conditionally loaded, zero CDN |
+| Motion | Four-tier doctrine (V/G/H/W), see §8 | All npm-bundled, conditionally loaded, zero CDN |
 | Data layer | `sgs-framework.db` (SQLite) | Source of truth for block schema, composition, slots, roles — see §5 |
-| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), the `indus-test` Indus Foods test site (`lavender-dinosaur-183533.hostingersite.com`) and the `eye-care-test` Eye Care Birmingham test site (`darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are the `TARGETS` dict in `plugins/sgs-blocks/scripts/build-deploy.py`. Each test site exists because the active header, footer, drawer and theme-snapshot pointers are single global options per WordPress site, so two clients cannot share one site |
+| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), `indus-test` (Indus Foods, `lavender-dinosaur-183533.hostingersite.com`) and `eye-care-test` (Eye Care Birmingham, `darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are `TARGETS` in `plugins/sgs-blocks/scripts/build-deploy.py`. One test site per client because the active header, footer, drawer and snapshot pointers are single global options |
 
 ## 3. Directory structure
 
@@ -49,43 +44,63 @@ Query them live:
 small-giants-wp/
 ├── theme/sgs-theme/           # Block theme — theme.json, templates/, parts/, patterns/, styles/ (empty, see §7)
 ├── plugins/
-│   ├── sgs-blocks/            # Gutenberg blocks + forms + the cloning-pipeline scripts (own CLAUDE.md)
+│   ├── sgs-blocks/            # Gutenberg blocks + forms + the converter scripts (own CLAUDE.md)
 │   ├── sgs-booking/           # Appointment + event booking (own CLAUDE.md; deferred, Spec 03)
 │   ├── sgs-client-notes/      # Visual annotation system (own CLAUDE.md; deferred, Spec 05)
 │   ├── sgs-accessibility/     # A11y helpers (masonry, min-height, ARIA roles, form errors) — no own CLAUDE.md yet
 │   └── sgs-configurator-pro/  # Product-configurator plugin work (own CLAUDE.md)
-├── sites/<client>/            # Per-client mockups, content, theme-snapshot.json (own CLAUDE.md per active client)
-├── .claude/                   # Working area — specs/, decisions.md, LEDGER.md, plans/, reports/ (own CLAUDE.md)
+├── scripts/computed-route/    # Spec 47 computed route (README.md indexes its modules); scripts/parity/ holds the walker
+├── sites/<client>/            # Per-client mockups, content, theme-snapshot.json, build/ trees (own CLAUDE.md per active client)
+├── .claude/                   # Working area: specs/, archive/decisions.md, LEDGER.md, plans/, reports/ (own CLAUDE.md)
 └── CLAUDE.md                  # Root rules — the spine; read this first every session
 ```
 
 `plugins/sgs-blocks/src/blocks/` holds one directory per block, each following the standard
 5-file pattern (`block.json`, `edit.js`, `render.php`, `style.css`, optionally `view.js`/
 `view-module.js`) — see `plugins/sgs-blocks/CLAUDE.md` "Block Pattern".
-`plugins/sgs-blocks/scripts/converter/` is the cloning-pipeline engine (§4).
+`plugins/sgs-blocks/scripts/converter/` is the Spec 31 converter engine and `scripts/computed-route/` the Spec 47 route (§4).
 
-## 4. The cloning pipeline
+## 4. Draft → page routes
 
-**What it does.** Converts a draft HTML mockup authored in SGS-BEM (`.sgs-<block>__<element>--
-<modifier>`, Spec 00 §3.1) into native SGS blocks driven by their own attributes — never a
-div-by-div mirror of the draft's DOM/classes. Canonical spec: `.claude/specs/31-UNIVERSAL-
-CLONING-PIPELINE.md` — read it in full at the start of any pipeline session (project rule).
+A design draft reaches a WordPress page by exactly one of two routes. The routing rule is Spec 31 §0
+(ROUTE): a draft that renders by script goes to the computed route whatever classes it carries, and so
+does a static classless draft; a static draft that carries SGS class names stays on the converter. The
+two routes share the framework DB (§5), the parity walker and the page builder, and no code (Spec 47
+R-47-1).
 
-**The walker.** ONE recursive function with exactly three permitted exceptions (R-31-3 /
-FR-31-3): atomic-tag swap (a bare `<p>`/`<h1>`/`<img>` etc. with no SGS classes routes via a
-DB-driven tag map), top-level chrome-skip (`header`/`footer`/`nav` — the only three permitted
-hardcoded tag names, R-31-1), and top-level container wrap. Every other decision comes from DB
-row data, never a 4th conditional or a slug literal. BEM is the *only* recognition signal
-(R-31-2) — HTML tag is rendering shape only.
+### 4.1 Computed route (Spec 47)
 
-**The content fork.** Every content-bearing attribute has a universal functional *identity*
-(`equivalent_block_for` — what kind of content: text/heading/media/button) which is separate
-from its *emit shape* (`block_attributes.emit_shape`, `nested` vs `child` — does this block
-render the value itself, or hand it to an InnerBlocks child). One universal per-attribute walk
-(not a block-level `has_inner_blocks` dispatch) decides each attribute's shape, because a single
-block can genuinely mix both shapes (Spec 31 §13.3, FR-31-2.6).
+**What it does.** Measures the rendered draft and writes block settings through the framework DB, never
+copying the draft's DOM or classes. Spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`.
 
-**CSS routing — three destinations (D0/D1/D2, Spec 31 §13.4 FR-31-5):**
+- **Code:** `scripts/computed-route/` (its `README.md` is the module index, enforced by `lint.mjs`).
+  Commands: `calibrate.mjs` (measures what each block setting paints), `fill.mjs` (skeleton plus
+  measured draft to a tree), `solve.mjs` (compare, write, rebuild, at most three rounds), `sweep.mjs`
+  and `triage.mjs` (classify what survives), `confirm-canvas.mjs`; shared code in `lib/`.
+- **Data:** layout trees in `sites/<client>/build/*.tree.json`; surfaces in
+  `sites/<client>/build/surfaces.json`.
+- **Build and measure:** trees are built through `scripts/wp-build-page.js`; the parity walker
+  `scripts/parity/draft-live-walk.mjs` compares draft and live.
+- **Accepted differences:** the divergence ledger `sites/<client>/build/qa/divergences.json`, linted
+  against the client's fix register.
+
+### 4.2 Converter (Spec 31)
+
+**What it does.** `/sgs-clone` converts a static draft authored in SGS-BEM (`.sgs-<block>__<element>--
+<modifier>`, Spec 00 §3.1) into native SGS blocks driven by their own attributes. Engine:
+`plugins/sgs-blocks/scripts/converter/` (entry `entry.py::convert_section`). Spec:
+`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`, read in full at the start of any converter session.
+
+**The walker.** ONE recursive function with three permitted exceptions (R-31-3 / FR-31-3): atomic-tag
+swap (a bare `<p>`/`<h1>`/`<img>` with no SGS classes, via a DB-driven tag map), top-level chrome-skip
+(`header`/`footer`/`nav`, R-31-1) and top-level container wrap. Every other decision comes from DB row
+data. BEM is the only recognition signal (R-31-2).
+
+**The content fork.** A content-bearing attribute's functional identity (`equivalent_block_for`) is separate
+from its emit shape (`block_attributes.emit_shape`, `nested` or `child`); one per-attribute walk decides the
+shape (Spec 31 §13.3, FR-31-2.6).
+
+**CSS routing (Spec 31 §13.4 FR-31-5):**
 
 | Destination | What |
 |---|---|
@@ -93,58 +108,36 @@ block can genuinely mix both shapes (Spec 31 §13.3, FR-31-2.6).
 | D1 | Typed-attr lift → a native block attribute (when a `property_suffixes` row matches) |
 | D2 | Scoped variation CSS, inlined at deploy (`variation-d0-d2.css`) |
 
-A property with none of the above is captured as a `ResidualBand` (an out-of-device-tier
-breakpoint) and serialised into the block's own `sgsCustomCss` field — never silently dropped
-(R-31-15 "no mirror emit"; a draft class silently absent from the clone is a rule violation, not
-an acceptable gap).
+A property with none of these is captured as a `ResidualBand` and serialised into the block's own
+`sgsCustomCss`, never silently dropped (R-31-15). The 3-layer wrapper model (OUTER / CONTENT-WIDTH /
+PER-GRID-ITEM) is how a composite offers the `sgs/container` panels it opts into (§6.2).
 
-**The 3-layer wrapper model** (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) is how every composite
-with a built-in wrapper offers the `sgs/container` panels it opts into — see §6.2.
+**Fidelity.** `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6, Spec 20) compares
+`getComputedStyle` on the clone against the draft, matched by text content. It is a per-commit diagnostic,
+never the closing gate (R-31-4); closure needs the live visual check and Bean's eye (R-31-13).
 
-**Fidelity measurement — computed-parity, Stage 11.6 (Spec 20).** `scripts/parity/
-computed-parity.js` compares `getComputedStyle` on the rendered clone vs the draft, matched by
-normalised TEXT CONTENT (not wrapper class, not source-declaration diff — both give
-unreliable scores, `.claude/specs/20-CLONE-FIDELITY-MEASUREMENT.md`). Runs automatically post-deploy. **This is a per-commit
-DIAGNOSTIC, never the closing gate (R-31-4)** — the pipeline never ships on a number alone.
-Closure requires the live per-section visual check plus Bean's eye (R-31-13) — script and human
-judgement are co-authoritative, neither closes alone.
-
-**Stage map.** Do not cache stage numbers here. The pipeline is a
-contiguous numbered sequence; read the stage index in `/sgs-update`'s own module docstring
-(`plugins/sgs-blocks/scripts/sgs-update-v2.py`) or Spec 31 Appendix D.
+**Stage map.** Not cached here: see `plugins/sgs-blocks/scripts/sgs-update-v2.py`'s docstring or Spec 31 Appendix D.
 
 ## 5. The data layer — `sgs-framework.db`
 
-**DB-first, no hardcoded dicts (R-31-1).** Every pipeline lookup — block→slot mapping, role
-classification, CSS property routing, variant discrimination — reads from `sgs-framework.db`
-via the accessor layer, never a hand-maintained Python dict. The only permitted hardcoded
-constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav).
+**DB-first, no hardcoded dicts (R-31-1).** Every converter lookup (block to slot, role classification, CSS
+property routing, variant discrimination) reads `sgs-framework.db` through the accessor layer. The only
+permitted hardcoded constant is `SKIP_TOP_LEVEL_TAGS` (header/footer/nav).
 
-**Access pattern — read carefully.** There is no plain read-only
-`db_lookup.py` at `plugins/sgs-blocks/scripts/`. The only module of that name is
-`converter/db/db_lookup.py`, which runs schema-migration functions against the shared live DB
-**as an import side effect** — do not import it from a read-only reporter. For a plain read,
-open the DB directly read-only:
-```python
-sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
-```
-— the convention used by `audit-declared-vs-seeded-roles.py`, `generate-db-catalogue.py`, and
-`audit-feature-parity.py`. For an ad-hoc query, use `python
-~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
+**Access pattern.** `converter/db/db_lookup.py` runs schema migrations against the shared live DB as an
+import side effect, so a read-only reporter must not import it. Open the DB directly read-only:
+`sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)` (as `audit-declared-vs-seeded-roles.py`,
+`generate-db-catalogue.py` and `audit-feature-parity.py` do). For an ad-hoc query use
+`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
 
-**Key tables** (names only — row counts drift daily, query them, don't cache them here):
-
-| Table | What it's for |
-|---|---|
-| `blocks` | Block roster; `tier` (block / class-section / pattern), `variant_attr` (names the variant-selector attr) |
-| `block_attributes` | Per-attribute routing: `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/`css_element`/`css_state`/`css_tier`, `canonical_slot` |
-| `block_composition` | `container_kind` (section / layout / content), `wraps_block` — the container-bearing roster |
-| `block_supports` / `block_capabilities` | Native WP `supports` + SGS capability flags per block |
-| `slots` / `roles` | Element- and section-scope BEM vocabulary + role classification |
-| `property_suffixes` | CSS property → device-tier attribute-name mapping (the D0/D1/D2 router's core lookup) |
-| `variant_slots` / `variant_composition_slots` | Per-variant discriminating attribute slots / discriminating child-block sets (for variants that share every attribute value) |
-| `preset_implications` | Auto-derived implied-CSS map for preset-selector attrs (e.g. `cardStyle`, `effectHover`), parsed from each block's own `style.css` |
-| `array_item_schema` | Per-field role declarations for repeater/array attributes |
+**Key tables** (names only; query counts, never cache them): `blocks` (roster, `tier`, `variant_attr`),
+`block_attributes` (per-attribute `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/
+`css_element`/`css_state`/`css_tier`, `canonical_slot`), `block_composition` (`container_kind`,
+`wraps_block`), `block_supports` / `block_capabilities`, `slots` / `roles` (BEM vocabulary and role
+classification), `property_suffixes` (CSS property to device-tier attribute name, the D0/D1/D2 router's
+core lookup), `variant_slots` / `variant_composition_slots` (discriminating slots and child-block sets),
+`preset_implications` (implied CSS for preset-selector attrs, parsed from each block's `style.css`) and
+`array_item_schema` (per-field roles for repeater attributes).
 
 `/sgs-update` (`sgs-update-v2.py`) rebuilds the DB from block.json files, render.php parsing,
 REST enumeration, and pattern parsing. Its own module docstring is the authoritative stage
@@ -154,100 +147,76 @@ index — do not cache a stage count here.
 
 ### 6.1 No-inline styling contract (Spec 32)
 
-**No SGS block may render an inline `style="…"` property declaration.** Native WP `supports`
-(colour, spacing, border, typography) stay *declared* — they still drive the block's editor
-controls — but their auto-inline output is suppressed per-property
-(`__experimentalSkipSerialization`) and re-routed through `wp_style_engine_get_styles()` into
-the block's own scoped `<style>` block at class-level specificity (`.{uid}.{block-root-class}`,
-never `#{uid}` — the class-level scoping is load-bearing: it's what lets a `sgsCustomCss`
-residual override it by equal specificity + source order, matching the WP-core Additional-CSS
-idiom).
+**No SGS block may render an inline `style="…"` property declaration.** Native WP `supports` stay
+declared (they drive the editor controls), but their auto-inline output is suppressed per-property
+(`__experimentalSkipSerialization`) and re-routed through `wp_style_engine_get_styles()` into the block's
+own scoped `<style>` at class-level specificity (`.{uid}.{block-root-class}`, never `#{uid}`), so a
+`sgsCustomCss` residual overrides it by equal specificity and source order.
 
-Per-side/per-corner box properties (padding, margin, border-width, border-radius) merge into a
-single named object attribute — `{top,right,bottom,left}` for 4-side families,
-`{topLeft,topRight,bottomLeft,bottomRight}` for 4-corner — driven by WP's native `BoxControl`.
-The `block_attributes.box_family` DB column (seeded declaratively from each block's
-`block.json supports.sgs.boxFamilies`, never a name-regex) is the collision guard, and a
-structural AST gate fails the build if any box-property grouping runs without checking it.
+Per-side/per-corner box properties (padding, margin, border-width, border-radius) merge into one named
+object attribute (`{top,right,bottom,left}` or `{topLeft,topRight,bottomLeft,bottomRight}`) driven by WP's
+`BoxControl`. The `block_attributes.box_family` column (seeded from `block.json supports.sgs.boxFamilies`,
+never a name-regex) is the collision guard; a structural AST gate fails the build if a box-property
+grouping runs without checking it.
 
 Verify current compliance: `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`.
 Canonical spec: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 
 ### 6.2 `SGS_Container_Wrapper` and the composite wrapper rule
 
-`sgs/container` is the canonical wrapper block (background image/video/parallax, shape
-dividers, width/content-width capping, grid/flex layout, responsive gap, grid-item defaults,
-shadow). Every composite block with a built-in outer wrapper (hero, cta-section, trust-bar,
-card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from
-the wrapper's computed behaviour with per-block CSS hacks (Spec 31 §13.6 FR-31-21.1). The DB's
-`block_composition.container_kind` column (`section` / `layout` / `content`) is read from
-`block.json supports.sgs.containerKind` by `/sgs-update`.
+`sgs/container` is the canonical wrapper block (background media, shape dividers, width capping, grid/flex
+layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, cta-section, trust-bar,
+card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from the
+wrapper's computed behaviour with per-block CSS hacks (Spec 31 §13.6 FR-31-21.1). `block_composition.container_kind`
+(`section` / `layout` / `content`) is read from `block.json supports.sgs.containerKind` by `/sgs-update`.
 
-**A composite need not call `SGS_Container_Wrapper::render()`** — this is
-a settled clarification, not an open design question. A **content-KIND composite that uses only
-box + width** (quote, info-box, testimonial, team-member) may render **block-private** — its own
-scoped `<style>`, no wrapper call — because the converter routes CSS by `block_attributes` keyed
-on `block_slug`, never by `wraps_block`/`container_kind`, so dropping the wrapper has zero walker
-impact. **Section/layout-KIND composites** (hero, cta-section, card-grid, feature-grid) **keep
-the wrapper** because they use its genuine grid/section machinery. This is the pattern selector;
-do not re-litigate it per block.
-
-A composite is never a separate system — its wrapper, when used, is the same shared helper
-(`plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`) as every other section-KIND
-block. A capability gap discovered on one composite is a design gap to *add to the composite*,
-never a converter workaround.
+**A composite need not call `SGS_Container_Wrapper::render()`.** A content-KIND composite using only
+box + width (quote, info-box, testimonial, team-member) may render block-private, because the
+converter routes CSS by `block_attributes` keyed on `block_slug`, never by `wraps_block`. Section/layout-KIND
+composites (hero, cta-section, card-grid, feature-grid) keep the wrapper for its grid/section
+machinery. A capability gap on a composite is added to the composite, never worked around in the
+converter. The shared helper is `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`.
 
 ### 6.3 Block customisation standard
 
-Every block: (1) native `supports` for wrapper-level editor controls; (2) custom attrs +
-controls for each inner text element, colour via `SgsColourPanel` (the standard shared
-component); (3) custom attrs + controls for every CTA; (4) Block Selectors API in `block.json`
-targets native typography to the block's primary text element. Border controls standardise on
-`SgsBorderControl` (one shape for width + colour + style across the framework). Full detail:
-`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard"; the colour/border helper
-registries: `.claude/rules/colour-emission.md` and `.claude/rules/block-editor-controls.md`.
+Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs and controls for each
+inner text element, colour via `SgsColourPanel`; (3) the same for every CTA; (4) the Block Selectors API
+targets native typography to the primary text element. Borders use `SgsBorderControl`. Detail:
+`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard"; helper registries:
+`.claude/rules/colour-emission.md`, `.claude/rules/block-editor-controls.md`.
 
 ### 6.4 Page-level singletons and shared frontend stores
 
 A behaviour that belongs to the PAGE rather than to one block (the add-to-bag toast,
-`includes/class-sgs-toast.php`) is a server-rendered singleton emitted on `wp_footer`, not a block:
-Interactivity directives on nodes injected later never hydrate, so the region must exist in the HTML.
-A rendering block opts in by calling the class's own request method, so a page with no participating
-block pays nothing. Precedents: `class-sgs-floating-ui-renderer.php` and `class-product-item-list.php`.
+`includes/class-sgs-toast.php`) is a server-rendered singleton emitted on `wp_footer`: Interactivity
+directives on nodes injected later never hydrate, so the region must exist in the HTML. A rendering
+block opts in through the class's own request method, so a page with no participating block pays
+nothing (precedents: `class-sgs-floating-ui-renderer.php`, `class-product-item-list.php`).
 
 Shared frontend behaviour lives in `src/shared/<name>/store.js` registering one Interactivity
-namespace, imported by relative path from each consuming `viewScriptModule`. **No `webpack.config.js`
-entry and no `wp_register_script_module()` call are needed** — @wordpress/scripts bundles a copy per
-block and the runtime dedupes by namespace, merging repeat registrations
-(`src/shared/nav-interactivity/store.js`'s docblock is the reference). The corollary binds: ALL state
-must live in the store's `state`, because module-scope variables are per-bundle and would desynchronise.
+namespace, imported by relative path from each consuming `viewScriptModule`; no `webpack.config.js`
+entry or `wp_register_script_module()` call is needed (`src/shared/nav-interactivity/store.js`'s
+docblock is the reference). ALL state must live in the store's `state`: module-scope variables are
+per-bundle and would desynchronise.
 
 ## 7. Per-client theming
 
-`theme/sgs-theme/styles/` is deliberately empty — the framework does not use WordPress style variations.
-Per-client colour/typography tokens live at `sites/<client>/theme-snapshot.json` (Spec 33 —
-extracted from the draft's own rendered computed styles, the opening step of the cloning
-pipeline, before any block conversion runs) and deploy via
-`plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`, which
-writes `wp_global_styles`. Client-specific CSS overrides go into the snapshot's `styles.css` or
-`sites/<client>/theme-overrides.css` — never into the framework's own `style.css`.
+`theme/sgs-theme/styles/` is deliberately empty: the framework uses no WordPress style variations.
+Per-client tokens live at `sites/<client>/theme-snapshot.json` (Spec 33, extracted from the draft's rendered
+computed styles before any block conversion) and deploy via
+`plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`, which writes
+`wp_global_styles`. Client CSS overrides go into the snapshot's `styles.css` or
+`sites/<client>/theme-overrides.css`, never the framework's own `style.css`.
 
 ## 8. Motion architecture (Spec 38)
 
-**Four-tier doctrine (constitutional):**
-
-| Tier | What | Rule |
-|---|---|---|
-| **V** — vanilla/CSS | The default for every effect | Used unless vanilla genuinely cannot do it |
-| **G** — GSAP | The bounded exception | Admitted only for what Tier V cannot do (pin+scrub, SplitText, Flip, Draggable, ScrollSmoother, DrawSVG, MorphSVG, image-sequence) |
-| **H** — helper/utility | A single-purpose library that is neither vanilla nor GSAP | A CLOSED list — currently Lenis alone, admitted per a documented four-part test |
-| **W** — rendering substrate | WebGL — a different rendering substrate, not "another library" | Admitted only on its own five-part test; carries a NAMED 120KB JS allowance for Tier-W pages alone |
-
-All tiers are npm-bundled and conditionally loaded — a page using none of them ships zero bytes
-of any. No CDN, ever. The cloning pipeline's `data-sgs-fx-*` grammar (Spec 38 §11) is the first
-home for how a draft declares which motion effect a section wants. Canonical spec:
-`.claude/specs/38-SGS-MOTION-SYSTEM.md` — its own §1 is the constitutional statement; §3 is the
-curated capability roster.
+**Four-tier doctrine (constitutional):** V (vanilla/CSS) is the default for every effect; G (GSAP) is
+admitted only for what V cannot do (pin+scrub, SplitText, Flip, Draggable, ScrollSmoother, DrawSVG,
+MorphSVG, image-sequence); H (a single-purpose helper) is a closed list, currently Lenis alone; W (WebGL)
+is a different rendering substrate with its own five-part test and a named 120KB JS allowance for
+Tier-W pages alone. All tiers are npm-bundled and conditionally loaded, with no CDN. The converter's
+`data-sgs-fx-*` grammar (Spec 38 §11) is how a draft declares a section's motion. Canonical spec:
+`.claude/specs/38-SGS-MOTION-SYSTEM.md` (§1 is the constitutional statement, §3 the capability roster).
 
 ## 9. Integration surfaces
 
@@ -255,13 +224,14 @@ curated capability roster.
 |---|---|
 | Theme → blocks plugin | `theme.json` design tokens as CSS custom properties (`--wp--preset--*`); Block Selectors API targets native typography per block |
 | Blocks plugin → DB | Read-only queries against `sgs-framework.db` (§5's access pattern); `/sgs-update` writes it |
-| Cloning pipeline → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
-| Cloning pipeline → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
+| Converter → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
+| Converter → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
+| Computed route → WordPress | `scripts/wp-build-page.js` builds trees through the editor; `scripts/parity/draft-live-walk.mjs` measures draft against live; both read the framework DB read-only (§4.1) |
 | Blocks plugin → email | Every email goes through `wp_mail()` (SGS code via `Sgs_Mailer`, shop alerts as `WC_Email` subclasses) over the site's SMTP mailbox via FluentSMTP; N8N receives optional automation events only |
-| Blocks plugin → WooCommerce cart lines | ONE server-built line summary (`includes/cart-line-summary/`) feeds all four surfaces from two taps: the `woocommerce_get_item_data` rows (bag drawer, cart page, checkout) and the order-item meta that `woocommerce_display_item_meta` renders (emails, order-received, My Account). Client wording arrives through a seeded option, never hardcoded. A Store API response rewrite must hook BOTH `rest_request_after_callbacks` and `woocommerce_hydration_request_after_callbacks` — the latter builds the first-paint payload, so hooking one flashes raw rows. `woocommerce_display_item_meta` hands over the WHOLE rendered meta block, so the renderer rebuilds from `get_formatted_meta_data()` and drops only the display keys the summary subsumes (frozen per line at purchase as `_sgs_line_summary_keys`): a third-party row on a summarised line survives instead of being destroyed. The admin order screen is untouched by this tap — nothing under WooCommerce's `includes/admin/` calls `wc_display_item_meta` — so its priced per-group rows remain. ⚠️ On the Store API side, `items[].extensions` is serialised as a **stdClass, not an array** (WooCommerce casts it so a line with no extension data comes out as `{}` rather than `[]`), and so is the namespace inside it: reading either with array syntax fatals EVERY cart request carrying a variation, which takes the bag count, the bag panel and the add-to-bag journey down on any client site. Normalise both levels. A filter on this boundary is only exercised by a request that goes THROUGH the route — calling the filters directly tests the function, not the payload WooCommerce hands it. The summary's "no add-ons" lead is applied only to a line that carries variation attributes, since a lead naming what was declined has nothing to say on a line where nothing was offered |
+| Blocks plugin → WooCommerce cart lines | One server-built line summary feeds the bag drawer, cart, checkout, emails and order screens. No spec governs it; the code and docblocks in `plugins/sgs-blocks/includes/cart-line-summary/` are the reference, and the Store API `extensions` stdClass trap is in auto memory |
 | Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
 | Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
-| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp. `--target indus-test` and `--target eye-care-test` deploy to those test sites. It builds and deploys from an isolated `git worktree add HEAD` by default, so a concurrent session's build or uncommitted dirty files cannot collide with the deploy |
+| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` is the ONE path (never hand-rolled tar/scp); `--target indus-test` and `--target eye-care-test` deploy to those test sites. It deploys from an isolated `git worktree add HEAD` |
 
 ## 10. Architectural principles
 
@@ -274,31 +244,27 @@ source. The decision log is `.claude/archive/decisions.md`.
    CSS supplies structural defaults only.
 3. **`sgs/container` is the universal layout primitive** for every multi-column/section layout.
    Nesting containers inside containers is the correct pattern for complex layouts.
-4. **No inline styling, framework-wide.** Zero `sgs/*` blocks emit an inline `style` property
-   declaration (§6.1); `audit-inline-styling.js --check` proves it.
-5. **Composite wrapper rule.** No composite with a built-in wrapper may diverge from the
-   wrapper's computed behaviour; the `container_kind` column gates which 3-layer panels a block
-   exposes (§6.2).
-6. **Content-KIND composites may render block-private** — section/layout-KIND composites keep the
+4. **No inline styling, framework-wide** (§6.1); `audit-inline-styling.js --check` proves it.
+5. **Composite wrapper rule.** No composite with a built-in wrapper diverges from the wrapper's
+   computed behaviour; `container_kind` gates which 3-layer panels a block exposes (§6.2).
+6. **Content-KIND composites may render block-private**; section/layout-KIND composites keep the
    shared wrapper (§6.2).
-7. **One canonical cloning-pipeline spec** — Spec 31. Older `R-22-N`/`FR-22-N` citations map 1:1
-   to `R-31-N`/`FR-31-N`.
-8. **One converter** — the modular `converter/` engine, no flag, no fallback (§4).
+7. **One canonical converter spec**: Spec 31. Older `R-22-N`/`FR-22-N` citations map 1:1 to
+   `R-31-N`/`FR-31-N`.
+8. **Two routes, one per draft.** The Spec 31 converter takes static drafts carrying SGS class names,
+   the Spec 47 computed route takes the rest (§4). No flag, no fallback between them, no shared code.
 9. **Root-cause methodology is mandatory.** No fix without a proven cause; verify every dependency
-   a theory rests on; attest with at least two independent evidence sources. Full statement: root
-   `CLAUDE.md` "Root-cause methodology".
-10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash`.** The shared
-    worktree carries many concurrent sessions; a stash or a glob-pathspec commit sweeps other
-    sessions' uncommitted work. Full rules: root `CLAUDE.md` "Git workflow" +
+   a theory rests on. Full statement: root `CLAUDE.md` "How to work here".
+10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash`.** A stash or a
+    glob-pathspec commit sweeps other sessions' uncommitted work. Rules: root `CLAUDE.md` "Git" and
     `~/.claude/rules/git-hygiene.md`.
-11. **Motion follows the four-tier doctrine** — see §8.
-12. **Scalar-media routing covers all three device tiers and all three media types**, so a
-    draft's mobile/tablet art-directed image, video or SVG has a routing path.
-13. **Composition-based variant tiebreaker.** `variant_composition_slots` resolves variants that
-    share every attribute value with a sibling by discriminating child-block-name set; it only
-    fires when the attribute-value pass ties.
-14. **Deploy isolates via `git worktree add HEAD` by default**, so a shared `build/` directory
-    cannot be clobbered by a concurrent session's `npm run build`.
+11. **Motion follows the four-tier doctrine** (§8).
+12. **Scalar-media routing covers all three device tiers and all three media types**, so a draft's
+    art-directed image, video or SVG has a routing path.
+13. **Composition-based variant tiebreaker.** `variant_composition_slots` resolves variants that share
+    every attribute value with a sibling by their child-block-name set; it fires only when the
+    attribute-value pass ties.
+14. **Deploy isolates via `git worktree add HEAD` by default**, so a concurrent build cannot clobber `build/`.
 
 ## 11. Known technical debt
 
@@ -308,37 +274,37 @@ Real, current items only. `.claude/LEDGER.md` carries the live status of each.
 |---|---|
 | Colour conformance, FILL surface | The TEXT surface is closed; FILL rows remain as a separate track — the count is a live census, don't cache it here |
 | Tier-object migration, remaining flat-trio attributes | Closed for hero's media family + accordion/button/table-of-contents/whatsapp-cta; a framework-wide survey has not been run |
-| Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings open; `.claude/LEDGER.md` has the current count |
+| Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings open; count them with `node plugins/sgs-blocks/scripts/inspector-scan/run.js --json` (rules `41-co2-element-grouping-order.js`, `43-colour-only-state-indicator.js`) |
 | `push-theme-snapshot.py` | Refuses to write `wp_global_styles` without a verified backup; run it with `--no-push` against a target to see whether it aborts |
 | Blocks with `:hover` rules but no `:focus-visible` counterpart | Re-derive the roster before acting: `git grep -l ':hover' -- plugins/sgs-blocks/src/blocks/*/style.css`, then check each file for a `:focus-visible` rule |
-| `box-shape`/`overlay` `:hover` rules unguarded against touch-hover-stuck | The hover-guard tooling only scans `build/blocks/*/style.css` and PHP render surfaces, never `assets/css/media-atoms/*.css` — a real gap shared by the whole media-atom family |
-| `sgs-accessibility` plugin has no `CLAUDE.md` yet | Exists in the tree with real commits; undocumented at the plugin level |
+| `box-shape`/`overlay` `:hover` rules unguarded against touch-hover-stuck | The hover-guard tooling never scans `assets/css/media-atoms/*.css` |
+| `sgs-accessibility` plugin has no `CLAUDE.md` yet | Undocumented at the plugin level |
 
 ## 12. External dependencies
 
 | Service | Purpose |
 |---|---|
-| Hostinger | Web hosting for the canary and the Indus test site (`ssh hd` alias) |
+| Hostinger | Web hosting for the canary and the Indus and Eye Care test sites (`ssh hd` alias) |
 | FluentSMTP | Per-site SMTP for `wp_mail()`, with email logs (`provision-site-mail.py`) |
 | N8N | Optional automation events (`sgs_n8n_webhook_url`); never the email path |
 | Playwright | Visual/live-DOM verification, MCP + CLI |
-| Lucide | ~1900 icons, pre-generated to `lucide-icons.php` |
+| Lucide | Icon set, pre-generated to `lucide-icons.php` |
 | Inter (variable), Montserrat, Source Sans 3 | Self-hosted WOFF2 fonts, no CDN |
 
 ## 13. Where the rest of the truth lives
 
-This file is deliberately altitude-limited. For anything below "system architecture", follow
-the pointer — do not duplicate the content here:
+This file stays at system altitude. Follow the pointer for anything lower:
 
 | For | Read |
 |---|---|
-| Hard rules, deploy commands, the 7 non-negotiable rules | root `CLAUDE.md` |
+| Hard rules, deploy commands, non-negotiables | root `CLAUDE.md` |
 | Spec roster + the DEAD-never-cite list | `.claude/specs/README.md` |
 | Current live status, open tracks, what shipped today | `.claude/LEDGER.md` |
 | Structural defences / lessons | Claude Code auto memory (not a repo path) |
 | D-numbered decision log | `.claude/archive/decisions.md` (frozen) |
 | Open deferred work | relevant plan/spec + `.claude/LEDGER.md` |
-| Cloning pipeline full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
+| Converter full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
+| Computed route full detail | `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, `scripts/computed-route/README.md` |
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | Motion system full detail | `.claude/specs/38-SGS-MOTION-SYSTEM.md` |

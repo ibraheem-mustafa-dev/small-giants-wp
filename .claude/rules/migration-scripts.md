@@ -65,8 +65,7 @@ object?"), per `surveys/survey-responsive-shape.py`'s settled doctrine (Spec 35 
 The canonical TIER-of-BOXES envelope is always `{desktop:{...}, tablet:{...}, mobile:{...}}` —
 never a variant of it. What differs is what's inside each tier, driven by whether the property is
 SIDE-keyed (padding, margin — `{top,right,bottom,left}`, read via `sgs_box_object_shorthand()`) or
-CORNER-keyed (borderRadius — `{topLeft,topRight,bottomRight,bottomLeft}`, read via
-`sgs_corner_object_shorthand()`).
+CORNER-keyed (borderRadius — `{topLeft,topRight,bottomRight,bottomLeft}`).
 
 WordPress provides ZERO schema-level protection for what's inside a tier's object — every
 tier-object attribute declares `{"type":"object","default":{}}` with no nested `properties`
@@ -89,10 +88,7 @@ in-memory state (loaded before your write) over everything; only the last write 
 
 ## Gotchas the scripts' own docstrings don't carry
 
-- **Shared render helpers are UNTYPED on purpose** (`scripts/migrate-render-closures.py`). Do not
-  "tidy" `sgs_box_object_shorthand()`/`sgs_corner_object_shorthand()`/the length sanitiser to a
-  typed `array` parameter — `before-after/render.php` calls it with a raw `null` and relies on the
-  helper's own `is_array()` guard; a typed parameter would throw and fatal the page.
+- **Shared render helpers keep their guards** (`scripts/migrate-render-closures.py`). `sgs_box_object_shorthand( array $box )` is typed, so a caller passes it an array only; `helpers-box.php::sgs_corner_object_longhand_list` takes an untyped value and guards with `is_array()` itself, and `helpers-css-safety.php::sgs_css_length_value` takes an untyped value and casts it to a string; keep both untyped rather than "tidying" them to a typed parameter, because a typed parameter fatals on the first wrong-typed saved value.
 - **Vacuous-guard shapes are not interchangeable** (`scripts/remove-vacuous-style-engine-guard.py`).
   STANDALONE (whole `if` goes) and COMPOUND (the dead call ANDed with a real condition) need
   different treatment — deleting the wrapper on a compound guard silently drops a live condition.
@@ -105,5 +101,3 @@ in-memory state (loaded before your write) over everything; only the last write 
   (`scripts/extract-comment-narrative.py`). Only 27% of removable lines carry a detectable marker;
   the other 73% are continuation lines of a paragraph whose first line had one — a wrong cut
   deletes knowledge silently and irreversibly, which is also why this is never a haiku-model edit.
-- **S4 folding is gated on the block's own schema**, not just the theme text — a scalar value is a
-  migration target only when that block's `block.json` declares the prop as `"type":"object"`.
