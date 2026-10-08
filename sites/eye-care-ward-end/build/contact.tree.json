@@ -531,7 +531,8 @@
                       },
                       "className": "cr-ref-contact-18",
                       "labelFontWeight": "400",
-                      "textColourHover": "text-label"
+                      "textColourHover": "text-label",
+                      "hoursCondensedInline": true
                     }
                   },
                   {
@@ -608,7 +609,7 @@
                       "top": "0px",
                       "right": "0px",
                       "left": "0px",
-                      "bottom": "0px"
+                      "bottom": "22px"
                     },
                     "tablet": {
                       "top": "0px",

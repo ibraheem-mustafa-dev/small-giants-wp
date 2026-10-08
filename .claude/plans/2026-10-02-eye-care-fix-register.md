@@ -22,7 +22,7 @@
 - *content*: page, product or Site Info data.
 - *client*: Eye Care-only styling, in its own token file.
 
-**Lane column (2026-10-08, build rule 4).** Every table row carries a lane: `Solve` (the draft is the answer and the walker measures it), `Fix` (a decision against the draft, a framework gap, content or behaviour), or `closed`. **Open rows: 80 = 31 Solve + 49 Fix** (closed 2026-10-08: S2, S3, 2, 32/33/44, 131, N40). Solve by surface: site-wide 4 (S4, S5, S6, S11), header 1, mega menus 3, phone drawer 2, footer 5, home 3, shop 1, product 4, Lenses 0, Help 5, Contact 3. Fix by surface: site-wide 1 (S1), header 1, mega menus 4, phone drawer 1, bag drawer 1, footer 4, floating WhatsApp 1, home 3, shop 3, product 11, Help 3, Contact 1, checkout 8, confirmation 2, content 2, computed route 3.
+**Lane column (2026-10-08, build rule 4).** Every table row carries a lane: `Solve` (the draft is the answer and the walker measures it), `Fix` (a decision against the draft, a framework gap, content or behaviour), or `closed`. **Open rows: 79 = 30 Solve + 49 Fix** (closed 2026-10-08: S2, S3, 2, 32/33/44, 131, N40, 130). Solve by surface: site-wide 4 (S4, S5, S6, S11), header 1, mega menus 3, phone drawer 2, footer 5, home 3, shop 1, product 4, Lenses 0, Help 5, Contact 2. Fix by surface: site-wide 1 (S1), header 1, mega menus 4, phone drawer 1, bag drawer 1, footer 4, floating WhatsApp 1, home 3, shop 3, product 11, Help 3, Contact 1, checkout 8, confirmation 2, content 2, computed route 3.
 
 ## Four build rules for every item
 
@@ -316,7 +316,7 @@
 | 127, 138 | WhatsApp button | S4 | | | clean on the walker | closed |
 | 128 | Details stay 2 columns on a phone | desktop 2, tablet 2 (your choice: live looks better), phone 1, gap 24 | tree | done (2026-10-04): the grid's desktop-only `repeat(2, …)` columns applied at every width over `columns.mobile: 1`; a phone value `minmax(0, 1fr)` added, and the details stack on a phone | clean on the walker | closed |
 | 129 | Label too close to its value | detail cell gap 14px | tree | Solve closed (2026-10-03) | clean on the walker | closed |
-| 130 | Hours | Same as footer 38 | | framework half closed with 38 (2026-10-05, 7689ebb70); the tree values stay with the Contact surface | still open | Solve: hours tree values |
+| 130 | Hours | Same as footer 38 | | closed 2026-10-08: `hoursCondensedInline: true` on cr-ref-contact-18 (row 38's inline; weight 400 and condensed were already set), rebuilt; `independent-check.mjs --surface contact` shows no difference on the hours block, its line or the label (-16, -18, -19) at 375/768/1440. The cause of the 5-6px was `.sgs-business-hours__row`'s hardcoded 0.35em padding, now the `hoursRowPadding` setting (`9ba98f91d`); the inline layout prints no row padding, so no value is needed here | closed 2026-10-08 | closed |
 | 131 | Phone/email hover | S3 (mirrors the page's other links) S2 sweep live on the contact phone and email (class on cr-ref-contact-9, -12; D-87, D-98). | tree | `textColourHover: text` on footer-24, contact-9 and contact-12 (2026-10-07, rebuilt) | closed 2026-10-08 | closed |
 | 133 | Form heading sits high | line height 1.5 | tree | Solve closed (2026-10-03) | clean on the walker | closed |
 | 134 | Social cards compact | card row as a 2-column grid | tree | Solve closed (2026-10-04): both cards fill the row equally (`sgsChildSizing` fill) | clean on the walker | closed |
