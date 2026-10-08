@@ -6587,8 +6587,9 @@
 			"slug": "sgs/multi-button",
 			"attr": "childBtnBorderRadius",
 			"fields": {
+				"css_property": "border-radius",
 				"css_element": "child-button",
-				"_why": "Painted on the child buttons through --sgs-mb-btn-radius-{top-left|top-right|bottom-right|bottom-left} (button/style.css); the same child-button element the manifest gives childBtnBackground."
+				"_why": "Painted on the child buttons through --sgs-mb-btn-radius-{top-left|top-right|bottom-right|bottom-left} (button/style.css, one border-*-radius longhand per corner, written by multi-button/render.php through sgs_corner_object_property_list); the analyser does not follow that prefix-built name to a reader, so the property is named here; the same child-button element the manifest gives childBtnBackground."
 			}
 		},
 		{
