@@ -124,6 +124,9 @@
  *                                     the product-page `brand_logo` binding and
  *                                     the bag drawer's cart lines.)
  *
+ *   helpers-site-info-binding.php   — sgs_bound_site_info_key,
+ *                                     sgs_bound_site_info_is_empty (which Site
+ *                                     Info key an attribute is bound to)
  *   helpers-reviews-inline.php      — sgs_reviews_inline_normalise,
  *                                     sgs_reviews_inline_data (written reviews
  *                                     shaped like the Places API's, so
@@ -180,6 +183,7 @@ require_once __DIR__ . '/helpers-brand-logo.php';
 require_once __DIR__ . '/helpers-button-note.php';
 require_once __DIR__ . '/helpers-empty-tab.php';
 require_once __DIR__ . '/helpers-reviews-inline.php';
+require_once __DIR__ . '/helpers-site-info-binding.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

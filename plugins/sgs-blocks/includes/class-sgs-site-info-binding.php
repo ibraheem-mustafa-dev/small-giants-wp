@@ -75,9 +75,49 @@ final class Sgs_Site_Info_Binding {
 					'source' => $source,
 				),
 				JSON_HEX_TAG | JSON_HEX_AMP
-			) . ';',
+			) . ';' .
+			'window.sgsBlocksData.siteInfo = ' . \wp_json_encode( self::editor_site_info(), JSON_HEX_TAG | JSON_HEX_AMP ) . ';',
 			'before'
 		);
+	}
+
+	/** Site Info keys the editor shows on bound blocks and icons: contact first, then every social. */
+	public const EDITOR_KEYS = array(
+		'phone',
+		'email',
+		'address',
+		'socials.whatsapp',
+		'socials.facebook',
+		'socials.instagram',
+		'socials.twitter',
+		'socials.linkedin',
+		'socials.youtube',
+		'socials.tiktok',
+		'socials.google',
+	);
+
+	/**
+	 * What the editor needs about each contact and social key: its plain value, the link it makes and whether it
+	 * is filled. Only for a user who can edit posts (they already see these values on the pages they edit); the
+	 * editor reads it as `window.sgsBlocksData.siteInfo` and it refreshes when the editor reloads.
+	 *
+	 * @return array<string,array{value:string,link:string,filled:bool}>
+	 */
+	public static function editor_site_info(): array {
+		if ( ! \current_user_can( 'edit_posts' ) ) {
+			return array();
+		}
+		$out = array();
+		foreach ( self::EDITOR_KEYS as $key ) {
+			$value       = self::raw_value( $key );
+			$link        = self::link_for_key( $key );
+			$out[ $key ] = array(
+				'value'  => $value,
+				'link'   => \esc_url_raw( $link ),
+				'filled' => '' !== $link,
+			);
+		}
+		return $out;
 	}
 
 	/**

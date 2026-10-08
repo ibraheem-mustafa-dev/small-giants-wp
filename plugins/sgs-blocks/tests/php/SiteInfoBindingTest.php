@@ -41,6 +41,7 @@ if ( ! function_exists( 'wp_strip_all_tags' ) ) {
 }
 
 require_once __DIR__ . '/../../includes/class-sgs-site-info-binding.php';
+require_once __DIR__ . '/../../includes/helpers-site-info-binding.php';
 
 use PHPUnit\Framework\TestCase;
 use SGS\Blocks\Sgs_Site_Info_Binding as Binding;
@@ -146,6 +147,48 @@ final class SiteInfoBindingTest extends TestCase {
 		Wp_Options_Stub::$user_can    = true;
 		$this->assertSame( '', Binding::get_value( array( 'key' => 'socials.tiktok' ), null, 'linkUrl' ) );
 		$this->assertStringContainsString( 'SGS Site Info', Binding::get_value( array( 'key' => 'socials.tiktok' ), null, 'text' ) );
+	}
+
+	private function block_bound_to( string $key, string $source = 'sgs/site-info' ): array {
+		return array(
+			'blockName' => 'sgs/icon',
+			'attrs'     => array(
+				'metadata' => array(
+					'bindings' => array(
+						'linkUrl' => array(
+							'source' => $source,
+							'args'   => array( 'key' => $key ),
+						),
+					),
+				),
+			),
+		);
+	}
+
+	public function test_bound_key_is_read_from_the_block_metadata(): void {
+		$this->assertSame( 'socials.whatsapp', sgs_bound_site_info_key( $this->block_bound_to( 'socials.whatsapp' ), 'linkUrl' ) );
+		$this->assertNull( sgs_bound_site_info_key( $this->block_bound_to( 'phone' ), 'linkTarget' ), 'another attribute' );
+		$this->assertNull( sgs_bound_site_info_key( $this->block_bound_to( 'phone', 'core/post-meta' ), 'linkUrl' ), 'another source' );
+		$this->assertNull( sgs_bound_site_info_key( array( 'attrs' => array() ), 'linkUrl' ), 'not bound' );
+	}
+
+	public function test_bound_empty_is_true_only_for_a_bound_key_with_no_link(): void {
+		$this->assertTrue( sgs_bound_site_info_is_empty( $this->block_bound_to( 'socials.tiktok' ), 'linkUrl' ) );
+		$this->assertFalse( sgs_bound_site_info_is_empty( $this->block_bound_to( 'socials.whatsapp' ), 'linkUrl' ) );
+		$this->assertFalse( sgs_bound_site_info_is_empty( array( 'attrs' => array() ), 'linkUrl' ), 'an unbound icon is never hidden by this rule' );
+		$this->seed( array( 'phone' => 'ring the bell' ) );
+		$this->assertTrue( sgs_bound_site_info_is_empty( $this->block_bound_to( 'phone' ), 'linkUrl' ), 'a phone with no digits makes no link' );
+	}
+
+	public function test_editor_data_needs_edit_posts(): void {
+		$data = Binding::editor_site_info();
+		$this->assertSame( Binding::EDITOR_KEYS, array_keys( $data ) );
+		$this->assertTrue( $data['socials.whatsapp']['filled'] );
+		$this->assertSame( 'https://wa.me/07700900123', $data['socials.whatsapp']['link'] );
+		$this->assertFalse( $data['socials.tiktok']['filled'] );
+		$this->assertSame( '0121 729 8233', $data['phone']['value'] );
+		Wp_Options_Stub::$user_can = false;
+		$this->assertSame( array(), Binding::editor_site_info() );
 	}
 
 	public function test_visitor_never_sees_the_hint(): void {

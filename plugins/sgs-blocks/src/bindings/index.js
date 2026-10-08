@@ -23,23 +23,15 @@
  *   - `getFieldsList()` (WP 6.9+) is the headline deliverable: it is what
  *     lets core's binding picker offer "Phone", "Email", "Address" etc. as
  *     clickable options instead of a client needing to know the raw key.
- *   - `getValues()` is a REQUIRED registration argument, but there is no
- *     public read path for this data on the client. `Sgs_Site_Info` values
- *     are GDPR-sensitive (phone/email/address/VAT number — see the
- *     `known_keys` sensitivity map in includes/class-sgs-site-info.php) and
- *     the only REST route registered for this store
- *     (includes/class-sgs-site-info-rest.php) is POST-only, for the cloning
- *     pipeline, and explicitly documents "no public read/write of business
- *     data here; reads stay server-side + escaped." Building a GET endpoint
- *     to feed this function would be new scope, not part of C15-2/C15-3, and
- *     a security-relevant decision this file does not make unilaterally.
- *     `getValues()` below therefore returns an empty string per binding: it
- *     never fabricates or exposes a real value client-side. This does NOT
- *     blank the client's editor canvas — every SGS block is dynamic and
- *     already renders via <ServerSideRender> (see memory
- *     `ssr-fixes-hand-built-preview-drift`), so the block-renderer REST
- *     route already resolves the real value server-side, through the exact
- *     same PHP `get_value_callback` that renders it on the frontend.
+ *   - `getValues()` reads `window.sgsBlocksData.siteInfo`, which
+ *     `Sgs_Site_Info_Binding::editor_site_info()` prints into the editor for
+ *     the contact keys (phone, email, address) and every social, and only for
+ *     a user who can edit posts (they already see these values on the pages
+ *     they edit; there is still no public REST read of the store). A link
+ *     attribute gets the link the key makes, any other attribute its plain
+ *     value; a key outside that list resolves to '' in the editor and the
+ *     canvas shows the server-rendered value where the block renders through
+ *     <ServerSideRender>. Values refresh when the editor reloads.
  *   - Write-back (`setValues` / `canUserEditValue`) is C15-4 and explicitly
  *     OUT OF SCOPE. Neither is implemented; per the Block Bindings API, a
  *     source with no `canUserEditValue` is treated as not editable in the
@@ -157,6 +149,12 @@ const SITE_INFO_FIELDS = {
 	},
 };
 
+/**
+ * @param {string} attrName Bound attribute name.
+ * @return {boolean} True for a link attribute: `url`, or a name ending `Url` (linkUrl, imageUrl …).
+ */
+const isLinkAttribute = ( attrName ) => 'url' === attrName || ( attrName.length > 3 && attrName.endsWith( 'Url' ) );
+
 registerBlockBindingsSource( {
 	name: 'sgs/site-info',
 	label: __( 'SGS Site Info', 'sgs-blocks' ),
@@ -164,23 +162,27 @@ registerBlockBindingsSource( {
 	/**
 	 * Resolves the CURRENT bound values for the editor UI.
 	 *
-	 * No client-side read path exists for this store (see the file
-	 * docblock) — returns an empty string per binding rather than
-	 * fabricating a value. The editor CANVAS still shows the real value,
-	 * resolved server-side via the same PHP source through
-	 * <ServerSideRender>; only a secondary UI surface (e.g. a value label
-	 * inside the Attributes panel itself) would show blank instead of the
-	 * live value.
+	 * From `window.sgsBlocksData.siteInfo` (see the file docblock): a link
+	 * attribute gets the key's link, any other attribute its plain value, and
+	 * a key the editor data does not carry gets ''.
 	 *
 	 * @param {Object} params
 	 * @param {Object} params.bindings Map of attribute name -> binding args.
 	 * @return {Object} Map of attribute name -> resolved value.
 	 */
 	getValues( { bindings } ) {
+		const siteInfo = window.sgsBlocksData?.siteInfo || {};
 		const values = {};
 
-		Object.keys( bindings || {} ).forEach( ( attrName ) => {
-			values[ attrName ] = '';
+		Object.entries( bindings || {} ).forEach( ( [ attrName, binding ] ) => {
+			const entry = siteInfo[ binding?.args?.key ];
+			if ( ! entry ) {
+				values[ attrName ] = '';
+				return;
+			}
+			// A link attribute takes the link the key makes; any other attribute its plain value
+			// (Sgs_Site_Info_Binding::is_link_attribute is the PHP twin of this rule).
+			values[ attrName ] = isLinkAttribute( attrName ) ? entry.link : entry.value;
 		} );
 
 		return values;
