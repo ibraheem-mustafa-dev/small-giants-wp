@@ -8082,98 +8082,98 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelFontFamily",
+      "attr": "filePromptFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelFontSize",
+      "attr": "filePromptFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelFontStyle",
+      "attr": "filePromptFontStyle",
       "fields": {
         "css_property": "font-style",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelFontWeight",
+      "attr": "filePromptFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelLetterSpacing",
+      "attr": "filePromptLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelLineHeight",
+      "attr": "filePromptLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelTextAlign",
+      "attr": "filePromptTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelTextColumns",
+      "attr": "filePromptTextColumns",
       "fields": {
         "css_property": "column-count",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelTextDecoration",
+      "attr": "filePromptTextDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelTextTransform",
+      "attr": "filePromptTextTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelTextWrap",
+      "attr": "filePromptTextWrap",
       "fields": {
         "css_property": "text-wrap",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
       "slug": "sgs/form",
-      "attr": "fileLabelWritingMode",
+      "attr": "filePromptWritingMode",
       "fields": {
         "css_property": "writing-mode",
-        "css_element": "file-label"
+        "css_element": "file-prompt"
       }
     },
     {
