@@ -27,13 +27,6 @@
     {
       "kind": "css-black-literal",
       "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
-      "line": 514,
-      "detail": "box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );",
-      "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
-    },
-    {
-      "kind": "css-black-literal",
-      "file": "plugins/sgs-blocks/src/blocks/google-reviews/style.css",
       "line": 850,
       "detail": "box-shadow: 0 4px 14px rgba( 0, 0, 0, 0.1 );",
       "reason": "src/blocks/google-reviews/ is another session's uncommitted work (task-tone-4 brief: never edit it). check-shadow-sources.py --fix deliberately skips this directory, so its shadow sources are left exactly as that session wrote them until it lands its own fix."
