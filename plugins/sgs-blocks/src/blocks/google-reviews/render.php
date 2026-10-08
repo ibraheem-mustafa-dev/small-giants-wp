@@ -692,6 +692,9 @@ $gr_responsive_css .= sgs_typography_css_rule( $attributes, 'footnote', $gr_root
 $gr_responsive_css .= sgs_typography_css_rule( $attributes, 'reviewLink', $gr_root_sel . ' .sgs-google-reviews__review-link' );
 $gr_responsive_css .= sgs_typography_css_rule( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review' );
 $gr_responsive_css .= sgs_typography_css_rule( $attributes, 'seeAll', $gr_root_sel . ' .sgs-google-reviews__see-all' );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'mapsLink', $gr_root_sel . ' .sgs-google-reviews__maps-link' );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'breakdownRow', $gr_root_sel . ' .sgs-google-reviews__breakdown-row' );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'badgeText', $gr_root_sel . ' .sgs-google-reviews__badge-text span' );
 
 $gr_style_engine_args = array();
 

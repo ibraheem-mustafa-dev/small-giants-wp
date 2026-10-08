@@ -199,6 +199,10 @@ export function panelRootStyle( attributes, tier, palette ) {
  */
 export function triggerStyles( attributes, tier, palette, hasPill ) {
 	const badge = { ...textPaintPreview( attributes.badgeTextColour, attributes.badgeTextColourGradient, palette ) };
+	// A plain pill count inherits the pill label's typography; the icon badge and the bubble use their own.
+	if ( ! hasPill || 'bubble' === attributes.pillCountStyle ) {
+		Object.assign( badge, typographyPreviewStyle( attributes, 'badge', tier ) );
+	}
 	const badgeFill = attributes.badgeColourGradient;
 	if ( isCssGradient( badgeFill ) ) {
 		badge[ '--sgs-cart-editor-badge-fill' ] = badgeFill;

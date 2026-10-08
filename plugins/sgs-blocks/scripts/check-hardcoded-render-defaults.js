@@ -1582,11 +1582,8 @@ const E14_BLOCKS_BUILD = false;
 // The ceilings are the counts `--check` MEASURES on a clean HEAD, lowered in the
 // same commit that removes findings. What remains (plugins/sgs-blocks/reports/
 // f3-e14-triage.md §6 holds the full accounting):
-// - CLASS-2 28: findings the triage rates DEFENSIBLE (UI chrome, documented
-//   intent).
+// - CLASS-2 0 and CANNOT-RESOLVE 0: every element the gate found has a control.
 // - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
-// - CANNOT-RESOLVE 2: the cart badge (two rows; its trigger markup is unseen,
-//   CANNOT-TELL).
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
@@ -1600,9 +1597,9 @@ const E14_BLOCKS_BUILD = false;
 // block's editor template) is a front-end element, and the child's own root
 // controls own it (collectTemplateChildOwners).
 const E14_OPEN_BACKLOG = {
-	'CLASS-2':        4,
+	'CLASS-2':        0,
 	'CLASS-3':        1,
-	'CANNOT-RESOLVE': 2,
+	'CANNOT-RESOLVE': 0,
 };
 
 /** Stats and the CLASS 1 evidence list, surfaced by --survey. */

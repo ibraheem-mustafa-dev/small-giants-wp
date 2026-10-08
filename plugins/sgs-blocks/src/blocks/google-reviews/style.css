@@ -199,7 +199,6 @@ a.sgs-google-reviews__maps-link {
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
-	font-size: 13.5px;
 	color: var( --sgs-gr-blue );
 	text-decoration: underline;
 	text-underline-offset: 2px;
@@ -225,7 +224,6 @@ a.sgs-google-reviews__author:focus-visible {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	font-size: 0.875rem;
 	color: var( --sgs-gr-ink );
 }
 
@@ -271,7 +269,6 @@ a.sgs-google-reviews__author:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	gap: 2px;
-	line-height: 1;
 }
 
 /* Star size is the custom property `--sgs-gr-star-size` (set by render.php from `starSize` /
@@ -649,7 +646,6 @@ a.sgs-google-reviews__author:hover {
 }
 
 .sgs-google-reviews__badge-text span {
-	font-size: 0.8125rem;
 	color: var( --sgs-gr-ink-muted );
 }
 

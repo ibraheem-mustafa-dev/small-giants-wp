@@ -286,6 +286,16 @@ if ( '' !== $badge_text_hover_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel . ':hover', $badge_text_hover_effective );
 }
 
+// Badge count text (size, weight) through the shared typography helper, for the
+// icon trigger's overlay badge and the pill's bubble. A plain pill count inherits
+// the pill label's own typography (style.css), so it is left out there.
+if ( 'pill' !== $trigger_style || 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' ) ) {
+	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel );
+	if ( '' !== $badge_typo_css ) {
+		$scoped_css[] = $badge_typo_css;
+	}
+}
+
 // Panel: panelBg (fill) / panelTextColour (text) share .sgs-cart__panel —
 // same split, only rendered when $has_panel (flyout|drawer displayMode).
 // Also HAND-BUILT: the panel's own `--flyout`/`--drawer` modifier classes

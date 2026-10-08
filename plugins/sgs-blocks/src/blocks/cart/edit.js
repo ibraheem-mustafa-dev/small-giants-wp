@@ -244,6 +244,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
+				{ ( ! hasPill || 'bubble' === attributes.pillCountStyle ) && (
+					<PanelBody
+						title={ __( 'Count badge text', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="badge"
+							showWeight
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
+					</PanelBody>
+				) }
+
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }

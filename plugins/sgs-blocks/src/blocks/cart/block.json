@@ -691,6 +691,20 @@
 			"default": "plain",
 			"description": "How the pill shows its item count: plain text beside the label, or a round filled bubble (badgeColour fill, badgeTextColour text)."
 		},
+		"badgeFontSize": {
+			"type": "object",
+			"default": {
+				"desktop": 11
+			}
+		},
+		"badgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"badgeFontWeight": {
+			"type": "string",
+			"default": "700"
+		},
 		"pillFontSize": {
 			"type": "object",
 			"default": {}
