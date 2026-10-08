@@ -130,57 +130,14 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_types' ) ) {
 	 * @return array<int,string>
 	 */
 	function sgs_nav_drawer_chrome_slot_types(): array {
-		return array( '', 'heading', 'label', 'text', 'button', 'google-rating' );
-	}
-}
-
-if ( ! function_exists( 'sgs_nav_drawer_chrome_rating_attrs' ) ) {
-	/**
-	 * The `sgs/google-rating-badge` attributes for the `google-rating` slot
-	 * type: a compact pill with no frame (no border, transparent ground, no
-	 * inline padding; the badge keeps its 44px minimum height), never switched
-	 * to compact mode, with the review count only when the author asked for it.
-	 * The slot's colour, when set, paints the score and caption. The rating,
-	 * count and link are not passed, so the badge reads them from Site Info
-	 * (or live Google data). The editor preview sends the same object.
-	 *
-	 * @param array $attributes Block attributes.
-	 * @return array<string,mixed> The badge's attributes.
-	 */
-	function sgs_nav_drawer_chrome_rating_attrs( array $attributes ): array {
-		$badge  = array(
-			'badgeStyle'       => 'pill',
-			'compactBelow'     => 0,
-			'showCount'        => ! empty( $attributes['chromeSlotBadgeShowCount'] ),
-			'borderStyle'      => 'none',
-			'borderWidth'      => array(
-				'top'    => '0',
-				'right'  => '0',
-				'bottom' => '0',
-				'left'   => '0',
-			),
-			'backgroundColour' => 'transparent',
-			'padding'          => array(
-				'desktop' => array(
-					'right' => '0',
-					'left'  => '0',
-				),
-			),
-		);
-		$colour = trim( (string) ( $attributes['chromeSlotColour'] ?? '' ) );
-		if ( '' !== $colour ) {
-			$badge['scoreColour']   = $colour;
-			$badge['captionColour'] = $colour;
-		}
-		return $badge;
+		return array( '', 'heading', 'label', 'text', 'button' );
 	}
 }
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 	/**
-	 * The free slot: one heading, label, text, button or Google rating badge.
-	 * A button with no link renders nothing (a button that goes nowhere is not
-	 * a control); the badge renders nothing when there is no rating to show.
+	 * The free slot: one heading, label, text or button. A button with no
+	 * link renders nothing (a button that goes nowhere is not a control).
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Trusted markup, or '' when the slot is off or empty.
@@ -188,33 +145,13 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 	function sgs_nav_drawer_chrome_slot_html( array $attributes ): string {
 		$type = (string) ( $attributes['chromeSlotType'] ?? '' );
 		$text = trim( (string) ( $attributes['chromeSlotText'] ?? '' ) );
-		if ( '' === $type || ! in_array( $type, sgs_nav_drawer_chrome_slot_types(), true ) ) {
-			return '';
-		}
-		// The rating badge has no words of its own; every other type needs them.
-		if ( '' === $text && 'google-rating' !== $type ) {
+		if ( '' === $type || '' === $text || ! in_array( $type, sgs_nav_drawer_chrome_slot_types(), true ) ) {
 			return '';
 		}
 
 		$placement = (string) ( $attributes['chromeSlotPlacement'] ?? 'after-logo' );
 		$placement = in_array( $placement, array( 'after-logo', 'center', 'end' ), true ) ? $placement : 'after-logo';
 		$class     = 'sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--' . $type . ' sgs-nav-drawer__chrome-slot--at-' . $placement;
-
-		if ( 'google-rating' === $type ) {
-			$badge = trim(
-				render_block(
-					array(
-						'blockName'    => 'sgs/google-rating-badge',
-						'attrs'        => sgs_nav_drawer_chrome_rating_attrs( $attributes ),
-						'innerBlocks'  => array(),
-						'innerHTML'    => '',
-						'innerContent' => array(),
-					)
-				)
-			);
-			// No rating anywhere: nothing renders and the row can be close-only.
-			return '' === $badge ? '' : '<div class="' . esc_attr( $class ) . '">' . $badge . '</div>';
-		}
 
 		if ( 'button' === $type ) {
 			$url = esc_url( (string) ( $attributes['chromeSlotUrl'] ?? '' ) );
@@ -245,12 +182,86 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_slot_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_nav_drawer_chrome_rating_attrs' ) ) {
+	/**
+	 * The `sgs/google-rating-badge` attributes for the top-row rating: a compact
+	 * pill with no frame (no border, transparent ground, no inline padding; the
+	 * badge keeps its 44px minimum height), never switched to compact mode, with
+	 * the review count only when the author asked for it. `chromeRatingColour`,
+	 * when set, paints the score and caption. The rating, count and link are not
+	 * passed, so the badge reads them from Site Info (or live Google data). The
+	 * editor preview sends the same object.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return array<string,mixed> The badge's attributes.
+	 */
+	function sgs_nav_drawer_chrome_rating_attrs( array $attributes ): array {
+		$badge  = array(
+			'badgeStyle'       => 'pill',
+			'compactBelow'     => 0,
+			'showCount'        => ! empty( $attributes['chromeRatingShowCount'] ),
+			'borderStyle'      => 'none',
+			'borderWidth'      => array(
+				'top'    => '0',
+				'right'  => '0',
+				'bottom' => '0',
+				'left'   => '0',
+			),
+			'backgroundColour' => 'transparent',
+			'padding'          => array(
+				'desktop' => array(
+					'right' => '0',
+					'left'  => '0',
+				),
+			),
+		);
+		$colour = trim( (string) ( $attributes['chromeRatingColour'] ?? '' ) );
+		if ( '' !== $colour ) {
+			$badge['scoreColour']   = $colour;
+			$badge['captionColour'] = $colour;
+		}
+		return $badge;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_chrome_rating_html' ) ) {
+	/**
+	 * The top-row Google rating: the `sgs/google-rating-badge` block in its own
+	 * wrapper, independent of the free slot so a heading and the rating share
+	 * one row.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Trusted markup, or '' when the rating is off or there is no rating to show.
+	 */
+	function sgs_nav_drawer_chrome_rating_html( array $attributes ): string {
+		if ( empty( $attributes['chromeRating'] ) ) {
+			return '';
+		}
+		$placement = 'center' === ( $attributes['chromeRatingPlacement'] ?? 'end' ) ? 'center' : 'end';
+		$badge     = trim(
+			render_block(
+				array(
+					'blockName'    => 'sgs/google-rating-badge',
+					'attrs'        => sgs_nav_drawer_chrome_rating_attrs( $attributes ),
+					'innerBlocks'  => array(),
+					'innerHTML'    => '',
+					'innerContent' => array(),
+				)
+			)
+		);
+		if ( '' === $badge ) {
+			return '';
+		}
+		return '<div class="sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-' . $placement . '">' . $badge . '</div>';
+	}
+}
+
 if ( ! function_exists( 'sgs_nav_drawer_chrome' ) ) {
 	/**
 	 * Wrap the × in the chrome row, add the logo and slot, and append the
 	 * row's scoped CSS to the drawer's own stylesheet string.
 	 *
-	 * A row holding only the × carries `--close-only`, so the FR-36-6
+	 * A row holding only the × (no logo, slot or rating) carries `--close-only`, so the FR-36-6
 	 * `trigger` predicate (render.php) can drop the whole row when the burger
 	 * is the live close control: an empty row renders nothing and costs no space.
 	 *
@@ -263,11 +274,12 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome' ) ) {
 	function sgs_nav_drawer_chrome( array $attributes, string $root_sel, string $close_html, string &$css ): string {
 		$urls = sgs_nav_drawer_chrome_logo_urls( $attributes );
 		$logo = sgs_nav_drawer_chrome_logo_html( $attributes, $urls );
-		$slot = sgs_nav_drawer_chrome_slot_html( $attributes );
+		$slot   = sgs_nav_drawer_chrome_slot_html( $attributes );
+		$rating = sgs_nav_drawer_chrome_rating_html( $attributes );
 
-		$css .= sgs_nav_drawer_chrome_css( $attributes, $root_sel, $urls, '' !== $logo, '' !== $slot );
+		$css .= sgs_nav_drawer_chrome_css( $attributes, $root_sel, $urls, '' !== $logo, '' !== $slot, '' !== $rating );
 
-		$class = 'sgs-nav-drawer__chrome' . ( '' === $logo && '' === $slot ? ' sgs-nav-drawer__chrome--close-only' : '' );
-		return '<div class="' . esc_attr( $class ) . '">' . $close_html . $logo . $slot . '</div>';
+		$class = 'sgs-nav-drawer__chrome' . ( '' === $logo && '' === $slot && '' === $rating ? ' sgs-nav-drawer__chrome--close-only' : '' );
+		return '<div class="' . esc_attr( $class ) . '">' . $close_html . $logo . $slot . $rating . '</div>';
 	}
 }

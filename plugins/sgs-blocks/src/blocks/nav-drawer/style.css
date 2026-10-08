@@ -219,6 +219,39 @@
 	height: fit-content;
 }
 
+/* The Google rating (chromeRating): its own row item beside the free slot, so a
+   heading after the logo and the rating at the end share one row. `end` rides
+   the same auto margin the slot uses and hands the × back its zero margin;
+   when the free slot is also at the end, the rating follows it with no second
+   auto margin. `center` is absolutely centred like the slot's centre. The
+   wrapper is a flex box so the badge's own 44px minimum height sets the row. */
+:where(.sgs-nav-drawer__chrome-rating) {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	min-width: 0;
+}
+
+.sgs-nav-drawer__chrome-rating--at-end {
+	margin-inline-start: auto;
+}
+
+.sgs-nav-drawer__chrome-slot--at-end + .sgs-nav-drawer__chrome-rating--at-end {
+	margin-inline-start: 0;
+}
+
+.sgs-nav-drawer__chrome:has(> .sgs-nav-drawer__chrome-rating--at-end) > .sgs-nav-drawer__close {
+	margin-inline-start: 0;
+}
+
+.sgs-nav-drawer__chrome-rating--at-center {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: fit-content;
+	height: fit-content;
+}
+
 /* The slot as a button: a 44px target. Colour, border, radius and padding
    are chromeButton* attributes (sgs_button_element_style_css), which win. */
 :where(.sgs-nav-drawer__chrome-slot--button) {

@@ -41,6 +41,25 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_display' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_nav_drawer_chrome_close_margin_beside_rating' ) ) {
+	/**
+	 * The close button's start margin on a tier where an end-placed rating is
+	 * shown or hidden: beside a shown rating it needs none (the rating's own
+	 * auto margin pushes both to the end); with the rating hidden it takes the
+	 * auto margin back so it still sits at the row's end.
+	 *
+	 * @param mixed $raw Raw tier value of chromeRatingShow.
+	 * @return string|null
+	 */
+	function sgs_nav_drawer_chrome_close_margin_beside_rating( $raw ) {
+		$display = sgs_nav_drawer_chrome_display( $raw );
+		if ( null === $display ) {
+			return null;
+		}
+		return 'none' === $display ? 'auto' : '0';
+	}
+}
+
 if ( ! function_exists( 'sgs_nav_drawer_chrome_auto_height' ) ) {
 	/**
 	 * The logo image's height wherever a width is set (the emitter's
@@ -87,9 +106,10 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 	 * @param array  $urls       Logo URLs per tier (sgs_nav_drawer_chrome_logo_urls()).
 	 * @param bool   $has_logo   Whether a logo rendered.
 	 * @param bool   $has_slot   Whether the free slot rendered.
+	 * @param bool   $has_rating Whether the Google rating rendered.
 	 * @return string CSS text (no `<style>` wrapper).
 	 */
-	function sgs_nav_drawer_chrome_css( array $attributes, string $root_sel, array $urls, bool $has_logo, bool $has_slot ): string {
+	function sgs_nav_drawer_chrome_css( array $attributes, string $root_sel, array $urls, bool $has_logo, bool $has_slot, bool $has_rating = false ): string {
 		$row_sel   = $root_sel . ' .sgs-nav-drawer__chrome';
 		$close_sel = $root_sel . ' .sgs-nav-drawer__close';
 
@@ -236,6 +256,35 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 						),
 					)
 				);
+			}
+		}
+
+		if ( $has_rating ) {
+			$show = sgs_nav_drawer_chrome_show_tiers( $attributes['chromeRatingShow'] ?? array(), null );
+			if ( $show ) {
+				$css .= sgs_emit_responsive_css(
+					$row_sel . ' .sgs-nav-drawer__chrome-rating',
+					array(
+						array(
+							'value'     => $show,
+							'css'       => 'display',
+							'transform' => 'sgs_nav_drawer_chrome_display',
+						),
+					)
+				);
+				if ( 'center' !== ( $attributes['chromeRatingPlacement'] ?? 'end' ) ) {
+					// style.css zeroes the ×'s auto margin beside an end rating; a tier that hides the rating gives it back.
+					$css .= sgs_emit_responsive_css(
+						$row_sel . ' > .sgs-nav-drawer__close',
+						array(
+							array(
+								'value'     => $show,
+								'css'       => 'margin-inline-start',
+								'transform' => 'sgs_nav_drawer_chrome_close_margin_beside_rating',
+							),
+						)
+					);
+				}
 			}
 		}
 

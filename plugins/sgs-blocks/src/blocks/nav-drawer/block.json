@@ -37,6 +37,10 @@
 					"rule": "states",
 					"reason": "The free slot's colour applies to its heading, label or text types, which are static text with no hover state. The button type carries its own full base-and-hover set (chromeButtonColour*). The gradient sibling (chromeSlotColourGradient) is wired."
 				},
+				"chromeRatingColour": {
+					"rule": "states",
+					"reason": "The top-row Google rating's colour paints the badge's score and caption, a link whose own hover feedback belongs to the badge block; the drawer offers one colour for it."
+				},
 				"closeBorderColour": {
 					"rule": "states",
 					"reason": "The close box border keeps one colour; the close button's hover and focus feedback is its existing opacity fade and focus ring (style.css), so there is no second border state to paint."
@@ -232,7 +236,19 @@
 						"tag": "chromeSlotHeadingLevel",
 						"css:display": "chromeSlotShow"
 					},
-					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text, button or google-rating; chromeSlotText is its words, and the google-rating badge needs none: it reads Site Info). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
+					"_note": "The one optional free slot in the chrome row (chromeSlotType heading, label, text or button; chromeSlotText is its words). The typography set uses the `chromeSlot` prefix through sgs_typography_css_rule(); chromeSlotHeadingLevel sets the tag for the heading type (the product-card headingLevel precedent). The button type's look is the separate `chromeButton` element."
+				},
+				"chromeRating": {
+					"label": "Top row Google rating",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "chromeRatingColour",
+						"css:display": "chromeRatingShow"
+					},
+					"_note": "The Google rating badge in the chrome row (chromeRating on), independent of the free slot so both can sit in one row. It renders the sgs/google-rating-badge block with the rating, count and link from Site Info (or live Google data); chromeRatingColour paints its score and caption, chromeRatingShow hides it per device, chromeRatingPlacement puts it centred or at the end beside the close button."
 				},
 				"chromeButton": {
 					"label": "Top row button",
@@ -500,15 +516,9 @@
 				"heading",
 				"label",
 				"text",
-				"button",
-				"google-rating"
+				"button"
 			],
-			"description": "The top row's one free slot: none, a heading, a label, a line of text, a button or a Google rating badge (rating, review count and link from Site Info, or live Google data; nothing is shown when there is no rating)."
-		},
-		"chromeSlotBadgeShowCount": {
-			"type": "boolean",
-			"default": false,
-			"description": "Show the number of reviews beside the rating when the slot is a Google rating badge. Off by default: the top row is narrow."
+			"description": "The top row's one free slot: none, a heading, a label, a line of text or a button."
 		},
 		"chromeSlotText": {
 			"type": "string",
@@ -561,6 +571,35 @@
 			"type": "string",
 			"default": "",
 			"description": "Text gradient for the heading, label or text slot; non-empty wins over chromeSlotColour."
+		},
+		"chromeRating": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the Google rating in the top row. The rating, review count and link come from Site Info, or live Google data when connected; nothing is shown when there is no rating."
+		},
+		"chromeRatingPlacement": {
+			"type": "string",
+			"default": "end",
+			"enum": [
+				"center",
+				"end"
+			],
+			"description": "Where the Google rating sits in the row: centred in the row, or at the end beside the close button."
+		},
+		"chromeRatingShow": {
+			"type": "object",
+			"default": {},
+			"description": "Show the Google rating, per device (true or false). Unset shows it."
+		},
+		"chromeRatingShowCount": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the number of reviews beside the rating. Off by default: the top row is narrow."
+		},
+		"chromeRatingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the Google rating's score and caption. Unset follows the badge's own colour."
 		},
 		"chromeSlotFontSize": {
 			"type": "number"

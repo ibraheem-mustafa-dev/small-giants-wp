@@ -1,8 +1,8 @@
 <?php
 /**
- * Tests: the nav drawer's `google-rating` top-row slot type.
+ * Tests: the nav drawer's top-row Google rating (`chromeRating`), an item independent of the free slot.
  *
- * Runs the REAL includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_slot_html() in a child PHP
+ * Runs the REAL includes/nav-drawer-chrome.php (sgs_nav_drawer_chrome() and its helpers) in a child PHP
  * process through the QA harness (scripts/qa/lib/render-css-harness.php, via --render-file). The
  * harness's render_block() is a stub, so a temporary auto_prepend_file supplies a render_block() that
  * runs the REAL src/blocks/google-rating-badge/render.php with the block.json defaults merged in
@@ -110,121 +110,202 @@ final class NavDrawerChromeRatingTest extends TestCase {
 	}
 
 	/**
-	 * The slot markup for the given attributes.
+	 * The whole chrome row markup and its scoped CSS.
+	 *
+	 * @param array<string, mixed> $attrs     Nav drawer attributes.
+	 * @param array<string, mixed> $site_info Site Info values.
+	 * @return array{html: string, css: string}
+	 */
+	private function row( array $attrs, array $site_info = self::SITE_INFO ): array {
+		$out                = $this->run_child(
+			'$css = ""; echo sgs_nav_drawer_chrome( $attributes, ".root", "<button class=\"sgs-nav-drawer__close\"></button>", $css ); echo "@@CSS@@" . $css;',
+			$attrs,
+			$site_info
+		);
+		list( $html, $css ) = explode( '@@CSS@@', $out, 2 );
+		return array(
+			'html' => $html,
+			'css'  => $css,
+		);
+	}
+
+	/**
+	 * The rating wrapper's markup alone.
 	 *
 	 * @param array<string, mixed> $attrs     Nav drawer attributes.
 	 * @param array<string, mixed> $site_info Site Info values.
 	 */
-	private function slot( array $attrs, array $site_info = self::SITE_INFO ): string {
-		return trim( $this->run_child( 'echo sgs_nav_drawer_chrome_slot_html( $attributes );', $attrs, $site_info ) );
+	private function rating( array $attrs, array $site_info = self::SITE_INFO ): string {
+		return trim( $this->run_child( 'echo sgs_nav_drawer_chrome_rating_html( $attributes );', $attrs, $site_info ) );
 	}
 
-	public function test_rating_type_renders_the_badge_inside_the_slot_wrapper(): void {
-		$html = $this->slot(
+	public function test_the_rating_renders_beside_a_heading_slot_in_one_row(): void {
+		$row = $this->row(
 			array(
-				'chromeSlotType'      => 'google-rating',
-				'chromeSlotPlacement' => 'end',
+				'chromeSlotType'        => 'heading',
+				'chromeSlotText'        => 'EXAMPLE BRAND',
+				'chromeSlotPlacement'   => 'after-logo',
+				'chromeRating'          => true,
+				'chromeRatingPlacement' => 'end',
 			)
-		);
-		$this->assertStringStartsWith( '<div class="sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--google-rating sgs-nav-drawer__chrome-slot--at-end">', $html );
-		$this->assertStringContainsString( 'sgs-google-rating-badge', $html );
-		$this->assertStringContainsString( 'href="https://www.google.com/maps/place/example"', $html );
-		$this->assertStringContainsString( '4.7', $html );
+		)['html'];
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-slot--heading', $row );
+		$this->assertStringContainsString( 'EXAMPLE BRAND', $row );
+		$this->assertStringContainsString( '<div class="sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-end">', $row );
+		$this->assertStringContainsString( 'sgs-google-rating-badge', $row );
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome--close-only', $row );
+		// The heading comes first, then the rating, inside the one row element.
+		$this->assertLessThan( strpos( $row, 'sgs-nav-drawer__chrome-rating' ), strpos( $row, 'EXAMPLE BRAND' ) );
+		$this->assertSame( 1, substr_count( $row, '<div class="sgs-nav-drawer__chrome' ) - substr_count( $row, '<div class="sgs-nav-drawer__chrome-' ) );
 		// Spec 32: no inline style declaration on the front end.
-		$this->assertStringNotContainsString( ' style="', $html );
+		$this->assertStringNotContainsString( ' style="', $row );
 
-		// Negative control: the text type with no words renders nothing, so the wrapper is not a side effect of the harness.
-		$this->assertSame( '', $this->slot( array( 'chromeSlotType' => 'text' ) ) );
-	}
-
-	public function test_no_rating_anywhere_returns_an_empty_string(): void {
-		$attrs = array( 'chromeSlotType' => 'google-rating' );
-		$this->assertSame( '', $this->slot( $attrs, array() ) );
-		// Negative control: the same attributes with a Site Info rating render the slot.
-		$this->assertNotSame( '', $this->slot( $attrs ) );
-	}
-
-	public function test_a_row_with_only_the_rating_slot_and_no_rating_is_close_only(): void {
-		$body  = '$css = ""; echo sgs_nav_drawer_chrome( $attributes, ".root", "<button></button>", $css );';
-		$attrs = array( 'chromeSlotType' => 'google-rating' );
-		$none  = $this->run_child( $body, $attrs, array() );
-		$this->assertStringContainsString( 'sgs-nav-drawer__chrome--close-only', $none );
-		// Negative control: with a rating the row is not close-only.
-		$rated = $this->run_child( $body, $attrs, self::SITE_INFO );
-		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome--close-only', $rated );
-		$this->assertStringContainsString( 'sgs-google-rating-badge', $rated );
-	}
-
-	public function test_the_type_list_includes_google_rating(): void {
-		$list = json_decode( $this->run_child( 'echo json_encode( sgs_nav_drawer_chrome_slot_types() );', array(), array() ), true );
-		$this->assertContains( 'google-rating', $list );
-		// Negative control: an invented type is not in the list.
-		$this->assertNotContains( 'bogus', $list );
-
-		// The PHP list mirrors block.json's enum.
-		$meta = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/block.json' ), true );
-		$this->assertEqualsCanonicalizing( $meta['attributes']['chromeSlotType']['enum'], $list );
-		$this->assertFalse( $meta['attributes']['chromeSlotBadgeShowCount']['default'] );
-	}
-
-	public function test_an_unknown_type_renders_nothing(): void {
-		$this->assertSame(
-			'',
-			$this->slot(
-				array(
-					'chromeSlotType' => 'bogus',
-					'chromeSlotText' => 'Hello',
-				)
+		// Negative control: the same heading with the rating off has no rating.
+		$off = $this->row(
+			array(
+				'chromeSlotType' => 'heading',
+				'chromeSlotText' => 'EXAMPLE BRAND',
 			)
-		);
+		)['html'];
+		$this->assertStringContainsString( 'EXAMPLE BRAND', $off );
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating', $off );
+		$this->assertStringNotContainsString( 'sgs-google-rating-badge', $off );
 	}
 
-	public function test_show_count_controls_the_review_count(): void {
-		$base = array( 'chromeSlotType' => 'google-rating' );
-		$off  = $this->slot( $base + array( 'chromeSlotBadgeShowCount' => false ) );
+	public function test_rating_off_renders_nothing_even_with_site_info_data(): void {
+		$this->assertSame( '', $this->rating( array( 'chromeRating' => false ) ) );
+		$this->assertSame( '', $this->rating( array() ) );
+		// Negative control: switched on, the same data renders the badge.
+		$this->assertStringContainsString( 'sgs-google-rating-badge', $this->rating( array( 'chromeRating' => true ) ) );
+	}
+
+	public function test_no_rating_data_gives_nothing_and_a_close_only_row(): void {
+		$attrs = array( 'chromeRating' => true );
+		$this->assertSame( '', $this->rating( $attrs, array() ) );
+		$none = $this->row( $attrs, array() )['html'];
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome--close-only', $none );
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating', $none );
+		// Negative control: with a rating the row is not close-only.
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome--close-only', $this->row( $attrs )['html'] );
+		// A heading slot keeps the row open even with no rating data.
+		$slot_only = $this->row(
+			$attrs + array(
+				'chromeSlotType' => 'heading',
+				'chromeSlotText' => 'EXAMPLE BRAND',
+			),
+			array()
+		)['html'];
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome--close-only', $slot_only );
+	}
+
+	public function test_show_count_controls_the_visible_review_count(): void {
+		$base = array( 'chromeRating' => true );
+		$off  = $this->rating( $base + array( 'chromeRatingShowCount' => false ) );
 		$this->assertStringContainsString( 'sgs-google-rating-badge', $off );
 		$this->assertStringNotContainsString( 'sgs-google-rating-badge__count', $off );
 		// The visually hidden accessible name always carries the count; only the visible caption is switched.
 		$this->assertStringNotContainsString( '>15 reviews<', $off );
 
-		$on = $this->slot( $base + array( 'chromeSlotBadgeShowCount' => true ) );
+		$on = $this->rating( $base + array( 'chromeRatingShowCount' => true ) );
 		$this->assertStringContainsString( 'sgs-google-rating-badge__count', $on );
 		$this->assertStringContainsString( '>15 reviews<', $on );
 	}
 
-	public function test_the_badge_is_unframed_and_follows_the_slot_colour(): void {
-		$base  = array( 'chromeSlotType' => 'google-rating' );
-		$plain = $this->slot( $base );
-		$this->assertStringContainsString( 'border-style:none', $plain );
-		$this->assertStringNotContainsString( '#ff0000', $plain );
-
-		$coloured = $this->slot( $base + array( 'chromeSlotColour' => '#ff0000' ) );
-		$this->assertStringContainsString( '#ff0000', $coloured );
+	public function test_placement_classes(): void {
+		$base   = array( 'chromeRating' => true );
+		$center = $this->rating( $base + array( 'chromeRatingPlacement' => 'center' ) );
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-rating--at-center', $center );
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating--at-end', $center );
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-rating--at-end', $this->rating( $base + array( 'chromeRatingPlacement' => 'end' ) ) );
+		// The default and an off-enum value both fall back to the end.
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-rating--at-end', $this->rating( $base ) );
+		$bad = $this->rating( $base + array( 'chromeRatingPlacement' => 'after-logo' ) );
+		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-rating--at-end', $bad );
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating--at-center', $bad );
 	}
 
-	public function test_other_types_still_require_text(): void {
-		$with = $this->slot(
+	public function test_per_device_show_hides_the_rating_by_tier(): void {
+		$base = array( 'chromeRating' => true );
+		$css  = $this->row(
+			$base + array(
+				'chromeRatingShow' => array(
+					'desktop' => true,
+					'mobile'  => false,
+				),
+			)
+		)['css'];
+		$this->assertStringContainsString( '.sgs-nav-drawer__chrome-rating', $css );
+		$this->assertMatchesRegularExpression( '/\.sgs-nav-drawer__chrome-rating\{[^}]*display:none/', $css );
+		$this->assertStringContainsString( '@media', $css );
+		// Negative control: unset shows on every device, so no rating rule is emitted.
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating', $this->row( $base )['css'] );
+		// The slot's own per-device switch does not hide the rating.
+		$slot_hidden = $this->row( $base + array( 'chromeSlotShow' => array( 'mobile' => false ) ) )['css'];
+		$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-rating', $slot_hidden );
+	}
+
+	public function test_a_tier_that_hides_an_end_rating_gives_the_close_button_its_auto_margin_back(): void {
+		$hidden_on_mobile = array(
+			'chromeRating'     => true,
+			'chromeRatingShow' => array(
+				'desktop' => true,
+				'mobile'  => false,
+			),
+		);
+		$css = $this->row( $hidden_on_mobile )['css'];
+		$this->assertMatchesRegularExpression( '/\.sgs-nav-drawer__close\{[^}]*margin-inline-start:auto/', $css );
+		$this->assertMatchesRegularExpression( '/\.sgs-nav-drawer__close\{[^}]*margin-inline-start:0/', $css );
+		// Negative control: a centred rating never touches the close button's margin.
+		$centred = $this->row( $hidden_on_mobile + array( 'chromeRatingPlacement' => 'center' ) )['css'];
+		$this->assertStringNotContainsString( 'margin-inline-start', $centred );
+	}
+
+	public function test_the_badge_is_unframed_and_follows_the_rating_colour(): void {
+		$base  = array( 'chromeRating' => true );
+		$plain = $this->rating( $base );
+		$this->assertStringContainsString( 'border-style:none', $plain );
+		$this->assertStringNotContainsString( '#ff0000', $plain );
+		$this->assertStringContainsString( '#ff0000', $this->rating( $base + array( 'chromeRatingColour' => '#ff0000' ) ) );
+		// The free slot's colour does not paint the rating.
+		$this->assertStringNotContainsString( '#00ff00', $this->rating( $base + array( 'chromeSlotColour' => '#00ff00' ) ) );
+	}
+
+	public function test_the_slot_types_are_the_original_five(): void {
+		$list = json_decode( $this->run_child( 'echo json_encode( sgs_nav_drawer_chrome_slot_types() );', array(), array() ), true );
+		$this->assertSame( array( '', 'heading', 'label', 'text', 'button' ), $list );
+		// Negative control: the rating is not a slot type.
+		$this->assertNotContains( 'google-rating', $list );
+
+		$meta = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/nav-drawer/block.json' ), true );
+		$this->assertSame( $list, $meta['attributes']['chromeSlotType']['enum'] );
+		$this->assertFalse( $meta['attributes']['chromeRating']['default'] );
+		$this->assertSame( array( 'center', 'end' ), $meta['attributes']['chromeRatingPlacement']['enum'] );
+		$this->assertSame( 'end', $meta['attributes']['chromeRatingPlacement']['default'] );
+
+		// A slot of the retired type renders nothing.
+		$body = 'echo sgs_nav_drawer_chrome_slot_html( $attributes );';
+		$this->assertSame( '', trim( $this->run_child( $body, array( 'chromeSlotType' => 'google-rating' ), self::SITE_INFO ) ) );
+		// Negative control: a real slot type with words renders.
+		$this->assertNotSame( '', trim( $this->run_child( $body, array( 'chromeSlotType' => 'label', 'chromeSlotText' => 'Hi' ), self::SITE_INFO ) ) );
+	}
+
+	public function test_slot_types_still_require_text(): void {
+		$with = $this->row(
 			array(
 				'chromeSlotType' => 'heading',
 				'chromeSlotText' => 'Menu',
 			)
-		);
+		)['html'];
 		$this->assertStringContainsString( 'sgs-nav-drawer__chrome-slot--heading', $with );
-		$this->assertStringContainsString( 'Menu', $with );
 
 		foreach ( array( 'heading', 'label', 'text', 'button' ) as $type ) {
-			$this->assertSame(
-				'',
-				$this->slot(
-					array(
-						'chromeSlotType' => $type,
-						'chromeSlotUrl'  => 'https://example.com/',
-					)
-				),
-				$type . ' with no words must render nothing'
-			);
+			$html = $this->row(
+				array(
+					'chromeSlotType' => $type,
+					'chromeSlotUrl'  => 'https://example.com/',
+				)
+			)['html'];
+			$this->assertStringNotContainsString( 'sgs-nav-drawer__chrome-slot', $html, $type . ' with no words must render nothing' );
 		}
-		// Negative control: the rating type is the only one that needs no words.
-		$this->assertNotSame( '', $this->slot( array( 'chromeSlotType' => 'google-rating' ) ) );
 	}
 }

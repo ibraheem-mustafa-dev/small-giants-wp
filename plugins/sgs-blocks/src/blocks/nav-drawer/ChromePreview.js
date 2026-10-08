@@ -27,8 +27,8 @@ function logoUrlFor( attributes, tier ) {
 }
 
 /**
- * The `sgs/google-rating-badge` attributes for the google-rating slot; the
- * same object includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_attrs sends.
+ * The `sgs/google-rating-badge` attributes for the top-row rating; the same
+ * object includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_attrs sends.
  *
  * @param {Object} attributes Block attributes.
  * @return {Object} The badge's attributes.
@@ -37,13 +37,13 @@ function ratingBadgeAttributes( attributes ) {
 	const badge = {
 		badgeStyle: 'pill',
 		compactBelow: 0,
-		showCount: !! attributes.chromeSlotBadgeShowCount,
+		showCount: !! attributes.chromeRatingShowCount,
 		borderStyle: 'none',
 		borderWidth: { top: '0', right: '0', bottom: '0', left: '0' },
 		backgroundColour: 'transparent',
 		padding: { desktop: { right: '0', left: '0' } },
 	};
-	const colour = ( attributes.chromeSlotColour || '' ).trim();
+	const colour = ( attributes.chromeRatingColour || '' ).trim();
 	if ( colour ) {
 		badge.scoreColour = colour;
 		badge.captionColour = colour;
@@ -65,13 +65,14 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 	const showLogo = !! logoUrl && false !== resolveTier( attributes.chromeLogoShow, tier, true ).value;
 	const type = attributes.chromeSlotType || '';
 	const text = ( attributes.chromeSlotText || '' ).trim();
-	const isRating = 'google-rating' === type;
 	const showSlot =
 		'' !== type &&
-		( isRating || '' !== text ) &&
+		'' !== text &&
 		( 'button' !== type || !! attributes.chromeSlotUrl ) &&
 		false !== resolveTier( attributes.chromeSlotShow, tier, true ).value;
 	const placement = attributes.chromeSlotPlacement || 'after-logo';
+	const showRating = !! attributes.chromeRating && false !== resolveTier( attributes.chromeRatingShow, tier, true ).value;
+	const ratingPlacement = 'center' === attributes.chromeRatingPlacement ? 'center' : 'end';
 	const logoWidth = tierLengthPreview( attributes.chromeLogoWidth, tier );
 	const linkedLogo = ! Object.prototype.hasOwnProperty.call( attributes, 'chromeLogoLink' ) || !! attributes.chromeLogoLink;
 	const LogoTag = linkedLogo ? 'a' : 'span';
@@ -103,14 +104,7 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 					/>
 				</LogoTag>
 			) }
-			{ showSlot && isRating && (
-				<div
-					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--google-rating sgs-nav-drawer__chrome-slot--at-${ placement }` }
-				>
-					<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
-				</div>
-			) }
-			{ showSlot && ! isRating && (
+			{ showSlot && (
 				<SlotTag
 					className={ `sgs-nav-drawer__chrome-slot sgs-nav-drawer__chrome-slot--${ type } sgs-nav-drawer__chrome-slot--at-${ placement }` }
 					style={ chromeSlotStyle( attributes, tier, palette ) }
@@ -118,6 +112,11 @@ export default function ChromePreview( { attributes, deviceTier, palette, childr
 				>
 					{ text }
 				</SlotTag>
+			) }
+			{ showRating && (
+				<div className={ `sgs-nav-drawer__chrome-rating sgs-nav-drawer__chrome-rating--at-${ ratingPlacement }` }>
+					<ServerSideRender block="sgs/google-rating-badge" attributes={ ratingBadgeAttributes( attributes ) } />
+				</div>
 			) }
 		</div>
 	);
