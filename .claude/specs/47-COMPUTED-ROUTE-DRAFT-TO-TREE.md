@@ -652,8 +652,9 @@ Ref classes stay on built blocks: they carry no style and no client name. A site
        editor, across every block that wires the shared border panel's radius, and the media atoms emit one property
        per side or corner (`check-box-corners-blocks-live.mjs` 42/42). The route needs no change for corners:
        `lib/resolve.mjs::radiusWrite` already writes all four corners per tier. No block reads WordPress's native
-       `style.border` any more (P2-g step 0). Open: P2-b the `var()` holdouts, P2-e the Eye Care tier boxes holding an
-       explicit zero, and P2-g's shared border function.
+       `style.border` any more (P2-g step 0). P2-b (the `var()` holdouts) and P2-h are done and live 2026-10-08: the route seeds only a border width's unset sides
+       (`lib/resolve.mjs::seedSides`). Open: P2-e the Eye Care tier boxes holding an explicit zero, and P2-g's shared border
+       function.
      - **Route (2026-10-07):** the four route defects are closed: canvas candidates mode (§3.8), CR4 (a large block
        calibrates: each page load gets `lib/calibrate-chunk.mjs::EDITOR_TIMEOUT_MS`, and the run restarts itself with
        the bigger heap; `sgs/nav-bar-menu` 71 settings, 46 of its 54 dead are states the calibration page cannot show),

@@ -122,9 +122,9 @@ files**.
 - **157 call sites** interpolate the value after the property name — `"padding:" . $v`. A longhand
   return would emit `padding:padding-top:12px`, invalid CSS the browser drops entirely. The helper has
   **no test coverage at all**.
-- **Some sites store the shorthand in one CSS custom property** read as `padding: var(--x)`, so a
-  longhand cannot replace the value in place; each needs one property per side or corner (the media atoms
-  did this in CR6 P2-c). The open list is CR6 plan Phase 2 row P2-b.
+- **Sites that stored the shorthand in one CSS custom property** (read as `padding: var(--x)`) now print one property
+  per set side or corner (the media atoms in CR6 P2-c, the six holdouts in P2-b); the four border widths stay
+  zero-filled by design.
 - **A JS consumer encodes the zero-fill deliberately**: `scripts/computed-route/lib/resolve.mjs::seedSides`,
   with a test named **"MUST FAIL TO ZERO"** asserting the zero-fill. ✅ **Landed with the helper change
   (2026-10-07):** `seedSides` now seeds unset sides only where a box still zero-fills.
