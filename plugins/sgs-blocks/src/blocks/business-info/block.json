@@ -692,7 +692,9 @@
 				"hours-row": {
 					"label": "Hours row",
 					"order": 6,
-					"clusters": [],
+					"clusters": [
+						"layout"
+					],
 					"prefix": "hoursRow",
 					"attrMap": {
 						"css:padding": "hoursRowPadding"
