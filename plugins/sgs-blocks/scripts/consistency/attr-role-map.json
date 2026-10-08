@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\Users\\Bean\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13200,
+    "row_count": 13201,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -8597,6 +8597,7 @@
     "sgs/post-grid::contentWidth": "layout",
     "sgs/post-grid::dragMomentum": "behaviour",
     "sgs/post-grid::dragToScroll": "behaviour",
+    "sgs/post-grid::emptyMessage": "text-content",
     "sgs/post-grid::excerptColour": "color",
     "sgs/post-grid::excerptColourGradient": "colour-gradient",
     "sgs/post-grid::excerptFontFamily": "typography",
