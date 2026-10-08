@@ -91,6 +91,20 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
     PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: the 106,
     to be diagnosed per mechanism, largest groups first (by property: background-image 19, grid-template-columns 10, text-indent
     9; by block: nav-bar-menu 10, nav-drawer-menu 9, hero 7, cta-section 6), plus the `oneWidth` probe list (23 today).
+    The nav groups wait for the nav-bar-menu recalibration another session was running on 2026-10-08 (it rewrites their caches).
+    **hero and cta-section diagnosed 2026-10-08 (13 rows, code and cache reading, not yet proven by a render):**
+    - Block code, 4 rows. `hero/style.css::section.sgs-hero{max-width:none}` out-ranks the wrapper's scoped `max-width`
+      (`maxWidth`). `cta-section/style.css::.sgs-cta-section` reads the button-preset `hover-transition` token before
+      `--sgs-transition-duration`, and Eye Care's snapshot sets that token to 0.25s, so `transitionDuration` never wins.
+      `cta-section/render.php` nulls `backgroundImage` for the wrapper, so its tier images (`backgroundImageTablet/Mobile`)
+      have no `::before` layer to paint on.
+    - Calibration preconditions and markers, 8 rows (`lib/calibrate-instances.mjs::preconditionsFor`,
+      `lib/calibrate-markers.mjs::markersFor`). hero's tier images need a base `backgroundImage`. `textIndent` (hero and cta)
+      paints only between two adjacent text blocks, which no fixture has. hero's `bgSvgOpacity` needs `bgSvgContent` and an
+      integer marker (`absint` turns 0.37 into 0). `bgZoomStart` needs `bgKenBurnsMode: zoom-out-once` and a marker in
+      100-150. `gridTemplateColumns` needs `variant: split` and a track-list marker. cta's `backgroundImage` is the legacy
+      twin of `backgroundMedia`, which the fixture always sets.
+    - Unresolved, 1 row: cta `textColour`; the next step is rendering one instance with a hex colour and reading its `color`.
   - `mega-group`'s discovery data is empty (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though
     Spec 47 L1.3 resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are
     triaged F `no-setting` only because of it. Ruled out 2026-10-07: the render (a server `do_blocks` of mega-group with
