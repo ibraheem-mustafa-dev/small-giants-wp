@@ -1983,6 +1983,22 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -27849,6 +27865,15 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "hoursRowJustify",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "hours-row"
       }
     },
     {
