@@ -292,8 +292,8 @@ depth-first index; it is appended to any existing `className`. Then rebuild once
 - **Hardcode:** the setting holds the draft value, or its logged snap, and the paint still differs beyond the walker's
   tolerance and the snap's distance. Framework repair. It holds whether Solve wrote the value this run or the tree
   already held it (`solve.mjs::writeRound` records the held groups; a measure-only run reads them against a copy of the
-  tree). The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row the
-  tree already holds, the rule that wins on the live page beside the rule that carries the draft value
+  tree). The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row, the rule
+  that wins on the live page beside the rule that carries the draft value
   (`lib/winning-rule.mjs`, Chrome DevTools' matched rules; `--no-rules` skips the browser read).
 - **Missing setting:** the resolver returned `no-setting`. Framework new control.
 - **Issue and cause views:** the report also lists each surviving style or hover row's issue (one element, property and

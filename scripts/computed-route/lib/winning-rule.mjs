@@ -13,12 +13,22 @@ const SIDES = { top: 'block-start', bottom: 'block-end', left: 'inline-start', r
 // Every property name that can set `prop`: itself, the logical longhand, and the shorthands covering it.
 export function propertyFamily( prop ) {
 	const m = /^(margin|padding)-(top|right|bottom|left)$/.exec( prop );
-	if ( ! m ) {
-		return [ prop ];
+	if ( m ) {
+		const [ , box, side ] = m;
+		const logical = side in SIDES && ( 'top' === side || 'bottom' === side ) ? `${ box }-block` : `${ box }-inline`;
+		return [ prop, `${ box }-${ SIDES[ side ] }`, logical, box ];
 	}
-	const [ , box, side ] = m;
-	const logical = side in SIDES && ( 'top' === side || 'bottom' === side ) ? `${ box }-block` : `${ box }-inline`;
-	return [ prop, `${ box }-${ SIDES[ side ] }`, logical, box ];
+	const b = /^border-(top|right|bottom|left)-(width|color|style)$/.exec( prop );
+	if ( b ) {
+		return [ prop, `border-${ b[ 1 ] }`, `border-${ b[ 2 ] }`, 'border' ];
+	}
+	if ( /^border-(width|color|style)$/.test( prop ) ) {
+		return [ prop, 'border' ];
+	}
+	// A longhand set through its shorthand: the rule that wins may name only the shorthand.
+	const shorthand = [ [ /^transition-/, 'transition' ], [ /^animation-/, 'animation' ], [ /^background-/, 'background' ], [ /^(font-(size|weight|family|style)|line-height)$/, 'font' ],
+		[ /^(row|column)-gap$/, 'gap' ], [ /^text-decoration-/, 'text-decoration' ], [ /^flex-(grow|shrink|basis)$/, 'flex' ], [ /^overflow-(x|y)$/, 'overflow' ] ].find( ( [ re ] ) => re.test( prop ) );
+	return shorthand ? [ prop, shorthand[ 1 ] ] : [ prop ];
 }
 
 const clean = ( v ) => String( v ).replace( /\s*!important\s*$/, '' ).trim();
@@ -50,7 +60,7 @@ export function explainCascade( matched, prop, draft, sources = {} ) {
 
 export const describeCascade = ( ex, prop ) => {
 	if ( ! ex?.winner ) {
-		return null;
+		return `no matched rule sets ${ prop } (inherited, or the browser's own default)`;
 	}
 	const at = ( d ) => `\`${ d.selector }\`${ d.specificity ? ` (${ d.specificity })` : '' } in ${ d.source }${ d.media ? ` @media ${ d.media }` : '' } sets ${ d.property }: ${ d.value }${ d.important ? ' !important' : '' }`;
 	return ex.carrier ? `winning rule ${ at( ex.winner ) }; losing rule ${ at( ex.carrier ) }` : `winning rule ${ at( ex.winner ) }; no rule sets ${ prop } to the draft's value`;
@@ -62,7 +72,7 @@ export const rowSelector = ( row ) => ( row.path ? `.${ row.ref } > ${ row.path 
 // Reads the winning rule of every given row (rows: Hardcode rows the tree holds) on the live page. `liveUrl` may hold {cb}.
 // Only the walker's default load state is read (a row needing a scripted state keeps no winning rule and says why).
 // Returns a Map: row -> { text, winner, carrier } or { note }.
-export async function readWinningRules( rows, { liveUrl, restState = 'opening', headless = ! process.env.SGS_HEADED } ) {
+export async function readWinningRules( rows, { liveUrl, restState = 'opening', headless = process.argv.includes( '--headless' ) } ) {
 	const out = new Map();
 	const todo = rows.filter( ( r ) => {
 		if ( r.state !== restState ) {

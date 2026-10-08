@@ -331,6 +331,12 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 	return { writes, gaps, held: holds };
 }
 
+// The groups whose setting already holds the draft value, read against the final walk on a copy of the tree: nothing is
+// written, and the token-snap log the caller passes is left as it was (the copy's resolve calls would repeat its entries).
+export function heldGroups( report, tree, opts ) {
+	return writeRound( report, structuredClone( tree ), { ...opts, round: 'held', log: [] } );
+}
+
 // The regression guard (R-47-9) lives in lib/guard.mjs. This wrapper keeps the single-call form: the writes undone this
 // round (a calibration-named culprit, or the one suspect under trial).
 export function revertRegressions( prev, report, tree, lastWrites, blocked, calFor = calibrationFor, trials = new Map() ) {
@@ -477,10 +483,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const before = JSON.parse( fs.readFileSync( path.join( outDir, 'round-1', 'report.json' ), 'utf8' ) );
 	// What the tree already holds for each still-open group, read against the final walk on a copy (nothing is written):
 	// a setting holding the draft value while the paint differs is a Hardcode, however many rounds ran.
-	const { held } = writeRound( report, structuredClone( tree ), { ...ctx, round: 'held', blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
+	const { held } = heldGroups( report, tree, { ...ctx, blocked, stateMap: s.states, canvas: !! s.canvas, refs, ownerOf: ( node ) => outsideOwner( node, { refs } ) } );
 	const classes = classify( report, { writes: allWrites, gaps, held, stateMap: s.states } );
-	// The rule that wins on the live page for each Hardcode row the tree already holds (read-only; --no-rules skips it).
-	const heldRows = classes.hardcode.filter( ( r ) => r.held );
+	// The rule that wins on the live page for each Hardcode row (read-only; --no-rules skips it).
+	const heldRows = classes.hardcode;
 	if ( heldRows.length && ! argv.includes( '--no-rules' ) ) {
 		try {
 			const liveUrl = ( await import( pathToFileURL( walker ).href ) ).default?.live?.url;

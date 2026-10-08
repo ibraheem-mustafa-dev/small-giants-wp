@@ -3,7 +3,7 @@
 // and which rule wins on the page, not "Unresolved: not written". Negative controls keep each check from being vacuous.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { writeRound } from '../solve.mjs';
+import { writeRound, heldGroups } from '../solve.mjs';
 import { classify, widthPattern, heldReason } from '../lib/solve-rows.mjs';
 import { explainCascade, describeCascade, propertyFamily, rowSelector } from '../lib/winning-rule.mjs';
 import { openDb } from '../lib/db.mjs';
@@ -86,7 +86,21 @@ test( 'negative control: an !important rule wins, and no rule carrying the draft
 test( 'the property family covers the logical longhand and the shorthands; the selector joins ref and path', () => {
 	assert.deepEqual( propertyFamily( 'margin-top' ), [ 'margin-top', 'margin-block-start', 'margin-block', 'margin' ] );
 	assert.deepEqual( propertyFamily( 'padding-left' ), [ 'padding-left', 'padding-inline-start', 'padding-inline', 'padding' ] );
-	assert.deepEqual( propertyFamily( 'line-height' ), [ 'line-height' ] );
+	assert.deepEqual( propertyFamily( 'transition-duration' ), [ 'transition-duration', 'transition' ] );
+	assert.deepEqual( propertyFamily( 'border-top-color' ), [ 'border-top-color', 'border-top', 'border-color', 'border' ] );
+	assert.deepEqual( propertyFamily( 'row-gap' ), [ 'row-gap', 'gap' ] );
+	assert.deepEqual( propertyFamily( 'color' ), [ 'color' ] );
+	assert.match( describeCascade( explainCascade( { matchedCSSRules: [] }, 'color', '#000' ), 'color' ), /no matched rule sets color/, 'a property no rule sets still says so' );
 	assert.equal( rowSelector( { ref: 'cr-ref-a-1', path: '' } ), '.cr-ref-a-1' );
 	assert.equal( rowSelector( { ref: 'cr-ref-a-1', path: '.sgs-x__y > span' } ), '.cr-ref-a-1 > .sgs-x__y > span' );
+} );
+
+test( 'heldGroups reads on a copy: the tree is left as it was, and a group still to be written is not held', () => {
+	const t = tree();
+	const before = JSON.stringify( t );
+	const out = heldGroups( report(), t, { ...opts, blocked: new Map() } );
+	assert.equal( JSON.stringify( t ), before, 'nothing written to the real tree' );
+	assert.deepEqual( out.held, {}, 'a value Solve would still write is not a hold' );
+	writeRound( report(), t, { ...opts, round: 1 } );
+	assert.equal( Object.keys( heldGroups( report(), t, { ...opts, blocked: new Map() } ).held ).length, 1, 'once the tree holds it, it is' );
 } );
