@@ -8377,6 +8377,198 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "gridColHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridColHeadingWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "grid-column-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "gridRowHeadingWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "grid-row-heading"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "gridTemplateRows",
       "fields": {
         "css_property": "grid-template-rows",
@@ -9150,6 +9342,102 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "step-number"
       }
     },
     {
@@ -21199,25 +21487,6 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "attribution"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "borderColourHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "wrapper",
-        "css_state": "hover"
       }
     },
     {
@@ -34414,10 +34683,29 @@
     },
     {
       "slug": "sgs/quote",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
