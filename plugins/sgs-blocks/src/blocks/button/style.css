@@ -311,8 +311,9 @@
 }
 
 /* The optional note (`note`, includes/helpers-button-note.php): a short
-   muted line at the far end, e.g. a price hint. The label and note spread
-   to the button's two ends. */
+   line at the far end, e.g. a price hint, in the button's own text colour
+   at every state (a muted mix reads as grey on a dark button). The label and
+   note spread to the button's two ends. */
 .sgs-button:has(> .sgs-button__note) {
 	justify-content: space-between;
 	gap: 12px;
@@ -320,7 +321,7 @@
 
 .sgs-button__note {
 	flex-shrink: 0;
-	color: color-mix(in srgb, currentColor 70%, transparent);
+	color: inherit;
 	font-weight: 400;
 	letter-spacing: 0;
 	text-transform: none;

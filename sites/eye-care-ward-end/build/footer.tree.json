@@ -229,14 +229,14 @@
                 "attributes": {
                   "content": "Shop",
                   "level": "h5",
-                  "textColour": "text-label",
+                  "textColour": "text",
                   "textTransform": "uppercase",
                   "letterSpacing": {
-                    "desktop": 0.2
+                    "desktop": 0.06
                   },
                   "letterSpacingUnit": "em",
                   "fontSize": {
-                    "desktop": "11.5px"
+                    "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-8",
                   "fontFamily": "Outfit, system-ui, sans-serif",
@@ -261,40 +261,43 @@
                 }
               },
               {
-                "name": "core/list",
+                "name": "sgs/icon-list",
                 "attributes": {
-                  "className": "is-style-no-bullets cr-ref-footer-9"
-                },
-                "innerBlocks": [
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/shop/\">Sunglasses</a>",
-                      "className": "cr-ref-footer-10"
-                    }
+                  "markerType": "none",
+                  "gap": "10px",
+                  "textColour": "text",
+                  "itemFontSize": {
+                    "desktop": "14px"
                   },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/shop/\">All brands</a>",
-                      "className": "cr-ref-footer-11"
+                  "itemLineHeight": 1.5,
+                  "itemTextDecoration": "none",
+                  "items": [
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Sunglasses",
+                      "url": "/shop/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "All brands",
+                      "url": "/shop/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Prescription lenses",
+                      "url": "/prescription-lenses/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Glasses — arriving soon"
                     }
-                  },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/prescription-lenses/\">Prescription lenses</a>",
-                      "className": "cr-ref-footer-12"
-                    }
-                  },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "Glasses — arriving soon",
-                      "className": "cr-ref-footer-13"
-                    }
-                  }
-                ]
+                  ],
+                  "className": "cr-ref-footer-9"
+                }
               }
             ]
           },
@@ -321,14 +324,14 @@
                 "attributes": {
                   "content": "Help",
                   "level": "h5",
-                  "textColour": "text-label",
+                  "textColour": "text",
                   "textTransform": "uppercase",
                   "letterSpacing": {
-                    "desktop": 0.2
+                    "desktop": 0.06
                   },
                   "letterSpacingUnit": "em",
                   "fontSize": {
-                    "desktop": "11.5px"
+                    "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-15",
                   "fontFamily": "Outfit, system-ui, sans-serif",
@@ -353,40 +356,44 @@
                 }
               },
               {
-                "name": "core/list",
+                "name": "sgs/icon-list",
                 "attributes": {
-                  "className": "is-style-no-bullets cr-ref-footer-16"
-                },
-                "innerBlocks": [
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/help/\">Delivery &amp; returns</a>",
-                      "className": "cr-ref-footer-17"
-                    }
+                  "markerType": "none",
+                  "gap": "10px",
+                  "textColour": "text",
+                  "itemFontSize": {
+                    "desktop": "14px"
                   },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/help/\">FAQs</a>",
-                      "className": "cr-ref-footer-18"
+                  "itemLineHeight": 1.5,
+                  "itemTextDecoration": "none",
+                  "items": [
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Delivery &amp; returns",
+                      "url": "/help/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "FAQs",
+                      "url": "/help/"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Size guide",
+                      "url": "#size-guide"
+                    },
+                    {
+                      "iconSource": "lucide",
+                      "iconName": "",
+                      "text": "Contact",
+                      "url": "/contact/"
                     }
-                  },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"#size-guide\">Size guide</a>",
-                      "className": "cr-ref-footer-19"
-                    }
-                  },
-                  {
-                    "name": "core/list-item",
-                    "attributes": {
-                      "content": "<a href=\"/contact/\">Contact</a>",
-                      "className": "cr-ref-footer-20"
-                    }
-                  }
-                ]
+                  ],
+                  "className": "cr-ref-footer-16"
+                }
               }
             ]
           },
@@ -413,14 +420,14 @@
                 "attributes": {
                   "content": "Visit or call",
                   "level": "h5",
-                  "textColour": "text-label",
+                  "textColour": "text",
                   "textTransform": "uppercase",
                   "letterSpacing": {
-                    "desktop": 0.2
+                    "desktop": 0.06
                   },
                   "letterSpacingUnit": "em",
                   "fontSize": {
-                    "desktop": "11.5px"
+                    "desktop": "13.5px"
                   },
                   "className": "cr-ref-footer-22",
                   "fontFamily": "Outfit, system-ui, sans-serif",
@@ -471,7 +478,7 @@
                 "attributes": {
                   "displayType": "address",
                   "showIcon": false,
-                  "textColour": "text-muted",
+                  "textColour": "text",
                   "fontSize": {
                     "desktop": "14px"
                   },
@@ -483,13 +490,13 @@
                 "attributes": {
                   "displayType": "hours",
                   "showIcon": false,
-                  "textColour": "text-label",
+                  "textColour": "text",
                   "fontSize": {
                     "desktop": "13px"
                   },
                   "hoursLayout": "condensed",
                   "className": "cr-ref-footer-26",
-                  "labelColour": "#8B8478"
+                  "labelColour": "text"
                 }
               }
             ]

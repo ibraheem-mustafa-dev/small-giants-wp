@@ -618,6 +618,8 @@
 .sgs-option-picker__pill-text {
 	display: inline-flex;
 	flex-direction: column;
+	align-items: center;
+	text-align: center;
 	white-space: normal;
 }
 
@@ -634,9 +636,14 @@
 	margin-top: 0.15em;
 }
 
-/* Selected pill keeps the same muted-relative-to-text look — no separate
-   :checked override needed, the opacity rides on whatever --sgs-op-sel-text
-   the :checked rules above already set via `color` inheritance. */
+/* The selected pill paints its sub-label at the full selected text colour: the
+   muting above, on the selected ground (often dark), reads as grey. Colour
+   still rides on whatever --sgs-op-sel-text the :checked rules set via
+   `color` inheritance; the smaller size keeps the line secondary. */
+.sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill .sgs-option-picker__sub-label,
+.sgs-option-picker__option--selected .sgs-option-picker__pill .sgs-option-picker__sub-label {
+	opacity: 1;
+}
 
 /* ================================================================
    Term badge + short description (Spec 43 FR-43-25 guided-buybox
