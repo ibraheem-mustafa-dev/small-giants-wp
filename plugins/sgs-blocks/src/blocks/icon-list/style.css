@@ -142,7 +142,7 @@
  * scoped `.{uid}` rule always wins. */
 :where(.sgs-icon-list__item:hover .sgs-icon-list__text),
 :where(.sgs-icon-list__item:focus-within .sgs-icon-list__text) {
-	color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-dark);
 }
 
 .sgs-icon-list__item:hover .sgs-icon-list__icon,

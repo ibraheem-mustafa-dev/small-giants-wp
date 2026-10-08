@@ -100,7 +100,7 @@
 		},
 		"textColour": {
 			"type": "string",
-			"default": "primary"
+			"default": ""
 		},
 		"textColourGradient": {
 			"type": "string",

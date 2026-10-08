@@ -75,7 +75,7 @@
 	 * chevron rotates 180deg (.sgs-product-faq-item[open] rule below). There is
 	 * deliberately no font-weight step: it would re-wrap the question on toggle,
 	 * and the weight is a client typography control. */
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary-dark, #0f7e80);
 }
 
 .sgs-product-faq-item__question:focus-visible {
@@ -107,7 +107,7 @@
  * union against this one, so a real non-colour cue (scale) is added here. */
 .sgs-product-faq-item[open] .sgs-product-faq-item__chevron,
 .sgs-product-faq-item__question:hover .sgs-product-faq-item__chevron {
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary-dark, #0f7e80);
 	transform: scale(1.1);
 }
 

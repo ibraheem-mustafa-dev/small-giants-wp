@@ -303,7 +303,7 @@
 		},
 		"nameColour": {
 			"type": "string",
-			"default": "primary"
+			"default": ""
 		},
 		"nameColourGradient": {
 			"type": "string",

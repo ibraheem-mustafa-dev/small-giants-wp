@@ -798,7 +798,7 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-field__consent-text a {
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary-dark, #0f7e80);
 	text-decoration: none; opacity: 0.85;
 }
 
@@ -1304,7 +1304,7 @@ select.sgs-form-field__input {
 .sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label,
 .sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label,
 .sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label {
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary-dark, #0f7e80);
 }
 
 /* Floating-label placeholder management.

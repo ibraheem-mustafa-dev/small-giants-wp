@@ -204,7 +204,7 @@
 		},
 		"tabActiveTextColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "primary-dark"
 		},
 		"tabBgColour": {
 			"type": "string"

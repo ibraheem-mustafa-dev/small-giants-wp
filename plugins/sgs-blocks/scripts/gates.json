@@ -1508,5 +1508,23 @@
     "added_commit": null,
     "budget_ms": 80,
     "order": 164
+  },
+  {
+    "id": "check-text-colour-defaults",
+    "cmd": "python scripts/check-text-colour-defaults.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 572,
+    "order": 165
+  },
+  {
+    "id": "check-text-colour-defaults-selftest",
+    "cmd": "python scripts/check-text-colour-defaults.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 165,
+    "order": 166
   }
 ]

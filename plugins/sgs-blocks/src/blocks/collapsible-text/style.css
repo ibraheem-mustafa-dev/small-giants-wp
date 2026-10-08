@@ -57,7 +57,7 @@
 	min-width: 44px;
 	cursor: pointer;
 	/* Colour: contrast vs background ≥4.5:1. */
-	color: var(--wp--preset--color--primary, #1e40af);
+	color: inherit;
 	font-weight: 600;
 	font-size: 0.9375em; /* ~15px when base = 16px. */
 	text-underline-offset: 3px;

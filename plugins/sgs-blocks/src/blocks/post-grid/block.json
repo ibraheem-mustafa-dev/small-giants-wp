@@ -442,7 +442,7 @@
     },
     "titleColour": {
       "type": "string",
-      "default": "primary"
+      "default": ""
     },
     "titleColourGradient": {
       "type": "string",
@@ -515,7 +515,7 @@
     },
     "readMoreColour": {
       "type": "string",
-      "default": "primary"
+      "default": ""
     },
     "readMoreColourGradient": {
       "type": "string",

@@ -55,15 +55,6 @@
 	position: relative;
 }
 
-/* Spec 32: no block emits an inline `style` property declaration any more,
- * so a `:not([style*=…])` guard always matches and the fallback is
- * unconditional. This value is PAINTED (not what the element inherits), so
- * it is kept — but de-specified via :where() (0,0,0) so the operator's own
- * scoped `.{uid}` rule always wins. */
-:where(.sgs-counter__number) {
-	color: var(--wp--preset--color--primary);
-}
-
 /* Accent underline stroke (when accentStroke = true) */
 .sgs-counter--accent-stroke .sgs-counter__number::after {
 	content: '';

@@ -206,7 +206,7 @@
 	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6)));
 	background-image: var(--sgs-op-bg-hover-gradient, var(--sgs-op-bg-gradient, none));
 	border-color:     var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
-	color:            var(--sgs-op-text-hover, var(--sgs-op-text, var(--wp--preset--color--primary, currentColor)));
+	color:            var(--sgs-op-text-hover, var(--sgs-op-text, var(--wp--preset--color--primary-dark, currentColor)));
 }
 
 /* Selected state — CSS-only via :checked sibling */
@@ -316,7 +316,7 @@
 
 .sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
 	background-color: transparent;
-	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
+	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary-dark, #1F7A7A));
 	border-color:     var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius:    var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
 	/* No font-weight declared here — see the outlined

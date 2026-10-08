@@ -81,7 +81,7 @@ $show_days       = $attributes['showDays'] ?? true;
 $show_hours      = $attributes['showHours'] ?? true;
 $show_minutes    = $attributes['showMinutes'] ?? true;
 $show_seconds    = $attributes['showSeconds'] ?? true;
-$number_colour   = $attributes['numberColour'] ?? 'primary';
+$number_colour   = $attributes['numberColour'] ?? '';
 // D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
 // mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
 $number_colour_gradient = $attributes['numberColourGradient'] ?? '';

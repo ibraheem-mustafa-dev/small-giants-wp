@@ -206,7 +206,7 @@
    client can restyle the whole price row for a sale item without touching
    WooCommerce's own markup. */
 .sgs-product-search__result-price--sale {
-	color: var( --wp--preset--color--primary, inherit );
+	color: inherit;
 }
 
 .sgs-product-search__result-stock--out {

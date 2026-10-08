@@ -266,7 +266,7 @@ $card_params = array(
 	'excerptLength'                      => absint( $attributes['excerptLength'] ?? 20 ),
 	'imageSize'                          => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
 	'aspectRatio'                        => $aspect_ratio,
-	'titleColour'                        => $attributes['titleColour'] ?? 'primary',
+	'titleColour'                        => $attributes['titleColour'] ?? '',
 	'excerptColour'                      => $attributes['excerptColour'] ?? 'text',
 	'metaColour'                         => $attributes['metaColour'] ?? 'text-muted',
 	'categoryBadgeColour'                => $attributes['categoryBadgeColour'] ?? 'text-inverse',
@@ -274,7 +274,7 @@ $card_params = array(
 	'categoryBadgeBgColour'              => $attributes['categoryBadgeBgColour'] ?? 'primary',
 	'categoryBadgeBgColourHover'         => (string) ( $attributes['categoryBadgeBgColourHover'] ?? '' ),
 	'categoryBadgeBgColourHoverGradient' => (string) ( $attributes['categoryBadgeBgColourHoverGradient'] ?? '' ),
-	'readMoreColour'                     => $attributes['readMoreColour'] ?? 'primary',
+	'readMoreColour'                     => $attributes['readMoreColour'] ?? '',
 	// 37-media-no-handroll: threaded through to render_card() so the
 	// featured-image <img> can carry the media-atom marker class — see the
 	// $sgs_pg_uid comment in class-post-grid-rest.php.

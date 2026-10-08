@@ -546,7 +546,7 @@ a.sgs-card-grid__item:focus-visible {
 	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
 	border-radius: 4px;
 	background: transparent;
-	color: var( --wp--preset--color--primary, #1a3a5c );
+	color: inherit;
 	cursor: pointer;
 	transition: background-color 150ms ease, color 150ms ease;
 }

@@ -99,6 +99,21 @@ def _load_derive_dark_palette():
 
 _dark_palette = _load_derive_dark_palette()
 
+
+def _load_text_colour_defaults():
+    path = Path(__file__).resolve().parent / "check-text-colour-defaults.py"
+    spec = _importlib_util.spec_from_file_location("sgs_check_text_colour_defaults", path)
+    module = _importlib_util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_text_ink = _load_text_colour_defaults()
+
+
+class TextInkContrastError(RuntimeError):
+    """The palette's state-text ink (primary-dark) fails 4.5:1 on a light ground."""
+
 # Windows consoles default to cp1252, which cannot encode the '->' arrow glyph
 # used in diff output -> UnicodeEncodeError. Force UTF-8 on the standard streams.
 sys.stdout.reconfigure(encoding="utf-8")
@@ -888,6 +903,15 @@ def prepare_deploy_snapshot(local: dict, include_advisory: bool) -> tuple[dict, 
     deploy, dark_note = apply_dark_palette(deploy)
     if dark_note:
         note = f"{note}; {dark_note}" if note else dark_note
+
+    # SGS state text and in-text links paint primary-dark (check-text-colour-defaults.py),
+    # so a palette whose primary-dark is unreadable on its own grounds never deploys.
+    ink_failures = _text_ink.palette_failures(deploy)
+    if ink_failures:
+        raise TextInkContrastError(
+            "; ".join(f"{ink} on {ground} is {ratio}:1 (needs {_text_ink.INK_MIN}:1)" for ink, ground, ratio in ink_failures)
+            + ". Darken primary-dark in the snapshot until it passes."
+        )
 
     return deploy, note
 

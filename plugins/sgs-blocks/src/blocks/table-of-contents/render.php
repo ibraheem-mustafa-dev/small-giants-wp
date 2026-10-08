@@ -95,7 +95,7 @@ $title_colour           = $attributes['titleColour'] ?? 'text';
 $title_colour_gradient  = $attributes['titleColourGradient'] ?? '';
 $link_colour            = $attributes['linkColour'] ?? 'text-muted';
 $link_colour_gradient   = $attributes['linkColourGradient'] ?? '';
-$active_colour          = $attributes['activeLinkColour'] ?? 'primary';
+$active_colour          = $attributes['activeLinkColour'] ?? 'primary-dark';
 $active_colour_gradient = $attributes['activeLinkColourGradient'] ?? '';
 
 // ---------------------------------------------------------------------------

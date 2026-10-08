@@ -268,7 +268,7 @@
 		},
 		"iconGlyphColourHover": {
 			"type": "string",
-			"default": "primary"
+			"default": "primary-dark"
 		},
 		"iconGlyphColourHoverGradient": {
 			"type": "string",

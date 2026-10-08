@@ -119,7 +119,7 @@
 
 .sgs-pricing-table__price {
 	font-size: var(--wp--preset--font-size--xx-large, 3rem);
-	color: var(--wp--preset--color--primary, #333);
+	color: inherit;
 }
 
 /* Default font-weight and line-height — :where() (specificity 0) so client-set
@@ -257,7 +257,7 @@
 }
 
 .sgs-pricing-table__cta--outline {
-	color: var(--wp--preset--color--primary, #333);
+	color: inherit;
 	background-color: transparent;
 	border-color: var(--wp--preset--color--primary, #333);
 }
@@ -424,7 +424,7 @@
 .sgs-pricing-table__toggle--style-text
 	.sgs-pricing-table__toggle-input:checked
 	+ .sgs-pricing-table__toggle-label {
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary-dark, #0f7e80);
 	font-weight: 700;
 }
 
@@ -458,7 +458,7 @@
 	padding: 0.5rem 1.5rem;
 	border: 2px solid var(--wp--preset--color--primary, #0f7e80);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: inherit;
 	background-color: transparent;
 	font-weight: 600;
 	transition: background-color 0.2s ease, color 0.2s ease;

@@ -12,7 +12,6 @@
 	/* Base = span default (inline). pill-fill/pill-wrap variants below opt into
 	   block/inline-block scoped to their own rule — the base must not force it. */
 	display: inline;
-	color: var(--wp--preset--color--primary);
 	font-family: inherit;
 	font-size: 12px;
 	font-weight: 600;

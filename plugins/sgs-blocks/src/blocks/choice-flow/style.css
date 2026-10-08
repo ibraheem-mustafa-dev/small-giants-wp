@@ -203,7 +203,7 @@
 	border: var(--wp--custom--button-presets--secondary--border-width, 2px) solid
 		var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary, #1F7A7A));
 	background-color: var(--wp--custom--button-presets--secondary--background, transparent);
-	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--wp--custom--button-presets--secondary--text, inherit);
 }
 
 /* A lone purchase button (Buy now switched off) is the step's primary
@@ -545,12 +545,12 @@
 .sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle,
 .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle {
 	border-color: var(--sgs-choice-flow-stepper-active, var(--wp--preset--color--primary, #1F7A7A));
-	color: var(--sgs-choice-flow-stepper-active, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--sgs-choice-flow-stepper-active, var(--wp--preset--color--primary-dark, #1F7A7A));
 }
 
 .sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-label,
 .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-label {
-	color: var(--sgs-choice-flow-stepper-active, var(--wp--preset--color--primary, #1F7A7A));
+	color: var(--sgs-choice-flow-stepper-active, var(--wp--preset--color--primary-dark, #1F7A7A));
 }
 
 /* --- 'badge' (a reference site): a step-count pill riding on the fill track,

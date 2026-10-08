@@ -168,7 +168,7 @@
 		},
 		"numberColour": {
 			"type": "string",
-			"default": "primary"
+			"default": ""
 		},
 		"numberColourGradient": {
 			"type": "string",

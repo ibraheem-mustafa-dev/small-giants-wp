@@ -189,7 +189,7 @@
 /* Rule 43 (WCAG 1.4.1): the active link was distinguished by colour alone —
  * bold weight is the standard TOC "you are here" non-colour signal. */
 :where(.sgs-toc__link--active) {
-	color: var(--wp--preset--color--primary, #0F7E80);
+	color: var(--wp--preset--color--primary-dark, #0F7E80);
 	font-weight: 700;
 }
 

@@ -43,7 +43,7 @@
 .sgs-buybox .buybox__price--pct-off {
 	font-size: 0.95rem;
 	font-weight: 600;
-	color: var(--sgs-buybox-sale-colour, var(--wp--preset--color--primary, currentColor));
+	color: var(--sgs-buybox-sale-colour, inherit);
 }
 
 .sgs-buybox .buybox__price-note {
@@ -225,7 +225,7 @@
 	border: var(--wp--custom--button-presets--secondary--border-width, 2px) solid var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
 	border-radius: var(--wp--custom--button-presets--secondary--border-radius, 8px);
 	background: var(--wp--custom--button-presets--secondary--background, transparent);
-	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--secondary--text, inherit);
 }
 
 .sgs-buybox .buybox__add-to-cart--secondary:hover:not([disabled]) {
@@ -604,7 +604,7 @@
 }
 
 .sgs-buybox__notify-consent-label a {
-	color: var(--wp--preset--color--primary, currentColor);
+	color: var(--wp--preset--color--primary-dark, currentColor);
 	text-underline-offset: 2px;
 }
 
@@ -1016,7 +1016,7 @@
 
 .sgs-buybox-guided__meter-btn--current {
 	border-color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
-	color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary, #1e1e1e));
+	color: var(--sgs-buybox-guided-meter-colour, var(--wp--preset--color--primary-dark, #1e1e1e));
 }
 
 .sgs-buybox-guided__meter-btn:not([aria-disabled='true']):hover {

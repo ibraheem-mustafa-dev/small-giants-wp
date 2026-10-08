@@ -56,14 +56,14 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--wp--preset--color--primary, #333);
+	color: inherit;
 	font-weight: 400;
 	text-decoration: none; opacity: 0.85;
 }
 
 .sgs-modal__trigger--text-link:hover {
 	/* color-mix() tint: 85% primary + 15% black */
-	color: color-mix(in srgb, var(--wp--preset--color--primary, #333) 85%, black);
+	color: color-mix(in srgb, var(--wp--preset--color--primary-dark, #333) 85%, black);
 	color: var(--sgs-hover-primary, var(--wp--preset--color--primary-dark, #000));
 	text-decoration: none;
 }
@@ -262,7 +262,7 @@
    invisible — darken towards primary instead. Two classes beat the icon
    style's `:where()` hover rule above regardless of source order. */
 .sgs-modal__close--glyph:hover {
-	color: var(--wp--preset--color--primary, #1a1a1a);
+	color: var(--wp--preset--color--primary-dark, #1a1a1a);
 }
 
 /* Content that brings its own Close (a choice flow's header) hides this one. */

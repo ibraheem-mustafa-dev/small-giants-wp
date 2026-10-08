@@ -470,7 +470,7 @@
     },
     "titleColour": {
       "type": "string",
-      "default": "primary"
+      "default": ""
     },
     "titleColourGradient": {
       "type": "string",

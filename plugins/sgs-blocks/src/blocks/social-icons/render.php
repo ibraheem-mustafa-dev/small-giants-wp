@@ -69,7 +69,7 @@ $icon_border_colour_hover       = $attributes['iconBorderColourHover'] ?? 'prima
 $icon_border_gradient           = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
 $icon_border_gradient_hover     = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
 $icon_glyph_colour              = $attributes['iconGlyphColour'] ?? 'text-muted';
-$icon_glyph_colour_hover        = $attributes['iconGlyphColourHover'] ?? 'primary';
+$icon_glyph_colour_hover        = $attributes['iconGlyphColourHover'] ?? 'primary-dark';
 // Icon/SVG gradient siblings — non-empty wins over the flat glyph
 // colours above at render time (helpers-svg-gradient.php).
 $icon_glyph_colour_gradient       = $attributes['iconGlyphColourGradient'] ?? '';

@@ -146,7 +146,7 @@
 /* Active: primary colour */
 .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs__tab--active {
-	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, #0f7e80 ) );
+	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary-dark, #0f7e80 ) );
 	background-color: var( --sgs-tab-active-bg, transparent );
 }
 
@@ -405,7 +405,7 @@
 	.sgs-tabs--horizontal:not(.sgs-tabs--mobile-row) .sgs-tabs__tab[aria-selected="true"] {
 		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
 		border-color: var( --wp--preset--color--primary, currentColor );
-		color: var( --wp--preset--color--primary, currentColor );
+		color: var( --wp--preset--color--primary-dark, currentColor );
 		/* Rule 43 (WCAG 1.4.1): the selected state must not rely on colour
 		   alone. The border width is the same in every state, so the weight
 		   carries the non-colour signal; it changes no box geometry because the

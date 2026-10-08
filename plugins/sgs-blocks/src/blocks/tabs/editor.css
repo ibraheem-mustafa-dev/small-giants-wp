@@ -41,7 +41,7 @@
 
 /* Active state in editor */
 .sgs-tabs__nav .sgs-tabs__tab.sgs-tabs__tab--active.components-button {
-	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, #0F7E80 ) );
+	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary-dark, #0F7E80 ) );
 }
 
 /* Pills active in editor */

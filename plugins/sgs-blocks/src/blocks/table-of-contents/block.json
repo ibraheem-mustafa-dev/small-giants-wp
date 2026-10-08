@@ -212,7 +212,7 @@
 		},
 		"activeLinkColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "primary-dark"
 		},
 		"activeLinkColourGradient": {
 			"type": "string",

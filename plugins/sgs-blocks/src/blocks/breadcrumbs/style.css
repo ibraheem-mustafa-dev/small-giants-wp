@@ -34,7 +34,7 @@
 }
 
 .sgs-breadcrumbs__item a:hover {
-	color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-dark);
 	text-decoration: none;
 }
 
