@@ -36,11 +36,12 @@ its icon to the top; forced-colours mode shows the underline at rest for `none` 
 `872a8434a` moved the hours position, padding and lines into one Styles-tab "Hours rows" panel (inspector-scan
 rule 03 back to its backlog of 27).
 
-Open, each for Bean or a later batch:
-- **Touch fallback (Bean's call):** on a touch screen `sweep` shows no underline at rest, the same as `none`. The UX
-  reviewer proposed `@media (hover: none)` restoring the underline at rest. Not applied: Bean's header, footer and menu
-  lists are sweep-only by decision, and lists of links are not the running-text case WCAG 1.4.1 targets; the help text
-  steers links in paragraphs to Always.
+Decided (Bean, 2026-10-09): no touch fallback. On a touch screen `sweep` shows no underline at rest, the same as
+`none`; the reviewer's `@media (hover: none)` resting underline is not added, because the header, footer and menu lists
+are sweep-only by decision and lists of links are not the running-text case WCAG 1.4.1 targets. The help text steers
+links in paragraphs to Always.
+
+Open, each for a later batch:
 - **Multi-line linked address:** business-info's link is one flex box, so the sweep draws under the last line only.
 - **`socials.google` can hold a review link:** Site Info documents it as the Google Business Profile or review link;
   a client storing a "write a review" URL gets the review form from the address. Consider a dedicated Maps link field.
