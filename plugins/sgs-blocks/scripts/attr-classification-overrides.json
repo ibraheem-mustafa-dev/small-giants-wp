@@ -6483,6 +6483,14 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-drawer",
+			"attr": "chromeRatingShow",
+			"fields": {
+				"role": "boolean-visibility",
+				"_reason": "2026-10-08 (drawer top-row Google rating). Per-device show/hide of the top row's rating (tier object of booleans, painted as display), the same shape as chromeSlotShow. The trailing 'Show' is outside the show*/hide* prefix rule, so no role was derived."
+			}
+		},
+		{
 			"slug": "sgs/container",
 			"attr": "separators",
 			"fields": {
