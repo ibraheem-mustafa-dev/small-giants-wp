@@ -42,6 +42,10 @@ export function readPage( list ) {
 	// auto-collect.mjs::srOnly, which the walker's collector applies), or a box parked wholly off the page's top or left
 	// edge (a skip link at left:-9999px), which no scroll can bring into view.
 	const srOnly = ( el ) => {
+		// An element with display:contents has no box of its own (a zero rectangle at the origin); its children decide.
+		if ( 'contents' === getComputedStyle( el ).display ) {
+			return false;
+		}
 		for ( let a = el, i = 0; a && i < 4; a = a.parentElement, i++ ) {
 			const r = a.getBoundingClientRect();
 			const cs = getComputedStyle( a );
@@ -101,7 +105,26 @@ export function readPage( list ) {
 		return out;
 	};
 	const used = new Set();
+	const usedText = new Set();
 	const px = ( v ) => parseFloat( v ) || 0;
+	// A text node paints where its own rendered rectangle is, inside an ancestor no one hides: an element with
+	// display:contents has no box of its own, so the nearest ancestor with a box is the one judged.
+	const textShown = ( n ) => {
+		const rg = document.createRange();
+		rg.selectNodeContents( n );
+		const b = rg.getBoundingClientRect();
+		if ( ! b.width || ! b.height || b.right + scrollX <= 0 || b.bottom + scrollY <= 0 ) {
+			return false;
+		}
+		let a = n.parentElement;
+		while ( a && ! a.getBoundingClientRect().width ) {
+			if ( 'hidden' === getComputedStyle( a ).visibility ) {
+				return false;
+			}
+			a = a.parentElement;
+		}
+		return ! a || ( 'hidden' !== getComputedStyle( a ).visibility && ! srOnly( a ) );
+	};
 	const out = [];
 	for ( const it of list ) {
 		let el = null;
@@ -122,11 +145,12 @@ export function readPage( list ) {
 			const tw = document.createTreeWalker( document.body, NodeFilter.SHOW_TEXT );
 			let node = null;
 			for ( let n = tw.nextNode(); n && ! node; n = tw.nextNode() ) {
-				if ( N( n.textContent ) === N( it.own ) && n.parentElement && ! skip( n.parentElement ) && visible( n.parentElement ) ) {
+				if ( ! usedText.has( n ) && N( n.textContent ) === N( it.own ) && n.parentElement && ! skip( n.parentElement ) && textShown( n ) ) {
 					node = n;
 				}
 			}
 			if ( node ) {
+				usedText.add( node );
 				const rg = document.createRange();
 				rg.selectNodeContents( node );
 				const b = rg.getBoundingClientRect();
@@ -153,7 +177,7 @@ export function readPage( list ) {
 		let tr = null;
 		for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
 			// Text no one sees (screen-reader-only, or parked off the page like a skip link) paints nowhere.
-			if ( ! n.textContent.trim() || ! visible( n.parentElement ) ) {
+			if ( ! n.textContent.trim() || ! textShown( n ) ) {
 				continue;
 			}
 			const rg = document.createRange();
@@ -319,7 +343,8 @@ async function main() {
 			const d = await draft.evaluate( readPage, items );
 			const l = await live.evaluate( readPage, items );
 			// Positions from the first block found on both pages, so the header above and a block missed on one side shift nothing.
-			const o = d.findIndex( ( row, i ) => row.found && l[ i ].found );
+			// The anchor is measured the same way on both sides: an element, never a text run on one side only.
+			const o = d.findIndex( ( row, i ) => row.found && l[ i ].found && ! row.run && ! l[ i ].run );
 			for ( const [ side, ref ] of [ [ d, d[ o ] ], [ l, l[ o ] ] ] ) {
 				const base = ref ? { x: ref.box.x, y: ref.box.y } : { x: 0, y: 0 };
 				side.filter( ( row ) => row.found ).forEach( ( row ) => {

@@ -183,3 +183,40 @@ test( 'a text run against an element compares where the words paint and their ty
 	assert.deepEqual( compare( run, el, 768 ), [] );
 	assert.deepEqual( compare( run, { ...el, textBox: { ...el.textBox, y: 120 } }, 768 ).map( ( x ) => x.prop ), [ 'text.y' ], 'negative control: moved words still differ' );
 } );
+
+// QC council 2026-10-08 (rater A). A5: two blocks with the same own words resolve to different text runs, never both
+// to the first. A7: text inside an element with display:contents (no box of its own) still paints and counts.
+test( 'MUST FAIL (QC A5): two blocks with the same bare words take different occurrences', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><a href="#a" style="display:block"><span>One</span>Book now</a><a href="#b" style="display:block;margin-top:40px"><span>Two</span>Book now</a></main>` );
+		const rows = await page.evaluate( readPage, [
+			{ ref: 'c1', block: 'sgs/container', own: null, texts: [ 'one', 'book now' ], field: null },
+			{ ref: 'c2', block: 'sgs/container', own: null, texts: [ 'two', 'book now' ], field: null },
+			{ ref: 'r1', block: 'sgs/text', own: 'book now', texts: [], field: null },
+			{ ref: 'r2', block: 'sgs/text', own: 'book now', texts: [], field: null },
+		] );
+		assert.equal( rows[ 2 ].found && rows[ 3 ].found, true );
+		assert.notEqual( rows[ 2 ].box.y, rows[ 3 ].box.y, 'the second takes the second occurrence' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'MUST FAIL (QC A7): text inside display:contents counts in the inset', async () => {
+	const { readPage } = await import( CHECK );
+	const { chromium } = await import( pathToFileURL( path.join( REPO, 'plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage( { viewport: { width: 768, height: 700 } } );
+		await page.setContent( `<main><div style="padding:12px 20px"><span style="display:contents">Hello there</span> <p style="margin:0">Second line</p></div></main>` );
+		const rows = await page.evaluate( readPage, [ { ref: 'c', block: 'sgs/container', own: null, texts: [ 'hello there', 'second line' ], field: null } ] );
+		assert.equal( rows[ 0 ].inset.top, 12 );
+		assert.equal( rows[ 0 ].inset.left, 20 );
+	} finally {
+		await browser.close();
+	}
+} );
