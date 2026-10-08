@@ -547,7 +547,8 @@
 		},
 		"iconColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "",
+			"description": "Icon and pill label colour. Empty takes the surrounding text colour, which the theme pairs with its surface."
 		},
 		"iconColourGradient": {
 			"type": "string",

@@ -65,7 +65,7 @@ $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowe
 	: 'link';
 $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'shopping-cart' ) );
 $icon_size             = absint( $attributes['iconSize'] ?? 24 );
-$icon_colour           = $attributes['iconColour'] ?? 'primary';
+$icon_colour           = (string) ( $attributes['iconColour'] ?? '' );
 // Icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover          = $attributes['iconColourHover'] ?? '';
@@ -189,8 +189,11 @@ $ssr_count = 0;
 // root's `style="…"` attribute. ────────────────────────────────────────────
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
-	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 );
+// Unset, the trigger takes the surrounding text colour (style.css's currentColor fallback).
+if ( '' !== $icon_colour ) {
+	$sgs_cart_vars[] = '--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour );
+}
 
 // ── Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
 // {desktop,tablet,mobile}, read once via
