@@ -103,7 +103,13 @@
           "label": "Button",
           "order": 2,
           "clusters": [],
-          "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls — this element documents that ownership; multi-button itself controls only the group's own arrangement (see `group`)."
+          "attrMap": {
+            "css:border-color": "childBtnBorderColour",
+            "css:border-width": "childBtnBorderWidth",
+            "css:border-style": "childBtnBorderStyle",
+            "css:border-radius": "childBtnBorderRadius"
+          },
+          "_note": "Buttons are native InnerBlocks children (`sgs/button`, the only entry in allowedBlocks), each with its own full text/fill/layout controls. The group sets their default border through the childBtn* attributes, which render.php prints as --sgs-mb-btn-* custom properties that button/style.css reads; a button's own border attributes override them."
         }
       }
     }
