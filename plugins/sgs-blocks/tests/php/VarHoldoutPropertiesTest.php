@@ -122,4 +122,38 @@ final class VarHoldoutPropertiesTest extends TestCase {
 		$this->assertSame( 2, substr_count( $css, '--sgs-mb-btn-radius-top-left:' ) );
 		$this->assertSame( 2, substr_count( $css, '--sgs-mb-btn-radius-bottom-right:' ) );
 	}
+
+	public function test_nav_submenu_radius_prints_the_set_corners_and_reads_each_with_the_token_fallback(): void {
+		require_once dirname( __DIR__, 2 ) . '/includes/render-helpers.php';
+		// The typography hover rule is defined by the block's own render.php; this test reads only the radius.
+		if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
+			function sgs_nav_shared_typography_hover_rule(): string {
+				return '';
+			}
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/nav-menu-submenu-link-css.php';
+		require_once dirname( __DIR__, 2 ) . '/includes/nav-menu-submenu-css.php';
+		$css = sgs_nav_shared_submenu_css(
+			array(
+				'submenuBorderRadius' => array(
+					'topLeft'     => '12px',
+					'bottomRight' => '0',
+				),
+			),
+			'.uid',
+			'none',
+			'',
+			'',
+			array(),
+			array(),
+			array(),
+			'sgs-nav-bar-menu'
+		);
+
+		$this->assertStringContainsString( '--sgs-nm-submenu-radius-top-left:12px', $css );
+		$this->assertStringContainsString( '--sgs-nm-submenu-radius-bottom-right:0px', $css );
+		$this->assertStringNotContainsString( '--sgs-nm-submenu-radius-top-right:', $css );
+		$this->assertStringContainsString( 'border-top-right-radius:var(--sgs-nm-submenu-radius-top-right, var(--wp--custom--border-radius--medium, 8px))', $css );
+		$this->assertDoesNotMatchRegularExpression( '/--sgs-nm-submenu-radius[:)]/', $css );
+	}
 }
