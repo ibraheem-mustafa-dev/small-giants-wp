@@ -80,12 +80,13 @@ panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, not
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
-- **F3/E14 — every element the gate found with no control has one, every control is live-verified, and gaps 4 (tag names), 9, 10b, 12 and 13 are built.**
-  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 124/124; sandybrown at `c68cd3903`). The gate reads InnerBlocks template
-  children (gap 9), bounds the writer set to reachable helpers (gap 10b), binds PHP function parameters to their callers'
-  literals (gap 12), places markup a function returns in the element its caller puts it in (gap 13,
-  `scripts/lib/e14-markup-splice.js`) and reads a sprintf-slot or PHP-echo tag name as an element of unknown tag with its class
-  (gap 4; `scripts/lib/e14-unknown-tag.js`, `e14-js-leaf.js`). The editor round-trip is done; it found media, product-card and theme-toggle never imported `editor.css` (fixed; `check-editor-css-imported` gates it). Slider pause icon, banner icon and close, hours time, button note and current store link: `:where()` default only (§3.2). Other gate gaps: built only when a row needs one (§7). Plan: `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", §7.
+- **F3/E14 — every element the gate found has a control or a zero-specificity default.**
+  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0** (self-test 124/124; sandybrown at `c68cd3903`). Gate gaps 4, 9, 10b, 12 and 13 are built
+  (`scripts/lib/e14-*.js`); other gate gaps are built only when a row needs one (§7). `scripts/check-editor-css-imported.js` fails a block whose
+  `editor.css` nothing imports. `:where()` default only: slider pause icon, banner icon and close, hours time, button note, current store link (§3.2).
+  **Open, no owner yet:** four files grew past the length limits (`post-grid/edit.js`, `google-reviews/render.php`, `cart/render.php`, `media/edit.js`)
+  and need splitting; the cart pill label fails contrast; hardcoded empty states remain in gallery, card-grid and post-grid `view.js`. All in
+  `plugins/sgs-blocks/reports/f3-e14-triage.md` §6 "Still open", plan §7.
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed
