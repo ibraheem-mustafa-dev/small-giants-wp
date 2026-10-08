@@ -162,14 +162,17 @@ framework fixes); it resumes in that plan's Session D, ranked by the sweep.
   `qa/solve/contact/2026-10-04T11-15-35/`: 0 new rows, 0 wrong writes). Ledger D-16 (map, register 132 and 141), D-17 to D-30, D-32 and
   D-33 (the phone link's 44px tap area), D-31 (WhatsApp lift, S1). **Solve 2026-10-08 (`qa/solve/contact/2026-10-08T02-29-56/`,
   3 write rounds): distinct issues 66 to 60, 0 new, 17 writes, 1 wrong (6%: cr-ref-contact-22's mobile bottom margin,
-  reverted, proven by undoing it alone).** Kept: the labels' hover colour stays their resting `text-label` (-15, -18, -19;
-  live turned them black on hover, the draft does not), the bordered cards' hover border `primary` (-27, -30), and the
-  footnote's typography (-25). Removed by hand: hover border colours on four borderless nodes (-9, -15, -18, -19), which
-  paint nothing, ledgered D-88 to D-91 (the D-65 ruling); D-87 holds the phone link's hover colour (register 131). Solve
-  had written -25's font as the literal stack `Outfit, sans-serif`; it now snaps a font stack to the theme preset whose
-  first family matches (`normalise.mjs::snapFontFamily`), and the 20 literal stacks across six Eye Care trees are now
-  preset slugs (paint unchanged; live picks them up on each surface's next rebuild: Contact is rebuilt, footer, header,
-  home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
+  reverted, proven by undoing it alone).** Kept, 5: the labels' hover colour `text-label` on -15, -18 and -19 (both sides
+  rest black; the draft greys them on hover, live had stayed black) and the bordered cards' hover border `primary` (-27,
+  -30). **Removed by hand, 11, painting nothing:** hover border colours on four borderless nodes (-9, -15, -18, -19),
+  ledgered D-88 to D-91 (the D-65 ruling); and 7 typography settings on the map (-25), copied from the draft's sketch
+  placeholder through rows D-16 missed because it was scoped to the opening state only. D-16 now covers every state, as its
+  ruling says ("no setting should copy the sketch's paint"). So 12 of the 17 writes were bad, though the spec counts 1.
+  Framework item: Solve should not write a border colour on an element whose border is 0px wide (D-65, D-66 and D-88 to
+  D-91 are the same case). D-87 holds the phone link's hover colour (register 131). Solve wrote fonts as literal stacks;
+  it now matches a stack to the theme preset whose first family matches (`normalise.mjs::snapFontFamily`), and the 20
+  literal stacks across six Eye Care trees are now preset slugs (paint unchanged; each surface picks them up on its next
+  rebuild: Contact is rebuilt, footer, header, home, mega-brands and mega-sunglasses are not). Labelled by Solve: 13 gaps to prove. `independent-check.mjs --surface
   contact`: 123 differences, mostly the form card's box (cr-ref-contact-24, 27 to 32: found on live only, or 432px of
   extra top inset). The right edge of Contact's text ends 17px short of the draft's at 1280 and wider (the N39 probe),
   likely the address width below. Open, all box rows:

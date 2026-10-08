@@ -231,7 +231,7 @@
     "id": "D-16",
     "scope": "contact",
     "node": "cr-ref-contact-25",
-    "state": "opening",
+    "state": "*",
     "property": "*",
     "expected": {
       "rule": "bean-choice"

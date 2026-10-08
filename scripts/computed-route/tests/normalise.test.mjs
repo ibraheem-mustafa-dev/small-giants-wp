@@ -42,7 +42,7 @@ test( 'snaps lengths to spacing tokens within 0.5px, else null', () => {
 	assert.equal( snapLength( 18, snapshot.spacing ), null );
 } );
 
-test( 'MUST FAIL (Contact footnote, 2026-10-08): a measured font stack snaps to the font-family preset whose first family matches', () => {
+test( 'MUST FAIL (literal font stacks in the Eye Care trees, 2026-10-08): a measured font stack snaps to the font-family preset whose first family matches', () => {
 	const snapshot = { fontFamilies: [ { slug: 'body', family: 'outfit' }, { slug: 'heading', family: 'playfair display' }, { slug: 'outfit', family: 'outfit' } ] };
 	const log = [];
 	assert.equal( snapFontFamily( 'Outfit, sans-serif', snapshot, { log } ), 'body', 'the first preset in theme order wins a tie' );

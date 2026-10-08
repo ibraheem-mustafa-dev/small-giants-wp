@@ -660,22 +660,7 @@
             "name": "sgs/business-info",
             "attributes": {
               "displayType": "map",
-              "className": "cr-ref-contact-25",
-              "fontFamily": "body",
-              "fontSize": {
-                "mobile": 11,
-                "tablet": 11,
-                "desktop": 11
-              },
-              "fontWeight": "400",
-              "fontStyle": "normal",
-              "lineHeight": {
-                "mobile": 1.5,
-                "tablet": 1.5,
-                "desktop": 1.5
-              },
-              "textTransform": "none",
-              "textColour": "primary"
+              "className": "cr-ref-contact-25"
             }
           },
           {
