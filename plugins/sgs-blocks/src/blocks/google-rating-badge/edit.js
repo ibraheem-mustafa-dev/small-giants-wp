@@ -32,6 +32,7 @@ import {
 	normaliseResponsiveBox,
 	fillRow,
 	textRow,
+	LinkPopoverField,
 } from '../../components';
 
 const typoTarget = ( prefix, label ) => ( {
@@ -232,20 +233,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Link and caption', 'sgs-blocks' ) } initialOpen={ false }>
-					<TextControl
+					<LinkPopoverField
 						label={ __( 'Link to (https only)', 'sgs-blocks' ) }
-						value={ listingUrl }
-						onChange={ set( 'listingUrl' ) }
-						type="url"
 						help={ __( 'Leave empty to use the Google Maps link, then the Google link in Site Info. With no https link the badge is not a link.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Open in a new tab', 'sgs-blocks' ) }
-						checked={ openInNewTab }
-						onChange={ set( 'openInNewTab' ) }
-						__nextHasNoMarginBottom
+						value={ {
+							url: listingUrl || '',
+							linkTarget: openInNewTab ? '_blank' : '_self',
+						} }
+						targetMode="boolean"
+						onChange={ ( next ) => {
+							const patch = {};
+							if ( undefined !== next.url ) patch.listingUrl = next.url;
+							if ( undefined !== next.linkTarget ) patch.openInNewTab = '_blank' === next.linkTarget;
+							setAttributes( patch );
+						} }
 					/>
 					<TextControl
 						label={ __( 'Link label for screen readers', 'sgs-blocks' ) }

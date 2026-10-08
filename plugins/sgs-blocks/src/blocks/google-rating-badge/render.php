@@ -257,7 +257,7 @@ if ( '' !== $grb_url ) {
 }
 $grb_link .= '>';
 
-$grb_logo_url = plugins_url( 'assets/google-logo.svg', SGS_BLOCKS_PATH . 'sgs-blocks.php' );
+$grb_logo_url = plugins_url( 'assets/google-logo.svg', dirname( __DIR__, 3 ) . '/sgs-blocks.php' );
 
 $grb_inner  = '<img class="sgs-google-rating-badge__logo" src="' . esc_url( $grb_logo_url ) . '" alt="" aria-hidden="true" width="24" height="24" decoding="async" />';
 $grb_inner .= '<span class="sgs-google-rating-badge__score" aria-hidden="true">' . esc_html( number_format( $grb_rating, 1 ) ) . '</span>';
