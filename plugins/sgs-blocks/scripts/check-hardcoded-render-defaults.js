@@ -1582,8 +1582,8 @@ const E14_BLOCKS_BUILD = false;
 // The ceilings are the counts `--check` MEASURES on a clean HEAD, lowered in the
 // same commit that removes findings. What remains (plugins/sgs-blocks/reports/
 // f3-e14-triage.md §6 holds the full accounting):
-// - CLASS-2 0 and CANNOT-RESOLVE 0: every element the gate found has a control.
-// - CLASS-3 1: sgs/post-grid's empty-state text, rated DEFENSIBLE.
+// - Every category is 0: every element the gate found has a control or a
+//   zero-specificity default.
 // A var() value counts as a literal on the E14 path unless the block writes one
 // of the custom properties it reads (isUnwrittenVarValue,
 // collectWrittenCustomProps).
@@ -1598,7 +1598,7 @@ const E14_BLOCKS_BUILD = false;
 // controls own it (collectTemplateChildOwners).
 const E14_OPEN_BACKLOG = {
 	'CLASS-2':        0,
-	'CLASS-3':        1,
+	'CLASS-3':        0,
 	'CANNOT-RESOLVE': 0,
 };
 

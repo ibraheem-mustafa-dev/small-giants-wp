@@ -803,6 +803,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ set( 'excludeCurrent' ) }
 						__nextHasNoMarginBottom
 					/>
+					<TextControl
+						label={ __( 'Message when there are no posts', 'sgs-blocks' ) }
+						help={ __( 'Leave empty to show nothing.', 'sgs-blocks' ) }
+						value={ attributes.emptyMessage || '' }
+						onChange={ set( 'emptyMessage' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				{ /* Panel 2: Layout */ }

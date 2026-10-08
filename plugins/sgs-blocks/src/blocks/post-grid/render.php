@@ -455,17 +455,11 @@ if ( $query->have_posts() ) {
 	}
 	wp_reset_postdata();
 } else {
-	echo '<div class="sgs-post-grid__empty" role="status">';
-	echo '<svg class="sgs-post-grid__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">';
-	echo '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
-	echo '<polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
-	echo '<line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
-	echo '<line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
-	echo '<polyline points="10 9 9 9 8 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
-	echo '</svg>';
-	echo '<p class="sgs-post-grid__empty-heading">' . esc_html__( 'No posts yet', 'sgs-blocks' ) . '</p>';
-	echo '<p class="sgs-post-grid__empty-text">' . esc_html__( 'The selected category or filter has no published posts. Check back soon or try a different selection.', 'sgs-blocks' ) . '</p>';
-	echo '</div>';
+	// No posts: the client's own message, or nothing at all (the grid wrapper still closes below).
+	$empty_message = trim( (string) ( $attributes['emptyMessage'] ?? '' ) );
+	if ( '' !== $empty_message ) {
+		echo '<div class="sgs-post-grid__empty" role="status"><p class="sgs-post-grid__empty-text">' . esc_html( $empty_message ) . '</p></div>';
+	}
 }
 echo '</div>';
 

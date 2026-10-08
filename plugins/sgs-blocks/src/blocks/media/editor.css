@@ -15,5 +15,21 @@
    built by view.js on the front end); gives the absolutely-positioned bar a
    box to sit in. */
 .sgs-video--editor-sample {
+	position: relative;
 	min-height: 64px;
+	margin-top: 8px;
+	border-radius: 4px;
+	background: #1e1e1e;
+}
+
+/* A plain caption so the dark strip reads as a labelled sample, not a broken player. */
+.sgs-video__sample-label {
+	position: absolute;
+	top: 8px;
+	left: 12px;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: #fff;
+	opacity: 0.7;
 }

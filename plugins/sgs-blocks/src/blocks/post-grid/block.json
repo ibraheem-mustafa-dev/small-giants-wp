@@ -412,6 +412,11 @@
       "type": "string",
       "default": "Read more"
     },
+    "emptyMessage": {
+      "type": "string",
+      "default": "",
+      "description": "Shown in place of the grid when the query returns no posts. Empty shows nothing."
+    },
     "pagination": {
       "type": "string",
       "default": "none",

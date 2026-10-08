@@ -817,20 +817,12 @@
 	align-items: center;
 	gap: 12px;
 	padding: 48px 24px;
-	text-align: center;
 	color: var( --wp--preset--color--text-muted, #555 );
 }
 
-.sgs-post-grid__empty-icon {
-	color: var( --wp--preset--color--border, #ccc );
-	flex-shrink: 0;
-}
-
-.sgs-post-grid__empty-heading {
-	font-size: var( --wp--preset--font-size--large, 1.25rem );
-	font-weight: 600;
-	margin: 0;
-	color: var( --wp--preset--color--text, #1e1e1e );
+/* Centred by default; zero specificity so a text-align the client sets on the block wins. */
+:where( .sgs-post-grid__empty, .sgs-post-grid__error ) {
+	text-align: center;
 }
 
 .sgs-post-grid__empty-text {

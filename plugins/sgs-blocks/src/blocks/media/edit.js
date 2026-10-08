@@ -742,6 +742,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     time read-out wears the same classes so the canvas shows the client's
 			     time typography. */ }
 			<div className="sgs-video sgs-video--editor-sample" aria-hidden="true">
+				<span className="sgs-video__sample-label">
+					{ __( 'Player controls preview', 'sgs-blocks' ) }
+				</span>
 				<div className="sgs-video__bar">
 					<span
 						className="sgs-video__time"
