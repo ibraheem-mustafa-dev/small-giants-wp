@@ -50,6 +50,29 @@ test( 'negative control: the same open rows with nothing held stay "Unresolved: 
 	assert.ok( classes.unresolved.every( ( r ) => 'not written' === r.reason ) );
 } );
 
+// P2-q: a side the walker never read (the shop brand badge with no text, the mega-brands inline span) is not a paint, so
+// a held group's row with a null side is unresolved, never Hardcode.
+test( 'MUST FAIL: a held row whose live or draft value was never measured is unresolved "unmeasured-side", not Hardcode', () => {
+	const t = tree();
+	writeRound( report(), t, { ...opts, round: 1 } );
+	const { held } = writeRound( report(), t, { ...opts, round: 2 } );
+	const rep = { runs: [ runAt( 375, [] ), runAt( 768, [] ), runAt( 1440, [ { ...row, live: undefined } ] ), runAt( 1920, [ { ...row, draft: null } ] ) ] };
+	const classes = classify( rep, { writes: [], gaps: {}, held, stateMap: { opening: null } } );
+	assert.equal( classes.hardcode.length, 0 );
+	assert.equal( classes.unresolved.length, 2 );
+	assert.match( classes.unresolved[ 0 ].reason, /^unmeasured-side: the live font-size was not read/ );
+	assert.match( classes.unresolved[ 1 ].reason, /^unmeasured-side: the draft font-size was not read/ );
+} );
+
+test( 'a row with no draft value forms no writable group, so nothing is written or held from it (P2-q)', () => {
+	const t = tree();
+	const rep = { runs: [ 1440, 1920 ].map( ( w ) => ( { state: 'opening', width: w, pairs: { head: { draft: { styles: {} }, diffs: [ { ...row, draft: undefined } ] } } } ) ) };
+	const out = writeRound( rep, t, { ...opts, round: 1 } );
+	assert.equal( out.writes.length, 0 );
+	assert.deepEqual( out.held, {} );
+	assert.equal( t[ 0 ].attributes.fontSize, undefined );
+} );
+
 test( 'widthPattern reads the widths that fail and pass in the same state only', () => {
 	const rep = { runs: [ runAt( 375, [] ), { ...runAt( 1440, [ { ...row } ] ), state: 'scrolled' }, runAt( 1440, [ { ...row } ] ) ] };
 	assert.deepEqual( widthPattern( rep, { ...row, state: 'opening' } ), { fails: [ 1440 ], matches: [ 375 ] } );

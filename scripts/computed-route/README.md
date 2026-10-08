@@ -314,10 +314,10 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `plainLength(v)` → whether a declared value is a plain length or percentage a setting can hold.
 - `usedValueTarget(prop, { perWidth, declared, held })` → `{ perWidth }` with the draft's declared value at every width no ledger entry holds (`held` from `draftValues`), or a `used-value` gap.
 - `draftValues(report, pair, prop, hover, walkerStates?, pseudo?)` → `{ perWidth, fontPx, declared, held }` from the draft snapshots, read only from runs in `walkerStates` when given, and on the `::before`/`::after` layer when `pseudo` is given (a group's `pseudo` comes from its rows).
-- `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`.
+- `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`; a row with no draft value goes to `other` (nothing to write).
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
-- `classify(report, { writes, gaps, held?, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`; `held` (from `writeRound` or `heldGroups`) makes a row whose setting already holds the draft value a Hardcode.
+- `classify(report, { writes, gaps, held?, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`; `held` (from `writeRound` or `heldGroups`) makes a row whose setting already holds the draft value a Hardcode, unless one side was never read: that row is unresolved `unmeasured-side`.
 - `intendedCount(report)` → accepted rows.
 - `knownPaths(cal)` → every element path a calibration knows (its elements, each setting's slots and reaches, and the discovered slots); the write path and triage read the same set, so a row whose only evidence is a discovered slot is never gapped `unmapped-element` by one and resolved by the other.
 - `stateDisagreement(report, group, stateMap)` → `{ width, values, detail }` when the walker states mapped to the group's setting state read different draft values at one width, else null; it compares every mapped state, not only those with an open row, because a baseline state usually has none.

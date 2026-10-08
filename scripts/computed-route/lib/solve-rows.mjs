@@ -187,6 +187,9 @@ export function writableGroups( report, stateMap ) {
 			unmapped.push( r );
 		} else if ( 'box' === r.kind ) {
 			box.push( r );
+		} else if ( null == r.draft ) {
+			// The walker read no draft value (an inline span's box styles): there is nothing to write.
+			other.push( r );
 		} else {
 			const k = groupKey( r, st );
 			if ( ! groups.has( k ) ) {
@@ -390,6 +393,13 @@ export function classify( report, { writes, gaps, held = {}, elements, stateMap 
 		}
 		if ( ! r.ref ) {
 			out.unresolved.push( { ...r, reason: 'unmapped-element (no ref)' } );
+			continue;
+		}
+		// A side the walker never read is not a paint (a live element with no text has no text styles read; a draft inline
+		// span has no box styles read), so the row cannot say the paint differs from what the tree holds.
+		const unmeasured = null == r.draft ? 'draft' : ( null == r.live ? 'live' : null );
+		if ( unmeasured ) {
+			out.unresolved.push( { ...r, reason: `unmeasured-side: the ${ unmeasured } ${ r.key } was not read (the ${ unmeasured } element carries no value for it)`, widths: widthPattern( report, r ) } );
 			continue;
 		}
 		const k = groupKey( r, st );
