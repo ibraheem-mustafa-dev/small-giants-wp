@@ -1526,5 +1526,23 @@
     "added_commit": null,
     "budget_ms": 165,
     "order": 166
+  },
+  {
+    "id": "check-partial-use-imports",
+    "cmd": "python scripts/check-partial-use-imports.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 167
+  },
+  {
+    "id": "check-partial-use-imports-selftest",
+    "cmd": "python scripts/check-partial-use-imports.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 150,
+    "order": 168
   }
 ]
