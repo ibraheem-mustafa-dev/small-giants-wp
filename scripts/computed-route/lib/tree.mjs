@@ -34,16 +34,27 @@ export function walk( tree, fn ) {
 const classes = ( n ) => String( n.attributes?.className || '' ).split( /\s+/ ).filter( Boolean );
 export const refOf = ( n ) => classes( n ).find( ( c ) => c.startsWith( REF_PREFIX ) ) || null;
 
-// Adds cr-ref-<surface>-<n> to every node that lacks a ref (n = depth-first index), appended to its className.
+// Adds cr-ref-<surface>-<n> to every node that lacks a ref, appended to its className. n continues past the
+// highest number the surface already uses, so a node added to a numbered tree never takes a number in use (its
+// depth-first index can belong to the node it pushed down); on an unnumbered tree that is the depth-first index.
 // Returns how many nodes it marked.
 export function addRefs( tree, surface ) {
+	const prefix = `${ REF_PREFIX }${ surface }-`;
+	let next = 0;
+	walk( tree, ( n ) => {
+		const ref = refOf( n );
+		const k = ref && ref.startsWith( prefix ) ? Number( ref.slice( prefix.length ) ) : NaN;
+		if ( Number.isInteger( k ) && k >= next ) {
+			next = k + 1;
+		}
+	} );
 	let added = 0;
-	walk( tree, ( n, i ) => {
+	walk( tree, ( n ) => {
 		if ( refOf( n ) ) {
 			return;
 		}
 		n.attributes = n.attributes || {};
-		n.attributes.className = [ ...classes( n ), `${ REF_PREFIX }${ surface }-${ i }` ].join( ' ' );
+		n.attributes.className = [ ...classes( n ), `${ prefix }${ next++ }` ].join( ' ' );
 		added++;
 	} );
 	return added;

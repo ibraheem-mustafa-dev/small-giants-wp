@@ -121,7 +121,7 @@
                   "left": "0px"
                 }
               },
-              "className": "cr-ref-mobile-menu-2"
+              "className": "cr-ref-mobile-menu-2 sgs-hover-underline-slide"
             }
           },
           {
@@ -165,7 +165,7 @@
                   "left": "0px"
                 }
               },
-              "className": "cr-ref-mobile-menu-3"
+              "className": "cr-ref-mobile-menu-3 sgs-hover-underline-slide"
             }
           },
           {
@@ -209,7 +209,7 @@
                   "left": "0px"
                 }
               },
-              "className": "cr-ref-mobile-menu-4"
+              "className": "cr-ref-mobile-menu-4 sgs-hover-underline-slide"
             }
           },
           {
@@ -331,7 +331,8 @@
               },
               "gap": "10",
               "itemPaddingBlock": "5px",
-              "className": "cr-ref-mobile-menu-9"
+              "className": "cr-ref-mobile-menu-9",
+              "textColourHover": "text"
             }
           }
         ]
@@ -395,7 +396,8 @@
                 }
               },
               "scoreColour": "text",
-              "captionColour": "text-soft"
+              "captionColour": "text-soft",
+              "className": "cr-ref-mobile-menu-16"
             },
             "innerBlocks": []
           },

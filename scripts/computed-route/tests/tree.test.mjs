@@ -18,6 +18,28 @@ test( 'addRefs numbers nodes depth-first, keeps existing classes, and is idempot
 	assert.equal( t[ 0 ].innerBlocks[ 0 ].attributes.className, undefined );
 } );
 
+test( 'addRefs gives a node added to a numbered tree a fresh number, never one already in use', () => {
+	// A tree numbered once (0, 1, 2), then a new node inserted before the last one: its depth-first index (2)
+	// is already taken by the node it pushed down, so the index cannot be its number.
+	const t = [ { name: 'sgs/container', attributes: { className: 'cr-ref-dm-0' }, innerBlocks: [
+		{ name: 'sgs/heading', attributes: { className: 'cr-ref-dm-1' } },
+		{ name: 'sgs/google-rating-badge', attributes: {} },
+		{ name: 'sgs/button', attributes: { className: 'cr-ref-dm-2 extra' } },
+	] } ];
+	assert.equal( addRefs( t, 'dm' ), 1 );
+	assert.equal( refOf( t[ 0 ].innerBlocks[ 1 ] ), 'cr-ref-dm-3' );
+	const refs = [];
+	walkRefs( t, refs );
+	assert.equal( new Set( refs ).size, refs.length, 'every ref is unique' );
+} );
+
+function walkRefs( nodes, out ) {
+	for ( const n of nodes ) {
+		out.push( refOf( n ) );
+		walkRefs( n.innerBlocks || [], out );
+	}
+}
+
 test( 'setAttr deep-merges one side of one tier and keeps the rest', () => {
 	const n = tree()[ 0 ].innerBlocks[ 0 ];
 	const r = setAttr( n, { attr: 'padding', value: { desktop: { bottom: '0px' } }, merge: 'deep' } );
