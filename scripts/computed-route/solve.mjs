@@ -188,6 +188,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		gaps[ c.key ] = blocked.get( c.key ) || { gap: 'state-conflict', detail: c.conflict.detail };
 	}
 	const claimed = new Map();
+	const start = structuredClone( tree );
 	for ( const g of groups ) {
 		if ( blocked.has( g.key ) ) {
 			gaps[ g.key ] = blocked.get( g.key );
@@ -291,7 +292,14 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 		for ( const w of r.writes ) {
 			const same = JSON.stringify( setAttr( structuredClone( target.node ), w ).after ) === JSON.stringify( target.node.attributes?.[ w.attr ] );
 			if ( same ) {
-				( holds[ g.key ] ||= [] ).push( { ref: target.ref, block: target.node.name, attr: w.attr, value: w.value } );
+				// Held only when the tree held the value before this round's first write: a value an earlier group wrote
+				// this round (two rows resolving to one setting) is a write, not a hold.
+				const atStart = nodeByRef( start, target.ref );
+				if ( ! atStart || JSON.stringify( setAttr( structuredClone( atStart ), w ).after ) === JSON.stringify( atStart.attributes?.[ w.attr ] ) ) {
+					( holds[ g.key ] ||= [] ).push( { ref: target.ref, block: target.node.name, attr: w.attr, value: w.value } );
+					continue;
+				}
+				writes.push( { round, group: g.key, ref: target.ref, block: target.node.name, path: target.path, prop: g.prop, state: g.state, attr: w.attr, before: setAttr( structuredClone( atStart ), w ).before, after: target.node.attributes?.[ w.attr ], rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 				continue;
 			}
 			leafChanges( target.node.attributes?.[ w.attr ], setAttr( structuredClone( target.node ), w ).after ).forEach( ( [ k, v ] ) => claimed.set( `${ target.ref }|${ w.attr }|${ k }`, v ) );

@@ -104,3 +104,38 @@ test( 'heldGroups reads on a copy: the tree is left as it was, and a group still
 	writeRound( report(), t, { ...opts, round: 1 } );
 	assert.equal( Object.keys( heldGroups( report(), t, { ...opts, blocked: new Map() } ).held ).length, 1, 'once the tree holds it, it is' );
 } );
+
+// P2-l: two open rows that resolve to one setting. The first writes it into the copy; the second must not read the copy's
+// value as "the tree already holds it".
+const rowTree = () => [ { name: 'sgs/site-footer-row', attributes: { className: 'cr-ref-r-1' } } ];
+const gapDiff = ( key ) => ( { kind: 'style', key, draft: '10px', live: '32px', ref: 'cr-ref-r-1', path: '.sgs-container__inner' } );
+const gapRun = ( width, keys ) => ( { state: 'opening', width, pairs: { row: { draft: { styles: Object.fromEntries( keys.map( ( k ) => [ k, '10px' ] ) ) }, diffs: keys.map( gapDiff ) } } } );
+const gapReport = ( keys ) => ( { runs: [ 375, 768, 1440, 1920 ].map( ( w ) => gapRun( w, keys ) ) } );
+const gapOpts = { db, snapshot, log: [], stateMap: { opening: null } };
+
+test( 'two rows resolving to one setting: the tree holds neither, so nothing is held (P2-l)', () => {
+	const t = rowTree();
+	const { held, writes } = heldGroups( gapReport( [ 'gap', 'row-gap' ] ), t, gapOpts );
+	assert.deepEqual( held, {}, 'the second row is not held' );
+	assert.equal( writes.length, 2, 'both rows are writes' );
+	assert.equal( t[ 0 ].attributes.gap, undefined, 'the real tree is untouched' );
+} );
+
+test( 'negative control: a tree that really holds the value still holds it for both rows (P2-l)', () => {
+	const t = rowTree();
+	t[ 0 ].attributes.gap = { mobile: '10px', tablet: '10px', desktop: '10px' };
+	const { held, writes } = heldGroups( gapReport( [ 'gap', 'row-gap' ] ), t, gapOpts );
+	assert.equal( Object.keys( held ).length, 2, 'both rows are held' );
+	assert.equal( writes.length, 0 );
+} );
+
+test( 'two rows on one setting: the write round writes it once into the tree, the next round holds both (P2-l)', () => {
+	const t = rowTree();
+	const first = writeRound( gapReport( [ 'gap', 'row-gap' ] ), t, { ...gapOpts, round: 1 } );
+	assert.equal( first.writes.length, 2, 'one entry per row' );
+	assert.deepEqual( first.writes.map( ( w ) => w.before ), [ null, null ], 'both record the value before the round' );
+	assert.deepEqual( first.writes[ 0 ].after, first.writes[ 1 ].after );
+	const second = writeRound( gapReport( [ 'gap', 'row-gap' ] ), t, { ...gapOpts, round: 2 } );
+	assert.equal( second.writes.length, 0 );
+	assert.equal( Object.keys( second.held ).length, 2 );
+} );
