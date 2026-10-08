@@ -57,7 +57,7 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 **Now (2026-10-08).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, four build rules.
-No blockers. **eye-care-test runs `ec51d6cf1` (blocks) and the sandybrown canary `44e2c9d0f`** (markers); sandybrown gets those commits with its next deploy. ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
+No blockers. **eye-care-test runs `ec51d6cf1` (blocks); sandybrown runs `b17c73217` (2026-10-08 gate-debt deploy)** (markers). ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the "Ask us" cell) and Q12 (the gallery grid) are closed live; their open edges are in their backlog rows. Q1 is decided, not building.
@@ -81,12 +81,10 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 **Owed, each with its owner:**
 - **F3/E14 — every element the gate found has a control or a zero-specificity default.**
-  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0**. Sandybrown runs `44e2c9d0f` (main is ahead only by gate scripts and docs, plus the nav
-  session's `731ec6232`/`dd32a11d2`, waiting for the next deploy). 2026-10-08 closed: block stylesheets and block.json text defaults no longer use
+  Ceilings **CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0**. 2026-10-08 closed: block stylesheets and block.json text defaults no longer use
   `primary` (state text `primary-dark`; gate `check-text-colour-defaults.py`); five oversized files split; every gate reads render partials, edit components and view
   submodules through `scripts/lib/block-source-files.js` / `block_source_files.py`; `check-partial-use-imports.py` stops a partial calling a
-  class only render.php imports. **Open:** pre-existing defects the component-aware gates now see sit on shrink-only lists for the next
-  nav-drawer / nav-bar-menu / google-reviews session, and modal `borderStyle` needs the enum detector read first (triage §6).
+  class only render.php imports. The component-aware gates' pre-existing defects are fixed and their shrink-only entries deleted (the older accepted-debt enum entries remain; enum detector no longer binds a shared component's prop to a neighbouring control); only the advisory backlogs rule 03 and rule 31 remain (triage §6).
   **PARKED (Bean):** 24 `product-card::valueLadder*::L3` need a bound-mode canvas mirror (§6).
 - **Route (2026-10-07):** the canvas cross-check is settled by a blind `/qc-council` and routed: decisions are
   ledger entries D-52..D-71, 72 confirmed gaps are register CR23 (Bean's call). The four route defects are closed

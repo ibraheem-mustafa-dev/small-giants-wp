@@ -491,7 +491,8 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
 - **One free slot:** `chromeSlotType` heading | label | text | button, `chromeSlotText`, `chromeSlotHeadingLevel`
   (h2 | h3 | h4 | p), `chromeSlotPlacement` after-logo | center | end, `chromeSlotShow`, the `chromeSlot`
   typography set and `chromeSlotColour`/`…Gradient`. The button type is a link (`chromeSlotUrl`,
-  `chromeSlotNewTab`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix.
+  `chromeSlotNewTab`, edited in one `LinkPopoverField`) styled by `sgs_button_element_style_css()` with the `chromeButton` prefix and its
+  background on a layer, so the button text takes a gradient (`chromeButtonColourTextGradient`, `chromeButtonColourTextHoverGradient`).
 - **Google rating:** its own item, beside the free slot (a wordmark heading and the rating share the row).
   `chromeRating` (on/off), `chromeRatingPlacement` end (beside the ×) | center, `chromeRatingShow` (tier object),
   `chromeRatingShowCount` and `chromeRatingColour`. `includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_html`

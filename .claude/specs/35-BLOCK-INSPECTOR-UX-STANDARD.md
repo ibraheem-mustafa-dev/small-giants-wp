@@ -936,7 +936,9 @@ everywhere a hyperlink option exists — including the block-link extension's li
    6–10/>10 bands by count alone (label extraction isn't load-bearing there). Cases the census cannot
    resolve are carried as explicit `skip` entries with a machine-readable reason (`unresolved-binding` /
    `shared-component` / `ambiguous-binding` / `label-extraction-failed`) — never silently counted as
-   compliant.
+   compliant. An attribute handed to a shared component as a prop value (`styleValue={ borderStyle }` on
+   `SgsBorderControl`, `value={ easing }` on `MotionEasingControl`) resolves as `shared`, never to a primitive control nearby;
+   `--self-test` case [12] fails if a neighbouring control captures it.
 
    ⚠ **Reading rendered labels instead of slugs finds FEWER violations than the census's slug proxy
    predicts:** many `SelectControl`s in the 2–5 band have a rendered label genuinely longer than 12
