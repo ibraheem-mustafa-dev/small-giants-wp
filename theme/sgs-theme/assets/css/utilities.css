@@ -218,26 +218,43 @@ body.admin-bar html {
 /* ----------------------------------------------------------------
    Link Hover Animation Presets (#198)
    ---------------------------------------------------------------- */
-.sgs-hover-underline-slide {
-	position: relative;
+/* Underline sweep: on hover a line in the link's own colour sweeps in left to
+   right, and on leave plays back right to left. Drawn as a background line,
+   not a positioned pseudo-element, so on an inline link it runs along every
+   wrapped line in reading order (box-decoration-break: slice).
+   - `.sgs-hover-underline-slide` opts in: on a link or button it sweeps that
+     element; on any other element (a block's wrapper, via its Additional CSS
+     class) it sweeps the links inside. 1px line by default.
+   - Link-list links (sgs/icon-list) and Link-style button labels take the same
+     sweep only when the client sets `settings.custom.linkSweep.thickness`;
+     unset, the line is 0px and nothing paints. */
+:is(a, button).sgs-hover-underline-slide,
+.sgs-hover-underline-slide:not(a, button) a,
+:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label) {
+	--sgs-sweep-thickness: var(--wp--custom--link-sweep--thickness, 0px);
+	background-image: linear-gradient(var(--sgs-link-hover-color, currentColor), var(--sgs-link-hover-color, currentColor));
+	background-repeat: no-repeat;
+	background-position: 0 100%;
+	background-size: 0 var(--sgs-sweep-thickness);
+	transition: background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;
+}
+:is(a, button).sgs-hover-underline-slide,
+.sgs-hover-underline-slide:not(a, button) a {
+	--sgs-sweep-thickness: var(--wp--custom--link-sweep--thickness, 1px);
 	text-decoration: none;
 }
-.sgs-hover-underline-slide::after {
-	content: '';
-	position: absolute;
-	width: 100%;
-	transform: scaleX(0);
-	height: 2px;
-	bottom: -2px;
-	left: 0;
-	background-color: var(--sgs-link-hover-color, currentColor);
-	transform-origin: bottom right;
-	transition: transform 0.25s ease-out;
+:is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible),
+.sgs-hover-underline-slide:not(a, button) a:is(:hover, :focus-visible),
+:where(.sgs-icon-list__item-link:is(:hover, :focus-visible)),
+:where(.sgs-button--link:is(:hover, :focus-visible) .sgs-button__label) {
+	background-size: 100% var(--sgs-sweep-thickness);
 }
-.sgs-hover-underline-slide:hover::after,
-.sgs-hover-underline-slide:focus-visible::after {
-	transform: scaleX(1);
-	transform-origin: bottom left;
+@media (prefers-reduced-motion: reduce) {
+	:is(a, button).sgs-hover-underline-slide,
+	.sgs-hover-underline-slide:not(a, button) a,
+	:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label) {
+		transition: none;
+	}
 }
 
 .sgs-hover-underline-fade {

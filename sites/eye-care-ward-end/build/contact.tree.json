@@ -323,7 +323,7 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-9",
+                      "className": "cr-ref-contact-9 sgs-hover-underline-slide",
                       "textColourHover": "text",
                       "iconGap": {
                         "mobile": "0px",
@@ -394,7 +394,7 @@
                       "fontSize": {
                         "desktop": "15px"
                       },
-                      "className": "cr-ref-contact-12"
+                      "className": "cr-ref-contact-12 sgs-hover-underline-slide"
                     }
                   }
                 ]

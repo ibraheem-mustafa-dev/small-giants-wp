@@ -522,6 +522,9 @@
       ]
     },
     "custom": {
+      "linkSweep": {
+        "thickness": "1px"
+      },
       "shadowHover": {
         "whisper": "soft",
         "soft": "lifted",

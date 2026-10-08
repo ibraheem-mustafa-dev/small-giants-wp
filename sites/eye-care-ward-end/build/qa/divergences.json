@@ -1383,5 +1383,56 @@
       "S2"
     ],
     "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-96",
+    "scope": "footer",
+    "node": "cr-ref-footer-9",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
+    "register": [
+      "32",
+      "33",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-97",
+    "scope": "footer",
+    "node": "cr-ref-footer-16",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 32/33 / S2 (Bean's decision): footer link-list words stay black on hover (textColourHover text) and take the underline sweep (custom.linkSweep); the draft's taupe hover colour is not applied.",
+    "register": [
+      "32",
+      "33",
+      "S2"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
+  },
+  {
+    "id": "D-98",
+    "scope": "contact",
+    "node": "cr-ref-contact-12",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 131 / S2-S3 (Bean's decision): the Contact email link keeps its own text colour on hover and takes the S2 underline sweep; the draft's taupe hover colour is not applied. Twin of D-87 (the phone).",
+    "register": [
+      "131",
+      "S2",
+      "S3"
+    ],
+    "decided": "2026-10-08 Bean (register S2)"
   }
 ]

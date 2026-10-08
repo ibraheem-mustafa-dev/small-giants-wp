@@ -296,7 +296,8 @@
                       "text": "Glasses — arriving soon"
                     }
                   ],
-                  "className": "cr-ref-footer-9"
+                  "className": "cr-ref-footer-9",
+                  "textColourHover": "text"
                 }
               }
             ]
@@ -392,7 +393,8 @@
                       "url": "/contact/"
                     }
                   ],
-                  "className": "cr-ref-footer-16"
+                  "className": "cr-ref-footer-16",
+                  "textColourHover": "text"
                 }
               }
             ]
