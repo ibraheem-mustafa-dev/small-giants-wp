@@ -414,7 +414,7 @@ tier-migration upgrade lands.
 
 **Status: ACTIVE.** The badge/trust-signal strip. `sgs/trust-bar` is **typed-only** — it has NO `sourceMode` attribute (check: `git grep -c sourceMode -- plugins/sgs-blocks/src/blocks/trust-bar/block.json` finds nothing). It carries the certification-badge use-cases (`badgeStyle` variants: icon-circle / text-only / image-badge + auto-scroll marquee); counter use-cases belong to `sgs/counter`. The converter emits typed `items[]` via the icon-identity resolver (`converter/services/icon_resolver.py`), resolving to correct icon slugs (home/check/truck/star). The live WC configurator modes (`wc-product`/`sgs-cpt`) belong to `sgs/product-card`, not this block.
 
-The icon circle has an overridable default border; a title placeholder never leaks (trim guard); `iconCircleSize` governs badge size for icon-circle mode. Typography uses the shared `TypographyControls` component. `src/blocks/trust-bar/` is the active directory. See Spec 27 §FR-24-10.
+Auto-scroll marquee behaviour: the badge row loops seamlessly with no empty space (the runtime clones the track and every copy animates in step, each carrying `--sgs-scroll-distance`); it pauses while a mouse hovers it or a finger presses it (`autoScrollPauseOnHover`, default on) and always while keyboard focus is inside it; a visible pause/play button is an opt-in (`autoScrollPauseButton`, default off, shown only while the row actually scrolls); `prefers-reduced-motion` keeps the row static. The icon circle has an overridable default border; a title placeholder never leaks (trim guard); `iconCircleSize` governs badge size for icon-circle mode. Typography uses the shared `TypographyControls` component. `src/blocks/trust-bar/` is the active directory. See Spec 27 §FR-24-10.
 
 ---
 
