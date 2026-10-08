@@ -293,7 +293,9 @@ reuses a number; it is appended to any existing `className`. Then rebuild once. 
 - **Hardcode:** the setting holds the draft value, or its logged snap, and the paint still differs beyond the walker's
   tolerance and the snap's distance. Framework repair. It holds whether Solve wrote the value this run or the tree
   already held it (`solve.mjs::writeRound` records the held groups; a measure-only run reads them against a copy of the
-  tree). The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row, the rule
+  tree). A group is held only if the tree held the value before the round's first write: a value another group wrote
+  earlier in the same round (two rows resolving to one setting) is a write, never a hold (test `tests/solve-held.test.mjs`).
+  The row says what the tree holds, the widths that differ and the widths that match, and, for a rest-state row, the rule
   that wins on the live page beside the rule that carries the draft value
   (`lib/winning-rule.mjs`, Chrome DevTools' matched rules; `--no-rules` skips the browser read).
 - **Missing setting:** the resolver returned `no-setting`. Framework new control.

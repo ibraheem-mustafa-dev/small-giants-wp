@@ -181,7 +181,12 @@ to map a scraped header into.
 
 Both row blocks (`sgs/site-header-row`, `sgs/site-footer-row`) carry a `layout` attribute
 (`flex` | `grid`), a per-device `columns` count and a per-device `gridTemplateColumns`. The two
-modes are explicit and intentional, and a row defaults to one of them per slot (§3.1/§3.2):
+modes are explicit and intentional, and a row defaults to one of them per slot (§3.1/§3.2). The per-slot default is
+SEEDED, not a block default: `site-footer/edit.js::TEMPLATE` and every footer starter pattern except the blank
+`footer-scratch.php` write `layout` on each row (`top` and `bottom` `flex`, `columns` `grid`), while `site-footer-row/block.json::attributes.layout` defaults to
+`grid` and `site-header-row`'s to `flex`. A footer row built outside the starters (a clone or a hand-written tree) must
+write `layout` itself; a `bottom` row left on the block default renders as a grid and ignores `justifyContent`, which
+the inspector offers only in Cluster mode (FR-37-33):
 
 - **`cluster`** — a horizontal flex group (header rows never wrap — §3.6). For rows of unlike
   items (logo + nav + cart). This is what every header row needs.

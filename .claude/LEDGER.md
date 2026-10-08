@@ -57,7 +57,7 @@ Handoff/`). Test site: https://darkcyan-grouse-898606.hostingersite.com (creds `
 **Now (2026-10-08).** ⚠️ **Both sites now run WooCommerce 11.1.2** (Bean upgraded the canary on 2026-10-06; confirmed by `wp plugin get woocommerce` on each). Earlier "installed 11.1.0" citations about the canary record what was read AT THE TIME and are provenance, not current state — re-read the installed source before relying on any of them, because no 11.1.0 install remains. Live = HEAD is proven by the deploy-ownership markers `~/.sgs-deploy-marker-<target>.json`, not a liveness check.
 The fix register `plans/2026-10-02-eye-care-fix-register.md` (v2) is the source of
 truth for what gets fixed: 12 site-wide fixes (S1-S12), every surface's items, decisions D1-D9, four build rules.
-No blockers. **eye-care-test runs `dd32a11d2` and the sandybrown canary `44e2c9d0f`** (markers); sandybrown gets `731ec6232`/`dd32a11d2` with its next deploy. ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
+No blockers. **eye-care-test runs `ec51d6cf1` (blocks) and the sandybrown canary `44e2c9d0f`** (markers); sandybrown gets those commits with its next deploy. ⚠️ The host edge 403s bursts (it blocked this machine for ~20 min on 2026-10-07): one `curl` probe before any host job. The backlog's QC finds Q3 to Q8 and Q11 are closed
 with live proof in their rows; N36S is live: the four-row Sizing table and the D1 front and side measured diagrams above it, both following
 the picked size (`sgs/measured-diagram` + `sgs/diagram-dimension`, verified live 2026-10-07; D1's deferrals are in the
 backlog's "D1 measured-diagram block" section). Q10 (the "Ask us" cell) and Q12 (the gallery grid) are closed live; their open edges are in their backlog rows. Q1 is decided, not building.
@@ -76,7 +76,7 @@ the fix register (fixes; its Sweep column re-judged on the 2026-10-07 measure-on
 (features, controls, the QC finds and the D1 measured-diagram block); `plans/2026-10-07-cr6-box-longhand-migration.md` (CR6 phase 2).
 **Measured state:** read the counts from `qa/triage/*.json` (all 17 surfaces), never a cached figure. The W-to-F reclassification is
 applied (`ffac809ce`, `844ee7bf2`) with every canvas citation read live (`canvas-confirm.json`), and the mega
-panels, shop and product are re-paired (2026-10-07 sweep: 2,207 open issues, nothing stale or unmeasured). ⚠️ Never compare a raw triage count with an
+panels, shop and product are re-paired (2026-10-08 sweep: 1,829 open issues, hardcode 21; size-guide stale, P2-o). ⚠️ Never compare a raw triage count with an
 audited one, and compare sweeps on a **normalised** path: a cosmetic path change re-keys rows wholesale.
 
 **Owed, each with its owner:**
@@ -95,8 +95,7 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
   **`sgs/hero`'s `maxWidth` is a REAL gap** (backlog): **never remove `section.sgs-hero{max-width:none}`** (D725). **CR12 is PARKED pending Bean**: the deriver hard-refuses Eye Care on contrast, 3 design options on its row.
   ⚠️ `solve.mjs` defaults to **3 WRITE rounds**; a sweep needs `--rounds 0`. Mirrors (8081/8082) carry **no `cr-ref`
   for header/mega/shop/product/lens/size-guide**; `curl` needs `-6`. **Never `wsl --shutdown`** (SearXNG).
-- **Mega menu width:** the full-width wrap paints the panel's fill and shadow (Spec 36 "Panel placement"); the 40-brand list
-  reads the draft. Live on eye-care-test; its untested paths and the sideways scroll are closed (register CR29 to CR31).
+- **Mega menu width:** full-width wrap and the 40-brand list are live on eye-care-test (Spec 36 "Panel placement"; register CR29 to CR31).
 - **The walker-blind rows** are all closed and verified live on eye-care-test, N36S included.
   The focus ring stays the client accent (D467). ⚠️ A plugin deploy does NOT apply a tree fix: rebuild the page with
   `wp-build-page.js` (one at a time; the host's edge challenge refuses bursts).
@@ -109,15 +108,15 @@ audited one, and compare sweeps on a **normalised** path: a cosmetic path change
 
 - **D7 closed live (2026-10-08):** `sgs/google-rating-badge` beside the header phone and in the drawer; header 79px.
   Drawer Solve (`solve.mjs --surface mobile-menu --rounds 0`): 219 rows, all unresolved.
-- **Session D (2026-10-08):** every register row has a `Lane` (78 open = 29 Solve + 49 Fix). **Lenses at 100%.**
-  S2 (underline sweep, `custom.linkSweep`), S3, S5's decided values: closed live. Contact: hours closed; 41 independent-
-  check rows left, grouped in the plan. Route fixes: guard judges own rows (Spec 47 0.15.7), borderless border colour is
-  no row, checker reads `<br>`/text runs. `85f07d38a` (heading canvas font slug) is live on eye-care-test.
+- **Session D (2026-10-08):** every register row has a `Lane` (78 open = 29 Solve + 49 Fix). **Lenses at 100%.** S2, S3, S5's decided
+  values: closed live. **Footer (evening):** Solve's "held" check fixed (P2-l); the bottom row is `layout: flex` + 10px gap; link
+  colour P2-m live; footer Hardcode is now only the social-icon borders, which go with `plans/2026-10-08-icon-unification-and-spacing-control.md`.
+  Open: P2-n (link underline control), P2-o (size-guide walker). Untriaged Hardcode (sweep issues): home 3, mega-brands 4, shop 2 (read each
+  Winning rule first). ⚠️ A Solve write run that crashes on a host timeout leaves its writes unjudged in the tree: `git diff` it first.
 
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the backlog's next tier.
 
-**Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`. Open only if asked: the composites'
-editor canvases and the cart panel show spacing only in the editor.
+**Separators** (DONE, live): `plans/archive/2026-10-01-separators-plan.md`.
 
 **Parked (detail in the plans):** Mama's Munches needs a site copy of the shop template for its Flavour and Size
 groups; card-grid zoom amount control; `disabled` as a golden state; nav-drawer badge/disabled; `IconPicker` `id`.
