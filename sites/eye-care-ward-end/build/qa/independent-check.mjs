@@ -162,6 +162,9 @@ export function readPage( list ) {
 	return out;
 }
 
+// A box with no gap (block flow, null) and a flex or grid gap of zero on both axes paint the same spacing.
+const gapKey = ( g ) => ( null === g || g.split( ' ' ).every( ( v ) => 0 === ( parseFloat( v ) || 0 ) ) ? null : g );
+
 export function compare( d, l, width ) {
 	const diffs = [];
 	const add = ( prop, dv, lv ) => diffs.push( { ref: d.ref, width, prop, draft: dv, live: lv } );
@@ -174,9 +177,10 @@ export function compare( d, l, width ) {
 	for ( const k of [ 'top', 'right', 'bottom', 'left' ] ) {
 		Math.abs( d.inset[ k ] - l.inset[ k ] ) > PX_TOL && add( `padding.${ k }`, d.inset[ k ], l.inset[ k ] );
 	}
-	for ( const k of [ 'ground', 'border', 'gap' ] ) {
+	for ( const k of [ 'ground', 'border' ] ) {
 		d[ k ] !== l[ k ] && add( k, d[ k ], l[ k ] );
 	}
+	gapKey( d.gap ) !== gapKey( l.gap ) && add( 'gap', d.gap, l.gap );
 	if ( d.font && l.font ) {
 		Math.abs( d.font.size - l.font.size ) > FONT_TOL && add( 'font-size', d.font.size, l.font.size );
 		const lh = ( f ) => ( 'normal' === f.lineHeight ? 'normal' : Math.round( f.lineHeight ) );

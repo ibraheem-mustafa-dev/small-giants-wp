@@ -100,3 +100,14 @@ test( 'MUST FAIL (Lenses button, 2026-10-07): a block whose own text another blo
 		await browser.close();
 	}
 } );
+
+test( 'MUST FAIL (Lenses gap, 2026-10-08): a block with no gap and a flex gap of 0px paint alike; a real gap still differs', async () => {
+	const { compare } = await import( CHECK );
+	const row = ( gap ) => ( { ref: 'r', found: true, box: { x: 0, y: 0, w: 100, h: 40 }, inset: { top: 0, right: 0, bottom: 0, left: 0 }, ground: null, border: null, gap } );
+	assert.deepEqual( compare( row( null ), row( '0px 0px' ), 375 ), [], 'block flow (null) and a zero flex gap are the same paint' );
+	assert.deepEqual( compare( row( '0px 0px' ), row( null ), 375 ), [], 'either side may be the block-flow one' );
+	const real = compare( row( null ), row( '16px 16px' ), 375 );
+	assert.equal( real.length, 1 );
+	assert.equal( real[ 0 ].prop, 'gap' );
+	assert.equal( compare( row( '0px 16px' ), row( null ), 375 ).length, 1, 'a one-axis gap is still a gap' );
+} );
