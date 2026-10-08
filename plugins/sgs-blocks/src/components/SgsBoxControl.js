@@ -119,6 +119,13 @@ function allIconFor( keys ) {
 	return keys.some( ( k ) => k.startsWith( 'top' ) && k !== 'top' ) ? cornerAll : sidesAll;
 }
 
+/**
+ * The value box (number + unit) keeps a fixed width so the preset select beside it fills the rest of the row;
+ * left to size itself, the unit control takes the whole row and the select collapses (read on sandybrown,
+ * 280px inspector, 2026-10-08).
+ */
+const VALUE_BOX_STYLE = { width: 104, flexShrink: 0 };
+
 /** Sentinel select values — mirrors SgsLengthControl.js's CUSTOM_VALUE shape. */
 const CUSTOM_VALUE = '__custom__';
 /** Row H: a stored preset slug the ACTIVE theme's scale no longer declares. */
@@ -410,7 +417,7 @@ export default function SgsBoxControl( {
 						__next40pxDefaultSize
 					/>
 				</FlexBlock>
-				<FlexItem className="sgs-box-control__value">
+				<FlexItem className="sgs-box-control__value" style={ VALUE_BOX_STYLE }>
 					<UnitControl
 						label={ rowLabel }
 						hideLabelFromVision
@@ -442,7 +449,7 @@ export default function SgsBoxControl( {
 		return (
 			<Flex align="center" gap={ 2 } key={ sideKey || 'linked' } className="sgs-box-control__row">
 				{ rowIcon( sideKey ) }
-				<FlexItem className="sgs-box-control__value">
+				<FlexItem className="sgs-box-control__value" style={ VALUE_BOX_STYLE }>
 					<UnitControl
 						label={ rowLabel }
 						hideLabelFromVision

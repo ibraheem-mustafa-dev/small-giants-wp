@@ -451,6 +451,16 @@ final class SGS_Blocks {
 				SGS_BLOCKS_VERSION
 			);
 		}
+
+		// Spacing between stacked SGS controls in the inspector (same document, same hook).
+		if ( file_exists( SGS_BLOCKS_PATH . 'assets/css/inspector-controls.css' ) ) {
+			wp_enqueue_style(
+				'sgs-inspector-controls',
+				SGS_BLOCKS_URL . 'assets/css/inspector-controls.css',
+				array(),
+				SGS_BLOCKS_VERSION
+			);
+		}
 	}
 
 	/**

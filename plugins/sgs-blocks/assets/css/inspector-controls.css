@@ -1,0 +1,20 @@
+/**
+ * Spacing between stacked SGS controls in the block inspector — EDITOR SIDEBAR ONLY.
+ *
+ * Loaded beside device-toggle.css on `admin_enqueue_scripts` (the inspector lives in the outer admin document,
+ * not the canvas iframe; see that file's header for why the hook matters).
+ *
+ * SGS controls pass `__nextHasNoMarginBottom`, which removes core's own bottom margin on the expectation that the
+ * parent spaces its children; a plain `PanelBody` does not, so two SGS controls stacked in one panel touched
+ * (measured on sandybrown 2026-10-08 across icon, container, button, text, heading, card-grid and hero: Padding
+ * then Margin 0px apart, and the same after every responsive override, responsive control, box control and
+ * notice). Each separate control now sits 16px below the one before it, core's spacing between inspector
+ * controls. A control's own parts (a label and its field, an override's header and field) are not separate
+ * controls and keep their spacing; the first control under a panel title keeps the panel's padding.
+ */
+.block-editor-block-inspector :is(.sgs-responsive-override, .sgs-responsive-control, .sgs-box-control, .sgs-tri-state-control, .components-notice)
+	+ :not(.sgs-responsive-override__field, .sgs-responsive-override__inherited),
+.block-editor-block-inspector :not(.components-panel__body-title, .sgs-responsive-override__header)
+	+ :is(.sgs-responsive-override, .sgs-responsive-control, .sgs-box-control, .sgs-tri-state-control) {
+	margin-top: 16px;
+}
