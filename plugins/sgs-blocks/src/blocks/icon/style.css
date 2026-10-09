@@ -89,7 +89,7 @@
 }
 
 .sgs-icon--has-bg .sgs-icon__shape {
-	background-color: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface))));
+	background-color: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface-alt))));
 	/* A wrapper's group gradient; render.php sets --sgs-icon-bg-image:none for an icon with its own background. */
 	background-image: var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none));
 }
@@ -157,7 +157,7 @@
 }
 
 .sgs-icon--has-bg .sgs-icon__outline-path {
-	fill: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface))));
+	fill: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface-alt))));
 }
 
 .sgs-icon--outline-dashed .sgs-icon__outline-path {
