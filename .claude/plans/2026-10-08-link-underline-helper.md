@@ -2,7 +2,7 @@
 title: Link underline helper for text blocks, and the Eye Care footer "Visit or call" column
 project: small-giants-wp
 created: 2026-10-08
-status: batch 1 live on eye-care-test and read live 2026-10-09; batch 2 (icon-list) built, deploy and live read pending; batch 3 (collapsible-text, quote, testimonial, timeline, product-card) open
+status: batches 1 and 2 (icon-list, label) live on eye-care-test, 2026-10-09; batch 3 (collapsible-text, quote, testimonial, timeline, product-card) open
 authors: Bean, Claude (small-giants-wp-57)
 governs: register CR6 P2-n (moved here from .claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md, which is box-longhand work only)
 ---
@@ -52,14 +52,17 @@ Open, each for a later batch:
   calls it, so it no longer falls back to `socials.google`, which may hold a review link. Eye Care's `maps_url` is set
   to its Google share link and the footer address links to it. Open: sandybrown and the other sites get the field when
   next deployed; open the Eye Care link once in a browser to confirm it lands on the listing, not a review form.
-- **Batch 2 (`icon-list`; code `e75081461`, `52ca75bac`, reseed `d997cec75`; deploy and live read pending):** the
-  list has `linkUnderline` and `linkUnderlineThickness` (a "Links" panel; element `item-link`) and its canvas shows
-  linked items as links. The theme's site-wide sweep (`utilities.css`, selector `.sgs-icon-list__item-link`, on when
-  `custom.linkSweep.thickness` is set) stays: it is the "Theme default" mode. An explicit choice overrides it by
-  specificity (`sweep` replaces its paint; `none` and `always` set `--sgs-sweep-thickness:0px` on the links), so no link
-  carries two sweeps, and the row's `itemTextDecoration` no longer forces the link's decoration when a choice is set.
-  `sgs/label` takes no setting: its text field allows no formats, so it holds no links. `sgs/button`'s link style keeps
-  its `utilities.css` sweep (a button label, not text in a paragraph).
+- **Batch 2 (`icon-list` and `sgs/label`; code `e75081461`, `52ca75bac`, `5c2e960b7`, reseeds `d997cec75`, `0a733de55`; live on
+  eye-care-test 2026-10-09):** each has `linkUnderline` and `linkUnderlineThickness` in a "Links" panel. `icon-list`'s
+  canvas shows linked items as links and previews the setting; `label`'s text field now allows links (`core/link`) and
+  previews it. The theme's site-wide sweep (`utilities.css`, selector `.sgs-icon-list__item-link`, on when
+  `custom.linkSweep.thickness` is set) stays as the "Theme default" mode: an explicit choice overrides it by specificity
+  (`sweep` replaces its paint; `none` and `always` set `--sgs-sweep-thickness:0px` on the links), so no link carries two
+  sweeps, and the row's `itemTextDecoration` no longer forces the link's decoration when a choice is set. `sgs/button`'s
+  link style keeps its `utilities.css` sweep (a button label, not text in a paragraph). Read live: Eye Care's footer
+  icon-list links, with no setting chosen, rest at `0px 1px` and sweep to `100% 1px` at 375, 768 and 1440. The new
+  settings' CSS is proven by `tests/php/IconListLinkUnderlineTest.php` and `tests/php/LabelLinkUnderlineTest.php`; no Eye
+  Care page sets them yet, so they have no live read of their own.
 - **Ledger:** the footer walk now reports the decided differences (the sweep's `background-image` on refs 23-25, the
   address colour and its link box's `gap`/`display` rows). They need divergence entries citing Bean's 2026-10-08
   decision (S2 covers the sweep; the address colour and link need a register row first).
