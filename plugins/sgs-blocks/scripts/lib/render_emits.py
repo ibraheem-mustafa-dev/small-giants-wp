@@ -2,10 +2,9 @@
 
 Source-only signal (never the DB, never mutates): ``render_reads_attr(slug, attr)`` is True when
 ``$attributes['attr']`` is read in the block's ``render.php`` or in a helper reachable from it by a
-statically-resolvable ``require`` / ``include``. ``sgs-update-v2.py::_populate_emit_shape`` uses it to
-decide whether a content-bearing attribute is emitted by the block itself (nested element) or
-delegated to ``$content`` (child InnerBlock); ``consistency/build-setting-types.py`` reads the
-resulting ``emit_shape`` column.
+statically-resolvable ``require`` / ``include``. ``lib/emit_shape.py`` uses it as the first test when it
+decides how a content-bearing attribute is carried (``sgs-update-v2.py::_populate_emit_shape`` stores the
+result in ``block_attributes.emit_shape``).
 """
 from __future__ import annotations
 

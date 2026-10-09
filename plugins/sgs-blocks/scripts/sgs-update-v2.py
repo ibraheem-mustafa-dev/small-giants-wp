@@ -3161,31 +3161,27 @@ def _populate_emit_shape(
     conn: "sqlite3.Connection",
     dry_run: bool,
 ) -> dict:
-    """Stage 1 sub-step D: seed block_attributes.emit_shape (nested|child) per
-    content attr, source-derived (Spec 31 §13.3 FR-31-2.6, 2026-07-04).
+    """Stage 1 sub-step D: seed block_attributes.emit_shape and emit_shape_proof for every
+    content-bearing attribute (Spec 31 §13.3 FR-31-2.6), source-derived by lib/emit_shape.py.
 
-    For each content-role attr (roles.classification='content-bearing' — the
-    content-vs-styling filter, FR-31-2.2), the shape is 'nested' when the block's
-    OWN render.php (+ require'd helpers) EMITS the attr as its own element, else
-    'child' (the content lives in the $content InnerBlocks region). Read from block
-    SOURCE via lib/render_emits.py. R-31-1: this seeds a DB COLUMN
-    (read by consistency/build-setting-types.py) — NOT a live PHP scan at read time.
+    emit_shape: nested | child | parent-rendered | unresolved. NULL means the attribute is not
+    content (roles.classification != 'content-bearing'), so the question does not apply.
+    emit_shape_proof records which test gave the answer (render-read, render-key-family,
+    template-alias, parent-read, or why it stayed unresolved). The order of tests and what each
+    one proves is the module docstring of lib/emit_shape.py; an agent reading the column must
+    read the proof beside it.
 
-    FAIL-LOUD (Rule 4, no silent misclassification): a block that HAS content-role
-    attrs and a render.php that does NOT consume $content (so it should render its
-    own content) but whose render-emit scan finds NOTHING is a suspected parse
-    failure — printed as a loud WARN and NOT classified, never silently marked
-    all-child. Every run CLEARS all stored values first and reseeds from source, so a
-    value left by an older role or by a block that now trips FAIL-LOUD can never
-    survive as stale truth (clear and reseed share one transaction).
+    Every run CLEARS both columns first and reseeds them in the same transaction, so a value
+    left by an older role or an older rule can never survive as stale truth. R-31-1: this seeds a
+    DB COLUMN, not a live PHP scan at read time.
     """
-    from render_emits import render_reads_attr
+    from emit_shape import EmitContext, classify_emit_shape
 
     c = conn.cursor()
-    # Idempotent column-add (mirrors the array_item_schema.role column-add pattern).
     _cols = [r[1] for r in c.execute("PRAGMA table_info(block_attributes)").fetchall()]
-    if "emit_shape" not in _cols:
-        c.execute("ALTER TABLE block_attributes ADD COLUMN emit_shape TEXT")
+    for _col in ("emit_shape", "emit_shape_proof"):
+        if _col not in _cols:
+            c.execute(f"ALTER TABLE block_attributes ADD COLUMN {_col} TEXT")
 
     # Content-bearing roles = the content-vs-styling filter (DB-driven, R-31-1).
     content_roles = [
@@ -3196,6 +3192,8 @@ def _populate_emit_shape(
     if not content_roles:  # roles table lacks classification → FR-31-2.2 allowlist
         content_roles = ["text-content", "identity", "image-object", "content", "rating"]
 
+    ctx = EmitContext(c.execute("SELECT slot_name, aliases, standalone_block FROM slots").fetchall())
+
     # Clear first, reseed second: only what the scan below re-proves is stored.
     stored_before = c.execute(
         "SELECT COUNT(*) FROM block_attributes WHERE emit_shape IS NOT NULL"
@@ -3203,9 +3201,14 @@ def _populate_emit_shape(
     if dry_run:
         print(f"[dry-run emit_shape] would clear {stored_before} stored value(s), then reseed")
     else:
-        c.execute("UPDATE block_attributes SET emit_shape = NULL WHERE emit_shape IS NOT NULL")
+        c.execute(
+            "UPDATE block_attributes SET emit_shape = NULL, emit_shape_proof = NULL "
+            "WHERE emit_shape IS NOT NULL OR emit_shape_proof IS NOT NULL"
+        )
 
-    scanned = updated = nested = child = suspect = 0
+    scanned = updated = 0
+    by_shape = {"nested": 0, "child": 0, "parent-rendered": 0, "unresolved": 0}
+    unresolved_by_proof: dict = {}
     placeholders = ",".join("?" * len(content_roles))
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
@@ -3223,61 +3226,40 @@ def _populate_emit_shape(
         scanned += 1
 
         content_attrs = c.execute(
-            f"SELECT attr_name, emit_shape FROM block_attributes "
+            f"SELECT attr_name, emit_shape, emit_shape_proof FROM block_attributes "
             f"WHERE block_slug = ? AND role IN ({placeholders})",
             (slug, *content_roles),
         ).fetchall()
-        if not content_attrs:
-            continue
-
-        # nested iff the block's OWN render reads the attr (raw read-check; the type
-        # filter is deliberately NOT applied — role already established content, and a
-        # number-typed rating IS content, FR-31-2.6).
-        reads = {a: render_reads_attr(slug, a) for a, _s in content_attrs}
-
-        # FAIL-LOUD: content attrs exist + render.php doesn't echo $content, yet NONE
-        # are render-read → suspected parse failure (unreadable render / a pattern the
-        # scan misses). Do not classify; surface loudly (Rule 4, no silent drop).
-        if (
-            not any(reads.values())
-            and (block_dir / "render.php").exists()
-            and not _render_consumes_content(block_dir)
-        ):
-            suspect += 1
-            print(
-                f"[emit_shape] WARN {slug}: {len(content_attrs)} content attr(s) but the "
-                f"render read-scan found NONE and render.php does not consume $content — "
-                f"suspected parse failure; NOT classified (review render.php + helpers)."
-            )
-            continue
-
-        for attr, stored in content_attrs:
-            shape = "nested" if reads[attr] else "child"
-            if shape == "nested":
-                nested += 1
-            else:
-                child += 1
-            if stored == shape:
+        for attr, stored, stored_proof in content_attrs:
+            shape, proof = classify_emit_shape(ctx, slug, attr)
+            by_shape[shape] += 1
+            if shape == "unresolved":
+                unresolved_by_proof.setdefault(proof, []).append(f"{slug}.{attr}")
+            if stored == shape and stored_proof == proof:
                 continue
             if dry_run:
-                print(f"[dry-run emit_shape] {slug}.{attr}: {stored} -> {shape}")
+                print(f"[dry-run emit_shape] {slug}.{attr}: {stored} -> {shape} ({proof})")
             else:
                 c.execute(
-                    "UPDATE block_attributes SET emit_shape = ? "
+                    "UPDATE block_attributes SET emit_shape = ?, emit_shape_proof = ? "
                     "WHERE block_slug = ? AND attr_name = ?",
-                    (shape, slug, attr),
+                    (shape, proof, slug, attr),
                 )
                 updated += 1
 
+    for proof, names in sorted(unresolved_by_proof.items()):
+        print(f"[emit_shape] unresolved ({proof}): {len(names)} -> {', '.join(names[:6])}"
+              + (" ..." if len(names) > 6 else ""))
     if not dry_run:
         conn.commit()
     return {
         "emit_scanned": scanned,
         "emit_cleared": 0 if dry_run else stored_before,
         "emit_updated": updated,
-        "emit_nested": nested,
-        "emit_child": child,
-        "emit_suspect": suspect,
+        "emit_nested": by_shape["nested"],
+        "emit_child": by_shape["child"],
+        "emit_parent": by_shape["parent-rendered"],
+        "emit_unresolved": by_shape["unresolved"],
     }
 
 
@@ -3482,7 +3464,8 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (emit_shape): scanned={es_counts['emit_scanned']}, "
             f"cleared={es_counts['emit_cleared']}, reseeded={es_counts['emit_updated']}, nested={es_counts['emit_nested']}, "
-            f"child={es_counts['emit_child']}, suspect={es_counts['emit_suspect']}."
+            f"child={es_counts['emit_child']}, parent-rendered={es_counts['emit_parent']}, "
+            f"unresolved={es_counts['emit_unresolved']}."
         )
 
         # --- Stage 1 tail: apply composition_role corrections (seed data, no

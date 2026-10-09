@@ -1544,5 +1544,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 172
+  },
+  {
+    "id": "emit-shape-selftest",
+    "cmd": "python scripts/lib/emit_shape.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 173
   }
 ]
