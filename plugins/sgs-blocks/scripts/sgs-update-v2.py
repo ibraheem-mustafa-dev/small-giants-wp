@@ -3164,7 +3164,7 @@ def _populate_emit_shape(
     """Stage 1 sub-step D: seed block_attributes.emit_shape and emit_shape_proof for every
     content-bearing attribute (Spec 31 §13.3 FR-31-2.6), source-derived by lib/emit_shape.py.
 
-    emit_shape: nested | child | parent-rendered | unresolved. NULL means the attribute is not
+    emit_shape: nested | repeater | child | parent-rendered | unresolved. NULL means the attribute is not
     content (roles.classification != 'content-bearing'), so the question does not apply.
     emit_shape_proof records which test gave the answer (render-read, render-key-family,
     template-alias, parent-read, or why it stayed unresolved). The order of tests and what each
@@ -3207,7 +3207,7 @@ def _populate_emit_shape(
         )
 
     scanned = updated = 0
-    by_shape = {"nested": 0, "child": 0, "parent-rendered": 0, "unresolved": 0}
+    by_shape = {"nested": 0, "repeater": 0, "child": 0, "parent-rendered": 0, "unresolved": 0}
     unresolved_by_proof: dict = {}
     placeholders = ",".join("?" * len(content_roles))
     for block_dir in sorted(blocks_dir.iterdir()):
@@ -3226,12 +3226,12 @@ def _populate_emit_shape(
         scanned += 1
 
         content_attrs = c.execute(
-            f"SELECT attr_name, emit_shape, emit_shape_proof FROM block_attributes "
+            f"SELECT attr_name, emit_shape, emit_shape_proof, attr_type FROM block_attributes "
             f"WHERE block_slug = ? AND role IN ({placeholders})",
             (slug, *content_roles),
         ).fetchall()
-        for attr, stored, stored_proof in content_attrs:
-            shape, proof = classify_emit_shape(ctx, slug, attr)
+        for attr, stored, stored_proof, attr_type in content_attrs:
+            shape, proof = classify_emit_shape(ctx, slug, attr, attr_type)
             by_shape[shape] += 1
             if shape == "unresolved":
                 unresolved_by_proof.setdefault(proof, []).append(f"{slug}.{attr}")
@@ -3257,6 +3257,7 @@ def _populate_emit_shape(
         "emit_cleared": 0 if dry_run else stored_before,
         "emit_updated": updated,
         "emit_nested": by_shape["nested"],
+        "emit_repeater": by_shape["repeater"],
         "emit_child": by_shape["child"],
         "emit_parent": by_shape["parent-rendered"],
         "emit_unresolved": by_shape["unresolved"],
@@ -3464,7 +3465,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         print(
             f"Stage 1 (emit_shape): scanned={es_counts['emit_scanned']}, "
             f"cleared={es_counts['emit_cleared']}, reseeded={es_counts['emit_updated']}, nested={es_counts['emit_nested']}, "
-            f"child={es_counts['emit_child']}, parent-rendered={es_counts['emit_parent']}, "
+            f"repeater={es_counts['emit_repeater']}, child={es_counts['emit_child']}, parent-rendered={es_counts['emit_parent']}, "
             f"unresolved={es_counts['emit_unresolved']}."
         )
 

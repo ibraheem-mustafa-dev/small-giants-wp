@@ -8,6 +8,9 @@ come in through ``EmitContext``).
 SHAPES (a NULL emit_shape means "not a content attribute", the question does not apply)
 
 * ``nested``          the block's own render emits the attribute as an element of its own.
+* ``repeater``        an array attribute the block's own render reads: one item per element it prints. The proof
+                      ends ``:items=object|string|untyped`` (the ``items.type`` in block.json). Where the block has
+                      declared item fields they are in ``array_item_schema`` (join on block_slug + array_attr).
 * ``child``           the content lives in a child block the block declares (its inner-blocks template or
                       ``allowedBlocks``); the attribute is only a name for that child's slot.
 * ``parent-rendered`` another block's render reads it off this block (``$inner_block->attributes['x']``), the
@@ -30,6 +33,7 @@ ORDER (the first step that gives an answer wins; the proof records which step it
    (block.json ``parent`` / ``ancestor``) or lists this block among its declared children
    -> ``parent-rendered`` / ``parent-read:<block>``. An unrelated block reading a same-named attribute
    proves nothing.
+   An array attribute that would otherwise be ``nested`` is stored as ``repeater`` instead (same proof).
 5. otherwise ``unresolved`` with one of: ``quoted-key-in-render`` (named in render.php but not a plain
    read), ``shared-include-only``, ``editor-only``, ``save-only``, ``no-reader-found``. ``no-reader-found``
    is the signal for a leftover attribute: nothing in the block's render, editor, save or the shared
@@ -53,7 +57,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import render_emits as RE  # noqa: E402
 
 _BLOCK_NAME_RE = re.compile(r"""['"]((?:sgs|core)/[a-z0-9-]+)['"]""")
-_DECL_RE = re.compile(r"\b(template|allowedBlocks)\s*[:=]\s*\{?\s*(\[|[A-Za-z_]\w*)")
+_DECL_RE = re.compile(r"\b(template|allowedBlocks)\s*[:=][\s{]*(\[|[A-Za-z_]\w*)")
 _PREFIX_RE = re.compile(r"""['"]([A-Za-z][A-Za-z0-9]{3,})['"]\s*\.\s*\$""")
 _SUFFIX_RE = re.compile(r"""\$\w+(?:\[[^\]]*\])?\s*\.\s*['"]([A-Za-z][A-Za-z0-9]{3,})['"]""")
 
@@ -166,7 +170,24 @@ def _js_use(attr: str) -> re.Pattern[str]:
     return re.compile(r"attributes\." + re.escape(attr) + r"\b|[{,]\s*" + re.escape(attr) + r"\s*[,}:]")
 
 
-def classify_emit_shape(ctx: EmitContext, slug: str, attr: str) -> tuple[str, str]:
+def _items_type(block_dir: Path, attr: str) -> str:
+    try:
+        schema = json.loads(_read(block_dir / "block.json") or "{}").get("attributes", {}).get(attr, {})
+    except ValueError:
+        return "untyped"
+    items = schema.get("items")
+    return str(items.get("type")) if isinstance(items, dict) and items.get("type") else "untyped"
+
+
+def classify_emit_shape(ctx: EmitContext, slug: str, attr: str, attr_type: str | None = None) -> tuple[str, str]:
+    """``attr_type`` is the attribute's declared type; pass it so arrays become ``repeater``."""
+    shape, proof = _classify(ctx, slug, attr)
+    if shape == "nested" and attr_type == "array":
+        return "repeater", f"{proof}:items={_items_type(RE._BLOCKS_DIR / RE._short(slug), attr)}"
+    return shape, proof
+
+
+def _classify(ctx: EmitContext, slug: str, attr: str) -> tuple[str, str]:
     short = RE._short(slug)
     block_dir = RE._BLOCKS_DIR / short
     children = ctx.children(slug)
@@ -238,7 +259,12 @@ def self_test() -> int:
         (root / "includes").mkdir(parents=True, exist_ok=True)
         _write(root, "src/blocks/demo/render.php",
                "<?php\n$t = $attributes['title'];\n$u = $attributes[ 'media' . $suffix ];\n"
-               "$g = $attributes['gatedText'];\n")
+               "$g = $attributes['gatedText'];\n$r = $attributes['rows'];\n$k = $attributes['tags'];\n")
+        _write(root, "src/blocks/demo/block.json", json.dumps({"name": "sgs/demo", "attributes": {
+            "rows": {"type": "array", "items": {"type": "object"}},
+            "tags": {"type": "array", "items": {"type": "string"}},
+            "gatedText": {"type": "string"},
+            "unusedList": {"type": "array"}}}))
         _write(root, "src/blocks/demo/edit.js",
                "const DEMO_TEMPLATE = [ [ 'sgs/heading', {} ], [ 'sgs/button', {} ] ];\n"
                "useInnerBlocksProps( {}, { template: DEMO_TEMPLATE } );\n"
@@ -260,6 +286,14 @@ def self_test() -> int:
               "nested", "render-key-family:media")
         check("whole name + variable key", classify_emit_shape(ctx, "sgs/demo", "media"),
               "nested", "render-key-family:media")
+        check("array the render reads, items are objects",
+              classify_emit_shape(ctx, "sgs/demo", "rows", "array"), "repeater", "render-read:items=object")
+        check("array the render reads, items are strings",
+              classify_emit_shape(ctx, "sgs/demo", "tags", "array"), "repeater", "render-read:items=string")
+        check("NEG: same read, attribute is not an array",
+              classify_emit_shape(ctx, "sgs/demo", "rows", "string"), "nested", "render-read")
+        check("NEG: array nobody reads stays unresolved",
+              classify_emit_shape(ctx, "sgs/demo", "unusedList", "array"), "unresolved", "no-reader-found")
         check("declared child, never read", classify_emit_shape(ctx, "sgs/demo", "headline"), "child", "template-alias:sgs/heading")
         check("parent reads it off an inner block", classify_emit_shape(ctx, "sgs/tab", "label"),
               "parent-rendered", "parent-read:tabs")
