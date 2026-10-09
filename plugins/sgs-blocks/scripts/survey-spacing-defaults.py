@@ -6,7 +6,7 @@ READ-ONLY. Writes nothing except `--out <file>` and `--write-baseline`; never bu
 or touches the database (it opens the framework DB with mode=ro, and never imports
 a framework-DB helper module, which could migrate the schema on import).
 
-Plan: .claude/plans/2026-10-08-icon-unification-and-spacing-control.md, Bean decision D1 and
+Plan: .claude/plans/archive/2026-10-08-icon-unification-and-spacing-control.md, Bean decision D1 and
 Phase E. D1 (refined by Bean 2026-10-09) DECLARES every untouched Spacing side's default: a theme
 spacing preset when the side's value equals that preset's size exactly, otherwise the literal
 length it already is (no snapping, so nothing moves). This census is the detector that runs

@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: all phases (1, A, B, C, D, E, F) done and read live; sandybrown and eye-care-test both run 75aeb5394 (icon Site Info link first with its own link as the fallback; the clone route's social-row rule, Spec 47 FR-47-9); open items are only the Spec 47 follow-ups listed under Phase F
+status: complete (all phases 1, A, B, C, D, E, F done and read live; sandybrown and eye-care-test run 75aeb5394; `sgs/icon` recalibrated for Fill on eye-care-test 2026-10-09); archived. Open points live in Spec 47 section 7
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
@@ -148,10 +148,7 @@ Raters B (claims vs code: 35 of 41 TRUE, none FALSE), D (executed edge cases), E
 - **Reseed:** the new attribute reached the DB through stage 1 + `seed_reference_data.py` from a clean detached worktree at `76d3db164` (no tracked file changed); the same run added `block_attributes.emit_shape_proof` (session 91's emit_shape step), so `schema.sql` was regenerated (`4ae03ac87`).
 
 ## Deferred
-- **Recalibrate `sgs/icon` (task: Spec 47 follow-up; run `scripts/computed-route/calibrate.mjs` for `sgs/icon`):** `cache/icon.json` has no `link` key, so Fill writes no draft address to an icon until then; done when a Fill fixture run writes `linkUrl` on a bound brand icon from a real draft.
-- **First real run of `plugins/sgs-blocks/scripts/provision-site-info-from-draft.py` (task: the next clone's Fill run):** no `handover.json` exists yet; run it as a dry run on that surface's handover and show Bean the table before any `--apply`.
-- **Brand hosts the lint cannot recognise (task: Spec 47 §7, needs host data in `brand-registry.json` and its PHP, editor and parity-test readers changed together):** `wa.me`, `youtu.be`, `g.page` and country second-level domains pass the lint without a binding.
-- Bluesky/Threads: add them to `brand-registry.json` and the binding when Site Info gains `socials.bluesky` / `socials.threads` keys.
+None. The open points (the lint's brand-host gap, the first real `provision-site-info-from-draft.py` dry run, Bluesky/Threads, adapting `sgs-clone` to the route) are recorded in `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md` section 7.
 
 ## Gates and commits
 - Per phase: `npm run build` (PowerShell), `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`, `check-border-preview-twin.js`, `check-border-width-without-style.py`, `python scripts/check-no-client-names.py --check`, full PHPUnit, inspector-scan, registry parity (JSON read by both PHP and JS: no twin lists).

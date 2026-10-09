@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.17.0"
+spec_version: "0.17.1"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -702,9 +702,16 @@ calibration page is built private, since no per-page noindex mechanism exists (Â
   `sites/<client>/build/surfaces.json` names as targets; today they are made by hand when a client is set up, and R-47-11
   limits the route to targets that already exist. A step that creates each target from the draft's screens and writes its
   ID into `surfaces.json` would make a whole-site clone start from the draft alone.
-- **Social-row address recognition and calibration.** The lint cannot recognise `wa.me`, `youtu.be`, `g.page` or country
-  second-level domains as a brand's address, because the registry carries no host data and the route holds no table
-  (FR-47-9); adding hosts to the shared registry needs its PHP, editor and parity-test readers changed together. The
-  calibration cache `cache/icon.json` has no `link` key for `sgs/icon`, so Fill writes no draft address to an icon until
-  `sgs/icon` is recalibrated, and no end-to-end Fill run of a real `sgs/social-icons` skeleton against the Eye Care draft
-  has been read live.
+- **Social-row address recognition.** The lint cannot recognise `wa.me`, `youtu.be`, `g.page` or country second-level
+  domains as a brand's address, because the registry carries no host data and the route holds no table (FR-47-9);
+  adding hosts to the shared registry needs its PHP, editor and parity-test readers changed together, and a host guess is
+  silent when wrong (a "Share on Facebook" button, a blog's Instagram photo). Build only on Bean's approval, after
+  `/brainstorming`.
+- **First real Site Info fill.** `plugins/sgs-blocks/scripts/provision-site-info-from-draft.py` has run only against test
+  data; its first real run is a dry run on a clone surface's `handover.json`, with the table shown to Bean before any
+  `--apply`.
+- **Bluesky and Threads.** Both wait for Site Info keys (`socials.bluesky`, `socials.threads`); then add them to
+  `brand-registry.json` and the binding.
+- **`sgs-clone` is not adapted to the route.** Cloning runs through this walker, not the `sgs-clone` skill; the skill
+  carries no knowledge of `siteInfoRow`, handover entries or Fill (Bean, 2026-10-09). Plan the adaptation before any
+  change to that skill.
