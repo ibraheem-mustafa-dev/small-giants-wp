@@ -1,0 +1,17 @@
+{
+ "name": "sgs/mapped",
+ "attributes": {
+  "asidePadding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  },
+  "footPadding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "settings": {
+  "spacing": {
+   "spacingSizes": [
+    {
+     "slug": "20",
+     "size": "0.5rem",
+     "name": "S20"
+    },
+    {
+     "slug": "30",
+     "size": "1rem",
+     "name": "S30"
+    },
+    {
+     "slug": "40",
+     "size": "1.5rem",
+     "name": "S40"
+    },
+    {
+     "slug": "50",
+     "size": "2rem",
+     "name": "S50"
+    },
+    {
+     "slug": "60",
+     "size": "3rem",
+     "name": "S60"
+    },
+    {
+     "slug": "70",
+     "size": "5rem",
+     "name": "S70"
+    },
+    {
+     "slug": "80",
+     "size": "8rem",
+     "name": "S80"
+    }
+   ]
+  }
+ }
+}

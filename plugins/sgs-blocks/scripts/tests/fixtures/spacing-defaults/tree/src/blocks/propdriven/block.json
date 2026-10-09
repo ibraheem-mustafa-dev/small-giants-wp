@@ -1,0 +1,17 @@
+{
+ "name": "sgs/propdriven",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  },
+  "cardMargin": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

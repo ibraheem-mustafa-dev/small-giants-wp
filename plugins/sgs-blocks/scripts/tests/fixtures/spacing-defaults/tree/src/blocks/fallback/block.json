@@ -1,0 +1,30 @@
+{
+ "name": "sgs/fallback",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  },
+  "margin": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ },
+ "supports": {
+  "sgs": {
+   "elements": {
+    "wrapper": {
+     "isWrapper": true,
+     "attrMap": {
+      "css:padding": "padding",
+      "css:margin": "margin"
+     }
+    }
+   }
+  }
+ }
+}

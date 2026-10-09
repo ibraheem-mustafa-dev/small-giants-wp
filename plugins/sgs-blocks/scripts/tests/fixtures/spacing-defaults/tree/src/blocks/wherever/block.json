@@ -1,0 +1,23 @@
+{
+ "name": "sgs/wherever",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ },
+ "supports": {
+  "sgs": {
+   "elements": {
+    "wrapper": {
+     "isWrapper": true,
+     "attrMap": {
+      "css:padding": "padding"
+     }
+    }
+   }
+  }
+ }
+}

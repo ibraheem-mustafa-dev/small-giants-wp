@@ -1,0 +1,33 @@
+{
+ "name": "sgs/emblock",
+ "attributes": {
+  "tagPadding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  },
+  "labelPadding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ },
+ "supports": {
+  "sgs": {
+   "elements": {
+    "tag": {
+     "attrMap": {
+      "css:padding": "tagPadding"
+     }
+    },
+    "label": {
+     "attrMap": {
+      "css:padding": "labelPadding"
+     }
+    }
+   }
+  }
+ }
+}

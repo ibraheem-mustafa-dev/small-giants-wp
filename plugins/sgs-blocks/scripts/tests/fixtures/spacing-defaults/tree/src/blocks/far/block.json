@@ -1,0 +1,11 @@
+{
+ "name": "sgs/far",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

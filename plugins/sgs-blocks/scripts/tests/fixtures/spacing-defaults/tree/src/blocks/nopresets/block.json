@@ -1,0 +1,11 @@
+{
+ "name": "sgs/nopresets",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

@@ -1,0 +1,6 @@
+.sgs-fallback {
+	--sgs-fb-defined: 20px;
+	padding: var(--sgs-fb-pad, 18px);
+	margin: var(--sgs-fb-m, var(--wp--preset--spacing--40));
+	padding-left: var(--sgs-fb-defined, 3px);
+}

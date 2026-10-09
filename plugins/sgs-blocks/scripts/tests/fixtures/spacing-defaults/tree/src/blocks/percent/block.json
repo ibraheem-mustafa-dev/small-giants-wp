@@ -1,0 +1,17 @@
+{
+ "name": "sgs/percent",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  },
+  "margin": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

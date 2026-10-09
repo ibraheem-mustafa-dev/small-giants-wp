@@ -1,0 +1,11 @@
+{
+ "name": "sgs/listpresets",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

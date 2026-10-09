@@ -1,0 +1,163 @@
+[
+ {
+  "block_slug": "sgs/plain",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/plain",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/wherever",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/fallback",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/fallback",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/zeroauto",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/zeroauto",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/nopresets",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/far",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/button",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/container",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/emblock",
+  "attr_name": "tagPadding",
+  "css_property": "padding",
+  "box_family": "tagPadding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/emblock",
+  "attr_name": "labelPadding",
+  "css_property": "padding",
+  "box_family": "labelPadding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/percent",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/percent",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/fluid",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/fluid",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/propdriven",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/propdriven",
+  "attr_name": "cardMargin",
+  "css_property": "margin",
+  "box_family": "cardMargin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/mapped",
+  "attr_name": "asidePadding",
+  "css_property": "padding",
+  "box_family": "asidePadding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/mapped",
+  "attr_name": "footPadding",
+  "css_property": "padding",
+  "box_family": "footPadding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/listpresets",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/dbonly",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ }
+]

@@ -1,0 +1,11 @@
+{
+ "name": "sgs/container",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

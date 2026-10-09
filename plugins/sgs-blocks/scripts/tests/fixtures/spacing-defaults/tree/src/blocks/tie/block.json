@@ -1,0 +1,11 @@
+{
+ "name": "sgs/tie",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}

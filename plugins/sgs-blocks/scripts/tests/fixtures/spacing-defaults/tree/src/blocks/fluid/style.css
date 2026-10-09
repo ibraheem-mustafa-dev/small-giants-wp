@@ -1,0 +1,15 @@
+.sgs-fluid {
+	padding: clamp(1rem, 4vw, 3rem);
+	margin: var(--sgs-missing);
+}
+@media (max-width: 600px) {
+	.sgs-fluid {
+		padding: 9px;
+	}
+}
+.sgs-fluid--wide {
+	padding: 99px;
+}
+.sgs-fluid:hover {
+	margin: 77px;
+}

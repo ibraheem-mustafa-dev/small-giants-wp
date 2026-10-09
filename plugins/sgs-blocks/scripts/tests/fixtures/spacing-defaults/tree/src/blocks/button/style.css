@@ -1,0 +1,3 @@
+.sgs-button {
+	padding: var(--wp--custom--button-presets--primary--padding, 14px 24px);
+}

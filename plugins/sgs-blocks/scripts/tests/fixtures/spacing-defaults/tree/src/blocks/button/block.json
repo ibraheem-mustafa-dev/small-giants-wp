@@ -1,0 +1,11 @@
+{
+ "name": "sgs/button",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ }
+}
