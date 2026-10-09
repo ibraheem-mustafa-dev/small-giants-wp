@@ -998,7 +998,13 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	const descLinkPreviewCss = linkUnderlinePreviewCss( `.${ ctaPreviewUid } .sgs-product-card__description`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
 		+ linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
 		+ linkColourPreviewCss(
-		`.${ ctaPreviewUid } .sgs-product-card__description, .${ ctaPreviewUid } .product-desc`,
+		`.${ ctaPreviewUid } .sgs-product-card__description`,
+		descLinkColour,
+		descLinkColourHover,
+		attributes.descLinkColourGradient,
+		attributes.descLinkColourHoverGradient
+	) + linkColourPreviewCss(
+		`.${ ctaPreviewUid } .product-desc`,
 		descLinkColour,
 		descLinkColourHover,
 		attributes.descLinkColourGradient,

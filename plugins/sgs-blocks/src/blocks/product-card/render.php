@@ -404,8 +404,11 @@ if ( '' !== $sgs_pc_desc_colour_effective ) {
 }
 // Two-state link colour (Task 3, 2026-09-07) — the description field permits
 // `core/link`, so a linked selection needs its own colour.
-$sgs_card_typo_css .= sgs_link_colour_css( $attributes, 'desc', $sgs_pc_desc_colour_sel );
-// How a link in the description is underlined: one call per description element, because the helper appends ` a` to a single selector.
+// The link helpers append ` a` to one selector, so each description element gets its own call (a comma list would
+// colour and underline only the last element's links, and the first would paint its whole text).
+$sgs_card_typo_css .= sgs_link_colour_css( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description' );
+$sgs_card_typo_css .= sgs_link_colour_css( $attributes, 'desc', '.' . $sgs_card_uid . ' .product-desc' );
+// How a link in the description is underlined.
 $sgs_card_typo_css .= sgs_link_underline_css( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description' );
 $sgs_card_typo_css .= sgs_link_underline_css( $attributes, 'desc', '.' . $sgs_card_uid . ' .product-desc' );
 

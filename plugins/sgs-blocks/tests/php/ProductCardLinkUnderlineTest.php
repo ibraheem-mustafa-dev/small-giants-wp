@@ -28,12 +28,31 @@ final class ProductCardLinkUnderlineTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\.sgs-product-card__description a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);/', $out['css'] );
 	}
 
+	public function test_sweep_is_skipped_when_the_link_colour_is_a_gradient(): void {
+		$out = $this->block( array( 'descLinkUnderline' => 'sweep', 'descLinkColourGradient' => 'linear-gradient(90deg,#f00,#00f)' ) );
+
+		$this->assertStringContainsString( '<a href="/offers/">', $out['html'], 'positive control: the link rendered' );
+		$this->assertStringNotContainsString( 'background-size:0', $out['css'], 'a gradient link colour owns the background, so no sweep line' );
+	}
+
 	public function test_always_sets_the_thickness_and_unset_prints_nothing(): void {
 		$always = $this->block( array( 'descLinkUnderline' => 'always', 'descLinkUnderlineThickness' => '2px' ) );
 		$this->assertMatchesRegularExpression( '/\.sgs-product-card__description a\{text-decoration-line:underline;text-decoration-thickness:2px;\}/', $always['css'] );
 
+		$none = $this->block( array( 'descLinkUnderline' => 'none' ) );
+		$this->assertMatchesRegularExpression( '/\.sgs-product-card__description a\{text-decoration:none;\}/', $none['css'] );
+
 		$unset = $this->block( array() );
 		$this->assertStringNotContainsString( 'text-decoration-line', $unset['css'], 'negative control: nothing printed when unset' );
 		$this->assertStringNotContainsString( 'link-sweep', $unset['css'] );
+	}
+
+	public function test_both_description_elements_get_their_own_underline_and_colour_rules(): void {
+		$out = $this->block( array( 'descLinkUnderline' => 'sweep', 'descLinkColour' => '#ff0000' ) );
+
+		foreach ( array( '.sgs-product-card__description', '.product-desc' ) as $element ) {
+			$this->assertMatchesRegularExpression( '/' . preg_quote( $element, '/' ) . ' a\{text-decoration:none;background-image:linear-gradient/', $out['css'], $element . ' underline' );
+			$this->assertMatchesRegularExpression( '/' . preg_quote( $element, '/' ) . ' a\{color:#ff0000;\}/', $out['css'], $element . ' link colour paints the links, not the whole description' );
+		}
 	}
 }
