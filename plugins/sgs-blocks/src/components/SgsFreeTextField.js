@@ -43,8 +43,8 @@ import { NumberControl } from './primitives';
 export default function SgsFreeTextField( { type = 'text', label, value, onChange, help, ...rest } ) {
 	// __nextHasNoMarginBottom/__next40pxDefaultSize are written literally on
 	// each control below rather than spread from a shared object —
-	// check-control-parity-live.js's build gate verifies these props via a
-	// static JSX scan and cannot trace a value passed through `{...spread}`,
+	// survey-control-parity.py's gate (`surveys-survey-control-parity`) verifies these
+	// props via a static JSX scan and cannot trace a value passed through `{...spread}`,
 	// so a spread here would pass at runtime but fail the build (confirmed
 	// 2026-08-19: the gate flagged all three controls when this used a
 	// `common` spread object; it clears once each prop is a literal

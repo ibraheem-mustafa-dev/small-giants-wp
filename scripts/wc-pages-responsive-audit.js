@@ -13,7 +13,7 @@
  *   5. Screenshot per page x viewport saved to the evidence directory.
  *
  * Usage:
- *   node scripts/wc-pages-responsive-audit.js [--base https://site] [--out dir] [--only key,key]
+ *   node scripts/wc-pages-responsive-audit.js [--base https://site] [--pdp /product/<slug>/] [--out dir] [--only key,key]
  *
  * Pages marked `auth` are audited logged in from `.claude/secrets/<site>.env`
  * (`--env sandybrown` by default): the shopper account
@@ -44,7 +44,7 @@ const ENV_NAME = argVal( '--env', 'sandybrown' );
 const ONLY = argVal( '--only', '' ).split( ',' ).filter( Boolean );
 
 const PAGES = {
-	pdp: { path: '/product/mamas-test-box-48-sku-fixture/' },
+	pdp: { path: argVal( '--pdp', '/product/mamas-test-box-48-sku-fixture/' ) },
 	shop: { path: '/shop/' },
 	cart: { path: '/cart/' },
 	checkout: { path: '/checkout/' },

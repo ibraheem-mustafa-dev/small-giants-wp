@@ -1526,5 +1526,23 @@
     "added_commit": null,
     "budget_ms": 1800,
     "order": 170
+  },
+  {
+    "id": "survey-spacing-defaults",
+    "cmd": "python scripts/survey-spacing-defaults.py --check --strict",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4400,
+    "order": 171
+  },
+  {
+    "id": "survey-spacing-defaults-selftest",
+    "cmd": "python scripts/survey-spacing-defaults.py --self-test",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 172
   }
 ]
