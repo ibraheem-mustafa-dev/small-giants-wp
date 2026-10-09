@@ -379,7 +379,8 @@
                   "captionColour": "text-soft",
                   "sgsCollapseVisibility": "hide",
                   "hideBelow": 1290,
-                  "minHeight": 0
+                  "minHeight": 0,
+                  "className": "cr-ref-header-15"
                 },
                 "innerBlocks": []
               },

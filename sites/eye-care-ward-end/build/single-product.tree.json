@@ -1563,7 +1563,7 @@
                       {
                         "name": "sgs/container",
                         "attributes": {
-                          "className": "eye-care-sizing-diagram",
+                          "className": "eye-care-sizing-diagram cr-ref-product-118",
                           "layout": "stack",
                           "gap": {
                             "desktop": "22px"
@@ -1594,7 +1594,8 @@
                           {
                             "name": "sgs/container",
                             "attributes": {
-                              "layout": "stack"
+                              "layout": "stack",
+                              "className": "cr-ref-product-119"
                             },
                             "innerBlocks": [
                               {
@@ -1615,7 +1616,8 @@
                                       "bottom": "6px"
                                     }
                                   },
-                                  "text": "Front"
+                                  "text": "Front",
+                                  "className": "cr-ref-product-120"
                                 }
                               },
                               {
@@ -1655,7 +1657,8 @@
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 300,
                                   "drawingImageAlt": "Front view of the frame",
-                                  "tickLength": 1.765
+                                  "tickLength": 1.765,
+                                  "className": "cr-ref-product-121"
                                 },
                                 "innerBlocks": [
                                   {
@@ -1690,7 +1693,8 @@
                                             }
                                           }
                                         }
-                                      }
+                                      },
+                                      "className": "cr-ref-product-122"
                                     }
                                   },
                                   {
@@ -1725,7 +1729,8 @@
                                             }
                                           }
                                         }
-                                      }
+                                      },
+                                      "className": "cr-ref-product-123"
                                     }
                                   },
                                   {
@@ -1760,7 +1765,8 @@
                                             }
                                           }
                                         }
-                                      }
+                                      },
+                                      "className": "cr-ref-product-124"
                                     }
                                   }
                                 ]
@@ -1779,7 +1785,8 @@
                                 "desktop": {
                                   "top": "20px"
                                 }
-                              }
+                              },
+                              "className": "cr-ref-product-125"
                             },
                             "innerBlocks": [
                               {
@@ -1800,7 +1807,8 @@
                                       "bottom": "6px"
                                     }
                                   },
-                                  "text": "Side"
+                                  "text": "Side",
+                                  "className": "cr-ref-product-126"
                                 }
                               },
                               {
@@ -1840,7 +1848,8 @@
                                   "drawingImageWidth": 680,
                                   "drawingImageHeight": 230,
                                   "drawingImageAlt": "Side view of the frame",
-                                  "tickLength": 1.765
+                                  "tickLength": 1.765,
+                                  "className": "cr-ref-product-127"
                                 },
                                 "innerBlocks": [
                                   {
@@ -1876,7 +1885,8 @@
                                           }
                                         }
                                       },
-                                      "extReachEnd": 7.641
+                                      "extReachEnd": 7.641,
+                                      "className": "cr-ref-product-128"
                                     }
                                   }
                                 ]
@@ -1940,7 +1950,8 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline"
+                                  "alignItems": "baseline",
+                                  "className": "cr-ref-product-129"
                                 },
                                 "innerBlocks": [
                                   {
@@ -2037,7 +2048,8 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline"
+                                  "alignItems": "baseline",
+                                  "className": "cr-ref-product-130"
                                 },
                                 "innerBlocks": [
                                   {
@@ -2118,7 +2130,8 @@
                                   "bottom": "16px",
                                   "left": "18px"
                                 }
-                              }
+                              },
+                              "className": "cr-ref-product-131"
                             },
                             "innerBlocks": [
                               {
@@ -2133,7 +2146,8 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline"
+                                  "alignItems": "baseline",
+                                  "className": "cr-ref-product-132"
                                 },
                                 "innerBlocks": [
                                   {
@@ -2149,7 +2163,8 @@
                                       },
                                       "letterSpacingUnit": "em",
                                       "textTransform": "uppercase",
-                                      "textColour": "text-label"
+                                      "textColour": "text-label",
+                                      "className": "cr-ref-product-133"
                                     }
                                   },
                                   {
@@ -2174,7 +2189,8 @@
                                             }
                                           }
                                         }
-                                      }
+                                      },
+                                      "className": "cr-ref-product-134"
                                     }
                                   }
                                 ]
@@ -2187,7 +2203,8 @@
                                     "desktop": 14
                                   },
                                   "fontSizeUnit": "px",
-                                  "textColour": "text-muted"
+                                  "textColour": "text-muted",
+                                  "className": "cr-ref-product-135"
                                 }
                               }
                             ]
@@ -2229,7 +2246,8 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline"
+                                  "alignItems": "baseline",
+                                  "className": "cr-ref-product-136"
                                 },
                                 "innerBlocks": [
                                   {
