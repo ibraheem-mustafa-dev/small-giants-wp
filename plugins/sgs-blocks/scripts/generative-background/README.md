@@ -116,7 +116,7 @@ underlying geometry's apparent coverage without any real shape difference.
 
 ## The root cause, PROVEN via `/systematic-debugging`, then FIXED (D926/D927)
 
-**It was NOT geometry.** `scripts/generative-background/silhouette-probe.mjs` renders our engine
+**It was NOT geometry.** A probe rendered our engine
 with every fragment effect bypassed (`u_silhouetteDebug`, a flat-colour debug mode — magenta, not
 white, because both the page background AND the ground colour are near-white and a white
 silhouette would be invisible to the coverage detector) and compares JUST the on-screen footprint
@@ -162,8 +162,8 @@ light theme's (`1`, `index.html:231`), and the light theme's real shader never r
 is real for dark ground and fabricated for light. Now gated on `u_ground`'s own luminance.
 
 **Result: all 3 sampled phases now pass** — see the headline table at the top of this README.
-`verify-transform.mjs` still 7/7 (layers 1–2 untouched); `silhouette-probe.mjs`'s SHADED and
-SILHOUETTE coverage now match exactly at every phase — fragment shading no longer erases any of
+`verify-transform.mjs` still 7/7 (layers 1–2 untouched); the probe's SHADED and
+SILHOUETTE coverage matched exactly at every phase — fragment shading no longer erases any of
 the geometry's own footprint.
 
 ⚠ **Still outstanding: Bean's NAMED visual sign-off.** A passing number was never the sole
@@ -178,8 +178,7 @@ D926 built 5 debug-only uniforms to bisect the fragment effects; 4 (`u_depthFade
 D927 turned their findings into real fixes (corrected constants, deleted code, real gating) —
 keeping a debug toggle for behaviour the source no longer has would be dead weight. `u_silhouetteDebug`
 (`generative-background.js`) stays as general-purpose diagnostic infrastructure — `poc-replica.html`'s
-`?silhouette=1` still works, `silhouette-probe.mjs` still uses it as the ongoing geometry-vs-shading
-regression check. Confirmed a no-op on shipped output via `capture-render.mjs` throughout D926's
+`?silhouette=1` still works, and `sweep-position-ranges.mjs` uses it for its geometry-only signal. Confirmed a no-op on shipped output via `capture-render.mjs` throughout D926's
 build (repeated re-checks after every edit). Never wired to any client-facing control.
 
 - `mean_abs_pct` — the average per-pixel colour difference, as a percentage of the 0–255

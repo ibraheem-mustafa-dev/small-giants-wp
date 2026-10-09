@@ -98,13 +98,9 @@ if ( ! function_exists( 'sgs_container_gap_value' ) ) {
 	 * name-preserving wrapper: every caller (class-sgs-container-wrapper.php:554,
 	 * 1280, 1283, 1286; sgs_container_tier_gap() below) is unchanged.
 	 *
-	 * Backward compatibility (bare-slug wrapping, plain lengths, two-value gaps)
-	 * is proven byte-identical against the old allowlist implementation by the
-	 * differential test at scripts/diff-gap-sanitiser.php — it freezes the old
-	 * implementation verbatim and asserts equality on the corpus in task-2-brief.md
-	 * constraint 5. This function additionally now accepts fluid CSS function
-	 * calls (var()/calc()/min()/max()/minmax()/clamp()) that the old allowlist
-	 * stripped to invalid CSS, e.g. the header row's clamp() gap default
+	 * Bare-slug wrapping, plain lengths and two-value gaps pass through
+	 * unchanged. Fluid CSS function calls (var()/calc()/min()/max()/minmax()/
+	 * clamp()) are accepted too, e.g. the header row's clamp() gap default
 	 * (src/blocks/site-header-row/block.json).
 	 *
 	 * @param string $gap Raw gap attribute value from block attributes.

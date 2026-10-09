@@ -3708,7 +3708,6 @@ function writeBaseline( allFindings ) {
 // SELF-TEST — E12 element-scoping (Part A + Part B, this pass)
 //
 // Mirrors the house `--self-test` convention (see
-// scripts/surveys/lib/wrapper-capability-selftest.js /
 // scripts/surveys/survey-experimental-imports.js): every rule carries a
 // NEGATIVE control (the exact false positive an earlier, reverted version of
 // this gate actually produced) alongside a POSITIVE control (proof the gate

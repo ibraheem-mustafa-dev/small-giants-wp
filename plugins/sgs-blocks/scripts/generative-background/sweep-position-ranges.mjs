@@ -11,12 +11,12 @@
  * than guesses, where each parameter's shape stops reading as an intentional
  * folded form.
  *
- * METHOD: silhouette mode (`u_silhouetteDebug`, the existing general-purpose
- * diagnostic uniform `silhouette-probe.mjs` already uses) renders a flat
+ * METHOD: silhouette mode (`u_silhouetteDebug`, the general-purpose
+ * diagnostic uniform) renders a flat
  * magenta footprint with every fragment effect bypassed — a clean geometry-
  * only signal, immune to grading/glow/striation making a small shape look
- * "present" via colour alone. Painted-coverage (same quantised-dominant-
- * colour technique `silhouette-probe.mjs` uses) over the FULL canvas (not a
+ * "present" via colour alone. Painted-coverage (quantised-dominant-
+ * colour technique) over the FULL canvas (not a
  * narrow crop — a value that pushes the shape off-frame must still be
  * caught) is measured at one fixed representative phase for every swept
  * value. The baseline (all-default) coverage anchors the sweep; a value is

@@ -565,8 +565,8 @@ through the same shared chain as the bar); the inspector shows *which menu is bo
   top-layer and would cover the burger). The pill grows into its menu card.
 - **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu`; `gap` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes`) is a
   per-device tier object on both menu blocks, so a reference's tight pitch (a 0 gap on 44px rows) is reachable
-  without changing padding. Stored flat values were folded into the tier shape by
-  `plugins/sgs-blocks/scripts/migrate-nav-gap-tier.php`, which every site runs before it takes the deploy.
+  without changing padding. A stored flat value fails the schema and renders the
+  default.
 - Every value is consulted by the U-5 motion `auto` map (`side-*` slide from their own edge, `container` expands
   down) and by the default edge (side panels take a shadow and a 1px primary line on their open edge; `container`,
   `trigger` and `centred` are cards).

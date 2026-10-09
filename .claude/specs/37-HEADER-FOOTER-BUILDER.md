@@ -333,8 +333,8 @@ The contract is independent of the editing home:
   — `cqi` is safe there because the row sets `container-type: inline-size` on itself and the
   wrapper emits `gap` onto `.sgs-container__inner`, whose ancestor container IS the row; do not
   copy `cqi` to a block without a guaranteed container ancestor (silent fallback to viewport
-  units is the failure mode). `scripts/diff-gap-sanitiser.php` compares the validator's gap output
-  with the allowlist sanitiser byte for byte.
+  units is the failure mode). `sgs_container_gap_value()` in
+  `plugins/sgs-blocks/includes/helpers-container.php` delegates to `sgs_css_length_value()`.
 - Container queries for row-level reflow (a row can collapse while the viewport is wider).
   `container-type: inline-size` stays on both rows.
 - **Gate:** `scrollWidth <= innerWidth` **swept 1400 → 320px in ≤10px steps**, not sampled at

@@ -23,7 +23,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 228 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 593 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 586 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -1044,7 +1044,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 550 scripts
+#### `plugins/sgs-blocks/scripts/` — 541 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1207,7 +1207,6 @@ for the verb you happen to have in mind.
 | `dedupe-shadow-colour-rows.py` | manifest+script-call | One writer for a shadow's colour: the ShadowControl. Any other colour row for the same attribute |
 | `deploy-client-notes-quick.py` | manifest | a small, one-off deploy path for |
 | `derive-dark-palette.py` | manifest+script-call+test-import | automatic dark palette derivation (U-12 §D). |
-| `diff-gap-sanitiser.php` | — | Differential test: sgs_container_gap_value() old allowlist vs the new sgs_css_length_value()-delegating implementation. |
 | `editor-render-parity/check-a-editor-canvas-desync.js` | manifest+script-call | CHECK A: editor-canvas desync. |
 | `editor-render-parity/check-b-invalid-keyword.js` | manifest+script-call | CHECK B: invalid CSS keyword passthrough. |
 | `editor-render-parity/lib-a-control-surface.js` | manifest+script-call | CHECK A: which JSX components are control surfaces, and which edit.js uses server-side render. |
@@ -1261,7 +1260,6 @@ for the verb you happen to have in mind.
 | `generative-background/fidelity-compare.mjs` | manifest+npm+script-call | The driver. Captures BOTH sides (the shipping generative-background engine, via poc-replica.html, and the reference rig… |
 | `generative-background/flip-probe.mjs` | manifest+script-call | decision baked into poc-replica.html. |
 | `generative-background/harness-lib.mjs` | manifest+script-call | scripts. |
-| `generative-background/silhouette-probe.mjs` | manifest+script-call | ORIGIN (systematic-debugging, 2026-09-03, D926/D927). Built to isolate the measured silhouette-coverage deficit (D925 — ours covered 7-12 points LESS… |
 | `generative-background/sweep-position-ranges.mjs` | manifest | static orientation/scale/framing overrides (rotationX/Y/Z, scaleX/Y/Z, offsetX/Y) added to `createGenerativeBackground()`. |
 | `generative-background/verify-field-texture.mjs` | manifest+npm | Bean's live report ("so many white splotches") after the D939-era blob- density change shipped without checking its own white-coverage stat against… |
 | `generative-background/verify-transform.mjs` | manifest+npm+script-call | Verify the PRODUCTION transform maths against ground truth from the rig. |
@@ -1388,8 +1386,6 @@ for the verb you happen to have in mind.
 | `migrate-core-blocks/publish-pattern-pair.py` | manifest | Publish a BEFORE/AFTER canary page pair for a migrated pattern file. |
 | `migrate-core-blocks/upgrade-button-presets.py` | manifest | One-shot: upgrade already-emitted sgs/button instances to use PRESETS. |
 | `migrate-length-sanitiser.py` | manifest+script-call | Move every LENGTH-valued call site from the crude sanitiser to the hardened one. |
-| `migrate-nav-gap-tier.php` | — | Fold a stored flat `gap` on sgs/nav-bar-menu and sgs/nav-drawer-menu into its tier object (Wave 3C U-3, 2026-09-25): "gap":"28px" ->… |
-| `migrate-product-card-image-id.py` | manifest | backfill `imageId` (a real WordPress |
 | `migrate-render-closures.py` | manifest+npm | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
 | `migrate-shadow-presets.py` | manifest | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
 | `migrate-stored-tier-scalars.py` | manifest+script-call | fold a flat per-device scalar into ONE tier object, |
@@ -1417,8 +1413,6 @@ for the verb you happen to have in mind.
 | `motion-qa/probe-carousel-loop.mjs` | manifest | Live probe — looping carousels (Spec 38, Bean's independent-control ruling). |
 | `motion-qa/probe-cursor-field.mjs` | manifest+script-call | Live probe — cursor-reactive field (Spec 38 §3.3, FR-38-25). |
 | `motion-qa/probe-first-paint.mjs` | manifest | gate's `first_paint_capture_passed` field is supposed to attest. |
-| `motion-qa/probe-fr-38-35-connector-stack.mjs` | manifest | Verify the shipped glow + fill + head stack against the REAL compiled stylesheet and the REAL markup render.php now emits. |
-| `motion-qa/probe-fr-38-35-live.mjs` | manifest | FR-38-35 LIVE verification against the canary, on the shipped mask stack. |
 | `motion-qa/probe-good-by-default.mjs` | manifest+npm+script-call | Gap-register claim 7 — is "good by default" true for pin-scrub / scrub / scramble / split-reveal? (2026-08-21, D729) |
 | `motion-qa/probe-horizontal-panel-focus.mjs` | manifest | Horizontal-panel keyboard-focus probe — Spec 38 FR-38-8 follow-up |
 | `motion-qa/probe-horizontal-panel.js` | manifest+script-call | Horizontal-panel travel probe — Spec 38 FR-38-8. |
@@ -1515,9 +1509,7 @@ for the verb you happen to have in mind.
 | `surveys/compare-reach-depth.py` | manifest+script-call | Does resolution DEPTH change the answer? Measure, do not assume. |
 | `surveys/extract-native-contracts.py` | manifest | Extract the REQUIRED props (and the __next* opt-ins) from Gutenberg's own |
 | `surveys/fetch-native-control-contracts.sh` | manifest+script-call | Fetch the CANONICAL prop contract for each WordPress core control primitive straight from the Gutenberg source, so a golden describes the real… |
-| `surveys/lib/control-detection.js` | manifest+script-call | Answers ONE question per (block, attribute): **can a client set this?** |
 | `surveys/lib/primitive-alias-imports.js` | manifest+script-call | PROBLEM THIS EXISTS FOR |
-| `surveys/lib/wrapper-capability-selftest.js` | manifest+script-call | Self-test for the wrapper-capability census. |
 | `surveys/survey-background-colour-support.py` | manifest+npm+script-call | Track A completion audit — native colour/gradient background support. |
 | `surveys/survey-box-controls.py` | manifest+npm | "--survey" census of the BOX (4-side) and BORDER |
 | `surveys/survey-colour-controls.py` | manifest+npm+script-call | Phase 0.0 "--survey" census of the COLOUR property |
@@ -1534,7 +1526,6 @@ for the verb you happen to have in mind.
 | `surveys/survey-native-supports.py` | manifest+npm+script-call | Phase 2.2 census — native WordPress `supports` capability routing. |
 | `surveys/survey-responsive-shape.py` | manifest+npm+script-call | the responsive STORAGE-SHAPE census. |
 | `surveys/survey-typography-controls.py` | manifest+npm | Phase 0.0 "--survey" census of the TYPOGRAPHY |
-| `surveys/survey-wrapper-capability.js` | manifest+script-call | PHASE 0 CENSUS for the shared-wrapper decomposition. |
 | `sync-business-info.py` | manifest+script-call+test-import | Tier-1 business-data extractor + pusher (D325, Spec 33 FR-33-14). |
 | `sync-container-wrapping-blocks.py` | manifest+script-call | Detects every SGS block that is container-bearing (wraps children via InnerBlocks, |
 | `sync-snapshot-shadow-presets.py` | manifest | Every client theme snapshot carries the framework's shadow presets, shadow colour and hover map. |
