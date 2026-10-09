@@ -1,12 +1,12 @@
 ---
 doc_type: spec
 spec_id: 38
-spec_version: 1.5
+spec_version: 1.6
 status: active
 title: SGS Motion System — the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
 created: 2026-07-29
-last_verified: 2026-09-26
-depends_on: [31, 32, 35, 37, "02 §Animation", "src/shared/effects/ house runtime"]
+last_verified: 2026-10-09
+depends_on: [32, 35, 37, 47, "02 §Animation", "src/shared/effects/ house runtime"]
 ---
 
 # Spec 38 — SGS Motion System: the four-tier motion doctrine (V/G/H/W) + the GSAP (Tier G) effects layer
@@ -46,8 +46,8 @@ apply, never completely walled off from areas of potential.
    achieve it**. Entrances, stagger, hovers, parallax (CSS scroll-driven first), marquees,
    simple keyframe motion, menu/drawer reveals, single-property scroll fades — all remain
    Tier V, exactly as built today. **Nothing currently shipped migrates to GSAP.** The Spec 36
-   nav follow-ons (`P-DRAWER-BURGER-MORPH-SYNC` — store state-wiring; `P-DRAWER-TRIGGER-ANCHOR-JS`
-   — geometry) are Bean-ruled NOT motion-system scope and stay the house way, untouched.
+   nav follow-ons (burger-morph store state-wiring; drawer trigger-anchor geometry) are
+   Bean-ruled NOT motion-system scope and stay the house way, untouched.
 2. **Tier G (capability) — GSAP.** Reserved for what Tier V genuinely cannot reach:
    scroll-scrubbed pinned timelines, SplitText, Flip layout transitions, Draggable/physics,
    DrawSVG scrubbing, MorphSVG. **Conditionally loaded** (§4.4): a page using
@@ -65,10 +65,10 @@ apply, never completely walled off from areas of potential.
    pinning, which is the shipped Spec 37 header*; (iii) it is single-purpose, npm-bundled, never
    CDN, and conditionally loaded on the same registry as Tier G, so a site not using it ships
    zero bytes of it; (iv) its admission is recorded as a D-numbered decision naming what it
-   replaces. Tier H is a named list, not a category anyone may extend by analogy — **current
-   membership: Lenis (site-level smooth scrolling) and the Lottie player (`lottie-web` 5.13.0
-   light build, SVG renderer, playing designer-supplied animation files; D1151), and nothing
-   else.** The Lottie player replaces nothing shipped; it adds the capability the motion register
+   replaces. Tier H is a named list, not a category anyone may extend by analogy: its
+   membership is `SELECT effect FROM fx_effects WHERE tier = 'H'` (Lenis for site-level smooth
+   scrolling; the Lottie player, `lottie-web` 5.13.0 light build, SVG renderer, playing
+   designer-supplied animation files; D1151). The Lottie player replaces nothing shipped; it adds the capability the motion register
    listed as absent. It is offered as the `lottie` media type (the logo, the Media block, the hero
    split media and the shared wrapper background) and loads only after its trigger fires, never
    under reduced motion. **Byte allowance: a NAMED 60KB JS allowance for pages that render a
@@ -94,7 +94,7 @@ apply, never completely walled off from areas of potential.
    - **Library: none — raw WebGL2**, behind an SGS-side `init / setUniform / destroy` interface
      so the renderer is REPLACEABLE. The tier is one program, one fullscreen quad, one draw (~150
      lines); OGL's ~34KB buys a scene graph and a camera, both of which this tier is forbidden
-     from growing. Measured: 4,325 bytes gzip for the whole effect vs 34KB for the library alone.
+     from growing. The whole effect is far smaller than the 34KB library alone (the recorded actual is in `scripts/motion-bundle-baseline.json`).
      Reversible in one file (`webgl/renderer.js`; Gate A greps that nothing outside `webgl/`
      imports it) and **flagged for Bean's ratification**. Reopen with OGL if a future effect needs
      multi-pass/framebuffers. OGL is **Unlicense (public domain)** — stronger than MIT — but it is
@@ -104,9 +104,9 @@ apply, never completely walled off from areas of potential.
      the same block** — never a blank canvas, never a hidden section.
    - **Scope: a CLOSED LIST of effects**, exactly as Tier H is a closed list of libraries. "We have
      WebGL now" is precisely how a byte budget dies.
-     **CURRENT MEMBERSHIP — THREE ENTRIES: `surface-treatment` (FR-38-29), `flowing-gradient`
-     (FR-38-31) and `generative-background` (`src/shared/effects/fx-generative-background.js`,
-     `fxGen*` attributes).**
+     **Membership is `SELECT effect FROM fx_effects WHERE tier = 'W'`** (`surface-treatment`,
+     FR-38-29; `wave-gradient`, FR-38-31; and `generative-background`,
+     `src/shared/effects/fx-generative-background.js`, `fxGen*` attributes).
      The fluid cursor field is NOT a member: (i) a genuine fluid simulation is MULTI-PASS
      (advection → divergence → Jacobi pressure → gradient subtract, over ping-pong framebuffers)
      and the single-pass Tier W interface structurally cannot express it; (ii) `fx-cursor-field.css`
@@ -123,7 +123,7 @@ apply, never completely walled off from areas of potential.
      is that a `null`/failed-init return IS the fallback — the untouched `<img>` is already the
      finished state, so there is no second rendering path to keep in sync. That premise holds ONLY
      because a Tier W effect wraps an existing source image, which `surface-treatment` does.
-     **`flowing-gradient` is GENERATIVE — there is no untouched anything for a failed WebGL init
+     **`wave-gradient` is GENERATIVE — there is no untouched anything for a failed WebGL init
      to fall back to** — so it ships a real, hand-authored CSS fallback
      (`assets/css/fx-wave-gradient.css`) that must be kept in sync with the shader FOREVER. That
      ongoing maintenance burden is the exact cost the `null`-return fallback contract was designed
@@ -155,8 +155,8 @@ apply, never completely walled off from areas of potential.
    freely" is false** — Tier H is a closed list with a four-part admission test (§1.2a) and a
    D-numbered decision per member. Any track claiming any of the three is misquoting this
    section.
-5. **Naming.** The tiers are deliberately **V/G/H/W**, not 1/2/3 — "Tier 1/Tier 2" already mean the
-   `blocks.replaces` reverse-walk in Spec 31 Appendix B, and "tier" alone also means the
+5. **Naming.** The tiers are deliberately **V/G/H/W**, not 1/2/3 — "Tier 1/Tier 2" already named the
+   `blocks.replaces` reverse-walk tiers of the retired converter, and "tier" alone also means the
    Mobile/Tablet/Desktop device system. In prose always write "Tier V" / "Tier G" / "Tier H" / "Tier W". W is for **WebGL** — a rendering SUBSTRATE, not a library.
    H is for **helper** (Bean's framing): a single-purpose utility admitted for one
    capability, not a general-purpose engine like GSAP.
@@ -190,12 +190,18 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Smooth scrolling (**Lenis**) | **H** — no CSS mechanism for smoothed/lagged scroll, and the Tier G option (ScrollSmoother) can only achieve it by transforming a wrapper around page content, which silently breaks the shipped Spec 37 sticky header (§4.2) | **SITE** | SGS → Motion settings page | Default OFF; disabled in editor + wp-admin; disabled under reduced-motion (live + reactive); touch left native; **no wrapper, no template change** (§4.2) | OFF | Site setting only (never per-block) |
 | Page transitions | **V** — cross-document View Transitions API is CSS-first, no GSAP, no router | SITE + per-template | Theme settings + per-template override | Progressive enhancement; unsupported browsers = normal navigation (defined fallback §3.5); reduced-motion = suppress | OFF | Site-wide → per-template variants |
 | Surface treatment (grain / halftone / duotone) — FR-38-29 | **W** — CSS moves and recolours a whole element, it cannot rewrite the pixels INSIDE one; GSAP animates VALUES and does not rasterise, so it cannot reach this either (§1.2b tests i + ii). Bounded to the image a block already renders (test iii); degrades to that untouched image (test iv); admitted under Tier W's five-part test (test v) | block (image-bearing) | fx panel — treatment picker (thumbnails) + duotone `DesignTokenPicker` colours; intensity behind "+" | Needs a raster `<img>` in the block's subtree — a block rendering its `<img>` as the block ROOT (e.g. `sgs/decorative-image`) is offered it but no-ops, see FR-38-29; no conflict with any Tier V/G effect (it repaints a texture, it does not own transform/opacity) | off | Image-bearing blocks → any block whose subtree contains a raster image |
-| Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-panel spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. Measured 982 bytes gzip, no GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on blocks such as `nav-bar-menu`, `site-header`, `form` and `modal` that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
-| Magnetic pull (FR-38-30) | **V** — the shipped `magnet.js` (`sgs/nav-bar-menu`) already does proximity-based pull in vanilla; the motion-ecosystem survey concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; measured 1054 bytes gzip; distance measured to the element's BOX, not its centre | off | Any fx-panel block (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
-| Flowing gradient (FR-38-31, SECOND Tier W entry) | **W** — a noise-driven generative gradient computed per pixel on the GPU, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
+| Cursor-reactive field (FR-38-25) + its four looks (FR-38-28) | **V** — the shipped mega-panel spotlight already does pointer-follow in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate; GSAP adds nothing §1.3's ratchet would accept. No GSAP dependency | block (emitter) + runtime-detected participants | fx panel — field type / colour (`DesignTokenPicker`) / size | `creates_panel = 0` (measured: letting it create panels put a new fx panel on blocks such as `nav-bar-menu`, `site-header`, `form` and `modal` that would also inherit `motion-path` + `scrub`); fine-pointer only; participants carry no control | off | Container-kind + background-image blocks → any block with a paintable background |
+| Magnetic pull (FR-38-30) | **V** — the shipped `magnet.js` (`sgs/nav-bar-menu`) already does proximity-based pull in vanilla; the motion-ecosystem survey concluded a magnetic button is "~20-30 lines of vanilla JS — write it, don't dependency it"; GSAP adds nothing §1.3's ratchet would accept | block | fx panel — Pull distance + Reach (shown by default), Direction (behind "+") | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only via `hover`; distance measured to the element's BOX, not its centre | off | Any fx-panel block (incl. `sgs/button`, `sgs/multi-button`, `sgs/icon`) → any block with the fx panel exposed |
+| Wave gradient (FR-38-31, SECOND Tier W entry) | **W** — a noise-driven generative gradient computed per pixel on the GPU, which CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE rather than image-wrapping, which widens Tier W's founding fallback premise (see §1.2b) | block (surface) | fx panel-equivalent surface control — 4 client colours (`DesignTokenPicker`) + a mandatory keyboard-reachable Pause control (SC 2.2.2, autonomous motion) | `requires='surface'`; AUTONOMOUS (`triggers='load'`), not cursor-driven — engages SC 2.2.2 so ships a real Pause control, `hidden` until JS confirms it is running; DPR capped at 1.5; IntersectionObserver + `visibilitychange` + context-loss give-up; real CSS fallback required (ships alongside, kept in sync forever — the tier-widening cost) | off | Section/hero surfaces → any block declaring the `surface` capability |
 | Particle trail (FR-38-32) | **V** — a canvas 2D pool of short-lived sprites; vanilla reaches it with no library, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W: it needs no GPU shader and that list stays closed | block | fx panel — Style (sparks/gravity-dots/ripple) shown by default, Density + Size behind "+" | `requires='none'` (PERMISSIVE — offered wherever a panel already exists, never creates one); fine-pointer only; cap 150/emitter (MEASURED: clamps at exactly 150 under saturation, but ordinary pointer input peaks at 106 — LIFETIME binds first, not the cap), DPR<=1.5; self-terminating loop (MEASURED: 0 frames drawn across 2500ms at rest; positive control confirms the counter rises on movement) | off | Any fx-panel block → any block with the fx panel exposed |
-| Progress connector on `sgs/timeline` (FR-38-35) | **V** — a SINGLE-property scrub (one number, 0→1), which FR-38-7 already places in V; multi-keyframe/staggered is the G boundary and the themed variants must be re-tiered against it | block (`sgs/timeline` only) | Block-private inspector — `ToggleControl` in the Connector PanelBody + an `SgsColourPanel` row. **NOT the fx panel** (FR-38-26 precedent: fx injectors stamp the block ROOT, the connector is a descendant), so zero `check-fx-list-drift.py` registrations | Two drivers writing one `@property`-registered custom property; the JS driver MUST feature-detect `animation-timeline` and exit, or both run and the rAF loop burns frames for nothing. Firefox has NO native support, so the JS path is primary | off | `sgs/timeline` → nothing else (the geometry is this block's own connector) |
-| *Existing Tier V inventory* (entrance ×16, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
+| Progress connector on `sgs/timeline` (FR-38-35) | **V** — a SINGLE-property scrub (one number, 0→1), which FR-38-7 already places in V; multi-keyframe/staggered is the G boundary and the themed variants must be re-tiered against it | block (`sgs/timeline` only) | Block-private inspector — `ToggleControl` in the Connector PanelBody + an `SgsColourPanel` row. **NOT the fx panel** (FR-38-26 precedent: fx injectors stamp the block ROOT, the connector is a descendant), so zero `check-fx-list-drift.py` registrations | One driver (`view.js`) writes the `@property`-registered custom property on every browser; it attaches nothing under reduced motion | off | `sgs/timeline` → nothing else (the geometry is this block's own connector) |
+| Generative background (Tier W, third member) | **W** — a GPU generative surface (a folded ribbon over a computed colour field) that CSS cannot generate and GSAP cannot rasterise (§1.2b tests i + ii); GENERATIVE, so there is no untouched image to fall back to | block (surface) | fx panel-equivalent surface control — `fxGen*` colour and shape attributes + a keyboard-reachable Pause control (SC 2.2.2) | `requires='surface'`; AUTONOMOUS (`triggers='load'`); layered fail-open: the CSS static gradient (`plugins/sgs-blocks/assets/css/fx-generative-background.css`) is the no-JS state, a 2D canvas colour field paints first, WebGL2 draws on top; a hand-authored fallback kept in sync with the shader | off | Section/hero surfaces → any block declaring the `surface` capability |
+| Cursor grid-dot field (FR-38-33) | **V** — a canvas 2D lattice of dots that lean toward the pointer; vanilla reaches it with no library | block | fx panel — dot shape, cell, dot size, radius, lean, ease | `requires='surface'`; `creates_panel = 0`; fine pointer only | off | Surface blocks → any block with the fx panel exposed |
+| Looping carousels (FR-38-26) | **V** — clones the leading and trailing items and re-seats `scrollLeft` instantly, never a tween | block-private (`loopCarousel`) | per-block control, not the fx panel (fx injectors stamp the block ROOT; the track is a descendant) | `creates_panel = 0`; instant `scrollLeft` write | off | Blocks with a scroll track |
+| Lottie player (§1.2a) | **H** — playing designer-supplied animation files, which neither CSS nor GSAP does | element (the logo, the Media block, hero split media, the shared wrapper background) | the `lottie` media type | loads `lottie-web` (light build) only after its trigger fires, never under reduced motion; a NAMED 60 KB allowance for pages that render one | off | Media-bearing blocks |
+| *Existing Tier V inventory* (entrance, hover suite, parallax 3-tier, path-draw, scroll-progress, marquee, float utilities) | **V** — shipped, proven, cheap | block/element | Existing inspector panels (unchanged) | §4.3 exclusivity when a G scrub is present on the same block | as today | Unchanged |
+
+`generative-background` and the Lottie player are tier members without separate FR numbers: their admission is §1.2a / §1.2b, and the generative background's parameters are the `fxGen*` rows in `block_attributes`.
 
 ## 3. The capability roster (nothing cut; curated defaults)
 
@@ -254,8 +260,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > focus is inside; `fx-split-reveal.js` uses a one-shot. The horizontal panel is the only one where
 > native reachability suffices, and only by accident.
 >
-> **Fixture.** `probe-step13-pin-focus.mjs` runs against canary page **2893** (`[GATE - DO NOT
-> DELETE] Pin keyboard focus FR-38-6`), which carries a link, a text field and buttons inside a
+> **Fixture.** `probe-step13-pin-focus.mjs` runs against the fixture committed at
+> `plugins/sgs-blocks/scripts/motion-qa/fixtures/pin-keyboard-focus-fr-38-6.html`, which carries a link, a text field and buttons inside a
 > genuine `data-sgs-fx="pin-scrub"` pin: 4 real focusables inside a pin report `engaged=True`, the
 > Tab walk covers all of them, and ZERO focus issues are raised — no out-of-viewport focus, no
 > invisible-while-focused control. The `reduce` arm reports the pin as never engaging at all, which
@@ -270,8 +276,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 - **FR-38-35 Scroll-driven progress connector on `sgs/timeline` — Tier V, BLOCK-PRIVATE.**
   The timeline's connecting line fills progressively 0→1 as the block
   scrolls through the viewport, so a journey visibly builds as the reader descends. Requested by
-  MIC for their journey page; this FR is the contract only, and four themed variants
-  (pulse / vine / tree / falling bricks) are NOT BUILT.
+  MIC for their journey page. Four themed variants (pulse / vine / tree / falling bricks) are
+  NOT BUILT.
 
  **Tier V, and the boundary is the one FR-38-7 above already draws:** this is a SINGLE-property
   scrub (`--sgs-timeline-fill-progress`, one number), not a multi-keyframe or staggered timeline.
@@ -281,54 +287,43 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
  **BLOCK-PRIVATE, not an fx-panel effect — the FR-38-26 precedent, for the identical reason.**
   Both `fx.js`'s save filter and `fx-attributes.php`'s injector only ever stamp the block ROOT,
-  and the connector is a DESCENDANT (an SVG child). That
+  and the connector is a DESCENDANT. That
   is exactly why `loopCarousel` went per-block with `fx_effects.creates_panel = 0`. Consequence:
   **zero `check-fx-list-drift.py` registrations are owed** — this effect joins none of the four
   hand-maintained fx lists, because it is not an fx effect. It also answers §3.3's standing note
   that *"`sgs/timeline` is a genuine horizontal scroller with no fx declaration — an unclaimed
   candidate needing a new control surface"*: this is that surface.
 
- **The contract — ONE number, TWO drivers, and the drivers must exclude each other.**
-  `--sgs-timeline-fill-progress` is `@property`-registered (`syntax: '<number>'`, `inherits: true`,
-  `initial-value: 0`) and consumed once, as
-  `stroke-dashoffset: calc(1 - var(--sgs-timeline-fill-progress))` on an `aria-hidden` SVG `<path>`
-  carrying `pathLength="1"` (which normalises any geometry to unit length, so the dash maths is an
-  authored constant and no one reaches for the JS-only `getTotalLength()`).
+ **The contract: ONE number, ONE driver.** `plugins/sgs-blocks/src/blocks/timeline/view.js` writes
+  `--sgs-timeline-fill-progress` (0 to 1) from the block's scroll position on every browser, with
+  no native `animation-timeline` branch (Firefox has no native support, and one driver means one
+  behaviour everywhere; the support table above still justifies the V/G boundary in FR-38-7). The
+  property is `@property`-registered (`syntax: '<number>'`, `inherits: true`, `initial-value: 0`)
+  so the browser treats it as a real number. The line is the always-drawn connector masked to the
+  fill fraction by a `progress` element (`plugins/sgs-blocks/src/blocks/timeline/render.php`,
+  `plugins/sgs-blocks/src/blocks/timeline/style.scss`).
 
-  - **Native driver** — `@supports (animation-timeline: scroll())` binds a `@keyframes` to the
-    scroll timeline. Serves Chrome/Edge 115+ and Safari 26+.
-  - **JS driver** — an rAF loop in the block's `view.js` writing the same property. **This is the
-    PRIMARY path for every Firefox user, not a fallback** (see the support table above).
-  - ⛔ **The JS driver MUST feature-detect and return before attaching anything**
-    (`CSS.supports('animation-timeline','scroll()')`). A CSS animation outranks a JS inline write
-    in the cascade, so without this gate the loop runs on ~85% of traffic producing nothing
-    visible — correct output masking wasted work, the hardest defect class to notice.
-
- ⛔ **THREE SILENT-FAILURE MODES, each of which renders plausible-looking output while being
-  wrong. All three are load-bearing; none is polish.**
+ ⛔ **TWO SILENT-FAILURE MODES, each of which renders plausible-looking output while being
+  wrong. Both are load-bearing; neither is polish.**
   1. **An unregistered custom property cannot be animated.** Its computed type is "token stream",
      which has no midpoint, so CSS legally swaps it discretely at 50%. The fill would not be
      progressive, the property would still resolve, and every gate would pass. `@property` is what
      makes it a real number. (Same reasoning as `assets/css/fx-motion-path.css`.)
-  2. **`stroke-dasharray` MUST be set.** It defaults to `none`, and `stroke-dashoffset` has NO
-     effect on a line with no dash pattern — the connector renders permanently 100% filled while
-     the property animates perfectly. With `pathLength="1"`, `stroke-dasharray: 1` makes one dash
-     span the path: offset 1 = empty, offset 0 = full.
-  3. **The old `::before` must be suppressed on the CLASS, never on `@supports`.** An
-     `@supports`-keyed hide leaves a DOUBLED line for every visitor on the JS driver — all
-     of Firefox.
+  2. **The old `::before` line must be suppressed on the attribute-driven CLASS, never on
+     `@supports`.** An `@supports`-keyed hide leaves a DOUBLED line for every visitor whose browser
+     fails the query.
 
  **Client controls (block-private, beside the existing connector controls):**
   `connectorProgressFill` (boolean, default off) as a `ToggleControl` in the Connector `PanelBody`;
   `connectorFillColour` (string, default `accent`) as an `SgsColourPanel` row with `linked: true`,
-  so it stores a palette SLUG and re-themes with the site rather than freezing a hex.
-  Seeded to `block_attributes`: `connectorFillColour` carries `css_property = stroke` on the
-  EXISTING `connector` element — a different property from `connectorColour`'s `background-color`
-  claim, so there is no routing-determinism collision and no new element was needed.
+  so it stores a palette SLUG and re-themes with the site rather than freezing a hex. It is routed
+  as `css:background-color` on the `progress` element in
+  `plugins/sgs-blocks/src/blocks/timeline/block.json` (the `progress` element's `attrMap`).
 
- **Accessibility.** The SVG is `aria-hidden="true" focusable="false"` — decorative, adding no
-  content. **SC 2.2.2 does NOT engage:** the motion is scroll-linked and user-driven with no
-  autonomous component, so no Pause control is owed — unlike FR-38-31, which genuinely owed one.
+ **Accessibility.** The fill is decorative, scroll-linked, with no autonomous motion, so **SC 2.2.2
+  does NOT engage** and no Pause control is owed (unlike FR-38-31, which genuinely owed one).
+  **Reduced motion:** the stylesheet shows the line fully filled and `view.js` attaches no
+  listener. **Editor:** the connector at rest (progress 0).
 
 - **FR-38-9 Scroll-scrubbed image sequence — dedicated block `sgs/image-sequence`.**
   Canvas-drawn frame sequence scrubbed by scroll. **Explicit sub-scope with its own tooling
@@ -476,8 +471,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   A block's background carries a field that follows the pointer. **Tier V, not G:** the shipped
   mega-panel implementation (`src/shared/effects/spotlight.js`, consumed by `sgs/mega-panel`) already
   does this in vanilla with an rAF-throttled custom-property write and a live reduced-motion gate —
-  GSAP adds nothing the doctrine's §1.3 ratchet would accept. **Measured at build: 982 bytes gzip,
-  no GSAP dependency**, so a page using this effect and no Tier G effect ships zero GSAP bytes.
+  GSAP adds nothing the doctrine's §1.3 ratchet would accept. **No GSAP dependency** (the
+  size is the recorded actual in `scripts/motion-bundle-baseline.json`), so a page using this effect and no Tier G effect ships zero GSAP bytes.
 
  **THE PAINTER IS SWAPPABLE; THE MECHANISM IS NOT.** Everything below about coordinates and
   `background-attachment` is load-bearing. The thing painted at the published position is
@@ -799,8 +794,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   the cheaper error to correct in either direction. The §10 row carries this contract.
 
 - **FR-38-29 Surface treatments — the first Tier W effect. BUILT + LIVE-VERIFIED.**
-  Evidence `reports/visual-diff/tier-w-surface-2026-08-21.md`; canary
-  `/tier-w-surface-canary/` (page 2591).
+  Canary `/tier-w-surface-canary/` (page 2591).
 
   A GPU shader repaints the raster image a block already renders. Three presets, chosen by
   NAME with a thumbnail — never a raw uniform at the default level (gap register §3.1,
@@ -878,10 +872,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   relocated. The four rows reuse the `DesignTokenPicker` + `ToolsPanelItem` shape this same
   file already uses for `fxFieldColour`.
 
- **Size:** the recorded baseline is 5,674 bytes gzip (4.6% of Tier W's 120KB page allowance;
-  4,325 for the treatments, +1,349 for the scroll reveal), held in
-  `scripts/motion-bundle-baseline.json`. Run `check-motion-bundle-budget.py` for the current
-  figure — do not cite this line as today's size. It is offered on the image-bearing
+ **Size:** the recorded actual is in `scripts/motion-bundle-baseline.json`; run
+  `check-motion-bundle-budget.py` for the current figure. The 120KB Tier W page allowance is the
+  named budget. It is offered on the image-bearing
   blocks. `creates_panel=1` is rejected: it would give a scroll-scrub panel to form fields
   (`form-field-tiles`, `option-picker`, `social-icons`, `star-rating`, `card-grid`) — the
   containment failure the fx roster gating exists to prevent.
@@ -944,12 +937,12 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
  **Grammar:** `data-sgs-fx="magnet"` + `data-sgs-fx-magnet-axis` / `-radius` / `-strength` (§11.2).
   Block attrs: `fxMagnetAxis` / `fxMagnetRadius` / `fxMagnetStrength` (§11.3).
 
- **Size + live verification:** 1054 bytes gzip. LIVE-VERIFIED on canary page 2737: measurable pull
+ **Size + live verification:** the size is the recorded actual in `scripts/motion-bundle-baseline.json`. LIVE-VERIFIED on canary page 2737: measurable pull
   at 240px outside the button, peaking at ~80px displacement, zero displacement beyond the 260px
   reach. Axis lock proven with a genuine negative control: a locked instance held `y=0.00` while an
   unlocked neighbour moved `y=-19.25` under identical pointer input.
 
-- **FR-38-31 Flowing gradient — the SECOND Tier W entry. BUILT + LIVE.**
+- **FR-38-31 Wave gradient — the SECOND Tier W entry. BUILT + LIVE.**
   ⭐ **SIX STYLES.** One `fxWaveVariant` attribute:
   `pastel | horizon | ribbon | veil` paint in pure CSS and boot no canvas at all;
   `aurora | ink` run the WebGL shader (`src/shared/effects/webgl/aurora.js`) and are the
@@ -993,7 +986,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 
  ⛔ **THIS WIDENS TIER W RATHER THAN EXTENDING IT — see §1.2b for the full
   argument.** In summary: Tier W's `null`-return-is-the-fallback premise holds only because
-  `surface-treatment` wraps an existing source image. `flowing-gradient` is GENERATIVE — there is
+  `surface-treatment` wraps an existing source image. `wave-gradient` is GENERATIVE — there is
   no untouched anything for a failed init to fall back to — so it ships a real, hand-authored CSS
   fallback that must be kept in sync with the shader forever, which is the exact ongoing cost
   Tier W's `null`-return contract exists to avoid. Tier W is still a CLOSED list, with entries of
@@ -1032,7 +1025,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
  **DB row:** `fx_effects` tier `W`, scope `block`, `requires='surface'`, `creates_panel=0`,
   `in_picker=1`, `triggers='load'`, `reduced_motion='simplify'`.
 
- **Size:** 3648 bytes gzip = 3% of Tier W's NAMED 120KB page allowance.
+ **Size:** the recorded actual is in `scripts/motion-bundle-baseline.json`, against Tier W's NAMED 120KB page allowance.
 
  **Licence provenance — recorded because most shader lineage in this space is NOT clean.**
   Technique modelled on `sa3dany/wave-gradient` (MIT), whose shader header states it is "based on
@@ -1041,50 +1034,16 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   — recorded explicitly because most aurora/flow-field shaders found in the wild descend from it,
   and this is the check that keeps this codebase off that lineage.
 
- ⚠ **STATUS — BUILT AND LIVE, BUT ITS LOOK IS REJECTED by Bean.** Verbatim:
-  *"it also looks like B-movie 3D VFX from like the early 2000s."* This is NOT a tuning problem —
-  the mechanism, not just the verdict:
-  - (a) the `minigl` mesh technique every public tutorial documents is stripe.com's OLD hero
-    (~2020-21). Their CURRENT hero is a different implementation
-    (`hero-wave-animation__canvas`, WebGL2, with a `wave-fallback-desktop.png` fallback) —
-    a BOUNDED RIBBON on a LIGHT ground with text beside it on clean white, plus fine striations,
-    not a full-bleed dark mesh.
-  - (b) their colour comes from a hand-painted 480×480 `palette.png` TEXTURE the shader samples,
-    not from interpolating a handful of CSS-style stops. Sampled values run nearly all above
-    `0xf0` — peach/coral/pink/cream/lilac, ADJACENT warm hues. This build uses a near-black navy
-    base with widely-spaced saturated hues.
-
-    ⛔ **Four colour stops are NOT the ceiling.** Rendering four HUE-ADJACENT stops through
-    Stripe's own machinery produced a premium result
-    from a palette carrying **307** unique colours, against Stripe's **82,831**. What fails is
-    *complementary* stops — interpolating blue→orange in RGB passes through grey and produces the
-    muddy band, the same failure as the rejected Aurora teal band. **The constraint is hue
-    ADJACENCY, not colour count: no artist-painted palette and no palette-texture capability is
-    required.** Evidence: `.claude/reports/2026-08-25-stripe-hero-anatomy.md` §Q7.
-  - (c) A scratch replication rig reproduces the live
-    hero at **0.66%** mean pixel difference against a live capture frozen at the same `u_time`,
-    with all 26 recovered mechanisms implemented. What makes theirs look expensive, in
-    priority order: **form** (a bounded shape dissolving by depth, not a full-bleed repetitive
-    wash), **ground** (bright colour on white, not saturated colour on near-black navy), **hue
-    adjacency**, and **a fine detail field** (striations — ours has none). FR-38-31 **does not
-    band** (mean scanline run-length 1.19), so "add a dither" and `mediump`→`highp` are not
-    needed. Report: `.claude/reports/2026-08-25-stripe-hero-anatomy.md`.
-  - (d) **GPU cost:** 0.373ms/frame on an RTX 2060 at 1393×761, blocklist not bypassed. ⭐ **The
-    post-process pass is 0.261ms of that — 70% of the frame, 2.3× the render it post-processes.**
-    §1.2b names multi-pass as the trigger to reopen Tier W's library decision; **a framebuffer
-    pass is a design gate, not an increment.** Fidelity held across three measurements: 0.66% →
-    0.67% on a held-out frame → 0.69% at DPR 2.
-  - (e) ⛔ **The technique spec is not a build spec — do not build shader work from it.**
-    `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` never specifies
-    the animation, gives no camera or projection, states no acceptance criterion, and its §2
-    canvas-gradient mechanism contradicts its own §5 OKLab remedy. Its §5 (hue adjacency) and §6
-    (ground) are sound and are the only parts in scope.
-    ⭐ The look reads as rendered 3D, and the spec's top-ranked mechanism builds a *sculpted 3D
-    ribbon* while deferring §7, the blur-and-grain that flattens it photographically. Building
-    §1 first bets against the diagnosis. The rejected look is **four CSS values**:
-    `fxWaveBase`/`fxWave1..3` all default to `''` (the attribute defaults in
-    `src/blocks/extensions/fx.js`), the effect defaults to `off`, and only canary page **2740**
-    uses it.
+ ⚠ **Bean ruling on the look.** Bean rejected the first look as "B-movie 3D VFX from like the early
+  2000s". The constraint going forward is hue-adjacent stops on a light ground, not complementary
+  stops. The rejected look is **four CSS values**: `fxWaveBase`/`fxWave1..3` all default to `''`
+  (the attribute defaults in `plugins/sgs-blocks/src/blocks/extensions/fx.js`), the effect
+  defaults to off, and only canary page **2740** uses it. The Stripe hero anatomy and the
+  measurements behind this ruling are in `.claude/reports/2026-08-25-stripe-hero-anatomy.md`; the
+  generative-background technique spec
+  (`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`) is not a build
+  spec. A framebuffer (post-process) pass is a design gate, not an increment: §1.2b names
+  multi-pass as the trigger to reopen Tier W's library decision.
 
 - **FR-38-32 Particle trail — Tier V, ONE engine, THREE presets. BUILT.**
   Canary page 2744. A pool of short-lived sprites trails the pointer across an emitter and fades out.
@@ -1447,7 +1406,7 @@ registry row (§6), not a hardcoded pair.
 
 ### 4.3a The Tier V entrance is its own layer on every block
 
-The universal entrance (`sgsAnimation`, 16 effects) runs as a script animation, never as CSS:
+The universal entrance (`sgsAnimation`) runs as a script animation, never as CSS:
 `plugins/sgs-blocks/assets/js/animation-observer.js` calls `element.animate()` (Web Animations
 API). A script animation is its own effect in the element's animation stack, so it never shares
 the element's `transition`, `animation` or `transform` with the block's own effects (hover
@@ -1528,26 +1487,24 @@ modules; per-plugin webpack chunks with `gsap`/`gsap/*` as shared externals.**
   module IDs via the script-modules import map, so no block or effect module ever bundles its
   own copy. A canary page proves `gsap` resolves via the browser's native import map and
   appears in NO consuming chunk's bundle.
-- **Size budget (min+gzip, ESTIMATES from GSAP 3.12/3.13 except Lenis, which is measured; the
-  recorded actuals live in `scripts/motion-bundle-baseline.json`; the build fails if a bundle
-  exceeds its budget by >20%):**
+- **Size budget:** size is the recorded actual in `scripts/motion-bundle-baseline.json`; the
+  build fails over budget by more than 20%. The "Loads when" column below is the contract:
 
-| Module | Est. gz | Loads when |
-|---|---|---|
-| gsap core | ~26 KB | any Tier G effect on the page |
-| ScrollTrigger | ~14 KB | any scroll-driven G effect |
-| **Lenis** (Tier H) | 5,777 bytes gzip (~5.6 KiB) — MEASURED, not an estimate (`shared/effects/smooth-scroll.js`, includes the bundled library; the figure is the budget baseline in `scripts/motion-bundle-baseline.json`) | site setting ON |
-| SplitText | ~9 KB | text reveals present |
-| Flip | ~7 KB | filtered-grid pairing ON |
-| Draggable + Inertia | ~15 + 6 KB | drag roster block opted in |
-| DrawSVG | ~3 KB | draw effect present |
-| MorphSVG | ~11 KB | morph present (asset-gated) |
-| MotionPath | ~6 KB | scrubbed path present |
-| ScrambleText | ~3 KB | scramble present |
-| Physics/Custom easings | ~2–3 KB each | bundled inside the offering effect's chunk |
+| Module | Loads when |
+|---|---|
+| gsap core | any Tier G effect on the page |
+| ScrollTrigger | any scroll-driven G effect |
+| **Lenis** (Tier H) | site setting ON (recorded actual in `scripts/motion-bundle-baseline.json`) |
+| SplitText | text reveals present |
+| Flip | filtered-grid pairing ON |
+| Draggable + Inertia | drag roster block opted in |
+| DrawSVG | draw effect present |
+| MorphSVG | morph present (asset-gated) |
+| MotionPath | scrubbed path present |
+| ScrambleText | scramble present |
+| Physics/Custom easings | bundled inside the offering effect's chunk |
 
-  Worst realistic page ≈ core + ScrollTrigger + SplitText ≈ **49 KB gz**; typical scroll-only
-  page ≈ **40 KB gz**; page with zero Tier G ≈ **0 KB**. (These sit OUTSIDE the Tier V <10KB
+  A page with zero Tier G ships **0 KB** of GSAP. (These sit OUTSIDE the Tier V <10KB
   CSS + <4KB JS extension budget in Spec 02, which is unchanged.)
 - **The existing anti-pattern is named:** today's Tier V motion assets enqueue unconditionally
   on every page (6 assets, runtime self-gating — `class-sgs-blocks.php`
@@ -1574,9 +1531,9 @@ shows nothing is a defect (Spec 35 Part A1: the client must be able to function)
 ### 4.7 Cloning contract (§11)
 
 Every effect maps to the **`data-sgs-fx-*`** draft grammar (first claimed by this spec).
-`data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Unrecognised fx values →
-**skip-with-reason** per class (Rule 4) — never silent, never a guess. The converter lift is
-DEFINED but NOT BUILT; the grammar is stable so drafts authored today clone when it ships.
+`data-sgs-scroll-*` is deliberately left UNCLAIMED (§11.1). Cloning is owned by Spec 47: it writes
+the sampled entrance duration, delay and distance to the `sgs-fx` settings
+(`scripts/computed-route/lib/entrance.mjs`). No route reads `data-sgs-fx-*` from a draft today.
 
 ## 5. Functional requirements (with done-criteria)
 
@@ -1618,70 +1575,52 @@ taxonomy table, not in this list** — this section is infrastructure only:
 - **FR-38-21 — per-effect editor-canvas story (§9).**
   *Done when:* every roster effect has a row and its implemented story matches it.
 - **FR-38-22 — cloning contract defined (§11).**
-  *Done when:* grammar + skip-with-reason rule are in-spec; converter work is explicitly
-  MAPPED to a later stage (Spec 31 attr-routing extension), not silently dropped.
+  *Done when:* the grammar is in-spec; cloning of entrances is owned by Spec 47.
 - **FR-38-23 — DB seeding (§6).**
   *Done when:* the seeder + reseed-guard exist and a full `/sgs-update` rebuild reproduces the
   seed byte-identically.
 - **FR-38-24 — verification canaries + budget gates.**
   Tier G adds gate canary pages exercising each effect family (the
-  P-NO-INLINE-GATE-COVERAGE-GAPS obligation: today's canaries never exercise
-  animation-attributed instances); bundle-size budget check wired to prebuild; stretch:
+  no-inline gate must exercise animation-attributed instances); bundle-size budget check wired to prebuild; stretch:
   migrate Tier V motion assets onto the conditional registry.
   *Done when:* each shipped effect family has a canary URL the gates exercise; prebuild
   fails on budget breach — breach = **>20% over the recorded actuals**
   (`scripts/motion-bundle-baseline.json`); the §4.4 module figures are estimates, and the gate
   compares against the recorded actuals, not the estimates.
 
-## 6. DB seeding plan (R-31-8 — real tables)
+## 6. DB seeding (R-31-8 — real tables)
 
-**Existing:** `animation_tokens` (an unwired registry to EXTEND, not duplicate — `used_by` is
-mostly NULL); `roles` already has `motion`; many `block_attributes` rows carry `role='motion'`;
-`css_property` already uses the `anim:*` pseudo-namespace
-(`anim:duration|easing|preset|parallax|stagger|trigger`); `preset_implications`
-(`effectHover`, 6 values + implied properties) is the registry-shape precedent. **Genuine
-gaps:** no motion capability in `block_capabilities`; no motion `modifier_suffixes`;
-`design_tokens.token_type` CHECK (`colour|font|spacing|size|shadow`) blocks motion tokens
-without a migration. **Out of scope:** the uimax `animations` table lives in a DIFFERENT DB
-(not `sgs-framework.db`) — never cited as seedable here (P-CP-3 caveat). Schema check:
-`python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`.
+- **Effect registry.** `fx_effects` is the single effect registry (one row per effect; columns
+  documented in `.claude/dev-setup.md`), seeded by `scripts/seed-motion-fx-registry.py` and
+  protected by `scripts/db-consistency/check_motion_fx_reseed.py`, so the seed survives
+  `/sgs-update` rebuilds. `scripts/generate-fx-effects-php.py` writes
+  `includes/generated-fx-effects.php` from it. Membership is
+  `SELECT effect, tier FROM fx_effects`.
 
-Seeding (all via an idempotent editorial seeder `scripts/seed-motion-fx-registry.py`, modelled
-on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog, plus a
-`db-consistency/check_motion_fx_reseed.py` guard so the seed survives `/sgs-update` rebuilds):
-
-1. **Effect registry** — new table `fx_effects` (`effect` PK e.g. `pin-scrub`, `tier` V|G,
-   `plugin_set` JSON, `owns_scroll_transform` 0|1 → drives §4.3 exclusion, `reduced_motion`
-   suppress|simplify, `editor_story` end-state|toggle|no-preview). Proposed NEW table —
-   justified because no existing table keys by effect; `animation_tokens` keys by keyframe
-   preset and stays the Tier V preset store.
-
-   > The table also carries an `effect='scroll-smoother'`, `tier='H'`, `scope='site'`,
-   > `plugin_set=[]` row (check:
-   > `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT effect,tier,scope,plugin_set FROM fx_effects WHERE effect='scroll-smoother'"`).
-   > ⛔ **Never delete it** (`DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`). Its
-   > `scope='site'` is a load-bearing NEGATIVE PROOF: it demonstrates by construction that a
-   > site-scoped effect is structurally excluded from every block panel, which is the row's own
-   > acceptance test. A row whose job is to be excluded looks exactly like a dead row to anything
-   > that only counts consumers. Lenis is a SITE setting, never reached via the `data-sgs-fx`
-   > grammar, so it has no per-element `fx_effects` row of its own. No live consumer
-   > (`generate-fx-qualifying-blocks.py`'s structural roster, `fx.js`'s `SHIPPED_EFFECTS`,
-   > `fx-attributes.php`'s `FX_ATTR_MAP`) references this row.
-2. **`block_attributes`** — fx param attrs seeded with `css_property` under a new **`fx:*`**
-   pseudo-namespace (sibling of `anim:*`; aligns with the approved-unbuilt FR-35-6 `anim:*`
-   settings-cluster — the `fx` cluster registers alongside it, never replacing it).
-3. **`block_capabilities`** — new capability values `fx-scrub`, `fx-draggable`, `fx-flip`,
-   `fx-svg` seeded from `supports.sgs.fx.*` declarations by `/sgs-update` (source-derived, so
-   this part lives in the update populator, not the editorial seeder).
-4. **`modifier_suffixes`** — no new rows in v1 (fx params are base-tier; a per-tier fx value is
-   a v2 candidate and would use the EXISTING breakpoint suffixes — never a new vocabulary).
-5. **`animation_tokens`** — reconcile the store: add the missing `fade-up` row (used as a
-   default by 10 blocks but absent), wire `used_by`, and record that Tier G does NOT read this
-   table (it is the Tier V preset store).
-6. **`design_tokens.token_type` migration** — widen the CHECK to admit `motion`
-   (duration/easing tokens) via `migrations/YYYY-MM-DD-motion-token-type.py`; deferred until a
-   seeded motion token is first needed (theme.json `--wp--custom--duration/easing--*` already
-   serve).
+  > The table also carries an `effect='scroll-smoother'`, `tier='H'`, `scope='site'`,
+  > `plugin_set=[]` row (check:
+  > `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT effect,tier,scope,plugin_set FROM fx_effects WHERE effect='scroll-smoother'"`).
+  > ⛔ **Never delete it** (`DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`). Its
+  > `scope='site'` is a load-bearing NEGATIVE PROOF: it demonstrates by construction that a
+  > site-scoped effect is structurally excluded from every block panel, which is the row's own
+  > acceptance test. A row whose job is to be excluded looks exactly like a dead row to anything
+  > that only counts consumers. Lenis is a SITE setting, never reached via the `data-sgs-fx`
+  > grammar, so it has no per-element `fx_effects` row of its own. No live consumer
+  > (`generate-fx-qualifying-blocks.py`'s structural roster, `fx.js`'s `SHIPPED_EFFECTS`,
+  > `fx-attributes.php`'s `FX_ATTR_MAP`) references this row.
+- **`block_attributes`.** The fx param attributes carry `css_property` under the **`fx:*`**
+  pseudo-namespace, a sibling of the `anim:*` pseudo-namespace in `css_property`
+  (`anim:duration|easing|preset|parallax|stagger|trigger`); the `fx` cluster registers
+  alongside it, never replacing it. `roles` has `motion`; `preset_implications` (`effectHover`)
+  is the registry-shape precedent.
+- **`animation_tokens`** is the Tier V preset store; Tier G does not read it.
+- **`design_tokens.token_type`** allows only colour, font, spacing, size and shadow, so there is
+  no `motion` type: motion tokens use theme.json `--wp--custom--duration--*` and
+  `--wp--custom--easing--*`.
+- **`modifier_suffixes`:** no fx rows. fx params are base-tier; a per-tier fx value would use the
+  EXISTING breakpoint suffixes, never a new vocabulary.
+- **Out of scope:** the uimax `animations` table lives in a DIFFERENT DB (not
+  `sgs-framework.db`) and is never cited as seedable here.
 
 > **The fx-qualifying roster is JS-only.** `src/blocks/extensions/generated-fx-qualifying-blocks.json`
 > gates which effects appear in a given block's editor picker (§7) — `fx.js` imports it. There is
@@ -1778,10 +1717,12 @@ that "nothing touches the header now" — that is the argument, not the evidence
 | Carousel loop (FR-38-26) | **The un-looped track.** Cloning of leading/trailing items happens in the block's frontend `view.js`; the canvas shows the real items only, which is also exactly what a no-JS visitor sees. ⚠ *Reasoned, not observed.* |
 | Physics canvas (FR-38-27) | **Children static in their authored positions** — the same state reduced motion produces (§10). Draggable/Inertia/Physics2D are frontend-only. ⚠ *Reasoned, not observed.* |
 | Magnetic pull (FR-38-30) | **Static — no displacement.** The element renders undisplaced, exactly the no-JS/reduce state; a document-level listener drives the effect, and the editor canvas is an iframe the `sgs/nav-bar-menu` `magnet.js` precedent already never runs pointer tracking inside. Notice: "Magnetic pull previews on the live site." ⚠ *Reasoned by mechanism, not observed in-editor.* |
-| Flowing gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The flowing gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
-| Progress connector (FR-38-35) | **The connector at rest — drawn, but not filling.** The canvas shows the SVG in place with progress at its `initial-value: 0`; neither driver runs in-canvas (the native one needs a real scroll timeline the editor iframe does not provide, and `view.js` is frontend-only — the magnet/trail precedent). The `ToggleControl`'s own help text names the limit: *“Previews on the live site only.”* ⚠ *Reasoned by mechanism; the editor has been observed for CONTROL PRESENCE only — the resting-state appearance in-canvas has not had Bean's eye (R-31-13).* |
+| Wave gradient (FR-38-31, Tier W) | **The CSS fallback layer**, exactly what a no-WebGL visitor sees on the frontend — the render layer's editor-parity guard does not boot a canvas WebGL context in a ServerSideRender/REST render (same reasoning as the surface-treatment row above), so the canvas shows the honest degraded state rather than a blank. A panel Notice names this: *"The wave gradient previews on the live site. Visitors without WebGL, and the editor canvas, see the static fallback."* |
+| Progress connector (FR-38-35) | **The connector at rest — drawn, but not filling.** The canvas shows the connector in place with progress at its `initial-value: 0`; `view.js` is frontend-only, so the fill does not run in-canvas (the magnet/trail precedent). The `ToggleControl`'s own help text names the limit: *“Previews on the live site only.”* ⚠ *Reasoned by mechanism; the editor has been observed for CONTROL PRESENCE only — the resting-state appearance in-canvas has not had Bean's eye (R-31-13).* |
 | Cursor grid-dot field (FR-38-33) | **A static resting lattice** — the CSS radial-gradient preview shows the dots at rest in their grid, not a live effect. **NOT a live preview:** the render filter that produces the live tracking canvas never runs in the editor (the magnet/trail precedent), so the pointer-lean/ease-back behaviour is invisible in-canvas; only the resting grid is honest to show. |
-| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* Editor controls: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** sit behind the ToolsPanel menu alongside Reset all; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)". The panel is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. ⛔ **Verification covers the EDITOR SURFACE only** — the picker, presets and Notice render without error. The frontend trail's visual quality and legibility has not had Bean's eye per R-31-13; that remains an OPEN verification item. |
+| Generative background (Tier W, `generative-background`) | **The CSS fallback layer** (the static gradient), exactly what a no-JS or no-WebGL visitor sees on the frontend. |
+| Lottie player (Tier H) | **The poster / first frame, no playback** (editor story no-preview). |
+| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* Editor controls: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** sit behind the ToolsPanel menu alongside Reset all; a bundle notice states the effect's recorded size against the 50 KB budget. The panel is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. ⛔ **Verification covers the EDITOR SURFACE only** — the picker, presets and Notice render without error. The frontend trail's visual quality and legibility has not had Bean's eye per R-31-13; that remains an OPEN verification item. |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -1809,9 +1750,11 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Physics canvas (FR-38-27) | **SIMPLIFY — disable the physics, never the content.** Under `reduce` no Draggable/Inertia/Physics2D is created and **the children still render, static, in their authored positions**. "Disables the surface outright" means *disables the motion*, not *removes the content*: hiding decorative children a client placed deliberately would be the `degrade-to-more-content-never-less` failure. ⚠ This reading is flagged for Bean's confirmation. |
 | Carousel loop (FR-38-26) | **Suppress-equivalent:** the correction is an instantaneous `scrollLeft` write, never a tween, so there is nothing for `prefers-reduced-motion` to gate directly. The one remaining hardcoded `'smooth'` case (google-reviews autoplay) is correctly gated by an early return. |
 | Magnetic pull (FR-38-30) | **SUPPRESS — no listener attaches at all.** Under `reduce`, `fx-magnet.js` never attaches its document-level listener, so the element simply never displaces — this is also the exact no-JS state, so there is one code path, not two that could drift apart. Deliberately differs from cursor-field's SIMPLIFY (§3.3 FR-38-30 body has the full reasoning): a resting cursor-field is a legitimate finished PAINT, but a magnet's "resting" position is just the undisplaced layout position, which is what suppression already produces — there is no separate "simplified but still present" state to build. |
-| Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
-| Progress connector (FR-38-35) | **SIMPLIFY — the line renders FULLY FILLED, never empty.** Under `reduce` the block's stylesheet forces `--sgs-timeline-fill-progress: 1` plus `animation: none` (required — an animation outranks a plain declaration in the cascade), and `view.js` returns before attaching a listener. Stated ONCE in the stylesheet rather than in either driver, so it holds identically on both and there is no second code path to drift. ⛔ **Note the direction:** an EMPTY line would misrepresent a journey as not yet begun, and the block's own existing convention is “show the end state, skip the animation” (`view.js` reveals all entries under reduce). This is `degrade-to-more-content-never-less` applied to a progress indicator. Deliberately unlike FR-38-32/33's SUPPRESS: a connector has a legitimate finished state to rest AS, whereas a pointer trail does not. |
+| Wave gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
+| Progress connector (FR-38-35) | **SIMPLIFY — the line renders FULLY FILLED, never empty.** Under `reduce` the block's stylesheet shows the line fully filled, and `view.js` returns before attaching a listener. ⛔ **Note the direction:** an EMPTY line would misrepresent a journey as not yet begun, and the block's own existing convention is “show the end state, skip the animation” (`view.js` reveals all entries under reduce). This is `degrade-to-more-content-never-less` applied to a progress indicator. Deliberately unlike FR-38-32/33's SUPPRESS: a connector has a legitimate finished state to rest AS, whereas a pointer trail does not. |
 | Cursor grid-dot field (FR-38-33) | **SUPPRESS — no instance, no canvas, no listener.** No JS is created under `reduce`; dots resting at cell centres is the same no-JS/reduce state, one code path (the FR-38-32 pattern, measured). |
+| Generative background (Tier W, `generative-background`) | **SIMPLIFY — draw exactly one frame and stop** (no loop), the same contract as the wave gradient. |
+| Lottie player (Tier H) | **SUPPRESS — never loads the player.** The reduced-motion check runs before the dynamic import, so a `reduce` visitor loads zero player bytes; the poster stays. |
 | Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js::boot` (the `if ( prefersReducedMotion() ) { return; }` gate) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
@@ -1830,15 +1773,12 @@ custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` �
 ### 11.2 Grammar (attr-per-property — converter-suffix-compatible)
 
 ```
-data-sgs-fx="<effect>"            e.g. pin-scrub | scrub | horizontal-panel | split-reveal |
-                                       scramble | flip | draggable | draw | morph | motion-path |
-                                       image-sequence | magnet (FR-38-30) |
-                                       particles (FR-38-32) |
-                                       cursor-grid (FR-38-33) |
-                                       particle-repel (FR-38-34 — NOT BUILT)
-                                  ⚠ `particle-repel` is a RESERVED NAME, not a shipped effect.
-                                    It is listed here because this project's practice is to claim
-                                    the grammar slot when the effect is specified, so a draft
+data-sgs-fx="<effect>"            the value is an `fx_effects.effect` row
+                                  (`SELECT effect FROM fx_effects`); the per-effect params below
+                                  are the `fx:*` rows in `block_attributes`.
+                                  ⚠ `particle-repel` (FR-38-34) is a RESERVED NAME, not a shipped
+                                    effect. It is listed here because this project's practice is to
+                                    claim the grammar slot when the effect is specified, so a draft
                                     author cannot pick a colliding name. No emit path exists.
 data-sgs-fx-trigger="<value>"     load | scroll | hover (per-effect enum)
 data-sgs-fx-start / -end          scroll range (viewport-relative, e.g. "top 80%")
@@ -1892,13 +1832,15 @@ data-sgs-fx-disable-tablet="true" / data-sgs-fx-disable-mobile="true"
                                    `fxDisableTablet` / `fxDisableMobile`.
 ```
 
-> **`flowing-gradient` (FR-38-31) is deliberately ABSENT from the `data-sgs-fx="<effect>"` enum
-> above.** This is consistent with §1.2b's Tier W cloning statement, not an oversight: a Tier W
-> effect is "permanently unclonable" from computed CSS and is DECLARED via a BEM signal resolved
-> to a block attribute rather than authored through the `data-sgs-fx*` draft grammar — the same
-> status `surface-treatment` (FR-38-29) already has, and it is likewise absent from this enum.
-> ⚠ The exact BEM signal / block attribute name for `flowing-gradient` is not yet confirmed
-> against source; record it here once confirmed rather than guessing a name.
+> **The Tier W effects are fx effects, but are not hand-authored in drafts.** `surface-treatment`
+> (FR-38-29), `wave-gradient` (FR-38-31) and `generative-background` are `fx_effects` rows; their
+> render layer (`plugins/sgs-blocks/includes/fx-surface-treatment.php`,
+> `plugins/sgs-blocks/includes/fx-wave-gradient.php`,
+> `plugins/sgs-blocks/includes/fx-generative-background.php`) stamps `data-sgs-fx="<effect>"` and
+> the effect's params (`data-sgs-fx-treatment*`, `data-sgs-fx-wave-*`, `data-sgs-fx-gen-*`) from
+> block attributes (`fxTreatment*`, `fxWave*`, `fxGen*`). A Tier W effect is "permanently
+> unclonable" from computed CSS (§1.2b): it is declared through those block attributes, never
+> inferred.
 
 > **`fxPreset` is deliberately NOT part of this grammar.** It is a real, seeded `block_attributes`
 > row (`fx:preset`) and a real client-facing control (the §7 intensity-preset layer) — but a
@@ -1963,17 +1905,18 @@ media-library pickers for `custom`), and both `motion-path` and `morph` present 
 `src/blocks/extensions/fx.js`, not declared per block in any `block.json`.
 
 One effect per element in v1 (a draft needing two composes wrapper elements). Attr-per-property
-(NOT a JSON blob) because: the Spec 31 suffix grammar clones it (base attr + suffix — the same
-`{base}{Param}` shape as tiers/states, §3.A steps 4/4a); the registry's render-time sniff is a
-cheap prefix scan; pattern authors can hand-write it.
+(NOT a JSON blob) because: the `{base}{Param}` shape matches the tier/state suffix
+vocabulary; the registry's render-time sniff is a cheap prefix scan; pattern authors can
+hand-write it.
 
-### 11.3 Converter mapping (defined; the lift is NOT BUILT)
+### 11.3 Cloning mapping
 
-Each `data-sgs-fx*` attr maps 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
+Each `data-sgs-fx*` attr corresponds 1:1 to a block fx attr (`fx`, `fxTrigger`, `fxStart`, `fxEnd`,
 `fxHold`, `fxScrub`, `fxStagger`, `fxDuration`, `fxEase`, `fxPin`, `fxShape`, `fxPath`,
 `fxParticlePreset`, `fxParticleDensity`, `fxParticleSize`,
-`fxMagnetAxis`, `fxMagnetRadius`, `fxMagnetStrength` — seeded in `block_attributes` under `fx:*`,
-§6.2). `fxPin` is IMAGE-SEQUENCE-only. `fxMagnetAxis`/`fxMagnetRadius`/
+`fxMagnetAxis`, `fxMagnetRadius`, `fxMagnetStrength`; the authority is
+`SELECT DISTINCT attr_name FROM block_attributes WHERE attr_name LIKE 'fx%'`).
+`fxPin` is IMAGE-SEQUENCE-only. `fxMagnetAxis`/`fxMagnetRadius`/
 `fxMagnetStrength` are MAGNET-only (FR-38-30).
 
 These attrs are seeded in `block_attributes` under `fx:*` — verify with
@@ -1990,11 +1933,12 @@ child's entrance, changing the choreography's feel in order to fix its ending. D
 `standard` = 33% of the pin. It applies to PINNING effects only (`fx_effects.pins = 1`); a
 non-pinning effect has no "afterwards" to hold.
 
-The converter lift is an extension of the Spec 31 §3.A dispatch (a routing-unit class alongside
-CSS decls + content), mapped to a named later stage — NOT BUILT. **Skip-with-reason (Rule 4):**
-an unrecognised `data-sgs-fx` value, an fx on an element whose resolved block declares no fx
-attrs, or a param outside its enum is reported per class in the conversion report
-(`skipped: fx <value> — <reason>`) — never silent, never coerced.
+Cloning is owned by Spec 47 (computed route). Spec 47 writes the sampled entrance duration,
+delay and distance to the `sgs-fx` settings (`scripts/computed-route/lib/entrance.mjs`); no
+surface reads explicit `data-sgs-fx-*` attributes from a draft today, so the grammar above is the
+draft-authoring contract only. **Skip-with-reason:** an unrecognised `data-sgs-fx` value, an fx on
+an element whose resolved block declares no fx attrs, or a param outside its enum is reported as
+skipped with a reason, never silent, never coerced.
 
 ### 11.4 Draft-authoring note
 
@@ -2029,10 +1973,10 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
   is a one-line `wp:pattern` reference, so the rendered header comes from
   `theme/sgs-theme/patterns/framework-header-default.php`. Editing the stored template part does
   not change what renders.
-- **Spec 31** — cloning contract extension point (§11.3); "Tier 1/2" naming collision avoided
+- **Spec 47** — the computed route owns cloning (§11.3); "Tier 1/2" naming collision avoided
   (§1.5). **Spec 32** — no-inline contract binds all fx CSS output. **Spec 35** — inspector
-  standard (§7); `fx` settings-cluster registers alongside the approved-unbuilt FR-35-6
-  `anim:*` cluster. **Spec 37** — this spec proposes no change to the header system; Spec 37
+  standard (§7); `fx` settings-cluster registers alongside the `anim:*` pseudo-namespace in
+  `css_property`. **Spec 37** — this spec proposes no change to the header system; Spec 37
   FR-37-40 is untouched, and its live verification is a regression check against changed scroll
   timing.
 - **npm dependencies introduced by this spec:** `gsap` (Tier G) and `lenis` (Tier H).
@@ -2040,8 +1984,5 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
   bytes of either.
  **Spec 02 §Animation** — the Tier V baseline this spec bounds (its performance budget
   unchanged; parallax shipped).
-- **Parking:** P-TIMELINE-ADVANCED-VISUAL-EFFECTS (first
-  ScrollTrigger-scrub client use-case — the `sgs/timeline` progressive fill lands as an
-  FR-38-7 consumer), P-NO-INLINE-GATE-COVERAGE-GAPS (FR-38-24 canary obligation),
-  P-DRAWER-BURGER-MORPH-SYNC + P-DRAWER-TRIGGER-ANCHOR-JS (out of scope, Tier V).
+- **First ScrollTrigger-style client use:** the `sgs/timeline` progressive fill (FR-38-35).
 - **Policy:** no block version bumps and no `deprecated.js` before production.
