@@ -255,14 +255,14 @@ Results, run records and counts moved out of Spec 47 section 5. Spec 47 section 
        border WIDTH (where an unset side SHOULD be 0) and for the `var()` holdouts. The gate is
        `plugins/sgs-blocks/scripts/migrate-box-longhands.py --check` (in `gates.json`, a baseline ratchet, now 0).
        **The route's half:** `lib/resolve.mjs::seedSides` seeds unset sides only for a border width (the one box
-       that still prints 0 for an unset side); padding and margin boxes are written one side alone. Live proof: `plugins/sgs-blocks/scripts/qa/check-box-longhands-live.mjs`
-       (18/18) and `check-box-longhands-blocks-live.mjs` (30/30), both of which read `40 0 0 0` on the old code.
+       that still prints 0 for an unset side); padding and margin boxes are written one side alone. Live proof, 2026-10-07: a live page check passed 18/18 and
+       a per-block live check passed 30/30, both of which read `40 0 0 0` on the old code.
        **Phase 2** (plan table): P2-d done (`google-reviews` padding prints set sides; `sgs_border_box_decls` holds no
        padding) and P2-f done (the behavioural analyser derives `sgs_box_object_longhands`' property from the call's
        literal, so the five CR6 classification overrides are gone). **P2-a and P2-c done and verified live
        2026-10-07:** corner radius prints only the corners a client set (`sgs_corner_object_longhands`), page and
        editor, across every block that wires the shared border panel's radius, and the media atoms emit one property
-       per side or corner (`check-box-corners-blocks-live.mjs` 42/42). The route needs no change for corners:
+       per side or corner (a per-block live check, 42/42). The route needs no change for corners:
        `lib/resolve.mjs::radiusWrite` already writes all four corners per tier. No block reads WordPress's native
        `style.border` any more (P2-g step 0). P2-b (the `var()` holdouts) and P2-h are done and live 2026-10-08: the route seeds only a border width's unset sides
        (`lib/resolve.mjs::seedSides`). P2-g is done and live 2026-10-08: every client border builds through
