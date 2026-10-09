@@ -189,20 +189,6 @@ CREATE TABLE indexed_files (
             last_indexed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
--- table: library_runtime_signals
-CREATE TABLE library_runtime_signals (
-            id            INTEGER PRIMARY KEY AUTOINCREMENT,
-            library_name  TEXT NOT NULL,
-            signal_type   TEXT NOT NULL
-                CHECK(signal_type IN (
-                    'html_body_class', 'wrapper_class_prefix', 'canvas_attr_prefix'
-                )),
-            aliases       TEXT NOT NULL,
-            confirms      TEXT NOT NULL,
-            notes         TEXT,
-            created_at    TEXT DEFAULT (datetime('now'))
-        );
-
 -- table: markup_examples
 CREATE TABLE markup_examples (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -387,9 +373,6 @@ CREATE INDEX idx_hooks_source ON hooks(source);
 
 -- index: idx_hooks_type
 CREATE INDEX idx_hooks_type ON hooks(hook_type);
-
--- index: idx_library_runtime_signals_library_name
-CREATE UNIQUE INDEX idx_library_runtime_signals_library_name ON library_runtime_signals(library_name);
 
 -- index: idx_motion_shape_signatures_preset_slug
 CREATE UNIQUE INDEX idx_motion_shape_signatures_preset_slug ON motion_shape_signatures(preset_slug);
