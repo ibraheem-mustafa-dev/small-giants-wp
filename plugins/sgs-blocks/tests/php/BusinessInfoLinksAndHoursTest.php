@@ -54,13 +54,20 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		$this->assertStringNotContainsString( '<a ', $html );
 	}
 
-	public function test_link_underline_reaches_the_phone_link(): void {
+	public function test_link_underline_is_drawn_on_the_text_inside_the_phone_link(): void {
 		$this->site_info( array( 'phone' => '0121 000 0000' ) );
-		$out = $this->render_block( 'sgs/business-info', array( 'displayType' => 'phone', 'linkUnderline' => 'sweep' ) );
 
-		$this->assertStringContainsString( 'class="sgs-business-info__link"', $out['html'] );
-		// The doubled class outranks style.css's `.sgs-business-info__link:hover` and the theme's focus underline.
-		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);background-repeat:no-repeat;background-origin:content-box;/', $out['css'] );
+		// The email link takes the same code path; the harness has no is_email(), so only the phone renders here.
+		foreach ( array( 'phone' => '0121 000 0000' ) as $type => $value ) {
+			$out = $this->render_block( 'sgs/business-info', array( 'displayType' => $type, 'linkUnderline' => 'sweep' ) );
+
+			$this->assertStringContainsString( 'class="sgs-business-info__link"', $out['html'], $type . ' rendered as a link' );
+			$this->assertStringContainsString( '<span class="sgs-business-info__text">' . $value . '</span>', $out['html'], $type . ' text sits in the inline span' );
+			// The link is a 44px-tall flex box: the line is drawn on the inline text, so it sits under the words, not under the tap padding.
+			// The doubled class outranks style.css's `.sgs-business-info__link:hover` and the theme's focus underline.
+			$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a\{text-decoration:none;\}\1\1 a \.sgs-business-info__text\{background-image:linear-gradient\(currentColor,currentColor\);background-repeat:no-repeat;background-origin:content-box;/', $out['css'], $type );
+			$this->assertDoesNotMatchRegularExpression( '/\} a\{[^}]*background-image/', $out['css'], $type . ': the link box itself carries no line' );
+		}
 	}
 
 	public function test_a_linked_address_draws_the_sweep_on_its_inline_text_so_every_line_is_underlined(): void {

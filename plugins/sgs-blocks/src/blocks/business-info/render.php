@@ -165,7 +165,7 @@ switch ( $display_type ) {
 		$phone_raw = (string) Sgs_Site_Info::get( 'phone', '' );
 		if ( '' !== $phone_raw ) {
 			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
-			$inner    = $icon_html( 'phone' ) . $label_html( Sgs_Site_Info::get_esc_html( 'phone' ) );
+			$inner    = $icon_html( 'phone' ) . $label_html( '<span class="sgs-business-info__text">' . Sgs_Site_Info::get_esc_html( 'phone' ) . '</span>' );
 			// Always a link — there is no use case for an unclickable phone
 			// number.
 			$html = sprintf(
@@ -183,7 +183,7 @@ switch ( $display_type ) {
 	case 'email':
 		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
 		if ( '' !== $email_raw && is_email( $email_raw ) ) {
-			$inner = $icon_html( 'mail' ) . $label_html( Sgs_Site_Info::get_esc_html( 'email' ) );
+			$inner = $icon_html( 'mail' ) . $label_html( '<span class="sgs-business-info__text">' . Sgs_Site_Info::get_esc_html( 'email' ) . '</span>' );
 			// Always a link — there is no use case for an unclickable email
 			// address.
 			$html = sprintf(
@@ -652,9 +652,11 @@ if ( $border['base'] ) {
 // How the block's links are underlined (phone, email, a linked address).
 // The doubled class (0,2,1) outranks style.css's `.sgs-business-info__link:hover`
 // and the theme's link focus underline (0,2,0); the attribution credit draws its
-// own sweep, so only the phone, email and address links take this setting.
+// own sweep, so only the phone, email and address links take this setting. The link is a
+// 44px-tall flex box, so the line is drawn on the inline text span inside it: it sits under
+// the text (like any other footer link) and follows every wrapped line.
 $sgs_bi_link_underline = in_array( $display_type, array( 'phone', 'email', 'address' ), true )
-	? sgs_link_underline_css( $attributes, '', $root_sel . $root_sel, 'address' === $display_type ? ' .sgs-business-info__text' : '' )
+	? sgs_link_underline_css( $attributes, '', $root_sel . $root_sel, ' .sgs-business-info__text' )
 	: '';
 if ( '' !== $sgs_bi_link_underline ) {
 	$scoped_css[] = $sgs_bi_link_underline;
