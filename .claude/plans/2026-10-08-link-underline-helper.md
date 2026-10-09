@@ -42,15 +42,16 @@ are sweep-only by decision and lists of links are not the running-text case WCAG
 links in paragraphs to Always.
 
 Open, each for a later batch:
-- **Multi-line linked address (code `2b2204129`, not yet deployed or read live):** the link is a flex box, so the sweep
-  now lives on an inline `.sgs-business-info__text` span inside it (`sgs_link_underline_css`'s optional `$paint`
-  argument) and follows every wrapped line. Open: deploy, then read the two-line address at 375 / 768 / 1440.
-- **Maps link field (code `41ce51659`, not yet deployed or read live):** Site Info has a `maps_url` field ("Google Maps
-  link"). `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key( 'address' )` is the one rule
-  (Maps link, else Maps CID, else a Maps search for the address) and `sgs/business-info`'s linked address calls it, so it
-  no longer falls back to `socials.google`, which may hold a review link. Open: deploy, set Eye Care's `maps_url` in
-  Site Info (it has no Maps CID, so its footer address would otherwise link to a Maps search), then read the footer
-  address href live.
+- **Multi-line linked address (code `2b2204129`, live on eye-care-test, read 2026-10-09):** the link is a flex box, so
+  the sweep lives on an inline `.sgs-business-info__text` span inside it (`sgs_link_underline_css`'s optional `$paint`
+  argument) and follows every wrapped line. Read at 375, 768 and 1440: two line fragments, `0px 1px` at rest, `100% 1px`
+  on hover, and a pixel scan finds the line under both lines.
+- **Maps link field (code `41ce51659`, live on eye-care-test, read 2026-10-09):** Site Info has a `maps_url` field
+  ("Google Maps link"). `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key( 'address' )` is
+  the one rule (Maps link, else Maps CID, else a Maps search for the address) and `sgs/business-info`'s linked address
+  calls it, so it no longer falls back to `socials.google`, which may hold a review link. Eye Care's `maps_url` is set
+  to its Google share link and the footer address links to it. Open: sandybrown and the other sites get the field when
+  next deployed; open the Eye Care link once in a browser to confirm it lands on the listing, not a review form.
 - **Batch 2:** `icon-list` and `sgs/button` link style already sweep through `utilities.css`
   (`:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label)`); adopting the control there means
   retiring those selectors so one element never has two sweeps.
