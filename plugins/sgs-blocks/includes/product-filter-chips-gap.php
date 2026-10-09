@@ -25,7 +25,6 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 const SGS_CHIP_GAP_BLOCK_NAME = 'woocommerce/product-filter-chips';
-const SGS_CHIP_GAP_ATTR       = 'sgsChipGap';
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_inject_chip_gap', 10, 2 );
 
@@ -78,7 +77,7 @@ function sgs_inject_chip_gap( $block_content, $block ) {
 	if ( SGS_CHIP_GAP_BLOCK_NAME !== ( $block['blockName'] ?? '' ) ) {
 		return $block_content;
 	}
-	$value = $block['attrs'][ SGS_CHIP_GAP_ATTR ] ?? null;
+	$value = $block['attrs']['sgsChipGap'] ?? null;
 	if ( ! is_array( $value ) ) {
 		return $block_content;
 	}

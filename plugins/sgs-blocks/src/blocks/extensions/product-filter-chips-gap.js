@@ -18,6 +18,8 @@ import { __ } from '@wordpress/i18n';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
 import SgsLengthControl from '../../components/SgsLengthControl';
 import { resolveResponsiveTier } from '../../utils/responsive';
+import { usePreviewTier } from '../../utils/usePreviewTier';
+import './product-filter-chips-gap.scss';
 
 /** Only WooCommerce's attribute filter chips block carries this control. */
 const TARGET_BLOCK_NAME = 'woocommerce/product-filter-chips';
@@ -105,4 +107,25 @@ if ( ! window.__sgsChipGapRegistered ) {
 		'sgs/product-filter-chips-gap/controls',
 		withChipGapControl
 	);
+	/**
+	 * Editor preview on the chips block: the gap of the tier the canvas previews, as the custom property
+	 * product-filter-chips-gap.scss reads (custom properties only: Spec 32 forbids inline declarations; the
+	 * front end gets its scoped rule from includes/product-filter-chips-gap.php).
+	 */
+	const withChipGapPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
+		const tier = usePreviewTier();
+		const { attributes, name } = props;
+		const gap = TARGET_BLOCK_NAME === name && attributes ? resolveResponsiveTier( attributes.sgsChipGap || {}, tier ).value : '';
+		if ( ! gap ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			className: [ props.wrapperProps?.className, 'sgs-chip-gap-preview' ].filter( Boolean ).join( ' ' ),
+			style: { ...( props.wrapperProps?.style || {} ), '--sgs-chip-gap': gap },
+		};
+		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
+	}, 'withChipGapPreview' );
+
+	addFilter( 'editor.BlockListBlock', 'sgs/product-filter-chips-gap/preview', withChipGapPreview );
 } // end guard: window.__sgsChipGapRegistered

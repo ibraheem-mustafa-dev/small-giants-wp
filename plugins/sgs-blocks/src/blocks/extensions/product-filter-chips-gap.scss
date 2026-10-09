@@ -1,0 +1,6 @@
+// Editor-canvas preview for the chip gap extension (product-filter-chips-gap.js).
+// The front-end rule is emitted per instance by includes/product-filter-chips-gap.php;
+// this mirrors it for the tier the editor is previewing.
+.sgs-chip-gap-preview .wc-block-product-filter-chips__items {
+	gap: var(--sgs-chip-gap);
+}
