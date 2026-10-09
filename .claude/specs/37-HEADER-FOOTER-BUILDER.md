@@ -1,18 +1,18 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.7.0
+spec_version: 1.8.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
 authors: [Claude Code, Bean]
-last_verified: 2026-09-26
+last_verified: 2026-10-09
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
   - .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md
-  - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
+  - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
   - .claude/plans/archive/2026-07-18-P1-architecture-decision-header-footer-nav.md
   - .claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md
@@ -69,7 +69,7 @@ what exists and nobody assumes something works because a similar-sounding file e
 |---|---|
 | Everything inside the nav (menus, dropdowns, mega panels, drawer contents) | **Spec 36** |
 | The `sgs_form` and `sgs_choice_flow` CPTs | Specs 42 / 43 |
-| Header/footer clone walker | Spec 33 Part 2 |
+| Header/footer drafts | Spec 47 (computed route) |
 | Site Info store (`sgs_site_info`) + the `sgs/site-info` binding source | **Spec 36** — FR-36-23 already names `sgs/business-info` "the Site-Info source of truth" |
 | The shared header/footer element blocks — cart, search, social, logo, business-info | **Spec 36** FR-36-19…23 |
 | Block styling/serialisation contract | Spec 32 |
@@ -160,8 +160,7 @@ short-circuit boundary must distinguish "I produced output" from "I tried".
 ### 3.1 Header — three named rows
 
 Three fixed, optional, named rows. Fixed-and-named (not arbitrary N) because it is
-predictable for a non-coder, and because the cloning converter needs a deterministic target
-to map a scraped header into.
+predictable for a non-coder, and because a fixed shape gives Spec 47's route a deterministic target.
 
 | Slot | Purpose | Default layout |
 |---|---|---|
@@ -182,8 +181,8 @@ to map a scraped header into.
 Both row blocks (`sgs/site-header-row`, `sgs/site-footer-row`) carry a `layout` attribute
 (`flex` | `grid`), a per-device `columns` count and a per-device `gridTemplateColumns`. The two
 modes are explicit and intentional, and a row defaults to one of them per slot (§3.1/§3.2). The per-slot default is
-SEEDED, not a block default: `site-footer/edit.js::TEMPLATE` and every footer starter pattern except the blank
-`footer-scratch.php` write `layout` on each row (`top` and `bottom` `flex`, `columns` `grid`), while `site-footer-row/block.json::attributes.layout` defaults to
+SEEDED, not a block default: `plugins/sgs-blocks/src/blocks/site-footer/edit.js::TEMPLATE` and every footer starter pattern except the blank
+`footer-scratch.php` write `layout` on each row (`top` and `bottom` `flex`, `columns` `grid`), while `plugins/sgs-blocks/src/blocks/site-footer-row/block.json::attributes.layout` defaults to
 `grid` and `site-header-row`'s to `flex`. A footer row built outside the starters (a clone or a hand-written tree) must
 write `layout` itself; a `bottom` row left on the block default renders as a grid and ignores `justifyContent`, which
 the inspector offers only in Cluster mode (FR-37-33):
@@ -219,7 +218,7 @@ is a **build opportunity, not a reason to avoid the design**.
 
 **Binding constraints on the build:**
 - The picker writes the **EXISTING** `gridTemplateColumns` attribute (object, per-device) —
-  **no new stored shape**, so the converter round-trips unchanged (the FR-37-28 preset rule).
+  **no new stored shape**, so the attribute layer is unchanged (the FR-37-28 preset rule).
 - **The count remains the default control.** The shape picker is the second, optional step —
   a client who just wants "4 columns" never meets it.
 - Per-device, like the count, and it **still stacks to 1 column on mobile automatically** —
@@ -229,12 +228,7 @@ is a **build opportunity, not a reason to avoid the design**.
 - Shapes are expressed in `fr` (plus `auto` for the `fit-centre` shape), not px, so they stay
   fluid (the reference's `340px 680px 340px` is ≈ `1fr 2fr 1fr`).
 
-**Status:** `PARTIAL` — `plugins/sgs-blocks/src/components/ColumnShapePicker.js::ColumnShapePicker` is mounted in
-`sgs/site-footer-row`, `sgs/site-header-row` and `sgs/container` `edit.js` (the container reaches it
-through `container/components/LayoutPanel.js` with `enableColumnShapePicker`), and emits
-`1fr auto 1fr` for the `fit-centre` shape. Verification on a live site and Bean's eye check are
-owed. Verify the mounts with
-`git grep -n "ColumnShapePicker" -- plugins/sgs-blocks/src/blocks`.
+**Status:** see FR-37-42 (the picker's home).
 
 An operator may change a row's `layout`. The picker gives a non-coder a control in place of the raw
 `gridTemplateColumns` string, and gives the header row the same grid capability as the footer row —
@@ -274,7 +268,7 @@ The three rows are **seeded and locked by the parent container**, not created by
   validator here would be a second guard overlapping a working one — forbidden by
   `~/.claude/rules/prove-the-cause-before-fix.md`.
 
-**What the converter gets:** a deterministic target — `sgs/site-header > sgs/site-header-row`
+**Fixed shape:** a deterministic target — `sgs/site-header > sgs/site-header-row`
 with `rowSlot` ∈ {`top`,`middle`,`bottom`}, and the footer equivalent with `columns` in place of
 `middle`. Fixed count, fixed identity, fixed order, no duplicate handling required (FR-37-22).
 
@@ -302,8 +296,8 @@ Concretely:
   never-overflow, behaviours, and the per-device cascade (§3.8).
 
 **Why freeform.** A hard `allowedBlocks` lock breaks two standing rules. (1) R-31-9
-universality — the cloning pipeline must place whatever a draft actually contains; a locked
-palette turns any unlisted element into an unfixable clone failure. (2) It fights the
+universality — any SGS block must be placeable in a row; a locked
+palette turns any unlisted element into an unfixable gap. (2) It fights the
 framework's own composability, where any SGS block may nest in any container. The non-coder
 benefit a palette would give is delivered by steering (starter templates + promoted palette), and
 costs nothing on the day an operator needs something unusual.
@@ -353,8 +347,8 @@ The contract is independent of the editing home:
 Every element in both containers MUST default
 from two shared sources, never from per-block literals:
 
-1. **Global style tokens** — `theme.json` / `wp_global_styles`, and for cloned sites the
-   Spec 33 `theme-snapshot.json`.
+1. **Global style tokens** — `theme.json` / `wp_global_styles`, and for client sites
+   `sites/<client>/theme-snapshot.json` (Spec 33).
 2. **The Site Info store** — `sgs_site_info` via the `sgs/site-info` bindings source.
 
 A value set once in Site Info renders identically in header and footer with no re-entry.
@@ -470,18 +464,16 @@ free. A drawer post's content is `sgs/nav-drawer` block markup; the block is the
 per page from the active or referenced post, so a duplicate `<dialog id>` cannot occur by
 construction.
 
-**Close chrome crosses the boundary (Wave 3C U-11, D1150).** The drawer post owns its close
+**Close chrome crosses the boundary (U-11, D1150).** The drawer post owns its close
 BEHAVIOUR through Spec 36 FR-36-6: the × is left out only when the drawer is `non-modal`,
 `closeStyle` at that tier is `trigger` and the opening burger is live, and `closeStyle`,
 `closePlacement`, `closeOffset` and `closeRadius` are per-device tier objects. Two consequences on
-this spec's side: (1) stored `sgs_drawer` posts and the seven `drawer-*.php` starter patterns carry
-`closeStyle` as `{desktop: …}` (flat values were migrated on 2026-09-24 with
-`plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py` and
-`plugins/sgs-blocks/scripts/migrate-theme-tier-scalars.py`); (2) a page whose content carries its own
+this spec's side: (1) stored `sgs_drawer` posts and the `drawer-*.php` starter patterns carry
+`closeStyle` as `{desktop: …}`; (2) a page whose content carries its own
 `sgs/nav-drawer` block shows that drawer instead of the Active post (the landmark guard below), so
 a live check of the Active drawer must use a page with no drawer block of its own.
 
-**Status:** `PARTIAL`.
+**Status:** `BUILT`.
 
 **Built:**
 - **Registration** — `Sgs_Block_CPTs::DRAWER_CPT` (`sgs_drawer`), registered from the same shared
@@ -507,7 +499,7 @@ a live check of the Active drawer must use a page with no drawer block of its ow
   drawer, matched on the Active drawer's own `drawerRef` rather than on its mere existence: a burger
   opens by element id, so an Active drawer with a different ref genuinely opens nothing.
 - **Starters** — the `sgs-drawers` pattern category with `sgs/drawer-scratch` ("Start from
-  scratch"), `sgs/framework-drawer-default`, and the seven looks `sgs/drawer-floating-capped-card`,
+  scratch"), `sgs/framework-drawer-default`, and the looks `sgs/drawer-floating-capped-card`,
   `-anchored-card-stack`, `-editorial-ghost-list`, `-centred-statement`, `-solid-brand-light`,
   `-two-column-editorial` and `-split-zone-serif` (`theme/sgs-theme/patterns/drawer-*.php`, keyword
   `featured`). A look is data — block markup carrying the drawer's own attributes and a starting
@@ -637,7 +629,7 @@ admin UI (matches FR-36-3's "reuse the platform, zero bespoke admin screens" rat
 WP caches the pattern list against the theme version, so a new or re-scoped starter pattern needs
 a theme version change before the modal shows it.
 
-**Status:** `BUILT` — the five mega starters exist and are scoped `core/post-content` +
+**Status:** `BUILT` — the mega starters exist and are scoped `core/post-content` +
 `Post Types: sgs_mega_menu`
 (`git grep -l "Post Types: sgs_mega_menu" -- theme/sgs-theme/patterns`). Whether the native modal
 fires on a new `sgs_mega_menu` post has not been re-observed in the editor for this spec (§8).
@@ -792,7 +784,7 @@ content — met — **and** on the Indus test site's header/footer — not yet d
 Four independent header behaviours: **sticky**, **transparent**, **shrink**,
 **hide-on-scroll**. Any combination may be active.
 **Status:** `BUILT + LIVE-VERIFIED`. `sgs/site-header` renders a semantic
-`<header class="sgs-site-header">`; the JS (`plugins/sgs-blocks/src/header-behaviours/view.js::getHeaderEl`) and the
+`<header class="sgs-site-header">`; the JS (`plugins/sgs-blocks/src/header-behaviours/view.js::getHeaderEls`) and the
 shared header-behaviour CSS (`assets/css/header-behaviours.css`) target `header.sgs-site-header`.
 Scroll-down hides the header, scroll-up returns it; there is exactly one banner landmark; the
 `--sgs-header-height` publisher runs; a one-header-per-request guard and editor `<header>` parity
@@ -837,7 +829,7 @@ seeds carry `{"desktop":"on"}`.
 #### FR-37-15 — Behaviours emit scoped CSS, not body classes
 Behaviour styling is emitted as scoped `#uid` rules (including `@media` tiers), per Spec 32. No
 `sgs-header-behaviour-*` body class exists: the only body class `Sgs_Header_Behaviours` emits is
-`sgs-has-header` (the cloning recogniser's page-level marker that a page carries an SGS header; the
+`sgs-has-header` (the page-level marker that a page carries an SGS header; the
 class also enqueues the shared header-behaviour CSS/JS). Scroll-state classes in `view.js`
 (`is-header-scrolled`, `is-header-shrunk`, `is-header-scrolling-down`) are tier-agnostic JS-state
 signals only.
@@ -873,7 +865,7 @@ floating header matches the pill's left and width, and a plain dropdown clamps i
 `--sgs-header-height` is the pinned header's bottom edge, its `top` offset plus its height, which is simply its
 height for every header at `top: 0`; `plugins/sgs-blocks/src/header-behaviours/view.js` publishes it. With no
 float attribute set the emitted CSS is byte-identical to a header without the feature.
-**Float over the page (pass-through, Wave 3C U-14, M-52).**
+**Float over the page (pass-through, U-14, M-52).**
 `plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerPassThrough` is a per-tier tri-state like
 `headerSticky`. At an ON tier the header is `position:fixed` (it takes no space and stays pinned; `top` adds
 `--wp-admin--admin-bar--height`, so a logged-in operator's header is not hidden under the admin bar) and only its
@@ -907,70 +899,29 @@ The header's Animation panel warns that an entrance delays the header's first ap
 3s failsafe shows the header if the observer never plays it. A footer row with
 `fxFooterStagger` on gives its own entrance way to the scroll reveal
 (`plugins/sgs-blocks/includes/animation-attributes.php::sgs_fx_owns_scroll_transform`); blocks inside it keep theirs.
-A reference whose header waits for its own preloader (lamalama, studionamma) is a recorded
+A reference whose header waits for its own preloader is a recorded
 divergence: SGS has no preloader, so the entrance starts at load.
 **Status:** `BUILT + LIVE-VERIFIED` (U-16, 2026-09-26): `node plugins/sgs-blocks/scripts/nav-qa/u16-entrance-probe.mjs`
 on `/qa-entrance/` (fixture `qa-item-markup-fixture.php entrance`) and
 `node plugins/sgs-blocks/scripts/nav-qa/u16-editor-check.mjs`.
 
 #### FR-37-53 — Header and footer furniture blocks
-Wave 3C U-12 shipped six new header/footer furniture blocks plus link-source and style additions on two
-existing blocks, so a client's header or footer top row can carry the small utility elements top-tier
-reference sites use, promoted by the row inserter (FR-37-34) alongside logo/nav/search/cart:
-- **`sgs/local-time`** — a live clock for one time zone: `timeZone`, a `label` + `labelPosition`
-  (`before`/`after`/`above`), `separator`, `hourCycle` (`h12`/`h23`), `showSeconds`, `showPeriod`. Server-rendered
-  so a no-JS or cached page still shows a correct time (`local-time/block.json`).
-- **`sgs/language-switch`** — a hand-set list of language links: `display` (`inline`/`single-link`/`disclosure`),
-  `labelStyle` (`autonym`/`code`/`custom`), `languages` (array), `separator`, `prefixLabel`. Shows the current
-  language via `aria-current`; reads language names/tags through PHP's `intl` extension when available
-  (`language-switch/block.json`). Polylang/WPML as a language-list source is residue, not built.
-- **`sgs/store-selector`** — a trigger button plus a disclosure list of country/store links: `stores` (array),
-  `triggerPrefix`, `panelAlign` (`start`/`end`), `flagSize`. The current store is detected from the visitor's
-  host and path (`store-selector/block.json`).
-- **`sgs/theme-toggle`** — a dark-mode switch or light/dark/auto segmented control, wired to the site's
-  automatic dark palette (`theme.json::settings.custom.dark`): `toggleStyle` (`switch`/`segmented`), `label`,
-  `labelRoll` (`''`/`up`/`up-scale`), the per-tier `iconOnly` tri-state, `lightIcon`/`darkIcon`
-  (`theme-toggle/block.json`). The automatic dark palette itself (derived at snapshot push time, a
-  minimum-change rule, every colour checked against every ground it is used on, failing closed) is Spec 33
-  FR-33-20.
-- **`sgs/wishlist-link`** (header/footer icon-link with a live saved-item count badge) and **`sgs/wishlist-panel`**
-  (the saved-items panel: `heading`, `emptyText`/`emptyLinkLabel`/`showWhenEmpty`, `showPrice`/`showStock`,
-  `layout` (`grid`/`list`/`strip`), `columns`, `maxItems`) implement the two-tier wishlist (a browser-stored list
-  merged into the account on log-in), with Move to basket and Notify me actions
-  (`wishlist-link/block.json`, `wishlist-panel/block.json`, `includes/wishlist/`). The customer account area and
-  saved-item alerts (price drops, share by link) are Spec 30 FR-30-14/FR-30-15, not this spec.
-- **`sgs/button`** gained `linkSource: 'top'` (scroll to the top of the page) and `linkSource: 'account'` (the
-  WooCommerce My Account page, or the login screen when WooCommerce is inactive) alongside the existing
-  `url`/`phone`/`email`/`whatsapp` sources, for a header/footer "back to top" or "account" link
-  (`button/block.json::attributes.linkSource`).
-- **`sgs/audio`** gained `playerStyle: 'toggle'` — a compact sound on/off button that mutes every other player on
-  the page — alongside its eight other visual styles, for a header/footer sound-mute control
-  (`audio/block.json::attributes.playerStyle`).
-- **`headerEssential`** (`supports.sgs.headerEssential`) is declared on `sgs/product-search` only among these,
-  so it is the one furniture block the header-row essentials contract (FR-37-39) protects from a shrink-hide
-  target by default.
-**Status:** `BUILT + LIVE-VERIFIED` (design `.claude/reports/2026-09-26-u12-furniture-design.md`, two-model
-council GO WITH FIXES, Bean sign-off; live `reports/visual-diff/furniture-2026-09-26.md`, `verdict: PASS`, on
-sandybrown fixture page 4070 `/qa-furniture/` and 4074 `/qa-wishlist/`).
+Six header/footer furniture blocks plus link-source and style additions on two existing blocks let a client's header or footer top row carry the small utility elements top-tier reference sites use, promoted by the row inserter (FR-37-34) alongside logo/nav/search/cart. Every block is server-rendered, so a no-JS or cached page is correct; settings live in each block's `block.json` (framework DB: `/wp-blocks`).
+- **`sgs/local-time`**: a live clock for one time zone.
+- **`sgs/language-switch`**: a hand-set list of language links showing the current language via `aria-current`; language names and tags come from PHP's `intl` extension when available. Polylang/WPML as a language-list source is not built.
+- **`sgs/store-selector`**: a trigger button plus a disclosure list of country/store links; the current store is detected from the visitor's host and path.
+- **`sgs/theme-toggle`**: a dark-mode switch or light/dark/auto segmented control wired to the site's automatic dark palette (the site's `custom.dark` theme.json setting, derived by `plugins/sgs-blocks/scripts/derive-dark-palette.py`). The palette itself (derived at snapshot push time by a minimum-change rule, every colour checked against every ground it is used on, failing closed) is Spec 33 FR-33-20.
+- **`sgs/wishlist-link`** (header/footer icon-link with a live saved-item count badge) and **`sgs/wishlist-panel`** (the saved-items panel) implement the two-tier wishlist (a browser-stored list merged into the account on log-in), with Move to basket and Notify me actions (`plugins/sgs-blocks/includes/wishlist/`). The customer account area and saved-item alerts are Spec 30 FR-30-14/FR-30-15, not this spec.
+- **`sgs/button`** supports `linkSource: 'top'` (scroll to the top of the page) and `'account'` (the WooCommerce My Account page, or the login screen when WooCommerce is inactive) alongside `url`/`phone`/`email`/`whatsapp` (`plugins/sgs-blocks/src/blocks/button/block.json::attributes.linkSource`).
+- **`sgs/audio`** supports `playerStyle: 'toggle'`, a compact sound on/off button that mutes every other player on the page, for a header/footer sound-mute control (`plugins/sgs-blocks/src/blocks/audio/block.json::attributes.playerStyle`).
+- `supports.sgs.headerEssential` is declared on `sgs/product-search` and `sgs/wishlist-link` among these, so those two are protected from a shrink-hide target by default (FR-37-39).
+**Status:** `BUILT + LIVE-VERIFIED` (live `reports/visual-diff/furniture-2026-09-26.md`, `verdict: PASS`, on sandybrown fixture pages 4070 `/qa-furniture/` and 4074 `/qa-wishlist/`).
 **Done when:** each block renders and round-trips its settings in the real editor, and sits in a header or
 footer row through the promoted inserter. ✅ met.
 
 #### FR-37-54 — Self-changing header message
-Wave 3C U-15 gave `sgs/notice-banner` a `messageMode` (`static` default | `rotate` | `random`), consumed by one
-or more `sgs/notice-message` children: `static` shows every child stacked (or the single child); `rotate`/
-`random` need at least two children to take effect, else the banner renders exactly as `static`
-(`notice-banner/block.json::attributes.messageMode`). `rotateInterval` (seconds, 2 to 30, default 5),
-`messageTransition` (`none`/`fade`/`slide-up`/`slide-left`), `showMessageArrows` (rotate mode only, also pauses
-auto-rotation) and `pauseOnHover` (rotate mode only) control the change. Each `sgs/notice-message` is a
-freeform InnerBlocks slot (no `allowedBlocks` restriction), so the rotating content is not limited to plain
-text. The banner also gained a full-width strip `displayMode` and an `iconStyle: 'circle'` badge
-(`iconCircleSize`/`iconCircleBackground`/`iconCircleBorderRadius`/`iconCircleShadow`), reusing `sgs/trust-bar`'s
-own icon-badge element shape. Not limited to the header (it is a general banner block), but this is the
-mechanism that fulfils the self-changing header message.
-**Status:** `BUILT + LIVE-VERIFIED` (design `.claude/reports/2026-09-26-u15-notice-message-design.md`, two-model
-council GO WITH FIXES, Bean sign-off; live `reports/visual-diff/notice-banner-2026-09-26.md`, `verdict: PASS`, on
-sandybrown fixture page 4072 `/qa-notice/`; Bean's eye check 2026-09-26: good, its rounded corners were the
-inline card style, now the full-width strip mode).
+`sgs/notice-banner` has a `messageMode` (`static` default | `rotate` | `random`), consumed by one or more `sgs/notice-message` children: `static` shows every child stacked (or the single child); `rotate`/`random` need at least two children to take effect, else the banner renders exactly as `static` (`plugins/sgs-blocks/src/blocks/notice-banner/block.json::attributes.messageMode`). Rotation interval, transition, arrows and pause-on-hover are block settings in the same `block.json`. Each `sgs/notice-message` is a freeform InnerBlocks slot (no `allowedBlocks` restriction), so the rotating content is not limited to plain text. The banner also has a full-width strip `displayMode` and an `iconStyle: 'circle'` badge reusing `sgs/trust-bar`'s icon-badge element shape. It is a general banner block, and this is the mechanism that fulfils the self-changing header message.
+**Status:** `BUILT + LIVE-VERIFIED` (live `reports/visual-diff/notice-banner-2026-09-26.md`, `verdict: PASS`, on sandybrown fixture page 4072 `/qa-notice/`).
 **Done when:** a banner with two or more `sgs/notice-message` children rotates or randomises on the frontend,
 each transition and the arrow/pause controls round-trip in the editor. ✅ met.
 
@@ -1056,16 +1007,9 @@ canary fresh-default).
 ### Pipeline
 
 #### FR-37-22 — Emittable by construction
-Every capability above must be settable by the cloning converter and mappable from what the
-converter extracts from a draft header/footer — a design constraint on this spec, not a
-later bolt-on (P1 DP6).
-**Status:** `NOT-BUILT` — the header/footer walker ("Spec 33 Part 2") is not started, **and is
-currently ownerless — see the §6 ownership note before scheduling any of it.**
-**Build order:** this FR is one of only TWO items in Specs 36+37 that genuinely wait on Part 2. Part 2
-itself is built **after** Specs 36 and 37 are complete — it consumes them. Do not treat this FR as
-a blocker on anything else in this spec.
-**Done when:** a drafted header clones into an active CPT header with its structure and
-behaviours carried, verified on the real homepage (R-31-11).
+Every capability above is a block attribute, so Spec 47's route can set it; no capability lives outside the attribute layer (P1 DP6).
+**Status:** `PARTIAL` — the attribute layer is the contract and holds; Spec 47 owns the route's header, footer and drawer surfaces.
+**Done when:** a header, footer or drawer for a draft is written through block attributes only, verified on the real homepage (R-31-11); the acceptance proof is FR-37-23.
 
 ### Further requirements
 
@@ -1078,7 +1022,7 @@ block in the framework (`includes/device-visibility.php`,
 the header/footer behaviour that depends on it. Changing the visibility extension from a header/footer
 spec would diverge from R-31-9 and the composite wrapper rule.
 
-**At the collapse point, not a tier (Wave 3C U-10, M-19).** A header block that moves into the drawer
+**At the collapse point, not a tier (U-10, M-19).** A header block that moves into the drawer
 (a copy in the drawer body, the header copy hidden) can hide exactly while the menu shows its burger:
 the extension's `sgsCollapseVisibility` (`''` | `hide` | `only`, control "When the menu collapses to a burger",
 shown only inside an `sgs/site-header`) adds `sgs-hide-collapsed` / `sgs-only-collapsed`, and the header writes
@@ -1127,7 +1071,6 @@ twice; the blind-tester arm is outstanding and is the authoritative half.
 - **Starter-look flow** (`reports/fr-37-26-simplicity-test/2026-09-17-starter-look-flow-re-run.md`):
   **PASS** for the FR-37-47 control's own simplicity.
 - **Blind-tester arm** (a real non-coder, screen-recorded): outstanding.
-`P-HEADER-SIMPLICITY-FINDINGS` (`.claude/archive/parking.md`) tracks the open findings.
 **Done when:** the test has been run and recorded, with the result — pass or fail — written
 down. A fail is a finding, not a reason to re-run until it passes. ✅ proxy arm met; blind-tester
 arm pending.
@@ -1181,7 +1124,7 @@ lint REPORTS a block as over the default — advisory, never a build blocker.
 
 #### FR-37-28 — Preset controls are permitted
 The inspector may expose composite preset controls (e.g. *Layout: Centred / Split / Minimal*)
-that write several attributes at once. The converter still targets the attribute layer only —
+that write several attributes at once. Spec 47's route targets the attribute layer only —
 presets are an operator convenience, never a storage shape (P2 §2.6).
 **Status:** `BUILT + LIVE-VERIFIED`. A "Layout preset" `ToggleGroupControl` (Centred / Split /
 Minimal) sits on the `sgs/site-header` **Styles** tab. It is **derived, not stored**:
@@ -1190,25 +1133,24 @@ Minimal) sits on the `sgs/site-header` **Styles** tab. It is **derived, not stor
 the primary (middle) row's existing `justifyContent` (Centred → `center`, Split/Minimal →
 `space-between`) via a `useSelect` lookup of the `rowSlot:'middle'` row and `updateBlockAttributes`.
 `getActiveLayoutPreset` also requires the row alignment to match, so the active indicator stays
-honest. **No new block.json attribute**, so the converter round-trips the underlying attrs
+honest. **No new block.json attribute**, so the underlying attrs are
 unchanged.
 **Done when:** at least one preset control exists on the header container and sets its
-attributes such that the converter round-trips them unchanged. ✅ met.
+attributes such that the underlying attributes are unchanged. ✅ met.
 
 #### FR-37-30 — WP-CLI surface (developer and pipeline only)
 A reduced `wp sgs` command set covers the header/footer/drawer lifecycle non-interactively:
 `wp sgs header|footer|drawer set-active|clear-active|list|seed-starter`. **Explicitly not a
 client-facing surface** — clients use the admin screens exclusively (framework CLAUDE.md: "WP-CLI
-is a developer tool only; never something clients touch"). It exists so that Bean and the cloning
-pipeline have a programmatic path, which FR-37-22 depends on.
+is a developer tool only; never something clients touch"). It exists so that Bean and scripts (Spec 47's header surface)
+have a programmatic path.
 **Status:** `BUILT + LIVE-VERIFIED` — `Sgs_Header_Footer_Cli_Commands`
-(`includes/class-sgs-header-footer-cli-commands.php`), registered in `sgs-blocks.php` for the three
+(`plugins/sgs-blocks/includes/class-sgs-header-footer-cli-commands.php`), registered in `sgs-blocks.php` for the three
 areas, delegates ALL active-state to `Sgs_Active_Layout` (no direct option writes) and is guarded by
 `defined('WP_CLI')`. Subcommand names are hyphenated through `@subcommand` annotations
 (`set-active`, `clear-active`, `seed-starter`), because WP-CLI registers method names verbatim.
 `wp sgs header list` returns the table with a correct **Active** column.
-**Done when:** each command runs non-interactively, is covered by `--help`, and the cloning
-pipeline can set an active header without a browser. ✅ met.
+**Done when:** each command runs non-interactively, is covered by `--help`. ✅ met.
 
 #### FR-37-31 — No orphan behaviour template parts; search starters preserved
 No `header-sticky` / `header-transparent` / `header-shrink` template-part registration, pattern or
@@ -1234,17 +1176,7 @@ This spec closes only when: FR-37-1/2/3/5 are live on the canary; §3 audits (FR
 recorded per clause; the never-overflow gate (FR-37-12) passes on every live site **across the
 full sweep per §3.6** (not three fixed widths); no inline `style=""` on either container; and
 **Bean's eye** signs off (R-31-13 — measurement and eye are co-authoritative, neither closes alone).
-The acceptance PROOF is the **12-reference clone as the FINAL gate of the merged 36/37 track**
-(`.claude/reports/2026-07-28-spec36-37-remaining-work-inventory.md`) — every reference built
-completely as SGS-native output (header + drawer + footer together, content/imagery/colours/
-typography), zero hardcoding; anything a reference needs that SGS cannot express is a defect in the
-earlier work, never a reason to trim the reference. **studionamma is the first clone**, one site
-100% before the rest. **Each accepted clone yields its B3 presets** — the B3 roster is 7 cloned
-pairs plus invented fills only where the references leave a gap (Utility commerce, Overlay
-hero-contrast, Directory footer). On completion, delete the `header-centred` / `header-minimal` /
-`header-full` structural starters; keep `scratch` + the three search-bar variants (capability, not
-look). Spec 33 Part 2 (the clone WALKER) consumes the proven system and inherits the 12 references
-as regression fixtures.
+The acceptance proof is cloning real references through Spec 47 as SGS-native output (header, drawer and footer together). Anything a reference needs that SGS cannot express is a defect in the framework, never a reason to trim the reference.
 **Status:** `NOT-BUILT`.
 **Done when:** all of the above, each with evidence recorded, not asserted.
 
@@ -1648,7 +1580,7 @@ it cannot be the source.)
 **Which looks are listed — the featured-else-all rule.** Of the patterns that qualify for the CPT,
 if any carries the pattern keyword `featured` the control lists only those; otherwise it lists every
 qualifying pattern. `featured` is a plain manual keyword on a pattern file; no script scores or
-selects it. The seven drawer looks carry it, so the drawer control lists the seven; no header or
+selects it. The drawer looks carry it, so the drawer control lists them; no header or
 footer pattern carries it, so those controls list every qualifying starter (including the three
 FR-37-31 search starters).
 
@@ -1675,7 +1607,7 @@ sanitisation surface. The control shows no derived "active look" indicator.
 
 **Status:** `BUILT`.
 **Done when:** creating a post of any of the three types shows the control listing the looks the
-featured-else-all rule selects (the seven `featured` looks for the drawer; every qualifying pattern
+featured-else-all rule selects (the `featured` looks for the drawer; every qualifying pattern
 for header and footer); selecting one sets only the owned settings and leaves `drawerRef`,
 `ariaLabel` and `backgroundImage` untouched, verified by reading the saved `post_content` (not editor
 state); with "Keep my blocks - change the look only" ON the inner blocks are unchanged and OFF they
@@ -1744,14 +1676,13 @@ there is no second "has this drawer printed yet" tracker.
 
 **Header and footer starter patterns embed no `sgs/nav-drawer`.** A header/footer post therefore
 contains nothing but its own locked wrapper: FR-37-46 blocks any other block, and the drawer is a
-separate post. Only the nine drawer starter patterns contain a `sgs/nav-drawer` — `drawer-scratch.php`,
-`framework-drawer-default.php` and the seven `drawer-*.php` looks (they are the drawer starters). The landmark guard of FR-37-43 stays in place for any header/footer
+separate post. Only the drawer starter patterns contain a `sgs/nav-drawer` — `drawer-scratch.php`,
+`framework-drawer-default.php` and the `drawer-*.php` looks (they are the drawer starters). The landmark guard of FR-37-43 stays in place for any header/footer
 content that still carries a sibling-embedded drawer.
 
-**Status:** `BUILT`. The one FR-37-43 clause still NOT-BUILT is inline creation of a drawer post
-from the picker.
+**Status:** `BUILT`.
 **Done when:** `drawerRef` on `sgs/nav-bar-menu` is a post picker (no free-text id field);
-`git grep -l "wp:sgs/nav-drawer " -- theme/sgs-theme/patterns` lists only the nine `drawer-*.php` /
+`git grep -l "wp:sgs/nav-drawer " -- theme/sgs-theme/patterns` lists only the `drawer-*.php` /
 `framework-drawer-default.php` starters; a
 fresh header/footer created through FR-37-47 has no drawer content unless the operator explicitly
 picks one through the picker; and the landmark guard still protects any pre-existing
@@ -1808,14 +1739,6 @@ canary). The pointers are read through `Sgs_Active_Layout`, never with a raw opt
 
 - **Nav internals** — Spec 36. This spec owns the drawer POST (FR-37-43/46/49) and the binding, and
   never describes what is inside a menu, dropdown, mega panel or drawer.
-- **The header/footer clone walker** — "Spec 33 Part 2". ⚠ **See the ownership + direction note
-  immediately below; that label currently has no named owner.**
-
-> **"Spec 33 Part 2" is the specialised header/footer CLONING pipeline** — a separate, later
-> consumer of this build's architecture, not this spec's own work and not a blocker on it. Only
-> two items in Specs 36+37 genuinely wait on it: the branded-header sliver of FR-36-18, and
-> FR-37-22. Everything else (including FR-36-15 and FR-36-25) is buildable now. Assigning Part 2
-> a single named owner is a prerequisite before any Part 2 work starts.
 - **The WP Customiser.** No Customiser surface edits header or footer content; FR-37-1 is the
   single editing home.
 - **Block version bumps / `deprecated.js`** — pre-production policy.
@@ -1844,11 +1767,7 @@ canary). The pointers are read through `Sgs_Active_Layout`, never with a raw opt
 
 | Question | Owner | Due |
 |---|---|---|
-| How are the 7 drawer looks delivered as starters, given FR-37-46's lock stops the native picker firing for the drawer post? (FR-37-43) | Bean | Before the drawer looks are built |
 | Does the native "Choose a pattern" modal fire on a new `sgs_mega_menu` post? Not re-observed in the editor for this spec (FR-37-7). | Claude (editor check) | Next mega-panel session |
 | Rules can only target file-registered patterns, not CPT posts (FR-37-20). Extend FR-37-3's direct render to rule targets, or leave the advanced path limited? | Bean | Before the advanced path is marketed |
 | Should a `sgs/modal` trigger with no `modalRef` fall back to the `_sgs_is_default` modal? The flag has no render consumer today (§5.2). | Bean | When modal triggers are next specified |
-| Who owns "Spec 33 Part 2" (the header/footer clone walker)? | Bean | Before any Part 2 work starts |
-| Should the logo come from Site Info instead of `get_theme_mod( 'custom_logo' )` (`responsive-logo/render.php`)? Spec 36 FR-36-22 owns the decision. | Spec 36 | With FR-36-22 |
 | Blind-tester arm of the operator-simplicity test (FR-37-26). | Bean | Before FR-37-26 is closed |
-| `sgs/site-header`, `sgs/site-footer` and `sgs/site-header-row` are `v0.1.0`; pre-production policy says no version bumps. Confirm they stay there. | Claude | Each release |

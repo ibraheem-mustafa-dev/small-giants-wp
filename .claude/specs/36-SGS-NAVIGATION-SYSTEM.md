@@ -1,17 +1,16 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.9
+spec_version: 3.0
 title: SGS Navigation System
 project: small-giants-wp
 status: active
 owner: framework
-last_verified: 2026-09-26
+last_verified: 2026-10-09
 references:
   - .claude/specs/37-HEADER-FOOTER-BUILDER.md
-  - .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
-  - .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
+  - .claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md
 ---
 
@@ -21,8 +20,8 @@ references:
 
 A set of blocks + a CPT that render a WordPress menu as a best-in-class navigation — a desktop bar with
 dropdowns + rich mega-menus, and an off-canvas drawer — meeting AND exceeding top WP-theme competitors +
-general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 37), and a faithful
-cloning-pipeline emit target. Spec 36 is the SINGLE canonical home for the whole header/nav element set:
+general web/UX, fully accessible + crawlable, decoupled inside the header (Spec 37), and writable by Spec 47's computed route
+through its block attributes. Spec 36 is the SINGLE canonical home for the whole header/nav element set:
 the nav blocks AND the utility pieces the nav composes with (cart / search / social / logo / business-info
 — §4).
 
@@ -38,11 +37,13 @@ Phase 3 (§7 Opp 1).
 
 ## 1. Scope, ownership, non-goals
 
+`P1` and `P2` in this spec are the archived design gates `.claude/plans/archive/2026-07-18-P1-architecture-decision-header-footer-nav.md` and `.claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md`; `DP<n>` and `P2 §<n>` cite their decision points and sections.
+
 **OWNS:** the nav blocks (`sgs/nav-bar-menu`, `sgs/nav-drawer-menu`, `sgs/nav-drawer`) + the mega CPT, their
 rendering/behaviour + editor controls, the menu-data contract, and the nav's accessibility, discoverability,
-and converter-emit contracts. **Also the header/nav PRESENTATION of the utility pieces it composes with** —
+and block-attribute write contract. **Also the header/nav PRESENTATION of the utility pieces it composes with** —
 cart, search, social, logo, business-info (FR-36-19..23): their nav/header rendering, behaviour + editor
-controls. (The underlying WooCommerce cart / Store-API logic remains WooCommerce's.) The **single canonical
+controls. (The underlying WooCommerce cart / Store-API logic remains WooCommerce's.) The nav menu colour, state and control mechanism (§14, FR-41-*). The **single canonical
 home** for navigation.
 
 **This spec owns the Site-Info data store:** the `sgs_site_info` option store, the `sgs/site-info`
@@ -69,7 +70,7 @@ are the primary/MVP path; block-menu support is a follow-on extra); WooCommerce 
 (category mega — note `core/navigation` hooks the WC mini-cart, a cutover concern; the cart PIECE itself is
 FR-36-19); multilingual (WPML/Polylang — the PHP `intl` extension does locale *formatting*, NOT
 translation, so real work); conditional/role-based/scheduled items; Opps 1–3 (§7). The header's own row
-model/behaviours (Spec 37). Building the cloning WALKER (31/33).
+model/behaviours (Spec 37).
 
 ### 1a. FR INDEX — read this before scanning the document
 
@@ -110,7 +111,8 @@ column here would drift against the code.
 | FR-36-15 | 9 | Converter-emittability |
 | FR-36-17 | 11 | Crawlable, schema-friendly, fast |
 | FR-36-25 | 11 | Structured-data-once |
-| FR-36-28 | 6 | Nav colour-state + control system → **Spec 41** (satisfies FR-36-4's hover/focus half + FR-36-11's colour floor; the ARIA active-trail is NOT satisfied — Spec 41 FR-41-20) |
+| FR-36-28 | 6 | Nav colour-state + control system → **§14** (satisfies FR-36-4's hover/focus half + FR-36-11's colour floor; the ARIA active-trail is NOT satisfied — FR-41-20) |
+| FR-41-1 to FR-41-41 | 14 | Nav menu colour, state and control system: three states, hover treatments, item border, submenu split, Menu Button panel, inspector layout (IDs stable; not renumbered) |
 | FR-36-29 | 3 | Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`) |
 
 ## 2. Architecture
@@ -148,9 +150,8 @@ FR-36-24). Neither instance reads the other's state.
 
 ### FR-36-3 — CPT model consistent with P2 (precise reuse)
 `sgs_mega_menu` mirrors P2's "per-client editable structural content = a CPT" (`sgs_header`). Reuses: the
-CPT editing home + native block editor; the **starter-template picker** (P2 §2.5 — the 5 mega layouts are
-git-versioned theme patterns, FR-36-5); the converter **pack factory** (P2 §9 — *unbuilt, a build-order
-dep*). Does NOT use `Sgs_Header_Rules` / `sgs_active_header_cpt_id`. The panel's `templateLock` is `false`,
+CPT editing home + native block editor; the **starter-template picker** (P2 §2.5 — the mega starters are
+git-versioned theme patterns, FR-36-5). Does NOT use `Sgs_Header_Rules` / `sgs_active_header_cpt_id`. The panel's `templateLock` is `false`,
 never `contentOnly` (FR-36-5). **Why a CPT:** chosen over InnerBlocks / synced-patterns / template-parts on
 findability + header-consistency + zero bespoke admin UX.
 
@@ -201,9 +202,9 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`. `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::repositionPanel` places the
   panel on each open; a dropdown keeps its own width, a mega panel takes the band. Collision clamping is always on.
   Under `full-width` the wrap spans the box and paints the mega panel block's fill, bottom edge and shadow across it
-  (`mega-disclosure.js::publishWrapFill` publishes them as custom properties, `nav-bar-menu/style.css` reads them,
+  (`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::publishWrapFill` publishes them as custom properties, `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` reads them,
   `data-sgs-mm-bleed` silences the block's own shadow); the block itself stays at its `maxWidth`, centred.
-- **Gap below the header.** `submenuTopOffset` (Spec 41 FR-41-11) is the gap between the header's bottom edge
+- **Gap below the header.** `submenuTopOffset` (FR-41-11, §14.5) is the gap between the header's bottom edge
   and the top of either kind of panel. `repositionPanel` publishes the header's bottom (`.sgs-site-header`,
   else the bar's header row, else nothing and the stylesheet's `100%` holds) as `--sgs-mm-panel-top`; a
   floating pill publishes its own bottom.
@@ -216,26 +217,26 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   (the top-level link's is `itemPadding`'s left side where set, else 12px; the submenu link's is 16px).
   `itemPadding` is the top-level link's padding and `submenuLinkPadding` the submenu link's (dropdown, mega
   fallback list, drawer accordion), each a per-device box of top, right, bottom and left, on BOTH
-  `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` (the two blocks were one menu block; every item-level control
-  exists on both unless it is meaningless in one form). Unset sides keep the defaults (top-level 8px 12px,
+  `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` (every item-level control
+  exists on both blocks unless it is meaningless in one form). Unset sides keep the defaults (top-level 8px 12px,
   submenu 16px inline-start). All four hover pairs are touch-guarded via `sgs_hover_state_rules()`.
   Both are emitted by `plugins/sgs-blocks/includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css` for
   either block; the sublink default is `--sgs-nav-sublink-pad-start` (16px), which `itemPaddingShiftHover` adds to.
   `itemMotionDuration`/`itemMotionEasing` time the item's own colour and background transition
-  (`includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css`; unset keeps the fast token) as well
+  (`plugins/sgs-blocks/includes/nav-menu-item-transition-css.php::sgs_nav_item_transition_css`; unset keeps the fast token) as well
   as the label roll.
 - **Item hover scope and caret (U-18).** `itemHoverScope` `all` | `with-submenu` on `sgs/nav-bar-menu` and
   `sgs/nav-drawer-menu` (the drawer's rows that open a section are its `--has-submenu` and `--mega` items;
   its caret is the accordion expander, see "Drawer item-level parity" below): with
   `with-submenu` every hover paint channel (text, ground, opacity, border swap/sweep, highlight weight) applies
-  only to items that open a dropdown or mega panel (`includes/nav-menu-item-hover-scope-css.php`). The caret takes
+  only to items that open a dropdown or mega panel (`plugins/sgs-blocks/includes/nav-menu-item-hover-scope-css.php`). The caret takes
   `submenuCaretSize`, `submenuCaretGap`, `submenuCaretOpacity`/`submenuCaretOpacityHover` and its open turn
-  `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css`,
+  `submenuCaretTurnDuration` + `submenuCaretTurnEasing`(`Custom`) (`plugins/sgs-blocks/includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css`,
   called by both blocks). The bar's
   scrim fades over `scrimFadeDuration`, mirroring `sgs/nav-drawer`, on `scrimFadeEasing` (shared motion list plus `scrimFadeEasingCustom`; empty follows the panel's easing). `submenuItemStaggerScope` `columns` | `rows`
   staggers either a panel's columns or every link row and card inside them. With `triggerSurface` on, plain
   non-interactive content in the trigger row passes its tap to the menu trigger; links, buttons and inputs keep
-  their own (`includes/nav-trigger-surface-css.php`).
+  their own (`plugins/sgs-blocks/includes/nav-trigger-surface-css.php`).
 - **Drawer item-level parity.** `sgs/nav-drawer-menu` offers the same item-level customisation as
   `sgs/nav-bar-menu`, on its own markup. Every attribute below is declared in
   `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json`, empty or `none` emits nothing, and every rule sits in
@@ -243,7 +244,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `showBurger`, `collapsePoint`, `drawerRef`, `scrim*` (owned by `sgs/nav-drawer`), `megaAlign`, `submenuAlign`,
   `submenuMinWidth`, `submenuTopOffset`, `submenuOpenOn`, `submenuIntentDelay`, `submenuCloseGrace`.
   - **Row separators.** `separators` (the top-level rows) and `submenuSeparators` (the rows of a nested section) are
-    the shared Separators setting (Spec 41 FR-41-37, `includes/nav-menu-separators.php`): a horizontal line centred in
+    the shared Separators setting (FR-41-37, §14.2, `plugins/sgs-blocks/includes/nav-menu-separators.php`): a horizontal line centred in
     the gap between stacked rows, drawn by the rows themselves, with `edges` `end` for a line under the last row. They
     are independent of the row's own border (`itemBorderWidth`/`itemBorderColour*`), so both can run in different
     colours. Hovering or focusing either row a line sits between repaints it, through the row's own link, expander or
@@ -251,16 +252,16 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
     column-major grid, so its lines take the grid path (native gap decorations, with the runtime overlay in
     `src/shared/separators/` elsewhere).
   - **Hover scope, magnet, alignment.** `itemHoverScope` is read by the shared item emitters
-    (`includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). `itemMagnetStrength` (0.02 to 0.5, shown with
+    (`plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). `itemMagnetStrength` (0.02 to 0.5, shown with
     `itemMagnetEnabled`) rides as `data-magnet-strength` on the list and is read by
-    `src/blocks/nav-drawer-menu/view.js::initBarEffects`; the row label carries `__magnet-target` only while the
-    magnet is on (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_label_inner`). It is pointer-fine only: touch
+    `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::initBarEffects`; the row label carries `__magnet-target` only while the
+    magnet is on (`plugins/sgs-blocks/includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_label_inner`). It is pointer-fine only: touch
     input and reduced motion switch it off inside `magnet.js`. `justifyContent` sets `justify-content` on
-    `.sgs-nav-drawer-menu__link` (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_row_layout_css`); `center`
+    `.sgs-nav-drawer-menu__link` (`plugins/sgs-blocks/includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_row_layout_css`); `center`
     also reserves the expander's 56px at the row start so the label sits on the row's true centre.
   - **Expander caret.** `submenuCaretSize`, `submenuCaretOpacity` and `submenuCaretTurnDuration`/`Easing`(`Custom`)
     style `.sgs-nav-drawer-menu__caret`, alongside `itemExpanderIcon` and `itemExpanderRotate`, through
-    `includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css` with the drawer's selectors. `submenuCaretGap` sets `gap`
+    `plugins/sgs-blocks/includes/nav-menu-caret-css.php::sgs_nav_menu_caret_css` with the drawer's selectors. `submenuCaretGap` sets `gap`
     on a whole-row toggle (`.sgs-nav-drawer-menu__accordion-summary--row`), the only row where label and expander share a
     box; a split row keeps its expander pinned to the row end as its own 44px target. `submenuCaretOpacityHover` follows
     the row's head (link, expander or whole-row toggle).
@@ -272,7 +273,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
     timing and the `[open]` rule the entry timing. `height` clips only while moving, then releases the clip so a section
     shadow or focus ring is never trimmed at rest. Accordion mode only: a drill-down section is an overlay that slides
     in and keeps its own motion, and nothing is emitted for it
-    (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_motion` returns the root modifier classes
+    (`plugins/sgs-blocks/includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_motion` returns the root modifier classes
     `sgs-nav-drawer-menu--acc-fade`, `--acc-fade-lift`, `--acc-height`, and the `--sgs-ndm-acc-*` values;
     the structure is at the end of `nav-drawer-menu/style.css`). All of it sits inside `prefers-reduced-motion: no-preference`.
   - **Row stagger.** `submenuItemStagger` (ms between rows, 0 is off), `submenuItemStaggerDistance`,
@@ -282,7 +283,7 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
     Rows animate each time their `<details>` opens, on their own index (`--sgs-ndm-si`) so they never inherit the
     top-level item stagger's `--sgs-i`. Accordion mode only.
   - **Section box.** `submenuBorderRadius` and `submenuShadow`/`submenuShadowColour` paint the open section's `<ul>`
-    (`includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css`); an untouched drawer section stays
+    (`plugins/sgs-blocks/includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_section_box_css`); an untouched drawer section stays
     square and flat.
   Inspector: Layout (justify, hover scope, split), "Row separators" and "Submenu row separators" (thickness, colour and style, hover
   treatment and angle, outer lines), "Row extras" (expander caret), "Submenu — Container" (radius, shadow), "Section motion" (animation, timing,
@@ -291,10 +292,10 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   accordion section is open (distinct from Current, which is page identity). A top-level item with children and
   no destination of its own (empty URL, `#`, or an object whose post type is not publicly queryable, such as
   `sgs_mega_menu`) renders its whole row as the `<summary>` toggle; an item that is a real page keeps label = link,
-  caret = toggle (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_has_real_destination`).
+  caret = toggle (`plugins/sgs-blocks/includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_has_real_destination`).
   `itemOrnamentRevealMode` (tier: `static` | `hover-draw`) hides the ornament at rest and draws its SVG strokes in
   sequence on hover or focus, and `itemOrnamentReserveSpace` keeps its space at rest
-  (`includes/nav-drawer-menu-ornament-reveal-css.php`). `ornamentHiddenItemIds` (item ids, `id:<menu item>`) turns
+  (`plugins/sgs-blocks/includes/nav-drawer-menu-ornament-reveal-css.php`). `ornamentHiddenItemIds` (item ids, `id:<menu item>`) turns
   the ornament off per item; with reserved space on, that row keeps an invisible placeholder so its label lines up.
   `itemOrnamentFrames` (an ordered list of up to 8 custom-SVG frames, icon ornaments only) flashes alternate glyphs on
   row hover or keyboard focus before the ornament settles on `itemOrnamentIcon`/`itemOrnamentIconHover`;
@@ -303,10 +304,10 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   index, while the settled glyph is held transparent for the whole run; the per-tier values reach the static rules as
   custom properties, and every animation rule sits inside `prefers-reduced-motion: no-preference`, so reduced motion
   shows only the final glyph. An empty list renders exactly as before
-  (`includes/nav-drawer-menu-ornament-frames.php::sgs_nav_drawer_menu_ornament_frames_css`,
-  `src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament--frames`). A whole-row-toggle `<summary>` also
+  (`plugins/sgs-blocks/includes/nav-drawer-menu-ornament-frames.php::sgs_nav_drawer_menu_ornament_frames_css`,
+  `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__ornament--frames`). A whole-row-toggle `<summary>` also
   carries `.sgs-nav-drawer-menu__link`, so every item rule (typography, colour, hover, padding, ornament) paints it
-  like a link row (`includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_accordion_html`). `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
+  like a link row (`plugins/sgs-blocks/includes/nav-drawer-menu-items.php::sgs_nav_drawer_menu_accordion_html`). `itemTrailingIcons` (per-item map), `itemTrailingIconColour`
   and `itemTrailingIconSize` put a trailing glyph on any row; the shared IconPicker takes a pasted custom SVG,
   re-sanitised server-side with `sgs_svg_kses_allowed_tags()`. The drawer also takes the bar's badge colours and
   `disabledItemIds`/`itemDisabledColour`.
@@ -314,15 +315,14 @@ throughout** (avoids the sticky-hover mobile bug). Mechanics:
   `submenuFontSizeUnit` on both menu blocks) and `sgs/business-info`'s own text sizes take `vw`/`vh` alongside
   `px`/`em`/`rem`, through the shared unit list (`plugins/sgs-blocks/src/components/TypographyControls.js::FONT_SIZE_UNIT_SLUGS`),
   so a menu label or a footer contact line can scale with the viewport instead of stepping at a breakpoint.
-  Per-tier menu line height was not built (no reference needs it); formula-based scaling was cut in favour of
-  `vw`/`vh` (Bean).
+  Per-device menu line height is not offered (`itemLineHeight` is a plain number, §14.8.4a). Formula-based scaling is not offered: `vw`/`vh` units cover it (Bean ruling).
   On `sgs/mega-panel`: `panelCardLift`
   (default `3px`) sets the `cards` style's group-tile hover/focus-within lift distance
   (`translateY(calc(-1 * <value>))`; empty or `0` means no lift); the same block's `itemPaddingShiftHover` grows a group item's own
   inline-start padding on hover, independently of the bar/drawer attribute of the same name. The `brands` variant's
   eyebrow ("Our Brands") takes `brandsEyebrow*` typography (via `sgs_typography_css_rule()`), `brandsEyebrowColour` and
   per-device `brandsEyebrowPadding`, defaulting to the mono 11px/500 uppercase muted look. `sliding pill`
-  (`itemBgHoverTreatment`), tint swap, colour, weight, underline and border stay owned by Spec 41.
+  (`itemBgHoverTreatment`), tint swap, colour, weight, underline and border stay owned by Part 14 (§14).
 - The timing constants apply to the hover path only; WCAG 1.4.13 (Dismissible/Hoverable/Persistent) on the
   hover panel; caret on expandable items only; distinct hover+focus states; active-trail
   (`aria-current="page"` + a visible style) — NOT BUILT, see below; a per-item **"featured"** flag;
@@ -337,11 +337,10 @@ form is the default. **The pill's foreground is contrast-checked against the res
 `sgs_wcag_preferred_text_colour_for_bg()` helper — the operator's colour wins when it clears AA, else the
 guaranteed-safe binary fallback — so no client palette can render a featured item below AA. Both forms are
 operator-set from the block inspector (Featured panel). **Why this is spec-level, not an implementation
-detail:** a featured style a draft can author MUST have somewhere in the data model to land — otherwise the
-converter silently drops the draft's featured fill and the text renders accent-on-surface below AA.
+detail:** a featured style a draft can author MUST have somewhere in the data model to land — otherwise Solve (Spec 47) has no attribute to write the draft's featured fill into and the text renders accent-on-surface below AA.
 
-**"Distinct hover+focus states" has a named mechanism — [Spec 41](41-NAV-MENU-COLOUR-STATE-SYSTEM.md)
-(FR-36-28). The ARIA "active-trail" does NOT, and is NOT BUILT; ancestor-item Current styling is built in CSS (Spec 41 FR-41-20).** Spec 41 supplies the concrete state model: exactly
+**"Distinct hover+focus states" has a named mechanism — Part 14 of this spec
+(FR-36-28). The ARIA "active-trail" does NOT, and is NOT BUILT; ancestor-item Current styling is built in CSS (FR-41-20).** Part 14 supplies the concrete state model: exactly
 THREE states — Normal / Hover / **current** — on every stateful colour, `current` keyed on the
 `aria-current="page"` that `plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage` (identical
 in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage`) stamps client-side (FR-36-11's
@@ -350,15 +349,9 @@ cache-safe mechanism, reused not re-derived; `current` is the framework's own st
 stay VISUALLY DISTINCT and Hover out-ranks current by source order, so a visitor can tell where they ARE from
 what they are POINTING AT.
 
-⛔ **The ARIA active-trail half of this clause is NOT satisfied by Spec 41 and must not be read as satisfied.**
-`markCurrentPage` matches by EXACT path equality (`path !== '' && path === current`), so a parent menu item
-whose CHILD page is the current page receives no `aria-current` marking, so assistive technology gets no ancestor signal (the item's visual Current styling is applied by CSS — Spec 41 FR-41-20). Spec 41
-implements "this exact link is the current page" and states the boundary as its own FR-41-20. The ARIA active-trail
-needs an ancestor-path list emitted per item at render time plus a prefix match in `markCurrentPage`
-stamping a signal that is NOT `aria-current="page"` (which is single-valued per page and belongs to the
-exact link). It has no owner.
+⛔ The ARIA active-trail is not built (FR-41-20, §14.10).
 
-⛔ The `featured` item-flag mechanism above is OUT of Spec 41's scope. Spec 41 also carries nav behaviours
+⛔ The `featured` item-flag mechanism above is OUT of Part 14's scope. Part 14 also carries nav behaviours
 that are correctness fixes with no operator control: a parent item stays in its Hover state while its own
 open dropdown is hovered, and the hover-highlight background is painted from the item Background row's Hover
 swatch when `itemBgHoverTreatment === 'highlight'`.
@@ -376,8 +369,8 @@ An operator cannot break a column's shape but can freely select and edit any nes
 **Aside column.** `sgs/mega-panel`'s `asideSeparator` (`style` line | none, `colour`, `width`) paints only the
 divider: the rule carries no padding, so the gap between the divider and the content is `sgs/mega-aside`'s own
 `asidePadding` (default 24px on every side), which a client can change. `style: none` adds
-`sgs-mega-panel--aside-sep-none` on the frontend (`mega-panel/render.php`) as well as in the editor, and
-`style.css::.wp-block-sgs-mega-panel:not(.sgs-mega-panel--aside-sep-none) .sgs-mega-aside` paints the divider
+`sgs-mega-panel--aside-sep-none` on the frontend (`plugins/sgs-blocks/src/blocks/mega-panel/render.php`) as well as in the editor, and
+`plugins/sgs-blocks/src/blocks/mega-panel/style.css::.wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside` paints the divider
 only when it is absent. `sgs/mega-aside` also owns `asideGap` (tier length, the gap between its stacked
 children; unset keeps `style.css`'s 16px) and `asideJustify` (tier: `flex-start` | `center` | `flex-end` |
 `space-between`, its content's alignment along the column; unset keeps the start). Both are emitted by
@@ -388,8 +381,8 @@ JetMenu (Crocoblock), and Kadence Pro mega menu — ARIA-compliant, semantic HTM
 dependencies**. Elementor's mega menu needs Elementor Pro ($59–399/yr) and generates heavy DOM; Max Mega Menu
 (the most popular free alternative) has documented WCAG failures + mobile-toggle issues. Panels use
 DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT posts, never template parts.
-- A mega panel is a **block-based CPT post** edited in its findable admin screen; the 5 layouts are
-  git-versioned starter theme patterns registered for the `sgs_mega_menu` post type:
+- A mega panel is a **block-based CPT post** edited in its findable admin screen; the mega starters are
+  git-versioned theme patterns (`git ls-files theme/sgs-theme/patterns | grep mega-`) registered for the `sgs_mega_menu` post type:
   `sgs/mega-brands-1` (logo-tile grid with a side call-to-action panel), `sgs/mega-general-1col`,
   `sgs/mega-general-2col`, `sgs/mega-general-2col-aside` (two columns + side CTA) and
   `sgs/mega-media-cards-1` (4-column media cards) — under `theme/sgs-theme/patterns/`. They embody the mega
@@ -430,7 +423,7 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   content crawlable server-rendered, **no lazy-load** (FR-36-17).
 - **Surface (M-13).** `sgs/mega-panel` carries the same surface-ground trio as the header and the drawer —
   `surfaceBlur` (a CSS length), `surfaceSaturate` (a whole-number percentage) and `surfaceOpacity` (0 to 1,
-  applied to the panel's own fill) — through `includes/helpers-surface-ground.php`, plus its own
+  applied to the panel's own fill) — through `plugins/sgs-blocks/includes/helpers-surface-ground.php`, plus its own
   `shadow`/`shadowColour` writer (`shadow` default `floating`, one of the theme shadow presets, or a raw
   layer stack composed with `shadowColour`; empty means no shadow). The panel's `borderRadius` stays a plain
   string today; migrating it to a `{desktop,tablet,mobile}` tier object, matching the header and container,
@@ -448,7 +441,7 @@ LIVES INSIDE the `sgs_drawer` CPT as that post's content (the CPT's template is 
 **1. The chrome top row** — rendered by render.php OUTSIDE the editable InnerBlocks. It is the *close
 button's* band; everything else in it is optional. Attribute-driven (NOT blocks, NOT InnerBlocks).
 
-*BUILT — the × close* (Wave 3C U-11, D-entry and design `.claude/reports/2026-09-24-u9-u11-design.md`).
+*BUILT — the × close* (U-11).
 Rendered as fixed dialog chrome (see "Close is CHROME" below). **The × is omitted at a tier only when ALL
 THREE hold at that tier:** (1) `modality` is `non-modal`; (2) `closeStyle` at that tier is `trigger` ("the
 menu button closes it"); (3) the opener is LIVE, meaning its centre point hit-tests to itself
@@ -457,12 +450,9 @@ off-screen does not count. `render.php` emits the eligibility rule for (1) and (
 `[data-sgs-nav-opener-live]`; `store.js` sets that flag after `show()` and before focus, re-checks it on
 resize, and clears it once the dialog has closed (never before the exit animation, which would bring the × back mid-close). In every other combination the × shows (under `trigger` it
 wears the `separate-x` glyph); no operator setting removes the last live close control. This is DEC-15 (b)'s
-own wording ("required only when no other visible, keyboard-reachable close control is live"); the earlier
-text keyed it on `burger-morph`, which missed the references whose trigger swaps its LABEL.
+own wording ("required only when no other visible, keyboard-reachable close control is live").
 Attributes: `closeStyle`, a per-device tier object `{desktop,tablet,mobile}` of `separate-x` | `text-swap` |
-`burger-morph` | `icon-and-text` | `trigger` (cascade desktop → tablet → mobile; stored flat strings were
-migrated by `scripts/migrate-stored-tier-scalars.py`, because WordPress coerces a schema-invalid stored value
-to the default before render; the PHP twin
+`burger-morph` | `icon-and-text` | `trigger` (cascade desktop → tablet → mobile; a flat string stored where a tier object is declared is coerced to the default by WordPress before render, so tier-scalar attributes are converted with `plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py`; the PHP twin
 `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` must equal the editor's
 option list); `closePlacement` tier object (`top-row-end` default | `top-row-start` | `same-slot`, the × centred
 on the opener's centre, measured by `store.js`; `same-slot` needs `modal` and resolves to `top-row-end` under
@@ -474,13 +464,11 @@ icon-picker object `{source,name}` or `{source:'custom',svg}`, default `{lucide,
 never goes below 44px), the close-label typography set, and the `toggleCloseColour*` colour/hover/gradient
 set. Gradient is routed per icon source by `sgs_icon_gradient_css()`; never restrict the icon source enum.
 
-*NOT BUILT:*
-- **Canvas/frontend icon parity.** The frontend renders the picker-driven `closeIcon`; the editor canvas
-  preview MUST resolve the same picker-driven source, or the canvas and the frontend show different icons.
+- **Canvas/frontend icon parity.** The editor canvas resolves the same picker-driven `closeIcon` as the frontend (the `closeIcon` mirror in `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`); keep them on one source.
 
 **The chrome row (built, U-18).** `plugins/sgs-blocks/includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome`
 prints `.sgs-nav-drawer__chrome`, a flex row outside InnerBlocks; its CSS is
-`includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css`. The × stays first in the DOM (focus lands on it)
+`plugins/sgs-blocks/includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css`. The × stays first in the DOM (focus lands on it)
 and `order` places it (`top-row-end` 1 with an auto inline-start margin, `top-row-start` -1, `same-slot`
 absolute within the row). The row takes `chromeRowHeight`, `chromeRowGap`, `chromeRowPadding` (tier objects;
 defaults 64px / 12px / 0 12px inside `:where()`) and `chromeRowBg`/`chromeRowBgGradient`, and replaces the body's
@@ -495,7 +483,7 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
   background on a layer, so the button text takes a gradient (`chromeButtonColourTextGradient`, `chromeButtonColourTextHoverGradient`).
 - **Google rating:** its own item, beside the free slot (a wordmark heading and the rating share the row).
   `chromeRating` (on/off), `chromeRatingPlacement` end (beside the ×) | center, `chromeRatingShow` (tier object),
-  `chromeRatingShowCount` and `chromeRatingColour`. `includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_html`
+  `chromeRatingShowCount` and `chromeRatingColour`. `plugins/sgs-blocks/includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome_rating_html`
   renders `sgs/google-rating-badge` (pill, no frame, never compact) through `render_block()`; its figures and link
   come from Site Info or live Google data, and with no rating it renders nothing (the row can still be
   `--close-only`). An end rating takes the auto margin and the × gives its up; a tier that hides the rating hands
@@ -503,9 +491,9 @@ reserved 64px: `.sgs-nav-drawer__body` padding-top is `var(--sgs-nd-close-room, 
 - **Close box:** `closeBorderWidth` (one box for every device, the border-control rule), `closeBorderStyle`,
   `closeBorderColour` (style written only with a width) and `closeIconSize` (tier); the hit area never drops
   below 44px (`::after`). `closePadding` (tier box; unset keeps `style.css`'s `padding:0`, or `0 12px` under
-  `text-swap`/`icon-and-text`) is emitted by `includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css` at a
+  `text-swap`/`icon-and-text`) is emitted by `plugins/sgs-blocks/includes/nav-drawer-chrome-css.php::sgs_nav_drawer_chrome_css` at a
   higher specificity than those style rules. `closeHoverOpacity` (0 to 1, default 0.75) is the × hover fade,
-  written as `--sgs-nd-close-hover-opacity` and read by `style.css::.sgs-nav-drawer__close:hover` (1 switches
+  written as `--sgs-nd-close-hover-opacity` and read by `plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__close:hover` (1 switches
   the fade off). `closeLineHeight` (tier, with `closeLineHeightUnit`, unitless by default) is the close label's
   line-height, emitted on `.sgs-nav-drawer__close-text` by `sgs_typography_css_rule()` with the rest of the
   `close` typography set.
@@ -520,7 +508,7 @@ clip. `plugins/sgs-blocks/src/blocks/nav-drawer/grow-from-anchor.js` measures `-
 dialog's own pixels and keeps `-to` current while open. Item entrance shape: `itemStaggerAxis` (tier: vertical |
 start | end, mirrored right-to-left) and `itemStaggerReveal` (translate | clip: `inset(0 0 100% 0)` to
 `inset(0)` with the travel, no fade), emitted by
-`includes/helpers-nav-drawer-stagger-shape.php::sgs_nav_drawer_stagger_shape`. With the `header-box` anchor the
+`plugins/sgs-blocks/includes/helpers-nav-drawer-stagger-shape.php::sgs_nav_drawer_stagger_shape`. With the `header-box` anchor the
 panel takes `zoom: var(--sgs-header-fluid-scale, 1)` and divides each measured box length by it, so it scales
 with a fluid header (`sgs/site-header::fluidScale`).
 
@@ -566,8 +554,8 @@ through the same shared chain as the bar); the inspector shows *which menu is bo
   (`publishHeaderBox`) publishes `--sgs-drawer-hb-*` on open and resize and marks the header
   `data-sgs-drawer-grown`, which drops the header's fill, blur and shadow (`site-header/style.css`) so the two read
   as one card, and pauses hide-on-scroll. Any tier on `header-box` forces the drawer non-modal (a modal dialog is
-  top-layer and would cover the burger). lamalama's pill growing into its menu card.
-- **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` `block.json::gap`) is a
+  top-layer and would cover the burger). The pill grows into its menu card.
+- **Item pitch.** The menu item `gap` (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu`; `gap` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes`) is a
   per-device tier object on both menu blocks, so a reference's tight pitch (a 0 gap on 44px rows) is reachable
   without changing padding. Stored flat values were folded into the tier shape by
   `plugins/sgs-blocks/scripts/migrate-nav-gap-tier.php`, which every site runs before it takes the deploy.
@@ -605,7 +593,7 @@ and draws no floating shell (fill, border, radius, shadow, backdrop, width cap, 
 glow, the tone class) while keeping `container-type` for its narrow stack; its text follows the drawer. The
 drawer's `sublinkMarkerColour` also colours an embedded panel's list markers (`--sgs-list-marker-colour`).
 `sgs/mega-panel` carries an "In the drawer" inspector panel (`edit.js`) whose `drawer*` attributes
-(`block.json::attributes`, elements `drawer`, `drawerLinks`, `drawerLinkNumber`, `drawerLinkLabel`,
+(`plugins/sgs-blocks/src/blocks/mega-panel/block.json::attributes`, elements `drawer`, `drawerLinks`, `drawerLinkNumber`, `drawerLinkLabel`,
 `drawerLinkDesc`, `drawerCard*`) paint the drawer copy only, through the panel's scoped CSS
 (`mega-panel/render.php`, the `$sgs_mm_in_drawer` block after the stack rules; every rule is rooted on the
 instance uid so it out-specifies the child blocks' own scoped colours, no inline style, and an empty
@@ -637,7 +625,7 @@ Escape closes; focus returns to the burger if it is live, else to the first live
 region, never to `<body>`; body-scroll-lock (incl. iOS fix); swipe-close is enhancement-over-the-×; animation
 reduced-motion-gated.
 
-**Close routes beyond the ×** (Wave 3C U-9): Escape, backdrop and scrim click, the live trigger. **Resize
+**Close routes beyond the ×** (U-9): Escape, backdrop and scrim click, the live trigger. **Resize
 (DEC-09):** while open, a burger carrying `data-sgs-nav-collapse` (its bar's `collapsePoint`) arms a
 `matchMedia('(min-width:Npx)')` watcher; on a change the drawer closes only if the opener is no longer live,
 so an always-burger bar never closes on a resize and a drawer otherwise reflows. **Close on scroll (DEC-02's
@@ -670,7 +658,7 @@ focus-return all kept exactly as `modal` has them). The `.show()` path lives in
 
 **Stacking order (M-09).** `sgs/site-header` carries a per-tier `zIndex` object
 (`{desktop,tablet,mobile}`, each a whole number 0 to 99998 or empty to inherit the wider tier; framework
-default 100), written only by `includes/sgs-header-z-index.php` and published as `--sgs-header-z`. Per
+default 100), written only by `plugins/sgs-blocks/includes/sgs-header-z-index.php` and published as `--sgs-header-z`. Per
 anchor tier (`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_geometry_for_anchor`): a
 `trigger` or `centred` panel, and a NON-MODAL `full-screen` drawer, paint one above the header
 (`--sgs-header-z` + 1), so no lower header row can overlap them; the non-modal full-screen drawer starts at
@@ -709,11 +697,11 @@ Header rows are NOT imported into the drawer in any form (there is no "show head
 
 Built: the per-device `anchor` object (`full-screen` default / `header` derives width + edges from the
 header / `trigger` / `centred`) + `panelSize` (responsive) + the surface-ground trio (`surfaceBlur`,
-`surfaceSaturate`, `surfaceOpacity`, through `includes/helpers-surface-ground.php`, the same emitter the
+`surfaceSaturate`, `surfaceOpacity`, through `plugins/sgs-blocks/includes/helpers-surface-ground.php`, the same emitter the
 header and the mega panel use) + a `shadow`/`shadowColour`
 writer (M-13, same vocabulary as the mega panel's) + a background-image media layer
 (`backgroundImage*`, `backgroundImageDecorative` — painted as a CSS layer, never a frontend `<img>`) + `closeStyle` + `sgs/nav-drawer-menu` `listColumns` (in-drawer
-only) + **seven drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`; the block
+only) + **the drawer looks as patterns** (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`; the block
 declares no variant attribute and registers no block variations) +
 **backdrop-click-to-close in `store('sgs/nav')`** (a `::backdrop` click closes a partial-width panel;
 full-screen is unaffected by construction).
@@ -727,9 +715,9 @@ operator's border and radius rules, so any operator border, radius or shadow win
 opener-live flag clears only once the dialog has closed, so the × never reappears during the exit
 animation.
 
-**The scrim (Wave 3C U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (lamalama's click-through is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. 
+**The scrim (U-2, M-14, D1148).** The drawer and the menu bar (`sgs/nav-bar-menu`, for every dropdown and mega panel it opens) carry the shared scrim: `supports.sgs.scrim` plus `scrimColour`, `scrimColourGradient` and per-device `scrimOpacity` and `scrimBlur`, rendered by `plugins/sgs-blocks/includes/helpers-scrim.php::sgs_scrim_render` (tint on `::before`, blur on the element, open state from CSS `:root:has(<open selector>)`, printed at `wp_footer`). Defaults: the drawer is black at 0.55; the bar has none unless set. A click on the scrim closes the surface and is absorbed, so a dismiss never follows a link underneath (click-through to a link underneath is an accepted divergence). The same helper serves `sgs/modal`, the `sgs/cart` drawer, the `sgs/gallery` lightbox and `sgs/product-search`; `scripts/scrim/check-scrim.py` fails the build on any dimming block that paints its own. The earlier "NO scrim element, 8/8 references have none" held for the eight drawer-variant references only; M-14's six references show part-width drawers and panels with one. 
 
-**Motion: how the drawer and the panels arrive and leave (Wave 3C U-5, M-31, M-32).** One vocabulary across
+**Motion: how the drawer and the panels arrive and leave (U-5, M-31, M-32).** One vocabulary across
 the drawer and every dropdown and mega panel: a shape, an opening and a closing time, a speed curve and an item
 stagger. The speed curves are one shared list, `plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`
 (editor `src/components/MotionEasingControl.js`), also read by the burger morph.
@@ -774,15 +762,13 @@ stagger. The speed curves are one shared list, `plugins/sgs-blocks/includes/help
   at 400px: 368×436 = `min(438px, 100vw−32px)`); only one reference swaps compact→takeover below desktop,
   handled by the per-device `anchor`. `side-panel` is not an `anchor` value — zero reference evidence at any
   width.
-- **Fidelity status.** The seven looks reproduce structure and copy, not design: styling, borders,
+- **Fidelity status.** The drawer looks reproduce structure and copy, not design: styling, borders,
   symbols, button treatment, cycling background imagery and its motion, and animated secondary media are
   absent. They must not be presented as faithful clones without rework; the Bean's-eye rubric (§8) lists
   the grounds that review checks. Record: `.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`.
 - **POC content rule:** POC fixtures are EXACT clones INCLUDING content (per-fixture classic menus with the
   references' real labels + copy) so differences attribute to the block; genericising the content is a named
-  pre-production step (`P-DRAWER-VARIANT-CONTENT-GENERICISE`). Fixtures that are not exact clones:
-  `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`.
-- **Draft-side look detection** needs value/roster matching and belongs to Spec 33 Part 2.
+  pre-production step.
 - **Design rationale (measured, ~30 sites — `.claude/reports/2026-07-28-nav-drawer-desktop-variant-research.md`):**
   - **ONE block with VARIANTS, not two blocks.** Every production system checked does this (WP core
     Navigation `overlayMenu`; Bricks; Webflow; GOV.UK; Elementor). The documented failure mode is one block
@@ -813,9 +799,9 @@ Full record: `.claude/plans/archive/2026-07-29-spec36-37-merged-architecture-and
    Scope: **site-wide Active default + per-burger override** via the picker. **BUILT:** the CPT, its Active
    model, template lock, and the `wp_footer` render path
    (`plugins/sgs-blocks/includes/class-sgs-drawer-render.php::render_active_drawer`);
-   header starter patterns embed no `sgs/nav-drawer` (only the nine drawer starters do:
-   `theme/sgs-theme/patterns/drawer-scratch.php`, `framework-drawer-default.php` and the seven `drawer-*.php` looks).
-2. **The seven looks as "Menu drawer" starter patterns — BUILT.** Each look is a pattern
+   header starter patterns embed no `sgs/nav-drawer` (only the drawer starter patterns do:
+   `theme/sgs-theme/patterns/drawer-scratch.php`, `framework-drawer-default.php` and the `drawer-*.php` looks).
+2. **The drawer looks as "Menu drawer" starter patterns — BUILT.** Each look is a pattern
    (`theme/sgs-theme/patterns/drawer-*.php`, keyword `featured`) carrying the drawer's own attributes and
    a starting block roster; every value stays editable and nothing locks. They are offered by the
    starter-look control and seeded as Menu drawer posts (Spec 37 FR-37-43, FR-37-47, FR-37-48).
@@ -826,15 +812,14 @@ Full record: `.claude/plans/archive/2026-07-29-spec36-37-merged-architecture-and
    resolved by `Sgs_Drawer_Render::drawer_ref_for()`. The picker is a `SelectControl` over `sgs_drawer`
    posts in `plugins/sgs-blocks/src/blocks/nav-bar-menu/DropdownSettingsPanel.js`, with a dangling-post
    Notice (FR-36-9a). `sgs/nav-drawer` `drawerRef` remains a string element id (default `sgs-nav-drawer`).
-   **NOT BUILT:** inline "create a drawer" from the picker.
+   **Inline creation, built:** the picker offers "Create a new menu panel" (`plugins/sgs-blocks/src/blocks/nav-bar-menu/useCreateDrawer.js::useCreateDrawer`, mounted by `CreateDrawerControl.js`); it is the only add path.
 4. **The nav-menu blocks stay BLOCKS** (`sgs/nav-bar-menu` and `sgs/nav-drawer-menu`) — their content home is
    the classic menu, their edit surface is the header CPT; a nav-menu CPT would triple-indirect. Trigger
    presentation: FR-36-27.
 5. **Controllability contract:** every reference-derived property has exactly one home — CPT content/attrs,
    inspector attrs (Spec 35-manifested), or theme tokens. A value with no home is a build defect.
 6. **Cloning is the FINAL PROOF GATE, not the next task:** fixture wave → capability wave (CPT + FR-36-27 +
-   FR-37-42 + harness fixes) → polish → the 12-reference clone, studionamma first, each accepted clone
-   yielding its starter presets.
+   FR-37-42 + harness fixes) → polish → cloning real references through Spec 47 (the acceptance proof is FR-37-23).
 
 **Drawer settings surface — BUILT** (a "Drawer" inspector panel, per-device via the shared
 `ResponsiveControl`, never a new switcher; all emission through the shared responsive helpers into the
@@ -871,36 +856,36 @@ STOP-DIALOG-DISPLAY-GATE stays intact. This is an editor-UX rule inside FR-36-6'
 capability.
 
 ### FR-36-29 — Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`)
-Wave 3C U-6 + U-7 added four item-level mechanisms to the drawer's own accordion list, each a genuinely
+U-6 and U-7 provide four item-level mechanisms to the drawer's own accordion list, each a genuinely
 different element from the bar's own item paint (FR-36-4):
 - **Row ornament (M-22).** `itemOrnament` (a per-tier `{desktop,tablet,mobile}` object: `none` | `index` | `icon`)
   leads each primary row with either a decorative two-digit counter (`01`, `02`, …) or a glyph
   (`itemOrnamentIcon`, an icon-picker object, with an optional `itemOrnamentIconHover` crossfade).
   `itemOrnamentColour`/`itemOrnamentColourHover` and `itemOrnamentSize`/`itemOrnamentGap` style it
-  (`block.json::attributes.itemOrnament`).
+  (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemOrnament`).
 - **Accordion expander.** `itemExpanderIcon` (icon-picker, default `chevron-down`) is the `<summary>` glyph;
   `itemExpanderRotate` (degrees, default 180, range -360 to 360) is the turn it takes while its accordion is
-  open — 45 degrees turns a plus into a cross (`block.json::attributes.itemExpanderRotate`). Its size, gap, opacity and
+  open — 45 degrees turns a plus into a cross (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemExpanderRotate`). Its size, gap, opacity and
   turn timing are the `submenuCaret*` attributes (Spec 36 "Drawer item-level parity").
 - **Per-item media (M-15).** `itemMedia` (`''` | `featured-image`) shows the linked page's own featured image
   beside its label; a GIF or WebP is served full size so it keeps animating. `itemMediaReveal` (per tier:
   `none` | `always` | `hover`, growing from zero width on hover or keyboard focus), `itemMediaWidth` (unset
   160px) and `itemMediaHeight` (unset 112px), both per tier, and `itemMediaRadius` size and shape it. It is a
   decorative slot, not an operator-placed image, so `supports.sgs.imageControls` is `false`
-  (`block.json::attributes.itemMedia`).
+  (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemMedia`).
 - **Sibling dim (M-24).** `siblingDimColour` (+ `siblingDimColourGradient`) and `siblingDimOpacity` recolour
   every OTHER item in the list while one is hovered or keyboard-focused (a list-scoped `:has()` rule,
-  `includes/helpers-item-effects.php::sgs_sibling_dim_css`); `''`/unset is off. Drawer and icon-list only — not
+  `plugins/sgs-blocks/includes/helpers-item-effects.php::sgs_sibling_dim_css`); `''`/unset is off. Drawer and icon-list only — not
   built on the bar (Bean).
 - **Label roll (M-25).** `labelRoll` (`''` | `up` | `up-scale`) rolls an item's label up to a second copy of
   itself on hover or keyboard focus, honouring reduced motion; `itemMotionDuration`/`itemMotionEasing` is the
   one shared item-motion timing pair for sibling dim, label roll and the ornament crossfade
-  (`block.json::attributes.labelRoll`). Distinct from `triggerHoverLabel`/`triggerOpenLabel` (FR-36-27), which
+  (`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.labelRoll`). Distinct from `triggerHoverLabel`/`triggerOpenLabel` (FR-36-27), which
   roll the BURGER TRIGGER's own word, not a list item's.
 - **Row separators.** Two independent mechanisms. The `itemBorderWidth`/`itemBorderColour*` family paints the
   bottom edge of a vertical row (on the horizontal bar the same attribute paints the item underline instead —
-  `block.json::attributes.itemBorderWidth`). The `separators` setting draws the line between stacked rows, with its
-  own colours and hover treatment (Spec 36 "Drawer item-level parity", Spec 41 FR-41-37).
+  `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemBorderWidth`). The `separators` setting draws the line between stacked rows, with its
+  own colours and hover treatment ("Drawer item-level parity", FR-41-37).
 - **Numbered link lists.** `sgs/icon-list`'s `markerType: 'numbered'` plus its per-item `description` (FR-36-26)
   serves the numbered starter pattern (`sgs/mega-compact-links-numbered`) that pairs with this unit.
 
@@ -909,22 +894,22 @@ The references make the trigger a designed element (one renders the word "MENU",
 glyph). **BUILT** on `sgs/nav-bar-menu` (burger is bar-only), all inspector-manifested: `triggerMode`
 (`icon` | `text` | `icon-and-text`, per device: a tier object), `triggerIconPosition` (icon before or after the
 label), `triggerIcon` (an `IconPicker` object), `triggerLabel` (default
-"Menu"), and the magnet-hover attributes (`triggerMagnetEnabled` / `Radius` / `Strength`), specified in Spec
-41 FR-41-30/31. The burger↔X morph is built but auto-gated to the default glyph
+"Menu"), and the magnet-hover attributes (`triggerMagnetEnabled` / `Radius` / `Strength`), specified in
+FR-41-30/31 (§14.7). The burger↔X morph is built but auto-gated to the default glyph
 (`plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`, `$is_default_icon`).
-**Its pose and timing are operator choices (Wave 3C U-11):** `burgerMorph` (`x` default | `x-rotate`, an X
+**Its pose and timing are operator choices (U-11):** `burgerMorph` (`x` default | `x-rotate`, an X
 plus a 180 degree turn | `line`, the bars collapse onto one line | `none`), `burgerMorphDuration` (ms,
 default 200) and `burgerMorphEasing` (named curves from the theme easing tokens plus a validated custom
 `cubic-bezier()`), delivered as custom properties; reduced motion still wins. `burgerBarCount` (3 default, or
 2) sets how many bars the default glyph draws; two bars sit 6.5px apart centre to centre and have their own pose
-under every `burgerMorph` value (wearecollins' two bars cross into an X). `burgerSize` is the button's height
+under every `burgerMorph` value (the two bars cross into an X). `burgerSize` is the button's height
 and `burgerWidth` (per tier, empty = square) its width; a button under 44px keeps a 44x44 tap area on its
 `::after`. The bar-stack BOX is `burgerIconWidth` (bar length) and `burgerIconHeight` (bar stack height), both
-per tier and both empty by default, which keeps the box at 24x18 (U-18 G6; lamalama's bars are 16px in a 12px
+per tier and both empty by default, which keeps the box at 24x18 (U-18; a reference's bars are 16px in a 12px
 stack). They write `--sgs-nbm-icon-w` and `--sgs-nbm-icon-h` rather than bare `width`/`height`, because every
 `burgerMorph` pose derives its open travel from `--sgs-nbm-icon-h` through `calc()`, so one property reaches
 every pose. `burgerBarGap` (per tier, empty by default) is the space between the bars: it writes
-`--sgs-nbm-icon-h` as `calc(bars x 2px + (bars - 1) x gap)` from `includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css`,
+`--sgs-nbm-icon-h` as `calc(bars x 2px + (bars - 1) x gap)` from `plugins/sgs-blocks/includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css`,
 after the `burgerIconHeight` rule, so a set gap wins over it. The button's own box takes `burgerPadding` (tier
 box; unset keeps `padding:0`), `burgerBorderRadius` (tier length; unset keeps the zero-specificity
 `:where(.sgs-nav-bar-menu__burger)` medium-radius default, 8px, in `style.css`; 0 gives square corners) and
@@ -932,20 +917,20 @@ box; unset keeps `padding:0`), `burgerBorderRadius` (tier length; unset keeps th
 is written only alongside a width, and a 0 width still writes it). Bar THICKNESS (2px) still has no setting; no reference has needed one. The bar items' label magnet
 takes `itemMagnetStrength` (the pull factor; unset keeps the built-in 0.15 capped at 8px). The burger button
 carries `data-sgs-nav-collapse` (its `collapsePoint`) for FR-36-6's resize rule.
-**Reach, built (Wave 3C U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as
+**Reach, built (U-14):** `triggerSurface` (tier on/off, "Whole row opens the menu", M-39, DEC-14 as
 amended to a separate attribute): below the collapse point the burger's `::after` stretches over its
 `.sgs-site-header-row`, so a click anywhere on the row is a click on the button (no JS); the magnet's transform
 moves to the button's children at those tiers, and other row blocks sit above the overlay
-(`plugins/sgs-blocks/includes/nav-trigger-surface-css.php`). The detaching chip (M-08, buck): `triggerDetach` (tier on/off),
+(`plugins/sgs-blocks/includes/nav-trigger-surface-css.php`). The detaching chip (M-08): `triggerDetach` (tier on/off),
 `triggerDetachAfter` (tier px), `triggerDetachSize` (tier px, never below 44), `triggerDetachOffset` (tier
-`{x,y}`, x from the inline end), `triggerDetachRadius`, `triggerDetachBackground`(`Hover`; empty paints the opaque surface token, as buck's chip is
+`{x,y}`, x from the inline end), `triggerDetachRadius`, `triggerDetachBackground`(`Hover`; empty paints the opaque surface token, so the chip is
 filled once it detaches), `triggerDetachZIndex` (110). Once the header's burger is off screen and the page has scrolled past the tier's
 threshold, a second copy of the burger (the same markup call, wrapper `__detach-wrap`, printed on `wp_footer` by
 `plugins/sgs-blocks/includes/nav-detach-chip.php` because a row's transform would trap a fixed child) shows fixed in the top
 inline-end corner, below the admin bar; `plugins/sgs-blocks/src/shared/nav-interactivity/detach-chip.js` sets `is-detached`. Every
 opener of one drawer reads one open state (`plugins/sgs-blocks/src/shared/nav-interactivity/store.js::state.openByRef`), so `aria-expanded` agrees on both.
 
-**Swap-label, built (Wave 3C U-6):** `triggerOpenLabel` (the word while the drawer is open, '' none) and
+**Swap-label, built (U-6):** `triggerOpenLabel` (the word while the drawer is open, '' none) and
 `triggerHoverLabel` (the word on hover), animated by `labelRoll` (`up` | `up-scale`) and the shared
 `itemMotionDuration`/`itemMotionEasing`. The copies bind `aria-hidden` to `state.isOpen`, so the button's
 accessible name is the visible word (WCAG 2.5.3); open wins over hover.
@@ -999,7 +984,7 @@ reachable on the target page). "Crawlable without JS" ≠ "every panel opens wit
   element and its link while collapsing its label to icon-only. The `ResponsiveTriStateControl`
   (on/off/inherit tri-state, P2 §4.1) is **BUILT** — adopt it, never invent a parallel control (R-31-9).
   Full per-device model + ownership split: FR-36-24.
-- **Moving a header block into the drawer (Wave 3C U-10, M-19) — BUILT by composition.** A copy of the block
+- **Moving a header block into the drawer (U-10, M-19) — BUILT by composition.** A copy of the block
   goes in the drawer body and the header copy is hidden: by tier with `sgsHideOnMobile/Tablet/Desktop`, or
   exactly while this menu shows its burger with `sgsCollapseVisibility` (`hide` | `only`), whose rules the
   header writes at this block's `collapsePoint` (Spec 37 FR-37-24, "At the collapse point, not a tier").
@@ -1082,7 +1067,7 @@ cases:
 - **No drawer at all** (`drawerRef` = 0, no Active drawer answers, no `sgs/nav-drawer` on the page). Header
   STARTER patterns embed no drawer (the Active `sgs_drawer` answers), but a header assembled by inserting
   the blocks by hand may have none, so the burger opens nothing — silently, with nothing for a non-coder to
-  diagnose (`P-HEADER-SIMPLICITY-FINDINGS` finding 1). The Notice says so in plain English and offers
+  diagnose. The Notice says so in plain English and offers
   **"Add the menu panel"**, which inserts an `sgs/nav-drawer` (seeded with a `sgs/nav-drawer-menu` on the
   same menu) as a **root-level SIBLING** of whatever top-level block the header's `sgs/nav-bar-menu` sits
   in, and selects it so the operator lands on its content. There is no one-click re-point to a different
@@ -1111,12 +1096,12 @@ the failure that policy exists to prevent.
 > note and a phase line so a solo builder knows the sequence. The ONE a11y decision gate for every interactive
 > piece is FR-36-10's: does the open panel leave the page usable (**DISCLOSURE**) or dim/block it (**DIALOG**)?
 > — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Spec 35A Part L controls,
-> converter-emittable, WCAG, perf, UK).
+> attribute-writable by Spec 47, WCAG, perf, UK).
 
 ### Spec maturity index — read this before dispatching any §4 FR
 
 The FRs in this section sit at uneven maturity. FR-36-26 is a dispatchable sub-spec (frozen attribute table,
-definition of done, converter contract); the others are one page of intent each, or built. A reader who
+definition of done, authoring contract); the others are one page of intent each, or built. A reader who
 assumes they are peers will hand an OUTLINE FR to a builder and get several different implementations.
 
 `Spec maturity` answers exactly one question: **"can this FR be handed to a builder AS WRITTEN, without a
@@ -1246,9 +1231,9 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;
   sticky-header compact-mark swap. **BUILT:** `colourTreatment` (`''` | `white` | `auto`): `white` forces the
   logo IMAGE to pure white via a CSS filter, for a full-colour logo on a dark surface such as `sgs/site-footer`;
-  `auto` whitens it only on a dark ground (Wave 3C U-13; the ground signals are in the next bullet).
+  `auto` whitens it only on a dark ground (U-13; the ground signals are in the next bullet).
 - **SHOULD (Phase 3):** shrink-on-scroll (row+logo dimension animate); logo+site-title lockup toggle;
-  **sync-as-favicon** (WP core `shouldSyncIcon`). **BUILT (Wave 3C U-17, U-13):** "Logo for dark backgrounds"
+  **sync-as-favicon** (WP core `shouldSyncIcon`). **BUILT (U-17, U-13):** "Logo for dark backgrounds"
   (`darkLogoId`), shown in the site's dark theme and on any dark ground: inside `sgs-on-dark`, or in a header
   whose section ink reads dark (`is-header-on-dark`, which outranks a static section class; Spec 37 FR-37-50),
   with the normal logo on a light ground even in dark mode; and a Lottie substrate (`animationSubstrate`
@@ -1397,29 +1382,9 @@ mandates (and the same reason `role="menu"`/`menubar` is banned there). Over-lan
 navigation noisier, not richer. So the naming work above applies to the nav as a WHOLE, once — not per panel,
 and not per column inside a panel.
 
-#### FR-36-26b — Converter routing target (declared now; recognition is Spec 33 Part 2's)
-The specialised header/footer converter ("Spec 33 Part 2") is not built and is deliberately not designed
-here. But its EMIT TARGET for this content type is stable, so it is declared now. Part 2 INHERITS the mapping
-below and only has to solve RECOGNITION (identifying the region in a draft) plus the conversion mechanics.
-
-**Declared routing — a draft footer "heading + list of links" region maps to:**
-
-| Draft signal | Emit |
-|---|---|
-| Heading + list whose items link to site pages | ONE `sgs/icon-list`, `source: "typed"`, heading = the draft's heading text, one `items[]` entry per link (`text` + `url`) |
-| The same, where the draft list appears to mirror a site menu | STILL `source: "typed"` on a first pass — binding to a real menu is an OPERATOR decision, not something the converter should infer |
-| Heading + list with NO links | ONE `sgs/icon-list`, `source: "typed"`, `markerType` per the draft's visual marker, `<nav>` OFF |
-
-**Binding constraints on that emit:** never `core/list` or `core/navigation` (both banned);
-`markerType` derived from the draft's RENDERED marker (`icon`/`emoji`/`bullet`/`numbered`/`none`),
-with `numbered` forcing `<ol>`; the heading is the block's own `heading` ATTRIBUTE, never a sibling
-`sgs/heading` block — a sibling would break the `aria-labelledby` contract in FR-36-26a; and the
-`<nav>` landmark defaults OFF for converted typed lists, per rule 3 above.
-
-**Out of scope here:** how Part 2 RECOGNISES a footer link-list region in an arbitrary draft. That is Part
-2's design problem; this entry exists so the MAPPING is not re-decided then.
-
 #### FR-36-26c — Build scope and contract (BUILT)
+**Authoring contract.** Never `core/list` or `core/navigation` (both banned); `markerType` comes from the rendered marker (`icon`/`emoji`/`bullet`/`numbered`/`none`), with `numbered` forcing `<ol>`; the heading is the block's own `heading` ATTRIBUTE, never a sibling `sgs/heading` block (a sibling would break the `aria-labelledby` contract in FR-36-26a); the `<nav>` landmark defaults OFF for typed lists (FR-36-26a rule 3); binding a typed list to a real menu is an OPERATOR decision.
+
 **Data model — attributes on `sgs/icon-list`.** Shapes are frozen: declare the SHAPE, not just the value,
 or WP coerces to the default.
 
@@ -1430,14 +1395,14 @@ or WP coerces to the default.
 | `source` | string | `'typed'` | `typed` \| `menu`. Never a JSON enum, same reason |
 | `menuRef` | integer | `0` | The `nav_menu` term id when `source: menu`. `0` = unset |
 | `markerType` | string | `'icon'` | `icon` \| `emoji` \| `bullet` \| `numbered` \| `none` |
-| `numberFormat` | string | `'decimal'` | `decimal` \| `decimal-leading-zero` (01, 02 …) for a `numbered` list; with `numberColour`, `numberFontSize`, `numberFontWeight` it paints the `<ol>`'s `::marker`. A drawer's `sublinkMarkerColour` wins inside an embedded mega panel (`--sgs-list-marker-colour`). Wave 3C U-7 |
-| `siblingDimColour` (+`Gradient`), `siblingDimOpacity`, `labelRoll`, `itemMotionDuration`/`Easing` | — | — | Sibling dim and the two-copy label roll on the list's items (Spec 41 FR-41-39, FR-41-40), e.g. a footer menu list |
+| `numberFormat` | string | `'decimal'` | `decimal` \| `decimal-leading-zero` (01, 02 …) for a `numbered` list; with `numberColour`, `numberFontSize`, `numberFontWeight` it paints the `<ol>`'s `::marker`. A drawer's `sublinkMarkerColour` wins inside an embedded mega panel (`--sgs-list-marker-colour`). U-7 |
+| `siblingDimColour` (+`Gradient`), `siblingDimOpacity`, `labelRoll`, `itemMotionDuration`/`Easing` | — | — | Sibling dim and the two-copy label roll on the list's items (FR-41-39, FR-41-40, §14.7b), e.g. a footer menu list |
 | `renderLandmark` | boolean | `false` | Emits the `<nav>` wrapper. Set `true` by default ONLY when `source: menu` (FR-36-26a rule 3) |
-| `heading*` typography family | per R-22-13 | — | `headingFontSize`/`Unit`/`Tablet`/`Mobile`, `headingFontWeight`, `headingFontStyle`, `headingLineHeight`/`Unit` |
-| `item*` typography family | per R-22-13 | — | Same suffix set, prefix `item` |
+| `heading*` typography family | per `plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard" item 2 (D209) | — | `headingFontSize`/`Unit`/`Tablet`/`Mobile`, `headingFontWeight`, `headingFontStyle`, `headingLineHeight`/`Unit` |
+| `item*` typography family | per `plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard" item 2 (D209) | — | Same suffix set, prefix `item` |
 
 **Typography is NOT hand-rolled.** Use the shared `TypographyControls` component + the
-`sgs_typography_css_rule( $attributes, $prefix, $selector )` helper (R-22-13). Do not write a bespoke
+`sgs_typography_css_rule( $attributes, $prefix, $selector )` helper (`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard" item 2, D209). Do not write a bespoke
 font-size control — that is the exact divergence the rule exists to stop, and `check-control-ux` flags a
 responsive family that bypasses `ResponsiveControl`.
 
@@ -1474,8 +1439,7 @@ confirm: `numbered` emits `<ol>`; the `<nav>` landmark appears ONLY for the menu
 accessible name equals the visible heading text; and `aria-current` lands on the right item on more than one
 page (proving it is client-side, not baked). Then `plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs` clean on that page.
 
-**Out of scope here:** the FR-36-26b converter recognition step (Part 2's problem — only the ROUTING is
-declared), and any change to `sgs/nav-bar-menu` / `sgs/nav-drawer-menu`, which keep each block's own role.
+**Out of scope here:** any change to `sgs/nav-bar-menu` / `sgs/nav-drawer-menu`, which keep each block's own role.
 
 ## 5. Accessibility (governing; primary-source-grounded)
 
@@ -1500,18 +1464,18 @@ keeps 44 px); skip-link visible-on-focus; `prefers-reduced-motion`; `forced-colo
 boundaries — borders/focus rings must not vanish in Windows High Contrast) + `prefers-contrast`; no
 colour/motion-only state.
 
-**The colour half of this FR has a named mechanism: [Spec 41](41-NAV-MENU-COLOUR-STATE-SYSTEM.md)**
-(FR-36-28). Its `aria-current="page"` clause above is the SAME client-side mechanism Spec 41 consumes —
+**The colour half of this FR has a named mechanism: Part 14 of this spec (§14)**
+(FR-36-28). Its `aria-current="page"` clause above is the SAME client-side mechanism Part 14 consumes —
 `plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage` (identical in
 `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage`), reused verbatim, never re-derived
-server-side (LiteSpeed would serve one page's answer everywhere). Spec 41's contrast posture is deliberately
+server-side (LiteSpeed would serve one page's answer everywhere). Part 14's contrast posture is deliberately
 conservative and weakens nothing here: the live luminance check in
 `plugins/sgs-blocks/src/components/GradientCapableColourControl.js` stays **warn-only** — it never blocks or
-silently alters an operator's colour (Spec 41 FR-41-17) — and an opt-in "Auto-adjust for readability" nudge
-is carried as Spec 41 FR-41-18, explicitly non-blocking. The automatic WCAG foreground resolution via
-`sgs_wcag_preferred_text_colour_for_bg()` is Spec 41's `itemSmartContrast` toggle (FR-41-5), **default off**
+silently alters an operator's colour (FR-41-17) — and an opt-in "Auto-adjust for readability" nudge
+is carried as FR-41-18, explicitly non-blocking. The automatic WCAG foreground resolution via
+`sgs_wcag_preferred_text_colour_for_bg()` is Part 14's `itemSmartContrast` toggle (FR-41-5), **default off**
 so an operator's explicit colour renders exactly as authored. **This FR's "no colour/motion-only state"
-clause is carried by Spec 41 FR-41-6**: two explicit, operator-reachable non-colour defaults — an underline
+clause is carried by FR-41-6**: two explicit, operator-reachable non-colour defaults — an underline
 on Hover and a weight change on current.
 
 ### FR-36-12 — Operator a11y feedback INFORMATIONAL ONLY (P2 DP2a)
@@ -1544,12 +1508,12 @@ block root, so hosting the drawer in it would either bury the `<dialog>` one lev
 wrapper's box/width controls over the actual modal surface) or put a `display` value on the `<dialog>` base
 rule, which defeats the UA's `dialog:not([open]){display:none}` and leaves the drawer permanently visible
 (STOP-DIALOG-DISPLAY-GATE). The drawer therefore renders block-private with its own scoped `<style>`. Zero
-converter impact (CSS routes off `block_attributes` keyed on `block_slug`, never
+routing impact (CSS routes off `block_attributes` keyed on `block_slug`, never
 `wraps_block`/`container_kind`). The no-inline contract is fully met.
 
 ### FR-36-14 — Control-completeness (Spec 35A Part L)
 Settings/Styles/Advanced via `group`; ≤3-default `PanelBody` + `ToolsPanel` (P2 §5); `LinkControl` per
-item/CTA; `StateToggleControl` (hover); the shared **`TypographyControls` + `sgs_typography_css_rule`** (R-22-13,
+item/CTA; `StateToggleControl` (hover); the shared **`TypographyControls` + `sgs_typography_css_rule`** (`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard" item 2, D209,
 never bespoke font controls); `ResponsiveControl` (tiers) + the **BUILT Responsive-Visibility extension** +
 BUILT `labelCollapse` (per-device show/hide + label-collapse — FR-36-8/-24); `DesignTokenPicker` (enableAlpha +
 clearable); box-object attrs; `hideExtensions`; `MediaGalleryPicker`/icon + `supports.sgs.imageControls:true`
@@ -1580,38 +1544,13 @@ attributes exist on the block, not just that the panel shows.
 a default.** Open framework-wide gaps (`conditional-visibility.js` has no `hideExtensions` slug; the bespoke
 Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern) are in Open Questions.
 
-### FR-36-28 — Nav colour-state system → Spec 41
+### FR-36-28 — Nav colour-state system → Part 14 (§14)
 
-**The `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` colour, state and control system (shared) is specified in
-[`41-NAV-MENU-COLOUR-STATE-SYSTEM.md`](41-NAV-MENU-COLOUR-STATE-SYSTEM.md).** That spec is the concrete
-mechanism satisfying FR-36-4's "distinct hover+focus states" and the colour half of FR-36-11, and it sits
-under FR-36-14's control-completeness contract rather than beside it. ⛔ It does **not** satisfy FR-36-4's
-"active-trail" clause — see FR-36-4 and Spec 41 FR-41-20.
+**The `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` colour, state and control system (shared) is specified in §14 of this spec.** It is the concrete mechanism satisfying FR-36-4's "distinct hover+focus states" and the colour half of FR-36-11, and it sits under FR-36-14's control-completeness contract rather than beside it. ⛔ It does **not** satisfy FR-36-4's "active-trail" clause (FR-41-20).
 
-**Why a separate spec.** This document's FR numbers are cited from code and cannot be renumbered, and a full
-control-surface design folded in would push the single canonical nav doc past readability for a cleanly
-separable concern. **Spec 36 keeps the requirement; Spec 41 owns the mechanism. Read together.**
+**Why a separate Part.** This document's FR numbers are cited from code and cannot be renumbered, and the control-surface design is a cleanly separable concern: §1 to §13 keep the requirement; §14 owns the mechanism. Read together.
 
-**What Spec 41 covers** (its own FR list is authoritative — read it, do not copy it here):
-- Every stateful control targets the LINK, never the `<li>`; three states (Normal / Hover / current) with
-  the current-before-Hover source-order rule; the 3-state PHP emitters.
-- `itemSmartContrast` — the auto-readable foreground as an opt-in toggle (default off); the non-colour
-  state signal (WCAG 1.4.1: hover underline + current weight); the warn-only contrast check and the opt-in,
-  non-blocking "Auto-adjust for readability".
-- One 3-state per-side item border (no separate "Item Divider"); "Hover colour animation" (border panel
-  only, mandatory reduced-motion companion); the hover treatment selector (`itemBgHoverTreatment`,
-  including `highlight`).
-- The submenu split (panel background Normal-only, LINK background 3-state); submenu open animation
-  (`none` / `fade` / `slide-down`); submenu top offset; parent-stays-hovered.
-- The menu button's icon/text/both mode + label and magnetic pull; the close-side companions on
-  `sgs/nav-drawer`; `SgsColourPanel` row sub-headings.
-- ⛔ The ARIA active-trail is NOT implemented — an explicit non-scope boundary (FR-41-20); ancestor Current styling is built in CSS.
-
-⛔ **Out of Spec 41's scope, deliberately:** mega-menu colours and controls (owned by the mega-menu builder);
-the `featured` item-flag mechanism (FR-36-4 — untouched); sticky/scrolled colour duplication (the header
-owns scroll state per Spec 37); a device-visibility panel (already covered by the universal
-`responsive-visibility.js` / `conditional-visibility.js` extensions, which neither `sgs/nav-bar-menu` nor
-`sgs/nav-drawer-menu` opts out of — see FR-36-14: both list only `clickEffects`, `parallax`, `spacing`).
+⛔ **Out of Part 14's scope, deliberately:** mega-menu colours and controls (FR-36-5); the `featured` item-flag mechanism (FR-36-4, untouched); sticky/scrolled colour duplication (the header owns scroll state per Spec 37); a device-visibility panel (covered by the universal `responsive-visibility.js` / `conditional-visibility.js` extensions, which neither nav block opts out of — see FR-36-14: both list only `clickEffects`, `parallax`, `spacing`).
 
 ## 6a. Build order
 
@@ -1619,10 +1558,7 @@ owns scroll state per Spec 37); a device-visibility panel (already covered by th
 table inside a requirements doc drifts against the code and, worse, wears a verification badge that stops the
 next reader checking.
 
-**Specs 36+37 complete first; the cloning header/footer pipeline (Spec 33 Part 2) consumes them.** FR-36-15
-FEEDS Part 2 (its job is documenting the architecture) and is blocked by nothing; FR-36-25 depends on
-FR-36-21/22/23, not Part 2; only the *branded* Indus header sliver of FR-36-18 waits for Part 2. See Spec 37
-§6.
+**Specs 36+37 complete first; Spec 47's route then writes headers, footers and drawers through their block attributes.** FR-36-15 is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 waits for Spec 47. See Spec 37 §6.
 
 ## 7. Phasing — MVP first, prove before the plumbing
 
@@ -1630,7 +1566,7 @@ Each phase ships something demoable + has a pre-registered exit gate (Bean's eye
 utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo builder knows the sequence.
 - **Phase 1 (MVP) — Mama's end-to-end (classic menu):** flat bar + burger (`sgs/nav-bar-menu`) →
   `sgs/nav-drawer` full-screen modal accordion (`sgs/nav-drawer-menu` inside it) + the shared utility +
-  converter-emit of those + FR-36-17 crawlability; **plus the cart badge (`role="status"`, FR-36-19) + logo
+  block-attribute emit of those + FR-36-17 crawlability; **plus the cart badge (`role="status"`, FR-36-19) + logo
   basics (FR-36-22).** NO mega CPT, NO safe-triangle (a flat bar has no submenus),
   NO mini-cart drawer. **Gate-1** (Mama's live + drawer a11y + crawl + Bean's eye) is the pre-registered
   exit.
@@ -1638,8 +1574,6 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
   attach + real-position render + mobile-in-drawer (the panel inside the drawer accordion by default, `megaDrawerMode` `link` available — FR-36-6);
   safe-triangle + hover-intent; the collapse mode (burger→drawer, built — FR-36-8); **the utility pieces — search, social, business-info, and the cart mini-cart
   (FR-36-19..23).** **Gate-2** = the full §8 incl. the Indus mega. **After Gate-2 passes, before Phase 3:**
-  update **Spec 33 Part 2** with the true header/footer setup (the clone pipeline comes after the nav is
-  built + tested — FR-36-15).
 - **Phase 3 (follow-on extras) — competitive breadth + the moves:** **block-based `wp_navigation` menu
   support** (+ its spike); WooCommerce category/nav integration; multilingual (+ hreflang);
   conditional/role-based/scheduled items; `<details>`-animation polish; **logo lockup + favicon-sync +
@@ -1656,7 +1590,7 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 - **Mama's (gate-1):** flat 5-item classic-menu bar + a **featured** item + a **cart badge** (`sgs/cart` with
   the `role="status"` badge); mobile → burger → drawer (accordion) + CTA + logo basics.
 - **Indus (gate-2):** a 7-item bar of plain links + **3 dropdowns + at least one mega ("Brands"), rendered at
-  its real menu position** (not last). The framework supports **5 mega layout templates**.
+  its real menu position** (not last). The framework ships mega starter patterns (`git ls-files theme/sgs-theme/patterns | grep mega-`).
 
   ⛔ **The mega COUNT is derived at gate time, never pre-known.** A criterion that names a number the spec
   does not know can be neither passed nor failed, so the criterion does not depend on a number:
@@ -1712,8 +1646,7 @@ diff as a defect of this gate.
 `document.elementFromPoint()` at each probe returns the expected top-layer node — the **header row's probe
 returns the toggle/close control** (not BODY or the scrim); **every drawer link probed at its own centre
 returns itself**; **everything below the header is unreachable** (probe a hero link → returns the scrim /
-`inert` layer, never the underlying link). PASS = every probe returns its expected node: **baseline 10/10
-Mama's, 18/18 Indus**. Geometry: a partial drawer's `getBoundingClientRect().top` === header bottom ±1px at
+`inert` layer, never the underlying link). PASS = every probe returns its expected node (record the probe count in the gate report). Geometry: a partial drawer's `getBoundingClientRect().top` === header bottom ±1px at
 all three widths; the frame sweep during open shows width/anchor CONSTANT (the scrollbar-bounce test — run on
 a **real desktop width with a classic scrollbar**; device emulation cannot reproduce the scrollbar-vanish
 bounce, so the check is otherwise vacuous). Cache: clear the CDN/LiteSpeed cache FIRST
@@ -1729,7 +1662,7 @@ checked first.
 
 **Self-check before presenting. Answer every row with evidence, not intent.** Grounds 1–5 are the fidelity
 grounds the owner's eye checks on drawer clones (`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`
-§D3); 6–7 are two defects proven live on the drawer variants (§D1, §D2).
+§D3); 6–7 are standing checks for two defects that shipped on the drawer variants (§D1, §D2).
 
 | # | Ground | Answer it with |
 |---|---|---|
@@ -1764,14 +1697,13 @@ grounds the owner's eye checks on drawer clones (`.claude/reports/2026-07-29-nav
 ### FR-36-18 — Live production instances render from CPTs
 Every live site (the sandybrown canary and the Indus test site, `lavender-dinosaur-183533`, deploy target
 `indus-test`) renders its header and footer from CPTs (`sgs_header` / `sgs_footer`) built on the current nav
-blocks; both currently render generic proof headers, and the faithful branded Indus header is delivered by
-the Spec 33 Part 2 header/footer cloning pipeline — a cloning concern, not a gate on anything here. Any
+blocks; both render generic proof headers; a branded header is produced through Spec 47's header surface. Any
 re-authoring of a live header is done **via the editor** (never WP-CLI `post_content`), **canary-first**,
 with a before/after computed check that both menus render + collapse.
 
-## 9. Converter-emittability (Spec 31 §13 + Spec 33 Part 2)
+## 9. Emittable by construction
 
-### FR-36-15 — Emittable by construction (DP6); the clone pipeline is built AFTER the nav, not before
+### FR-36-15 — Emittable by construction (DP6)
 Write a **classic `nav_menu`** (the primary path — `wp_update_nav_menu_item()`; add a `nav_menu_item`
 targeting each `sgs_mega_menu` post — the native association, no map); write `sgs/nav-bar-menu` with
 mode/style/`drawerRef` attrs for the header placement, and `sgs/nav-drawer-menu` for the drawer placement;
@@ -1781,27 +1713,14 @@ a per-client title/slug prefix (no collisions). **Degradation:** an un-mappable 
 logged skipped-with-reason (Rule 4). All native SGS blocks; no inline styles; no banned core blocks;
 crawlable `<a href>`.
 
-**The specialised header/footer clone pipeline is built AFTER this nav is built + tested — it is NOT a
-Phase-1 blocker.** The universal pipeline already passes 100% on the homepage; a targeted header/footer one is
-EASIER. The spec's job HERE is to **DOCUMENT the architecture clearly + hold to universal WP coding standards**
-so that the later pipeline is easy. **Spec 33 Part 2 is updated with the true header/footer setup AFTER the
-nav build passes its test gate, before the extras phase** (§7) — not a hidden pre-Phase-1 blocker. FR-36-15
-stays HIGH-LEVEL: no converter sub-design is owed here.
-
-**Idempotency (a light note to honour at build, NOT a blocker):** the create-then-reference emit should use a
-`_sgs_clone_source_id` postmeta idempotency key (NOT bare `post_name`, which WP auto-suffixes → re-clone
-duplicates), UPDATE-in-place on match (not skip), an orphan-sweep for panels removed in a later re-clone, and a
-`do_blocks` recursion guard for a panel that references its own menu; batch the N mega-panel resolves (one
-`get_posts` by referenced IDs) + transient-cache the rendered panel HTML keyed by panel-modified. Documented
-so the later pipeline is easy. *(wp_navigation-block emit + the "pack factory" are Phase-3/build-order
-deps.)*
+A mega panel that references its own menu is stopped by a `do_blocks` recursion guard.
 
 ## 10. Constraints
-Spec 32 no-inline · Spec 35A Part L + the Responsive-Visibility ext · Spec 31/33 emittable · Spec 37
+Spec 32 no-inline · Spec 35A Part L + the Responsive-Visibility ext · block attributes writable by Spec 47 · Spec 37
 decoupling + published state surface · WCAG 2.1 AA (+2.2; 44 px; forced-colors survival) ·
 crawlable/no-AJAX/schema-friendly (FR-36-17) · `viewScriptModule` vanilla JS + honest no-JS scope, no jQuery
 · works in the header · transform-ancestor survival · perf budget (<100 KB CSS / <50 KB JS; no CLS;
-links-never-lazy, distinct from below-fold `<img loading=lazy>`) · UK English · the 5 mega layouts are
+links-never-lazy, distinct from below-fold `<img loading=lazy>`) · UK English · the mega starters are
 git-versioned theme patterns (FR-36-5) · no block deprecations pre-production ·
 **`blocks-must-shrink-to-fit-container`** — every nav piece is intrinsically responsive (min-content ≤
 container at every breakpoint), not clamp-forced.
@@ -1852,15 +1771,13 @@ store, not this one. So the claim is: **one Site-Info entry is the default sourc
 | **Dialog-engine duplication.** `sgs/modal` hand-rolls its own `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines. Should a shared dialog-geometry primitive (carrying a modal/non-modal flag, serving drawer, modal, cart flyout, search overlay) unify them? | Framework | Unscheduled |
 | **`conditional-visibility.js` has no `hideExtensions` slug**, so no block can opt out of it (`git grep -n -i hideExtensions -- plugins/sgs-blocks/src/blocks/extensions/conditional-visibility.js` returns nothing). Kept on nav blocks deliberately (member-only / promo-window navs are legitimate); needs a slug for whoever wants it hideable. | Framework | Unscheduled |
 | **Custom CSS field gap.** The bespoke Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern present on every `sgs/*` block. | Framework | Unscheduled |
-| **FR-36-27 shape.** Keep it open for the `triggerStyle` / `triggerSymbol` / `triggerOpenStyle` / cross-block morph-sync shape, or close it as satisfied by Spec 41's narrower `triggerMode` / `triggerIcon` build? | Bean | Unscheduled |
+| **FR-36-27 shape.** Keep it open for the `triggerStyle` / `triggerSymbol` / `triggerOpenStyle` / cross-block morph-sync shape, or close it as satisfied by Part 14's narrower `triggerMode` / `triggerIcon` build? | Bean | Unscheduled |
 | **`listColumns` reading order.** Rows-of-2 vs column-wise reading is undecided — the reference capture for that variant failed, so there is no ground truth. | Bean | Unscheduled |
 | **Block-editor `sgs_mega_menu` link search (Phase 3 spike).** Does the block Nav editor surface the CPT in link search? | Framework | Phase 3 |
 | **Partial-width drawer under a hide-on-scroll header.** Needs a published hidden-state signal from Spec 37 (FR-36-9). | Spec 37 owner | Before that combination is built |
-| **Drawer defects proven live:** icon-list text is invisible on the two dark-`footer-bg` drawer variants (`P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER`); `drawerAlign: 'center'` does not centre the menu list (`P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`). | Framework | Before the drawer variants are re-presented |
 
 ## 13. Sources
-Research: `.claude/reports/2026-07-18-P2.5-*` (phase-1 research + QC), `.claude/reports/2026-07-19-P2.5-*`
-(cart/search and logo/social/business-info pieces research). Live-code checks:
+Live-code checks:
 `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::get_nav_block_names`,
 `plugins/sgs-blocks/src/header-behaviours/view.js::publishHeight`, `labelCollapse`
 (`plugins/sgs-blocks/src/blocks/button/edit.js::labelCollapse` /
@@ -1871,5 +1788,901 @@ Research: `.claude/reports/2026-07-18-P2.5-*` (phase-1 research + QC), `.claude/
 MDN, Adrian Roselli. UX: NN/g, Baymard, Smashing, IxDF, LogRocket, Algolia. Platform: MDN/Chrome (Popover,
 `<dialog>`, `<details name>` — re-verify at build), WP/Woo (Store API, Mini-Cart block, `core/search`,
 `core/site-logo` `shouldSyncIcon`, `site-title`, `social-links`), `LocalBusiness` schema. Competitor:
-Kadence/Blocksy/Spectra/Bricks header builders. Internal: Spec 37, 32, 35, 31 §13, 33 Part 2, the P2 builder
+Kadence/Blocksy/Spectra/Bricks header builders. Internal: Spec 37, 32, 35, 47, the P2 builder
 design gate; seo-schema/seo-technical.
+
+## 14. Nav menu colour, state and control system
+
+⛔ **FR IDs and section numbers in this Part are stable citations.** Every `FR-41-N` ID is cited from code, the framework DB and other specs and is never renumbered; new requirements take the next free number, and gaps are intentional. Code cites the sections below as `Spec 36 §14.x` (the numbering inside this Part mirrors the nav colour-state system's own outline: `§14.9.6` is the Colour panel layout, `§14.1.3` the three states). Spec 36 keeps the nav requirements (FR-36-4's "distinct hover+focus states", FR-36-11's WCAG floor); this Part owns the mechanism (FR-36-28 is the pointer here).
+
+Companions: Spec 35 (PART O control-type contract), Spec 35A (Part L control completeness), Spec 32 (no inline `style=` property declarations; scoped `<style>` only).
+
+### 14.0 One-liner and plain English
+
+`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` carry a complete, client-editable control surface: **three colour states (Normal, Hover, Current) on every colour that has states**, all side by side in ONE Colour panel (border colour included), each Hover swatch paired with a **hover-treatment selector** that changes *how* that one colour is applied rather than adding a second colour; a **3-state per-side item border**; a **submenu split** (the floating panel and the links inside it are separately controllable, in colour and in typography); **submenu open animation and top offset**; a **menu button** that can be an icon, text or both, with an operator-chosen icon and an optional magnetic pull; and three correctness fixes that need no control. There is no hover "style" chooser: every hover look is a direct control. None of it changes a control on any other block, because it needs no new shared component.
+
+⛔ **THE COLOUR-REUSE RULE (owner-locked, binding on every row).** One colour picker per element property. The hover-treatment selector NEVER introduces a second colour value; it changes HOW the existing Hover swatch's value is applied. `Swap` applies it instantly, `Sweep` travels it across the element, `Highlight` paints it into the shared sliding pill. All three read the SAME swatch. A treatment that needed its own colour attribute would be a second control for one property, the exact pattern FR-41-7 and FR-41-23 prevent.
+
+### 14.0a Build status
+
+Requirement-level status is BUILT unless named in §14.0a.3. Do not cache a step count or percentage here; live status is single-sourced to `.claude/LEDGER.md`.
+
+#### 14.0a.1 The CSS is emitted by a set of PHP files, not by `render.php` alone
+
+Verify the roster live: `git ls-files plugins/sgs-blocks/includes | grep nav-menu`. Both blocks `require_once` the shared `plugins/sgs-blocks/includes/nav-menu-*.php` files PER INSTANCE from their own `render.php` (not bootstrap-loaded; the `sgs/product-card` `plugins/sgs-blocks/includes/product-card-builtin-render.php` precedent). A future cross-block caller must require the file itself.
+
+| File | Owns |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` | entry, `SGS_Nav_Menu_Bar_Renderer`, treatment-resolution call, indicator/magnet `data-` flags, `<style>` assembly, `sgs_nav_shared_typography_hover_rule()` (FR-41-21; declared identically in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php`) |
+| `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php` | entry, `SGS_Nav_Drawer_Menu_Flattener` (the drawer's own copy of the flatten methods), the same typography helper |
+| `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php` | `SGS_Nav_Menu_Source`: resolves the site's menu for both blocks |
+| `plugins/sgs-blocks/includes/nav-menu-markup.php` | `sgs_nav_bar_menu_render_items()`, `sgs_nav_drawer_menu_render_items()`, `sgs_nav_bar_menu_burger_toggle_markup()`, `sgs_nav_shared_badge_html()` |
+| `plugins/sgs-blocks/includes/nav-menu-css.php` | `sgs_nav_shared_item_state_css()`: item typography, nav-container colour, the item text/background three-state emission with paired treatments, the FR-41-13 persistence rules |
+| `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php` | `sgs_nav_shared_item_border_css()` (item border states and the directional border-sweep band, then the lines between items); `sgs_nav_shared_featured_css()` |
+| `plugins/sgs-blocks/includes/nav-menu-separators.php` | `sgs_nav_menu_separators_css()`, `sgs_nav_menu_separators_root()` (FR-41-37) |
+| `plugins/sgs-blocks/includes/nav-menu-treatments.php` | `sgs_nav_shared_sweep_eligible()`, `sgs_nav_shared_resolved_treatments()`, `sgs_nav_shared_text_sweep_css()`, `sgs_nav_shared_icon_markup()` |
+| `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` | `sgs_nav_bar_menu_trigger_css()`: the Menu Button's colour, glyph sweep, background and size rule (bar-only) |
+| `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` | `sgs_nav_shared_submenu_css()`: collapse-point switch, dropdown/mega positioning and the FR-41-11 bridge, the submenu link's base typography/text states, custom CSS |
+| `plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php` | `sgs_nav_shared_submenu_link_css()`: the submenu link's hoverable background/border/typography-hover, the drawer overrides, `listColumns` grid, the sliding indicator, the root box |
+| `plugins/sgs-blocks/includes/sweep-css.php` | `sgs_directional_sweep_css()`: the angle-driven sweep primitive (FR-41-38) |
+
+The inspector is split the same way. Panels shared by both blocks live in `plugins/sgs-blocks/src/shared/nav-menu-panels/` (`ItemsPanel.js`, `SubmenuItemsPanel.js`, `TypographyPanel.js`, `DropdownStylePanel.js`, `ColourRowExtras.js`, `ColourTreatment.js`, `EffectsPanel.js`, `FeaturedPanel.js`, `ListLayoutPanel.js`, `MegaDrawerPanel.js`, `SeparatorsPanel.js`); bar-only panels sit in `plugins/sgs-blocks/src/blocks/nav-bar-menu/` (`BurgerPanel.js`, `BarColourRowExtras.js`). ⛔ `colourRows` STAYS in each block's `edit.js`: `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a row's state count only from a shape it can see in that file or in `plugins/sgs-blocks/src/components/`.
+
+#### 14.0a.2 BUILT pointers
+
+Every requirement in this Part is built except those in §14.0a.3. Pointers:
+
+- FR-41-8's additive `suppress_edges` is live at `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css`.
+- `itemSmartContrast` is declared in both blocks and mounted in each block's General-tab **Accessibility** panel (`plugins/sgs-blocks/src/blocks/nav-bar-menu/DropdownSettingsPanel.js`, `plugins/sgs-blocks/src/blocks/nav-drawer-menu/DropdownSettingsPanel.js`): FR-41-5 / FR-41-27.
+- FR-41-12 is built on both sides: the Menu Button and the `sgs/nav-drawer` close mirror.
+- FR-41-26's declarative source is `supports.sgs.sweepEligibility` in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json`, with mechanical readers.
+- FR-41-13 is four rules (mouse and keyboard halves, bar and drawer) in `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css`.
+- FR-41-15's no-ungated-paint rule holds and FR-41-35's detector runs in hard-fail mode: `HARD_FAIL_BLOCKS` in `plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` lists `["sgs/nav-bar-menu", "sgs/nav-drawer-menu"]`.
+- The **sublink marker colour row** (FR-41-30b) is built end to end and is DRAWER-only: `sublinkMarkerColour`, `sublinkMarkerColourHover`, `sublinkMarkerColourCurrent` and their `*Gradient` counterparts are declared, wired to `css:fill` / `css:fill-gradient` under the `sublinkMarkerIcon`-keyed conditional, mapped in the colour-row config and read in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php`.
+
+#### 14.0a.3 NOT BUILT or PARTIAL
+
+| Status | Requirement | Proof |
+|---|---|---|
+| NOT BUILT | **FR-41-18**: auto-adjust for readability (explicitly non-blocking) | `git grep -n -i "auto-adjust\|autoAdjust" -- plugins/sgs-blocks/src/blocks/nav-bar-menu plugins/sgs-blocks/src/blocks/nav-drawer-menu` returns nothing |
+| PARTIAL | **FR-41-20**: active-trail. The visual ancestor Current styling is built in CSS; the ARIA/semantic trail is not built (out of scope by design) | `git grep -n "data-sgs-nav-has-current" -- plugins/sgs-blocks/includes plugins/sgs-blocks/src` shows the CSS ancestor rule and its bar fallback |
+| PARTIAL | **FR-41-36**: default colour scheme. Item-border, submenu-row, drawer-panel and Current-weight defaults are declared; the item Hover/Current background defaults are unset, and the item Hover text default-closes in PHP | the defaults FR-41-36's table lists are in the two `block.json` files (`itemBorderColour`, `submenuLinkBg`, `submenuLinkBgHover`, `itemFontWeightCurrent`) |
+
+### 14.1 Scope
+
+#### 14.1.1 In scope
+
+The `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` inspectors, `block.json` manifests and rendered CSS; **three** additive backwards-compatible shared extensions (`SgsColourPanel` row sub-headings, FR-41-16; `SgsBorderControl`'s `showColour` prop, FR-41-33; an optional third state on `sgs_emit_state_colour_css()` / `sgs_fill_decls()` / `sgs_text_decls()`, FR-41-3); one CSS rule and one trio of `data-` attributes reusing the existing `fx-magnet` runtime plus a two-line value-preserving addition to `plugins/sgs-blocks/assets/css/fx-magnet.css` exposing `--sgs-magnet-transition` (FR-41-31). One cross-block companion lands on `sgs/nav-drawer` (FR-41-12). All three shared extensions and the shared-stylesheet addition are design-gated and each is the minimum shape that does the job: every existing caller renders byte-identically by default (§14.11 G1).
+
+#### 14.1.2 Out of scope (named so nobody re-opens them)
+
+| Not in scope | Why |
+|---|---|
+| The **featured item-flag** mechanism (`featuredColour`, `featuredBg`, `featuredColourHover`, `featuredBgHover` and gradient siblings) | A separate working per-item flag with its own WCAG-contrast resolution (FR-36-4). The featured link's `::after` is not suppressed, so the item-border Sweep band (FR-41-8) renders on featured items too. |
+| **Mega menu** | Owned by the mega-menu builder (FR-36-5). |
+| **Sticky / scrolled** colour states | Owner-rejected: it doubles the control count for a state the header (Spec 37) already owns via its own `scrolled` state. |
+| A **device-visibility** panel | `blocks/extensions/responsive-visibility.js` and `conditional-visibility.js` attach to every `sgs/*` block; both nav blocks list only `clickEffects`, `parallax`, `spacing` in `supports.sgs.hideExtensions`. No second visibility surface. |
+| A **fourth colour state** | Exactly three everywhere: Normal, Hover, Current. |
+| **ARIA active-trail** | Not built (FR-41-20); the visual ancestor Current styling is. |
+| A **hover trio on the CURRENT state** (`itemTextDecorationCurrent`, any `...TransformCurrent` / `...WeightCurrent` beyond `itemFontWeightCurrent`) | Not offered: `TypographyControls` models resting + hover only, and Current already carries its own non-colour signal (`itemFontWeightCurrent`, FR-41-6). |
+| **`itemBorderColourGradient`** (gradient ring on the ITEM border) | Cut on a pseudo-element budget: `sgs_border_states_css()`'s ring path needs `::before`, which the item link already uses for the item background (FR-41-7). The submenu PANEL border keeps `submenuBorderColourGradient` because nothing competes for the panel's own `::before`. |
+| **Cursor-reactive field** (and the other eight `motionSurface` effects) | Eligible, deliberately not offered (FR-41-32). |
+
+#### 14.1.3 The three states: definition and vocabulary
+
+| State | Means | Selector | Set by |
+|---|---|---|---|
+| **Normal** | Resting | the base selector | none |
+| **Hover** | Pointer over it, or keyboard-focused | `:hover` (touch-guarded) + `:focus-visible` (never guarded) | pointer / keyboard |
+| **Current** | This is the page you are on | `[aria-current="page"]` | `markCurrentPage`, an independent copy in each of `plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js` |
+
+⛔ The third state is named `current`, the framework's own vocabulary: `plugins/sgs-blocks/scripts/consistency/golden-controls.json::_meta.stateVocabulary.real` declares three real states (`hover`, `current`, `scrolled`), and its `current` entry (`[aria-selected="true"], [aria-current], .is-active`) unifies tabs and nav. Every attribute, row-descriptor state key, PHP variable, `css_state` value and sentence uses `current`, never `Active` or `selected`.
+
+⛔ REUSE the existing `aria-current` mechanism. `markCurrentPage` in each `view.js` is wired only to its own block's root, normalises `window.location.pathname`, stamps `aria-current="page"` on both the item link and the sublink (`.sgs-nav-bar-menu__link[data-sgs-nav-path]` / `__sublink[data-sgs-nav-path]`; the drawer equivalents), and re-runs on bfcache `pageshow`. It is client-side because LiteSpeed would otherwise serve one page's answer everywhere (FR-36-11).
+
+#### 14.1.4 Colour-architecture research
+
+The research file `~/.claude/memory/research/2026-09-10-nav-drawer-colour-architecture-industry-standard.md` recommends an MD3-style derived state layer (hover = content colour at 8% over the background). This Part does not adopt it: the operator gets three explicit authorable colours per row plus the warn-only contrast check (FR-41-17), the shadcn-style "paired tokens authored together" shape. Its other findings (the `<details>` roving-nav gap; the 1.4.11 hover-background exemption not rescuing text-colour failures) remain live reading.
+
+### 14.2 The shared-mechanism strategy
+
+#### FR-41-1 — Every stateful control targets the LINK. Nothing targets the `<li>`.
+
+The single load-bearing architectural decision. `markCurrentPage` stamps `aria-current="page"` on the item link and sublink (the anchors), never on the `<li>` and never on a drawer ancestor, so a Current rule keyed on the `<li>` matches nothing. **Text colour, background, border and the hover animation all apply to the link element**, the padded, full-height, focusable target in both the bar and the drawer's vertical list. Consequences: `:has()` is needed nowhere for the Current state; `:focus-visible` binds correctly by construction; specificity is uniform across all three states, which makes the source-order rule (FR-41-3) one rule. A border spanning the `<li>`'s margin box beyond the link is not wanted.
+
+DOM shape (two separate blocks, each calling its own emitter in `plugins/sgs-blocks/includes/nav-menu-markup.php`):
+
+| Block | Emitted by | Structure |
+|---|---|---|
+| `sgs/nav-bar-menu` | `sgs_nav_bar_menu_render_items` | `li.sgs-nav-bar-menu__item--has-submenu` › `div.sgs-nav-bar-menu__submenu-root` › **`.sgs-nav-bar-menu__link`** (an `<a>` with a sibling `button.sgs-nav-bar-menu__subtoggle`, or a `<button>` carrying both classes) + `div.sgs-nav-bar-menu__submenu-wrap` › `ul.sgs-nav-bar-menu__submenu` › `li.sgs-nav-bar-menu__subitem` › `a.sgs-nav-bar-menu__sublink` |
+| `sgs/nav-drawer-menu` | `sgs_nav_drawer_menu_render_items` | `li.sgs-nav-drawer-menu__item--has-submenu` › `div.sgs-nav-drawer-menu__accordion-row` › **`.sgs-nav-drawer-menu__link`** (an `<a>`, or `<span class="...__link ...__link--label">` when the parent has no URL) + `details.sgs-nav-drawer-menu__accordion` › `summary.sgs-nav-drawer-menu__accordion-summary` + `ul.sgs-nav-drawer-menu__submenu[data-sgs-drill-panel]` › `a.sgs-nav-drawer-menu__sublink` |
+
+The link is never a direct child of the `<li>` on a submenu-bearing item (`li > .sgs-nav-*-menu__link` matches nothing there); `.sgs-nav-bar-menu__submenu-wrap` is bar-only; `ul.sgs-nav-*-menu__submenu` is the one class present in both forks, so every "inside the open panel" rule keys on it.
+
+#### FR-41-36 — Default colour scheme for item/submenu/drawer states
+
+**Status: PARTIAL** (§14.0a.3). Researched and owner-approved. Uses the real `theme.json` tokens `primary`, `primary-dark`, `accent`, `accent-light`, `accent-text`, `surface`, `surface-alt`, `text`, `text-muted`, `border-light`.
+
+Terminology: the shared bottom-edge family (`itemBorderWidth` / `Colour` / `ColourHover` / `ColourCurrent`) is the item's own edge: the **Underline** on the bar's top-level items, or a boxed item when all four sides are set. A line BETWEEN two items or rows is not part of that family: it is the shared Separators setting (FR-41-37).
+
+| Context | Normal | Hover | Current |
+|---|---|---|---|
+| **Top bar item** | text and background unset (inherited); Underline `border-light`, drawn only once an `itemBorderWidth` is set | text default-closes in PHP to `primary` (skipped when the resolved text treatment is `none`); background unset; Underline `accent` | text and background unset; Underline `accent` (with no fill on either, the Underline plus `itemFontWeightCurrent` `"600"` mark Current) |
+| **Desktop submenu** rows | row background `surface` (painted when neither `submenuBg` nor `submenuBgGradient` is set); text `text` (`primary` text fails 4.5:1 on light-brand palettes, so the brand colour carries the Hover fill); separator 1px solid `border-light` | row background `primary`; text default-closes to `text`; separator `accent` | row background `surface-alt`; text `text` |
+| **Drawer top-level** | as the top bar; panel background is `nav-drawer`'s `drawerBg`, default `surface` | as the top bar | as the top bar |
+| **Drawer nested submenu** | the same `submenuLinkBg*` / `submenuColour*` family as the desktop submenu | as the desktop submenu | as the desktop submenu |
+
+Sources: the `block.json` defaults of `itemBorderColour*`, `itemFontWeightCurrent`, `submenuLinkBg*`, `submenuColourCurrent`, `submenuSeparators`; `plugins/sgs-blocks/src/blocks/nav-drawer/block.json` `drawerBg`; `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css` (its `$default_item_colour_hover` parameter, both callers pass `'primary'`); `plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css` (the `submenuColourHover` default-close to `'text'`).
+
+**Why the submenu defaults are what they are.** Each carries its contrast justification in `block.json`: `text` on `surface` 11.86:1, `text` on `primary` 5.28:1, `text` on `surface-alt` 14.31:1; `accent-light` background with `accent` text measured 1.35:1, so the Hover pair is `primary` + `text`. An explicit opaque row background means the drawer's nested submenu never depends on a runtime contrast computation against an arbitrary `drawerBg`.
+
+**Why the item Hover text default-closes to a token.** Left unset, the hover colour comes from core's ambient `:root :where(a:hover)` (zero specificity), which stops matching when the pointer leaves the literal `<a>` while still inside the item's open dropdown, so FR-41-13 would have nothing to hold. Default-closing makes every branch gated on a non-empty hover colour fire for every untouched item. The parameter stays a parameter so a surface with a different background can override it.
+
+**Underline / row-separator rule.** Every context uses one colour language: `border-light` at rest, `accent` on Hover and Current. **The item Underline paints nothing until the operator sets `itemBorderWidth`** (default `{}`); the submenu row separator is 1px by default. ⛔ The drawer does NOT default to a brand-filled whole panel (Kadence, Astra, GeneratePress and Divi default to a neutral background, brand colour for accents only); `drawerBg` defaults to `surface`.
+
+**Not built:** an item Hover background tint (`accent-light`) and a Current-row tint on the top bar and drawer top-level; those background defaults are unset, so an untouched item paints no Hover or Current fill.
+
+#### FR-41-37 — The lines between items (Separators)
+
+A line between two items is its own setting, not a border on one of them. Both nav blocks carry the shared Separators setting (`plugins/sgs-blocks/includes/helpers-separators.php`, editor control `SgsSeparatorControl`):
+
+| Attribute | Block | Draws between | Axis | Offers |
+|---|---|---|---|---|
+| `separators` | `sgs/nav-bar-menu` | top-level bar items | `column` (vertical); not drawn in the bar's drawer copy | hover colour, swap / sweep |
+| `separators` | `sgs/nav-drawer-menu` | top-level rows | `row` (horizontal) | hover colour, swap / sweep, `edges` (between / all / end) |
+| `submenuSeparators` | both | the rows of an open submenu | `row` | hover colour, swap |
+
+**Shape:** `{ row?: axis, column?: axis, edges, hoverTreatment, sweepAngle }`, an axis being `{ style, width: {desktop,tablet,mobile}, colour, colourHover }`. An axis with no width draws nothing. Defaults: `separators` style `solid`, colour `text-muted` (about 4.7:1 on a light header), hover `accent`, treatment `swap`, no width; `submenuSeparators` a 1px `border-light` line with an `accent` hover. `sweepAngle` defaults to 180 (vertical line) or 90 (horizontal); a sweep is a gradient band, offered and emitted for a solid line only.
+
+**Geometry.** The items draw the line: an empty pseudo-element on every item except the first, offset half the gap plus half the line outward, so it is centred in the gap at any thickness with no measuring (`plugins/sgs-blocks/includes/helpers-separators-line-css.php`). The gap is the `--sgs-nm-gap` custom property each tier writes (`plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php`); submenu rows touch, so their gap is zero. `edges: 'end'` adds a flush line under the last row, `'all'` also above the first. With `listColumns` on, the drawer's top-level list is a column-major grid whose row starts CSS cannot know, so that list takes the flow path (native `column-rule` / `row-rule`, else the runtime overlay in `plugins/sgs-blocks/src/shared/separators/`).
+
+**Hover reaches from both neighbours.** A line belongs to the item before and after it, so hovering or focusing EITHER repaints it: the own-item rule on the following item plus an adjacent-sibling rule from the preceding one, built from `sgs_hover_guarded_rule()` and an unguarded focus rule. A drawer row counts a hover on its link, split-row link or expander summary. No Current state.
+
+**Controls.** One `SgsSeparatorControl` per list ("Item separators", "Row separators", "Submenu row separators"): a per-device thickness beside one colour swatch whose popover holds the Normal / Hover tabs and the line-style picker. The colour lives in this composite, like a border colour in `SgsBorderControl`, not in the Colour panel.
+
+**Emitter:** `plugins/sgs-blocks/includes/nav-menu-separators.php::sgs_nav_menu_separators_css`, called at the end of `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`. Gate: `plugins/sgs-blocks/scripts/check-separators-through-helper.py` fails a between-item line drawn outside the helper.
+
+#### FR-41-38 — The hover Sweep is angle-driven
+
+Every band Sweep (the item border band and the separator band) uses `plugins/sgs-blocks/includes/sweep-css.php::sgs_directional_sweep_css`: a `linear-gradient(<angle>deg, <hover> 50%, <rest> 50%)` at `background-size:200% 200%`, both `background-position` endpoints computed from the sine and cosine of the angle. The attribute is `sweepAngle` (`number`, default `90`; `90` left to right, `270` right to left), edited with an `AnglePickerControl` plus a preset dropdown. `borderHoverAnimationDirection` is not declared and no control writes it; the emitter reads it defensively off the raw `$attributes` only when `sweepAngle` is absent so saved content keeps its direction (WordPress does not strip an undeclared key before `render.php`; see `.claude/rules/block-authoring.md`). The text/glyph Sweep (FR-41-26) is a fixed left-to-right gradient and does not use this primitive. The separator hover uses the same mechanism through `separators.hoverTreatment` / `separators.sweepAngle`; its band lives on the item's own `::before` (the resting line's pseudo), leaving the item link's `::before` / `::after` free for the item background and border-bottom sweep.
+
+#### FR-41-2 — No new shared JS component is built. None is needed.
+
+**(a) No `fillRow3`/`textRow3` sibling.** `plugins/sgs-blocks/src/components/colour-variants/fillRow.js::fillRow` and `plugins/sgs-blocks/src/components/colour-variants/textRow.js::textRow` accept an optional `current` / `currentGradient` key, the JS mirror of FR-41-3's optional PHP `current` key. `colourRows` is a single literal `ArrayExpression` whose entries are mostly `fillRow()` / `textRow()` calls, so a third state is one more string in that call's `attrs` object.
+
+⛔ Two rows are hand-written literals, deliberately; do not convert them:
+
+| Row | Why it cannot use the helper |
+|---|---|
+| **Item background** (`item-bg`) | FR-41-14 omits the Current state per-STATE while `Highlight` is active. A conditional attribute NAME passed to the helper is not a string literal, so `describeRow()` would resolve 2 states while 3 render (the gate goes blind while the code is correct). A spread-of-ternary inside a literal `states` array stays statically countable in both branches. |
+| **Item border colour** (`item-border`) | The item border declares no gradient attribute (FR-41-7, §14.1.2), so the row cannot be `gradientCapable`. A non-`gradientCapable` row renders `DesignTokenPicker`, which has no contrast check, so this row's `contrastAgainst` / `contrastLargeText` pair is declared per §14.9.6 and is currently INERT. The submenu panel border row beside it is gradient-capable and its check runs. |
+
+A `current` state is appended only when `hover` is also supplied (both helpers warn on Current-without-Hover: Current is the THIRD state, never a substitute). `linked: true` is set by the helpers on every state they build; the two hand-written rows set it inline. `31-golden-colour-control.js` resolves a `fillRow` / `textRow` CALL natively via `describeRow()`, which is why the CALL SITE must stay in `edit.js` even though the builder lives in `plugins/sgs-blocks/src/components/`.
+
+**(b) `SgsBorderControl` needs no fork (FR-41-2b), and its N-state colour machinery is not used here.** Border COLOUR lives in the global Colour panel as an ordinary 3-state row (FR-41-33), so these blocks never pass `colourStates`. `plugins/sgs-blocks/src/components/SgsBorderControl.js::SgsBorderControl` still owns width, style and radius, mounted with the additive `showColour={ false }` prop (default `true`, every other caller unchanged). The control's `colourStates` prop (forwarded as `states` to `GradientCapableColourControl`, no fixed length) already renders three tabs for a three-element array on its 40-plus other mounts; the one permitted modification is FR-41-33's `showColour` prop. Live multi-state mount to copy: `plugins/sgs-blocks/src/blocks/container/edit.js::Edit`.
+
+`borderStyle` rides the colour popover, so `showColour={ false }` must not take border style with it: `SgsBorderControl` then renders the existing shared `plugins/sgs-blocks/src/components/BorderStyleControl.js::BorderStyleControl` as a sibling in the same row (FR-41-33 item 2). ⛔ Do not build a fresh `SelectControl` for border style.
+
+**Detector rules.** `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a row's state count as `statesArray.elements.length` on a literal `ArrayExpression` (minimum 2, no upper bound).
+- ⛔ State entries are LITERAL array entries, never `.map()`/`.filter()`-generated; conditionality happens at array level (`showCurrent ? [ normal, hover, current ] : [ normal, hover ]`).
+- ⛔ `linked: true` on every state, so `DesignTokenPicker` stores the palette slug and a brand token survives a re-skin.
+- ⛔ State labels are translated at the row: `__( 'Current', 'sgs-blocks' )`.
+
+#### FR-41-3 — The PHP emitters take an optional third state. No `_3` family exists.
+
+⛔ There is no `sgs_fill_states_css_3`, `sgs_text_states_css_3`, `sgs_border_states_css_3` or `sgs_emit_state_colour_css_3`. The third state arrives as optional parameters on the existing functions, defaulting to current behaviour so every existing caller is byte-identical (§14.11 G1).
+
+**(a)** `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover, array $extra_states = array() ): string`. `$extra_states` maps `state_key => [ 'suffix' => string, 'decls' => string[], 'guarded' => bool ]`; each entry emits `{$selector}{$suffix}{...}`, guarded via `sgs_hover_state_rules()` when `guarded`. For Current the caller passes `'current' => [ 'suffix' => '[aria-current="page"]', 'decls' => [...], 'guarded' => false ]`. ⛔ `$extra_states` is emitted BEFORE `$decls_hover` inside the function, so ordering is a property of the emitter. The default `[]` is the acceptance condition: every other call site must produce byte-identical CSS.
+
+**(b)** `sgs_fill_decls()` and `sgs_text_decls()` read an optional `$map['current']` (and `$map['current_gradient']` where the mechanism supports it) and return a `current` bucket populated only when the caller's map carries one. Their `sgs_fill_states_css()` / `sgs_text_states_css()` wrappers forward a non-empty bucket into `$extra_states`, else pass `[]`.
+
+**(c)** `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css`: the third state is FLAT-PATH ONLY (a mechanism constraint).
+
+| Path | Condition | Emits | Third state |
+|---|---|---|---|
+| **Flat** | no `gradient` / `hover_gradient` | `{sel}{border-color:X}` plus a `sgs_hover_state_rules()` pair | Supported: one more `{sel}[aria-current="page"]{border-color:Z}` rule before the hover pair |
+| **Ring** | either gradient set | `sgs_border_gradient_css( $sel, $normal_paint, $hover_paint, $width )`: a masked `::before` ring composing both paints, `border-color:transparent` | Not supported: Current is gradient-exempt at the ring level (the primitive takes two paints) |
+
+The ITEM border never reaches the ring path (no item-border gradient is declared; its `::before` belongs to the item background, FR-41-23), so its three states all render. The submenu PANEL border declares `submenuBorderColourGradient` legitimately: nothing competes for the panel's `::before`, and the panel is Normal-only for every property (FR-41-9). The distinction is the pseudo-element budget on one element.
+
+**Three binding emitter rules:**
+1. ⛔ Every hover rule routes through `plugins/sgs-blocks/includes/helpers-hover-state.php`, never a bare `{sel}:hover`: `sgs_hover_state_rules( $selector, $decls, $focus, $suffix )` for a base selector, `sgs_hover_guarded_rule( $hover_selector, $decls )` only for a fully built `:hover` selector. A tap engages `:hover` on touch until the user taps elsewhere. `SGS_HOVER_MEDIA` (`@media (hover:hover) and (pointer:fine)`) fixes phones and pure-touch tablets; `SGS_HOVER_NOT_TOUCH` (`:where(:root:not(.sgs-touch-input))`) fixes hybrids; neither covers the other's devices.
+2. `:focus-visible` stays OUTSIDE both guards (a keyboard user on a touchscreen laptop needs it).
+3. ⛔ The Current rule is emitted BEFORE the Hover rule and is never guarded.
+
+**The specificity rule (write the rule, not the numbers).** Because FR-41-1 puts all three states on the same element, every state-pair shares one base selector and differs by one single-specificity suffix (`[aria-current="page"]` vs `:hover`). A state-pair therefore always ties and source order is the only tie-breaker. (The base `$link_sel` is `.{uid} .{bem_root}__link`, two classes, set in `sgs_nav_shared_item_state_css`.) Emitting Current first means hover wins when you point at the item for the page you are on: where you are and what you are pointing at are different questions. Current is not pointer-dependent, so it takes no touch guard.
+
+#### FR-41-16 — `SgsColourPanel` takes optional row keys (additive, zero blast radius)
+
+`plugins/sgs-blocks/src/components/SgsColourPanel.js::SgsColourPanel` renders ONE `PanelBody` "Colour" in the `group="styles"` slot, one control per row. A row descriptor may carry three optional keys, all default-absent:
+
+| Key | Rendered | Exists for |
+|---|---|---|
+| `heading` (string) | a non-interactive `BaseControl.VisualLabel` BEFORE the row's control | the §14.9.6 Menu / Submenu / Menu-button groupings inside one Colour panel |
+| `after` (React node) | AFTER the row's control, inside the same row wrapper | FR-41-23/24's treatment selector and the `ⓘ` notes. A SLOT, not a component |
+| `contrastLargeText` (boolean) | forwarded with `contrastAgainst`/`contrastLabel` on the gradient-capable branch | border rows, so they get WCAG 1.4.11's 3:1 UI-component threshold, not the 4.5:1 text one |
+
+A row without a key renders byte-identically; `contrastLargeText` is spread only when declared. ⛔ `after` is the ONLY sanctioned mount point for the treatment selector: no second panel, sibling `PanelBody` or control outside the row wrapper (the operator meets the control and its consequence in one place). Live mounts: the shared Item/Submenu treatments (`ItemTextTreatment`, `ItemBgTreatment`, `ItemBorderTreatment`, `SubmenuTextTreatment`, `SubmenuLinkBgTreatment`) export from `plugins/sgs-blocks/src/shared/nav-menu-panels/ColourRowExtras.js`; the bar-only Burger treatments (`BurgerIconTreatment`, `BurgerBgTreatment`) from `plugins/sgs-blocks/src/blocks/nav-bar-menu/BarColourRowExtras.js`. This is a design-gated shared-component change; acceptance is byte-identical inspector output for every other `SgsColourPanel` mount (§14.11 G1).
+
+### 14.3 Accessibility signals: smart contrast and the non-colour state signal
+
+#### FR-41-5 — Smart contrast: an opt-in toggle
+
+`itemSmartContrast` (boolean, default `false`, both blocks) is a WCAG safety-net TOGGLE, not a colour, so it sits in the General tab **Accessibility** panel (FR-41-27, §14.9.5). ⛔ It must stay findable from the rows it governs: the Item text and Item background rows in §14.9.6 each carry a one-line cross-reference to §14.9.5. Acceptance: §14.11 G16 (renders, bound to `itemSmartContrast`, changes the rendered colour off versus on, on the live canary). Control: a native `ToggleControl` "Keep text readable automatically".
+
+⚠ Sweep defeats this toggle (`-webkit-text-fill-color: transparent` overrides the resolved foreground), so the two are never offered together (FR-41-26 eligibility).
+
+When on, and the operator has set a Hover or Current **background**, `sgs_nav_shared_item_state_css` resolves the foreground through the EXISTING helpers (do not build a new contrast function): text colour empty → `sgs_wcag_text_colour_for_bg( $bg_hex )`; text colour set → `sgs_wcag_preferred_text_colour_for_bg( $bg_hex, $preferred )`, which keeps the operator's colour when it clears AA and falls back to the safe binary only when it does not.
+
+**Default OFF**: an explicit `itemColourHover` renders as authored unless the operator opts in. The readability CHECK stays unconditional: an always-on advisory `Notice` under the Item text colour row whenever the hover combination fails contrast, pointing to the toggle. Only the automatic SWAP is gated. Help text is plain language ("When you set a background, we can check your text colour stays readable against it and swap in a readable one if it doesn't. Off by default, so your chosen colour always renders exactly as picked."); no "WCAG", "contrast ratio" or "AA" in a client-visible string.
+
+#### FR-41-6 — The non-colour state signal (WCAG 1.4.1)
+
+Hover and Current must never be colour-only signals. ⛔ **The PRIMARY non-colour signal is the border row's own Hover treatment; the hover typography trio is an OPTIONAL SECONDARY decoration and is never "the divider".** Neither half may be restated as the other anywhere (spec, help text, control label).
+
+- **Primary signal.** FR-41-23 pairs a None/Swap/Sweep selector beneath the item border's Hover swatch; Swap changes the border colour instantly, Sweep travels a band along the bottom edge (FR-41-8), both at the border width the operator set. This is the only thing counted as the WCAG 1.4.1 signal for Hover.
+- **Optional secondary layer.** `TypographyControls`' `showHover` is on for both blocks and all three controls ship (hover text-decoration, text-transform, font-weight). None is required for compliance or substitutes for the border treatment. `itemTextDecorationHover: "underline"` hugs the baseline and spans only the glyphs, whereas the border treatment spans the item's full width, so they do not compete. There is no full-width animated `::after` underline bar; the link's `::after` belongs to the border Sweep band.
+
+**Consequences:** (1) `itemTextDecorationHover`, `itemTextTransformHover`, `itemFontWeightHover` plus the three `submenu`-prefixed siblings are declared (six attributes; `showHover` is all-or-nothing). (2) `itemTextDecorationCurrent` is NOT declared (no shared control for a Current trio; Current carries `itemFontWeightCurrent`). (3) A hover font-weight change reflows the bar (a heavier face is wider); this caution belongs in the control's help text (§14.9.10 carries the verbatim string) and is not a reason to omit the control. (4) The base `itemTextDecoration` (Normal only) renders through `sgs_typography_css_rule()` unaffected; its `block.json` `enum` carries `overline` as a fifth value, matching `SGS_TEXT_DECORATION_OPTIONS` and the PHP allowlist.
+
+⛔ The distinction is RENDERED in the inspector: two reciprocal `ⓘ` notes, one under the item border row's hover-treatment selector (§14.9.6) and one under the hover trio row (§14.9.10), each naming the other and stating they are not the same thing. Both or neither. The verbatim strings live in §14.9.10. Gated: §14.11 G19(e).
+
+**Default non-colour signal, one per state:**
+
+| State | Signal | Attribute | Default | Why |
+|---|---|---|---|---|
+| **Hover** | the item border's Hover treatment | `itemBorderColourHover` + `itemBorderHoverTreatment` | `"swap"` | Uses the border the operator already sized; identical in bar and drawer (FR-41-28). Only visible once a border width is set. |
+| **Current** | `font-weight` | `itemFontWeightCurrent` | `"600"` | Safe on Current because it does not change on pointer movement. |
+
+⚠ `itemBorderWidth` defaults to `{}`, so an untouched block ships NO border and therefore no default Hover signal. Accepted: an unrequested underline on every item of every install is a design imposition the owner rejected, and the operator has a one-action control. FR-41-17a carries the residual risk; §14.11 G10 asserts the Hover signal renders once a border width IS set.
+
+⛔ `itemFontWeightCurrent` is `"type": "string", "default": "600"` (matching `itemFontWeight`'s `{"type":"string","default":""}`; a number-typed sibling would be a second vocabulary). It renders as a `SelectControl` fed `SGS_FONT_WEIGHT_OPTIONS` (exported from `TypographyControls.js`, re-exported by `plugins/sgs-blocks/src/components/index.js`), never a number input or a hand-typed weight array (the `featuredFontWeight*` hand-rolled 4-option array is the anti-pattern).
+
+**Never-lighter rule.** The emitter writes the Current weight rule only when `(int) itemFontWeightCurrent` is strictly greater than `(int) itemFontWeight` (empty casts to 0: the default `"600"` always emits, an empty Current never does). A floor, not a preference: a deliberately lighter current page cannot be expressed here.
+
+⛔ One DEFAULT signal per state, not two. This constrains what ships, not what an operator may add: the `showHover` trio defaults to unset and paints nothing until chosen. The Current-state control is a standalone `SelectControl` mounted block-privately at the bottom of the Typography panel's Menu target (FR-41-29, §14.9.10). The residual risk when both signals are off is FR-41-17a.
+
+### 14.4 Border and sweep
+
+#### FR-41-7 — ONE item border control. There is no separate "Item Divider".
+
+⛔ No `itemDivider` toggle, no standalone divider `itemBorderColour`, no `itemBorderSweep` (two mechanisms for one question is how a double-line bug arises). The item's border is a normal 3-state `SgsBorderControl` mount with per-side width (`ResponsiveBoxControl` in border-width mode): a **bottom** border for a drawer-style row separator, a **right/left** border for a vertical separator in the flat bar, all four for a boxed item. (A divider styled independently of the item's own underline is FR-41-37.) ⛔ Width is BASE-ONLY by the control's design (`showResponsive={ false }`); do not propose `itemBorderWidthTablet` / `...Mobile`.
+
+**Attributes** (both blocks): `itemBorderWidth` (object, default `{}`; nothing paints until a width is set), `itemBorderStyle` (default `"solid"`), `itemBorderColour` / `itemBorderColourHover` / `itemBorderColourCurrent` (defaults `"border-light"` / `"accent"` / `"accent"`), `itemBorderRadius` (object, default `8px` on every corner). The emitter writes `border-width` and `border-style` only when a width is set (a style with no width would paint the UA `medium` border).
+
+⛔ There is no `itemBorderColourGradient`: a named SCOPE CUT on a pseudo-element budget (the gradient path is a masked `::before` ring, FR-41-3c, and the item link's own `::before` is the item background layer, FR-41-15 / FR-41-23). The submenu PANEL border keeps its gradient.
+
+⛔ The three border COLOUR attributes are NOT authored inside this control: they render as an ordinary 3-state row in the global Colour panel (FR-41-33). `SgsBorderControl` is mounted with `showColour={ false }` and owns width, style and radius only; a second live control writing the same attribute from two panels is banned (`check-duplicate-controls.js`). ⛔ Radius rides `SgsBorderControl`'s own `radiusValues` / `onRadiusChange` pair (mounted with `showRadiusResponsive={ false }`, matching the base-only width); there is no competing flat radius control.
+
+**Borders do NOT leak between the bar and the drawer.** They are two separate blocks, each with its own uid, scoped `<style>` and inspector (`plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE` seeds its own `sgs/nav-drawer-menu`); a bottom border on one instance is invisible to the other.
+
+#### FR-41-8 — The item border's hover treatment: None / Swap / Sweep
+
+The choice lives on the universal hover-treatment selector (FR-41-23) directly under the item border row's Hover colour; a standalone "hover colour animation" control in the border panel would be a second mechanism on the SAME property. The sweep direction is `sweepAngle` (FR-41-38), shown only when `sweep` is chosen. This FR owns the MECHANISM; FR-41-23 owns the CONTROL PLACEMENT.
+
+**`itemBorderHoverTreatment`**, string, default `"swap"`; values `none` | `swap` | `sweep`. A `ToggleGroupControl` from `plugins/sgs-blocks/src/components/primitives` (three options sit inside `plugins/sgs-blocks/src/components/TypographyControls.js::SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED`, which is `3`). One control, not per-element: not duplicated on the background or text rows and not given a submenu-panel twin (the panel is not a hoverable surface, FR-41-9). ⛔ A plain `"type": "string"` validated in PHP, never a JSON `enum` (an out-of-enum value silently coerces to the default, which bites hardest via programmatic writers such as Spec 47's route and pattern files). It animates the BOTTOM edge only (a sweep needs a horizontal line); other edges swap instantly.
+
+⛔ **When `itemBorderHoverTreatment === 'sweep'`, the Hover AND Current border-colour emissions are OMITTED for the swept edge; the band owns every non-resting colour on it.** Otherwise `sgs_border_states_css()` would repaint a real border beneath the band on hover: two visible lines. The rule is the emitter's own condition: `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_border_states_css( string $selector, array $attributes, array $map )` accepts an additive optional `$map['suppress_edges']`, `array( 'top' => bool, 'right' => bool, 'bottom' => bool, 'left' => bool )` (the box-object vocabulary of `itemBorderWidth`; absent key, empty array or absent edge mean false).
+- When any edge is suppressed, the NON-RESTING rules (the hover pair and the `current` state) emit per-edge `border-<edge>-color` longhands for the unsuppressed edges only (top/right/bottom/left order); with none suppressed they emit the flat `border-color` shorthand; with every edge suppressed they emit no non-resting rule at all (not an empty body).
+- The RESTING rule is unaffected (it is what the sweep override turns transparent and what the band reads as its resting stop).
+- Each block calls the helper ONCE, passing `'suppress_edges' => array( 'bottom' => true )` when the resolved treatment is `'sweep'` and NO `suppress_edges` key otherwise, from `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php::sgs_nav_shared_item_border_css`.
+- ⛔ The gradient/ring path IGNORES `suppress_edges` silently and by design (two paints, no per-edge concept; the docblock says so).
+- ⛔ The absent-key default is the ACCEPTANCE CONDITION: every other caller passes no key and must emit byte-identical CSS including the flat shorthand (§14.11 G1(c); G6 is the live proof). There is no `sgs_border_states_css_per_edge()` and no block-private override rule (a second painter on one selector would be an unfalsifiable overlapping fix).
+- The Hover and Current swatches stay VISIBLE and STORED: they govern the other three edges and the band reads the Hover value as its travelling colour. Switching back to `Swap` loses nothing.
+
+**Mechanism: one painted line, not two.** When `sweep` is chosen the emitter writes:
+1. ⛔ `{link}{position:relative;}` UNCONDITIONALLY (the band is `position:absolute`; the item-background rule sets `position:relative` only when a fill is set).
+2. ⛔ `{link}{border-bottom-color:transparent;}`: `bottom:0` on an absolute child resolves against the PADDING box while a real `border-bottom` paints on the BORDER box, so without this an operator with both would see two lines.
+3. The band on the link's `::after`: `content:""; position:absolute; inset-inline:0; bottom:calc(-1 * <itemBorderWidth.bottom>); height:<itemBorderWidth.bottom>; background-image:<sgs_directional_sweep_css( sweepAngle, NORMAL, HOVER )>; background-size:200% 200%; background-repeat:no-repeat; transition:background-position 300ms ease; pointer-events:none`, with `{link}:hover::after` moving `background-position`.
+
+| `itemBorderHoverTreatment` | What `sgs_border_states_css()` receives |
+|---|---|
+| `swap` (default) | the full `$map`: Normal, Hover and Current all emit on every edge |
+| `none` | `hover` unset on every edge; Current still emits (Current is not a hover state) |
+| `sweep` | `hover` and `current` unset on the BOTTOM edge only; other edges behave as `swap` |
+
+`swap` and `none` emit no band, no transparent override and no `position:relative`. ⚠ A sweep with no bottom border width or no Hover colour emits nothing (no line, no colour to travel to); say so in the control's help text. The gradient shape follows `plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-attribution .sgs-business-info__link` except its `background-clip:text` glyph sweep (this sweeps a separate band element, so no clip, `@supports`, `forced-colors` or `print` rescue). ⛔ A `prefers-reduced-motion: reduce` rule (`{link}::after{transition:none}`) is MANDATORY: keep both end states, drop only the travel. ⚠ Emit through PHP hover helpers, not `style.css` (the colours are operator attributes): `sgs_hover_state_rules( $link_sel, 'background-position:...', ':focus-visible', '::after' )`; `background-position` is a `MOTION_PROPERTIES` member in `plugins/sgs-blocks/scripts/hover-guard/classify.js`.
+
+### 14.5 The submenu
+
+#### FR-41-9 — The submenu split: the PANEL and the LINKS are different things
+
+**The PANEL** (`.sgs-nav-bar-menu__submenu` / `.sgs-nav-drawer-menu__submenu`) is **Normal-only for every property**: background, border colour and shadow. A bare panel is never the hovered surface nor "the current page". `submenuBg` has no `Hover`/`Current` siblings anywhere. ⛔ This applies to the border as much as the background: no `submenuBorderColourHover`, `submenuBorderColourCurrent` or `submenuBorderHoverAnimation`; its shadow likewise (§14.9.9: a floating panel is either rendered or absent). ⛔ The panel shadow is a `filter:drop-shadow()`, not a `box-shadow`: the wrapper `.{bem_root}__submenu-wrap` carries `overflow-y:auto` (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php`), which clips a `box-shadow`. ⛔ `supports.sgs.colourExemptions`'s `submenu-bg` entry is kept in both nav `block.json` files (its `"rule": "states"` claim is true and it stops a conformance gate demanding a meaningless hover state; its wording names `submenuLinkBg*` as the hoverable surface); the `indicator` entry and a matching panel-border entry stay too.
+
+**The LINK** (`.sgs-nav-bar-menu__sublink` / `.sgs-nav-drawer-menu__sublink`) carries a genuine 3-state background under distinct names: `submenuLinkBg` (string, `"surface"`), `submenuLinkBgHover` (`"primary"`), `submenuLinkBgCurrent` (`"surface-alt"`), `submenuLinkBgGradient` (`""`, the Normal-state gradient sibling); defaults and contrast justification are FR-41-36's. ⛔ Never reuse `submenuBg*` names for the link: the `sublink` element declares `"prefix": ""` because a `submenu` prefix would wrongly claim `submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding`, which belong to the panel. The link's text Current state is `submenuColourCurrent` (string, `"text"`), sibling of `submenuColour` / `submenuColourHover`.
+
+#### FR-41-10 — Submenu open animation
+
+**Bar-only** (the submenu-wrap exists only on `sgs/nav-bar-menu`). The dropdown shows by a binary `display:none → block` toggle in `plugins/sgs-blocks/includes/nav-menu-submenu-css.php`; the animation is layered on that. **`submenuAnimation`**, string, default `"fade"`; values `none` | `fade` | `fade-lift` | `slide-down` | `grow`; PHP-validated, no JSON enum (FR-41-8's reasoning). `fade` is pure opacity, safe under overflow-flip repositioning. Control: a five-option `SelectControl` (past the segmented threshold) in the "Dropdown (only affects items with sub-items)" `ToolsPanel` (§14.9.9); timing, easing and item stagger live in the bar's "Panel motion" panel.
+
+| Link | Where |
+|---|---|
+| Control | `plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js` (`ToolsPanelItem`, gated `showSizingControls`: bar `true`, drawer `false`); timing in `plugins/sgs-blocks/src/blocks/nav-bar-menu/PanelMotionPanel.js` |
+| Storage | `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuAnimation`, string, no JSON `enum` |
+| Validation | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`: the constructor reduces the value to `$submenu['animation']` via `in_array( ..., array( 'fade', 'fade-lift', 'slide-down', 'grow' ), true ) ? ... : 'none'`, so an out-of-vocabulary value degrades to `none` |
+| Markup | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items`: the dropdown wrap AND the mega panel wrap carry `sgs-nav-bar-menu__panel-motion sgs-nav-bar-menu__panel-motion--{animation}` |
+| Paint | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-bar-menu__panel-motion`: transitions opacity, translate, scale, clip-path, visibility and `display` (`transition-behavior: allow-discrete`), entered from `@starting-style`; timing from `--sgs-nbm-panel-dur` / `--sgs-nbm-panel-exit-dur` / `--sgs-nbm-panel-ease` written by `render.php` |
+
+`@starting-style` gives the newly displayed wrap a first frame; `allow-discrete` holds `display` until the close transition ends. While closing the panel takes no pointer hits and its `visibility` goes hidden (out of the Tab order and accessibility tree); a browser without the exit part closes instantly. Spec 36 "Motion" (U-5) holds the full vocabulary. ⛔ Every panel rule sits inside `prefers-reduced-motion: no-preference`: under `reduce` the panel opens and closes whole and is never stranded at an invisible start state. The drawer's native `<details>` accordion has no panel animation; its arrival and item stagger are `sgs/nav-drawer` attributes (Spec 36 "Motion").
+
+#### FR-41-11 — Submenu top offset, and the hover-bridge it requires
+
+Both panel kinds (`.sgs-nav-bar-menu__submenu-wrap`, `.sgs-nav-bar-menu__mega-panel-wrap`) sit at `top: calc(var(--sgs-mm-panel-top, 100%) + <offset>)`; `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::repositionPanel` publishes `--sgs-mm-panel-top` as the header's bottom edge (FR-36-4 "Gap below the header"). **`submenuTopOffset`**, string, default `""` (no gap), `SgsLengthControl` with `presets={ false }` in the "Dropdown" `ToolsPanel` beside `submenuMinWidth` and the border.
+
+⛔ A non-zero offset creates a hover dead strip (the gap belongs to neither element, so the parent flickers back to its resting paint), the bug FR-41-13 fixes; it MUST ship with the bridge. ⛔ `submenuCloseGrace` does NOT cover this: in `mega-disclosure.js::leaveBridge` it is a `window.setTimeout` on the bridge element's `mouseleave` deferring `ctx.isOpen = false`; it governs openness, never CSS `:hover`.
+
+**The fix:** a CSS hover-bridge pseudo-element on the open item's disclosure root:
+
+```
+{uid} .sgs-nav-bar-menu__submenu-root:has([data-sgs-mega-trigger][aria-expanded="true"])::after,
+{uid} .sgs-nav-bar-menu__mega:has([data-sgs-mega-trigger][aria-expanded="true"])::after {
+  content: ""; position: absolute; left: 0; right: 0;
+  top: 100%; height: var(--sgs-mm-bridge-h, 0px); pointer-events: auto;
+}
+```
+
+`repositionPanel` publishes `--sgs-mm-bridge-h` on the root (the panel's top minus the item's bottom: the header's bottom padding plus the offset, so possibly above zero even with no offset). The bridge hangs from the root, never the panel wrap, because both wraps scroll (`overflow-y:auto`) and a scroll box clips a pseudo-element outside its own edges. It fixes the parent's PAINT only. Safe because: `.sgs-nav-bar-menu__submenu-wrap::before` is unused elsewhere; the wrap is `position:absolute`; a closed (`display:none`) panel has no pseudo-elements, so the bridge exists only while open; both wraps are bar-only (the drawer has no offset or gap).
+
+### 14.6 The menu trigger
+
+#### FR-41-12 — The burger has a mode + label. The close side is a `sgs/nav-drawer` companion.
+
+⛔ The panel is named **"Menu Button"** ("Burger" is jargon; "Menu Trigger" a developer's word), opening with the help text "Controls the button that opens the mobile menu (the 'burger')." ⚠ The heading is a LABEL only: `triggerMode`, `triggerLabel`, `triggerIcon`, `triggerMagnet*` and the `burger*` family keep their names (a rename's blast radius is the whole write path, including Spec 47's route).
+
+**OPEN side (`sgs/nav-bar-menu`; the drawer has no burger).** A `<button class="sgs-nav-bar-menu__burger">` built by `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_toggle_markup`.
+
+| Attribute | Type | Default | Purpose | Control |
+|---|---|---|---|---|
+| `triggerMode` | object (tier) | `{"desktop":"icon"}` | Per device `icon` \| `text` \| `icon-and-text` (tablet inherits desktop, mobile tablet). PHP-validated against `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$sgs_nm_allowed_trigger_modes`, no JSON enum. The button renders the icon if any tier shows it and the label if any does; `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` hides each per tier. Accessible name: "Open menu" when no tier shows the word, the label when some do, none when all do. A stored flat string folds to `{desktop}`. | `ResponsiveOverride` + three-option `ToggleGroupControl` |
+| `triggerIconPosition` | string | `"after"` | `before` \| `after` when a tier shows both (visual reorder only) | `ToggleGroupControl`, shown when a tier is `icon-and-text` |
+| `triggerLabel` | string | `"Menu"` | The visible word | native `TextControl` (`__nextHasNoMarginBottom __next40pxDefaultSize`), not `SgsFreeTextField` (no adopters on this block) |
+| `triggerIcon` | object | `{"source":"lucide","name":"menu"}` | The glyph (FR-41-30a) | the framework Icon Picker |
+
+`icon` renders the icon alone; `text` replaces the SVG with `<span class="sgs-nav-bar-menu__burger-text">`; `icon-and-text` renders both, icon first, in the flex button.
+
+⚠ The `aria-label` is assembled conditionally (`$aria_attr`): `sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) )` only in `icon` mode; passing `''` into the literal would emit an empty accessible name. Under `text` / `icon-and-text` the visible word IS the name (SC 2.5.3 Label in Name). ⚠ `aria-hidden="true"` on the icon under `icon-and-text` (the same convention as the sublink marker and caret). ⚠ The button is not a fixed square in non-icon modes: `burgerSize` drives `width`, `height`, `min-width`, `min-height` (declared twice in the `burger` element `attrMap`); under `text` / `icon-and-text` `plugins/sgs-blocks/includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css` writes `min-width: <burgerSize>` and `width: auto`, keeping `height` and `min-height` so the 44px touch-target floor survives.
+
+**CLOSE side** lives in `sgs/nav-drawer`'s own `block.json` and mirrors the open side (same shared helpers, same control shape). `sgs/nav-drawer` owns the close button and `closeStyle` (default `"separate-x"`), rendered by its `render.php`. The close button's 2-state colour pairing (`toggleCloseColour` / `toggleCloseColourHover` / `toggleCloseColourGradient` on `supports.sgs.elements.close`, via `sgs_text_colour_decl()` + `sgs_hover_state_rules()`) is separate and complete.
+1. **`closeLabel`** (string, default `"Close"`), the mirror of `triggerLabel`; `text-swap` renders `<span class="sgs-nav-drawer__close-text">`. ⛔ When it resolves empty the hardcoded `aria-label` `esc_attr__( 'Close menu', 'sgs-blocks' )` must SURVIVE.
+2. **`closeIcon`** (object, default `{"source":"lucide","name":"x"}`), resolved through the same source-aware resolver `sgs/icon` uses (FR-41-30a), plus a fourth `closeStyle` value.
+
+`closeStyle` is not `triggerMode`'s twin: `separate-x` and `text-swap` are the icon/text axis, but **`burger-morph` is a GLYPH choice** (a CSS-drawn two-bar `<span class="sgs-nav-drawer__close-bars">` reading as an X, no icon, no text). It keeps its name and three original values and carries a FOURTH, `icon-and-text`, and (U-11, FR-36-6) is a per-device tier object with a fifth value `trigger`, so it has no JSON `enum`; the allowed values live in `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_allowed_close_styles` and the editor option list, and `plugins/sgs-blocks/tests/php/run-close-control-standalone.php` asserts the two agree (a value accepted by one side and rejected by the other coerces silently to the default). ⛔ The new option's LABEL is "Both" (the 12-character `ToggleGroupControl` bound, Spec 35 Part O) while the STORED value stays `icon-and-text`; never shorten the value (it gives open and close one vocabulary). The other labels: `× icon` / `“Close” text` / `Morphed icon`. ⛔ The magnetic-pull trio (FR-41-31) is NOT mirrored onto the close button. ⚠ `closeIcon` / `closeLabel` route no CSS property, so they get no `supports.sgs.elements` members (§14.8.6(e)). `sgs/nav-drawer` is outside the §14.11 gate set (scoped to the two menu blocks); its acceptance is enum parity across both lists, a non-empty accessible name when `closeLabel` is empty, and a `closeIcon`-unset byte-identity proof (G15's shape).
+
+The **"Menu Button"** panel carries `triggerIcon`, `triggerMode`, `triggerLabel`, `burgerSize` and the FR-41-31 magnetic-pull trio; its colours sit in the Colour panel's **Menu button** grouping (§14.9.6).
+
+### 14.7 Three behaviours that are fixes, not controls
+
+#### FR-41-13 — A parent item stays in its Hover state while its own dropdown is hovered
+
+**Problem and effect.** The item's hover rule targets only `{$link_sel}:hover` and `{$link_sel}:focus-visible`, so when the pointer leaves the parent link and enters the dropdown it just opened, the parent snaps back to resting while its panel is open: an open panel with no visible parent reads as broken and breaks the "you are inside this branch" affordance of FR-36-4.
+
+**Solution: FOUR rules, a mouse half and a keyboard half, PER FORK** (the wrapper between `<li>` and link differs per fork, FR-41-1's DOM table). The mouse half needs no `:has()`: `:hover` matches every ANCESTOR in the DOM tree of the hovered element, including an absolutely positioned panel's parent wrapper:
+
+```
+/* BAR, {bem_root} = sgs-nav-bar-menu */
+{uid} .{bem_root}__submenu-root:hover > .{bem_root}__link
+/* DRAWER, {bem_root} = sgs-nav-drawer-menu */
+{uid} .{bem_root}__accordion-row:hover > .{bem_root}__link
+```
+
+⛔ The `>` child combinator is load-bearing: the trigger link is a direct child of the wrapper while every `.{bem_root}__sublink` sits deeper in `ul.{bem_root}__submenu`; a descendant space would start matching the moment a nested structure gains a `.{bem_root}__link`, and the point is that the PARENT keeps its look. ⚠ `.{bem_root}__submenu-root` is dropdown-only and needs no `--has-submenu` qualifier (the mega variant emits `.{bem_root}__mega`).
+
+**The keyboard half genuinely needs `:has()`** (focus does not bubble like hover), keyed on the class present in both forks:
+
+```
+/* BAR */    {uid} .{bem_root}__submenu-root:has( .{bem_root}__submenu :focus-visible ) > .{bem_root}__link
+/* DRAWER */ {uid} .{bem_root}__accordion-row:has( .{bem_root}__submenu :focus-visible ) > .{bem_root}__link
+```
+
+⛔ Never key the `:has()` on `.{bem_root}__submenu-wrap` (bar-only; a rule using it silently does nothing for the drawer, where nested keyboard navigation is most common).
+
+**Binding implementation notes:**
+1. "Panel is open" needs no extra condition (a closed bar panel is `display:none`; the drawer `<ul>` lives in a closed `<details>`).
+2. Route each `:hover` variant through `sgs_hover_guarded_rule()`, not `sgs_hover_state_rules()` (the `:hover` is already in the built selector); emit each `:focus-visible` variant separately and unguarded.
+3. All four rules out-rank the plain hover rule (mouse `(0,4,0)`, keyboard `(0,5,0)` vs `(0,3,0)`) and that is harmless because the declarations are identical. ⛔ Never use it to smuggle in different declarations.
+4. The declarations are literally the Hover-state declarations from the same emitter call, not a hand copy. They cover plain text colour, the `swap` border colour and the item background on `::before`; a text Sweep and a border Sweep are excluded (copying `border-color` would reintroduce a solid bottom border under the transparent-border Sweep band). On the bar the mouse rule also covers the caret glyph.
+
+⚠ `:has()` browser floor: Safari 15.4, Chrome/Edge 105, Firefox 121 (Baseline from 2023-12-19; Firefox is the binding constraint). On an older Firefox the keyboard half does not apply; the mouse half works everywhere. Graceful bounded degradation, which is why the halves are split.
+
+#### FR-41-14 — The Highlight treatment suppresses per-item Hover/Current BACKGROUND
+
+The item Background row's `Highlight` treatment (FR-41-25) renders the shared indicator element (`.sgs-nav-bar-menu__indicator` / `.sgs-nav-drawer-menu__indicator`), one background shape that slides between items. Per-item `itemBgHover` / `itemBgCurrent` would paint a second background behind the same item. There is no separate indicator attribute or panel: `Highlight` IS the third option on the item Background row's selector (FR-41-23) and the pill reads that row's OWN Hover swatch (`itemBgHover` / `itemBgHoverGradient`), per the colour-reuse rule (§14.0).
+
+When `itemBgHoverTreatment === 'highlight'`:
+- The Background row renders with its **Current** state OMITTED; the row, its Normal state and its **Hover** state always render (the Hover swatch is what the pill is painted in).
+- `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css` skips the per-ITEM hover and current background declarations; the pill reads `itemBgHover` / `itemBgHoverGradient` as its fill.
+- Text colours, the border (all three states), the radius and the menu button are unaffected.
+- The stored `itemBgCurrent` is NOT cleared; switching back to `swap` restores it.
+
+⛔ Per-STATE, never per-ROW (the row's Normal control and the Hover swatch the pill reads must stay): `states: [ normalBg, hoverBg, ...( 'highlight' !== itemBgHoverTreatment ? [ currentBg ] : [] ) ]`. ⛔ OMIT, never disable: the caller inlines the condition in the array literal (reference: `plugins/sgs-blocks/src/blocks/icon-list/edit.js::Edit`); a greyed-out control that does nothing is the failure this prevents. The conditionality stays statically resolvable (a spread of a conditional literal array is countable in both branches; a `.filter()` is not, FR-41-2). The treatment control carries plain-language help: "Highlight paints one shape that slides between items, using the Hover colour you picked above. It replaces each item's own current-page background, so that swatch is hidden while it's selected."
+
+#### FR-41-15 — No hardcoded, ungated state/paint rule stands beside an operator control
+
+Every `background` or `border` declaration in these blocks' CSS is either (a) gated on an operator attribute, (b) an attribute-driven `var()` whose writer exists, or (c) structurally incapable of the defect (a reset to `none`/`0`, a `forced-colors` rule, a zero-specificity `:where()` default). A hardcoded rule duplicating or overriding an operator attribute is a silent override (the class `check-hardcoded-render-defaults.js` F3b catches only when a matching attribute exists on the selector).
+
+⛔ **Why the `background` SHORTHAND is the defect.** The text Sweep (FR-41-26) paints its gradient into `background-image` on the link and makes the glyphs transparent with `-webkit-text-fill-color: transparent`. An ungated `background:` shorthand on a hover state resets `background-image` to `none` and out-ranks the sweep's base rule: on hover the gradient is erased, the transparent fill survives and **legible text becomes near-invisible**. Silent both ways (`getComputedStyle( el ).color` still returns the operator's colour; the glyph paint is governed by `-webkit-text-fill-color`). Use `background-color:` longhands on any selector a Sweep can paint.
+
+**Standing consequences (binding):**
+- The item border is the item's own edge (FR-41-7); the line BETWEEN items is the Separators setting (FR-41-37). No second hardcoded between-item line may sit beside either (on a different element it never competes by specificity, so both paint). Neither the drawer's item-row `border-top` nor its static `style.css` twin exists.
+- The current-page state has no hardcoded tint or left rule: Current colour, weight, background and border are the operator's `itemColourCurrent`, `itemFontWeightCurrent` (never-lighter guard, FR-41-6), `itemBgCurrent` / `submenuLinkBgCurrent`, `itemBorderColourCurrent`; the submenu link's Current colour reads `--sgs-nm-submenu-current-colour`, written from `submenuColourCurrent` (a custom property with a consumer and no writer only ever renders its fallback).
+- The drawer's panel override zeroes the bar's panel border only while `submenuBorderWidth` is empty (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php`).
+- Featured sub-item paint is emitted only when the featured custom properties are written, with no hardcoded `primary` fallback and `background-color:` not the shorthand; there is no featured sub-item hover rule with a hardcoded background.
+- Structural chrome kept and named: the drawer's resting sub-item indent (`border-left`). It returns to the census when the item-border mechanism extends to that element.
+- Button resets are not paints (`background:none;border:0` on the mega-trigger and sub-toggle, `border:0` on the drill-down Back button `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn`). They return to the census when a stateful colour row (FR-41-23) targets that element (the shorthand would destroy a Sweep gradient exactly as above).
+- Two accessibility rules stay: the `@supports not (background-color: color-mix(...))` burger hover rescue (longhand, `(0,1,0)`, beaten by every uid-scoped rule, FR-41-17a(c)) and the `@media (forced-colors: active)` burger border.
+- The submenu panel's declarations are all attribute-driven with token fallbacks: `--sgs-nm-submenu-bg` / `--sgs-nm-submenu-bg-gradient` (from `submenuBg` / `submenuBgGradient`, empty-guarded, chained `surface-alt → surface → #fff` fallback); `min-width` from `submenuMinWidth`; per-corner `--sgs-nm-submenu-radius-{top-left|top-right|bottom-right|bottom-left}` via `sgs_corner_object_property_list()` (an unset corner keeps the 8px token); `--sgs-nm-submenu-border-width` / `--sgs-nm-submenu-border-style` with the colour from `sgs_border_states_css()` (Normal-only, no `suppress_edges`); the shadow is `filter:drop-shadow()` from `--sgs-nm-submenu-filter` (FR-41-9). The drill-down sub-panel's `background: var(--sgs-nm-submenu-bg, inherit)` is structurally load-bearing (`position:absolute; inset:0`, must be opaque); a submenu-panel GRADIENT attribute on that selector would return it to the census.
+
+**Methodology.** A rule enters the census when it carries a `background` or `border` declaration not gated on an operator attribute, whatever its state, block, or form (literal concatenation or helper call), across BOTH surfaces: the PHP emitters (both `render.php` plus every `git ls-files plugins/sgs-blocks/includes | grep nav-menu` file) and each block's `style.css` (a scan of `render.php` alone reports a clean tree). Every hit is classified in writing: **GATED** (gate named), **DISMISSED** (structurally incapable, with the condition that would return it), **CENSUSED** (deleted or converted). ⚠ The scan is statement-aware, not variable-aware: a declaration built into an intermediate PHP variable and appended later is outside it (`$sgs_nm_featured_vars` is a live instance, harmless only because its declarations are custom-property assignments). **Enforcement is `plugins/sgs-blocks/scripts/check-ungated-paint-rules.py` (FR-41-35)**, a character-boundary parser over both surfaces whose `HARD_FAIL_BLOCKS` lists the two menu blocks; the script is the enforcement, not this prose.
+
+### 14.7a The universal hover-treatment pairing
+
+#### FR-41-23 — Every stateful colour row gets ONE paired hover-treatment selector, not a separate mechanism
+
+"How should this property look when hovered?" is one question asked of every property; three independent mechanisms answering it (the Hover-colour swap, a border-only animation control, a background-only indicator panel) would make an operator learn three places. The selector sits directly beneath the Hover swatch of each qualifying row: a `ToggleGroupControl` with three options (a small reusable pattern, not a new shared component, FR-41-24):
+
+| Option | Meaning | What renders |
+|---|---|---|
+| **None** | No visual change on hover for this property | The property does not change (the Hover swatch stays stored so switching back restores it) |
+| **Swap** (default) | A plain colour change | What a 3-state row renders without a treatment: `sgs_emit_state_colour_css()` / `sgs_border_states_css()` with the Hover colour |
+| **Sweep** (text, border) / **Highlight** (background only) | An animated transition | The property-specific mechanism below |
+
+⛔ `Swap` is the DEFAULT for every row: an untouched block renders a plain Hover swap.
+
+| Row | Attribute | Third option | Third-option mechanism |
+|---|---|---|---|
+| Item text | `itemColourHoverTreatment` | **Sweep** | glyph colour-sweep (FR-41-26); offered only when the row passes the Sweep eligibility test |
+| Item background | `itemBgHoverTreatment` | **Highlight** | the shared sliding pill (FR-41-14/25), painted in the row's OWN Hover swatch |
+| Item border | `itemBorderHoverTreatment` | **Sweep** | the directional band (FR-41-8); under `sweep` the Hover and Current border emissions are omitted for the swept edge |
+| Submenu link text | `submenuColourHoverTreatment` | **Sweep** | the glyph sweep scoped to `.sgs-nav-bar-menu__sublink` / `.sgs-nav-drawer-menu__sublink`; eligibility-gated (the sublink paints its own background, so Sweep is omitted whenever any of its three state fills or its gradient is set) |
+| Submenu link background | `submenuLinkBgHoverTreatment` | **None only** (enum `none`/`swap`, two options) | the pill is an ITEM-row mechanism; a sweep band on a vertical list has no precedent |
+| Menu button icon colour | `burgerColourHoverTreatment` | **Sweep** | glyph sweep scoped to `.sgs-nav-bar-menu__burger` (bar-only); eligible only when `triggerMode` is not `icon` (a pure SVG has no glyphs to clip), `burgerBg` / `burgerBgGradient` / `burgerHoverColour` are unset (the button paints its own background in both states) and `burgerColourGradient` is unset |
+| Menu button background | `burgerBgHoverTreatment` | **None only** (two options) | a single button: no siblings for a pill, no text baseline for a band |
+
+⛔ `Highlight` is genuinely NOT offered outside the item Background row (the pill is defined by having sibling rows to slide between).
+
+**Rows with NO selector, each a real boundary:** the nav bar background/text (`navBg*` / `navColour*`, one static wrapper, a 2-state Swap-only row with no `after` node); the item / submenu-link Current swatches (Current is not pointer-driven and has no hover lifecycle; it stays a plain third colour); the submenu panel background/border colour (Normal-only, FR-41-9); shadow colour (single-state).
+
+⛔ **THE ITEM BACKGROUND ROW PAINTS ALL THREE STATES ON `{link}::before`.** The Normal, Hover AND Current fills are ALL emitted onto `.{uid} .{bem_root}__link::before` (same layer, `z-index: -1`, `border-radius: inherit`); no state's fill is emitted onto the link itself. This holds for `Swap` and `Highlight` (which skips the per-item emission); `None` emits no hover fill. **Why:** a Hover fill painted directly on the link would make FR-41-26's "Condition 1 passes always" false the instant `itemBgHover` is set, and the chosen Sweep would clip the new fill to the letter shapes. Emission is in `sgs_nav_shared_item_state_css`. `::before` is uncontested (the border-sweep band owns `::after`, the text sweep claims no pseudo-element): three states are three declarations on three selectors. ⚠ `{link}{position:relative;isolation:isolate;}` is emitted whenever ANY of the three fills is set (`'' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl`); duplication with FR-41-8's `position:relative` is harmless. Cited by FR-41-26's eligibility table, item-text row, condition 1.
+
+⛔ The selector must choose AMONG the same three fixed options everywhere; no bespoke per-row enum, except the two explicit 2-option rows (which drop the unavailable option rather than rendering it disabled).
+
+#### FR-41-24 — Component shape: block-private, not a new shared component
+
+No other block in the framework offers a hover-treatment sub-control beneath a colour row (`git grep -n -i "hover-treatment\|hoverTreatment" -- plugins/sgs-blocks/src` finds only these blocks, `business-info`'s sweep precedent and unrelated GSAP naming). **Decision:** block-private, not an export from `plugins/sgs-blocks/src/components/` (an abstraction from a sample of one). Each selector is a plain `ToggleGroupControl` + `ToggleGroupControlOption` mounted through FR-41-16's `after` slot, reading its own row's attributes directly: `ItemTextTreatment`, `ItemBgTreatment`, `ItemBorderTreatment`, `SubmenuTextTreatment`, `SubmenuLinkBgTreatment` in `plugins/sgs-blocks/src/shared/nav-menu-panels/ColourRowExtras.js`; `BurgerIconTreatment`, `BurgerBgTreatment` (bar-only) in `plugins/sgs-blocks/src/blocks/nav-bar-menu/BarColourRowExtras.js`. ⛔ None is exported from `plugins/sgs-blocks/src/components/` until a SECOND block asks for the pairing (§14.12); then promote to a `primitives` export. **Storage:** one `"type": "string"` attribute per applicable row, PHP-validated, no JSON `enum` (FR-41-8's reasoning), default `"swap"` for every row including the 2-option ones.
+
+#### FR-41-25 — The Highlight treatment IS the sliding pill
+
+`Highlight` on the item Background row is the shared sliding pill; no separate indicator attribute or Indicator panel. FR-41-14's per-STATE omission applies (stored values preserved, the emitter skips per-item hover/current fills). Trigger: `'highlight' === itemBgHoverTreatment`. ⛔ There is no `indicatorColour` / `indicatorColourGradient`: a separate pill colour pair would break the colour-reuse rule. Highlight paints in `itemBgHover` / `itemBgHoverGradient`, the swatch `Swap` and (on the text row) `Sweep` read. The help text is FR-41-14's.
+
+Conditional rows in JS: write a spread of a TERNARY, never a spread of a boolean-`&&` (`...( cond && {...} )` throws "false is not iterable" in an ARRAY literal): `...( showMarkerColour ? [ markerColourRow ] : [] )`. A whole ROW may be omitted with `cond && row` (`SgsColourPanel` runs `rows.filter(Boolean)`); the spread-of-ternary is for omitting a STATE inside a row.
+
+#### FR-41-26 — The Sweep treatment on TEXT: the shipped precedent, adopted directly
+
+The technique is shipped: `sgs/business-info`'s attribution link hover is a glyph colour sweep (`plugins/sgs-blocks/src/blocks/business-info/style.css::.sgs-business-attribution .sgs-business-info__link`, with the `--sgs-bi-link-hover-text` / `--sgs-bi-link-hover-bg` emission in `plugins/sgs-blocks/src/blocks/business-info/render.php`). This Part adopts the sweep, not its underline-growth accessory. Emitted by `plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_text_sweep_css`:
+
+```css
+{link} { position: relative; color: <normal colour, or inherit>;
+  background-image: linear-gradient( to right, <HOVER colour> 50%, <NORMAL colour, or currentColor> 50% );
+  background-size: 200% 100%; background-position: 100% 0; background-repeat: no-repeat;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  transition: background-position 300ms ease; }
+{link}:hover, {link}:focus-visible { background-position: 0 0; }
+@media (prefers-reduced-motion: reduce) { {link} { transition: none; } }
+@media (forced-colors: active), print { {link} { background-image: none; -webkit-text-fill-color: currentColor; } }
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  {link} { background-image: none; -webkit-text-fill-color: currentColor; color: <NORMAL>; }
+  {link}:hover, {link}:focus-visible { color: <HOVER>; } }
+```
+
+⛔ The `@supports` fallback colour is the NORMAL colour, the HOVER colour arriving via its own rule in the same block (seeding the base with Hover renders a permanently hover-coloured menu on exactly the browsers least able to cope). The hover half routes through `sgs_hover_state_rules()` (FR-41-3 rule 1; `hover-guard/check.js`, §14.11 G2, scans the PHP emitters). ⛔ The fallback is MANDATORY, not belt-and-braces (`.claude/rules/colour-emission.md`): without `background-clip:text` support the transparent fill makes the text invisible. Emit it with `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_text_colour_gradient_fallback_rule`, never a hand-rolled rule; it sits beside the `forced-colors`/`print` rescues (a supporting browser in a special mode), not instead of them.
+
+Safe on the item link without the `textSharesElementWithBackground` workaround because the link paints no background itself (the item background paints on `{link}::before`, FR-41-23, freeing `::after` for the border band). ⛔ Text-sweep uses ZERO pseudo-elements and is colour travel only; an animated line as well is the Border row's own Sweep. Its direction is fixed left to right (the angle-driven primitive of FR-41-38 governs the border and separator bands).
+
+##### Sweep eligibility: one predicate, applied to every text/icon row
+
+`Sweep` is offered on a text/icon colour row only when ALL of the following hold:
+1. **The element paints no background of its own, from ANY source (attribute-driven OR static/hardcoded CSS), in ANY state.** `background-clip: text` clips the whole background-painting area to the glyph shapes, and a `background` shorthand resets the sweep's `background-image` (`textSharesElementWithBackground`, `.claude/rules/colour-emission.md`). The condition is about what the RENDERED element paints: a hardcoded rule, a helper-emitted rule, a drawer-only rule and a `:hover` rule all count; every state's background, flat AND gradient, is a blocking input (`burgerHoverColour` is a real hover `background-color` on the burger; `submenuLinkBgHover` / `submenuLinkBgCurrent` block the sublink sweep like `submenuLinkBg`). One named exception NOT in the predicate: the static `@supports not (background-color: color-mix(...))` burger hover fallback in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` (a longhand, so the failure is a cosmetic clip not invisible text, and no attribute controls it). ⛔ Do not delete that fallback to "fix" Sweep; it is carried as residual FR-41-17a(c).
+2. **The row carries no Normal-state gradient** (both write `background-image` on one selector; if the gradient wins, resting text is transparent over nothing).
+3. **The element actually has glyphs.**
+
+When any condition fails, the `Sweep` segment is OMITTED and the row renders as a two-option `None`/`Swap` control (omit, don't disable).
+
+| Row | Condition 1 (own background, all states) | Condition 2 | Condition 3 | Net |
+|---|---|---|---|---|
+| **Item text** `.{bem_root}__link` | passes always: all three item-background fills paint on `{link}::before` (FR-41-23). This rests on that `::before` guarantee, not on the element by nature | `itemColourGradient` empty | always | offered unless `itemColourGradient` is set |
+| **Submenu link text** `.{bem_root}__sublink` | `submenuLinkBg` AND `submenuLinkBgHover` AND `submenuLinkBgCurrent` AND `submenuLinkBgGradient` all empty (it paints directly, no `::before`; these default to tokens, FR-41-36, so Sweep is not offered until an operator clears them) | `submenuColourGradient` empty | always | offered only on a sublink with no background in any state and no text gradient |
+| **Menu button icon** `.sgs-nav-bar-menu__burger` (bar-only) | `burgerBg` AND `burgerBgGradient` AND `burgerHoverColour` all empty | `burgerColourGradient` empty | `triggerMode !== 'icon'` | offered only on a text-bearing button with no background in either state and no icon gradient |
+| **Item border** (band on `::after`) | none (a separate element paint) | none | `glyphGuard` on `itemBorderStyle`: not for `dashed` / `dotted` / `double` / `groove` / `ridge` / `inset` / `outset` | offered for a solid style |
+| **Separators** (band on `::before`) | the line paints no background | none | line style `dashed` / `dotted` | offered for a solid line; decided by `SgsSeparatorControl` and `sgs_separators_line_css()`, not a `sweepEligibility` row |
+
+⚠ The FEATURED sub-item paints a background directly on `.{bem_root}__sublink` (`featuredBg` / `featuredBgGradient`, `--sgs-nm-featured-bg`). Resolution: the emitter scopes the sublink sweep selector to exclude featured sub-items (`{uid} .{bem_root}__subitem:not(.{bem_root}__subitem--featured) .{bem_root}__sublink`), so `featuredBg` is NOT in condition 1. ⛔ If the emitter does not scope it, `featuredBg` AND `featuredBgGradient` MUST be added to condition 1 and Sweep removed from the whole row. ⚠ `burgerColourHover` (icon/text COLOUR on hover) is NOT a blocking input and must not be added (§14.8.1 keeps it apart from `burgerHoverColour`). ⛔ Condition 1 is not satisfiable by moving backgrounds onto `::before` (churn on a shipped mechanism, and the burger's `::before` collides with the FR-41-31 magnet).
+
+##### The predicate is evaluated twice: in the UI AND in the emitter
+
+⛔ The predicate is the EMISSION rule; the inspector reflects it. The emitter evaluates the identical predicate before honouring any stored `'sweep'` and, when false, resolves to `'swap'` regardless of the database. Sweep CSS is never emitted while it is false. A UI-only gate fails because the inputs are OTHER attributes the operator can change afterwards: setting `submenuLinkBg` after choosing sublink Sweep would clip the new background to the letter shapes; setting `burgerBg` likewise; switching `triggerMode` back to `'icon'` leaves no glyphs and the transparent fill renders the icon button empty. The stored `'sweep'` is KEPT (clearing would discard a choice that becomes valid again, against the FR-41-14 / FR-41-23 discipline); the EMISSION is gated, and clearing the blocking attribute restores the swept render.
+
+##### One declared source, two evaluators: the predicate is DATA, not a function
+
+The emitter (PHP) and `edit.js` (React) both need it and the inspector cannot call PHP, so: **ONE DECLARATIVE SOURCE, READ BY BOTH SURFACES; neither re-derives the rule.** Each block declares it in its own `supports.sgs.sweepEligibility` (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`, `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json`), the framework's shape for a fact both halves need (PHP already reads `supports.sgs.*`: `plugins/sgs-blocks/includes/helpers-container.php::sgs_block_wants_intrinsic_columns`, `plugins/sgs-blocks/includes/hover-effects/resolve.php`, `plugins/sgs-blocks/includes/image-controls.php`; each block's `index.js` imports its own `block.json`). The PHP reader `plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_resolved_treatments( array $attributes, string $block_name = 'sgs/nav-bar-menu' )` takes the block slug from each `render.php`. ⛔ No separate JSON file, PHP constant or JS constant (a second artefact to sync). The bar declares four rows (`itemColourHoverTreatment`, `submenuColourHoverTreatment`, `burgerColourHoverTreatment`, `itemBorderHoverTreatment`), the drawer three (item text, submenu text, item border). Three keys per row, nothing else:
+
+```json
+"itemColourHoverTreatment":  { "blockingBackgroundAttrs": [], "blockingGradientAttrs": [ "itemColourGradient" ], "glyphGuard": null },
+"submenuColourHoverTreatment": { "blockingBackgroundAttrs": [ "submenuLinkBg", "submenuLinkBgHover", "submenuLinkBgCurrent", "submenuLinkBgGradient" ], "blockingGradientAttrs": [ "submenuColourGradient" ], "glyphGuard": null },
+"burgerColourHoverTreatment": { "blockingBackgroundAttrs": [ "burgerBg", "burgerBgGradient", "burgerHoverColour" ], "blockingGradientAttrs": [ "burgerColourGradient" ], "glyphGuard": { "attr": "triggerMode", "disallowedValues": [ "icon" ] } }
+```
+
+`blockingBackgroundAttrs` (condition 1) and `blockingGradientAttrs` (condition 2): eligible only when every named attribute is empty. `glyphGuard` (condition 3): `null` always passes, else ineligible when `attributes[attr]` is in `disallowedValues`. ⛔ `itemColourHoverTreatment`'s empty array is a DECLARED FACT, true only because of FR-41-23's `::before` rule; write `[]` explicitly, and if any item-background fill ever moves off `::before` the array gains that attribute in the same change. `edit.js` omits the `Sweep` segment when false and writes no logic of its own. The emitter reads the entry via `WP_Block_Type_Registry::get_instance()->get_registered( $block_name )->supports['sgs']['sweepEligibility']`, resolves to `'swap'` when false (no sweep `background-image`, `background-clip`, `-webkit-text-fill-color`, `@supports` fallback or rescue), keeps the stored value, and merges registered attribute defaults underneath the stored attributes first (a programmatic writer omitting `triggerMode` is read at its default `'icon'`, which its own `glyphGuard` disallows). If a new blocking input is found it is added to the DECLARED ROW (one edit, both surfaces). The resolved treatment, not the stored one, is what every downstream rule keys on. Acceptance: §14.11 G14 (f) and (g); (g) proves the two surfaces AGREE on a stored value straddling the boundary.
+
+##### When there is no hover colour to swap to
+
+The fallback to `'swap'` emits the row's Hover swatch; if that is empty, nothing is emitted for that property's hover state and the element keeps its Normal colour. ⛔ The emitter substitutes no colour of its own, falls back to no token and derives none from the background (a hardcoded render default, the `check-hardcoded-render-defaults.js` F3b class, un-clearable by the operator). An honest residual: an operator who picked Sweep and never filled the Hover swatch can lose hover feedback on that property when a blocking attribute is set (the border treatment, FR-41-6, is unaffected). Recorded at FR-41-17a(d).
+
+##### Sweep + a hover text-decoration: the underline must travel too
+
+`text-decoration-color` is NOT governed by `-webkit-text-fill-color`, so with `itemTextDecorationHover` (or the `submenu` sibling) on a swept row the glyphs would change while the line stays at the resting colour. ⛔ The rule keys on the RESOLVED treatment (after the eligibility re-check; read it into a variable once and have every downstream rule read that): when the resolved `...HoverTreatment` is `'sweep'` AND that prefix's hover text-decoration resolves to a permitted non-`none` value, the block-private emitter (FR-41-21) also sets `text-decoration-color` to the row's own Hover swatch in the same `sgs_hover_state_rules()` call. ⚠ No transition on `text-decoration-color` (it swaps at the start of the travel; competing transitions at different rates is the "looked broken" failure `sgs/business-info` fixed). Only item-text and submenu-link-text rows (the burger has no typography trio, the border row sweeps a band). Gated: §14.11 G14(e). ⚠ Condition 2 also protects `itemSmartContrast` (FR-41-5): Sweep's transparent fill overrides the resolved foreground, and the two are mutually exclusive by construction on the item text row; say so in the toggle's help text anyway.
+
+#### FR-41-27 — `itemSmartContrast` sits in the General-tab Accessibility panel
+
+The toggle, default and two-case resolution are FR-41-5's. Its inspector home is §14.9.5 "Accessibility", beside `navLabel` (both are "does the menu behave safely" controls).
+
+#### FR-41-28 — One border/divider mechanism for BOTH blocks
+
+The bar and the drawer are two separate blocks, each with its own uid and inspector, rendering the identical `itemBorderWidth` / `itemBorderColour*` / `itemBorderHoverTreatment` mechanism onto the same class name (FR-41-1). There is no bar-specific or drawer-specific border path: one `SgsBorderControl` mount and one `sgs_border_states_css()` call apply to both.
+
+#### FR-41-29 — "Current-page weight" as a block-private field inside the Typography panel
+
+A `SGS_FONT_WEIGHT_OPTIONS`-fed `SelectControl` writing `itemFontWeightCurrent`, NOT built into the shared `TypographyControls` (which has no Current branch and, per FR-41-21's "do NOT extend the shared helper" ruling, stays so; the Hover trio is adopted because the component already renders it and `typographyAttrKeys()` already names its keys, whereas a Current trio would change the shared component). It sits at the bottom of the Typography panel's **Menu** target (FR-41-22), beneath the shared hover trio row (§14.9.10). ⛔ It is the ONLY Current-state typography field (`itemTextDecorationCurrent` is not declared, FR-41-6): Current gets ONE signal, weight.
+
+#### FR-41-30 — Icon Picker drives two icons: the menu button and the sublink marker
+
+`plugins/sgs-blocks/src/components/IconPicker/IconPicker.js` offers four libraries (Lucide, Emoji, WordPress, Dashicons), search and categories; `plugins/sgs-blocks/src/blocks/icon/edit.js` is the live adopter pairing it with a 2-state gradient-capable colour row, the precedent both wirings copy.
+
+**FR-41-30a — the burger trigger icon.** `triggerIcon` (object, default `{"source":"lucide","name":"menu"}`) via an `IconPicker` in the "Menu Button" panel (§14.9.3), visible when `triggerMode` includes an icon. The emitter resolves the SVG through the same source-aware resolver `sgs/icon` uses (`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_icon_markup`), never a bespoke lookup. Its colour is the `burgerColour` / `burgerColourHover` row; `Sweep` follows FR-41-26 eligibility.
+
+**FR-41-30b — the submenu marker (drawer-only).** The sublink marker (`.sgs-nav-drawer-menu__sublink-marker`) is operator-chosen: `sublinkMarkerIcon` (object, default `{"source":"lucide","name":"chevron-right"}`) via `IconPicker`, and the colour family `sublinkMarkerColour` / `sublinkMarkerColourHover` / `sublinkMarkerColourCurrent` plus `*Gradient` counterparts (string, `""`), declared only in `nav-drawer-menu`, in the **Submenu — Items** panel. By default the marker inherits the sublink text colour and no picker shows. ⛔ The picker is revealed only when `sublinkMarkerIcon` is non-default (keyed on the icon, NOT on whether `sublinkMarkerColour` is set, since an empty string is indistinguishable from untouched); omitted, not disabled (`sublinkMarkerIconIsCustom && textRow( ... )` in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/edit.js::Edit`). Once revealed it is a full Normal/Hover/Current + gradient row matching `sgs/button`'s icon-colour control (SVG-stroke gradient for lucide/wp-icon, text gradient for dashicon/emoji, via `sgs_icon_gradient_css()`). The marker is `aria-hidden="true"` decoration, so an unset colour inherits `currentColor` and follows Hover and Current. Conditional inclusion of a whole row needs no new `SgsColourPanel` key (FR-41-16's `rows.filter(Boolean)`).
+
+### 14.7b Motion and placement
+
+#### FR-41-31 — The menu button has an optional magnetic pull
+
+Block-private, Tier V, reusing the shared `fx-magnet` runtime (Spec 38 FR-38-30) at the CSS/JS layer only: no new JS or CSS module, no DB row, no fx-panel or roster registration. One two-line value-preserving, design-gated edit to the existing `plugins/sgs-blocks/assets/css/fx-magnet.css` exposes its transition as `--sgs-magnet-transition` so this block reads it instead of duplicating it (no rendered change for any existing adopter, §14.11 G1(e)). The roster route is wrong on two counts: both nav blocks are deliberately EXCLUDED from the fx-panel roster (a functional nav element gets no effects panel), and the button is a DESCENDANT of the block root while the generic injector reaches only the root.
+
+| Attribute | Type | Default | Control |
+|---|---|---|---|
+| `triggerMagnetEnabled` | boolean | `false` | `ToggleControl` |
+| `triggerMagnetRadius` | number | `120` | `RangeControl` min 20 max 400 |
+| `triggerMagnetStrength` | number | `24` | `RangeControl` min 2 max 80 |
+
+⛔ The RangeControl bounds match `fx-magnet.js`'s own clamp (do not widen without changing the clamp first). ⛔ No axis control (a square button falls back to the runtime's `'both'`). Panel: "Menu Button" (§14.9.3), Design tab, after the size control; help text "Makes the menu button lean toward the visitor's cursor as they approach it. Off automatically on touch devices and when reduced motion is requested."
+
+**Render wiring (on the `<button class="sgs-nav-bar-menu__burger">` only; bar-only).** When enabled emit `data-sgs-fx="magnet" data-sgs-fx-magnet-radius="{value}" data-sgs-fx-magnet-strength="{value}"` (each `absint()` then `esc_attr()`); when disabled, no attribute. ⛔ No `view.js` change or enqueue code: the motion registry's enqueue is markup-sniffed (it regexes the rendered HTML for `data-sgs-fx="..."`). ⛔ One companion rule is REQUIRED in the same change, in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css`, because the magnet's transition and the burger's hover-background transition are equal specificity and the later stylesheet would silently kill one (an intermittent, enqueue-order bug):
+
+```css
+.sgs-nav-bar-menu__burger[data-sgs-fx="magnet"] {
+  transition: background-color var(--wp--custom--transition--fast, 150ms ease),
+              var(--sgs-magnet-transition, transform 180ms ease-out);
+}
+```
+
+⛔ The magnet half of that declaration is READ from a shared custom property, never retyped. `plugins/sgs-blocks/assets/css/fx-magnet.css` (registered by `plugins/sgs-blocks/includes/class-sgs-motion-registry.php` as `'magnet' => 'assets/css/fx-magnet.css'`) declares `transition: transform 180ms ease-out`; copying the literal makes the number true in two places. The shared file exposes the value it owns: `[data-sgs-fx="magnet"] { --sgs-magnet-transition: transform 180ms ease-out; transition: var( --sgs-magnet-transition ); }`, and the nav rule's `var()` carries the identical literal as its fallback. ⚠ A custom property INHERITS to the element's whole subtree (harmless here); a descendant that needs to know it is inside a magnet keys on the `[data-sgs-fx="magnet"]` ATTRIBUTE, which does not inherit (no `--sgs-magnet-transition: initial` resets). This is a design-gated shared-file touch; acceptance rides G1 as a fifth proof (every existing magnet element renders a byte-identical computed `transition`).
+
+⚠ **Reduced motion.** The companion rule `.sgs-nav-bar-menu__burger[data-sgs-fx="magnet"]` is `(0,2,0)` and would beat the shared kill switch (`[data-sgs-fx="magnet"]` under `prefers-reduced-motion: reduce`, `(0,1,0)`, `transform:none; transition:none`); what rescues it is the pre-existing `!important` rule `.sgs-nav-bar-menu__burger` under `reduce` (`transition-duration: 0.01ms`) in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` (the drawer's `style.css` carries its own for its three selectors). The companion declares no `transform`, so the kill switch's `transform: none` is unopposed. ⛔ Do NOT also wrap the companion in `@media not (prefers-reduced-motion: reduce)` (a second mechanism for an outcome an unremovable rule already guarantees) and do NOT give it `!important` (it would beat the rescue). The dependency is asserted at §14.11 G9. **Acceptance: §14.11 G17.** With `triggerMagnetEnabled` false the markup carries no magnet attribute AND no magnet module or stylesheet is enqueued (assert the asset's absence).
+
+#### FR-41-39 — Sibling dim: the OTHER items change while one is hovered
+
+**Status: BUILT** (U-6, M-24). `sgs/nav-drawer-menu` and `sgs/icon-list` carry `siblingDimColour` (+`Gradient`) and `siblingDimOpacity`; while one item of a list is hovered or keyboard-focused, every OTHER item of that list takes the dim values (each list on its own). Built by `plugins/sgs-blocks/includes/helpers-item-effects.php::sgs_sibling_dim_css`: one hand-built `:has()` rule wrapped with `sgs_hover_media_wrap()` (never `sgs_hover_guarded_rule()`, which splits its selector on every comma) plus a separate keyboard rule keyed on `:focus-visible` (never `:focus-within`, which a tap on an accordion `<summary>` would hold), written `list:has(> item :focus-visible)` with ONE level of `:has()` (nested `:has()` is invalid; `plugins/sgs-blocks/tests/php/run-u6-u7-item-markup-standalone.php` asserts no nesting). Not on `sgs/nav-bar-menu` (no reference dims bar items; Bean). The colour row carries a `states` exemption (a pointer-driven state); a dimmed colour below 4.5:1 is transient, reported by the contrast warning, never clamped.
+
+#### FR-41-40 — Two-copy label roll, and the trigger's hover and open words
+
+**Status: BUILT** (U-6, M-25). `labelRoll` (`''` | `up` | `up-scale`) on `sgs/nav-bar-menu` (items and trigger word), `sgs/nav-drawer-menu` and `sgs/icon-list`. Off emits no extra markup; on, the label gains an `aria-hidden` copy and rolls to it on hover or keyboard focus inside an `overflow:clip` inline grid, with no transform under reduced motion. One timing pair per block (`itemMotionDuration`, `itemMotionEasing` + `Custom`) times every item effect. The trigger adds `triggerHoverLabel` and `triggerOpenLabel` (FR-36-27's swap-label): the copies bind `aria-hidden` to `state.isOpen`, so the accessible name is the visible word (WCAG 2.5.3) and open beats hover.
+
+#### FR-41-41 — Drawer row extras: ornament, expander glyph, per-item media
+
+**Status: BUILT** (U-7, M-22 and M-15). `sgs/nav-drawer-menu` only. `itemOrnament` per tier (`none` | `index` | `icon`): a decorative two-digit counter (`content: counter() / ""`) or `itemOrnamentIcon` with an optional crossfading `itemOrnamentIconHover`, plus `itemOrnamentSize`, `itemOrnamentColour` (+`Hover`) and `itemOrnamentGap`; the colour row carries a `gradient` exemption (one span holds a counter or an SVG glyph; no single gradient paints both). `itemExpanderIcon` and `itemExpanderRotate` replace the hardcoded chevron and its 180 degree turn. `itemMedia: featured-image` shows each linked page's featured image beside its label (custom links show none; a GIF or WebP is served at `full` so it keeps animating), revealed per tier by `itemMediaReveal` (`none` | `always` | `hover`, growing from width 0 on hover or keyboard focus) and sized by `itemMediaWidth` / `itemMediaHeight` per tier and `itemMediaRadius`. The image is decorative (`alt=""`).
+
+#### FR-41-32 — Cursor-reactive field: eligible, deliberately NOT offered
+
+A capability someone will expect, named as not built with the reason. (a) `sgs/nav-bar-menu` declares `containerKind: "layout"`, so it qualifies structurally. (b) Not offered because the only route is `supports.sgs.fx.motionSurface: true`, which opens a panel of nine effects at once (cursor-field, generative-background, grid-dots, morph, motion-path, particles, scrub, wave-gradient, plus magnet, which would need subtraction via `providesNatively` to avoid colliding with FR-41-31); the effects system cannot offer ONE effect without its `requires` sibling group, and the panel-bloat containment rule (`plugins/sgs-blocks/scripts/generate-fx-qualifying-blocks.py`) keeps functional blocks (navigation, header, footer) off the effects panel. (c) Revisit when a per-block, per-effect motion selection system exists. ⛔ No controls, attributes or panel placement are designed for this, and no bespoke one-off wiring is built to route around the containment rule.
+
+#### FR-41-33 — Border COLOUR joins the global Colour panel; width, style and radius stay with the element
+
+Owner-locked, decided on merits, knowingly diverging from a generic framework rule.
+
+| Property | Home | Control |
+|---|---|---|
+| Border **width**, **style**, **radius** | the element's own panel: "Menu item" (§14.9.7), "Submenu — Container" (§14.9.9) | `SgsBorderControl` with `showColour={ false }` |
+| Border **colour**, all states | the global Colour panel (§14.9.6) as an ordinary row beside fill and text | `SgsColourPanel` row: 3 states on the item, Normal-only on the panel |
+
+`SgsColourPanel`'s docblock names border colour as one of three documented exemptions (with overlay and shadow colour). This block's redesign is a side-by-side comparison of every element's colours across three states, and border colour must coordinate with the fill and text beside it; width, style and radius need no such comparison. A considered block-scoped exception; the general rule is unchanged and no other block's inspector moves.
+
+**Feasibility, checked:**
+1. ⛔ `SgsBorderControl`'s colour picker is suppressed only through the additive **`showColour`** prop (boolean, default `true`) removing the `.sgs-border-control__colour` `FlexItem` (omitting the colour props would render an empty picker). Every other mount is byte-identical (§14.11 G1; the mount roster is a live grep, never a cached count). ⛔ `showColour={ false }` makes TEN props INERT, and that ignore-list is documented on the component's docblock: `colourStates`, `colourValue` / `onColourChange`, `colourGradientValue` / `onColourGradientChange`, `colourLinked`, `colourLabel`, `clearable`, `enableAlpha`, and `contrastAgainst` / `contrastLabel` / `contrastLargeText` (the dangerous one: a caller can wire a WCAG contrast check that then silently never runs). `borderStyle` is NOT on the list (item 2 re-parents it). These blocks' own mounts pass none of the ten; the border colour rows carry `contrastAgainst` / `contrastLargeText: true` in the Colour panel (§14.9.6 / FR-41-17), where the control that reads them renders.
+2. ⚠ `borderStyle` rides INSIDE the colour popover (`styleValue`/`onStyleChange` forwarded as `borderStyle`/`onBorderStyleChange`), so under `showColour={ false }` `SgsBorderControl` renders the existing shared `plugins/sgs-blocks/src/components/BorderStyleControl.js::BorderStyleControl` (exported from `plugins/sgs-blocks/src/components/index.js`; already used by `GradientCapableColourControl.js` and `DesignTokenPicker.js`) as a sibling in the same row. ⛔ Reuse it; a hand-rolled `SelectControl` would re-widen the vocabulary beyond WP core's Solid / Dashed / Dotted (the component is a `ToggleGroupControl` with `isDeselectable`, "None" reached by deselecting; props `{ label?, value, onChange }`, `onChange` receives `''` on deselect). ⚠ Gate the sibling exactly as `GradientCapableColourControl` does: only when `typeof onStyleChange === 'function'`, so a caller that never wired border style gets no orphan control (G1(d)).
+3. `ShadowControl` is a partial precedent: it externalised its colour OWNERSHIP (the caller owns `{name}Colour`), but still RENDERS the picker inside `ShadowStateBuilder`; `showColour` is behaviour the control did not have.
+
+⛔ The split is exclusive: exactly ONE live control writes each attribute (`check-duplicate-controls.js` bans a duplicate writer). Acceptance: §14.11 G18.
+
+### 14.8 Attribute reconciliation
+
+Existing names WIN; new attributes extend the existing convention (`itemColourHover` exists, so its sibling is `itemColourCurrent`). The attributes live in `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes`, which are the source of truth for names, types and defaults (query the framework DB: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT attr_name, css_property FROM block_attributes WHERE block_slug IN ('sgs/nav-bar-menu','sgs/nav-drawer-menu')"`). The bar / drawer / both split per attribute is recorded in `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md`.
+
+#### 14.8.1 Colour-row attributes
+
+The 3-state rows are `itemColour*`, `itemBg*` (`itemBgHover` is ALSO the Highlight pill's fill, FR-41-25: one swatch, three treatments), `submenuColour*`, the submenu link background (`submenuLinkBg*`), and the item border colours (`itemBorderColour*`). `submenuBg` (the PANEL) is Normal only (FR-41-9). `navBg*` and `navColour*` are 2-state: the nav bar keeps two states, not three (a bar is never "the current page"). The Menu Button family (`burgerColour`, `burgerColourGradient`, `burgerColourHover`, `burgerBg`, `burgerBgGradient`, `burgerHoverColour`, `burgerSize`) is 2-state, in the "Menu Button" panel plus the Colour panel's **Menu button** grouping. `itemTextDecoration` is Normal state, its `enum` carries `overline` as a fifth value (FR-41-6) and it has an explicit `attrMap` entry (§14.8.6a); its Hover sibling is `itemTextDecorationHover` (FR-41-6 / FR-41-21) and there is no Current sibling.
+
+⛔ **`burgerColourHover` and `burgerHoverColour` are two different attributes governing two different properties; only this table disambiguates them** (both `{"type":"string","default":""}`, names anagram-close):
+
+| Attribute | Governs | Emission |
+|---|---|---|
+| `burgerColourHover` | the ICON/TEXT colour on hover | `color:` on `.sgs-nav-bar-menu__burger` via `sgs_hover_state_rules()`; manifest `burger.states.hover.attrMap."css:color"`; the Hover half of the **Icon colour** row |
+| `burgerHoverColour` | the BUTTON BACKGROUND on hover | `background-color:` on the same element; manifest `burger.states.hover.attrMap."css:background-color"`; the Hover half of the **Button background** row (Normal half `burgerBg`) |
+
+⛔ Neither is renamed (the zero-renames rule, §14.8.4). The two rows carry DIFFERENT treatment attributes for the same reason (`burgerColourHoverTreatment`, 3-option and Sweep eligibility-gated, vs `burgerBgHoverTreatment`, 2-option); crossing the attributes crosses the treatments.
+
+#### 14.8.2 Other existing attributes
+
+No control in this Part touches: `padding`, `margin`, `ref`, `collapsePoint`, `drawerRef`, `featuredItemIds`, `navLabel`, `gap`, `listColumns`, the `item*` typography families (+ `*Unit`), every `featured*`, `itemMagnetEnabled`, `sgsCustomCss`, `submenuAlign`, `submenuCaret`, `submenuCloseGrace`, `submenuMinWidth`, `submenuPadding`. ⚠ `itemMagnetEnabled` (item-level magnet, Effects panel §14.9.11) is a different attribute from FR-41-31's `triggerMagnetEnabled`; neither reads the other.
+
+#### 14.8.4 Attributes declared by this Part
+
+Names, types and defaults are in the two `block.json` files; the grouped list and the decisions that are not obvious from a manifest:
+- **Current and gradient completions (both blocks):** `itemColourCurrent`, `itemBgCurrent`, `itemBgCurrentGradient`, `itemBgHoverGradient` (completes the row's three-state gradient set and is what the Highlight pill paints with when a gradient is chosen, FR-41-25), `submenuColourCurrent` (`"text"`), `submenuBgGradient` (the PANEL's Normal-only gradient sibling, required by `sgs_custom_property_gradient_decls()`).
+- **Weight and trio:** `itemFontWeightCurrent` (string `"600"`, matching `itemFontWeight`; FR-41-6), and the six `showHover` trio attributes `itemTextDecorationHover`, `itemTextTransformHover`, `itemFontWeightHover`, `submenuTextDecorationHover`, `submenuTextTransformHover`, `submenuFontWeightHover` (strings; the weights are string-typed). `itemSmartContrast` (boolean `false`, FR-41-5).
+- **Item border:** `itemBorderWidth` (box object, base-only), `itemBorderStyle`, `itemBorderRadius`, `itemBorderColour` / `Hover` / `Current` (`"border-light"` / `"accent"` / `"accent"`; no gradient sibling; authored in the Colour panel, FR-41-33), `sweepAngle` (number `90`, FR-41-38, shown only when `itemBorderHoverTreatment==='sweep'`).
+- **Submenu:** `submenuLinkBg` / `Hover` / `Current` (`"surface"` / `"primary"` / `"surface-alt"`) and `submenuLinkBgGradient`; `submenuAnimation` and `submenuTopOffset` (bar); `submenuBorderWidth`, `submenuBorderStyle`, `submenuBorderRadius` (bar), `submenuBorderColour` + `submenuBorderColourGradient` (panel border, Normal only); `submenuShadow` and `submenuShadowColour` (bar; the colour name is forced by `plugins/sgs-blocks/src/components/ShadowControl.js::shadowAttrKeys`'s rule `colour = <base>Colour`).
+- **Trigger (bar):** `triggerMode`, `triggerIconPosition`, `triggerLabel`, `triggerIcon`, `triggerMagnetEnabled` / `Radius` / `Strength` (FR-41-12 / FR-41-30a / FR-41-31).
+- **Treatments:** `itemColourHoverTreatment`, `itemBgHoverTreatment`, `itemBorderHoverTreatment`, `submenuColourHoverTreatment` (both), `submenuLinkBgHoverTreatment` (none/swap only), `burgerColourHoverTreatment` (bar), `burgerBgHoverTreatment` (bar, none/swap only); all default `"swap"` (FR-41-23). Sweep is omitted per FR-41-26 (a background in ANY state blocks it; `burgerColourHover` is NOT a blocking input, it is the colour the sweep travels TO).
+- **Drawer-only:** `sublinkMarkerIcon` and the `sublinkMarkerColour*` family (FR-41-30b).
+
+⛔ **`itemBorderRadius` defaults to `8px` on all four corners, a FLAT corner object, not a tier envelope.** A background-filled item with hard square corners reads as unfinished; decided on merits, not on any test page. The per-element precedent is `sgs/product-card`'s `ctaBorderRadius` (`{"topLeft":"10px","topRight":"10px","bottomLeft":"10px","bottomRight":"10px"}`, CSS length STRINGS with units), consumed by `plugins/sgs-blocks/includes/helpers-box.php::sgs_corner_object_longhands` (reads exactly `topLeft` / `topRight` / `bottomRight` / `bottomLeft` via `sgs_css_length_value()`, printing only set corners). The root `borderRadius` tier envelope (`{"desktop":{}}`, `sgs_border_radius_tiers`) would find no corner keys and silently vanish. ⚠ `submenuBorderRadius` keeps its `{}` default (the panel reads `--sgs-nm-submenu-radius-{corner}` with a token fallback, FR-41-15). The full submenu typography family is declared under FR-41-22.
+
+⛔ **Every `showHover` trio attribute defaults to `""`; `itemTextDecorationHover` does NOT default to `"underline"`.** A non-empty default would make the underline the block's SHIPPED hover signal (the framing FR-41-6 rules out), would ship an underline to every item of every install (the imposition FR-41-17a(a) refuses: "do not close case (a) by re-defaulting"), and would break the additive-defaults contract (§14.11 G13). All six are plain `"type": "string"` with NO JSON `enum`, PHP-validated against FR-41-21's allowlists (an out-of-enum stored value silently coerces to the `block.json` default).
+
+⛔ **Zero renames in this Part.** Every attribute above is additive (a rename's blast radius is the whole write path, including Spec 47's route, not just the readers). The `itemTextDecoration` base keeps its real JSON `enum` as a disclosed asymmetry with the six enum-less trio attributes: an existing attribute is not restructured, and the zero-renames rule covers the shape as much as the name.
+
+#### 14.8.4a Responsive font-size tiers: no flat tier attributes
+
+`itemFontSize` is `{"type":"object","default":{}}`, a `{desktop,tablet,mobile}` TIER OBJECT, and both surfaces take the tiered path: `plugins/sgs-blocks/src/components/TypographyControls.js::TypographyControls` computes `fontSizeIsTiered = isTieredValue( fontSizeRaw )` (true for any non-null object and for the empty array the `{}` default reaches the editor as; `tests/js/typography-tier-shape.test.js`), renders `<ResponsiveOverride>` and writes the single attribute; `sgs_typography_css_rule()` branches on `$size_is_tiered = is_array( $attributes[ $k_size ] )` and emits per-tier `@media` CSS via `sgs_emit_responsive_css()`, reading `FontSizeTablet` / `FontSizeMobile` only in its flat `else` branch. So tablet and mobile font size persist and render end to end. ⛔ Declaring `itemFontSizeTablet` / `itemFontSizeMobile` would add two attributes with zero writers and readers (dead-attribute debt); `typographyAttrKeys()` returning a key name is not evidence a block uses it (it names keys for both storage shapes). `itemLetterSpacing` is a tier object for the same reason; do not "complete the set". **Requirement:** §14.11 G20 asserts a tablet and a mobile font-size value set through the editor persist and render.
+
+⚠ The one un-tiered member is `itemLineHeight` (`{"type":"number"}`, no default): `lineHeightIsTiered` is false, so `TypographyControls` renders one plain `LineHeightControl` and per-device line height is not offered (a missing capability, never a silent discard). ⛔ Do not declare `itemLineHeightTablet` / `...Mobile`; the settled direction is the tier-object migration via `plugins/sgs-blocks/scripts/migrate-tier-object.py --property lineHeight`, which is that codemod's job across every block. Formula-based scaling is not offered: vw/vh units cover it (Bean ruling).
+
+#### 14.8.5 Three deliberate boundaries: do not "complete the set"
+
+1. **The item TEXT row's gradient is Normal plus Hover, never Current.** `itemColourGradient` (Normal) and `itemColourHoverGradient` (Hover, in `item.states.hover`) exist; there is no `itemColourCurrentGradient`. A gradient has no single hex to contrast-test, so it cannot coexist with the smart-contrast auto-swap (FR-41-5): the Hover gradient is offered only while `itemSmartContrast` is off and hidden the instant it is switched on, and the emitter ignores a stored hover gradient while the swap is active. ⚠ This is a TEXT-row boundary: the item BACKGROUND row has a full three-state gradient set (`itemBgGradient` / `itemBgHoverGradient` / `itemBgCurrentGradient`; a background gradient is what is contrasted against), and `itemBgHoverGradient` is read by Highlight (FR-41-25).
+2. **The submenu PANEL background has a Normal-state gradient and nothing else.** `submenuBgGradient` is declared identically in both blocks because the fill is written by `sgs_custom_property_gradient_decls( 'sgs-nm-submenu-bg', ... )`, which emits a `--sgs-nm-submenu-bg-gradient` sibling. ⛔ No `submenuBgGradientHover` / `...Current` (FR-41-9's argument is about STATES, not gradients).
+3. **No gradient on the ITEM border in any state, while the submenu PANEL border keeps one** (the pseudo-element budget, FR-41-3c).
+
+#### 14.8.6 Required `block.json` manifest shape
+
+**(a) The `item` element has hover and current states with DISTINCT attribute names per state.** `supports.sgs.elements.item` declares `clusters: ["text","fill","layout","border"]`, `prefix: "item"`, and `states` `hover` and `current`.
+- `"border"` in `item.clusters`: without it the forward-resolution pass never visits `css:border-color` / `css:border-width` / `css:border-style` (the same trap the `indicator` element's note records: an attrMap on an element with `clusters: []` is never consulted).
+- Base members: `css:border-radius` → `itemBorderRadius` (no hover entry), `css:border-color` → `itemBorderColour`, `css:border-width` → `itemBorderWidth`, `css:border-style` → `itemBorderStyle`, `css:text-decoration` → `itemTextDecoration` (base plus hover with no current entry is correct), `css:text-transform` → `itemTextTransform` (without an explicit base, base and Hover derive to the same `(text-transform, item, state=NULL)` slot and collide), and `css:font-weight` → `itemFontWeight` (⛔ must SURVIVE: dropping it leaves two state entries with no base, the STATE_WITHOUT_BASE shape the manifest gate flags, Spec 35 FR-35-5).
+- `states.hover`: `css:color` → `itemColourHover`, `css:color-gradient` → `itemColourHoverGradient`, `css:background-color` → `itemBgHover`, `css:background-image` → `itemBgHoverGradient`, `css:border-color` → `itemBorderColourHover`, and the trio `css:text-decoration` / `css:text-transform` / `css:font-weight` → `itemTextDecorationHover` / `itemTextTransformHover` / `itemFontWeightHover`. ⛔ All three trio entries are explicit, never left to the `{prefix}Suffix` convention.
+- `states.current`: `css:color` → `itemColourCurrent`, `css:background-color` → `itemBgCurrent`, `css:background-image` → `itemBgCurrentGradient`, `css:border-color` → `itemBorderColourCurrent`, and explicitly `css:font-weight` → `itemFontWeightCurrent`.
+
+`css:background-image` is claimed at all three states by three DIFFERENT attributes, and `css:font-weight` likewise (`css:text-decoration` at two): the safe shape, each declared explicitly at its own state. ⛔ The explicit current `css:font-weight` entry is not belt-and-braces: the `burger` element's note records `burgerColour` + `burgerColourHover` deriving to `(color, burger, state=NULL)` and colliding on one slot, and the `sublink` note records the same for `submenuColour` + `submenuColourHover`. ⛔ `current` maps DIFFERENT attribute names from `hover`: the classifier's `_record()` is last-write-wins, so a `current` attrMap identical to `hover` would overwrite the correct hover derivation and tag attributes with the wrong `css_state`. Verification (§14.11 G4): assert via `/sgs-db` that `itemColourHover` and `itemBgHover` carry `css_state='hover'` and the Current attributes `css_state='current'`.
+
+**(b) The `sublink` element has hover and current states, `fill` and `border` clusters and explicit typography members.** Clusters `["text","fill","border"]`, `"prefix": ""`. `submenuColourCurrent` on `states.current`; `submenuLinkBg` / `...Hover` / `...Current` across base and both states; `submenuLinkBgGradient` as `css:background-image` at base. `states.hover` carries `css:text-decoration` / `css:text-transform` / `css:font-weight` → `submenuTextDecorationHover` / `submenuTextTransformHover` / `submenuFontWeightHover`. On `nav-drawer-menu` it also routes the marker colour family (`css:fill` / `css:fill-gradient` → `sublinkMarkerColour*`). ⛔ Each hover member needs its BASE counterpart declared in the same change (`submenuTextDecoration`, `submenuTextTransform`, `submenuFontWeight`, itemised in FR-41-22(c)): a hover member with no base is STATE_WITHOUT_BASE, with an implicit base it collides. ⚠ `"prefix": ""` is deliberate and must NOT change (a `submenu` prefix would claim `submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding`, which belong to the PANEL); FR-41-22's `submenu`-prefixed typography attributes belong to this anchor, resolved by an explicit `attrMap` entry per property, never by giving the element a prefix.
+
+**(c) A `submenu-panel` element claims the panel** (`.{bem_root}__submenu`): `submenuBg` / `submenuBgGradient` (base only), `submenuBorderColour` / `submenuBorderColourGradient` / `submenuBorderWidth` / `submenuBorderStyle`, and on `nav-bar-menu` `submenuBorderRadius`, `submenuShadow`, `submenuShadowColour`. Clusters `["fill","border","layout"]`, `"prefix": ""`. ⛔ No `states` key (no hover or current state for any property).
+
+**(d) The between-item line has no element.** It is the shared Separators setting (FR-41-37): `separators` and `submenuSeparators` are object attributes drawn by the helper, so neither block's `supports.sgs.elements` carries an `item-separator` element and `sublink` claims no border members.
+
+**(e) The `burger` element carries nothing for `triggerMode` / `triggerLabel` / `triggerIcon` / `triggerMagnet*`** (not CSS properties; declaring them creates phantom routing slots). Its `css:width` / `css:height` → `burgerSize` pair is unchanged by non-icon modes (`width:auto` is a render-time branch).
+
+**(f) No `underline` element exists.** Assert via `/sgs-db` that zero rows carry `css_element='underline'` for either block (§14.11 G11).
+
+**(g) `supports.sgs.sweepEligibility` is declared per block (FR-41-26).** Four notes: (1) ⛔ it is NOT an `elements` entry and routes NOTHING (it sits beside `colourExemptions` / `hideExtensions` / `boxFamilies`); (2) both read paths are proven (PHP reads `supports.sgs.*`; JS imports the manifest via `plugins/sgs-blocks/src/blocks/nav-bar-menu/index.js::metadata` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/index.js::metadata`); (3) nothing constrains which keys `supports.sgs` may carry; (4) ⛔ every attribute NAMED in a row must exist in that block's own `attributes` (the `burgerColourHoverTreatment` row exists only in the bar; a typo in `blockingBackgroundAttrs` reads as permanently empty and the rule silently stops existing); assert name by name (§14.11 G12).
+
+### 14.9 The inspector: two tabs, exact layout
+
+⛔ This section is the control-by-control layout and it is authoritative: if an FR's prose and this section disagree, this is what a builder implements and the FR is the one to fix. `block.json` and the Spec 35 element manifest win on any default VALUE. Panel order within a tab is the order below. `SgsColourPanel` must render **before** any other same-group `<InspectorControls>` in `edit()` (WordPress concatenates same-group Fills in mount order). ⛔ Every control names its actual component; there is no "dropdown": 2-3 options is `ToggleGroupControl`, 4+ is `SelectControl` (`SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED` is `3`; `ToggleGroupControl` / `ToggleGroupControlOption` import from `plugins/sgs-blocks/src/components/primitives`).
+
+#### TAB 1: General
+
+**14.9.1 Panel "Menu"** (menu source): `SelectControl` (WP menu picker) → `ref` (`0`).
+
+**14.9.2 Panels "Burger Menu" (bar) and "List layout" (Design tab):** Show the burger on (bar-only): `ToggleGroupControl` Always | Tablet | Mobile | Custom (Custom reveals a `SgsLengthControl` "Switch to burger below") → `collapsePoint` (`768`). Item gap (`ToolsPanel`): `SgsLengthControl` → `gap` (`"8px"`). Columns (drawer only): `RangeControl` in `ResponsiveControl` → `listColumns`. Padding: `ResponsiveBoxControl` → `padding`.
+
+**14.9.3 Panel "Menu Button"** (bar-only; opens with the help text "Controls the button that opens the mobile menu (the 'burger')."):
+
+| Control | Component | Attribute |
+|---|---|---|
+| Icon (when `triggerMode` is `icon` or `icon-and-text`) | `IconPicker` (FR-41-30a) | `triggerIcon` |
+| Show as (per device) | `ResponsiveOverride` + `ToggleGroupControl` **Icon \| Text \| Both** | `triggerMode` |
+| Icon position (when a tier is Both) | `ToggleGroupControl` **Before \| After** | `triggerIconPosition` |
+| Label (when any tier is not `icon`) | `TextControl` (`__nextHasNoMarginBottom __next40pxDefaultSize`) | `triggerLabel` |
+| Size | `SgsLengthControl` | `burgerSize` (`"44px"`) |
+| Magnetic pull | `ToggleControl` (FR-41-31) | `triggerMagnetEnabled` |
+| Pull distance / strength (when on) | `RangeControl` 20-400 / 2-80 | `triggerMagnetRadius` / `triggerMagnetStrength` |
+
+⛔ The third option's LABEL is "Both", not "Icon and text", and the STORED value is `icon-and-text`: "Icon and text" is 13 characters, over Spec 35 Part O's 12-character bound for a 2-4-option `ToggleGroupControl`, whose remedy is to shorten the LABEL, never the VALUE (one vocabulary for open and close sides). See `plugins/sgs-blocks/src/blocks/nav-bar-menu/BurgerPanel.js` (`<ToggleGroupControlOption value="icon-and-text" label={ __( 'Both', 'sgs-blocks' ) } />`) and identically `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`; both carry the shortening on purpose.
+
+**14.9.4 Submenu behaviour** (bar-only, in the bar's "Menu panel" panel): Panel this burger opens (`SelectControl` → `drawerRef`); Open from (`SelectControl` Start / Centre / End → `submenuAlign`); Show expand arrow (`ToggleControl` → `submenuCaret`); Close delay (`RangeControl` ms → `submenuCloseGrace`, `170`).
+
+**14.9.5 Panel "Accessibility"** (both blocks; FR-41-27): Navigation label (`TextControl` → `navLabel`); Keep text readable automatically (`ToggleControl` → `itemSmartContrast`, `false`), plain-language help per FR-41-5. **14.9.5a Device visibility** is present via the universal extension (§14.1.2): build nothing.
+
+#### TAB 2: Design
+
+**14.9.6 Panel "Colour"**: ONE `SgsColourPanel`, sub-groupings via FR-41-16, every stateful row paired with its hover-treatment selector (FR-41-23). Each block mounts exactly one (`plugins/sgs-blocks/src/blocks/nav-bar-menu/edit.js::Edit` `colourRows`; `plugins/sgs-blocks/src/blocks/nav-drawer-menu/edit.js::Edit`'s trimmed `colourRows`). The treatment `ToggleGroupControl` renders directly beneath each Hover swatch.
+
+| Grouping | Row | States | Attributes | Hover treatment |
+|---|---|---|---|---|
+| **Menu** | Nav background | Normal, Hover | `navBg` / `navBgHover` (+ `navBgGradient`) | none (single static wrapper) |
+| | Nav text | Normal, Hover | `navColour` / `navColourHover` (+ `navColourGradient`) | none |
+| | Item text | Normal, Hover, **Current** | `itemColour` / `itemColourHover` / `itemColourCurrent` (+ `itemColourGradient`; `itemColourHoverGradient` while `itemSmartContrast` is off) | None / Swap / **Sweep** (`itemColourHoverTreatment`); Sweep omitted when `itemColourGradient` is set |
+| | Item background | Normal, Hover, **Current** (Current omitted under Highlight, FR-41-14) | `itemBg` / `itemBgHover` / `itemBgCurrent` (+ the three gradients) | None / Swap / **Highlight** (`itemBgHoverTreatment`), painting in the row's own Hover swatch |
+| | Item border colour (labelled "Item underline colour" on the bar) | Normal, Hover, **Current** | `itemBorderColour` / `...Hover` / `...Current` | None / Swap / **Sweep** (`itemBorderHoverTreatment`) |
+| | Sweep angle (only when Sweep) | n/a | `sweepAngle` (`AnglePickerControl` + preset dropdown) | n/a |
+| **Submenu** | Panel background | Normal only | `submenuBg` (+ `submenuBgGradient`) | none |
+| | Panel border colour | Normal only | `submenuBorderColour` (+ `submenuBorderColourGradient`) | none (FR-41-9) |
+| | Link text | Normal, Hover, **Current** | `submenuColour` / `...Hover` / `...Current` (+ `submenuColourGradient`) | None / Swap / **Sweep** (`submenuColourHoverTreatment`); omitted when the link paints a background in ANY of its three states or carries a text gradient |
+| | Link background | Normal, Hover, **Current** | `submenuLinkBg` / `...Hover` / `...Current` (+ `submenuLinkBgGradient`) | None / **Swap only** (`submenuLinkBgHoverTreatment`) |
+| | Sublink marker colour (drawer-only, FR-41-30b) | Normal, Hover, **Current** (revealed once `sublinkMarkerIcon` is non-default) | `sublinkMarkerColour` / `...Hover` / `...Current` (+ 3 gradients) | none |
+| **Menu button** (bar-only) | Icon colour | Normal, Hover | `burgerColour` / `burgerColourHover` (+ `burgerColourGradient`) | None / Swap / **Sweep** (`burgerColourHoverTreatment`); omitted under `triggerMode:'icon'`, when the button paints a background in EITHER state (`burgerBg` or `burgerHoverColour`) or carries an icon gradient |
+| | Button background | Normal, Hover | `burgerBg` / `burgerHoverColour` (+ `burgerBgGradient`) | None / **Swap only** (`burgerBgHoverTreatment`) |
+| **Featured** | out of scope (§14.1.2) | | | |
+
+ⓘ **Cross-reference note beneath the Item text and Item background rows (FR-41-5 / FR-41-27):** "Automatic readable-text checking for these colours is switched on under General → Accessibility." Without it the toggle governs two rows from another tab and reads as a dropped control. Gated: §14.11 G16.
+
+ⓘ **Cross-reference note beneath the Item border colour row's hover-treatment selector (FR-41-6):** "This changes the line around the item. To underline the menu word itself instead, use Decoration (hover) under Typography — they're separate settings and don't do the same thing." ⛔ RENDERED in the inspector, not merely stated here (an operator meets the controls in the editor); the twin of the §14.9.10 note and neither ships without the other. Gated: §14.11 G19(e).
+
+⛔ There is no "Indicator" panel or indicator-colour row (FR-41-25): Highlight paints in `itemBgHover` / `itemBgHoverGradient`, per the colour-reuse rule. Both border-colour rows are ordinary `SgsColourPanel` rows (FR-41-33), not duplicates, because `SgsBorderControl` is mounted with `showColour={ false }` in §14.9.7 / §14.9.9; each carries `contrastAgainst` with `contrastLargeText: true` (WCAG 1.4.11, 3:1). ⛔ Mega Menu colours are NOT in this panel.
+
+**14.9.7 Panel "Menu item"** (border SHAPE here; border COLOUR in the Colour panel, FR-41-33). Width, style and radius sit as a labelled **Border** control rendered by `SgsBorderControl` with `showColour={ false }`: per-side width (base only) + style (the shared `BorderStyleControl` sibling, FR-41-2b / FR-41-33 item 2) + radius via `radiusValues` / `onRadiusChange` with `showRadiusResponsive={ false }`, bound to `itemBorderWidth` / `itemBorderStyle` / `itemBorderRadius`. This is a considered block-scoped EXCEPTION to the framework rule that border colour lives in the composite (rationale: FR-41-33). ⛔ The split is EXCLUSIVE: exactly one control writes each attribute (`check-duplicate-controls.js`). The mechanism is identical in bar and drawer (FR-41-28); no per-layout branching.
+
+**14.9.7a Panels "Item separators" (bar), "Row separators" (drawer), "Submenu row separators" (both)** (FR-41-37). Each is one `PanelBody` holding one `SgsSeparatorControl` (`plugins/sgs-blocks/src/shared/nav-menu-panels/SeparatorsPanel.js`) bound to `separators` or `submenuSeparators`: a per-device **Thickness** (`ResponsiveLengthControl`, empty draws no line) beside one **Line colour and style** swatch whose popover carries the Normal / Hover tabs and the Solid / Dashed / Dotted picker. The drawer's top-level panel also offers **Outer lines** (Between items only / Between items and at both ends / Between items and after the last); the top-level panels also offer **Line on hover** (None / Swap / Sweep, with direction and angle under Sweep). The line colours are NOT rows in §14.9.6.
+
+**14.9.8 Panel "Submenu — Items"** (drawer-only): the LINKS inside the drawer's submenu, distinct from the container (§14.9.9). Colour rows live in §14.9.6 (cross-referenced, not duplicated). Marker icon: `IconPicker` (FR-41-30b) → `sublinkMarkerIcon`. Typography: the Typography panel's "Submenu" target (§14.9.10 / FR-41-22). Spacing: submenu link padding, a per-device box → `submenuLinkPadding`, unset keeps the stylesheet default (the control is in the shared ItemsPanel); `submenuPadding` belongs to the PANEL (§14.9.9).
+
+**14.9.9 Panel "Submenu — Container"** (a `ToolsPanel`, each row a `ToolsPanelItem` with `hasValue` / `onDeselect`; bar-only rows marked):
+
+| Control | Component | Attribute |
+|---|---|---|
+| Open animation (bar-only) | five-option `SelectControl` None \| Fade \| Fade and lift \| Slide down \| Grow (FR-41-10) | `submenuAnimation` (`"fade"`) |
+| Distance below the bar (bar-only) | `SgsLengthControl` with `presets={ false }` | `submenuTopOffset` |
+| Minimum width (bar-only) | `SgsLengthControl` with `presets={ false }` | `submenuMinWidth` |
+| Inner spacing | `ResponsiveBoxControl` | `submenuPadding` |
+| Border | `SgsBorderControl` with `showColour={ false }`: width + style (+ radius on the bar) only, matching §14.9.7; its colour is a Normal-only row in §14.9.6's Submenu grouping (FR-41-33) | `submenuBorderWidth` / `submenuBorderStyle` / `submenuBorderRadius` (bar) |
+| Box shadow (bar-only) | `ShadowControl` with `attrNames={ shadowAttrKeys( 'submenuShadow' ) }` | `submenuShadow` + `submenuShadowColour` |
+
+Radius rides the border control's radius half (no flat `submenuRadius` control). The panel is single-state throughout (FR-41-9): a floating panel is either rendered or absent. ⛔ Do not give the panel's border-colour row a Hover or Current state. ⚠ Shadow colour stays with `ShadowControl` and is NOT moved into `SgsColourPanel` by FR-41-33 (the border exception rests on the comparison argument; a Normal-only shadow colour has nothing to compare against and moving it would break `ShadowControl`'s preset behaviour). `ShadowControl` renders its colour picker itself inside `ShadowStateBuilder`; only the ATTRIBUTE is caller-owned. Reuse `plugins/sgs-blocks/src/components/ShadowControl.js::ShadowControl` and `plugins/sgs-blocks/includes/helpers-tokens.php::sgs_shadow_value_composed`; `shadowAttrKeys( 'submenuShadow' )` with no options returns exactly `{ base: 'submenuShadow', colour: 'submenuShadowColour' }` (reference mount `plugins/sgs-blocks/src/blocks/info-box/edit.js::Edit`); its PHP twin `plugins/sgs-blocks/includes/helpers-colour-variants.php::sgs_shadow_attr_map( 'submenuShadow' )` takes the same call (both sides carry the same opt-in or JS binds a key the block never declares and the editor silently discards writes). ⛔ Shadow is gradient-exempt by mechanism (`inspector-scan` rule 31 encodes it centrally; declare nothing per block).
+
+**14.9.10 Panel "Typography"** (directly under the Colour and List-layout panels): the Menu / Submenu `targets` switcher (FR-41-22 has the attribute family and `TypographyTargetSwitcher` mechanics).
+
+| Control | Component | Applies to |
+|---|---|---|
+| Target | `ToggleGroupControl` Menu \| Submenu; on the bar a third **Menu button** target (font family, transform, letter spacing) appears when `triggerMode` is not `icon` | selects the attribute family |
+| Font family | `TypographyControls` font-family picker | `{prefix}FontFamily` |
+| Font size (+ tiers) | `ResponsiveControl` wrapping `UnitControl` | `{prefix}FontSize` (tier object, §14.8.4a) |
+| Weight / Style | native `SelectControl`s | `{prefix}FontWeight` / `{prefix}FontStyle` |
+| Line height | `UnitControl` | `{prefix}LineHeight` |
+| Decoration / Transform / Letter spacing / Text align / Text wrap / Text columns / Writing mode | native controls per `TypographyControls`' standard set (Normal state) | `{prefix}TextDecoration` etc. |
+| **Decoration (hover) / Transform (hover) / Weight (hover)** | the three `SelectControl`s `TypographyControls` renders in ONE `<Flex>` row when `showHover: true` (`SGS_TEXT_DECORATION_OPTIONS` / `SGS_TEXT_TRANSFORM_OPTIONS` / `SGS_FONT_WEIGHT_OPTIONS`); ⛔ not three hand-rolled controls | `{prefix}TextDecorationHover` / `...TextTransformHover` / `...FontWeightHover`, all `""` |
+
+`showTextIndent` is `false` on both targets. The hover trio row is present on BOTH targets (`showHover: true` per `targets` entry; FR-41-6 / FR-41-21 / FR-41-22). ⛔ It is described, in help text and every future edit, as an **optional secondary decoration**: not the block's non-colour hover signal (that is the item border row's treatment selector in the Colour panel, §14.9.6) and not an alternative way to author the divider (a hover underline is a baseline-hugging glyph-width decoration; the divider is a full-width edge treatment).
+
+ⓘ **Cross-reference note beneath the hover trio row (FR-41-6), the twin of the §14.9.6 note, neither shipping without the other:** "These change how the menu word itself looks on hover. For a line across the whole item, use the item border's hover setting in the Colour panel instead."
+
+The help strings below are the BINDING wording (a wording requirement without wording is unbuildable); adjust sentence rhythm, never the distinction:
+
+| Control | Help text (verbatim) |
+|---|---|
+| **Decoration (hover)** | "Underlines the menu word itself on hover — not a full-width line. For a line under the whole item, use the border's hover setting in the Colour panel instead." |
+| **Weight (hover)** | "Makes the word bolder when you point at it. Bolder text is a little wider, so the items to its right will shift across slightly as you move along the menu." |
+
+⛔ Neither string names WCAG, "contrast ratio", "AA", "signal" or "divider", and the Decoration string is never softened into "another way to underline". ⚠ The Weight caution is operator guidance, not a blocker (it does not disable the control or gate the value).
+
+Block-private field, Menu target ONLY, at the bottom of that target's set (FR-41-29, a plain block-owned `SelectControl`, not part of `TypographyControls`): **Current-page weight**, `SelectControl` fed `SGS_FONT_WEIGHT_OPTIONS` → `itemFontWeightCurrent` (`"600"`); its plain-language help says it keeps the menu usable for someone who cannot tell two colours apart and that its hover counterpart is the item border's hover treatment in the Colour panel. Every state-signal control has a named home (the hover trio row, the Current-page weight field below it, `itemSmartContrast` in §14.9.5); only `itemTextDecorationCurrent` has no control (FR-41-6).
+
+**14.9.11 Panel "Effects"**: `itemMagnetEnabled` ("Magnetic hover pull"). **14.9.12 Panel "Featured"**: out of scope (§14.1.2). **14.9.13 Panel "Mega menu (drawer)"** (drawer-only): out of scope (§14.1.2).
+
+### 14.10 WCAG contrast, follow-ups and comment hygiene
+
+#### FR-41-17 — The warn-only contrast check applies to every row
+
+`contrastAgainst` / `contrastLabel` feed the live luminance-ratio check in `plugins/sgs-blocks/src/components/GradientCapableColourControl.js`. Every 3-state row carries both with identical behaviour: it warns, never blocks and never alters a colour, and is ignored on a row that is not `gradientCapable` (a plain `DesignTokenPicker` has no check). The caller works out which background is behind the text: item text contrasts against `itemBg` (resting), `itemBgHover` (hover) and `itemBgCurrent` (current); submenu link text against `submenuLinkBg` and, where unset, `submenuBg`. ⚠ The two border-colour rows carry `contrastLargeText: true` set explicitly on the row descriptor (a border is a WCAG 1.4.11 UI-component case at 3:1; the row lives in `SgsColourPanel`, so the obligation sits on the descriptor and must not inherit `GradientCapableColourControl`'s `false` default). It does not overlap FR-41-5 (the emitter changes the colour; this only warns in the editor). ⛔ It checks a foreground against its BACKGROUND, never two foreground states against each other (FR-41-17a).
+
+#### FR-41-17a — Residual, accepted risk: colour-only state signals
+
+Four accepted, named cases ((a) and (b) the colour-only pair; (c) and (d) Sweep-specific, ending in a state with no visible signal):
+- **(a) Default case: no border, no Hover signal.** `itemBorderWidth` defaults to `{}`, so an untouched block ships no non-colour Hover signal (Current still ships its `"600"` weight). Accepted: an unrequested underline on every item of every install is a design imposition the owner rejected, and one border-width entry supplies the signal. ⚠ `itemTextDecorationHover` does NOT close this case and must not be recorded as closing it (it defaults to unset).
+- **(b) The switched-off case.** An operator can set `itemColourHover` and `itemColourCurrent` to two similar colours AND leave the border width empty AND clear `itemFontWeightCurrent`; Hover and Current are then distinguished by colour alone, an SC 1.4.1 failure the inspector never warns about.
+- **(c) The `color-mix`-less browser under Sweep on the menu button.** The static `@supports not (background-color: color-mix(...))` fallback in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` paints `background-color: rgba(128,128,128,0.12)` on `.sgs-nav-bar-menu__burger:hover` / `:focus-visible`; on browsers supporting `background-clip: text` but not `color-mix` that fill is clipped to the glyph shapes during a Sweep. Not gated by FR-41-26 condition 1 (a longhand, so cosmetic; no attribute controls it). ⛔ Do not close it by deleting the fallback.
+- **(d) The Sweep fallback with an empty Hover swatch.** When the predicate turns false the treatment resolves to `'swap'`; with an empty Hover swatch nothing is emitted and the property has no hover change (FR-41-26). Accepted: substituting a colour would be an un-clearable hardcoded render default, and refusing the fallback would leave the clip defect. Narrower than (a) and (b): the item border treatment is unaffected, so it bites only on a border-less menu. Closed by one swatch entry.
+
+All four are accepted residual risks, not covered work. The fix, if ever taken, is distinct work: extend the warn-only contrast UI to flag perceptual similarity between two state colours on the same element when every non-colour signal for those states is off (a state-vs-state comparison, a new trigger and string; not FR-41-17 with a wider input). ⛔ Do not close this by removing the operator's ability to switch signals off, and do not close case (a) by re-defaulting `itemBorderWidth` to a non-empty value.
+
+#### FR-41-18 — "Auto-adjust for readability": a SEPARATE, EXPLICITLY NON-BLOCKING follow-up
+
+**Status: NOT BUILT** (§14.0a.3). ⛔ Blocks no other requirement. An optional per-colour-row toggle that nudges the operator's pick toward the nearest AA-safe value against the resolved background; off by default. Attribute `{attrName}AutoAdjust` (boolean, `false`, one per row that offers it); placement inside the row's own popover beneath the states; only rows that already supply `contrastAgainst`; nudge toward AA and never past it; store the operator's original pick and adjust at render (overwriting would make the toggle irreversible). Help text: "Automatically brightens or darkens your chosen colour just enough to stay easy to read against the background behind it. Your original colour is kept — switch this off to go back to it."
+
+#### FR-41-19 — Code comments state what the code does
+
+The `supports.sgs.elements.item._note` and `...sublink._note` in the two nav `block.json` files state the current-page mechanism and name `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent`; the `sublink._note` states that `"prefix": ""` stands and that `submenu`-prefixed typography attributes reach the element through explicit `attrMap` entries (§14.8.6b / FR-41-22). The citation in these comments is `FR-35-5`, not `FR-36-5`. ⛔ No retirement narration in active comments; each note states what the code does now.
+
+#### FR-41-20 — Ancestor Current styling is built in CSS; there is no ARIA active-trail
+
+**Built.** When a descendant submenu link is the current page, its ancestor top-level item renders the item's own Current declarations (colour, background on `::before`, border colour, weight), re-using the literal Current declarations, never a diluted third look. Selectors: `.{bem_root}__submenu-root:is(:has(ul.{bem_root}__submenu a[aria-current="page"]), [data-sgs-nav-has-current]) > .{bem_root}__link:not(:hover):not(:focus-visible)` on the bar and `.{bem_root}__accordion-row:has(ul.{bem_root}__submenu a[aria-current="page"]) > .{bem_root}__link:not(:hover):not(:focus-visible)` on the drawer, emitted by `sgs_nav_shared_item_state_css`. The trailing `:not(:hover):not(:focus-visible)` is what makes hover win over a propagated-Current ancestor (the `:has()` selector's own specificity outranks the plain hover rule). The bar-only `[data-sgs-nav-has-current]` fallback exists because `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js` moves the panel to `<body>` while a page-embedded dropdown is open, breaking the `:has()` descent; it mirrors the fact onto the never-moving `.submenu-root` for that duration (the drawer never reparents).
+
+**Not built: the ARIA active-trail.** `markCurrentPage` in both `view.js` files marks a link only on EXACT path equality, so a parent whose child page is current gets no `aria-current` marking and assistive technology gets no ancestor signal; there is no ancestor-path data from which one could be derived without a second mechanism. FR-36-4 names both the visual and semantic trail; the visual half has a mechanism here, the semantic half has no owner. Building it would need an ancestor-path list emitted per item at render time (the menu tree is known server-side) plus a client-side prefix match in `markCurrentPage` stamping a distinct signal, not `aria-current="page"` (single-valued per page, belonging to the exact link). Coherent, self-contained, and not in scope here.
+
+### 14.10a Typography
+
+#### FR-41-21 — The `showHover` trio has no shared PHP emitter, so these blocks emit it themselves
+
+The `showHover` flag is on for both targets of both blocks (FR-41-6), so the trio must be emitted and the shared helper cannot do it. **The block-private emit is BUILT.** ⛔ Do not extend `sgs_typography_css_rule()` for this (a design-gated shared helper with callers across most of the block library).
+
+Facts: `plugins/sgs-blocks/src/components/TypographyControls.js::TypographyControls` accepts `showHover = false` and, when true, renders three `SelectControl`s in one `<Flex>` row (Decoration / Transform / Weight, hover), writing `k.textDecorationHover` / `k.textTransformHover` / `k.fontWeightHover`, opt-in only "for a block that DECLARES + renders the `{prop}Hover` companions, else the dead-control gate flags it". `sgs_typography_css_rule()` in `plugins/sgs-blocks/includes/helpers-typography.php` has no hover branch (its only `:hover` emission is `sgs_link_colour_css()`). `showHover: true` is adopted only by these two blocks. `typographyAttrKeys( prefix )` returns all three hover key names, so the NAMES are the shared contract and only rendering is block-private. Switching `showHover` on without emitting creates six dead controls and fails `check-dead-controls.js`; the emitter is what makes the six declared attributes legal.
+
+**The emit:** one `sgs_hover_state_rules()` call per prefix composing whichever of the three declarations are set (`sgs_hover_state_rules( $link_sel, '<decls>', ':focus-visible' )`, and the same for `$sublink_sel` with the `submenu` prefix). ⛔ Each value is validated against the SAME allowlist the base path applies (inline arrays in `sgs_typography_css_rule()`, no exported constant, so the emitter reproduces the checks literally): `text-decoration` in `none / underline / line-through / overline`; `text-transform` in `none / uppercase / lowercase / capitalize`; `font-weight` through `preg_replace( '/[^a-z0-9]/i', '', (string) $v )`. If the base allowlists change, this emitter changes in the same commit. ⛔ A hover value that is set but not permitted emits NOTHING (never falls back to the base value, which would repaint the resting declaration inside `:hover`). ⚠ Emit through `sgs_hover_state_rules()`, never a bare `{sel}:hover` (a stuck hover weight on touch reflows the bar until the visitor taps elsewhere).
+
+**Where it lives:** `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::sgs_nav_shared_typography_hover_rule` and identically `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php::sgs_nav_shared_typography_hover_rule`, each inside its own `function_exists()` guard (a top-level declaration in a per-instance include fatals on the second instance). Signature `( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' )`; the fourth parameter is how FR-41-26's "the underline must travel too" rule reaches it. Its two CALLERS live in other files: `plugins/sgs-blocks/includes/nav-menu-css.php` (prefix `item`, on `$link_sel`) and `plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php` (prefix `submenu`, on `$sublink_sel`). That is safe only because those modules merely DEFINE functions at include time and call this one at render time, after `render.php`'s top level declared it. ⛔ Do not relocate the definition into one of the modules (the other does not `require_once` its sibling).
+
+#### FR-41-22 — Submenu typography: the Items panel is a Menu / Submenu switcher
+
+The sublink (`.{bem_root}__sublink`) has its own typography controls so dropdown links can be a step smaller than the bar. The switcher is not new component work: `TypographyControls`' `targets` prop is adopted by `card-grid`, `icon-list`, `option-picker`, `pricing-table`, `product-card`, `team-member`, `testimonial`, `trust-bar`; copy `plugins/sgs-blocks/src/blocks/card-grid/edit.js::Edit`'s two-target switcher (a `ToggleGroupControl` at two targets; threshold `SGS_TYPOGRAPHY_SWITCHER_MAX_SEGMENTED = 3`).
+
+⛔ In `targets` mode, per-field flags MUST live on each target entry, not the outer element: with `targets.length > 1` `TypographyControls` renders `TypographyTargetSwitcher` and DISCARDS `singleProps`, forwarding only each target's `...fieldProps`; flags on the outer element silently delete the working controls, and each target carries its own `prefix`. The mount has two targets, `item` ("Menu") and `submenu` ("Submenu"), each with `fontSizePresets`, `showFontFamily`, `showDecoration`, `showTransform`, `showLetterSpacing`, `showTextAlign`, `showTextWrap`, `showTextColumns`, `showWritingMode`, `showTextIndent: false` (never emitted for nav links; the attribute is kept) and **`showHover: true`** (FR-41-6 / FR-41-21). A `showHover` left on the outer element renders no trio while every gate stays green (the inverse shape `check-dead-controls.js` looks for). The bar adds a third **Menu button** target when `triggerMode` is not `icon`.
+
+**(a) Declare the full `submenu*` family in `block.json`**, matching `typographyAttrKeys( 'submenu' )` exactly: `submenuFontFamily`, `submenuFontSize`, `submenuFontSizeUnit`, `submenuFontWeight`, `submenuFontStyle`, `submenuLineHeight`, `submenuLineHeightUnit`, `submenuTextDecoration`, `submenuTextTransform`, `submenuLetterSpacing`, `submenuLetterSpacingUnit`, `submenuTextAlign`, `submenuTextWrap`, `submenuTextColumns`, `submenuTextIndent`, `submenuWritingMode`. ⛔ `submenuFontSize` and `submenuLetterSpacing` are `{"type":"object","default":{}}` (the tier-object shape, no `...Tablet` / `...Mobile` siblings, §14.8.4a); mirror the item family's shapes exactly (a new flat family would be born migration debt). ⚠ `submenuLineHeight` mirrors `itemLineHeight` as `{"type":"number"}` (un-migrated on both prefixes, deliberately symmetrical; an asymmetry between the two targets of one switcher is visible to the operator; both migrate together via the codemod). Plus the three companions `submenuTextDecorationHover`, `submenuTextTransformHover`, `submenuFontWeightHover` (`"type": "string"`, default `""`). ⛔ "Flag set", "attributes declared" and "render emit present" go together; never one or two of the three.
+
+**(b) The render calls.** Base: `sgs_typography_css_rule( $attributes, 'submenu', $sublink_sel )` in `plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php`, beside `sgs_typography_css_rule( $attributes, 'item', $link_sel )` in `plugins/sgs-blocks/includes/nav-menu-css.php` (without them every attribute is a dead control). Plus the companion hover emit per prefix: `sgs_nav_shared_typography_hover_rule( $attributes, 'item', $link_sel, $item_sweep_hover )` and the `submenu` twin; selectors are built from `$bem_root`. ⛔ The helper is BLOCK-PRIVATE to the two nav blocks, not an addition to a shared helper file (promoting it is the §14.12 follow-up).
+
+**(c) FR-41-22c: an explicit `attrMap` entry on `sublink` per typography property** (it declares `"prefix": ""`, so the `{prefix}Suffix` convention resolves nothing). Base: `css:font-family`, `css:font-size`, `css:font-weight`, `css:font-style`, `css:line-height`, `css:text-decoration`, `css:text-transform`, `css:letter-spacing`, `css:text-align` → the matching `submenu*` attribute. Plus three on `states.hover` (`css:text-decoration`, `css:text-transform`, `css:font-weight` → `submenu*Hover`), each explicit for the collision reason in §14.8.6(a). ⛔ Never resolve this by giving `sublink` a `submenu` prefix (it re-claims `submenuAlign` / `Caret` / `CloseGrace` / `MinWidth` / `Padding` and the whole border family, which belong to the PANEL).
+
+### 14.10b The ungated-paint detector
+
+#### FR-41-35 — The ungated-paint detector, built framework-wide
+
+**Status: BUILT.** FR-41-15's census was found incomplete on three consecutive reviews; a method in prose is not enforcement, so this is the enforcement. **Scope: FRAMEWORK-WIDE.** FR-41-15's methodology contains nothing nav-menu-specific (join each `$css .=` / hover-helper statement to its terminating `;`, test the buffer for a `background`/`border` declaration, read the block's stylesheet for the same shape; the classification input comes from the block's own declared `attributes`). The block-agnosticity risk is the exemption set, see (d).
+
+**(a)** `plugins/sgs-blocks/scripts/check-ungated-paint-rules.py`. `check-*` because it is gate-first; Python because the load-bearing half is PHP statement structure (every PHP-semantics detector in this tree is Python). ⛔ It does NOT extend `check-hardcoded-render-defaults.js`, which runs the INVERSE direction (attribute exists → is its property also hardcoded?); this asks declaration exists → does a governing attribute exist?
+
+**(b) `--survey`** emits the census in FR-41-15's three buckets for one block (`--block sgs/x`) or every block: per hit the source file, selector, verbatim declaration and bucket (CENSUSED / GATED with the `if` named / DISMISSED with the reason AND the condition that would return it). ⛔ All three buckets are emitted, never just the findings.
+
+**(c) FR-41-35c: `--check`** exits non-zero when a `background` or `border` declaration is emitted or authored ungated on a selector with no corresponding operator attribute, on both surfaces in one run, failing closed for `HARD_FAIL_BLOCKS` (`["sgs/nav-bar-menu", "sgs/nav-drawer-menu"]`); every other block's findings print and pass. ⛔ The scan logic is FR-41-15's methodology (a character-boundary parser joining to the terminating `;`). ⚠ It is statement-aware, NOT variable-aware (the `$sgs_nm_featured_vars` assembly in `plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php` is a live instance); the script PRINTS this limit in `--survey` output.
+
+**(d) Exemptions**, each a GENERIC rule keyed on selector shape or `supports.sgs`, never a block name: resets (a declaration to `none` / `0` / `transparent` with no competing operator value); `:where()` defaults; forced-colors / `@supports` a11y rules; wrapper-delegated blocks (a `supports.sgs` container kind whose paint belongs to `SGS_Container_Wrapper`); an attribute-driven `var()` with a live writer (⛔ it must verify the writer EXISTS in `src/`, since a `var()` with no writer only paints its hardcoded fallback). ⛔ Writing `.sgs-nav-bar-menu__` or `.sgs-nav-drawer-menu__` into an exemption means writing a nav-menu lint, not a gate.
+
+**(e) `--self-test`**: negative controls are fixtures under `plugins/sgs-blocks/scripts/fixtures/ungated-paint/` (real diagnosed instances: unconditional, ungated `background` shorthand, `:hover`, via `sgs_hover_guarded_rule()`, `$uid_sel`-scoped). ⛔ Each `*-dirty` fixture must FAIL the check and the `*-clean` copy report zero; one `*-legit` and one `*-trap` fixture per exemption prove none over-matches.
+
+**(f) Wiring:** the entry is in `plugins/sgs-blocks/scripts/gates.json` (consumed by `run-gates.py`), id `check-ungated-paint-rules`, plus the `package.json` alias `check:ungated-paint-rules`. ⛔ A `package.json` alias alone does NOT wire a gate; prove reachability with `npm run gate:list`, not a grep. **(g) Gate:** §14.11 G20c.
+
+### 14.11 Acceptance
+
+Live roster commands replace cached counts throughout.
+
+| Gate | Condition |
+|---|---|
+| **G1: zero blast radius** | Five proofs, all required. (a) Every block mounting `SgsColourPanel` renders byte-identical inspector output despite the FR-41-16 row keys (diff at least three callers; roster `git grep -l "<SgsColourPanel" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`). (b) Every existing `sgs_emit_state_colour_css()` call site emits byte-identical CSS with the 4th parameter defaulted (`git grep -c "sgs_emit_state_colour_css(" -- '*.php'`). (c) `sgs_fill_states_css()` / `sgs_text_states_css()` / `sgs_border_states_css()` emit byte-identical CSS for every caller whose `$map` has neither a `current` nor a `suppress_edges` key; ⛔ assert specifically that such a caller still receives the flat `border-color` SHORTHAND, not per-edge longhands (`git grep -n "sgs_border_states_css(" -- '*.php'`). (d) Every existing `SgsBorderControl` mount renders byte-identical output with `showColour` defaulting `true` (diff at least three callers; `git grep -l "<SgsBorderControl" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'` under-counts, `sgs/media` mounts it through the media-atom chain); `GradientCapableColourControl` is NOT edited, but assert the `BorderStyleControl` child's other adopters (`DesignTokenPicker.js`, `GradientCapableColourControl.js`) are unaffected. (e) Every `data-sgs-fx="magnet"` element renders a byte-identical COMPUTED `transition` with `fx-magnet.css` exposing `--sgs-magnet-transition` (⛔ assert the computed value on a live magnet element, not that the file still contains `180ms`: a mistyped property name would leave the text intact and silently strip every other magnet's transition). |
+| **G2: no bare `:hover`** | `plugins/sgs-blocks/scripts/hover-guard/check.js` passes; every hover rule traces to `sgs_hover_state_rules()` or `sgs_hover_guarded_rule()`. |
+| **G3: no inline styling** | `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 (Spec 32 / FR-36-13). |
+| **G4: DB state routing** | `/sgs-db` shows `itemColourHover` / `itemBgHover` at `css_state='hover'` and every Current attribute at `css_state='current'` (§14.8.6a negative control; it must be RUN). The typography trio is IN this gate: for each property on each prefix assert the BASE (`itemTextDecoration` / `itemTextTransform` / `itemFontWeight` at `css_state IS NULL`) and HOVER (`css_state='hover'`) attributes occupy SEPARATE slots, the same six for `submenu`: twelve rows, twelve distinct `(css_property, css_element, css_state)` triples (assert distinctness; last-write-wins retags one attribute with the other's state and both rows survive). Assert `itemFontWeight`'s base row specifically. |
+| **G5: no dead controls, no readers of undeclared attributes** | `npm run check:dead-controls` and `npm run check:empty-inspector-containers` pass. Every declared attribute is both written by a control and read by the emitter, including the whole submenu typography family and the three `triggerMagnet*`; the six `showHover` attributes are IN this check (control renders with `showHover: true` on that target AND the block-private rule emits). No code reads an attribute not declared here: `git grep -nE "hoverStyle\|underlineColour\|underlineThickness\|underlineOffset\|itemRadius\|submenuRadius\|indicatorStyle\|indicatorColour\|borderHoverAnimation[^D]" -- plugins/sgs-blocks/src plugins/sgs-blocks/includes theme` returns only comment prose (the `[^D]` guard exempts `borderHoverAnimationDirection`, FR-41-38). Also `python plugins/sgs-blocks/scripts/check-dead-pattern-attrs.py`. |
+| **G6: one line, not two** | On the live canary, with a bottom border colour AND a Sweep set, the item row renders exactly one painted horizontal line and `getComputedStyle( link ).borderBottomColor` is `rgba(0, 0, 0, 0)` while the `::after` band paints (FR-41-8 mechanism items 2 + 3). |
+| **G7: live verification on the real page (R-31-11, R-31-13)** | Playwright on the real page, both blocks: hover a parent with a dropdown in the BAR, move into the dropdown, confirm via `getComputedStyle` the parent's hover declarations still apply; repeat in the DRAWER's accordion; Tab into each panel and confirm the `:has()` half. With a non-zero `submenuTopOffset`, move slowly across the gap and confirm the parent's paint never drops (FR-41-11). Confirm Current paints on the current page and the drawer and bar instances carry independent borders. Plus Bean's eye: a number alone does not close this. |
+| **G8: touch** | On touch emulation, tapping an item does not leave it stuck in its hover colour and the colour sweep does not strand half-finished. |
+| **G9: reduced motion** | Under `reduce` the colour sweep and the submenu open animation land on their END state with no travel and the submenu still opens; assert both FIRE without the media query too. Magnet: with `triggerMagnetEnabled` on and `reduce` emulated, (a) `getComputedStyle( burger ).transitionDuration` resolves to the killed value, not `180ms`, (b) `transform` is `none`, and (c) ⛔ the CAUSE: the winning `transition-duration` is the `!important` one from the `prefers-reduced-motion: reduce` rule in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` (naming `.sgs-nav-bar-menu__burger`, `__link`, `__indicator` and `[data-magnet] .sgs-nav-bar-menu__magnet-target`), the ONLY thing killing the transition because FR-41-31's companion `(0,2,0)` out-ranks the shared `(0,1,0)` kill switch. ⚠ Assert the companion carries NO `!important`. |
+| **G10: non-colour signal RENDERS, not just computes** | (a) Hover: with a bottom `itemBorderWidth` set and every colour unset except `itemBorderColourHover`, hovering visibly changes the border (computed `border-bottom-color` differs). ⚠ Do NOT assert a signal on a border-less menu (FR-41-17a(a)). (b) Current: with every colour unset the current item renders at the declared weight. ⛔ `getComputedStyle` alone does not close the weight half (`theme/sgs-theme/theme.json` registers `display` with a single 400 face and `dm-sans` with `400 700`): also assert a rendered difference (a `getBoundingClientRect().width` delta on a fixed string, or `document.fonts.check( '600 16px <family>' )`). |
+| **G11: no `underline` element in the DB** | After `/sgs-update`, `/sgs-db` returns zero rows with `css_element='underline'` for either nav block (§14.8.6f). |
+| **G12: manifest conformance** | `npm run audit:element-manifest` passes, and `python plugins/sgs-blocks/scripts/placement-reach.py --block sgs/nav-bar-menu` (and `sgs/nav-drawer-menu`) reports no new CONTESTED attributes (the border family is claimable by both `item` and `submenu-panel`, so each needs its explicit `attrMap` entry, §14.8.6a/c). ⚠ Assert `supports.sgs.sweepEligibility` name by name per block: every attribute in `blockingBackgroundAttrs` / `blockingGradientAttrs` / `glyphGuard.attr` resolves in that block's `attributes`, and every row KEY is a declared `...HoverTreatment` attribute (§14.8.6g). ⛔ A misspelt name reads as permanently empty, so the eligibility rule silently ceases to exist (a dead-detector shape; this is the only gate positioned to see it). |
+| **G13: hover-treatment defaults** | Every `{row}HoverTreatment` defaults to `"swap"`; an untouched block renders a plain Hover swap on each row. `itemBgHoverTreatment='highlight'` with `itemBgHover = X` renders the pill in X, the gradient pair likewise. Radius default: with an `itemBg` set and `itemBorderRadius` untouched, the COMPUTED `borderRadius` is `8px` on all four corners (via `sgs_corner_object_shorthand()`); and an item with NO background renders no `border-radius` rule. |
+| **G14: text-sweep does not collide with background/border layers** | Live DOM: with `itemColourHoverTreatment='sweep'` AND `itemBgHoverTreatment` set AND `itemBorderHoverTreatment='sweep'`, the item renders three non-fighting effects (glyph sweep with no pseudo-element, background on `::before`, band on `::after`), each pseudo carrying its own expected declarations. Negative control for eligibility: set `submenuLinkBg` and assert the submenu link-text row offers exactly two segments; repeat with `burgerBg`, with `triggerMode='icon'`, and with `itemColourGradient`. This is the block's cross-mechanism-interaction gate. **(e)** Sweep x hover text-decoration: with `itemColourHoverTreatment='sweep'` AND `itemTextDecorationHover='underline'`, hover and assert `textDecorationColor` equals the resolved HOVER colour (⛔ asserting `textDecorationLine` alone is the trap); repeat on a sublink; plus the RESOLVED-value negative control (set `submenuLinkBgHover` so the treatment resolves to `'swap'` while stored stays `'sweep'`; the decoration-colour rule must not fire). **(f) THE EMITTER RE-CHECKS THE PREDICATE** (the load-bearing assertion): store `submenuColourHoverTreatment='sweep'` with `submenuLinkBg` empty (clear `submenuLinkBg`, `...Hover`, `...Current` explicitly, as they default to tokens), then set `submenuLinkBg` WITHOUT touching the treatment; the emitted sublink CSS contains no `background-clip`, `-webkit-background-clip` or `-webkit-text-fill-color` and the sublink background paints normally. Repeat: `burgerColourHoverTreatment='sweep'` then `burgerBg`; then switch `triggerMode` back to `'icon'`; `submenuColourHoverTreatment='sweep'` then `submenuLinkBgHover` (leaving `submenuLinkBg` empty); `burgerColourHoverTreatment='sweep'` then `burgerHoverColour` (⛔ assert the hover fill paints as a filled button, not coloured letter shapes). Assert the ABSENCE of the clip declarations in rendered CSS (the control disappears while emission continues, which the editor cannot see) and that the stored value is still `'sweep'`. **(g) THE TWO SURFACES AGREE** (the direct proof of one-declared-source): for each text/icon row pick a stored value straddling the boundary (`'sweep'` plus exactly one blocking attribute) and on the SAME post in the SAME state assert both (i) the editor row renders exactly two segments and (ii) the rendered CSS carries no clip declarations; then the converse on an unblocked fixture. ⛔ Both halves in one check on one stored state; run at least one path per row including the `submenuLinkBgHover` and `burgerHoverColour` straddles. |
+| **G15: icon pickers default to the standard glyphs** | With `triggerIcon` / `sublinkMarkerIcon` unset, the rendered SVG is the Lucide `menu` / `chevron-right` glyph (FR-41-30). |
+| **G16: the readability toggle works** | On the live canary: (a) the toggle renders in General → Accessibility; (b) flipping it writes `itemSmartContrast` and no other attribute; (c) ⛔ switching it OFF then ON changes the RENDERED text colour on an item with a Hover background (computed `color` differs); and the §14.9.6 cross-reference note renders beneath the Item text and Item background rows. |
+| **G17: magnet default costs zero bytes** | With `triggerMagnetEnabled` false, the burger markup carries no `data-sgs-fx` attribute AND no magnet module or stylesheet is enqueued (assert the asset's absence; the enqueue is markup-sniffed). Switched on: attribute present, module enqueued, and the companion `transition` rule from the nav stylesheet is the winning declaration on the button. |
+| **G18: exactly one writer per border-colour attribute** | `node plugins/sgs-blocks/scripts/check-duplicate-controls.js` passes AND, because its CHECK 2 is blind to a duplicate writer inside a row object literal, verify in the live editor that `SgsBorderControl` under `showColour={ false }` renders no colour swatch on either mount and that the Colour-panel rows are the only place the three `itemBorderColour*` attributes can be set. Border STYLE: (a) RENDERS on both `showColour={ false }` mounts (§14.9.7, §14.9.9); (b) WRITES: Dashed stores `"dashed"` in `itemBorderStyle` / `submenuBorderStyle` respectively and no other attribute, deselecting stores `""`; (c) EMITS: with a width set, the rendered CSS carries `border-style:dashed` on the item link (and the submenu panel) and `getComputedStyle` agrees. Run (b) and (c) as a matched pair on the SAME value. |
+| **G19: the hover typography trio renders, emits, and is NOT the default signal** | (a) all six controls render (three per target) and each writes only its own attribute; (b) with `itemTextDecorationHover: "underline"` and every colour unset, hovering gives `textDecorationLine === 'underline'` while the resting value is not (repeat on a sublink with `submenuFontWeightHover`); (c) additive default: with all six unset assert the ABSENCE of any hover `text-decoration` / `text-transform` / `font-weight` declaration in the rendered CSS; (d) negative control: an `itemTextTransformHover` outside `none/uppercase/lowercase/capitalize` emits NOTHING (FR-41-21); (e) BOTH cross-reference notes render, each pointing at the other (one-way is a failure), and neither string contains "WCAG", "contrast", "AA", "signal" or "divider". Cross-mechanism combinations are G14(e), not here. |
+| **G20: the responsive font-size tiers PERSIST and RENDER** | For both prefixes: (a) PERSISTS: set a Tablet font size, reload the editor, assert it survives, then Mobile; ⛔ assert the value is stored INSIDE the tier object (`itemFontSize.tablet`) and that no `itemFontSizeTablet` attribute exists on the post (proves the tiered path). (b) RENDERS: the emitted CSS carries `@media` `font-size` rules at the tablet and mobile breakpoints and the computed `fontSize` differs across the three widths. (c) NEGATIVE CONTROL: with all tiers unset, no `font-size` `@media` rule is emitted for that prefix. |
+| **G20c: the ungated-paint detector exists, is REACHABLE and can still fail** | FR-41-35. (a) `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --check` exits 0 on the tree. (b) `--self-test` passes and each `*-dirty` fixture makes `--check` exit non-zero while the `*-clean` copy exits 0 (both directions, or the self-test is vacuous). (c) `npm run gate:list` shows the gate (not a `package.json` grep). (d) FRAMEWORK-WIDE: `--survey` with no `--block` enumerates every block and the source contains no `sgs-nav-bar-menu` or `sgs-nav-drawer-menu` string literal outside fixtures. (e) `--survey` PRINTS its variable-awareness limit. (f) ENFORCEMENT SCOPE in both directions: a planted ungated rule in either nav block exits non-zero; the same rule in any other block exits 0 with the finding printed (a scope that hard-fails everything is a standing-red gate for every concurrent session). |
+
+### 14.12 Open questions
+
+Recorded, not resolved; each needs an owner call if it matters.
+
+1. **`sgs_typography_css_rule()` has no hover branch.** The two nav blocks are the `showHover` flag's only adopters, paying that cost block-privately (FR-41-21), which duplicates three of the helper's allowlists. Extending the helper to own the trio is the better long-term answer, taken the day a SECOND block wants `showHover`.
+2. **The hover-treatment selector (FR-41-23/24) is deliberately block-private.** Promote it to a shared `plugins/sgs-blocks/src/components/primitives` export the day a SECOND block wants the pairing, not before.
+3. **`SgsColourPanel.js`'s three documented exemptions have a named block-scoped exception** (FR-41-33: border colour joins the panel for the two nav blocks only). If a second block takes the same exception, re-litigate the exemption list rather than accumulating one-offs.
+4. **The default non-colour Hover signal is conditional on the operator setting a border width** (FR-41-17a(a), accepted). If clients routinely ship border-less menus with two similar state colours, the honest fix is a warn-only inspector notice, not a re-defaulted border (an owner call).
+5. **Active-trail semantics.** The visual ancestor Current styling is built; an ancestor-path list plus a client-side prefix match stamping a distinct (non-`aria-current`) signal is not (FR-41-20).
