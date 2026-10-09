@@ -45,9 +45,7 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
 ## Carried and open
 
 - **Route lint is red** (`node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`
-  exits 1). Two causes: (a) nine exports missing from `scripts/computed-route/README.md` (`lib/guard.mjs` ownSizeRow and
-  landed, `lib/normalise.mjs` snapFontFamily, `lib/solve-rows.mjs` heldReason and widthPattern, `lib/winning-rule.mjs`
-  describeCascade and rowSelector, `solve.mjs` unpaintedBorder and settingRatio): add a README line for each; (b)
+  exits 1). One cause left (the README exports were listed 2026-10-09):
   divergence entries D-72 to D-86 (Lenses: the draft's scroll reveal never fires below 1440, so its measured positions are
   a draft flaw) and D-88 to D-91 (Contact: a hover border colour on a node with no border paints nothing, D-65 ruling)
   cite no register item. Give those rulings a fix-register row (or cite the existing one) and set each entry's
@@ -93,6 +91,49 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
   `calibrate.mjs --site local-eye-care --blocks sgs/mega-group --recalibrate` alone and confirm `discovered.sgsChildSizing`
   records `flex-grow` on the root; the 2026-10-05 run may itself have been crossed (its discovery is empty), which the
   clean run will show.
+
+## Session D, 2026-10-09: labels, framework gaps, the local route
+
+Triage re-run on all 17 surfaces from their newest reports (2026-10-08 `--rounds 0`, footer re-measured 2026-10-09) and
+sweep `qa/sweep/2026-10-09/sweep.json` (1,817 open, none stale). An independent Sonnet re-derivation of all 217 F verdicts
+agreed with 105; the main thread checked every disagreement against code.
+
+**Labelling fixed** (each MUST FAIL + negative control, triage re-run, every moved label traced): `unmeasured-side` (10
+false F; `ac78fee32`), `same-element` (an element read by every enclosing pair's text carrier; 45 own rows had followed an
+echo, 108 chains ended on a row no triage reports), `L` / `ledger-consequence` (a row following a divergence-ledger decision;
+walker equivalence accepts never attribute), `uncalibrated-fit` (146 rows: a name fit calibration never measured is a
+calibration gap, not a setting Solve failed to write), `mispaired` (43 rows: boxes over twice the size AND different words;
+`d5f7e4c4a`).
+
+**Tool fixes** (Bean approved the walker and solver changes 2026-10-09): one shared paints-nothing rule for every surface,
+`gap` included (`ba31e5157`; the seven per-surface copies and Home's about-step patch deleted, `walker-refs` guard green
+again); `effectiveState`: a walker state mapped to a setting state resolves at rest for what it does not change
+(`65c464f4b`); box-held rows (padding, margin, border width, flex-grow) accepted when the pair and every pair inside it keep
+box and text position, transition timing never (`d5f7e4c4a`); a flow row is measured from the nearest earlier pair not
+nested with it (`e0660afa0`); `--site <target>` runs Solve on a local mirror, `scripts/local-wp/refresh-from-remote.sh`
+refreshes the mirror from its test site (`e1f814775`).
+
+**Ledger** (Bean, 2026-10-09): Contact's tap-area entries D-17 to D-33 widened to every walker state (they left 216 unchanged
+rows open in the form states); D-126 to D-133 Google Reviews arrows and timing (register N17c, the 2026-10-05 ruling) and the
+review buttons' lift (N16a). S9 stays a walker accept in `qa/parity/shop.mjs`: the ledger cannot scope an entry to one element
+of a block (§5 Residual), so an S9 entry on the product card would accept every card text and style row.
+
+**Framework gaps closed:** `sgs/mega-panel` `groupPadding` and `groupTransitionDuration` (`a5977f7a7`, manifest `8e0e32a01`;
+20 rows on the mega surfaces); WooCommerce filter chips `sgsChipGap` extension (`371d8a27a`, wired `a56437129`). Reseed
+`76835cca7` from a clean HEAD worktree; a full `sgs-update-v2.py` run left `sgs/hero.splitMediaType` reclassified, which
+`dbschema/seed_reference_data.py` re-asserts (do this after every reseed until the reclassifying stage is found).
+Assessed and NOT gaps: the lens configurator's 28 rows (the draft pads the outer panel, live the inner one by the same
+amounts, `lensAsidePad`) and 40 of the shop's 43 (invisible, mispaired, or existing settings). Product's related cards are
+`sgs/product-card` with hover lift and shadow off: an existing setting Solve never wrote (a tool defect, below).
+
+**Open tool defects, for the baseline** (grouped by mechanism; sizes from the 2026-10-09 triage): `consequence` by the loose
+`layout-row` match (231 rows, unproven: does a follower close when its parent does); calibration coverage (`uncalibrated-fit`,
+the dead-calibration rows); `css_property` NULL settings the resolver cannot see (`sgsChildSizing`, `surfaceBlur`, native
+`supports` margin); parent-block context settings (accordion header settings via `providesContext`); a hand pair that
+displaced a generated pair at pairing time and misses live at walk time leaves the block unmeasured (Contact `-20`
+`form-card`); a generated pair at the wrong level (`unmeasured-side`, mega-brands-41, brand-strip track); business-info
+`displayType` (below); repeated inner text pairing; layout never written (flex row against grid); missed x rows; theme options
+Solve cannot write.
 
 ## Contact (page 190): state at the end of 2026-10-08
 
