@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: Phases 1, A, B, D done and live; label option (end/start/below/above) and contrasting ground live; Phase E rolled out in source (53 sides declared; the sandybrown deploy of 02c64a229 was in flight at handoff, its live look is owed), 12 variant-dependent sides wait for Bean; a QC council on the shipped work was started at handoff (raters B, D, E) and must be rerun with its live rater A; Phase C (drawer) waits for session 79
+status: Phases 1, A, B, D done and live; label option (end/start/below/above) and contrasting ground live; Phase E rolled out in source (53 sides declared and deployed to sandybrown at 02c64a229; the live look is owed), 12 variant-dependent sides wait for Bean; a QC council on the shipped work was started at handoff (raters B, D, E) and must be rerun with its live rater A; Phase C (drawer) waits for session 79
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
