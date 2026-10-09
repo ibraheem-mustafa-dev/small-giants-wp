@@ -87,3 +87,9 @@ describe( 'icon motion parity', () => {
 		expect( jsVars( cases[ cases.length - 1 ] ) ).toEqual( {} );
 	} );
 } );
+
+test( 'the row file\'s own name table equals the shared ROW_MOTION_NAMES (one contract, two literal copies)', () => {
+	// eslint-disable-next-line global-require
+	const { ROW_MOTION_NAMES: ROW_OWN } = require( '../../src/blocks/social-icons/group-motion' );
+	expect( ROW_OWN ).toEqual( ROW_MOTION_NAMES );
+} );

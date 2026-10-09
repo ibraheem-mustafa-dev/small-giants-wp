@@ -8,9 +8,23 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
-import { ROW_MOTION_NAMES, iconMotionStyle, iconShadowStyle } from '../icon/icon-motion';
+import { iconMotionStyle, iconShadowStyle } from '../icon/icon-motion';
 import { BrandHoverControl, HoverMotionFields, IconShadowPanel, ROW_SHADOW_KEYS } from '../icon/motion-panels';
 import { isCssGradient } from '../../utils/background-preview';
+
+// The row's own hover and motion attribute names, written out here so the inspector scan sees this block's controls
+// (it does not follow one block's import of another's file). tests/js/icon-motion-parity.test.js keeps it equal to
+// icon/motion-panels.js::ROW_MOTION_NAMES.
+export const ROW_MOTION_NAMES = {
+	x: 'childIconOffsetXHover',
+	y: 'childIconOffsetYHover',
+	rotate: 'childIconRotateHover',
+	moveMs: 'childIconTransitionDuration',
+	paintMs: 'childIconPaintDuration',
+	easing: 'childIconTransitionEasing',
+	easingCustom: 'childIconTransitionEasingCustom',
+	lift: 'childIconShadowLiftOnHover',
+};
 
 /**
  * The row's group hover, motion and shadow custom properties on the canvas. Twin of the matching part of render.php.
