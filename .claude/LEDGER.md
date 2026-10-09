@@ -43,7 +43,7 @@ Operating rules:
 Open owed items:
 - **F3/E14** (every element the gate found has a control or a zero-specificity default): ceilings CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0; only the advisory backlogs rule 03 and rule 31 remain (triage §6). Owner: the backlog.
 - **Box alignment** (`check:box-alignment`): indus-test's next deploy must carry `b90def34b`, `50449c17e` and `afae93d66`; the front-end separator at a numeric 40% width is not yet read in LTR and RTL. Owner: the backlog.
-- **CR6 phase 2** is live; the cart free-delivery bar is unmeasured. Owner: `plans/archive/2026-10-07-cr6-box-longhand-migration.md`. The 31 held routing rows stay NULL on purpose.
+- **CR6** (padding and margin print only the sides that are set) is done and live, front end and editor (`plans/archive/2026-10-07-cr6-box-longhand-migration.md`). The 31 held routing rows stay NULL on purpose.
 - **Spec 47 sweep** (`sites/eye-care-ward-end/build/qa/sweep/2026-10-08/sweep.json`): every surface measured with `--rounds 0`, none stale; Hardcode is only the footer social-icon borders (P2-r). The three-round Solve baseline is owed (`plans/2026-10-04-spec47-full-coverage.md`, Session D).
 - **Link underline helper** (P2-n): batch 1 (`sgs/text`, `sgs/heading`, `sgs/business-info`) live on eye-care-test at `872a8434a` and read live; the footer "Visit or call" column uses it. Batches 2 and 3 and the footer ledger entries are open. Owner: `plans/2026-10-08-link-underline-helper.md`.
 - **Icon unification and spacing control** (P2-r): the footer's social-icon borders go with it. Owner: `plans/2026-10-08-icon-unification-and-spacing-control.md`.
@@ -91,3 +91,4 @@ Open owed items:
 
 - `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: serve the cloning-pipeline gate work in `specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
 - `test_wp_integration::test_native_hover_zoom_routes`: serves the card-grid zoom control (Parked).
+- `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (README exports, D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.

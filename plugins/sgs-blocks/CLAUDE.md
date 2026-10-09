@@ -189,7 +189,7 @@ build runs it). Every gate script documents what it catches in its own header â€
 re-deriving the rule. Never dump a new finding into a gate's baseline file; fix the pattern or
 generalise the gate.
 
-A gate that reads a block's own source reads it through `scripts/lib/block-source-files.js` /
+A gate that reads a block's own source reads it through `plugins/sgs-blocks/scripts/lib/block-source-files.js` /
 `block_source_files.py` (`renderFiles`/`renderSource`, `editFiles`/`editSource`, `viewFiles`/`viewSource`), never
 `render.php`, `edit.js` or `view.js` by name: a split into partials or components otherwise blinds it silently.
 A render partial names classes fully qualified (`\SGS\Blocks\X::`), never through a `use` of its own

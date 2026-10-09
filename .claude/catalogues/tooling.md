@@ -23,7 +23,7 @@ Check every row before building anything new.
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 235 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 1050 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 1051 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/scripts/` | 0 | working-area helpers |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -802,7 +802,7 @@ Every field below is extracted from the script's own executable code (regex over
 - Non-zero exit sites found: exit(0)
 
 **`plugins/sgs-blocks/scripts/migrate-box-alignment.py`** (build)
-- Path constants: `ROOT` = next(p for p in Path(__file__).resolve().parents if (p / '.claude' / 'THE-MIGRATION-METHOD.md').exis
+- Path constants: `ROOT` = next(p for p in Path(__file__).resolve().parents if (p / '.git').exists())
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: `tmp`
 - CLI flags read: `--apply`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`

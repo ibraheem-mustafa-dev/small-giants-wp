@@ -44,6 +44,21 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
 
 ## Carried and open
 
+- **Route lint is red** (`node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`
+  exits 1). Two causes: (a) nine exports missing from `scripts/computed-route/README.md` (`lib/guard.mjs` ownSizeRow and
+  landed, `lib/normalise.mjs` snapFontFamily, `lib/solve-rows.mjs` heldReason and widthPattern, `lib/winning-rule.mjs`
+  describeCascade and rowSelector, `solve.mjs` unpaintedBorder and settingRatio): add a README line for each; (b)
+  divergence entries D-72 to D-86 (Lenses: the draft's scroll reveal never fires below 1440, so its measured positions are
+  a draft flaw) and D-88 to D-91 (Contact: a hover border colour on a node with no border paints nothing, D-65 ruling)
+  cite no register item. Give those rulings a fix-register row (or cite the existing one) and set each entry's
+  `register` array. Done when the lint exits 0.
+- **Encode the register's prose-only rulings** (Bean, 2026-10-08, "condense and encode"). `sites/eye-care-ward-end/build/qa/divergences.json`
+  holds the rulings the walker honours; some rulings in `.claude/plans/2026-10-02-eye-care-fix-register.md` exist only as
+  prose ("deliberate", "accepted", "Bean's decision"), so a sweep can flag them and a session can "fix" them back. For each
+  such ruling that names a measurable element and property, add a ledger entry in the FR-47-5 shape (`reason` quotes the
+  ruling, `register` cites the row); behaviour-only rulings (keyboard, motion, content) stay prose and are listed. Done
+  when one Eye Care sweep reads each newly encoded row `accepted` and no other row changes status.
+
 - **Dead calibration rows** (`.claude/reports/2026-10-07-dead-calibration-rerun/SUMMARY.md`, the 2026-10-04 pipeline re-run
   unchanged, with its `classify3` split): 546 dead; FIXTURE_LACKS_ELEMENT 210, **UNEXPLAINED 106**,
   PORTAL_OR_CLOSED_SURFACE 55, READ_CAP_81 53, HOVER_POINTER_MISSES_ELEMENT 38, the rest under 14 each. Still open: the 106,
