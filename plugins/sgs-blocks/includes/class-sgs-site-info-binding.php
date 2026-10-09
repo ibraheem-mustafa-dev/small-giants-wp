@@ -402,11 +402,11 @@ final class Sgs_Site_Info_Binding {
 	 *
 	 *   - email / support_email → `mailto:` + the address ('' unless `is_email()` accepts it).
 	 *   - phone                 → `tel:` + digits and a leading + ('' when no digits remain); an international number
- *                             (+ or 00) drops its "(0)" trunk group and writes 00 as +.
+	 *                             (+ or 00) drops its "(0)" trunk group and writes 00 as +.
 	 *   - socials.whatsapp      → `https://wa.me/<digits>` from a number, a wa.me or api.whatsapp.com URL.
 	 *   - socials.instagram / tiktok / twitter → a bare handle (`@name` or `name`) becomes the profile URL.
 	 *   - other socials         → `https://` added when the value has no scheme; a scheme other than http or https
- *                             gives ''.
+	 *                             gives ''.
 	 *   - any other key         → the value unchanged.
 	 *
 	 * The caller escapes the result with `esc_url()`, whose protocol allowlist drops `javascript:` and `data:`.

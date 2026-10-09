@@ -3,7 +3,7 @@
  * placeholder text. A tier that sets the key itself reports nothing.
  */
 
-import { inheritedBox, inheritedBoxValue, inheritedValueLabel, radiusAsCorners } from '../../src/utils/inherited-box';
+import { inheritedBox, inheritedBoxValue, inheritedDefault, radiusAsCorners } from '../../src/utils/inherited-box';
 
 describe( 'inheritedBoxValue', () => {
 	const tiers = {
@@ -74,19 +74,23 @@ describe( 'radiusAsCorners', () => {
 	} );
 } );
 
-describe( 'inheritedValueLabel', () => {
-	const sizes = [ { slug: '40', name: 'Medium' }, { slug: '50' } ];
+describe( 'inheritedDefault', () => {
+	const sizes = [ { slug: '40', name: 'Medium', size: '1.5rem' }, { slug: '50', size: '2.25rem' } ];
 
-	it( 'names an offered preset', () => {
-		expect( inheritedValueLabel( 'var(--wp--preset--spacing--40)', sizes ) ).toBe( 'Medium' );
+	it( 'names an offered preset and gives its size', () => {
+		expect( inheritedDefault( 'var(--wp--preset--spacing--40)', sizes ) ).toEqual( { label: 'Medium', size: '1.5rem' } );
 	} );
 
 	it( 'falls back to the slug for a nameless preset', () => {
-		expect( inheritedValueLabel( 'var(--wp--preset--spacing--50)', sizes ) ).toBe( '50' );
+		expect( inheritedDefault( 'var(--wp--preset--spacing--50)', sizes ) ).toEqual( { label: '50', size: '2.25rem' } );
 	} );
 
-	it( 'leaves a literal length and an unoffered preset as stored (negative control: it must not rename them)', () => {
-		expect( inheritedValueLabel( '24px', sizes ) ).toBe( '24px' );
-		expect( inheritedValueLabel( 'var(--wp--preset--spacing--99)', sizes ) ).toBe( 'var(--wp--preset--spacing--99)' );
+	it( 'gives a literal length as itself (negative control: it must not rename it)', () => {
+		expect( inheritedDefault( '24px', sizes ) ).toEqual( { label: '24px', size: '24px' } );
+	} );
+
+	it( 'never returns a raw var(): an unoffered preset gives its fallback, else nothing', () => {
+		expect( inheritedDefault( 'var(--wp--preset--spacing--99, 2rem)', sizes ) ).toEqual( { label: '2rem', size: '2rem' } );
+		expect( inheritedDefault( 'var(--wp--preset--spacing--99)', sizes ) ).toEqual( { label: '', size: '' } );
 	} );
 } );

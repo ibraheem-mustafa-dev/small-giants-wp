@@ -52,18 +52,32 @@ export function inheritedBox( tierValues, tier, keys ) {
 	return out;
 }
 
+/** A `var()` call with an optional fallback: `var(--name)` or `var(--name, 2rem)`. */
+const VAR_CALL_RE = /^var\(\s*(--[a-zA-Z0-9_-]+)\s*(?:,\s*(.+?)\s*)?\)$/;
+
 /**
- * An inherited spacing value as the inspector words it: a preset's name when the value is a
- * `var(--wp--preset--spacing--<slug>)` call for a preset the theme offers, the value as stored otherwise.
+ * An unset side's declared or inherited default as the inspector words it, never a raw `var()`: a spacing preset
+ * the theme offers gives its name (else its slug) and size; an unknown slug, or any other custom property, gives
+ * its own fallback, else nothing; a plain length gives itself.
  *
- * @param {string}   value Inherited value.
- * @param {Object[]} sizes The theme's spacing sizes, `{ slug, name }`.
- * @return {string} The label to show.
+ * @param {string}   value Declared or inherited value.
+ * @param {Object[]} sizes The theme's spacing sizes, `{ slug, name, size }`.
+ * @return {{label: string, size: string}} Option-label text and placeholder text ('' when there is none).
  */
-export function inheritedValueLabel( value, sizes ) {
-	const match = typeof value === 'string' ? value.trim().match( /^var\(\s*--wp--preset--spacing--([a-z0-9-]+)\s*\)$/i ) : null;
-	const preset = match ? ( sizes ?? [] ).find( ( size ) => size.slug === match[ 1 ] ) : undefined;
-	return preset ? preset.name || preset.slug : value;
+export function inheritedDefault( value, sizes ) {
+	if ( typeof value !== 'string' || ! value.trim() ) {
+		return { label: '', size: '' };
+	}
+	const call = value.trim().match( VAR_CALL_RE );
+	if ( ! call ) {
+		return { label: value.trim(), size: value.trim() };
+	}
+	const slug = call[ 1 ].startsWith( '--wp--preset--spacing--' ) ? call[ 1 ].slice( '--wp--preset--spacing--'.length ) : null;
+	const preset = slug ? ( sizes ?? [] ).find( ( s ) => s.slug === slug ) : undefined;
+	if ( preset ) {
+		return { label: preset.name || preset.slug, size: preset.size ?? '' };
+	}
+	return call[ 2 ] ? inheritedDefault( call[ 2 ], sizes ) : { label: '', size: '' };
 }
 
 const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
