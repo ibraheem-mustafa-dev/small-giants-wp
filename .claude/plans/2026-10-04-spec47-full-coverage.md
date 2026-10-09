@@ -175,7 +175,12 @@ proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces items 
 5. Try before write: render the block twice through `/wp/v2/block-renderer`, map the CSS difference onto the live uid,
    measure (proven on the home cards); blocks with `wp_unique_id`/`microtime` classes or block context rebuild as today.
 Before the next measuring run: rebuild home on the local mirror from the committed tree (it still carries the
-2026-10-09 card padding).
+2026-10-09 card padding), and refresh the mirror from eye-care-test (header and footer changed). Footer and header changed
+shape on 2026-10-09 (register N47-N49): the wordmark is an image on both sides, Visit or call is one icon-list
+(`cr-ref-footer-23`), and `cr-ref-footer-4`, `-24`, `-25`, `-26` and `cr-ref-header-9` no longer exist. Regenerate
+`qa/parity/footer.full.mjs` and `header.full.mjs` (`pairs.mjs`), retarget the `footer.mjs`/`header.mjs` hand pairs that
+find the wordmark by its words, and take the ledger entries on `cr-ref-footer-24` (the phone tap area) to Bean to re-point at
+the list's phone item; never edit a ledger entry without Bean's decision.
 
 ## Contact (page 190): state at the end of 2026-10-08
 
