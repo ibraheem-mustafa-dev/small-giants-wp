@@ -106,9 +106,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
    shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper
    (`includes/helpers-typography.php`) in render.php — never hand-rolled font controls, never
    native `supports.typography` on an inner element (gate: `inspector-scan` rule 45). Copy the
-   `sgs/trust-bar` triple, the clean full-surface reference; `scripts/add-control.js` CANNOT
-   scaffold it (legacy flat attribute shapes, five members missing, and it emits the hover trio
-   the helper has no code path for). Build the selector INLINE in the call —
+   `sgs/trust-bar` triple, the clean full-surface reference; no generator scaffolds it: copy the triple by hand. Build the selector INLINE in the call —
    `check-hardcoded-render-defaults.js::collectHelperGovernance` learns the governed element from
    the string literals in the call's own argument region, so a pre-assigned selector variable
    registers nothing and the gate falls back to a BEM-name heuristic that flags unrelated

@@ -297,7 +297,7 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
     to end.
 
     Restores from the committed gzip archive (`scripts/data/wp-reference/
-    *.json.gz`), deliberately NOT `dbschema/refresh_wp_reference.py`'s
+    *.json.gz`), deliberately NOT a
     GitHub-scrape path — a `--rebuild` must stay OFFLINE-CAPABLE and
     DETERMINISTIC, and a rebuild that only sometimes succeeds depending on
     network access or upstream repo state is not that.
@@ -5703,8 +5703,7 @@ def stage_8_drift_gate(
 # default behaviour is to mark them `is_stale = 1` rather than delete.  The
 # operator can pass `--prune-mode aggressive` to DELETE those rows instead.
 #
-# Operates on BOTH DBs (.agents + .claude) to keep them in sync, mirroring
-# the dual-path pattern used by seed-slot-synonyms.py.
+# Operates on BOTH DBs (.agents + .claude) to keep them in sync.
 # ---------------------------------------------------------------------------
 
 # Second DB path (.claude) — the .agents DB is the canonical primary and is

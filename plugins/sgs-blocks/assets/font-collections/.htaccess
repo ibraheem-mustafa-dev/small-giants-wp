@@ -2,9 +2,8 @@
 # the operator opens "Manage Fonts" in the Site Editor.  The JSON is ~2.5MB
 # uncompressed; gzip cuts it to ~250KB.
 #
-# Cache aggressively — the manifest only changes when
-# plugins/sgs-blocks/scripts/build-font-collection.py is re-run, which
-# happens at most when the uimax google_fonts table is refreshed (quarterly).
+# Cache aggressively — the manifest is a committed file that changes only
+# when someone replaces it.
 
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE application/json

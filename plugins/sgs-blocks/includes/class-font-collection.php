@@ -9,10 +9,7 @@
  * on any page until an operator explicitly installs and activates a typeface, which
  * writes it to wp_global_styles and from there to per-page enqueuing.
  *
- * The JSON manifest is pre-built by:
- *   plugins/sgs-blocks/scripts/build-font-collection.py
- *
- * Re-run that script whenever the uimax google_fonts table is refreshed.
+ * The JSON manifest is the committed file assets/font-collections/google-fonts.json.
  *
  * @package SGS\Blocks
  * @since   0.1.1
@@ -64,7 +61,7 @@ class Font_Collection {
 	 * `google-fonts` collection carries direct fonts.gstatic.com woff2 URLs and previews, and its
 	 * permission prompt is now pre-granted by Google_Fonts_Consent, so this catalogue is a broken
 	 * duplicate. Re-enable with `add_filter( 'sgs_register_google_fonts_catalogue', '__return_true' );`
-	 * only after build-font-collection.py emits real font-file URLs.
+	 * only after the manifest holds real font-file URLs.
 	 *
 	 * @return void
 	 */

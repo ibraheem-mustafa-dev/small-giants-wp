@@ -19,8 +19,7 @@ paths:
 mechanism. Critical constraint: do NOT add fonts from the collection to `theme.json`
 `settings.typography.fontFamilies` to make them "available" — WordPress enqueues every entry in
 `fontFamilies` on every page (WP Core issue #39332). The collection is the available-fonts
-catalogue; theme.json is the active-fonts list. Re-build the manifest:
-`python plugins/sgs-blocks/scripts/build-font-collection.py` (idempotent; `--self-test` validates).
+catalogue; theme.json is the active-fonts list. The manifest `assets/font-collections/google-fonts.json` is a committed file, and the catalogue registers only when `sgs_register_google_fonts_catalogue` returns true (off by default).
 
 **Trustpilot Sync.** `includes/trustpilot/` — see `class-trustpilot-sync.php`'s own docblock for
 the one-option/one-writer/one-reader shape. The Browserless `/content` REST endpoint uses

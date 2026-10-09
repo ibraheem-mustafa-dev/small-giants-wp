@@ -106,7 +106,7 @@ _FIXTURES_DIR = _HERE / "fixtures" / "ungated-paint"
 # WARN-ONLY for this build. `--check` always exits 0 regardless of findings —
 # the tree still holds the eleven `sgs/nav-menu` rules FR-41-15 has not yet
 # removed, and a gate that always fails trains readers to skip it (this
-# project's own recorded `wp-pre-merge-gate` failure shape).
+# project's own recorded pre-merge-hook-gate failure shape).
 #
 # Step 26 sets this to the gates.json-configured scope — `['sgs/nav-menu']`
 # for this phase — and flips `--check` to fail closed for exactly those

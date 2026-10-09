@@ -64,7 +64,7 @@ SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.d
 # CITE-LINE is advisory BY DESIGN and should stay that way until the existing
 # line-citations are migrated. Gating it on day one would paint the gate red on
 # every commit, and a gate that always fails is a gate nobody reads — this repo
-# has already lived that (wp-pre-merge-gate printed FAIL for months on findings
+# has already lived that (the old pre-merge hook gate printed FAIL for months on findings
 # nobody owned, and readers learned to skip it). Advisory drives migration on
 # touch; CITE-SYMBOL gates, so anything already migrated must stay true.
 #

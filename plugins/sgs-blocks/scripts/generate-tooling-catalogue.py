@@ -153,13 +153,13 @@ _SCRIPTS_BLOB = " && ".join(_PKG.get("scripts", {}).values())
 # Runnable suffixes. .php and .sh are included: excluding them from the table
 # while COUNTING them in the directory row above would make the count say one
 # thing and the table another, and would hide PHP tools such as
-# golden-master-harness.php and product-search-leak-check.php (whose own header
+# product-search-leak-check.php (whose own header
 # calls itself "the REAL gate", with the JS grep only a tripwire).
 _RUNNABLE = (".py", ".js", ".mjs", ".php", ".sh")
 
 # THERE ARE TWO GATE CHAINS, not one. package.json `prebuild` runs at build
 # time; .githooks/sgs-gates.sh runs at COMMIT time — that is the chain holding
-# the visual-diff gate, check-markup-neutral.py and check-editor-only.py.
+# the visual-diff gate and check-markup-neutral.py.
 # Reading only `prebuild` reported 9 actively-enforced commit gates as unwired,
 # i.e. told a reader they were free to forget the gate that had just blocked them.
 _GATES_SH = REPO / ".githooks" / "sgs-gates.sh"
