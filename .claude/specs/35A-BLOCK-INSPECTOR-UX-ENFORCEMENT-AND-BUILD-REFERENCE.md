@@ -14,8 +14,6 @@ parent_spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
 
 > **Parent spec.** Spec 35A (owner: framework; governs the EDITOR-FACING control surface, while Spec 32 governs RENDERED output and Spec 00 naming) is the sub-spec of Spec 35 (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`). Spec 35's header carries the migration-method gate, the implementation-status box and the table that maps every PART letter, section number and ID to its file — read it first. In this file a bare "PART A" to "PART E", "D1" to "D5", "PART O §N", "§N field M" or "contract §N" citation is Spec 35; "Part F" to "Part N", "CO-n", "O.15", "O.16" and "Cross-cutting A/B" are here.
 
-> **Parked, not started:** a declarative `block.json` source for the non-lift `block_capabilities` values (`grid-layout`, `carousel`, `logo-strip` and so on), which `isCollectionKind()` needs (Part M, framework DB section); PHPUnit tests left red at the 2026-10-09 run (list in the open-items line near the end).
-
 ## PART F — Anti-patterns (fail-list)
 
 Essential control only in sidebar · sidebar as home for every option · no headers past a handful ·
@@ -461,7 +459,7 @@ attribute registration and unit tests do not exercise the editor canvas (R-31-13
 crashed on first live render despite passing unit tests).
 
 **OPEN (parked, none blocking Spec 35):** `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for
-var-driven features; see Spec 32 §6.2(a)) · the PHPUnit suite runs (`cd plugins/sgs-blocks && php vendor/bin/phpunit`, no WordPress needed); at the 2026-10-09 run 3,009 tests passed except 38 (BorderElementParityTest baselines for other blocks, GoogleReviewsAttrsTest, IconOutlineShapesTest, ResponsiveLogoChainTest), left red · Shrink+Hide legacy-transition overlap on pre-animation-timeline browsers (documented,
+var-driven features; see Spec 32 §6.2(a)) · the PHPUnit suite runs (`cd plugins/sgs-blocks && php vendor/bin/phpunit`, no WordPress needed) · Shrink+Hide legacy-transition overlap on pre-animation-timeline browsers (documented,
 not speculatively fixed).
 
 **THE PLACEMENT RULE, as built.** Canonical rule text: Spec 35 A3/A4 + **PART O** (Spec 35) §THE
@@ -730,13 +728,11 @@ Reach is derived, not hardcoded: a block is in an extension's surface when it op
      arrays (`categories`, `tags`) are config filters, its content comes from `WP_Query`, and the
      capability's own docstring excludes exactly this case. Adding it would be actively wrong.
      ⚠ `sgs/gallery` — verify `mediaItems` is authored content, not config, BEFORE declaring it.
-   - **The other capability values** (`grid-layout`, `carousel`, `logo-strip`, …) have **no
-     writer in this repo.** Their former writer, a hardcoded `CAPABILITY_RULES` dict in an
-     out-of-repo `populate-db.py`, has been deleted, and `sgs-update-v2.py` is now the only
-     writer of the framework DB. That is why `sgs/post-grid` has zero capability rows of ANY kind.
-     This is class (b) plus a second R-31-1 breach. **`isCollectionKind()` therefore cannot be
-     delivered by a backfill** — it needs a declarative block.json source designed and ported into
-     Stage 1. PARKED, not started.
+   - **The declarative capabilities** (`collection`, `icon-picker`) are read from `supports.sgs.*` in each
+     block.json by `_DECLARATIVE_CAPABILITIES` in `plugins/sgs-blocks/scripts/sgs-update-v2.py`, so
+     `isCollectionKind()` has its declarative source. The remaining historical values (`grid-layout`,
+     `carousel`, `logo-strip` and so on) have no writer and no reader; `_FOSSIL_CAPABILITIES` prunes them on every
+     Stage 1, and `sgs-update-v2.py` is the only writer of the framework DB.
 
 Regenerate before building any gate on them.
 
