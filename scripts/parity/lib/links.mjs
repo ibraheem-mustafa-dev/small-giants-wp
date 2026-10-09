@@ -4,6 +4,9 @@
 // - health: every visible live link has a real href ("#", empty and javascript: are dead) and a
 //   same-origin target answers below 400;
 // - real draft hrefs (tel:, mailto:, an external site) are compared with the live link of the same text;
+// - a live link marked as Site Info's (`siteInfoKey`, read from the nearest `data-sgs-site-info-key` in the page) shows
+//   the site's stored address, so a difference from the draft is a handover note (the draft address belongs in Site
+//   Info), not an href mismatch;
 // - the config's `links: { '<label>': '<live path or URL>' | [ ... ] }` table states where each label goes.
 import { AUTO_EXCLUDE } from './auto-walk.mjs';
 
@@ -20,6 +23,7 @@ function collectLinksIn( [ rootSel, exclude ] ) {
 		text: ( a.innerText.trim() || a.getAttribute( 'aria-label' ) || a.getAttribute( 'title' ) || a.querySelector( 'img' )?.alt || '' ).replace( /\s+/g, ' ' ).trim().toLowerCase(),
 		href: a.getAttribute( 'href' ).trim(),
 		url: a.href,
+		siteInfoKey: a.closest( '[data-sgs-site-info-key]' )?.getAttribute( 'data-sgs-site-info-key' ) || '',
 	} ) );
 }
 
@@ -78,10 +82,10 @@ const sameLabel = ( a, b ) => a && b && ( a === b || a.includes( b ) || b.includ
 // The rows for one state, each reported once per run (`seen` holds the keys already reported).
 export function compareLinks( d, l, cfg, origins, seen ) {
 	const rows = [];
-	const add = ( key, draft, live ) => {
+	const add = ( key, draft, live, accepted ) => {
 		if ( ! seen.has( key ) ) {
 			seen.add( key );
-			rows.push( { kind: 'link', key, draft, live } );
+			rows.push( { kind: 'link', key, draft, live, ...( accepted ? { accepted } : {} ) } );
 		}
 	};
 	// Health is the live site's: a --self run (both sides one site) has no live side to judge.
@@ -98,7 +102,12 @@ export function compareLinks( d, l, cfg, origins, seen ) {
 		if ( ! mates.length ) {
 			add( `missing "${ x.text }"`, want, 'no link with this text' );
 		} else if ( ! mates.some( ( y ) => norm( y.href, origins.live ) === want ) ) {
-			add( `href "${ x.text }"`, want, mates.map( ( y ) => norm( y.href, origins.live ) ).join( ' | ' ) );
+			if ( mates.every( ( y ) => y.siteInfoKey ) ) {
+				const keys = [ ...new Set( mates.map( ( y ) => y.siteInfoKey ) ) ].map( ( k ) => `"${ k }"` ).join( ', ' );
+				add( `handover "${ x.text }"`, want, mates.map( ( y ) => norm( y.href, origins.live ) ).join( ' | ' ), `Site Info ${ keys } supplies this address; the draft's ${ want } belongs in Site Info` );
+			} else {
+				add( `href "${ x.text }"`, want, mates.map( ( y ) => norm( y.href, origins.live ) ).join( ' | ' ) );
+			}
 		}
 	}
 	// The table states live destinations: a --self run has no live side to hold to it.

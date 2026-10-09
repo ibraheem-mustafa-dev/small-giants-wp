@@ -52,7 +52,7 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		}
 		ctx.boxMatches = boxes.every( ( x ) => x.accepted );
 		for ( const diff of diffs.filter( ( x ) => 'box' !== x.kind ) ) {
-			diff.accepted = verdict( ctx, diff );
+			diff.accepted = diff.accepted || verdict( ctx, diff );
 		}
 		return diffs;
 	};
