@@ -1185,7 +1185,7 @@ command-palette modes are a native `<dialog>` DIALOG on the shared `store('sgs/n
   Result count / no-results = a live region (WCAG 4.1.3), same as the cart.
 
 ### FR-36-21 — Social and contact row (`sgs/social-icons`, a wrapper of `sgs/icon` children)
-**Status:** BUILT: `plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.hiddenLinks`, `sgs/icon` children bound to Site Info (the block allows only `sgs/icon`), brand glyphs from `plugins/sgs-blocks/includes/data/brand-registry.json`, and `rel` set on external links by `plugins/sgs-blocks/src/blocks/icon/render.php`. Not built (NICE): explicit Follow-versus-Share components and optional `rel="me"`.
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.hiddenLinks`, `sgs/icon` children bound to Site Info (the block allows only `sgs/icon`), brand glyphs from `plugins/sgs-blocks/includes/data/brand-registry.json`, and `rel` set on external links by `plugins/sgs-blocks/src/blocks/icon/render.php`. A bound child shows the Site Info link first and its own typed link as the fallback, hides only when neither gives a link, and `linkSource: "custom"` makes the typed link win (`icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The clone route builds the row from one skeleton node (Spec 47 FR-47-9). Not built (NICE): explicit Follow-versus-Share components and optional `rel="me"`.
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
 **Built in** icon plan Phase B (`.claude/plans/2026-10-08-icon-unification-and-spacing-control.md`).

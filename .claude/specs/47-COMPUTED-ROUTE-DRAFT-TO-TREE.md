@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 47
-spec_version: "0.16.0"
+spec_version: "0.17.0"
 title: "Computed Route: rendered draft to block tree, measured not copied"
 project: small-giants-wp
 created: 2026-10-03
@@ -518,6 +518,46 @@ designed.
 declares a padding box family classes `canvas-settable` citing that ancestor's attribute, and the same row classes a
 framework gap with the rule disabled (the negative control).
 
+### 3.9 Social and contact rows (FR-47-9)
+
+A draft's row of social or contact icons (Instagram, Google reviews, WhatsApp, phone, email, map) must reach the built
+page as Site Info-bound icons, never as addresses typed into the tree. Site Info is the site's stored business details
+(`Sgs_Site_Info`, option `sgs_site_info`): the client changes one setting and every icon follows. Ordinary icons,
+buttons and links are not touched: a Site Info icon is one the skeleton author makes on purpose (an `sgs/icon` with
+`iconSource: "brand"`, or a row below). Fill never infers one from an address, because a share button, a blog's Instagram
+photo and a Maps link look alike (R-31-9 forbids a per-block carve-out; a wrong guess is silent).
+
+- **The icon keeps both addresses (Bean, 2026-10-09).** On a Site Info-bound `sgs/icon` the draft's address stays in
+  `linkUrl` as the fallback. The page shows the Site Info link when it makes one, else the fallback, and hides the icon only
+  when neither gives a link; `linkSource: "custom"` makes the typed link win even when Site Info holds another
+  (`plugins/sgs-blocks/src/blocks/icon/render.php`, `includes/helpers-icon.php::sgs_icon_resolve_bound_link`). The icon's root
+  carries `data-sgs-site-info-key` so the walker can tell the address came from Site Info.
+- **Fill reports the address for Site Info.** `lib/fill-presence.mjs::linkDecisions` keeps writing the draft address to a
+  setting bound to Site Info (`metadata.bindings.<attr>`, source `sgs/site-info`) and returns a `handover` row;
+  `lib/fill-resolve.mjs::fillContent` turns it into a `site-info` handover entry carrying the Site Info key and the draft
+  address. An unbound node gets its link and no entry.
+- **One skeleton node builds the row.** A skeleton `sgs/social-icons` node may carry the Fill-only keys `siteInfoRow`
+  (brand slugs from `plugins/sgs-blocks/includes/data/brand-registry.json`, in that order; absent = every registry brand),
+  `childAttributes` (merged into each generated child) and `childRefs` (`{slug: selector}`, so a child can read its draft
+  address). `lib/fill-skeleton.mjs::expandSiteInfoRows` expands it into `sgs/icon` children with `iconSource: "brand"`,
+  `brandName`, and the binding whose key is the registry's `siteInfoKey`; `cleanTree` strips the keys, `skeletonProblems`
+  rejects an unknown or duplicate slug. The platform-to-key map is the registry, read by `lib/brand-registry.mjs`; the route
+  holds no table of its own (R-31-1).
+- **The lint rejects the leak.** `lint.mjs::lintSkeleton` fails an `sgs/icon` with `iconSource: "brand"` that types its
+  own brand's address and has no Site Info binding. It checks brand icons only. A brand owns `tel:` (phone), `mailto:`
+  (email) and a whole host of the form `<slug or key name>.<tld>` or a subdomain of it, so `instagram.com.evil.example` is
+  not Instagram. `wa.me`, `youtu.be`, `g.page` and country second-level domains are not derivable from the registry and are
+  not recognised (ยง7).
+- **Filling Site Info from the draft.** `plugins/sgs-blocks/scripts/provision-site-info-from-draft.py` reads a surface's
+  `handover.json` and fills only EMPTY Site Info keys (never overwrites), skips placeholders (`example.com`, `yourpage`,
+  a bare network host, non-web schemes) and conflicting addresses, shows a dry-run table first, and with `--apply` backs
+  up the whole option (md5), writes through `Sgs_Site_Info::set()` and reads back.
+- **The walker understands it.** `scripts/parity/lib/links.mjs::compareLinks` reports a draft link whose live counterpart
+  carries `data-sgs-site-info-key` and a different address as a pre-accepted `handover` note, not an `href` mismatch; a
+  draft link with no live link of that text is still `missing`.
+
+**Done when:** `node --test "scripts/computed-route/tests/fill-site-info.test.mjs" "scripts/computed-route/tests/fill-site-rows.test.mjs" "scripts/computed-route/tests/lint.test.mjs" "scripts/parity/tests/links.test.mjs"` and `python -m pytest scripts/tests/test_provision_site_info_from_draft.py` pass. The cases that must fail are an unbound node getting a handover entry, a brand icon typing its own address with no binding passing the lint, `instagram.com.evil.example` counting as Instagram, a filled Site Info key being overwritten, and a placeholder address being written. The expanded footer and drawer rows match `sites/eye-care-ward-end/build/footer.tree.json` and `mobile-menu.tree.json` child for child.
+
 ## 4. Files
 
 All in `scripts/computed-route/`. The README lists every exported function (R-47-1).
@@ -527,6 +567,7 @@ All in `scripts/computed-route/`. The README lists every exported function (R-47
 | `README.md` | Purpose, file index, function index, imports, what the route never touches |
 | `lint.mjs` | README index, no style values in skeletons, no `style` or `native_wp` writes, no imports from `plugins/sgs-blocks/scripts/` |
 | `lib/db.mjs` | Read-only `block_attributes` queries |
+| `lib/brand-registry.mjs` | Reads `plugins/sgs-blocks/includes/data/brand-registry.json` (brand slug, Site Info key, brand ownership of an address) for the social-row expansion and the lint |
 | `lib/calibrate.mjs`, `calibrate.mjs` | Calibration library and command |
 | `lib/resolve.mjs` | The one property-to-setting engine |
 | `lib/normalise.mjs` | Value normalisation and token snapping from `theme-snapshot.json`, with the snap log |
@@ -661,3 +702,9 @@ calibration page is built private, since no per-page noindex mechanism exists (ย
   `sites/<client>/build/surfaces.json` names as targets; today they are made by hand when a client is set up, and R-47-11
   limits the route to targets that already exist. A step that creates each target from the draft's screens and writes its
   ID into `surfaces.json` would make a whole-site clone start from the draft alone.
+- **Social-row address recognition and calibration.** The lint cannot recognise `wa.me`, `youtu.be`, `g.page` or country
+  second-level domains as a brand's address, because the registry carries no host data and the route holds no table
+  (FR-47-9); adding hosts to the shared registry needs its PHP, editor and parity-test readers changed together. The
+  calibration cache `cache/icon.json` has no `link` key for `sgs/icon`, so Fill writes no draft address to an icon until
+  `sgs/icon` is recalibrated, and no end-to-end Fill run of a real `sgs/social-icons` skeleton against the Eye Care draft
+  has been read live.

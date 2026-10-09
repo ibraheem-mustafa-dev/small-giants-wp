@@ -2,7 +2,7 @@
 title: One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
 project: small-giants-wp
 created: 2026-10-08
-status: all phases (1, A, B, C, D, E) done and read live; sandybrown at 46bd7d184, eye-care-test at 517cc7235 (footer and drawer social rows read live at 375/768/1440); QC council closed; only the Spec 47 cloned-social-row deferral remains, owned by that spec
+status: all phases (1, A, B, C, D, E) done and read live, plus the Site Info link fallback (linkSource) and the clone route's social-row rule (Spec 47 FR-47-9); sandybrown at 46bd7d184 (its next deploy needs its sgs/cta-section pages migrated, see LEDGER), eye-care-test being deployed with the fallback
 ---
 
 # One icon block (sgs/icon) + sgs/social-icons rebuilt as its wrapper + a rebuilt Spacing control
@@ -141,7 +141,6 @@ Raters B (claims vs code: 35 of 41 TRUE, none FALSE), D (executed edge cases), E
 - **Rater A live reads (pass):** every link at least 44x44 (the labelled ones are 44 tall, case 21 is 55x81.6); hrefs and names as Phase A states; the blank WhatsApp key absent for visitor and admin, dimmed (the shape at 0.4) with the notice in the editor; outlines draw `svg.sgs-icon__outline`; label end/start/below geometry; theme and brand hover flips; eye-care-test footer row list of three, wa.me href, 44x44, border rgb(230, 225, 218), glyph rgb(20, 20, 20) at 375/768/1440; 0 console errors. After the deploy of 46bd7d184 and the fixture rebuild (2026-10-09): case 24's label sits 8px (spacing-20) above its shape, centred within 0.01px, link 50.8x81.6 named "Call us" with href `tel:+441234567890`; case 21's label is `text` rgb(58, 46, 38) at 11.86:1 on the page; axe 0 violations on every icon and social row; all 16 icon links at least 44x44; 0 console errors, at 375/768/1440.
 
 ## Deferred
-- **Cloned social rows (owner: Spec 47 computed route, `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`; Spec 47 carries no stage for it yet, so the next session editing Spec 47 adds one, status NOT BUILT):** when a draft holds a social or contact link row, the route should emit `sgs/social-icons` with `sgs/icon` children bound to Site Info keys by platform (registry `plugins/sgs-blocks/includes/data/brand-registry.json`, keys `Sgs_Site_Info_Binding::EDITOR_KEYS`), a fixed URL only for a platform the registry lacks. Today a clone gets whatever the route writes from the draft's markup.
 - Bluesky/Threads: add them to `brand-registry.json` and the binding when Site Info gains `socials.bluesky` / `socials.threads` keys.
 
 ## Gates and commits
