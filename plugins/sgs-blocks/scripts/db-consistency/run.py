@@ -81,7 +81,6 @@ _models_mod = _load_sibling("models")
 _resolver_mod = _load_sibling("resolver_bridge")
 _check_routing_mod = _load_sibling("check_routing")
 _check_composition_mod = _load_sibling("check_composition")
-_check_variants_mod = _load_sibling("check_variants")
 _check_overrides_drift_mod = _load_sibling("check_overrides_drift")
 _check_variant_reseed_mod = _load_sibling("check_variant_reseed")
 _check_orphan_roles_mod = _load_sibling("check_orphan_roles")
@@ -89,8 +88,6 @@ _check_tier_composition_mod = _load_sibling("check_tier_composition")
 _check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
 _check_motion_fx_reseed_mod = _load_sibling("check_motion_fx_reseed")
 _check_fx_qualifying_blocks_stale_mod = _load_sibling("check_fx_qualifying_blocks_stale")
-_check_dead_composition_signal_mod = _load_sibling("check_dead_composition_signal")
-_check_inert_composition_attr_mod = _load_sibling("check_inert_composition_attr")
 _check_role_resolution_guess_mod = _load_sibling("check_role_resolution_guess")
 
 Violation = _models_mod.Violation
@@ -103,15 +100,12 @@ _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework
 _CHECK_LABELS = {
     "routing": "Check #1 — Routing Determinism",
     "composition": "Check #2 — has_inner_blocks Sync",
-    "variants": "Check #3 — Variant Discriminator Collision",
     "overrides_drift": "Check #4 — Override-Dict Drift",
     "variant_reseed": "Check #5 — variant_slots ↔ block.json Determinism",
     "orphan_roles": "Check #6 — Role Referential Integrity",
     "tier_composition": "Check #7 — tier ↔ composition_role/container_kind",
     "css_property_reseed": "Check #8 — css_property/css_layer/css_element/css_state/css_tier Reseed-Survival",
     "motion_fx_reseed": "Check #9 — Spec 38 fx_effects Reseed-Survival",
-    "dead_composition_signal": "Check #10 — Dead Composition Discriminator",
-    "inert_composition_attr": "Check #11 — Inert Child-Attribute Discriminator",
     "role_resolution_guess": "Check #12 — Order-Dependent Role Resolution",
 }
 
@@ -123,10 +117,9 @@ _CHECK_LABELS = {
 # findings sat uncounted-by-eye in the total. Caught while verifying this task's own
 # acceptance criteria; see the session report for the discovery trail.
 _CHECK_ORDER = (
-    "routing", "composition", "variants",
+    "routing", "composition",
     "overrides_drift", "variant_reseed", "orphan_roles", "tier_composition",
-    "css_property_reseed", "motion_fx_reseed", "dead_composition_signal",
-    "inert_composition_attr", "role_resolution_guess",
+    "css_property_reseed", "motion_fx_reseed", "role_resolution_guess",
 )
 
 
@@ -214,7 +207,6 @@ def main() -> int:
         violations: list = []
         violations.extend(_check_routing_mod.run(conn))
         violations.extend(_check_composition_mod.run(conn))
-        violations.extend(_check_variants_mod.run(conn))
         violations.extend(_check_overrides_drift_mod.run(conn))
         violations.extend(_check_variant_reseed_mod.run(conn))
         violations.extend(_check_orphan_roles_mod.run(conn))
@@ -222,8 +214,6 @@ def main() -> int:
         violations.extend(_check_css_property_reseed_mod.run(conn))
         violations.extend(_check_motion_fx_reseed_mod.run(conn))
         violations.extend(_check_fx_qualifying_blocks_stale_mod.run(conn))
-        violations.extend(_check_dead_composition_signal_mod.run(conn))
-        violations.extend(_check_inert_composition_attr_mod.run(conn))
         violations.extend(_check_role_resolution_guess_mod.run(conn))
     except sqlite3.OperationalError as exc:
         # DB present but DRIFTED (e.g. a required table missing) — this is a

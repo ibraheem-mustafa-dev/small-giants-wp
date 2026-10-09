@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-17
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-09
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_variant_composition_slots_1, sqlite_autoindex_variant_composition_attr_slots_1, sqlite_autoindex_block_render_repeaters_1, sqlite_autoindex_block_render_composition_1, sqlite_autoindex_block_render_singletons_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -63,36 +63,6 @@ CREATE TABLE block_composition (
   created_at TEXT DEFAULT CURRENT_TIMESTAMP, container_kind TEXT CHECK (container_kind IN ('section', 'layout', 'content')),
   FOREIGN KEY (block_slug) REFERENCES blocks(slug)
 );
-
--- table: block_render_composition
-CREATE TABLE block_render_composition (
-            block_slug   TEXT NOT NULL,
-            child_slug   TEXT NOT NULL,
-            call_order   INTEGER NOT NULL,
-            source_file  TEXT NOT NULL,
-            source_sha   TEXT NOT NULL,
-            PRIMARY KEY (block_slug, child_slug, source_file, call_order)
-        );
-
--- table: block_render_repeaters
-CREATE TABLE block_render_repeaters (
-            block_slug   TEXT NOT NULL,
-            role         TEXT NOT NULL,
-            role_order   INTEGER NOT NULL,
-            source_file  TEXT NOT NULL,
-            source_sha   TEXT NOT NULL,
-            PRIMARY KEY (block_slug, role, role_order)
-        );
-
--- table: block_render_singletons
-CREATE TABLE block_render_singletons (
-            block_slug   TEXT NOT NULL,
-            role         TEXT NOT NULL,
-            role_order   INTEGER NOT NULL,
-            source_file  TEXT NOT NULL,
-            source_sha   TEXT NOT NULL,
-            PRIMARY KEY (block_slug, role, role_order)
-        );
 
 -- table: block_selectors
 CREATE TABLE block_selectors (
@@ -172,9 +142,6 @@ CREATE TABLE docs (
             content     TEXT,
             UNIQUE(slug, source)
         );
-
--- table: excluded_properties
-CREATE TABLE excluded_properties (  css_property TEXT NOT NULL,  reason       TEXT NOT NULL,  decided_by   TEXT NOT NULL,  date         TEXT NOT NULL,  UNIQUE(css_property));
 
 -- table: fx_effects
 CREATE TABLE fx_effects (
@@ -309,18 +276,6 @@ CREATE TABLE plugins (
         description TEXT
     );
 
--- table: preset_implications
-CREATE TABLE preset_implications (
-          block_slug        TEXT NOT NULL,
-          preset_attr       TEXT NOT NULL,
-          enum_value        TEXT NOT NULL,
-          implied_property  TEXT NOT NULL DEFAULT '',
-          presence          TEXT NOT NULL DEFAULT 'present',
-          is_neutral        INTEGER NOT NULL DEFAULT 0,
-          created_at        TEXT DEFAULT CURRENT_TIMESTAMP,
-          PRIMARY KEY (block_slug, preset_attr, enum_value)
-        );
-
 -- table: property_suffixes
 CREATE TABLE property_suffixes (
                 suffix TEXT PRIMARY KEY,
@@ -383,24 +338,6 @@ CREATE TABLE theme_parts (
         description TEXT,
         variants TEXT
     );
-
--- table: variant_composition_attr_slots
-CREATE TABLE variant_composition_attr_slots (
-                block_slug TEXT NOT NULL,
-                variant_value TEXT NOT NULL,
-                child_slug TEXT NOT NULL,
-                child_attr_name TEXT NOT NULL,
-                child_attr_value TEXT NOT NULL,
-                PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
-            );
-
--- table: variant_composition_slots
-CREATE TABLE variant_composition_slots (
-            block_slug TEXT NOT NULL,
-            variant_value TEXT NOT NULL,
-            unique_child_slug TEXT NOT NULL,
-            PRIMARY KEY (block_slug, variant_value, unique_child_slug)
-        );
 
 -- table: variant_slots
 CREATE TABLE variant_slots (

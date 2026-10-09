@@ -5,8 +5,8 @@ Phase 1 (parent plan `.claude/plans/2026-08-01-db-derivation-and-converter-clean
 
 WHY THIS EXISTS
 ---------------
-``property_suffixes`` / ``slots`` / ``excluded_properties`` are converter-load-bearing
-and had NO WRITER ANYWHERE — a rebuild-from-empty produced 0 rows in all three, which
+``property_suffixes`` and ``slots`` are load-bearing
+and had NO WRITER ANYWHERE — a rebuild-from-empty produced 0 rows in both, which
 does not error, it just makes the converter answer wrongly. Their only historical
 source was a set of one-off migrations, and **migration replay is a proven dead end**
 (Phase 0 Step 0.5: three migrations reference ``slot_synonyms``, retired in favour of
@@ -18,10 +18,9 @@ capture REPEATABLE and CHECKABLE instead of hand-transcribed.
 
 ONE WRITER PER ARTEFACT
 -----------------------
-- This script is the ONLY writer of ``scripts/data/{property-suffixes,slots,
-  excluded-properties}.json``.
-- ``converter/db/db_lookup.py`` is the ONLY writer of the three DB tables (it seeds
-  FROM these files at module load).
+- This script is the ONLY writer of ``scripts/data/{property-suffixes,slots}.json``.
+- ``dbschema/seed_reference_data.py`` is the ONLY writer of the two DB tables (it seeds
+  FROM these files).
 Nothing writes in both directions, so there is no clobber loop.
 
 USAGE
@@ -72,11 +71,6 @@ TABLES: dict[str, tuple[str, list[str], str]] = {
          "standalone_block_default_attrs", "resolves_whole_instance"],
         "rows",
     ),
-    "excluded_properties": (
-        "excluded-properties.json",
-        ["css_property", "reason", "decided_by", "date"],
-        "rows",
-    ),
 }
 
 DOCS: dict[str, dict[str, str]] = {
@@ -113,20 +107,6 @@ DOCS: dict[str, dict[str, str]] = {
                         "redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; "
                         "there is no script to re-run.",
         "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
-    },
-    "excluded_properties": {
-        "__doc": "F4 excluded_properties — CSS properties deliberately NOT lifted to block "
-                 "attributes (still cloned via passthrough <style>). THE source of truth "
-                 "for the table. db_lookup._migrate_excluded_properties() seeds it.",
-        "__why": "Read as a frozenset by converter/dispatch_table.py:95 and by the "
-                 "excluded-gate. Empty ⇒ every excluded property is wrongly treated as "
-                 "liftable. Captured from live 2026-08-02 (Phase 1).",
-        "__order": "NOT load-bearing — every reader builds a set. Captured in rowid order "
-                   "anyway so the file diffs cleanly.",
-        "__note": "Some `reason` strings contain U+FFFD (a replacement character from an "
-                  "earlier bad write). Captured VERBATIM: byte-exact parity with live is "
-                  "the goal, no reader parses these strings, and silently 'repairing' them "
-                  "would make this capture disagree with the database it mirrors.",
     },
 }
 
@@ -232,14 +212,10 @@ SELF_TEST_DDL = {
         "standalone_block TEXT, notes TEXT, created_at TEXT, "
         "standalone_block_default_attrs TEXT, resolves_whole_instance TEXT, "
         "PRIMARY KEY (slot_name, scope))",
-    "excluded_properties":
-        "CREATE TABLE excluded_properties (css_property TEXT NOT NULL, reason TEXT NOT NULL, "
-        "decided_by TEXT NOT NULL, date TEXT NOT NULL, UNIQUE(css_property))",
 }
 SELF_TEST_ROWS = {
     "property_suffixes": ("zzzTest", "color", "zzz-prop", 1, "palette", None, None),
     "slots": ("zzz-slot", "element", '["zzz"]', "sgs/text", "n", None, None),
-    "excluded_properties": ("zzz-prop", "r", "d", "2026-01-01"),
 }
 
 

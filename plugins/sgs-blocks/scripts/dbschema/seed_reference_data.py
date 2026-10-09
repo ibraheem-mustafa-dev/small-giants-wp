@@ -11,6 +11,8 @@ the source of truth; the DB tables are the runtime query target, R-31-1):
   slots                  <- slots.json
   block_attributes.role  <- scalar-media-roles.json  (re-asserts role='scalar-media' on the
                             rostered attrs; only a column, never a whole table)
+  html_tag_to_core_block <- atomic-tag-map.json      (bare HTML tag -> SGS block slug; the file
+                            is the single source of the key set, so keys it lacks are deleted)
 
 Also exposes ``fx_attr_roster()``, the full ``fx*`` attribute roster read from
 ``includes/fx-attributes.php`` and ``includes/extension-attributes.generated.php``.
@@ -41,6 +43,7 @@ _ROLES_FILE = _DATA_DIR / "roles.json"
 _MODIFIER_SUFFIXES_FILE = _DATA_DIR / "modifier-suffixes.json"
 _SCALAR_MEDIA_ROLES_FILE = _DATA_DIR / "scalar-media-roles.json"
 _SCALAR_MEDIA_ROLE = "scalar-media"
+_ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
 
 _FX_ATTRIBUTES_PHP = _PLUGIN_DIR / "includes" / "fx-attributes.php"
 _EXTENSION_ATTRS_GENERATED_PHP = _PLUGIN_DIR / "includes" / "extension-attributes.generated.php"
@@ -370,6 +373,51 @@ def _seed_scalar_media_roles(conn: sqlite3.Connection) -> None:
 # Public API
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# html_tag_to_core_block
+# ---------------------------------------------------------------------------
+
+def _load_atomic_tag_seed() -> dict[str, tuple[str, str]]:
+    """Load ``{html_tag: (target_sgs_slug, note)}`` from atomic-tag-map.json.
+
+    Keys starting with ``__`` are metadata. A missing or unreadable file yields ``{}``, in which
+    case the seeder leaves existing rows untouched.
+    """
+    try:
+        raw = json.loads(_ATOMIC_TAG_MAP_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, tuple[str, str]] = {}
+    for tag, val in raw.items():
+        if tag.startswith("__") or not isinstance(val, list) or not val:
+            continue
+        out[tag] = (val[0], val[1] if len(val) > 1 else "")
+    return out
+
+
+def _seed_html_tag_to_core_block(conn: sqlite3.Connection) -> None:
+    """Upsert every atomic-tag-map.json entry, then delete rows whose tag the file no longer has.
+
+    ``core_block_slug`` holds the target SGS block slug (the column name is kept for the
+    consumers that read it).
+    """
+    seed = _load_atomic_tag_seed()
+    if not seed:
+        return
+    for html_tag, (target_slug, note) in seed.items():
+        conn.execute(
+            "INSERT OR REPLACE INTO html_tag_to_core_block "
+            "(html_tag, core_block_slug, note) VALUES (?, ?, ?)",
+            (html_tag, target_slug, note),
+        )
+    placeholders = ",".join("?" for _ in seed)
+    conn.execute(
+        f"DELETE FROM html_tag_to_core_block WHERE html_tag NOT IN ({placeholders})",  # noqa: S608 - placeholders only
+        list(seed.keys()),
+    )
+    conn.commit()
+
+
 def seed_all(db_path: Path | str | None = None) -> None:
     """Run every seeder against ``db_path`` (default: ``default_db_path()``) over its own connection.
 
@@ -389,6 +437,7 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("slots", lambda c: _seed_table_ordered(c, "slots")),
             ("property_suffixes.kind_override", _seed_property_suffixes_kind_override),
             ("scalar-media roles", _seed_scalar_media_roles),
+            ("html_tag_to_core_block", _seed_html_tag_to_core_block),
         )
         for label, step in steps:
             try:

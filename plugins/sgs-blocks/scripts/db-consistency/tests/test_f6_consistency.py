@@ -9,16 +9,7 @@ Tests
    - lift_producible_attrs('sgs/hero') does NOT contain 'splitImage'
    - lift_producible_attrs('sgs/hero') does NOT contain 'splitGap'
 
-2. Check #3 on live DB:
-   - Returns ZERO violations (post-hero-fix state)
-   - Is UNIVERSAL — the check iterates BOTH sgs/hero and sgs/testimonial
-     (verified by checking that testimonial's discriminators are inspected too)
-
-3. Planted violations — each check REJECTS a bad input:
-   - Check #3 (ambiguity rule, 2026-07-22): synthetic block where two variants
-     share an identical discriminator signature (empty or non-empty), PLUS
-     negative controls proving a single empty-signature fallback and the ''
-     enum default-sentinel are both accepted, not flagged
+2. Planted violations — each check REJECTS a bad input:
    - Check #1: synthetic block with 2 attrs derivable from one css_property + writer_path
    - Check #2: synthetic stale has_inner_blocks (DB says 1, AND-rule derivation says 0)
 
@@ -83,12 +74,10 @@ def _bootstrap_db_consistency():
     _load("resolver_bridge")
     _load("check_routing")
     _load("check_composition")
-    _load("check_variants")
     _load("check_overrides_drift")
     _load("check_variant_reseed")
     _load("check_orphan_roles")
     _load("check_tier_composition")
-    _load("check_dead_composition_signal")
     _load("check_role_resolution_guess")
 
 
@@ -97,13 +86,13 @@ _bootstrap_db_consistency()
 from db_consistency.models import (  # noqa: E402
     Violation, routing_key, composition_key, variant_key,
     variant_reseed_key, orphan_role_key, tier_composition_key,
-    dead_composition_signal_key, role_resolution_guess_key,
+    role_resolution_guess_key,
 )
 from db_consistency import (  # noqa: E402
-    check_routing, check_composition, check_variants,
+    check_routing, check_composition,
     check_overrides_drift, check_variant_reseed,
     check_orphan_roles, check_tier_composition,
-    check_dead_composition_signal, check_role_resolution_guess,
+    check_role_resolution_guess,
 )
 from db_consistency.resolver_bridge import (  # noqa: E402
     lift_producible_attrs,
@@ -142,7 +131,6 @@ def _make_minimal_db(
     block_attributes: list[tuple],   # (block_slug, attr_name) or (block_slug, attr_name, role)
     blocks: list[tuple] | None = None,  # (slug, variant_attr) or (slug, variant_attr, tier)
     variant_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_slot)
-    variant_composition_slots: list[tuple] | None = None,  # (block_slug, variant_value, unique_child_slug)
     block_composition: list[tuple] | None = None,  # (block_slug, has_inner_blocks) or (..., composition_role, container_kind)
     roles: list[tuple] | None = None,  # (role_name,)
     variant_enum: list[tuple] | None = None,  # (block_slug, attr_name, enum_values_json)
@@ -160,9 +148,6 @@ def _make_minimal_db(
     the variant-attr's own declared enum roster (check #3's ambiguity rule
     reads this to see zero-discriminator variants that never get a
     variant_slots row).
-    variant_composition_slots rows are 3-tuples (block_slug, variant_value,
-    unique_child_slug) — the InnerBlocks-composition discriminator half of
-    check #3's FULL signature (2026-09-05 update).
     block_capabilities rows are 2-tuples (block_slug, capability) — check
     #10's second content-extraction path ('array-content-lift').
     emit_shape_attrs rows are 2-tuples (block_slug, attr_name) — each gets
@@ -190,10 +175,6 @@ def _make_minimal_db(
     conn.execute(
         "CREATE TABLE variant_slots "
         "(block_slug TEXT, variant_value TEXT, unique_slot TEXT)"
-    )
-    conn.execute(
-        "CREATE TABLE variant_composition_slots "
-        "(block_slug TEXT, variant_value TEXT, unique_child_slug TEXT)"
     )
     conn.execute(
         "CREATE TABLE block_composition "
@@ -226,11 +207,6 @@ def _make_minimal_db(
                 conn.execute("INSERT INTO blocks (slug, variant_attr, tier) VALUES (?,?,?)", row)
     if variant_slots:
         conn.executemany("INSERT INTO variant_slots VALUES (?,?,?)", variant_slots)
-    if variant_composition_slots:
-        conn.executemany(
-            "INSERT INTO variant_composition_slots VALUES (?,?,?)",
-            variant_composition_slots,
-        )
     if block_composition:
         for row in block_composition:
             if len(row) == 2:
@@ -329,325 +305,8 @@ class TestResolverBridgeKnownCases:
 
 
 # ===========================================================================
-# 2. Check #3 — live DB: zero violations + universal coverage
-# ===========================================================================
-
-class TestCheck3LiveDB:
-    """Check #3 returns zero violations on the post-hero-fix live DB."""
-
-    @_skip_no_db
-    def test_check3_zero_violations_post_hero_fix(self, live_conn):
-        """After the hero fix, check #3 must return no violations."""
-        violations = check_variants.run(live_conn)
-        assert violations == [], (
-            f"check_variants returned {len(violations)} violation(s) on the live DB — "
-            "expected 0 after the hero block.json fix.\n"
-            + "\n".join(v.detail for v in violations)
-        )
-
-    @_skip_no_db
-    def test_check3_inspects_hero_discriminators(self, live_conn):
-        """Universal coverage: check #3 must inspect sgs/hero's variant_slots."""
-        # Verify hero is a variant block (has variant_attr).
-        hero_row = live_conn.execute(
-            "SELECT variant_attr FROM blocks WHERE slug='sgs/hero'"
-        ).fetchone()
-        assert hero_row is not None, "sgs/hero missing from blocks table"
-        assert hero_row[0], "sgs/hero has no variant_attr — universality check broken"
-
-        # Verify hero's variant_slots are present (so the check has something to inspect).
-        slots = live_conn.execute(
-            "SELECT unique_slot FROM variant_slots WHERE block_slug='sgs/hero'"
-        ).fetchall()
-        assert slots, "sgs/hero has no variant_slots — universality check trivially passes"
-
-    @_skip_no_db
-    def test_check3_inspects_testimonial_discriminators(self, live_conn):
-        """Universal coverage: check #3 must inspect sgs/testimonial's variant_slots."""
-        # Verify testimonial is a variant block.
-        t_row = live_conn.execute(
-            "SELECT variant_attr FROM blocks WHERE slug='sgs/testimonial'"
-        ).fetchone()
-        assert t_row is not None, "sgs/testimonial missing from blocks table"
-        assert t_row[0], "sgs/testimonial has no variant_attr"
-
-        # Verify testimonial's variant_slots are present.
-        slots = live_conn.execute(
-            "SELECT unique_slot FROM variant_slots WHERE block_slug='sgs/testimonial'"
-        ).fetchall()
-        assert slots, "sgs/testimonial has no variant_slots — universality check trivially passes"
-
-        # A sample testimonial discriminator (ratingStars) should NOT be lift-producible.
-        producible = lift_producible_attrs("sgs/testimonial", live_conn)
-        # ratingStars, avatarMedia, etc. are not CSS-lift targets.
-        for slot in ("ratingStars", "avatarMedia", "orgLogo", "workMedia", "summaryPhrase"):
-            if slot in [r[0] for r in slots]:
-                assert slot not in producible, (
-                    f"Testimonial discriminator '{slot}' should NOT be lift-producible"
-                )
-
-    @_skip_no_db
-    def test_check3_hero_split_discriminators_safe(self, live_conn):
-        """After the fix, sgs/hero 'split' discriminators are image-family attrs only.
-
-        2026-09-02 (Wave 7b): the literal names changed from
-        splitImage/splitImageMobile to splitImageUrl/splitImageUrlMobile —
-        block.json's composite splitImage/splitImageMobile attrs were
-        DELETED (their only remaining reason to exist, the cloning
-        pipeline's DB anchor, moved to splitMediaType — see
-        scripts/data/scalar-media-roles.json's __RE_ANCHOR_2026_09_02 note),
-        so variant_slots' auto-derivation (which reads live block.json
-        attrs) correctly picked new discriminating slots from what block.json
-        NOW declares. This is the mechanism adapting correctly, not a design
-        break — assert on the CURRENT real attr names, not the deleted ones.
-        """
-        split_slots = live_conn.execute(
-            "SELECT unique_slot FROM variant_slots WHERE block_slug='sgs/hero' AND variant_value='split'"
-        ).fetchall()
-        slot_names = {r[0] for r in split_slots}
-        assert "gridTemplateColumns" not in slot_names, (
-            "gridTemplateColumns is still a discriminator for sgs/hero 'split' — hero fix not applied to DB. "
-            "Run: python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"
-        )
-        # The safe discriminators should be present.
-        assert "splitImageUrl" in slot_names or "splitImageUrlMobile" in slot_names, (
-            f"Expected splitImageUrl or splitImageUrlMobile as hero 'split' discriminators "
-            f"after the 2026-09-02 re-anchor; got {slot_names!r}"
-        )
-
-
-# ===========================================================================
 # 3. Planted violations — each check REJECTS a bad input
 # ===========================================================================
-
-class TestCheck3PlantedViolation:
-    """Check #3 (ambiguity rule, 2026-07-22) must flag two variants that share
-    the same discriminator signature, and must NOT flag a single intentional
-    empty-signature fallback."""
-
-    def test_check3_flags_two_zero_discriminator_variants(self):
-        """Plant: two variants BOTH with no discriminating slots at all.
-
-        detect_variant genuinely cannot tell 'text-only' and 'image-badge'
-        apart when neither has a unique styling attr — this IS the real bug
-        this check exists to catch (trust-bar's pre-fix shape).
-        """
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[
-                ("sgs/test-block", "variant"),
-            ],
-            variant_slots=[
-                # Only 'icon-circle' gets a discriminator row; 'text-only' and
-                # 'image-badge' get none — both signatures are empty.
-                ("sgs/test-block", "icon-circle", "iconCircleSize"),
-            ],
-            variant_enum=[
-                ("sgs/test-block", "variant", '["icon-circle", "text-only", "image-badge"]'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for two empty-signature variants, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/test-block"
-        assert v.check == "variants"
-        assert "image-badge" in v.detail and "text-only" in v.detail
-        assert v.key == variant_key("sgs/test-block", "image-badge|text-only")
-
-    def test_check3_flags_two_identical_nonempty_signatures(self):
-        """Plant: two variants that share the exact same non-empty discriminator
-        set — equally ambiguous, not just the empty-signature case."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[
-                ("sgs/test-block", "variant"),
-            ],
-            variant_slots=[
-                ("sgs/test-block", "variant-a", "sharedAttr"),
-                ("sgs/test-block", "variant-b", "sharedAttr"),
-            ],
-            variant_enum=[
-                ("sgs/test-block", "variant", '["variant-a", "variant-b"]'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for identical non-empty signatures, got {len(violations)}"
-        )
-        assert violations[0].key == variant_key("sgs/test-block", "variant-a|variant-b")
-
-    def test_check3_passes_single_empty_signature_fallback(self):
-        """NEGATIVE CONTROL: exactly ONE empty-signature variant (the intentional
-        no-unique-feature fallback) must NOT trigger a violation — proves the
-        gate distinguishes 'one fallback' from 'two indistinguishable variants'.
-        """
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[
-                ("sgs/test-block", "variant"),
-            ],
-            variant_slots=[
-                ("sgs/test-block", "icon-circle", "iconCircleSize"),
-                ("sgs/test-block", "image-badge", "badgeImageSize"),
-                # 'text-only' has zero slots — the sole intentional fallback.
-            ],
-            variant_enum=[
-                ("sgs/test-block", "variant", '["icon-circle", "image-badge", "text-only"]'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            f"Expected 0 violations for a single empty-signature fallback, got {len(violations)}: "
-            + "\n".join(v.detail for v in violations)
-        )
-
-    def test_check3_composition_signature_disambiguates_empty_attr_signature(self):
-        """Plant: two variants both with EMPTY variant_slots (attribute)
-        signatures — 'text-only' style, gate would previously flag them as
-        colliding (as sgs/nav-drawer's 'split-zone-serif'/'two-column-editorial'
-        pair genuinely did pre-fix). But ONE of them ('composed-variant') also
-        has a REAL, unique variant_composition_slots row — an InnerBlocks
-        composition discriminator. That must be enough to disambiguate it:
-        detect_variant can now tell them apart via composition even though
-        neither has a distinguishing styling attr. Only 'plain-variant' is left
-        as the single empty-FULL-signature fallback, so 0 violations expected.
-        """
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[
-                ("sgs/test-block", "variant"),
-            ],
-            variant_slots=[],  # both variants have zero attribute-signature rows
-            variant_composition_slots=[
-                # Only 'composed-variant' gets a composition discriminator —
-                # 'plain-variant' gets none, so it stays the sole intentional
-                # empty-signature fallback.
-                ("sgs/test-block", "composed-variant", "sgs/card-grid"),
-            ],
-            variant_enum=[
-                ("sgs/test-block", "variant", '["plain-variant", "composed-variant"]'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            f"Expected 0 violations — 'composed-variant' has a unique composition "
-            f"discriminator even though its attribute signature is empty, got "
-            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
-        )
-
-    def test_check3_ignores_empty_string_default_sentinel(self):
-        """NEGATIVE CONTROL: an enum's '' default-placeholder entry (e.g.
-        sgs/testimonial's un-set default) must never be compared as if it were
-        a real variant — it would otherwise spuriously collide with a genuine
-        single empty-signature fallback."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[
-                ("sgs/test-block", "variant"),
-            ],
-            variant_slots=[
-                ("sgs/test-block", "classic-card", "ratingStars"),
-                # 'minimal-quote' has zero slots — the sole intentional fallback.
-            ],
-            variant_enum=[
-                ("sgs/test-block", "variant", '["", "classic-card", "minimal-quote"]'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            "The '' sentinel must be excluded from ambiguity comparison — "
-            f"got {len(violations)} violation(s): "
-            + "\n".join(v.detail for v in violations)
-        )
-
-
-class TestCheck3PlantedMissingOrMalformedEnum:
-    """Negative-control-or-the-test-is-vacuous fix (2026-07-22, parking
-    P-CHECK-VARIANTS-ENUM-SILENT-CONTINUE): a variant_attr block with
-    missing/malformed enum_values must be REPORTED, not silently skipped.
-    Before the fix these all returned [] — proving the check would have
-    passed even though detect_variant has no roster to discriminate with."""
-
-    def test_check3_flags_missing_enum_row(self):
-        """Plant: variant_attr block with NO block_attributes row at all for
-        its variant attr (no enum_row) → must be flagged, not silently skipped."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[("sgs/no-enum-block", "variant")],
-            # No variant_enum row planted at all — enum_row will be None.
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for a missing enum row, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/no-enum-block"
-        assert v.check == "variants"
-        assert v.key == variant_key("sgs/no-enum-block", "__missing_enum__")
-
-    def test_check3_flags_malformed_enum_json(self):
-        """Plant: enum_values is present but not valid JSON → must be flagged."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[("sgs/bad-json-block", "variant")],
-            variant_enum=[
-                ("sgs/bad-json-block", "variant", "{not valid json"),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for malformed enum JSON, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/bad-json-block"
-        assert v.check == "variants"
-        assert v.key == variant_key("sgs/bad-json-block", "__malformed_enum__")
-
-    def test_check3_flags_non_list_enum(self):
-        """Plant: enum_values decodes to valid JSON but not a list (e.g. an
-        object) → must be flagged, not silently skipped."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            blocks=[("sgs/non-list-block", "variant")],
-            variant_enum=[
-                ("sgs/non-list-block", "variant", '{"not": "a list"}'),
-            ],
-        )
-        violations = check_variants.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for a non-list enum, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/non-list-block"
-        assert v.check == "variants"
-        assert v.key == variant_key("sgs/non-list-block", "__non_list_enum__")
-
 
 class TestCheck1PlantedViolation:
     """Check #1 must flag a block with ≥2 attrs from one css_property + writer_path."""
@@ -1408,161 +1067,6 @@ class TestNewModelKeys:
 
     def test_tier_composition_key_format(self):
         assert tier_composition_key("sgs/hero") == "tiercomp:sgs/hero"
-
-    def test_dead_composition_signal_key_format(self):
-        assert dead_composition_signal_key("sgs/counter") == "deadcomp:sgs/counter"
-
-
-# ===========================================================================
-# 11. Check #10 — dead composition discriminator (variant-composition-
-#     fingerprinting plan, Task 7 — the "protect the future" structural guard)
-# ===========================================================================
-
-class TestCheck10LiveDB:
-    """Check #10 on the real, live DB — real negative control."""
-
-    @_skip_no_db
-    def test_check10_zero_violations_today(self, live_conn):
-        """After Task 5/6's nav-drawer fix, check #10 must return no violations —
-        the only block with variant_composition_slots rows (sgs/nav-drawer) now
-        has a real content-extraction path (derive_delegates_content()==1)."""
-        violations = check_dead_composition_signal.run(live_conn)
-        assert violations == [], (
-            f"Expected 0 dead-composition-signal violations on the live DB, got "
-            f"{len(violations)}: " + "\n".join(v.detail for v in violations)
-        )
-
-    @_skip_no_db
-    def test_check10_nav_drawer_has_real_extraction_path(self, live_conn):
-        """`derive_delegates_content()` recognises the drawer's InnerBlocks
-        (`has_inner.py` regex), so check #10 stays quiet for it. No live block
-        currently carries `variant_composition_slots` rows, so the planted-violation
-        class below is the check's positive control, not a live row."""
-        assert check_dead_composition_signal.derive_delegates_content("sgs/nav-drawer") == 1, (
-            "sgs/nav-drawer's derive_delegates_content() must be 1 (the "
-            "has_inner.py regex) for check #10 to correctly stay quiet."
-        )
-
-
-class TestCheck10PlantedViolation:
-    """Synthetic positive + negative controls — proves check #10 can both fire
-    and stay quiet, per this project's 'a check with no positive control passes
-    against a dead feature' doctrine. Uses a fake block slug with no real
-    src/blocks/ directory, so derive_delegates_content() fails CLOSED to 0 for
-    it (no source on disk to derive from) without needing to mock anything."""
-
-    def test_check10_flags_block_with_no_extraction_path(self):
-        """POSITIVE CONTROL: a block with a real variant_composition_slots row
-        and NONE of the three content-extraction paths must be flagged. This
-        is the exact shape of the original nav-drawer bug this check exists to
-        catch automatically for any future block."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            variant_composition_slots=[
-                ("sgs/fake-dead-block", "fake-variant", "sgs/card-grid"),
-            ],
-        )
-        violations = check_dead_composition_signal.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected 1 violation for a block with a composition discriminator "
-            f"and no extraction path, got {len(violations)}"
-        )
-        v = violations[0]
-        assert v.block == "sgs/fake-dead-block"
-        assert v.check == "dead_composition_signal"
-        assert "fake-variant" in v.detail
-        assert v.key == dead_composition_signal_key("sgs/fake-dead-block")
-
-    def test_check10_passes_block_with_array_content_lift_capability(self):
-        """NEGATIVE CONTROL (a): an 'array-content-lift' block_capabilities row
-        is enough on its own to clear the block, even with no real source dir."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            variant_composition_slots=[
-                ("sgs/fake-lift-block", "fake-variant", "sgs/card-grid"),
-            ],
-            block_capabilities=[
-                ("sgs/fake-lift-block", "array-content-lift"),
-            ],
-        )
-        violations = check_dead_composition_signal.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            f"Expected 0 violations when an array-content-lift capability row "
-            f"exists, got {len(violations)}: " + "\n".join(v.detail for v in violations)
-        )
-
-    def test_check10_passes_block_with_emit_shape_child_attr(self):
-        """NEGATIVE CONTROL (b): a block_attributes row with emit_shape='child'
-        is enough on its own to clear the block."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            variant_composition_slots=[
-                ("sgs/fake-child-block", "fake-variant", "sgs/card-grid"),
-            ],
-            emit_shape_attrs=[
-                ("sgs/fake-child-block", "childItems"),
-            ],
-        )
-        violations = check_dead_composition_signal.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            f"Expected 0 violations when an emit_shape='child' attribute exists, "
-            f"got {len(violations)}: " + "\n".join(v.detail for v in violations)
-        )
-
-    def test_check10_passes_block_with_real_delegates_content(self):
-        """NEGATIVE CONTROL (c): a REAL block that genuinely delegates content
-        (sgs/nav-drawer, post Task-5 fix) is not flagged even via the synthetic
-        in-memory DB path — proves path (a) alone is sufficient, using the real
-        derive_delegates_content() against real source on disk, not a mock."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            variant_composition_slots=[
-                ("sgs/nav-drawer", "split-zone-serif", "sgs/card-grid"),
-            ],
-        )
-        violations = check_dead_composition_signal.run(conn)
-        conn.close()
-
-        assert violations == [], (
-            f"Expected 0 violations for sgs/nav-drawer (real delegates_content==1 "
-            f"post Task-5 fix), got {len(violations)}: "
-            + "\n".join(v.detail for v in violations)
-        )
-
-    def test_check10_reports_all_affected_variants_for_one_block(self):
-        """A block with TWO dead-discriminator variants gets ONE violation
-        naming both — not two separate violations (block-level key, per the
-        module's design: one Violation per block, listing every affected
-        variant)."""
-        conn = _make_minimal_db(
-            property_suffixes=[],
-            block_attributes=[],
-            variant_composition_slots=[
-                ("sgs/fake-multi-block", "variant-a", "sgs/card-grid"),
-                ("sgs/fake-multi-block", "variant-b", "sgs/icon-list"),
-            ],
-        )
-        violations = check_dead_composition_signal.run(conn)
-        conn.close()
-
-        assert len(violations) == 1, (
-            f"Expected exactly 1 violation (one per block) for a block with 2 "
-            f"dead-discriminator variants, got {len(violations)}"
-        )
-        v = violations[0]
-        assert "variant-a" in v.detail
-        assert "variant-b" in v.detail
-        assert v.key == dead_composition_signal_key("sgs/fake-multi-block")
 
 
 # ===========================================================================

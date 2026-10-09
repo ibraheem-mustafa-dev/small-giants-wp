@@ -273,8 +273,8 @@ _KNOWN_TABLES = {
     "modifier_suffixes", "attribute_gap_candidates", "indexed_files", "docs",
     "markup_examples", "schema_metadata", "design_tokens",
     "html_tag_to_core_block", "slots", "roles", "block_composition",
-    "variant_slots", "excluded_properties", "array_item_schema",
-    "preset_implications", "fx_effects", "schema_migrations", "sqlite_master",
+    "variant_slots", "array_item_schema",
+    "fx_effects", "schema_migrations", "sqlite_master",
 }
 _GENERIC_NAMES = {"p", "f", "fh", "fp", "file", "path", "self", "expr", "fd"}
 

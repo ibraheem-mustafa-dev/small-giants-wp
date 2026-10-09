@@ -7,7 +7,7 @@ runs ``sgs-update-v2.py --rebuild`` inside it, then compares the result against
 live table-by-table.
 
 A shortfall is the EXPECTED result, not a failure to hide: ``property_suffixes``,
-``roles``, ``slots`` and ``excluded_properties`` are already known to have no
+``roles`` and ``slots`` are already known to have no
 regenerative source -- that is Phase 1's work. Bean's ruling (2026-08-02):
 **partial rebuild PASSES provided the shortfalls are written down and carried
 forward.** This script writes them down.
@@ -30,8 +30,8 @@ from sandbox import sandbox  # noqa: E402
 # Known to have no regenerative source -- Phase 1's scope, not Phase 0's.
 #
 # EMPTIED 2026-08-02 (Phase 1, T1.4). All four original members now regenerate:
-# `roles` and `modifier_suffixes` were wired first, then `property_suffixes`,
-# `slots` and `excluded_properties` gained data-file seeders in db_lookup.py
+# `roles` and `modifier_suffixes` were wired first, then `property_suffixes`
+# and `slots` gained data-file seeders in db_lookup.py
 # (captured from live by `dbschema/capture_seed_data.py`, which owns the JSON).
 # The set stays declared, not deleted: it is the honest place to record the next
 # table that turns out to have no source, and an empty set means every remaining

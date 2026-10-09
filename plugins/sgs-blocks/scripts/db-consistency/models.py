@@ -79,34 +79,6 @@ def motion_fx_qualifying_key(block: str, kind: str) -> str:
     return f"fxqualify:{kind}:{block}"
 
 
-def inert_composition_attr_key(
-    block: str, variant: str, child: str, attr: str
-) -> str:
-    """Check #11 (Inert Child-Attribute Discriminator) stable dedup key.
-
-    Keyed per ROW, not per block: two variants of one block can name different
-    child attributes, and only one of them may be inert — a block-keyed key
-    would collapse them and hide the second finding behind the first.
-    """
-    return f"inertcompattr:{block}:{variant}:{child}:{attr}"
-
-
-def dead_composition_signal_key(block: str) -> str:
-    """Check #10 (Dead Composition Discriminator) stable dedup key.
-
-    NOTE ON NUMBERING: motion_fx_qualifying_key above is ALSO commented
-    "Check #10" — that check (check_fx_qualifying_blocks_stale.py) is loaded
-    and run by run.py's main() but was never added to run.py's _CHECK_LABELS/
-    _CHECK_ORDER dicts, so its docstring number was aspirational and never
-    actually collided with a registered label. This check (key
-    "dead_composition_signal") is the one that IS registered as "Check #10 —
-    Dead Composition Discriminator" in run.py. Flagged, not fixed here — out
-    of scope for the variant-composition-fingerprinting plan (see the
-    2026-09-05 task-7 report for the discovery).
-    """
-    return f"deadcomp:{block}"
-
-
 def role_resolution_guess_key(slot: str) -> str:
     """Check #12 (Order-Dependent Role Resolution) stable dedup key.
 
