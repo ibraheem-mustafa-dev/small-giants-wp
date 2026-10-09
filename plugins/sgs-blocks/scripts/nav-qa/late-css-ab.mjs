@@ -9,7 +9,8 @@
  *
  *   A — the page loaded normally.
  *   B — every external stylesheet request aborted (resourceType 'stylesheet',
- *       which covers `<link rel=stylesheet>` loads). Inline `<style>` survives.
+ *       which covers `<link rel=stylesheet>` loads) except the collected block CSS
+ *       under /uploads/sgs-css/, which is the blocks' own scoped styles. Inline `<style>` survives.
  *
  * Measured in both runs: getBoundingClientRect() of the open drawer dialog,
  * its close control and its first link. PASS = every edge (left, top, right,
@@ -119,7 +120,10 @@ async function runOnce( browser, args, width, blockCss ) {
 	let blocked = 0;
 	if ( blockCss ) {
 		await page.route( '**/*', ( route ) => {
-			if ( route.request().resourceType() === 'stylesheet' ) {
+			// The collected block CSS (`/uploads/sgs-css/`, `sgs_css_output_mode` = file) is the
+			// blocks' own scoped `<style>` rules delivered as one render-blocking head link,
+			// the same content as the inline form (mode = head), so it is not a late external sheet.
+			if ( route.request().resourceType() === 'stylesheet' && ! route.request().url().includes( '/uploads/sgs-css/' ) ) {
 				blocked++;
 				return route.abort();
 			}
