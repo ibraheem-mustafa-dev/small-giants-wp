@@ -32,12 +32,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "b_equal_sides": {
@@ -78,12 +72,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -124,12 +112,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "d_style_none": {
@@ -169,12 +151,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "e_widths_no_colour": {
@@ -214,12 +190,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "f_colour_no_widths": {
@@ -258,12 +228,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "g_gradient": {
@@ -306,12 +270,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid::before": [
             "-webkit-mask-composite:xor",
@@ -372,12 +330,6 @@
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
         "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__card.sgs-post-grid__card--minimal:hover": [
             "border-top-color:var(--wp--preset--color--secondary,currentColor)"
         ],
@@ -421,12 +373,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "k_radius_tiers": {
@@ -468,12 +414,6 @@
         ],
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__readmore": [
-            "color:var(--wp--preset--color--primary,currentColor)"
-        ],
-        " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__title a": [
-            "color:var(--wp--preset--color--primary,currentColor)"
         ],
         "@media(max-width:1023px) || .sgs-post-grid-UID.wp-block-sgs-post-grid": [
             "border-top-left-radius:6px"

@@ -2,13 +2,13 @@
     "a_baseline": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)"
+            "--sgs-countdown-number-colour:"
         ]
     },
     "b_equal_sides": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
@@ -17,7 +17,7 @@
     "c_unequal_dashed_raw": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-color:#ff0000",
             "border-style:dashed",
             "border-width:1px 0 0 4px"
@@ -26,7 +26,7 @@
     "d_style_none": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-style:none",
             "border-width:0"
         ]
@@ -34,7 +34,7 @@
     "e_widths_no_colour": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ]
@@ -42,14 +42,14 @@
     "f_colour_no_widths": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "g_gradient": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "background-clip:padding-box",
             "border-color:transparent",
             "border-style:solid",
@@ -73,14 +73,14 @@
     "j_radius_uniform": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-radius:8px"
         ]
     },
     "k_radius_tiers": {
         " || .sgs-cd-UID.wp-block-sgs-countdown-timer": [
             "--sgs-countdown-label-colour:var(--wp--preset--color--text-muted,currentColor)",
-            "--sgs-countdown-number-colour:var(--wp--preset--color--primary,currentColor)",
+            "--sgs-countdown-number-colour:",
             "border-bottom-left-radius:4px",
             "border-bottom-right-radius:4px",
             "border-top-left-radius:12px",

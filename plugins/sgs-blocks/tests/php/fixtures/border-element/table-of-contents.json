@@ -4,7 +4,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "b_equal_sides": {
@@ -17,7 +17,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -30,7 +30,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "d_style_none": {
@@ -42,7 +42,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "e_widths_no_colour": {
@@ -54,7 +54,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "f_colour_no_widths": {
@@ -65,7 +65,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "g_gradient": {
@@ -80,7 +80,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents::before": [
             "-webkit-mask-composite:xor",
@@ -104,7 +104,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ]
     },
     "k_radius_tiers": {
@@ -118,7 +118,7 @@
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
         " || .sgs-toc-UID.wp-block-sgs-table-of-contents .sgs-toc__link.sgs-toc__link--active": [
-            "color:var(--wp--preset--color--primary,currentColor)"
+            "color:var(--wp--preset--color--primary-dark,currentColor)"
         ],
         "@media(max-width:1023px) || .sgs-toc-UID.wp-block-sgs-table-of-contents": [
             "border-top-left-radius:6px"

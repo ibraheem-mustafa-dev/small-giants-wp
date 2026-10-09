@@ -137,7 +137,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				array(
 					"{$r} .sgs-google-reviews__aggregate{gap:22px;}",
 					"{$r} .sgs-google-reviews__aggregate{padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;}",
-					"{$r} .sgs-google-reviews__aggregate{border-bottom-color:#E8EAED;}",
+					"{$r} .sgs-google-reviews__aggregate{border-color:#E8EAED;}",
 					"{$r} .sgs-google-reviews__aggregate{border-bottom-width:1px;}",
 				),
 			),
