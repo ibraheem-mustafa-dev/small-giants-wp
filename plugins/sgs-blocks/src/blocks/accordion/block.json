@@ -533,7 +533,7 @@
     "headerGap": {
       "type": "object",
       "default": {},
-      "description": "Gap between the item header's title and its toggle icon, in px, per device {desktop,tablet,mobile}. Empty = the stylesheet's 12px."
+      "description": "Gap between the item header's title and its toggle icon, per device {desktop,tablet,mobile}, each a spacing preset slug (\"20\") or a custom length (\"12px\"), validated by sgs_css_length_value(). Empty = the stylesheet's 12px."
     },
     "headerMinHeight": {
       "type": "object",

@@ -35,6 +35,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBorderControl,
 	LinkPopoverField,
+	SpacingControl,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
 import { flagSizeAtTier, storeSelectorPreviewStyles } from './preview-style';
@@ -278,18 +279,15 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
 						{ ( tier ) => (
-							<TextControl
+							<SpacingControl
+								custom
 								label={ __( 'Gap', 'sgs-blocks' ) }
-								hideLabelFromVision
 								value={ attributes.gap?.[ tier ] ?? '' }
-								placeholder="8px"
 								onChange={ ( val ) =>
 									setAttributes( {
 										gap: { ...attributes.gap, [ tier ]: val || undefined },
 									} )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveControl>

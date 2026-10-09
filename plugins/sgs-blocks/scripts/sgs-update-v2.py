@@ -129,11 +129,7 @@ EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
 # NOT a slug list: adding a capability costs one entry here plus a block.json key,
 # so the fact always travels with the block (R-31-1).
 #
-# ⛔ This map is the ONLY sanctioned writer of a non-lift capability. Do not run
-# `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py` to add capabilities: its
-# hardcoded CAPABILITY_RULES dict is the fossil source this replaced, and it shares
-# a last-one-wins conflict with the partially-ported `block_selectors` writer, so
-# running it would silently clobber selectors as well.
+# ⛔ This map is the ONLY sanctioned writer of a non-lift capability.
 _DECLARATIVE_CAPABILITIES = {
     # Renders a repeated set of items as its PRIMARY content, whose children carry
     # their own interactive elements. Consumed by the universal-extension fit test
@@ -161,7 +157,7 @@ _FUNCTIONAL_CAPABILITY_NAMES = frozenset(
 )
 
 # Capability names with NO in-repo writer and NO live reader, seeded historically by
-# populate-db.py's CAPABILITY_RULES. Their only consumer — the capability-aware
+# the former populate-db.py's CAPABILITY_RULES. Their only consumer — the capability-aware
 # tiebreaker — was RETIRED at D278, and every live `capabilities_for()` call site
 # reads only the three lift flags (measured 2026-08-08). Pruned on every Stage 1 so
 # the table means exactly one thing: capabilities a block DECLARES about itself.
@@ -977,7 +973,7 @@ def _self_test_is_responsive() -> int:
 # ---------------------------------------------------------------------------
 # Stage 1 — SGS codebase scan
 # PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py
-#              (check_blocks + full-population logic via populate-db.py)
+#              (check_blocks + full-population logic via the former populate-db.py)
 # Key difference: uses INSERT OR IGNORE for new rows + UPDATE for drifted rows.
 # Second run produces zero new rows AND updates any row whose block.json changed.
 # ---------------------------------------------------------------------------
@@ -1010,9 +1006,7 @@ def _index_sgs_block_files(
 
     Also updates indexed_files mtime + content_hash per block.json processed.
     Also writes block_selectors (delete-then-insert per on-disk block, plus a
-    post-loop prune of rows for blocks with no block.json on disk any more —
-    Task 2a/2b, 2026-08-01. See the inline comment at the write site for the
-    two-writer caveat vs populate-db.py.
+    post-loop prune of rows for blocks with no block.json on disk any more).
 
     Returns counters dict: scanned, new_blocks, new_attrs, new_supports,
     updated_blocks, updated_attrs, updated_supports,
@@ -1674,10 +1668,8 @@ def _index_sgs_block_files(
         # WHY THIS EXISTS. `block_capabilities` held two unrelated things under one
         # name. The three lift flags are declarative, written here, and read by the
         # converter. The other ~36 semantic tags ('carousel', 'grid-layout',
-        # 'logo-strip', 'icon-text' …) had NO live-path writer — their only writer is
-        # a hardcoded CAPABILITY_RULES dict in
-        # `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py`, outside this repo —
-        # AND no live reader, since the capability-aware tiebreaker that consumed them
+        # 'logo-strip', 'icon-text' …) have NO writer in this repo (they were seeded by
+        # the former populate-db.py's hardcoded CAPABILITY_RULES dict) AND no live reader, since the capability-aware tiebreaker that consumed them
         # was retired at D278. Measured 2026-08-08: every live `capabilities_for()`
         # call site reads only the three lift flags. They were fossils, and building
         # `isCollectionKind()` on 'carousel'/'grid-layout'/'logo-strip' (as first
@@ -1831,34 +1823,12 @@ def _index_sgs_block_files(
                     )
                     updated_supports += 1
 
-        # --- block_selectors writer (Task 2a, 2026-08-01) ---
-        # Adds the missing writer: block_selectors (92 rows / 44 blocks) was
-        # previously written ONLY by ~/.claude/skills/sgs-wp-engine/scripts/
-        # populate-db.py, which lives OUTSIDE this repo and is DEAD on the live
-        # path (this script reimplements Stage 1 inline with zero subprocess
-        # calls to it — see module docstring). Result before this fix: 3 live
-        # blocks that declare `selectors` (sgs/media, sgs/mega-panel,
-        # sgs/nav-drawer) had ZERO rows.
-        #
-        # Flattening mirrors populate-db.py's pattern EXACTLY (nested dict
-        # entries become "element.sub_el") so this does not change the meaning
-        # of any of the existing rows for blocks whose selectors are unchanged.
-        #
-        # Difference from populate-db.py: populate-db.py only deletes when
-        # `if selectors:` is truthy, so a block that DROPS its `selectors` key
-        # entirely never has its old rows cleaned up — this is exactly how
-        # sgs/heading accumulated 2 stale rows (it used to declare selectors,
-        # no longer does). The delete here is unconditional — every on-disk
-        # block's rows are cleared and re-derived from its CURRENT block.json
-        # on every run, so a dropped `selectors` key correctly empties the
-        # block's rows instead of leaving ghosts.
-        #
-        # CAVEAT — this does NOT make sgs-update-v2.py the sole owner of
-        # block_selectors. populate-db.py still exists outside this repo and
-        # writes the SAME table with the SAME delete-then-insert shape — two
-        # writers now exist, last-one-wins on whichever ran most recently. The
-        # risk is latent (populate-db.py is dead on today's live path), not
-        # eliminated — do not read this comment as "ownership transferred".
+        # --- block_selectors writer ---
+        # This script is the only writer of block_selectors. Nested selector dict
+        # entries are flattened to "element.sub_el". The delete is unconditional:
+        # every on-disk block's rows are cleared and re-derived from its CURRENT
+        # block.json on every run, so a block that drops its `selectors` key ends
+        # up with no rows instead of leaving ghosts.
         c.execute("DELETE FROM block_selectors WHERE block_slug = ?", (slug,))
         _selectors = data.get("selectors", {})
         if isinstance(_selectors, dict):
@@ -1941,10 +1911,9 @@ def _index_sgs_block_files(
 
     # --- Prune fossil capabilities (D525, 2026-08-08) ---
     # See _FOSSIL_CAPABILITIES: writer-less, reader-less rows left behind by
-    # populate-db.py's hardcoded CAPABILITY_RULES. Pruning here (not once, by hand)
-    # is what makes the table's meaning STABLE — if that out-of-repo script is ever
-    # run again, the next /sgs-update removes what it reintroduced, instead of the
-    # fossils silently coming back and a future rule scoping against them.
+    # the former populate-db.py's hardcoded CAPABILITY_RULES. Pruning here on every
+    # run keeps the table's meaning STABLE: any fossil name that reappears is
+    # removed by the next /sgs-update instead of a future rule scoping against it.
     pruned_fossil_caps = 0
     if not dry_run:
         # ⛔ kind='functional' is LOAD-BEARING here too (D528). Eleven fossil NAMES
@@ -2154,7 +2123,7 @@ def _run_component_adoption_seed(conn) -> None:
 
     Wired here rather than left as a manual command deliberately. The table it
     replaces had ZERO in-repo readers and ZERO in-repo writers: its 13 rows came
-    from an out-of-repo populate-db.py, which is exactly why every description
+    from the former out-of-repo populate-db.py, which is exactly why every description
     was a placeholder. A registry that needs someone to remember to run it is the
     problem it exists to solve.
 
@@ -4412,7 +4381,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     2026-07-05 — the column it wrote is dropped; has_inner_blocks is now
     derived fresh at convert-time by converter.services.has_inner.)
 
-    PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
+    PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + the former populate-db.py
     """
     blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
     if not blocks_dir.exists():

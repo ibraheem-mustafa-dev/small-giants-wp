@@ -40,7 +40,7 @@ export function themeTogglePreview( attributes, tier, palette ) {
 	return {
 		buttonStyle: {
 			...boxPreview( attributes, tier, palette ),
-			...backgroundPaintPreview( attributes.backgroundColour, '', palette ),
+			...backgroundPaintPreview( attributes.backgroundColour, attributes.backgroundColourGradient, palette ),
 		},
 		labelStyle: {
 			...typographyPreviewStyle( attributes, 'label', tier ),

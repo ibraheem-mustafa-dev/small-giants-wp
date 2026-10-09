@@ -23,6 +23,7 @@ import {
 	sgsBorderPreview,
 	typographyPreviewStyle,
 	typographyPreviewCss,
+	gapVar,
 } from '../../utils';
 
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
@@ -108,7 +109,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		decls.push( `grid-template-columns:minmax(0,${ ratio }fr) minmax(0,1fr)` );
 	}
 	if ( gap && ! /[;{}<>]/.test( gap ) ) {
-		decls.push( `gap:${ /^\d+(\.\d+)?$/.test( gap ) ? `${ gap }px` : gap }` );
+		decls.push( `gap:${ gapVar( gap ) }` );
 	}
 	if ( decls.length ) {
 		const breakpoint = 'tablet' === attributes.stackBelow ? '1024px' : '768px';

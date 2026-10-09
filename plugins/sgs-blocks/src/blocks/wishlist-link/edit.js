@@ -43,31 +43,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const previewUid = `sgs-wishlist-link-preview-${ clientId }`;
 	const blockProps = useBlockProps( { className: `sgs-wishlist-link ${ previewUid }` } );
 
-	// The icon colour is painted as a background on the svg, the same
-	// declaration sgs_fill_states_css() emits; an svg cannot take a style prop
-	// through IconPreview, so a scoped editor rule carries it.
-	const iconPaint = backgroundPaintPreview( attributes.iconColour, '' );
-	const iconPaintCss = iconPaint.backgroundColor
-		? `.${ previewUid } .sgs-wishlist-link__icon svg{background-color:${ iconPaint.backgroundColor };}`
+	// The icon colour is `color` on the svg (the glyph strokes with
+	// currentColor), the same declaration render.php emits; an svg cannot take a
+	// style prop through IconPreview, so a scoped editor rule carries it. A
+	// gradient is passed to IconPreview, which strokes it as render.php does.
+	const iconPaint = textPaintPreview( attributes.iconColour, '' );
+	const iconPaintCss = iconPaint.color
+		? `.${ previewUid } .sgs-wishlist-link__icon svg{color:${ iconPaint.color };}`
 		: '';
 	const iconSizePreview = parseInt( resolveTier( iconSize, previewTier ).value, 10 ) || 24;
 	const badgeStyle = {
-		...backgroundPaintPreview( attributes.badgeBackgroundColour, '' ),
+		...backgroundPaintPreview( attributes.badgeBackgroundColour, attributes.badgeBackgroundColourGradient ),
 		...textPaintPreview( attributes.badgeTextColour, '' ),
 	};
 
 	const colourRows = [
-		fillRow( {
+		textRow( {
 			key: 'icon',
 			label: __( 'Icon', 'sgs-blocks' ),
-			attrs: { base: 'iconColour', hover: 'iconColourHover' },
+			attrs: {
+				base: 'iconColour',
+				hover: 'iconColourHover',
+				gradient: 'iconColourGradient',
+				hoverGradient: 'iconColourHoverGradient',
+			},
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'badgeBackground',
 			label: __( 'Badge background', 'sgs-blocks' ),
-			attrs: { base: 'badgeBackgroundColour' },
+			attrs: { base: 'badgeBackgroundColour', gradient: 'badgeBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
@@ -153,6 +159,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						source={ iconSource || 'lucide' }
 						name={ iconName || 'heart' }
 						size={ iconSizePreview }
+						gradient={ attributes.iconColourGradient }
 					/>
 				</span>
 				{ label ? (

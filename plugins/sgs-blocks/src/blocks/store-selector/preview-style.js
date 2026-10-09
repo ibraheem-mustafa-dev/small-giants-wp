@@ -15,6 +15,7 @@ import {
 	sgsBorderPreview,
 	resolveTier,
 	tierBoxLonghands,
+	gapVar,
 } from '../../utils';
 
 const DEFAULT_FLAG = { w: 16, h: 12 };
@@ -50,7 +51,7 @@ export function flagSizeAtTier( flagSize, tier ) {
  * @return {{root: Object, trigger: Object, item: Object, list: Object}} Style objects per canvas element.
  */
 export function storeSelectorPreviewStyles( attributes, tier ) {
-	const gap = resolveTier( attributes.gap, tier ).value;
+	const gap = gapVar( resolveTier( attributes.gap, tier ).value );
 	const gapStyle = gap ? { gap } : {};
 
 	return {

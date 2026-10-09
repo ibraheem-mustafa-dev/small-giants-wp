@@ -14,6 +14,8 @@ parent_spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
 
 > **Parent spec.** Spec 35A (owner: framework; governs the EDITOR-FACING control surface, while Spec 32 governs RENDERED output and Spec 00 naming) is the sub-spec of Spec 35 (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`). Spec 35's header carries the migration-method gate, the implementation-status box and the table that maps every PART letter, section number and ID to its file — read it first. In this file a bare "PART A" to "PART E", "D1" to "D5", "PART O §N", "§N field M" or "contract §N" citation is Spec 35; "Part F" to "Part N", "CO-n", "O.15", "O.16" and "Cross-cutting A/B" are here.
 
+> **Parked, not started:** a declarative `block.json` source for the non-lift `block_capabilities` values (`grid-layout`, `carousel`, `logo-strip` and so on), which `isCollectionKind()` needs (Part M, framework DB section); PHPUnit tests left red at the 2026-10-09 run (list in the open-items line near the end).
+
 ## PART F — Anti-patterns (fail-list)
 
 Essential control only in sidebar · sidebar as home for every option · no headers past a handful ·
@@ -176,7 +178,7 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 | **Block Bindings API** (`register_block_bindings_source`) | any bespoke dynamic-content attr system | **HIGH** — WP's own direction |
 | `LinkControl` | raw URL text fields | **HIGH** — internal search + rel + new-tab free |
 | Native duotone / aspect-ratio / lightbox / sticky | hand-rolled filter/box/JS/position | **HIGH** — check before building any of these |
-| Block style variations w/ inner-element styles ("Section Styles", 6.6) | bespoke variant switching where it's "same structure, different look" | Med — maps onto `variant_slots` |
+| Block style variations w/ inner-element styles ("Section Styles", 6.6) | bespoke variant switching where it's "same structure, different look" | Not adopted: Spec 32 rejects WordPress block style variations; `variant_slots` covers "same structure, different look" |
 | Spacing presets (theme.json) | hand-written spacing values | Med — spacing presets are unaffected by the typography rule below |
 | — (fluid typography: NOT adopted) | — | ⛔ SGS uses EXPLICIT per-device typography values via the tier system + `assets/css/type-scale.css`. `clamp()` on `vw` can fail WCAG 1.4.4 because viewport units ignore browser zoom (GOV.UK never adopted `clamp()`; Designsystemet Norway shipped and reversed it). |
 | `register_block_pattern` + categories/blockTypes | uncategorised patterns | Med — audit existing `patterns/*.php` |
@@ -255,7 +257,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | **Bulk media/gallery** | **BUILT** — `MediaGalleryPicker` (extracted from `gallery/edit.js`) | DONE |
 | **Focal point / image size / aspect-ratio** | Blocks whose focal-point/image-size/aspect-ratio declaration had no effect carry no such declaration (`info-box`/`decorative-image`/`responsive-logo`/`timeline`/`brand-strip`/`trust-bar`/`hero`); blocks with a real crop scenario use an explicit mechanism (`before-after`/`team-member`/`testimonial-slider`/`gallery`/`card-grid`/`product-card`), each calling `includes/helpers-media-position.php` with its own known selector rather than a guessing filter. `testimonial`/`image-sequence` still declare the capability with a real crop scenario but are not converted — each needs its own per-item design decision. Design record: `plans/archive/spec-35-capability-routing-doctrine.md` Part 9. | ✅ **DONE** |
 | **Gradient / bg overlay** | `BackgroundPanel` is the shared swatch+popover background UI; list its adopters with `git grep -l BackgroundPanel -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`. Single-element blocks (text/button/heading/etc.) get colour/gradient via native WP colour support on a different mechanism (effect-verified by `survey-background-colour-support.py`), not via `BackgroundPanel`. | ✅ **DONE** |
-| **Spacing token control** | raw units | still open — not gated by Part K |
+| **Spacing token control** | `SpacingControl` (custom) and `SgsBoxControl` / `ResponsiveBoxControl` with `presets` | BUILT; `plugins/sgs-blocks/scripts/check-raw-spacing-controls.py --check` fails on any raw-unit gap, padding or margin control |
 | ToolsPanel disclosure | **BUILT + ROLLED OUT** — panels that are mode wizards, repeaters or variant-gated are skip-reasoned in-code | DONE |
 | **Client-safe editing** | `templateLock:"contentOnly"` is **PER-CLIENT OPT-IN ONLY** (Part G) | Not a framework rollout — deliberate, not a gap |
 | **Dynamic content** | BUILT: `includes/class-sgs-block-bindings-support.php` (`Sgs_Block_Bindings_Support`) is live and wired at `sgs-blocks.php`, widening the native Block Bindings API across the blocks listed in its `$supported_block_attributes` map. Two further binding SOURCES are registered: `class-sgs-site-info-binding.php` and `class-product-bindings.php` (with a PHPUnit test). This is the native mechanism Part G mandates, not a bespoke one. **Residual: confirm the block coverage in `$supported_block_attributes` is the intended scope, or extend it.** | DONE |
@@ -271,12 +273,12 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 | 2 | Every link/URL field → the shared link control (`LinkPopoverField`) | BUILT |
 | 3 | Shared `ShadowControl` (real X/Y/blur/spread/colour+alpha) replacing None/Small/Medium selects | BUILT |
 | 4 | `templateLock:"contentOnly"` in client patterns | PER-CLIENT OPT-IN ONLY (Part G) — not a framework rollout |
-| 5 | `MediaGalleryPicker` (bulk multi-upload) → `brand-strip` logos + any repeater-media block | `MediaGalleryPicker` BUILT; `brand-strip/edit.js` still imports the single-slot `MediaPicker` — NOT BUILT for brand-strip (`grep -n "import.*Media" plugins/sgs-blocks/src/blocks/brand-strip/edit.js`) |
+| 5 | `MediaGalleryPicker` (bulk multi-upload) → `brand-strip` logos + any repeater-media block | `MediaGalleryPicker` BUILT, and `brand-strip/edit.js` adds logos in bulk through it (the single `MediaPicker` replaces one logo) |
 | 6 | Extend `imageControls`: FocalPointPicker `{x,y}`, object-fit via scoped var; the image-size dropdown is NOT forcible at extension level (no universal attachment ID) | BUILT |
 | 7 | Whole-card clickable-link pattern for card-grid/team/product/testimonial | BUILT (stretched-link overlay) |
 | 8 | `ToolsPanel` progressive disclosure on control-dense panels | BUILT |
 | 9 | Every animation `prefers-reduced-motion`-gated (WCAG) | BUILT (framework-wide gate) |
-| 10 | Adopt native: Block Bindings for dynamic content, native duotone/aspect-ratio | BUILT (Part G verdict table). Section Styles (block style variations with inner-element styles, WP 6.6) — NOT BUILT (`git grep -n -i "SectionStyles\|Section Styles" -- plugins/sgs-blocks/src plugins/sgs-blocks/includes theme` → 0); pattern categories/blockTypes audit and Interactivity API for hand-rolled view.js remain considerations |
+| 10 | Adopt native: Block Bindings for dynamic content, native duotone/aspect-ratio | BUILT (Part G verdict table). Section Styles (block style variations with inner-element styles, WP 6.6) — deliberately not adopted (Spec 32 rejects WordPress block style variations; `variant_slots` covers it); pattern categories/blockTypes audit and Interactivity API for hand-rolled view.js remain considerations |
 
 ## PART K — Rollout mechanism
 
@@ -418,11 +420,10 @@ independently derivable "should" denominator.
 **The STANDARD (Parts A–L) is complete as a written spec. The BUILD SURFACE against it is
 substantially complete: the component layer and the Part-K gate are complete and wired fail-closed.**
 Named open items:
-1. **Spacing token control** — still raw units (Part I).
+1. **Spacing token control** — BUILT (Part I); the raw-spacing detector gates it.
 2. **Block Bindings coverage** — built (Part I "Dynamic content"); the residual is confirming the
    `$supported_block_attributes` scope.
-3. **Part J step 5 (brand-strip logos on `MediaGalleryPicker`)** and **step 10's Section Styles** —
-   NOT BUILT (Part J).
+3. **Part J step 5 (brand-strip logos on `MediaGalleryPicker`)** — BUILT. **Step 10's Section Styles** — deliberately not adopted (Part J).
 
 **Measurement & enablement layer (makes Part L enforceable):**
 - **Element-manifest conformance linter** (`plugins/sgs-blocks/scripts/check-element-manifest-conformance.js`):
@@ -460,8 +461,7 @@ attribute registration and unit tests do not exercise the editor canvas (R-31-13
 crashed on first live render despite passing unit tests).
 
 **OPEN (parked, none blocking Spec 35):** `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for
-var-driven features; see Spec 32 §6.2(a)) · `plugins/sgs-blocks/tests/php/HeaderBehavioursTest.php` needs a composer/PHPUnit env
-to execute · Shrink+Hide legacy-transition overlap on pre-animation-timeline browsers (documented,
+var-driven features; see Spec 32 §6.2(a)) · the PHPUnit suite runs (`cd plugins/sgs-blocks && php vendor/bin/phpunit`, no WordPress needed); at the 2026-10-09 run 3,009 tests passed except 38 (BorderElementParityTest baselines for other blocks, GoogleReviewsAttrsTest, IconOutlineShapesTest, ResponsiveLogoChainTest), left red · Shrink+Hide legacy-transition overlap on pre-animation-timeline browsers (documented,
 not speculatively fixed).
 
 **THE PLACEMENT RULE, as built.** Canonical rule text: Spec 35 A3/A4 + **PART O** (Spec 35) §THE
@@ -731,15 +731,12 @@ Reach is derived, not hardcoded: a block is in an extension's surface when it op
      capability's own docstring excludes exactly this case. Adding it would be actively wrong.
      ⚠ `sgs/gallery` — verify `mediaItems` is authored content, not config, BEFORE declaring it.
    - **The other capability values** (`grid-layout`, `carousel`, `logo-strip`, …) have **no
-     writer on the live path at all.** Their sole writer is a hardcoded `CAPABILITY_RULES` dict in
-     `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py` — outside this repo, dead on the live
-     path. That is why `sgs/post-grid` has zero capability rows of ANY kind. This is class (b) plus
-     a second R-31-1 breach. **`isCollectionKind()` therefore cannot be delivered by a backfill** —
-     it needs a declarative block.json source designed and ported into Stage 1.
-   - ⚠ Sibling: `block_selectors` has the identical disease and is only PARTIALLY ported —
-     two writers exist, last-one-wins. Running `populate-db.py` to patch capabilities would silently
-     clobber selectors. Treat retiring that script as ONE job.
-   - ⚠ `PARENT_CHILD` in the same file is a third hardcoded dict, untraced.
+     writer in this repo.** Their former writer, a hardcoded `CAPABILITY_RULES` dict in an
+     out-of-repo `populate-db.py`, has been deleted, and `sgs-update-v2.py` is now the only
+     writer of the framework DB. That is why `sgs/post-grid` has zero capability rows of ANY kind.
+     This is class (b) plus a second R-31-1 breach. **`isCollectionKind()` therefore cannot be
+     delivered by a backfill** — it needs a declarative block.json source designed and ported into
+     Stage 1. PARKED, not started.
 
 Regenerate before building any gate on them.
 

@@ -76,19 +76,39 @@ $root_sel = '.' . $uid . '.wp-block-sgs-wishlist-link';
 
 $scoped_css = array();
 
-// Colours (flat only — no gradient companions requested for this block).
-$scoped_css[] = sgs_fill_states_css(
-	$root_sel . ' .sgs-wishlist-link__icon svg',
-	$attributes,
-	array(
-		'base'  => 'iconColour',
-		'hover' => 'iconColourHover',
-	)
+// Icon colour. The glyph is an outline drawn with stroke="currentColor", so a
+// flat colour is `color` on the svg (never a background, which would fill the
+// svg's box). A gradient is painted as an SVG stroke gradient and wins over the
+// flat colour in each state; hover and focus are triggered by the whole link.
+$icon_svg_sel  = $root_sel . ' .sgs-wishlist-link__icon svg';
+$icon_flat     = (string) ( $attributes['iconColour'] ?? '' );
+$icon_flat_hov = (string) ( $attributes['iconColourHover'] ?? '' );
+$icon_grad     = sgs_icon_gradient_states_css(
+	'lucide',
+	(string) ( $attributes['iconColourGradient'] ?? '' ),
+	(string) ( $attributes['iconColourHoverGradient'] ?? '' ),
+	$uid,
+	$icon_svg_sel,
+	$root_sel,
+	' .sgs-wishlist-link__icon svg'
 );
+if ( '' !== $icon_flat ) {
+	$scoped_css[] = $icon_svg_sel . '{color:' . sgs_colour_value( $icon_flat ) . ';}';
+}
+if ( '' !== $icon_flat_hov && '' === (string) ( $attributes['iconColourHoverGradient'] ?? '' ) ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, 'color:' . sgs_colour_value( $icon_flat_hov ), ':focus-visible', ' .sgs-wishlist-link__icon svg' );
+}
+$scoped_css = array_merge( $scoped_css, $icon_grad['css'] );
+$icon_html  = sgs_svg_inject_defs( $icon_html, $icon_grad['defs_base'] );
+$icon_html  = sgs_svg_inject_defs( $icon_html, $icon_grad['defs_hover'] );
+
 $scoped_css[] = sgs_fill_states_css(
 	$root_sel . ' .sgs-wishlist-link__badge',
 	$attributes,
-	array( 'base' => 'badgeBackgroundColour' )
+	array(
+		'base'     => 'badgeBackgroundColour',
+		'gradient' => 'badgeBackgroundColourGradient',
+	)
 );
 $scoped_css[] = sgs_text_states_css(
 	$root_sel . ' .sgs-wishlist-link__badge',

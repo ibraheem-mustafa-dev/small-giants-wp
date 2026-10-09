@@ -24,7 +24,7 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
+import { SpacingControl, ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	fontSizeVar,
@@ -37,6 +37,7 @@ import {
 	backgroundPaintPreview,
 	textPaintPreview,
 	sgsBorderPreview,
+	gapVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -319,7 +320,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const quoteInlineStyle = {
 		...resolveTextColourPreviewStyle( quoteColour, quoteColourGradient ),
 		...typographyPreviewStyle( attributes, 'quote', previewTier ),
-		marginBottom: quoteMarginBottom || undefined,
+		marginBottom: gapVar( quoteMarginBottom ),
 	};
 	// summary/name/role/org/rating colours (2026-09-03) — the sibling
 	// {attr}ColourGradient wins when set+valid, same recipe as quoteColour/
@@ -1222,18 +1223,13 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								setAttributes( { quoteMarginBottom: '' } )
 							}
 						>
-							<TextControl
+							<SpacingControl
+								custom
 								label={ __( 'Quote spacing below', 'sgs-blocks' ) }
-								help={ __(
-									'A spacing slug (e.g. 30) or a CSS value (e.g. 16px, 1.5rem). Leave empty for the theme default.',
-									'sgs-blocks'
-								) }
 								value={ quoteMarginBottom }
 								onChange={ ( val ) =>
 									setAttributes( { quoteMarginBottom: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						{ /* Moved in from the shared SgsColourPanel (D622 — an

@@ -646,9 +646,9 @@
 			"description": "Font size of the compact card's tag in the drawer."
 		},
 		"drawerCardTagPadding": {
-			"type": "string",
-			"default": "",
-			"description": "Padding of the compact card's tag in the drawer, 1 to 4 CSS lengths (e.g. 3px 8px)."
+			"type": "object",
+			"default": {},
+			"description": "Padding of the compact card's tag in the drawer as a {top,right,bottom,left} box, each side a spacing preset (var(--wp--preset--spacing--30)) or a length (e.g. 3px). An unset side keeps the stylesheet's padding."
 		},
 		"drawerCardTitleSize": {
 			"type": "string",
@@ -661,9 +661,9 @@
 			"description": "Drawer form: the card title's line height, a CSS length (e.g. 22.5px). Empty keeps normal."
 		},
 		"drawerCardTagMargin": {
-			"type": "string",
-			"default": "",
-			"description": "Drawer form: the space around the card's tag, 1 to 4 lengths (e.g. 4px 0 6px). Empty keeps 0 0 6px."
+			"type": "object",
+			"default": {},
+			"description": "Drawer form: the space around the card's tag as a {top,right,bottom,left} box, each side a spacing preset (var(--wp--preset--spacing--40)) or a length (e.g. 4px). An unset side keeps the default 0 0 6px 0."
 		},
 		"drawerCardLinkSize": {
 			"type": "string",

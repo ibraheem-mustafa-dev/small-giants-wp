@@ -16,9 +16,9 @@ import {
 	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
-import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
+import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
 import { colourVar, linkColourPreviewCss, linkUnderlinePreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
-import { sanitiseSvg } from '../../utils';
+import { sanitiseSvg, gapVar } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
 
@@ -628,7 +628,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// not the custom property itself — see the class added to
 			// `previewClasses` above.
 			'--sgs-timeline-milestone-min-height': milestoneMinHeight || undefined,
-			'--sgs-timeline-entry-gap': entryGap || undefined,
+			'--sgs-timeline-entry-gap': gapVar( entryGap ),
 			...buildRootPreviewStyle( attributes, previewTier ),
 		},
 	} );
@@ -1155,16 +1155,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-					<TextControl
+					<SpacingControl
+						custom
 						label={ __( 'Space between milestones', 'sgs-blocks' ) }
 						value={ entryGap }
 						onChange={ ( val ) => setAttributes( { entryGap: val } ) }
-						help={ __(
-							'Any CSS length, e.g. 3rem or 48px. Leave blank to keep the current spacing.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<TextControl
 						label={ __( 'Milestone media width', 'sgs-blocks' ) }

@@ -221,7 +221,21 @@ $sgs_ai_px_tiers = static function ( $raw, string $var, bool $allow_zero = false
 $responsive_css .= $sgs_ai_px_tiers( $icon_size_raw, '--sgs-accordion-icon-size' );
 // Gap and minimum height accept 0: no gap between title and icon, and no
 // height floor, are both legitimate client choices. A 0px icon never is.
-$responsive_css .= $sgs_ai_px_tiers( $header_gap_raw, '--sgs-accordion-header-gap', true );
+// Gap tiers are a spacing preset slug ("20") or a custom length ("12px").
+$sgs_ai_len_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_ai_var_tiers ): string {
+	$tiers = sgs_responsive_normalise_object( $raw );
+	$out   = '';
+	foreach ( $sgs_ai_var_tiers as $tier => $media ) {
+		$val = sgs_css_length_value( $tiers[ $tier ] ?? '' );
+		if ( '' === $val ) {
+			continue;
+		}
+		$rule = $root_sel . '{' . $var . ':' . $val . ';}';
+		$out .= '' === $media ? $rule : $media . '{' . $rule . '}';
+	}
+	return $out;
+};
+$responsive_css .= $sgs_ai_len_tiers( $header_gap_raw, '--sgs-accordion-header-gap' );
 $responsive_css .= $sgs_ai_px_tiers( $header_min_height_raw, '--sgs-accordion-header-min-h', true );
 if ( $icon_rotation > 0 ) {
 	$responsive_css .= $root_sel . '{--sgs-accordion-icon-rotate:' . $icon_rotation . 'deg;}';

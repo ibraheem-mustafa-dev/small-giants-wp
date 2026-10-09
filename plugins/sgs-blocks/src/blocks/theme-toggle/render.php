@@ -192,8 +192,10 @@ $scoped_css[] = sgs_fill_states_css(
 	$root_sel,
 	$attributes,
 	array(
-		'base'  => 'backgroundColour',
-		'hover' => 'backgroundColourHover',
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
 	)
 );
 
@@ -209,7 +211,8 @@ $border = sgs_border_element_decls(
 	$root_sel,
 	array(
 		'colour' => array(
-			'base' => 'borderColour',
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
 		),
 	)
 );

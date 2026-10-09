@@ -137,14 +137,31 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		// in either layout.
 		$active_link  = $root_sel . ' nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a';
 		$css[]        = sgs_text_states_css( $active_link, $attributes, array( 'base' => 'menuActiveTextColour' ) );
-		$css[]        = sgs_fill_states_css( $active_link . '::after', $attributes, array( 'base' => 'menuActiveIndicatorColour' ) );
-		$css[]        = sgs_fill_states_css( $active_link, $attributes, array( 'base' => 'menuActiveBackgroundColour' ) );
+		$css[]        = sgs_fill_states_css(
+			$active_link . '::after',
+			$attributes,
+			array(
+				'base'     => 'menuActiveIndicatorColour',
+				'gradient' => 'menuActiveIndicatorColourGradient',
+			)
+		);
+		$css[]        = sgs_fill_states_css(
+			$active_link,
+			$attributes,
+			array(
+				'base'     => 'menuActiveBackgroundColour',
+				'gradient' => 'menuActiveBackgroundColourGradient',
+			)
+		);
 
 		// Cards (dashboard quick-cards, latest-order card, auth cards, tracking card).
 		$css[] = sgs_fill_states_css(
 			$root_sel . ' .sgs-account__card',
 			$attributes,
-			array( 'base' => 'cardBackgroundColour' )
+			array(
+				'base'     => 'cardBackgroundColour',
+				'gradient' => 'cardBackgroundColourGradient',
+			)
 		);
 		$css[] = sgs_border_states_css( $root_sel . ' .sgs-account__card', $attributes, array( 'base' => 'cardBorderColour' ) );
 		$css[] = sgs_account_card_border_shape_css( $attributes, $root_sel . ' .sgs-account__card' );
@@ -164,14 +181,20 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		$css[] = sgs_text_states_css(
 			$root_sel . ' .sgs-account__heading, ' . $root_sel . ' .sgs-account__card-title',
 			$attributes,
-			array( 'base' => 'headingColour' )
+			array(
+				'base'     => 'headingColour',
+				'gradient' => 'headingColourGradient',
+			)
 		);
 
 		// Status chip.
 		$css[] = sgs_fill_states_css(
 			$root_sel . ' .sgs-account__chip',
 			$attributes,
-			array( 'base' => 'chipBackgroundColour' )
+			array(
+				'base'     => 'chipBackgroundColour',
+				'gradient' => 'chipBackgroundColourGradient',
+			)
 		);
 		$css[] = sgs_text_states_css(
 			$root_sel . ' .sgs-account__chip',
@@ -209,7 +232,7 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 
 		// Menu width / gap / content max-width — responsive custom-property tiers.
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'navWidth', '--sgs-account-menu-width', $root_sel );
-		$css[] = sgs_account_tier_custom_property_css( $attributes, 'gap', '--sgs-account-gap', $root_sel );
+		$css[] = sgs_account_tier_custom_property_css( $attributes, 'gap', '--sgs-account-gap', $root_sel, true );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'contentMaxWidth', '--sgs-account-content-max-width', $root_sel );
 
 		return implode( '', array_filter( $css ) );
@@ -227,9 +250,13 @@ if ( ! function_exists( 'sgs_account_tier_custom_property_css' ) ) {
 	 * @param string $attr_name   Tier-object attribute name (e.g. 'gap').
 	 * @param string $css_var     Custom property name (e.g. '--sgs-account-gap').
 	 * @param string $root_sel    The block's own scoped root selector.
+	 * @param bool   $token_aware True when a tier may hold a spacing preset slug ("20")
+	 *                            beside a length ("12px"); a digits-only string is then
+	 *                            handed to sgs_css_length_value() unchanged so a slug
+	 *                            becomes its preset variable. False appends px to a bare number.
 	 * @return string CSS text (may be '').
 	 */
-	function sgs_account_tier_custom_property_css( array $attributes, string $attr_name, string $css_var, string $root_sel ): string {
+	function sgs_account_tier_custom_property_css( array $attributes, string $attr_name, string $css_var, string $root_sel, bool $token_aware = false ): string {
 		$tiers = sgs_responsive_normalise_object( $attributes[ $attr_name ] ?? null, false );
 		$css   = '';
 		foreach (
@@ -243,7 +270,7 @@ if ( ! function_exists( 'sgs_account_tier_custom_property_css' ) ) {
 			if ( null === $raw || '' === $raw ) {
 				continue;
 			}
-			$safe = sgs_css_length_value( is_numeric( $raw ) ? $raw . 'px' : (string) $raw );
+			$safe = sgs_css_length_value( is_numeric( $raw ) && ! $token_aware ? $raw . 'px' : (string) $raw );
 			if ( '' === $safe ) {
 				continue;
 			}

@@ -517,6 +517,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Tab padding', 'sgs-blocks' ) }
 						values={ tabPadding && typeof tabPadding === 'object' ? tabPadding : {} }
 						units={ BOX_UNITS }
+						presets
 						onChange={ ( next ) => setAttributes( { tabPadding: next || {} } ) }
 					/>
 					<SgsLengthControl

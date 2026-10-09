@@ -831,6 +831,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Button Padding', 'sgs-blocks' ) }
 						values={ submitPadding && typeof submitPadding === 'object' ? submitPadding : {} }
 						units={ BOX_UNITS }
+						presets
 						onChange={ ( next ) => setAttributes( { submitPadding: next || {} } ) }
 					/>
 					<NumberControl
@@ -888,6 +889,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								label={ __( 'Field padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
+								presets
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

@@ -272,8 +272,8 @@
               "colour": "#EFEAE2"
             }
           },
-          "tilePadding": 26,
-          "logoGap": 0,
+          "tilePadding": "26px",
+          "logoGap": "0px",
           "brandHideEmpty": false,
           "logoLayout": "row",
           "maxHeight": 22,

@@ -199,6 +199,7 @@ export default function ChromeSlotControls( { attributes, setAttributes } ) {
 							<SgsBoxControl
 								label={ __( 'Button padding', 'sgs-blocks' ) }
 								values={ chromeButtonPadding ?? {} }
+								presets
 								onChange={ ( next ) => setAttributes( { chromeButtonPadding: next } ) }
 							/>
 						</>

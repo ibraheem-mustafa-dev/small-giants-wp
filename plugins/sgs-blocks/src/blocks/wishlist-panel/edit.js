@@ -52,21 +52,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		textRow( {
 			key: 'heading',
 			label: __( 'Heading', 'sgs-blocks' ),
-			attrs: { base: 'headingColour' },
+			attrs: { base: 'headingColour', gradient: 'headingColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
 		textRow( {
 			key: 'itemName',
 			label: __( 'Product name', 'sgs-blocks' ),
-			attrs: { base: 'itemNameColour' },
+			attrs: { base: 'itemNameColour', gradient: 'itemNameColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
 		textRow( {
 			key: 'price',
 			label: __( 'Price', 'sgs-blocks' ),
-			attrs: { base: 'priceColour' },
+			attrs: { base: 'priceColour', gradient: 'priceColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
@@ -94,7 +94,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'buttonBackground',
 			label: __( 'Move to basket background', 'sgs-blocks' ),
-			attrs: { base: 'buttonBackgroundColour' },
+			attrs: { base: 'buttonBackgroundColour', gradient: 'buttonBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
@@ -115,7 +115,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'barBackground',
 			label: __( 'Guest prompt / alerts bar background', 'sgs-blocks' ),
-			attrs: { base: 'barBackgroundColour' },
+			attrs: { base: 'barBackgroundColour', gradient: 'barBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),

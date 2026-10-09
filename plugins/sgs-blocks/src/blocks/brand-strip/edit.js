@@ -13,7 +13,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl } from '../../components';
+import { SgsColourPanel, SsrPreviewGuard, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsSeparatorControl, SpacingControl, MediaGalleryPicker } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -268,6 +268,38 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	// Bulk add: the library modal selects many images at once and each becomes one
+	// logo item, appended after the existing logos (multiple="add" never replaces them).
+	const resolveLogoItem = ( media ) => {
+		if ( ! media || ! media.url ) {
+			return null;
+		}
+		return {
+			media: {
+				url: media.url,
+				type: 'image',
+				id: media.id || 0,
+				alt: media.alt || '',
+				mime: media.mime || media.mime_type || '',
+				width: media.width,
+				height: media.height,
+			},
+			alt: media.alt || '',
+			name: '',
+			linkUrl: '',
+			linkTarget: '_self',
+			linkRel: '',
+			_key: generateItemKey(),
+			objectFit: 'cover',
+		};
+	};
+
+	const addLogos = ( items ) => {
+		if ( items.length ) {
+			setAttributes( { logos: [ ...logos, ...items ] } );
+		}
+	};
+
 	const addLogo = () => {
 		setAttributes( {
 			logos: [
@@ -502,8 +534,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								onRemove={ () => removeLogo( index ) }
 							/>
 						) ) }
+						<MediaGalleryPicker
+							value={ [] }
+							onChange={ addLogos }
+							resolveItem={ resolveLogoItem }
+							allowedTypes={ [ 'image' ] }
+							multiple="add"
+							addLabel={ __( 'Add logos from the library', 'sgs-blocks' ) }
+						/>
+						{ ' ' }
 						<Button variant="secondary" onClick={ addLogo }>
-							{ __( 'Add logo', 'sgs-blocks' ) }
+							{ __( 'Add empty logo', 'sgs-blocks' ) }
 						</Button>
 					</PanelBody>
 				) }
@@ -727,10 +768,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					resetAll={ () =>
 						setAttributes( {
 							tileShape: 'square',
-							tilePadding: 10,
+							tilePadding: '10px',
 							tileRadius: 16,
 							tileShadow: '',
-							logoGap: 0,
+							logoGap: '0px',
 							tileBackgroundColour: '',
 							tileBorderWidth: 0,
 							tileBorderColour: '',
@@ -770,24 +811,23 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Tile padding', 'sgs-blocks' ) }
-						hasValue={ () => tilePadding !== 10 }
-						onDeselect={ () => setAttributes( { tilePadding: 10 } ) }
+						hasValue={ () => '10px' !== tilePadding }
+						onDeselect={ () => setAttributes( { tilePadding: '10px' } ) }
 					>
-						<RangeControl
-							label={ __( 'Tile padding (px)', 'sgs-blocks' ) }
-							help={ __(
-								'Space between the logo and the tile edge. Set to 0 so the logo fills the tile edge-to-edge.',
-								'sgs-blocks'
-							) }
+						<SpacingControl
+							custom
+							label={ __( 'Tile padding', 'sgs-blocks' ) }
 							value={ tilePadding }
 							onChange={ ( val ) =>
 								setAttributes( { tilePadding: val } )
 							}
-							min={ 0 }
-							max={ 60 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
+						<p className="components-base-control__help">
+							{ __(
+								'Space between the logo and the tile edge. Choose a custom 0 so the logo fills the tile edge-to-edge.',
+								'sgs-blocks'
+							) }
+						</p>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -828,23 +868,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanelItem
 						label={ __( 'Gap between logos', 'sgs-blocks' ) }
-						hasValue={ () => logoGap !== 0 }
-						onDeselect={ () => setAttributes( { logoGap: 0 } ) }
+						hasValue={ () => '0px' !== logoGap }
+						onDeselect={ () => setAttributes( { logoGap: '0px' } ) }
 					>
-						<RangeControl
-							label={ __( 'Gap between logos (px)', 'sgs-blocks' ) }
-							help={ __(
-								'0 uses the theme default spacing.',
-								'sgs-blocks'
-							) }
+						<SpacingControl
+							custom
+							label={ __( 'Gap between logos', 'sgs-blocks' ) }
 							value={ logoGap }
 							onChange={ ( val ) =>
 								setAttributes( { logoGap: val } )
 							}
-							min={ 0 }
-							max={ 200 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 

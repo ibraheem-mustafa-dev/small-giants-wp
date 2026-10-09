@@ -6,7 +6,7 @@
  *
  * @package SGS\Blocks
  */
-import { colourVar, tierLengthPreview, tierValueOf } from '../../utils';
+import { backgroundPaintPreview, colourVar, gapVar, textPaintPreview, tierValueOf } from '../../utils';
 
 /**
  * @param {string} slugOrColour Stored colour (palette slug or CSS colour).
@@ -19,28 +19,53 @@ function paint( slugOrColour, property ) {
 }
 
 /**
+ * A text colour or its gradient sibling: a gradient wins and paints through
+ * background-clip:text, as sgs_text_colour_decl() does on the front end.
+ *
+ * @param {string} slugOrColour Stored flat colour.
+ * @param {string} gradient     Stored gradient sibling.
+ * @return {Object} Style object, {} when both are unset.
+ */
+function paintText( slugOrColour, gradient ) {
+	return gradient ? textPaintPreview( '', gradient ) : paint( slugOrColour, 'color' );
+}
+
+/**
+ * A fill colour or its gradient sibling: a gradient wins and paints through
+ * background-image, as sgs_background_paint_decl() does on the front end.
+ *
+ * @param {string} slugOrColour Stored flat colour.
+ * @param {string} gradient     Stored gradient sibling.
+ * @return {Object} Style object, {} when both are unset.
+ */
+function paintFill( slugOrColour, gradient ) {
+	return gradient ? backgroundPaintPreview( '', gradient ) : paint( slugOrColour, 'backgroundColor' );
+}
+
+/**
  * @param {Object} attributes Block attributes.
  * @return {Object} Style object per canvas element.
  */
 export function wishlistColourStyles( attributes ) {
 	return {
-		heading: paint( attributes.headingColour, 'color' ),
+		heading: paintText( attributes.headingColour, attributes.headingColourGradient ),
 		// Mirrors render.php: no itemNameColour means the palette's text token.
-		itemName: attributes.itemNameColour
-			? paint( attributes.itemNameColour, 'color' )
-			: { color: 'var(--wp--preset--color--text)' },
-		price: paint( attributes.priceColour, 'color' ),
+		itemName:
+			attributes.itemNameColour || attributes.itemNameColourGradient
+				? paintText( attributes.itemNameColour, attributes.itemNameColourGradient )
+				: { color: 'var(--wp--preset--color--text)' },
+		price: paintText( attributes.priceColour, attributes.priceColourGradient ),
 		priceDrop: paint( attributes.priceDropColour, 'color' ),
 		stockChip: {
 			...paint( attributes.stockChipBackgroundColour, 'backgroundColor' ),
 			...paint( attributes.stockChipTextColour, 'color' ),
 		},
 		button: {
-			...paint( attributes.buttonBackgroundColour, 'backgroundColor' ),
+			...paintFill( attributes.buttonBackgroundColour, attributes.buttonBackgroundColourGradient ),
 			...paint( attributes.buttonTextColour, 'color' ),
 		},
 		link: paint( attributes.linkColour, 'color' ),
-		bar: paint( attributes.barBackgroundColour, 'backgroundColor' ),
+		bar: paintFill( attributes.barBackgroundColour, attributes.barBackgroundColourGradient ),
 		shareField: {
 			...paint( attributes.shareFieldBackgroundColour, 'backgroundColor' ),
 			...paint( attributes.shareFieldTextColour, 'color' ),
@@ -65,7 +90,7 @@ export function wishlistGridStyle( attributes, tier = 'desktop' ) {
 	if ( undefined !== columns ) {
 		style[ '--sgs-wishlist-panel-columns' ] = columns;
 	}
-	const gap = tierLengthPreview( attributes.gap, tier );
+	const gap = gapVar( tierValueOf( attributes.gap, tier ) );
 	if ( undefined !== gap ) {
 		style[ '--sgs-wishlist-panel-gap' ] = gap;
 	}

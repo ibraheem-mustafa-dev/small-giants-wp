@@ -11,7 +11,7 @@ import { PanelBody, ToggleControl } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { BandWrap, tierBoxProperties, usePreviewTier } from '../../utils';
+import { BandWrap, tierBoxProperties, usePreviewTier, gapVar } from '../../utils';
 import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { itemWrapperPreview, headerPreview } from './preview-style';
 import { SgsColourPanel, fillRow, textRow,
@@ -103,7 +103,11 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					typeof v === 'number' && ( allowZero ? v >= 0 : v > 0 )
 			);
 	const iconSizeTier = pxTier( context[ 'sgs/accordionIconSize' ], false );
-	const headerGapTier = pxTier( context[ 'sgs/accordionHeaderGap' ], true );
+	// Gap tiers hold a preset slug or a length; the narrowest tier with a value wins.
+	const headerGapTier = [ tier, 'tablet', 'desktop' ]
+		.slice( tier === 'mobile' ? 0 : tier === 'tablet' ? 1 : 2 )
+		.map( ( t ) => ( context[ 'sgs/accordionHeaderGap' ] || {} )[ t ] )
+		.find( ( v ) => 'string' === typeof v && '' !== v );
 	const headerMinHeightTier = pxTier(
 		context[ 'sgs/accordionHeaderMinHeight' ],
 		true
@@ -111,9 +115,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const slotVars = {
 		...tierBoxProperties( context[ 'sgs/accordionHeaderPadding' ], tier, '--sgs-accordion-header-pad-' ),
 		...tierBoxProperties( context[ 'sgs/accordionContentPadding' ], tier, '--sgs-accordion-content-pad-' ),
-		// typeof, not truthiness: a gap or height floor of 0 must still emit.
-		'--sgs-accordion-header-gap':
-			typeof headerGapTier === 'number' ? `${ headerGapTier }px` : undefined,
+		// typeof, not truthiness: a height floor of 0 must still emit.
+		'--sgs-accordion-header-gap': gapVar( headerGapTier ),
 		'--sgs-accordion-header-min-h':
 			typeof headerMinHeightTier === 'number'
 				? `${ headerMinHeightTier }px`

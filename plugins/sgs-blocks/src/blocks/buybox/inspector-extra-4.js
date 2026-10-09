@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl } from '@wordpress/components';
-import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { SpacingControl } from '../../components';
 
 /**
  * Settings-tab (default InspectorControls group) extra panels for
@@ -227,19 +228,20 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					__unstableInputWidth="100%"
 					__next40pxDefaultSize
 				/>
-				<UnitControl
+				<SpacingControl
+					custom
 					label={ __( 'Gap between columns', 'sgs-blocks' ) }
 					value={ galleryColumnGap || '' }
 					onChange={ ( val ) =>
 						setAttributes( { galleryColumnGap: val ?? '' } )
 					}
-					help={ __(
-						"Empty keeps today's clamp(1.5rem, 4vw, 3rem). Applies only where the two columns sit side by side (see Layout → Where the columns stack).",
+				/>
+				<p className="components-base-control__help">
+					{ __(
+						"None keeps today's clamp(1.5rem, 4vw, 3rem). Applies only where the two columns sit side by side (see Layout → Where the columns stack).",
 						'sgs-blocks'
 					) }
-					__unstableInputWidth="100%"
-					__next40pxDefaultSize
-				/>
+				</p>
 			</PanelBody>
 		</>
 	);

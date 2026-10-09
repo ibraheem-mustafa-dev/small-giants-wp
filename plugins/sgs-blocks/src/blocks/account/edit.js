@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
-import { ResponsiveControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
+import { ResponsiveControl, SgsBorderControl, SgsColourPanel, SpacingControl, SsrPreviewGuard, fillRow, textRow, TypographyControls } from '../../components';
 import { UnitControl } from '../../components/primitives';
 import { patchTier } from '../../utils';
 import MenuPanel from './MenuPanel';
@@ -47,21 +47,21 @@ export default function Edit( { attributes, setAttributes } ) {
 		fillRow( {
 			key: 'menuActiveIndicator',
 			label: __( 'Active item indicator (sidebar bar)', 'sgs-blocks' ),
-			attrs: { base: 'menuActiveIndicatorColour' },
+			attrs: { base: 'menuActiveIndicatorColour', gradient: 'menuActiveIndicatorColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'menuActiveBackground',
 			label: __( 'Active item background (tabs pill)', 'sgs-blocks' ),
-			attrs: { base: 'menuActiveBackgroundColour' },
+			attrs: { base: 'menuActiveBackgroundColour', gradient: 'menuActiveBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'cardBackground',
 			label: __( 'Card background', 'sgs-blocks' ),
-			attrs: { base: 'cardBackgroundColour' },
+			attrs: { base: 'cardBackgroundColour', gradient: 'cardBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
@@ -75,14 +75,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		textRow( {
 			key: 'heading',
 			label: __( 'Headings', 'sgs-blocks' ),
-			attrs: { base: 'headingColour' },
+			attrs: { base: 'headingColour', gradient: 'headingColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
 		fillRow( {
 			key: 'chipBackground',
 			label: __( 'Status chip background', 'sgs-blocks' ),
-			attrs: { base: 'chipBackgroundColour' },
+			attrs: { base: 'chipBackgroundColour', gradient: 'chipBackgroundColourGradient' },
 			attributes,
 			setAttributes,
 		} ),
@@ -160,10 +160,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 					<ResponsiveControl label={ __( 'Gap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
+							<SpacingControl
+								custom
 								label={ __( 'Gap', 'sgs-blocks' ) }
-								hideLabelFromVision
 								value={ gap?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
 									patchTier( attributes, setAttributes, 'gap', breakpoint, value )

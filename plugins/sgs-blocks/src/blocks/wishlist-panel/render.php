@@ -69,11 +69,26 @@ $root_sel = '.' . $uid . '.wp-block-sgs-wishlist-panel';
 
 $scoped_css = array();
 
-$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__heading', $attributes, array( 'base' => 'headingColour' ) );
+$scoped_css[] = sgs_text_states_css(
+	$root_sel . ' .sgs-wishlist-panel__heading',
+	$attributes,
+	array(
+		'base'     => 'headingColour',
+		'gradient' => 'headingColourGradient',
+	)
+);
 
-$item_name_colour = (string) ( $attributes['itemNameColour'] ?? '' );
-if ( '' !== $item_name_colour ) {
-	$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-name', $attributes, array( 'base' => 'itemNameColour' ) );
+$item_name_colour          = (string) ( $attributes['itemNameColour'] ?? '' );
+$item_name_colour_gradient = (string) ( $attributes['itemNameColourGradient'] ?? '' );
+if ( '' !== $item_name_colour || '' !== $item_name_colour_gradient ) {
+	$scoped_css[] = sgs_text_states_css(
+		$root_sel . ' .sgs-wishlist-panel__row-name',
+		$attributes,
+		array(
+			'base'     => 'itemNameColour',
+			'gradient' => 'itemNameColourGradient',
+		)
+	);
 } else {
 	// No client colour set — default the product-name LINK to the palette's
 	// text token, not the site's global link colour (Bean's ruling, lane A
@@ -87,8 +102,22 @@ if ( '' !== $item_name_colour ) {
 	// `a` element's specificity).
 	$scoped_css[] = $root_sel . ' .sgs-wishlist-panel__row-name{color:var(--wp--preset--color--text);}';
 }
-$scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__row-price', $attributes, array( 'base' => 'priceColour' ) );
-$scoped_css[] = sgs_fill_states_css( $root_sel . ' .sgs-wishlist-panel__move-to-basket', $attributes, array( 'base' => 'buttonBackgroundColour' ) );
+$scoped_css[] = sgs_text_states_css(
+	$root_sel . ' .sgs-wishlist-panel__row-price',
+	$attributes,
+	array(
+		'base'     => 'priceColour',
+		'gradient' => 'priceColourGradient',
+	)
+);
+$scoped_css[] = sgs_fill_states_css(
+	$root_sel . ' .sgs-wishlist-panel__move-to-basket',
+	$attributes,
+	array(
+		'base'     => 'buttonBackgroundColour',
+		'gradient' => 'buttonBackgroundColourGradient',
+	)
+);
 $scoped_css[] = sgs_text_states_css( $root_sel . ' .sgs-wishlist-panel__move-to-basket', $attributes, array( 'base' => 'buttonTextColour' ) );
 $scoped_css[] = sgs_text_states_css(
 	$root_sel . ' .sgs-wishlist-panel__remove, ' . $root_sel . ' .sgs-wishlist-panel__notify-toggle',
@@ -116,7 +145,8 @@ foreach ( array(
 	}
 	$gap_val = $gap_tiers[ $tier ] ?? null;
 	if ( null !== $gap_val && '' !== $gap_val ) {
-		$gap_safe = sgs_css_length_value( is_numeric( $gap_val ) ? $gap_val . 'px' : (string) $gap_val );
+		// A tier is a spacing preset slug ("20") or a custom length ("12px").
+		$gap_safe = sgs_css_length_value( is_int( $gap_val ) || is_float( $gap_val ) ? $gap_val . 'px' : (string) $gap_val );
 		if ( '' !== $gap_safe ) {
 			$decls[] = '--sgs-wishlist-panel-gap:' . $gap_safe;
 		}

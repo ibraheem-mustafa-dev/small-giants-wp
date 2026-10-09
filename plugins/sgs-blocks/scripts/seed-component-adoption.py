@@ -6,7 +6,7 @@ WHY
 Bean, 2026-08-24. The `components` table held 13 rows of editor JS with placeholder
 descriptions and `props` all NULL — a file listing wearing the name. It had ZERO
 readers and ZERO writers inside this repo (grepped across .py/.js/.php); the rows
-came from an out-of-repo populate-db.py, which is why every description said
+came from the former out-of-repo populate-db.py, which is why every description said
 nothing. Rebuilt here as the registry of every shared helper and injector built for
 unification, WITH ADOPTION COUNTS, and the writer now lives IN the repo so it
 refreshes with /sgs-update instead of needing a manual out-of-tree run.

@@ -96,8 +96,12 @@ $show_names          = ! empty( $attributes['showNames'] );
 $pause_on_hover      = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
 $name_colour          = $attributes['nameColour'] ?? '';
 $name_colour_gradient = $attributes['nameColourGradient'] ?? '';
-$logo_gap            = isset( $attributes['logoGap'] ) ? absint( $attributes['logoGap'] ) : 0;
-$tile_padding        = isset( $attributes['tilePadding'] ) ? absint( $attributes['tilePadding'] ) : 10;
+// logoGap and tilePadding are a spacing preset slug ("50") or a custom length ("12px"),
+// validated by sgs_css_length_value(); empty or unsafe falls back to the default.
+$logo_gap            = sgs_css_length_value( $attributes['logoGap'] ?? '' );
+$logo_gap            = '' !== $logo_gap ? $logo_gap : '0px';
+$tile_padding        = sgs_css_length_value( $attributes['tilePadding'] ?? '' );
+$tile_padding        = '' !== $tile_padding ? $tile_padding : '10px';
 $tile_radius         = isset( $attributes['tileRadius'] ) ? absint( $attributes['tileRadius'] ) : 16;
 $tile_shape_raw      = $attributes['tileShape'] ?? 'square';
 $tile_shape          = in_array( $tile_shape_raw, array( 'square', 'circle', 'none' ), true ) ? $tile_shape_raw : 'square';
@@ -276,7 +280,7 @@ $css_vars = array_merge(
 		'--sgs-columns-desktop:' . $columns_desktop,
 		'--sgs-columns-tablet:' . $columns_tablet,
 		'--sgs-columns-mobile:' . $columns_mobile,
-		'--sgs-tile-padding:' . $tile_padding . 'px',
+		'--sgs-tile-padding:' . $tile_padding,
 		'--sgs-tile-radius:' . $tile_radius . 'px',
 		// NB: named "thickness" NOT "border-width" — an inline value containing the
 		// substring "border-width" is matched by WP core's border-support selector
@@ -326,7 +330,7 @@ $css_vars = array_merge(
 // the gap can never be closed (a reference strip with adjacent, border-separated
 // tiles needs gap:0). block.json default stays 0 = tiles adjacent; raise logoGap
 // to add space.
-$css_vars[] = '--sgs-logo-gap:' . $logo_gap . 'px';
+$css_vars[] = '--sgs-logo-gap:' . $logo_gap;
 
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS assembly. uid is a CLASS (this block declares `anchor: true`,

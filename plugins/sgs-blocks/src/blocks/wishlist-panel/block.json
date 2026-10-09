@@ -37,7 +37,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "headingColour"
+						"css:color": "headingColour",
+						"css:color-gradient": "headingColourGradient"
 					}
 				},
 				"itemName": {
@@ -47,7 +48,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "itemNameColour"
+						"css:color": "itemNameColour",
+						"css:color-gradient": "itemNameColourGradient"
 					}
 				},
 				"price": {
@@ -57,7 +59,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "priceColour"
+						"css:color": "priceColour",
+						"css:color-gradient": "priceColourGradient"
 					}
 				},
 				"button": {
@@ -69,6 +72,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "buttonBackgroundColour",
+						"css:background-image": "buttonBackgroundColourGradient",
 						"css:color": "buttonTextColour"
 					}
 				},
@@ -118,7 +122,8 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:background-color": "barBackgroundColour"
+						"css:background-color": "barBackgroundColour",
+						"css:background-image": "barBackgroundColourGradient"
 					}
 				},
 				"shareField": {
@@ -318,17 +323,37 @@
 			"type": "string",
 			"default": ""
 		},
+		"headingColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the heading text instead of a flat colour. Non-empty wins over headingColour at render time."
+		},
 		"itemNameColour": {
 			"type": "string",
 			"default": ""
+		},
+		"itemNameColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the product name text instead of a flat colour. Non-empty wins over itemNameColour at render time."
 		},
 		"priceColour": {
 			"type": "string",
 			"default": ""
 		},
+		"priceColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the price text instead of a flat colour. Non-empty wins over priceColour at render time."
+		},
 		"buttonBackgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"buttonBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the Move to basket button background instead of a flat colour. Non-empty wins over buttonBackgroundColour at render time."
 		},
 		"buttonTextColour": {
 			"type": "string",
@@ -357,6 +382,11 @@
 		"barBackgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"barBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the guest prompt and alerts bar background instead of a flat colour. Non-empty wins over barBackgroundColour at render time."
 		},
 		"shareFieldBackgroundColour": {
 			"type": "string",

@@ -55,7 +55,8 @@
 					],
 					"attrMap": {
 						"css:color": "menuActiveTextColour",
-						"css:background-color": "menuActiveBackgroundColour"
+						"css:background-color": "menuActiveBackgroundColour",
+						"css:background-image": "menuActiveBackgroundColourGradient"
 					}
 				},
 				"menuIndicator": {
@@ -65,7 +66,8 @@
 						"fill"
 					],
 					"attrMap": {
-						"css:background-color": "menuActiveIndicatorColour"
+						"css:background-color": "menuActiveIndicatorColour",
+						"css:background-image": "menuActiveIndicatorColourGradient"
 					}
 				},
 				"heading": {
@@ -76,7 +78,8 @@
 					],
 					"prefix": "heading",
 					"attrMap": {
-						"css:color": "headingColour"
+						"css:color": "headingColour",
+						"css:color-gradient": "headingColourGradient"
 					}
 				},
 				"cardBox": {
@@ -88,6 +91,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "cardBackgroundColour",
+						"css:background-image": "cardBackgroundColourGradient",
 						"css:border-color": "cardBorderColour",
 						"css:border-width": "cardBorderWidth",
 						"css:border-style": "cardBorderStyle"
@@ -112,7 +116,8 @@
 					"prefix": "chip",
 					"attrMap": {
 						"css:color": "chipTextColour",
-						"css:background-color": "chipBackgroundColour"
+						"css:background-color": "chipBackgroundColour",
+						"css:background-image": "chipBackgroundColourGradient"
 					}
 				},
 				"track": {
@@ -251,13 +256,28 @@
 			"type": "string",
 			"default": ""
 		},
+		"menuActiveIndicatorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the active menu item bar instead of a flat colour. Non-empty wins over menuActiveIndicatorColour at render time."
+		},
 		"menuActiveBackgroundColour": {
 			"type": "string",
 			"default": ""
 		},
+		"menuActiveBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the active menu item background instead of a flat colour. Non-empty wins over menuActiveBackgroundColour at render time."
+		},
 		"cardBackgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"cardBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card background instead of a flat colour. Non-empty wins over cardBackgroundColour at render time."
 		},
 		"cardBorderColour": {
 			"type": "string",
@@ -275,6 +295,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"headingColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the heading and card title text instead of a flat colour. Non-empty wins over headingColour at render time."
+		},
 		"contentLinkColour": {
 			"type": "string",
 			"default": ""
@@ -286,6 +311,11 @@
 		"chipBackgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"chipBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the status chip background instead of a flat colour. Non-empty wins over chipBackgroundColour at render time."
 		},
 		"chipTextColour": {
 			"type": "string",

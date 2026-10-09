@@ -35,6 +35,7 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 		<ResponsiveBoxControl
 			key={ `${ blockSlug }-${ prefix }-media-padding` }
 			label={ __( 'Padding', 'sgs-blocks' ) }
+			presets
 			values={ {
 				base: tiers.desktop ?? {},
 				tablet: tiers.tablet ?? {},

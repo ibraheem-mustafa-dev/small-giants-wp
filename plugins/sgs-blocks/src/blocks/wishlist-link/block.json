@@ -38,12 +38,14 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "iconColour"
+						"css:color": "iconColour",
+						"css:stroke": "iconColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover"
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
 							}
 						}
 					}
@@ -57,6 +59,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "badgeBackgroundColour",
+						"css:background-image": "badgeBackgroundColourGradient",
 						"css:color": "badgeTextColour"
 					}
 				}
@@ -111,13 +114,28 @@
 			"type": "string",
 			"default": ""
 		},
+		"iconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time."
+		},
 		"iconColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the icon's stroke on hover or focus instead of a flat colour. Non-empty wins over iconColourHover at render time."
+		},
 		"badgeBackgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"badgeBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the count badge's background instead of a flat colour. Non-empty wins over badgeBackgroundColour at render time."
 		},
 		"badgeTextColour": {
 			"type": "string",

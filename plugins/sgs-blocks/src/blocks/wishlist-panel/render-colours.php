@@ -39,7 +39,10 @@ if ( ! function_exists( 'sgs_wishlist_panel_new_element_css' ) ) {
 		$css[] = sgs_fill_states_css(
 			$root_sel . ' .sgs-wishlist-panel__bar, ' . $root_sel . ' .sgs-wishlist-panel__guest-prompt',
 			$attributes,
-			array( 'base' => 'barBackgroundColour' )
+			array(
+				'base'     => 'barBackgroundColour',
+				'gradient' => 'barBackgroundColourGradient',
+			)
 		);
 
 		$css[] = sgs_fill_states_css(

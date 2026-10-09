@@ -21,7 +21,26 @@
 
 import { colourVar, isCssGradient } from '../../utils';
 
-const BOX_RE = /^[-\d.\sa-z%]+$/i;
+const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
+const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
+
+/**
+ * The set sides of a {top,right,bottom,left} box as longhand declarations
+ * (`padding-top:3px;`), mirroring render.php's sgs_box_object_longhand_list().
+ *
+ * @param {Object} box    Box object; anything else yields ''.
+ * @param {string} family 'padding' or 'margin'.
+ * @return {string} Declarations, '' when no side is set.
+ */
+function boxSideDecls( box, family ) {
+	if ( ! box || 'object' !== typeof box ) {
+		return '';
+	}
+	return BOX_SIDES.map( ( side ) => {
+		const value = String( box[ side ] ?? '' ).trim();
+		return value && SAFE_LENGTH_RE.test( value ) ? `${ family }-${ side }:${ value };` : '';
+	} ).join( '' );
+}
 
 const flat = ( value ) => ( value ? colourVar( value ) || value : '' );
 const gradient = ( value ) => ( isCssGradient( value ) ? value : '' );
@@ -125,18 +144,17 @@ export default function drawerPreviewCss( scope, v ) {
 		`border-radius:${ v.drawerCardRadius || '0' };padding:${ v.drawerCardPadding || '0' };` +
 		`${ cardDecls }${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }}`;
 	css += `${ aside } > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:${ thumb };height:${ thumb };min-height:0;margin:0;overflow:hidden;}`;
-	const tagMargin = v.drawerCardTagMargin && BOX_RE.test( v.drawerCardTagMargin ) ? v.drawerCardTagMargin : '0 0 6px';
-	css += `${ aside } > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:${ tagMargin };}`;
+	css += `${ aside } > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;${ boxSideDecls( v.drawerCardTagMargin, 'margin' ) }}`;
 	css += `${ aside } > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${ v.drawerCardTitleLineHeight || 'normal' };}`;
 	css += `${ aside } > :nth-child(4){display:none;}`;
 	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 
-	const tagPad = v.drawerCardTagPadding && BOX_RE.test( v.drawerCardTagPadding ) ? v.drawerCardTagPadding : '';
+	const tagPad = boxSideDecls( v.drawerCardTagPadding, 'padding' );
 	if ( v.drawerCardTagSize || tagPad ) {
 		css +=
 			`${ aside } > :nth-child(2) .wp-block-sgs-label{` +
 			decl( 'font-size', v.drawerCardTagSize ) +
-			decl( 'padding', tagPad ) +
+			tagPad +
 			( v.drawerCardTagSize ? 'line-height:1.5;' : '' ) +
 			'}';
 	}

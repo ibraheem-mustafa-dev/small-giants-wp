@@ -53,6 +53,8 @@ import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
 	SgsBorderControl,
+	SgsBoxControl,
+	BOX_UNITS,
 	SgsColourPanel,
 	SgsLengthControl,
 	ShadowControl,
@@ -1396,21 +1398,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) => setAttributes( { drawerCardTagSize: value || '' } ) }
 						presets={ false }
 					/>
-							<TextControl
+							<SgsBoxControl
 								label={ __( 'Card tag padding', 'sgs-blocks' ) }
-								help={ __( '1 to 4 lengths, e.g. 3px 8px.', 'sgs-blocks' ) }
-								value={ drawerCardTagPadding || '' }
-								onChange={ ( value ) => setAttributes( { drawerCardTagPadding: value || '' } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								values={ drawerCardTagPadding && 'object' === typeof drawerCardTagPadding ? drawerCardTagPadding : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setAttributes( { drawerCardTagPadding: next || {} } ) }
 							/>
-							<TextControl
+							<SgsBoxControl
 								label={ __( 'Card tag spacing', 'sgs-blocks' ) }
-								help={ __( '1 to 4 lengths around the tag, e.g. 4px 0 6px. Empty keeps 0 0 6px.', 'sgs-blocks' ) }
-								value={ drawerCardTagMargin || '' }
-								onChange={ ( value ) => setAttributes( { drawerCardTagMargin: value || '' } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								values={ drawerCardTagMargin && 'object' === typeof drawerCardTagMargin ? drawerCardTagMargin : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setAttributes( { drawerCardTagMargin: next || {} } ) }
 							/>
 					<SgsLengthControl
 						label={ __( 'Card title size', 'sgs-blocks' ) }

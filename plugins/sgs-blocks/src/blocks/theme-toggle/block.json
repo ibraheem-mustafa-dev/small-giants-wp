@@ -84,16 +84,19 @@
 					],
 					"attrMap": {
 						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
 						"css:padding": "padding",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:background-color": "backgroundColourHover"
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient"
 							}
 						}
 					}
@@ -194,13 +197,28 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the button fill. Non-empty wins over backgroundColour."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-visible."
+		},
 		"borderColour": {
 			"type": "string",
 			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour. Non-empty wins over borderColour."
 		},
 		"borderWidth": {
 			"type": "object",

@@ -854,7 +854,7 @@
 		"galleryColumnGap": {
 			"type": "string",
 			"default": "",
-			"description": "CSS length for the gap between the gallery and configurator columns (e.g. \"60px\"). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio."
+			"description": "Gap between the gallery and configurator columns: a spacing preset slug (e.g. \"50\") or a custom length (e.g. \"60px\"), validated by sgs_css_length_value(). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio."
 		},
 		"rrpMetaKey": {
 			"type": "string",

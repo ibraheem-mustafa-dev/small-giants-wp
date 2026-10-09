@@ -7,7 +7,7 @@
  * Bean, 2026-08-24: the `components` table held 13 rows of editor JS with
  * placeholder descriptions and `props` all NULL — a file listing wearing the
  * name. It had ZERO readers and ZERO writers inside this repo; the rows came
- * from an out-of-repo populate-db.py, which is why the descriptions say nothing.
+ * from the former out-of-repo populate-db.py, which is why the descriptions say nothing.
  *
  * Rebuilt as the registry of every shared helper and injector built for
  * unification, WITH ADOPTION COUNTS. The counts are what make it an audit

@@ -523,12 +523,14 @@
 			"description": "CSS gradient string painted through the caption text via background-clip:text. Non-empty wins over nameColour at render time (D636)."
 		},
 		"logoGap": {
-			"type": "number",
-			"default": 0
+			"type": "string",
+			"default": "0px",
+			"description": "Gap between logos: a spacing preset slug (\"50\") or a custom length (\"12px\"), validated by sgs_css_length_value()."
 		},
 		"tilePadding": {
-			"type": "number",
-			"default": 10
+			"type": "string",
+			"default": "10px",
+			"description": "Space between a logo and its tile edge: a spacing preset slug (\"30\") or a custom length (\"10px\"), validated by sgs_css_length_value()."
 		},
 		"tileRadius": {
 			"type": "number",

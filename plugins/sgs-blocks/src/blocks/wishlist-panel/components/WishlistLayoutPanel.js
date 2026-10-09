@@ -11,8 +11,7 @@ import {
 	RangeControl,
 	SelectControl,
 } from '@wordpress/components';
-import { UnitControl } from '../../../components/primitives';
-import { ResponsiveControl } from '../../../components';
+import { ResponsiveControl, SpacingControl } from '../../../components';
 
 /**
  * @param {Object}   props
@@ -153,10 +152,9 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 					<ResponsiveControl label={ __( 'Row gap', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
-							<UnitControl
-								__next40pxDefaultSize
+							<SpacingControl
+								custom
 								label={ __( 'Row gap', 'sgs-blocks' ) }
-								hideLabelFromVision
 								value={ gap[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
 									setAttributes( { gap: { ...gap, [ breakpoint ]: value } } )

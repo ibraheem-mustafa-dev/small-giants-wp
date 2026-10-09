@@ -11,7 +11,7 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SGS_FONT_WEIGHT_OPTIONS } from "../../components";
+import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl, SGS_FONT_WEIGHT_OPTIONS } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 import { usePreviewTier } from "../../utils";
 import { accordionWrapperPreview } from "./preview-style";
@@ -387,17 +387,11 @@ export default function Edit({ attributes, setAttributes, clientId }) {
             onChange={ ( obj ) => setAttributes( { headerGap: obj } ) }
           >
             { ( { ownValue, setOwnValue } ) => (
-              <RangeControl
-                label={ __( "Header gap (px)", "sgs-blocks" ) }
-                help={ __( "Space between the question and the toggle icon. Empty keeps 12px.", "sgs-blocks" ) }
-                value={ typeof ownValue === "number" ? ownValue : undefined }
+              <SpacingControl
+                custom
+                label={ __( "Header gap", "sgs-blocks" ) }
+                value={ "string" === typeof ownValue ? ownValue : "" }
                 onChange={ ( val ) => setOwnValue( val ) }
-                min={ 0 }
-                max={ 64 }
-                step={ 1 }
-                allowReset
-                __nextHasNoMarginBottom
-                __next40pxDefaultSize
               />
             ) }
           </ResponsiveOverride>

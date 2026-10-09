@@ -26,7 +26,7 @@ import {
 	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SpacingControl } from '../../components';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
@@ -35,6 +35,7 @@ import {
 	usePreviewTier,
 	boxPreview,
 	tierBoxLonghands,
+	gapVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
@@ -719,18 +720,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									},
 								] }
 							/>
-							<TextControl
+							<SpacingControl
+								custom
 								label={ __( 'Label margin bottom', 'sgs-blocks' ) }
-								help={ __(
-									'CSS value, e.g. 8px or 0.5rem. Empty = default.',
-									'sgs-blocks'
-								) }
 								value={ labelMarginBottom }
 								onChange={ ( val ) =>
 									setAttributes( { labelMarginBottom: val } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</>
 					) }
@@ -1035,7 +1031,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ {
 							...typographyPreviewStyle( attributes, 'label', previewTier ),
 							...resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar ),
-							...( labelMarginBottom ? { marginBottom: labelMarginBottom }         : {} ),
+							...( labelMarginBottom ? { marginBottom: gapVar( labelMarginBottom ) } : {} ),
 						} }
 					>
 						{ label || __( 'Choose an option', 'sgs-blocks' ) }

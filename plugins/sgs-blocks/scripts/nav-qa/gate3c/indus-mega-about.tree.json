@@ -52,10 +52,10 @@
       "drawerCardSpacing": "14px",
       "drawerCardThumbSize": "64px",
       "drawerCardTagSize": "10px",
-      "drawerCardTagPadding": "3px 8px",
+      "drawerCardTagPadding": { "top": "3px", "right": "8px", "bottom": "3px", "left": "8px" },
       "drawerCardTitleSize": "15px",
       "drawerCardLinkSize": "12.5px",
-      "drawerCardTagMargin": "4px 0 6px",
+      "drawerCardTagMargin": { "top": "4px", "right": "0", "bottom": "6px", "left": "0" },
       "drawerCardTitleLineHeight": "22.5px"
     },
     "innerBlocks": [

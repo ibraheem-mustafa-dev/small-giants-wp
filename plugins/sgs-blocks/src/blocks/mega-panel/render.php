@@ -957,22 +957,11 @@ if ( $sgs_mm_in_drawer ) {
 		return sgs_css_single_length_value( isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '' );
 	};
 	$sgs_dv_aside  = $root_sel . '.sgs-mega-panel--in-drawer .sgs-mega-aside';
-	// A 1-4 token padding shorthand, each token a validated single length.
-	$sgs_dv_box    = static function ( string $key ) use ( $attributes ): string {
-		$raw    = isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '';
-		$tokens = '' === $raw ? array() : preg_split( '/\s+/', $raw );
-		if ( ! is_array( $tokens ) || count( $tokens ) > 4 ) {
-			return '';
-		}
-		$out = array();
-		foreach ( $tokens as $token ) {
-			$len = sgs_css_single_length_value( $token );
-			if ( '' === $len ) {
-				return '';
-			}
-			$out[] = $len;
-		}
-		return implode( ' ', $out );
+	// A {top,right,bottom,left} box as longhand declarations (each side validated
+	// by sgs_css_length_value, so a spacing preset or a length), one per set side.
+	$sgs_dv_box    = static function ( string $key, string $family ) use ( $attributes ): string {
+		$decls = sgs_box_object_longhand_list( $attributes[ $key ] ?? null, $family );
+		return $decls ? implode( ';', $decls ) . ';' : '';
 	};
 	$sgs_dv_decl   = static function ( string $prop, string $value ): string {
 		return '' !== $value ? $prop . ':' . $value . ';' : '';
@@ -1105,19 +1094,19 @@ if ( $sgs_mm_in_drawer ) {
 		);
 		// Slot 1 (media frame) is the thumbnail, spanning the tag, title and link rows.
 		$css .= $sgs_dv_aside . ' > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:' . $sgs_dv_thumb . ';height:' . $sgs_dv_thumb . ';min-height:0;margin:0;overflow:hidden;}';
-		$sgs_dv_tag_margin  = $sgs_dv_box( 'drawerCardTagMargin' );
+		$sgs_dv_tag_margin  = $sgs_dv_box( 'drawerCardTagMargin', 'margin' );
 		$sgs_dv_title_lh    = $sgs_dv_len( 'drawerCardTitleLineHeight' );
-		$css               .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:' . ( '' !== $sgs_dv_tag_margin ? $sgs_dv_tag_margin : '0 0 6px' ) . ';}';
+		$css               .= $sgs_dv_aside . ' > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;' . $sgs_dv_tag_margin . '}';
 		$css               .= $sgs_dv_aside . ' > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:' . ( '' !== $sgs_dv_title_lh ? $sgs_dv_title_lh : 'normal' ) . ';}';
 		$css .= $sgs_dv_aside . ' > :nth-child(4){display:none;}';
 		$css .= $sgs_dv_aside . ' > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}';
 
 		$sgs_dv_tag_size = $sgs_dv_len( 'drawerCardTagSize' );
-		$sgs_dv_tag_pad  = $sgs_dv_box( 'drawerCardTagPadding' );
+		$sgs_dv_tag_pad  = $sgs_dv_box( 'drawerCardTagPadding', 'padding' );
 		if ( '' !== $sgs_dv_tag_size || '' !== $sgs_dv_tag_pad ) {
 			$css .= $sgs_dv_aside . ' > :nth-child(2) .wp-block-sgs-label{'
 				. $sgs_dv_decl( 'font-size', $sgs_dv_tag_size )
-				. $sgs_dv_decl( 'padding', $sgs_dv_tag_pad )
+				. $sgs_dv_tag_pad
 				. ( '' !== $sgs_dv_tag_size ? 'line-height:1.5;' : '' ) . '}';
 		}
 		$sgs_dv_title_size = $sgs_dv_len( 'drawerCardTitleSize' );

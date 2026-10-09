@@ -48,6 +48,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColour,
 		backgroundColourHover,
 		borderColour,
+		borderColourGradient,
 		borderWidth,
 		borderStyle,
 		borderRadius,
@@ -105,6 +106,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						attrs: {
 							base: 'backgroundColour',
 							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
 						},
 						attributes,
 						setAttributes,
@@ -231,6 +234,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourValue={ borderColour }
 						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked
 						contrastAgainst={ themeToggleContrastAgainst }
 					/>
