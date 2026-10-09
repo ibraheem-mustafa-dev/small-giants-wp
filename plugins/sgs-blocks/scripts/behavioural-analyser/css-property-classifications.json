@@ -24389,6 +24389,22 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
