@@ -253,7 +253,8 @@
 					"layer": "CONTENT",
 					"order": 4,
 					"clusters": [
-						"layout"
+						"layout",
+						"motion"
 					],
 					"attrMap": {
 						"css:border-color": "groupBorderColour",
