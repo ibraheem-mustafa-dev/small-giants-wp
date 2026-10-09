@@ -43,11 +43,14 @@ small-giants-wp/
 │   ├── src/             # blocks/ (+ extensions/), components/, header-behaviours/, shared/, utils/
 │   ├── build/           # compiled output (gitignored; build-deploy.py ships it)
 │   ├── assets/          # frontend CSS/JS for extensions, media atoms, effects
-│   └── scripts/         # build, deploy, gate and cloning-pipeline tooling (build-deploy.py, gates.json, computed-route/, parity/)
+│   └── scripts/         # block build, deploy, gate and database tooling (build-deploy.py, run-gates.py, gates.json, sgs-update-v2.py, inspector-scan/)
 ├── plugins/             # also sgs-booking, client-notes, accessibility, configurator
+├── scripts/             # cloning and live-site tooling: computed-route/ (Spec 47), parity/, wp-build-page.js, local-wp/, repo-wide lints
 ├── sites/               # per-client content, mockups, theme-snapshot.json
-└── .claude/             # specs, ledger, plans, reports, catalogues
+└── .claude/             # specs, ledger, plans, reports, catalogues; hooks/ holds the Claude-session and commit guards wired in settings.json
 ```
+
+**Which `scripts/` folder?** Three places hold scripts, each for one job. `plugins/sgs-blocks/scripts/` builds, gates and deploys the blocks plugin and seeds the framework database. Root `scripts/` clones a client draft into a site and checks it against the live page (`computed-route/` imports nothing from the plugin's scripts, rule R-47-1), plus lints that span the whole repo. `.claude/hooks/` holds only the guards the Claude harness and git run automatically. A new script goes where its job sits; the dated report scripts under `.claude/reports/` are records, not tools.
 
 Each block lives in `src/blocks/{block-name}/` (file layout: `plugins/sgs-blocks/CLAUDE.md` "Block Pattern"). Dynamic blocks (the majority) use `render.php` and return `null` from `save.js`.
 
