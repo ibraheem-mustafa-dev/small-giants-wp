@@ -173,5 +173,19 @@
   "css_property": "padding",
   "box_family": "padding",
   "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/declaredbad",
+  "attr_name": "margin",
+  "css_property": "margin",
+  "box_family": "margin",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/variant",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
  }
 ]

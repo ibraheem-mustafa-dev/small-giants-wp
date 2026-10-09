@@ -201,10 +201,12 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
   (per-row state, `customRows`).
 - **Untouched sides:** show the value inherited from a wider device tier as the placeholder, through `inherited`
   (or the surrounding `ResponsiveOverride`); the stored attribute stays empty. A side no wider tier sets shows the
-  block's declared default the same way: `block.json::supports.sgs.spacingDefaults` names a spacing preset per
-  attribute and side, the stylesheet paints it as `var(--wp--preset--spacing--N, <theme size>)`, and the mount passes
-  `defaults={ spacingDefaultsFor( name, attr ) }` (`src/utils/spacing-defaults.js`). Never store the preset in the
-  attribute default. Gate: `scripts/survey-spacing-defaults.py --check --strict`.
+  block's declared default the same way ("Default (M)", "Default (20px)"): `block.json::supports.sgs.spacingDefaults`
+  names per attribute and side a spacing preset when the stylesheet value equals that preset's size exactly (painted
+  as `var(--wp--preset--spacing--N, <theme size>)`), otherwise the literal length the stylesheet already paints (never
+  snapped). The mount passes `defaults={ spacingDefaultsFor( name, '<attr>' ) }` (`src/utils/spacing-defaults.js`).
+  Never store the default in the attribute default. A side a variant class or @media rule repaints with another value
+  has no single default and is left undeclared. Gate: `scripts/survey-spacing-defaults.py --check --strict`.
 - **Gaps and single lengths:** a gap, row gap or other single spacing length mounts `<SpacingControl custom>` (preset dropdown plus a Custom length; stored as a preset slug such as `"20"` or a length such as `"12px"`, read through `sgs_css_length_value()`, previewed in the canvas with `gapVar()`), never a `RangeControl` or `UnitControl`. Inside a `ResponsiveControl` that already shows the label, pass `hideLabelFromVision` (inspector-scan rule 29). Detector: `scripts/check-raw-spacing-controls.py --check`.
 - **Inspector spacing:** separate SGS controls stack 16px apart (`assets/css/inspector-controls.css`), because SGS
   controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap.

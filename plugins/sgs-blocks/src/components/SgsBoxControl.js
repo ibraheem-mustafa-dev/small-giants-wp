@@ -208,12 +208,14 @@ function parseLength( raw ) {
  *                                   it as placeholder text and the slider rests
  *                                   at it; nothing is written until the client
  *                                   types (`utils/inherited-box.js`).
- * @param {Object}   [props.defaults] { side: value } — the spacing preset the
- *                                   block declares for each untouched side
+ * @param {Object}   [props.defaults] { side: value } — the default the block
+ *                                   declares for each untouched side, a spacing
+ *                                   preset var() or a literal length
  *                                   (`utils/spacing-defaults.js`). An unset side
  *                                   that inherits nothing from a wider tier
- *                                   shows it exactly as an inherited value;
- *                                   nothing is written.
+ *                                   shows it exactly as an inherited value
+ *                                   ("Default (M)" / "Default (20px)", and the
+ *                                   size as placeholder); nothing is written.
  * @param {Object}   [props.labels]  { side: label } — names for non-side keys
  *                                   (the four corners of a radius).
  * @param {number}   [props.min]     RangeControl minimum override. Omit to
@@ -446,10 +448,13 @@ export default function SgsBoxControl( {
 		);
 	};
 
-	/** Side icon, value box and slider (no presets). */
+	/**
+	 * Side icon, value box and slider (no presets). An unset side shows what it inherits or the block's declared
+	 * default as the placeholder (a declared preset as its size) and the slider rests at it; nothing is written.
+	 */
 	const plainRow = ( sideKey, value, onSideChange, rowLabel ) => {
 		const own = parseLength( value );
-		const inheritedRaw = inheritedFor( sideKey, value );
+		const inheritedRaw = presetSize( inheritedFor( sideKey, value ) );
 		const rest = parseLength( inheritedRaw );
 		const unit = own.num === undefined && rest.num !== undefined ? rest.unit : own.unit;
 		const unitRange = rangeForUnit( unit );

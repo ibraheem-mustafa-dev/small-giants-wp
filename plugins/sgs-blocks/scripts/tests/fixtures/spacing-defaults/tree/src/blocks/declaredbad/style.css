@@ -1,6 +1,7 @@
 .sgs-declaredbad {
 	padding-top: var(--wp--preset--spacing--30, 1rem);
-	padding-right: 0;
+	padding-right: 16px;
 	padding-bottom: var(--wp--preset--spacing--10, 0.25rem);
 	padding-left: 12px;
+	margin-top: var(--wp--preset--spacing--30, 12px);
 }

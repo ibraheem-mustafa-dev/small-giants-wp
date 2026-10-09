@@ -6,6 +6,12 @@
    "default": {
     "desktop": {}
    }
+  },
+  "margin": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
   }
  },
  "supports": {
@@ -14,15 +20,20 @@
     "wrapper": {
      "isWrapper": true,
      "attrMap": {
-      "css:padding": "padding"
+      "css:padding": "padding",
+      "css:margin": "margin"
      }
     }
    },
    "spacingDefaults": {
     "padding": {
      "top": "var(--wp--preset--spacing--40)",
+     "right": "16px",
      "bottom": "var(--wp--preset--spacing--10)",
-     "left": "12px"
+     "left": "14px"
+    },
+    "margin": {
+     "top": "var(--wp--preset--spacing--30)"
     }
    }
   }

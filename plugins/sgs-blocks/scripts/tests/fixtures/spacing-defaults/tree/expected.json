@@ -1,135 +1,439 @@
 {
- "_comment": "Hand-derived from each fixture block's style.css and edit.js, against the scale in theme.json (4, 8, 16, 24, 32, 48, 80, 128 px). survey-spacing-defaults.py --self-test compares the census with this file.",
+ "_comment": "Hand-derived from each fixture block's style.css and edit.js, against the scale in theme.json (4, 8, 16, 24, 32, 48, 80, 128 px). Bean D1 (2026-10-09): a side proposes a preset (slug) only when its px equals that preset's size exactly; any other length proposes itself (slug null, proposed = the literal). survey-spacing-defaults.py --self-test compares the census with this file.",
  "attributes": {
   "plain:padding": {
-   "family": "padding", "presets": "true", "root_element": true,
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
    "sides": {
-    "top": {"status": "default", "raw": "14px", "px": 14.0, "slug": "30", "tie": false, "over_50pc": false},
-    "right": {"status": "default", "raw": "30px", "px": 30.0, "slug": "50"},
-    "bottom": {"status": "default", "raw": "14px", "slug": "30"},
-    "left": {"status": "default", "raw": "30px", "slug": "50"}
+    "top": {
+     "status": "default",
+     "raw": "14px",
+     "px": 14.0,
+     "slug": null,
+     "proposed": "14px"
+    },
+    "right": {
+     "status": "default",
+     "raw": "30px",
+     "px": 30.0,
+     "slug": null,
+     "proposed": "30px"
+    },
+    "bottom": {
+     "status": "default",
+     "raw": "14px",
+     "slug": null,
+     "proposed": "14px"
+    },
+    "left": {
+     "status": "default",
+     "raw": "30px",
+     "slug": null,
+     "proposed": "30px"
+    }
    }
   },
   "plain:margin": {
    "presets": "true",
    "sides": {
-    "top": {"status": "stay-unset", "reason": "absent"},
-    "bottom": {"status": "default", "raw": "1.5rem", "px": 24.0, "slug": "40"}
+    "top": {
+     "status": "stay-unset",
+     "reason": "absent"
+    },
+    "bottom": {
+     "status": "default",
+     "raw": "1.5rem",
+     "px": 24.0,
+     "slug": "40",
+     "proposed": "var(--wp--preset--spacing--40)"
+    }
    }
   },
   "wherever:padding": {
-   "sides": {"top": {"status": "default", "raw": "1.5rem", "slug": "40", "where": true}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "1.5rem",
+     "slug": "40",
+     "proposed": "var(--wp--preset--spacing--40)",
+     "where": true
+    }
+   }
   },
   "fallback:padding": {
    "sides": {
-    "top": {"status": "default", "raw": "18px", "slug": "30", "tie": false},
-    "left": {"status": "default", "raw": "20px", "slug": "40", "tie": true}
+    "top": {
+     "status": "default",
+     "raw": "18px",
+     "slug": null,
+     "proposed": "18px"
+    },
+    "left": {
+     "status": "default",
+     "raw": "20px",
+     "slug": null,
+     "proposed": "20px"
+    }
    }
   },
   "fallback:margin": {
-   "sides": {"top": {"status": "default", "raw": "var(--wp--preset--spacing--40)", "slug": "40", "reason": "already a preset"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "var(--wp--preset--spacing--40)",
+     "slug": "40",
+     "proposed": "var(--wp--preset--spacing--40)",
+     "reason": "already a preset"
+    }
+   }
   },
   "zeroauto:padding": {
-   "sides": {"top": {"status": "stay-unset", "reason": "zero"}}
+   "sides": {
+    "top": {
+     "status": "stay-unset",
+     "reason": "zero"
+    }
+   }
   },
   "zeroauto:margin": {
    "sides": {
-    "top": {"status": "stay-unset", "reason": "zero"},
-    "right": {"status": "stay-unset", "reason": "auto"}
+    "top": {
+     "status": "stay-unset",
+     "reason": "zero"
+    },
+    "right": {
+     "status": "stay-unset",
+     "reason": "auto"
+    }
    }
   },
   "nopresets:padding": {
    "presets": "false",
-   "sides": {"top": {"status": "default", "raw": "16px", "slug": "30", "tie": false}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "16px",
+     "slug": "30",
+     "proposed": "var(--wp--preset--spacing--30)"
+    }
+   }
   },
   "listpresets:padding": {
    "presets": "list",
-   "sides": {"top": {"status": "default", "raw": "8px", "slug": "20"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "8px",
+     "slug": "20",
+     "proposed": "var(--wp--preset--spacing--20)"
+    }
+   }
   },
   "tie:padding": {
    "sides": {
-    "top": {"status": "default", "raw": "20px", "slug": "40", "tie": true},
-    "right": {"status": "default", "raw": "6px", "slug": "20", "tie": true}
+    "top": {
+     "status": "default",
+     "raw": "20px",
+     "slug": null,
+     "proposed": "20px"
+    },
+    "right": {
+     "status": "default",
+     "raw": "6px",
+     "slug": null,
+     "proposed": "6px"
+    }
    }
   },
   "far:padding": {
    "sides": {
-    "top": {"status": "default", "raw": "1px", "slug": "10", "over_50pc": true},
-    "right": {"status": "stay-unset", "reason": "absent"},
-    "bottom": {"status": "default", "raw": "300px", "slug": "80", "over_50pc": true}
+    "top": {
+     "status": "default",
+     "raw": "1px",
+     "slug": null,
+     "proposed": "1px"
+    },
+    "right": {
+     "status": "stay-unset",
+     "reason": "absent"
+    },
+    "bottom": {
+     "status": "default",
+     "raw": "300px",
+     "slug": null,
+     "proposed": "300px"
+    }
    }
   },
   "button:padding": {
-   "sides": {"top": {"status": "exempt", "reason": "theme-button-presets"}}
+   "sides": {
+    "top": {
+     "status": "exempt",
+     "reason": "theme-button-presets"
+    }
+   }
   },
   "container:padding": {
-   "sides": {"top": {"status": "stay-unset", "reason": "layout-gutter"}}
+   "sides": {
+    "top": {
+     "status": "stay-unset",
+     "reason": "layout-gutter"
+    }
+   }
   },
   "emblock:tagPadding": {
-   "element": "tag", "root_element": false,
-   "sides": {"top": {"status": "em-ambiguous", "slug": "20"}}
+   "element": "tag",
+   "root_element": false,
+   "sides": {
+    "top": {
+     "status": "em-ambiguous",
+     "slug": "20",
+     "proposed": "var(--wp--preset--spacing--20)"
+    }
+   }
   },
   "emblock:labelPadding": {
-   "sides": {"top": {"status": "default", "raw": "1em", "px": 16.0, "slug": "30"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "1em",
+     "px": 16.0,
+     "slug": "30"
+    }
+   }
   },
   "percent:padding": {
-   "sides": {"top": {"status": "stay-unset", "reason": "percentage"}}
+   "sides": {
+    "top": {
+     "status": "stay-unset",
+     "reason": "percentage"
+    }
+   }
   },
   "percent:margin": {
-   "sides": {"left": {"status": "stay-unset", "reason": "inherit"}}
+   "sides": {
+    "left": {
+     "status": "stay-unset",
+     "reason": "inherit"
+    }
+   }
   },
   "fluid:padding": {
-   "sides": {"top": {"status": "unknown", "raw": "clamp(1rem, 4vw, 3rem)", "reason": "fluid-function"}}
+   "sides": {
+    "top": {
+     "status": "unknown",
+     "raw": "clamp(1rem, 4vw, 3rem)",
+     "reason": "fluid-function"
+    }
+   }
   },
   "fluid:margin": {
-   "sides": {"top": {"status": "unknown", "reason": "unresolved custom property --sgs-missing"}}
+   "sides": {
+    "top": {
+     "status": "unknown",
+     "reason": "unresolved custom property --sgs-missing"
+    }
+   }
   },
   "propdriven:padding": {
-   "sides": {"top": {"status": "default", "raw": "10px", "slug": "20"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "10px",
+     "slug": null,
+     "proposed": "10px"
+    }
+   }
   },
   "propdriven:cardMargin": {
-   "element": "card", "family": "margin",
-   "sides": {"top": {"status": "default", "raw": "8px", "slug": "20", "tie": false}}
+   "element": "card",
+   "family": "margin",
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "8px",
+     "slug": "20",
+     "proposed": "var(--wp--preset--spacing--20)"
+    }
+   }
   },
   "mapped:asidePadding": {
-   "sides": {"top": {"status": "default", "raw": "24px", "slug": "40"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "24px",
+     "slug": "40"
+    }
+   }
   },
   "mapped:footPadding": {
-   "sides": {"top": {"status": "default", "raw": "3rem", "slug": "60"}}
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "3rem",
+     "slug": "60"
+    }
+   }
   },
   "declared:padding": {
-   "family": "padding", "presets": "true", "root_element": true,
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
    "sides": {
-    "top": {"status": "declared", "raw": "var(--wp--preset--spacing--30, 1rem)", "reason": "falls back to the same preset 30"},
-    "right": {"status": "declared", "raw": "var(--wp--preset--spacing--40, 1.5rem)"},
-    "bottom": {"status": "declared", "raw": "var(--wp--preset--spacing--30, 1rem)"},
-    "left": {"status": "declared", "raw": "var(--wp--preset--spacing--40, 1.5rem)"}
+    "top": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--30, 1rem)",
+     "reason": "falls back to the same preset 30",
+     "declared": "var(--wp--preset--spacing--30)"
+    },
+    "right": {
+     "status": "declared",
+     "raw": "20px",
+     "declared": "20px",
+     "reason": "paints the same length 20px"
+    },
+    "bottom": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--30, 1rem)"
+    },
+    "left": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--40, 1.5rem)"
+    }
    }
   },
   "declaredbad:padding": {
-   "family": "padding", "presets": "true", "root_element": true,
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
    "sides": {
-    "top": {"status": "default", "raw": "var(--wp--preset--spacing--30, 1rem)", "reason": "already a preset"},
-    "right": {"status": "stay-unset", "raw": "0"},
-    "bottom": {"status": "declared", "raw": "var(--wp--preset--spacing--10, 0.25rem)"},
-    "left": {"status": "default", "raw": "12px", "slug": "30", "tie": true}
+    "top": {
+     "status": "default",
+     "raw": "var(--wp--preset--spacing--30, 1rem)",
+     "reason": "already a preset",
+     "declared": "var(--wp--preset--spacing--40)"
+    },
+    "right": {
+     "status": "default",
+     "raw": "16px",
+     "slug": "30",
+     "proposed": "var(--wp--preset--spacing--30)",
+     "declared": "16px"
+    },
+    "bottom": {
+     "status": "default",
+     "raw": "var(--wp--preset--spacing--10, 0.25rem)",
+     "reason": "already a preset",
+     "declared": "var(--wp--preset--spacing--10)"
+    },
+    "left": {
+     "status": "default",
+     "raw": "12px",
+     "slug": null,
+     "proposed": "12px",
+     "declared": "14px"
+    }
+   }
+  },
+  "declaredbad:margin": {
+   "family": "margin",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "default",
+     "raw": "var(--wp--preset--spacing--30, 12px)",
+     "slug": "30",
+     "reason": "already a preset",
+     "declared": "var(--wp--preset--spacing--30)"
+    }
+   }
+  },
+  "variant:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "variant-dependent",
+     "raw": "20px",
+     "reason": "28px",
+     "declared": "20px"
+    },
+    "right": {
+     "status": "variant-dependent",
+     "raw": "1rem",
+     "reason": "(max-width: 600px)"
+    },
+    "bottom": {
+     "status": "default",
+     "raw": "20px",
+     "slug": null,
+     "proposed": "20px"
+    },
+    "left": {
+     "status": "default",
+     "raw": "1rem",
+     "slug": "30",
+     "proposed": "var(--wp--preset--spacing--30)"
+    }
    }
   }
  },
- "absent_attributes": ["dbonly:padding"],
+ "absent_attributes": [
+  "dbonly:padding"
+ ],
  "db_crosscheck": {
-  "source_only": ["tie:padding"],
-  "db_only": ["dbonly:padding"]
+  "source_only": [
+   "tie:padding"
+  ],
+  "db_only": [
+   "dbonly:padding"
+  ]
  },
  "declared_defaults": {
-  "declared:padding:top": [], "declared:padding:right": [], "declared:padding:bottom": [], "declared:padding:left": [],
-  "declaredbad:padding:top": ["falls back to preset 30, the declaration names 40"],
-  "declaredbad:padding:bottom": ["missing from snapshot(s) ['alpha']"],
-  "declaredbad:padding:left": ["is not a literal var(--wp--preset--spacing--N)", "stylesheet paints '12px'"]
+  "declared:padding:top": [],
+  "declared:padding:right": [],
+  "declared:padding:bottom": [],
+  "declared:padding:left": [],
+  "declaredbad:padding:top": [
+   "falls back to preset 30, the declaration names 40",
+   "passes no defaults prop"
+  ],
+  "declaredbad:padding:right": [
+   "'16px' equals preset 30 (1rem) exactly"
+  ],
+  "declaredbad:padding:bottom": [
+   "missing from snapshot(s) ['alpha']",
+   "passes no defaults prop"
+  ],
+  "declaredbad:padding:left": [
+   "stylesheet paints '12px', the declaration names '14px'"
+  ],
+  "declaredbad:margin:top": [
+   "fallback '12px' is not preset 30's theme size 1rem",
+   "not this attribute (margin)"
+  ],
+  "variant:padding:top": [
+   "a variant or media rule repaints this side (.sgs-variant.sgs-variant--big = 28px)"
+  ]
  },
  "summary": {
-  "attributes_surveyed": 25, "sides_total": 100, "default": 53, "em_ambiguous": 4, "already_preset": 10,
-  "stay_unset": 26, "unknown": 8, "exempt": 4, "flagged_over_50pc": 2, "ties": 6, "mounts_without_presets": 1,
-  "declared": 5, "declared_problems": 3
+  "attributes_surveyed": 27,
+  "sides_total": 105,
+  "default": 58,
+  "em_ambiguous": 4,
+  "already_preset": 10,
+  "undeclared_exact_matches": 31,
+  "stay_unset": 25,
+  "unknown": 8,
+  "exempt": 4,
+  "mounts_without_presets": 1,
+  "declared": 4,
+  "declared_presets": 3,
+  "declared_literals": 1,
+  "declared_problems": 6,
+  "variant_dependent": 2
  }
 }

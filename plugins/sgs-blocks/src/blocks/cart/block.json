@@ -43,9 +43,9 @@
 			"spacingDefaults": {
 				"panelFooterPadding": {
 					"top": "var(--wp--preset--spacing--30)",
-					"right": "var(--wp--preset--spacing--40)",
+					"right": "20px",
 					"bottom": "var(--wp--preset--spacing--30)",
-					"left": "var(--wp--preset--spacing--40)"
+					"left": "20px"
 				},
 				"panelEmptyPadding": {
 					"top": "var(--wp--preset--spacing--40)",

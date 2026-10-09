@@ -217,6 +217,31 @@ describe( 'SgsBoxControl declared defaults', () => {
 		expect( selects()[ 1 ].options[ 0 ].textContent ).toBe( 'Default (M)' );
 	} );
 
+	test( 'a declared literal length reads "Default (20px)" with the length as placeholder, writing nothing', () => {
+		const writes = renderControlled(
+			{},
+			{ defaults: { top: preset( 30 ), right: '20px', bottom: preset( 30 ), left: '20px' } }
+		);
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '', '', '', '' ] );
+		expect( selects().map( ( s ) => s.options[ 0 ].textContent ) ).toEqual( [
+			'Default (S)',
+			'Default (20px)',
+			'Default (S)',
+			'Default (20px)',
+		] );
+		expect( valueBoxes().map( ( b ) => b.placeholder ) ).toEqual( [ '1rem', '20px', '1rem', '20px' ] );
+		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '', '', '', '' ] );
+		expect( writes ).toEqual( [] );
+	} );
+
+	test( 'without presets the value box shows the declared default as its placeholder (a preset as its size)', () => {
+		const writes = renderControlled( {}, { presets: false, defaults: { top: preset( 40 ), right: '20px' }, sides: [ 'top', 'right' ] } );
+		expect( selects() ).toHaveLength( 0 );
+		expect( valueBoxes().map( ( b ) => b.placeholder ) ).toEqual( [ '1.5rem', '20px' ] );
+		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '', '' ] );
+		expect( writes ).toEqual( [] );
+	} );
+
 	test( 'negative control: without defaults an untouched side reads plain Default with no placeholder', () => {
 		renderControlled();
 		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );

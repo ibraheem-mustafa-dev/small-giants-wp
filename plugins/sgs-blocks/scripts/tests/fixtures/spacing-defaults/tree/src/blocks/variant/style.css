@@ -1,0 +1,21 @@
+.sgs-variant {
+	padding: 20px 1rem;
+}
+
+.sgs-variant.sgs-variant--big {
+	padding-top: 28px;
+}
+
+.sgs-variant:hover {
+	padding-left: 2px;
+}
+
+@media (max-width: 600px) {
+	.sgs-variant {
+		padding-right: 12px;
+	}
+}
+
+.sgs-variant.sgs-variant--same {
+	padding-bottom: 20px;
+}

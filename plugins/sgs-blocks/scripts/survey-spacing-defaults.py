@@ -7,8 +7,10 @@ or touches the database (it opens the framework DB with mode=ro, and never impor
 scripts/converter/db/db_lookup.py, which migrates the schema on import).
 
 Plan: .claude/plans/2026-10-08-icon-unification-and-spacing-control.md, Bean decision D1 and
-Phase E. D1 gives every untouched Spacing side a theme spacing PRESET as its default. This
-census is the detector that runs first (THE migration method: survey, check, self-test):
+Phase E. D1 (refined by Bean 2026-10-09) DECLARES every untouched Spacing side's default: a theme
+spacing preset when the side's value equals that preset's size exactly, otherwise the literal
+length it already is (no snapping, so nothing moves). This census is the detector that runs
+first (THE migration method: survey, check, self-test):
 
   1. POPULATION, from source. A Babel AST pass (embedded below, run with the plugin's own
      @babel/parser) finds every JSX mount of SgsBoxControl, ResponsiveBoxControl and
@@ -25,17 +27,18 @@ census is the detector that runs first (THE migration method: survey, check, sel
      properties, longhand/logical/shorthand sides, specificity and !important) and the base rule
      that wins each side is recorded. render.php `var(--x, fallback)` padding/margin text is
      reported when the stylesheet is silent.
-  3. NEAREST PRESET per side against theme/sgs-theme/theme.json spacingSizes (static `size`;
-     fluid min/max reported): smallest absolute px difference, the larger preset on a tie,
-     flagged when the difference exceeds 50% of the value. em is `em-ambiguous` when the
-     element sets its own font-size.
+  3. PROPOSAL per side against theme/sgs-theme/theme.json spacingSizes (static `size`, 1rem =
+     16px; fluid min/max reported): the preset whose size equals the side's px exactly, else the
+     literal length itself. em is `em-ambiguous` when the element sets its own font-size.
   4. STAY-UNSET: 0, auto, inherit-likes, percentages, the container layout gutter, or no
-     declaration. `sgs/button` padding is `exempt: theme-button-presets`.
+     declaration. `sgs/button` padding is `exempt: theme-button-presets`. VARIANT-DEPENDENT: a
+     side some variant-class or @media/@container rule on the element itself repaints with
+     another value has no single default, so it is reported and never declared.
   5. SNAPSHOTS: the spacing slugs each sites/*/theme-snapshot.json declares. A snapshot with no
      scale is assumed to inherit theme.json's (stated, not verified in WordPress core).
   6. DECLARED DEFAULTS: block.json::supports.sgs.spacingDefaults names, per attribute and side,
-     the `var(--wp--preset--spacing--N)` an untouched side paints (Bean D1: declared, never
-     stored). A side whose stylesheet falls back to that same preset reports `declared`.
+     what an untouched side paints (Bean D1: declared, never stored): `var(--wp--preset--spacing--N)`
+     or a literal length. A side whose stylesheet paints exactly that reports `declared`.
 
 Usage:
     python scripts/survey-spacing-defaults.py --survey [--out census.json]
@@ -47,9 +50,12 @@ Usage:
 acknowledged in the baseline (`--strict` ignores the acknowledgement), (b) a stylesheet
 length on a Spacing-governed side that the committed baseline
 (scripts/data/spacing-defaults-census.json) does not hold, and (c) a declared default that is
-not a literal preset var(), names a side no Spacing control governs, whose stylesheet fallback
-is not that same preset, or whose slug a snapshot's scale lacks (never acknowledgeable).
-`var(--wp--preset--spacing--N)` is always allowed: that is the migration target.
+neither a literal preset var() nor a length, names a side no Spacing control governs, differs
+from what the stylesheet paints (another preset, a var() fallback that is not the preset's theme
+size, or another length), is a length equal to a preset's size (declare the preset), or names a
+slug a snapshot's scale lacks, or is edited by a mount that passes no `defaults` prop (or reads
+another attribute's spacingDefaultsFor) (never acknowledgeable). `--strict` also fails (d) a governed side
+the stylesheet paints (a length or a preset) that no declaration covers.
 
 LIMITS (stated, not hidden): tier-conditional rules (@media/@container) are not base defaults;
 a stylesheet outside src/blocks/<block>/style.css (theme CSS, shared assets) is not read; a
@@ -81,6 +87,7 @@ FAMILIES_WITH_DEFAULTS = ('padding', 'margin')
 DEFINITION_FILES = {'src/components/SgsBoxControl.js', 'src/components/ResponsiveBoxControl.js', 'src/components/ResponsiveOverride.js', 'src/components/SgsBorderControl.js'}
 PRESET_VAR = re.compile(r'var\(\s*--wp--preset--spacing--([\w-]+)\s*(?:,[^)]*)?\)')
 DECLARED_VAR = re.compile(r'var\(\s*--wp--preset--spacing--([\w-]+)\s*\)')
+PRESET_FALLBACK = re.compile(r'var\(\s*--wp--preset--spacing--[\w-]+\s*,\s*([^)]*?)\s*\)')
 BUTTON_PRESETS = '--wp--custom--button-presets--'
 MUTATE = set()  # self-test negative control: names of deliberately broken rules
 
@@ -186,6 +193,13 @@ function presetsOf(el) {
 	if (e && e.type === 'BooleanLiteral') return { kind: String(e.value), value: e.value };
 	if (e && e.type === 'ArrayExpression' && e.elements.every((x) => x && strOf(x) !== null)) return { kind: 'list', value: e.elements.map(strOf) };
 	return { kind: 'dynamic', value: null, expr: CODE.slice(e.start, e.end) };
+}
+function defaultsOf(el) {
+	const a = attrOf(el, 'defaults');
+	const e = exprOf(a);
+	if (!e) return null;
+	const call = e.type === 'CallExpression' && e.callee.type === 'Identifier' && e.callee.name === 'spacingDefaultsFor';
+	return { expr: CODE.slice(e.start, e.end), attr: call && e.arguments[1] ? strOf(e.arguments[1]) : null, call };
 }
 function sidesOf(el) {
 	const a = attrOf(el, 'sides');
@@ -297,7 +311,7 @@ for (const f of files) {
 				}
 			}
 			out.mounts.push({
-				file: r, line: el.loc.start.line, component: canonical, presets: presetsOf(el), sides: sidesOf(el),
+				file: r, line: el.loc.start.line, component: canonical, presets: presetsOf(el), defaults: defaultsOf(el), sides: sidesOf(el),
 				label: strOf(exprOf(attrOf(el, 'label'))), setKeys: [...setKeys], dynamicKeys: [...dyn], dynResolved,
 				strings: [...strings], valueNames: [...valueNames], overrideWrapped, enclosing, enclosingParams,
 			});
@@ -379,21 +393,21 @@ def load_scale(theme_json):
     return out
 
 
-def nearest_preset(px, scale):
-    """Smallest absolute px difference; the larger preset on a tie."""
-    best = None
-    for p in scale:
-        d = abs(px - p['px'])
-        if best is None or d < best[0] - 1e-9:
-            best = (d, p)
-        elif abs(d - best[0]) <= 1e-9:
-            tie_wins = p['px'] < best[1]['px'] if 'tie-smaller' in MUTATE else p['px'] > best[1]['px']
-            if tie_wins:
-                best = (d, p)
-    d, p = best
-    tie = sum(1 for q in scale if abs(abs(px - q['px']) - d) <= 1e-9) > 1
-    over = d > 0.5 * px if 'no-flag' not in MUTATE else False
-    return {'slug': p['slug'], 'name': p['name'], 'preset_px': p['px'], 'diff_px': round(d, 4), 'ratio': round(d / px, 4) if px else None, 'tie': tie, 'over_50pc': over}
+def exact_preset(px, scale):
+    """The preset whose static size is exactly `px`, else None."""
+    return next((p for p in scale if p['px'] is not None and abs(px - p['px']) <= 1e-9), None)
+
+
+def propose(px, raw, scale):
+    """Bean D1 (2026-10-09): a preset only on an exact size match; any other value stays the literal it is.
+
+    The `snap` self-test control restores the old nearest-preset snap, which the fixture must catch."""
+    p = exact_preset(px, scale)
+    if p is None and 'snap' in MUTATE:
+        p = min(scale, key=lambda q: abs(px - q['px']))
+    if p:
+        return {'kind': 'preset', 'value': f'var(--wp--preset--spacing--{p["slug"]})', 'slug': p['slug'], 'name': p['name'], 'preset_px': p['px']}
+    return {'kind': 'literal', 'value': raw, 'slug': None, 'name': None, 'preset_px': None}
 
 
 # ----------------------------------------------------------------------------------------------
@@ -677,6 +691,7 @@ def resolve_element_css(rules, names, aliases):
     """{'matched': [rule...], 'custom': {..}, 'mentioned': bool, 'variants': n, 'font_size': bool}."""
     matched = []
     variants = 0
+    variant_rules = []
     pat = re.compile(r'\.(' + '|'.join(re.escape(n) for n in names) + r')(?![-\w])') if names else None
     for r in rules:
         hits = []
@@ -686,6 +701,9 @@ def resolve_element_css(rules, names, aliases):
                 hits.append((s, bm))
             elif pat and pat.search(s):
                 variants += 1
+                comps = split_compounds(s)
+                if comps and pat.search(comps[-1]) and not re.search(r':(hover|focus|focus-visible|focus-within|active|visited)\b', comps[-1]):
+                    variant_rules.append({'rule': r, 'sel': s})
         for s, bm in hits:
             matched.append({'rule': r, 'sel': s, 'spec': bm[0], 'where': bm[1]})
     custom = {}
@@ -694,9 +712,24 @@ def resolve_element_css(rules, names, aliases):
             if prop.startswith('--'):
                 custom[prop] = val
     return {
-        'matched': matched, 'custom': custom, 'variants': variants,
+        'matched': matched, 'custom': custom, 'variants': variants, 'variant_rules': variant_rules,
         'font_size': any(d[0] == 'font-size' for m in matched for d in m['rule']['decls']),
     }
+
+
+def variant_side_values(css_info, fam, root_custom):
+    """{side: [{'sel', 'cond', 'raw'}]}: what each variant or media/container rule paints the element's sides."""
+    custom = dict(root_custom)
+    custom.update(css_info['custom'])
+    out = {}
+    for m in css_info['variant_rules']:
+        for prop, val, _ in m['rule']['decls']:
+            if not prop.startswith(fam):
+                continue
+            resolved, _ = resolve_vars(val, custom)
+            for side, tok in side_values(prop, resolved, fam).items():
+                out.setdefault(side, []).append({'sel': m['sel'], 'cond': ' '.join(m['rule']['cond']), 'raw': tok})
+    return out
 
 
 def painted_sides(css_info, fam, root_custom):
@@ -990,7 +1023,7 @@ def side_row(raw_info, ctx):
         p = scale.get(pm.group(1))
         if not p:
             return {**row, 'status': 'unknown', 'reason': f'preset slug {pm.group(1)} is not in theme.json'}
-        return {**row, 'status': 'default', 'reason': 'already a preset', 'px': p['px'], 'already_preset': True, 'nearest': {'slug': p['slug'], 'name': p['name'], 'preset_px': p['px'], 'diff_px': 0.0, 'ratio': 0.0, 'tie': False, 'over_50pc': False}}
+        return {**row, 'status': 'default', 'reason': 'already a preset', 'px': p['px'], 'already_preset': True, 'proposed': {'kind': 'preset', 'value': f'var(--wp--preset--spacing--{p["slug"]})', 'slug': p['slug'], 'name': p['name'], 'preset_px': p['px']}}
     if low == 'auto':
         return {**row, 'status': 'stay-unset', 'reason': 'auto'}
     if low in ('inherit', 'initial', 'unset', 'revert', 'revert-layer'):
@@ -1008,8 +1041,8 @@ def side_row(raw_info, ctx):
         return {**row, 'status': 'unknown', 'reason': 'negative-length (no preset is negative)'}
     row['px'] = round(px, 4)
     if note == 'em' and ctx['font_size']:
-        return {**row, 'status': 'em-ambiguous', 'reason': 'element sets its own font-size; em is not 16px', 'nearest_if_16px': nearest_preset(px, ctx['scale'])}
-    return {**row, 'status': 'default', 'reason': 'stylesheet length', 'nearest': nearest_preset(px, ctx['scale'])}
+        return {**row, 'status': 'em-ambiguous', 'reason': 'element sets its own font-size; em is not 16px', 'proposed_if_16px': propose(px, raw, ctx['scale'])}
+    return {**row, 'status': 'default', 'reason': 'stylesheet length', 'proposed': propose(px, raw, ctx['scale'])}
 
 
 def mount_presets(m):
@@ -1042,16 +1075,25 @@ def build_rows(tree, blocks, hits, scale):
             sides_gov |= set(SIDES) if s in (None, 'dynamic') else {x for x in s if x in SIDES}
         kinds = [h['mount']['presets']['kind'] for h in hs]
         presets = 'true' if 'true' in kinds else 'list' if 'list' in kinds else 'dynamic' if 'dynamic' in kinds else 'false'
-        mounts = [{'file': h['mount']['file'], 'line': h['mount']['line'], 'component': h['mount']['component'], 'presets': mount_presets(h['mount']), 'sides': h['mount']['sides'], 'via': h['via']} for h in hs]
+        mounts = [{'file': h['mount']['file'], 'line': h['mount']['line'], 'component': h['mount']['component'], 'presets': mount_presets(h['mount']), 'defaults': h['mount'].get('defaults'), 'sides': h['mount']['sides'], 'via': h['via']} for h in hs]
         row = {'block': b, 'attr': attr, 'family': fam, 'family_source': esrc, 'element': element, 'root_element': root, 'classes': sorted(names), 'presets': presets, 'mounts': mounts, 'sides': []}
         if fam in FAMILIES_WITH_DEFAULTS:
             info = resolve_element_css(blk['rules'], names, aliases)
             root_info = resolve_element_css(blk['rules'], *element_classes(blk, 'wrapper', True))
             painted = painted_sides(info, fam, root_info['custom'])
             ctx = {'scale': scale, 'fam': fam, 'block': b, 'attr': attr, 'css_info': info, 'font_size': info['font_size'], 'php_fb': render_fallbacks(blk['php'], fam), 'names': names, 'custom_names': blk['custom_names'], 'has_css': blk['has_css'], 'has_scss': blk['has_scss'], 'mentioned': mentions(blk['rules'], names)}
+            overrides = variant_side_values(info, fam, root_info['custom'])
             for s in SIDES:
                 if s in sides_gov:
-                    row['sides'].append(side_row({'side': s, 'painted': painted.get(s)}, ctx))
+                    srow = side_row({'side': s, 'painted': painted.get(s)}, ctx)
+                    base_px = to_px(srow['raw'])[0] if srow.get('raw') and not PRESET_VAR.fullmatch(srow['raw']) else srow.get('px')
+                    diff = [o for o in overrides.get(s, []) if o['raw'] != srow.get('raw') and (base_px is None or to_px(o['raw'])[0] != base_px)]
+                    if diff:
+                        srow['overridden_by'] = diff
+                        if srow['status'] == 'default':
+                            srow['status'] = 'variant-dependent'
+                            srow['reason'] = f'a variant or media rule paints {diff[0]["raw"]} ({diff[0]["sel"]}{" " + diff[0]["cond"] if diff[0]["cond"] else ""}); one declared default would misreport it'
+                    row['sides'].append(srow)
             row['variant_rules'] = info['variants']
         else:
             row['not_spacing'] = f'{fam}: listed, no Spacing defaults computed'
@@ -1115,11 +1157,55 @@ def snapshot_report(tree, scale):
     return out
 
 
-def declared_report(blocks, rows, snaps):
+def declared_problems(value, srow, scale):
+    """Why a declared side's value is not what its stylesheet paints (Bean D1, 2026-10-09)."""
+    if srow.get('overridden_by') and 'declared-ignore-variant' not in MUTATE:
+        o = srow['overridden_by'][0]
+        return [f'a variant or media rule repaints this side ({o["sel"]}{" " + o["cond"] if o["cond"] else ""} = {o["raw"]}), so one declared default would misreport it']
+    raw = (srow.get('raw') or '').strip()
+    sm = PRESET_VAR.fullmatch(raw)
+    m = DECLARED_VAR.fullmatch(value.strip())
+    if m:
+        slug = m.group(1)
+        if not sm:
+            return [f'stylesheet paints {srow.get("raw")!r} ({srow["status"]}), not the declared preset']
+        if sm.group(1) != slug and 'declared-ignore-slug' not in MUTATE:
+            return [f'stylesheet falls back to preset {sm.group(1)}, the declaration names {slug}']
+        preset = next((p for p in scale if p['slug'] == slug), None)
+        fb = PRESET_FALLBACK.fullmatch(raw)
+        fb_px = to_px(fb.group(1))[0] if fb else None
+        if preset and (fb_px is None or abs(fb_px - preset['px']) > 1e-9) and 'declared-ignore-fallback' not in MUTATE:
+            have = fb.group(1) if fb else None
+            return [f"the stylesheet var() fallback {have!r} is not preset {slug}'s theme size {preset['size']}"]
+        return []
+    px = to_px(value)[0]
+    if sm:
+        return [f'stylesheet paints the preset {raw!r}, the declaration names the length {value!r}']
+    have = to_px(raw)[0] if raw else None
+    if have is None or abs(have - px) > 1e-9:
+        return [f'stylesheet paints {srow.get("raw")!r}, the declaration names {value!r}']
+    exact = exact_preset(px, scale)
+    if exact and 'declared-ignore-exact' not in MUTATE:
+        return [f'{value!r} equals preset {exact["slug"]} ({exact["size"]}) exactly; declare and paint var(--wp--preset--spacing--{exact["slug"]}, {exact["size"]})']
+    return []
+
+
+def is_declarable(value):
+    """A literal preset var() or a plain px/rem length."""
+    if not isinstance(value, str) or not value.strip():
+        return False
+    if DECLARED_VAR.fullmatch(value.strip()):
+        return True
+    px, unit, note = to_px(value)
+    return px is not None and px > 0 and unit in ('px', 'rem') and not note
+
+
+def declared_report(blocks, rows, snaps, scale):
     """One entry per side a block.json::supports.sgs.spacingDefaults declares, with its problems.
 
-    A side whose declaration and stylesheet fallback name the same preset is marked `declared` on
-    its census row; a snapshot that lacks the slug is still a problem for the gate."""
+    A side whose stylesheet paints exactly its declaration (the same preset with the theme size as
+    its fallback, or the same length) is marked `declared` on its census row; a snapshot that lacks
+    a declared slug is still a problem for the gate."""
     out = []
     for b, blk in sorted(blocks.items()):
         decl = ((blk['json'].get('supports') or {}).get('sgs') or {}).get('spacingDefaults')
@@ -1138,8 +1224,8 @@ def declared_report(blocks, rows, snaps):
                 problems = []
                 m = DECLARED_VAR.fullmatch(value.strip()) if isinstance(value, str) else None
                 slug = m.group(1) if m else None
-                if not m:
-                    problems.append(f'declared value {value!r} is not a literal var(--wp--preset--spacing--N)')
+                if not is_declarable(value):
+                    problems.append(f'declared value {value!r} is neither a literal var(--wp--preset--spacing--N) nor a px/rem length')
                 if side not in SIDES:
                     problems.append(f'{side!r} is not a side')
                 elif not row:
@@ -1148,22 +1234,25 @@ def declared_report(blocks, rows, snaps):
                     problems.append(f'the attribute is {row["family"]}, not padding or margin')
                 elif side not in got:
                     problems.append('no Spacing control governs this side')
-                else:
-                    srow = got[side]
-                    sm = PRESET_VAR.fullmatch((srow.get('raw') or '').strip())
-                    if not sm:
-                        problems.append(f'stylesheet paints {srow.get("raw")!r} ({srow["status"]}), not the declared preset')
-                    elif slug and sm.group(1) != slug and 'declared-ignore-slug' not in MUTATE:
-                        problems.append(f'stylesheet falls back to preset {sm.group(1)}, the declaration names {slug}')
+                elif not problems:
+                    problems += declared_problems(value, got[side], scale)
+                if row and 'mount-ignore-defaults' not in MUTATE:
+                    for mt in row['mounts']:
+                        md = mt.get('defaults')
+                        if not md:
+                            problems.append(f'the mount at {mt["file"]}:{mt["line"]} passes no defaults prop, so the control cannot show the declared default')
+                        elif md['call'] and md['attr'] is not None and md['attr'] != attr:
+                            problems.append(f'the mount at {mt["file"]}:{mt["line"]} reads {md["expr"]}, not this attribute ({attr})')
                 agree = not problems
                 gaps = sorted(site for site, v in snaps.items() if slug and slug not in v['slugs'])
                 if gaps:
                     problems.append(f'slug {slug} is missing from snapshot(s) {gaps}')
                 if row and side in got:
-                    got[side]['declared'] = slug
+                    got[side]['declared'] = value
                     if agree:
                         got[side]['status'] = 'declared'
-                        got[side]['reason'] = f'declared default (supports.sgs.spacingDefaults); the stylesheet falls back to the same preset {slug}'
+                        got[side]['reason'] = (f'declared default (supports.sgs.spacingDefaults); the stylesheet falls back to the same preset {slug}' if slug
+                                               else f'declared default (supports.sgs.spacingDefaults); the stylesheet paints the same length {value}')
                 out.append({'block': b, 'attr': attr, 'side': side, 'value': value, 'slug': slug, 'problems': problems})
     return out
 
@@ -1178,8 +1267,8 @@ def build_census(tree):
     unresolved += [{'what': 'file did not parse', 'where': p} for p in ast['parseErrors']]
     delegating = sorted({f'{m["file"]}:{m["line"]}' for m in ast['mounts'] if m['file'] == 'src/components/SgsBorderControl.js'})
     snaps = snapshot_report(tree, scale)
-    declared = declared_report(blocks, rows, snaps)
-    proposed = sorted({s['nearest']['slug'] for r in rows.values() for s in r['sides'] if s['status'] == 'default'} | {d['slug'] for d in declared if d['slug']})
+    declared = declared_report(blocks, rows, snaps, scale)
+    proposed = sorted({s['proposed']['slug'] for r in rows.values() for s in r['sides'] if s['status'] == 'default' and s['proposed']['slug']} | {d['slug'] for d in declared if d['slug']})
     gaps = {site: sorted(set(proposed) - set(v['slugs']), key=int) for site, v in snaps.items() if set(proposed) - set(v['slugs'])}
     allsides = [s for r in rows.values() for s in r['sides']]
     spacing = [r for r in rows.values() if r['family'] in FAMILIES_WITH_DEFAULTS]
@@ -1199,11 +1288,13 @@ def build_census(tree):
         'non_spacing_attributes': len(rows) - len(spacing), 'sides_total': len(allsides),
         'sides_with_stylesheet_default': st('default') + st('em-ambiguous'), 'default': st('default'), 'em_ambiguous': st('em-ambiguous'),
         'already_preset': sum(1 for s in allsides if s.get('already_preset')),
-        'lengths_to_snap': sum(1 for s in allsides if s['status'] == 'default' and not s.get('already_preset')),
-        'stay_unset': st('stay-unset'), 'unknown': st('unknown'), 'exempt': st('exempt'), 'declared': st('declared'),
+        'undeclared_presets': sum(1 for s in allsides if s['status'] == 'default' and s.get('already_preset')),
+        'undeclared_lengths': sum(1 for s in allsides if s['status'] == 'default' and not s.get('already_preset')),
+        'undeclared_exact_matches': sum(1 for s in allsides if s['status'] == 'default' and not s.get('already_preset') and s['proposed']['kind'] == 'preset'),
+        'stay_unset': st('stay-unset'), 'unknown': st('unknown'), 'exempt': st('exempt'), 'variant_dependent': st('variant-dependent'), 'declared': st('declared'),
+        'declared_presets': sum(1 for s in allsides if s['status'] == 'declared' and DECLARED_VAR.fullmatch(s.get('declared') or '')),
+        'declared_literals': sum(1 for s in allsides if s['status'] == 'declared' and not DECLARED_VAR.fullmatch(s.get('declared') or '')),
         'declared_problems': sum(1 for d in declared if d['problems']),
-        'flagged_over_50pc': sum(1 for s in allsides if s['status'] == 'default' and s['nearest']['over_50pc']),
-        'ties': sum(1 for s in allsides if s['status'] == 'default' and s['nearest']['tie']),
         'mounts_without_presets': len(census['mounts_without_presets']),
         'mounts_with_dynamic_presets': len(census['mounts_with_dynamic_presets']),
         'snapshot_slug_gaps': {k: v for k, v in gaps.items()},
@@ -1218,13 +1309,14 @@ def length_map(census):
     """'block:attr:side' -> stylesheet text for every governed side whose length a preset could replace.
 
     Zero, auto, inherit and percentage sides stay unset by design, an exempt block follows its own
-    theme presets, and an already-preset side is the migration target, so none of those gate."""
+    theme presets, an already-preset side is a preset, and a declared side is governed by its
+    declaration, so none of those gate here."""
     return {f'{r["block"]}:{r["attr"]}:{s["side"]}': s['raw'] for r in census['attributes'] for s in r['sides']
-            if s.get('raw') and s['status'] in ('default', 'em-ambiguous', 'unknown') and not s.get('already_preset')}
+            if s.get('raw') and s['status'] in ('default', 'em-ambiguous', 'unknown', 'variant-dependent') and not s.get('already_preset')}
 
 
 def make_baseline(census):
-    return {'version': 1, 'note': 'Stylesheet lengths on Spacing-governed sides as of the last --write-baseline. Phase E removes entries by moving them to var(--wp--preset--spacing--N).',
+    return {'version': 1, 'note': 'Stylesheet lengths on Spacing-governed sides, not yet declared, as of the last --write-baseline. Phase E removes entries by declaring them in block.json::supports.sgs.spacingDefaults (a preset on an exact size match, else the literal).',
             'lengths': dict(sorted(length_map(census).items())),
             'acknowledged_slug_gaps': {k: v for k, v in sorted(census['slug_gaps'].items())}}
 
@@ -1248,6 +1340,11 @@ def run_check(census, baseline, strict=False):
     for d in census.get('declared_defaults', []):
         for problem in d['problems']:
             fails.append(f'declared default {d["block"]}:{d["attr"]}:{d["side"]}: {problem}')
+    undeclared = [(r, s) for r in census['attributes'] for s in r['sides'] if s['status'] == 'default']
+    for r, s in undeclared if strict else ():
+        fails.append(f'undeclared default {r["block"]}:{r["attr"]}:{s["side"]} = {s["raw"]!r}; declare {s["proposed"]["value"]!r} in block.json::supports.sgs.spacingDefaults')
+    if undeclared and not strict:
+        notes.append(f'{len(undeclared)} governed side(s) paint a default no declaration covers (--strict fails on them)')
     stale = sorted(set(base_len) - set(length_map(census)))
     if stale:
         notes.append(f'{len(stale)} baseline entr(ies) no longer hold a stylesheet length (migrated or removed)')
@@ -1262,16 +1359,16 @@ def top_defaults(census, n=15):
     for r in census['attributes']:
         for s in r['sides']:
             if s['status'] == 'default' and not s.get('already_preset'):
-                g = groups.setdefault((s['raw'], s['nearest']['slug'], s['nearest']['name']), [])
+                g = groups.setdefault((s['raw'], s['proposed']['value'], s['proposed']['name'] or 'literal'), [])
                 g.append(f'{r["block"]}.{r["attr"]}.{s["side"]}')
     ranked = sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[0][0]))
-    return [{'current': k[0], 'preset_slug': k[1], 'preset_name': k[2], 'sides': len(v), 'examples': v[:4]} for k, v in ranked[:n]]
+    return [{'current': k[0], 'declare': k[1], 'preset_name': k[2], 'sides': len(v), 'examples': v[:4]} for k, v in ranked[:n]]
 
 
 def human_summary(census):
     s = census['summary']
     lines = ['spacing-defaults census', '=' * 23]
-    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'lengths_to_snap', 'stay_unset', 'unknown', 'exempt', 'declared', 'declared_problems', 'flagged_over_50pc', 'ties', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
+    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'undeclared_presets', 'undeclared_lengths', 'undeclared_exact_matches', 'stay_unset', 'unknown', 'exempt', 'variant_dependent', 'declared', 'declared_presets', 'declared_literals', 'declared_problems', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
         lines.append(f'  {k:32} {s[k]}')
     dbc = census['db_crosscheck']
     if dbc.get('available'):
@@ -1281,9 +1378,9 @@ def human_summary(census):
         gap = census['slug_gaps'].get(site)
         lines.append(f'  snapshot {site}: {"declares " + str(len(v["slugs"])) + " slugs" if v["declares_scale"] else "no scale (inherits theme.json, assumed)"}{"; MISSING " + str(gap) if gap else ""}')
     lines.append(f'  unresolved: {len(census["unresolved"])}')
-    lines.append('  top proposed defaults:')
+    lines.append('  undeclared lengths -> declaration:')
     for t in top_defaults(census):
-        lines.append(f'    {t["sides"]:4} x {t["current"]:>10} -> {t["preset_slug"]} ({t["preset_name"]})  e.g. {t["examples"][0]}')
+        lines.append(f'    {t["sides"]:4} x {t["current"]:>10} -> {t["declare"]} ({t["preset_name"]})  e.g. {t["examples"][0]}')
     return '\n'.join(lines)
 
 
@@ -1316,9 +1413,9 @@ def assertions(census):
             if not s:
                 fails.append(f'{key}:{side}: side not governed/reported')
                 continue
-            flat = {'status': s['status'], 'raw': s.get('raw'), 'px': s.get('px'), 'slug': (s.get('nearest') or s.get('nearest_if_16px') or {}).get('slug'),
-                    'tie': (s.get('nearest') or {}).get('tie'), 'over_50pc': (s.get('nearest') or {}).get('over_50pc'),
-                    'where': (s.get('source') or {}).get('where'), 'reason': s.get('reason')}
+            prop = s.get('proposed') or s.get('proposed_if_16px') or {}
+            flat = {'status': s['status'], 'raw': s.get('raw'), 'px': s.get('px'), 'slug': prop.get('slug'), 'proposed': prop.get('value'),
+                    'declared': s.get('declared'), 'where': (s.get('source') or {}).get('where'), 'reason': s.get('reason')}
             for k, v in w.items():
                 have = flat.get(k)
                 if (k == 'reason' and v not in (have or '')) or (k != 'reason' and have != v):
@@ -1354,8 +1451,8 @@ def gate_assertions(census):
     planted = [x for x in f if x.startswith('declared default ')]
     if [x for x in f if x not in planted]:
         fails.append(f'check must pass on its own baseline apart from the planted declared defaults: {[x for x in f if x not in planted][:2]}')
-    if not planted or any(not x.startswith('declared default declaredbad:') for x in planted):
-        fails.append(f'check must fail on exactly the planted declared-default problems (declaredbad), got {planted}')
+    if not planted or any(not x.startswith(('declared default declaredbad:', 'declared default variant:')) for x in planted):
+        fails.append(f'check must fail on exactly the planted declared-default problems (declaredbad, variant), got {planted}')
     broken = copy.deepcopy(base)
     key = next((k for k, v in broken['lengths'].items() if not PRESET_VAR.fullmatch(v.strip())), None)
     broken['lengths'].pop(key, None)
@@ -1370,14 +1467,24 @@ def gate_assertions(census):
     f, _ = run_check(census, base, strict=True)
     if census['slug_gaps'] and not any('lacks proposed default' in x for x in f):
         fails.append('--strict did not fail on an acknowledged snapshot slug gap')
+    undeclared = sorted(x.split(' = ')[0] for x in f if x.startswith('undeclared default '))
+    want = sorted(f'undeclared default {r["block"]}:{r["attr"]}:{s["side"]}' for r in census['attributes'] for s in r['sides'] if s['status'] == 'default')
+    if not want or undeclared != want:
+        fails.append(f'--strict must fail on exactly the undeclared governed defaults ({len(want)}), got {len(undeclared)}')
+    if any(x.startswith('undeclared default ') for x in run_check(census, base)[0]):
+        fails.append('an undeclared default failed without --strict')
     return fails
 
 
 def self_test():
     census = build_census(fixture_tree())
     fails = assertions(census) + gate_assertions(census)
-    controls = {'tie-smaller': 'tie must resolve to the larger preset', 'no-flag': 'the >50% flag',
-                'declared-ignore-slug': 'a declared preset that differs from the stylesheet fallback'}
+    controls = {'snap': 'a non-matching length must stay literal, never snap to the nearest preset',
+                'declared-ignore-slug': 'a declared preset that differs from the stylesheet preset',
+                'declared-ignore-fallback': 'a declared preset whose stylesheet fallback is not its theme size',
+                'declared-ignore-exact': 'a declared length that equals a preset size exactly',
+                'mount-ignore-defaults': 'a declared attribute whose mount passes no defaults prop',
+                'declared-ignore-variant': 'a declared side a variant or media rule repaints'}
     for name, what in controls.items():
         MUTATE.add(name)
         try:

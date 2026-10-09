@@ -759,11 +759,11 @@
 }
 
 /* ── Footer — subtotal + transparency note + CTAs ────────────────────────────── */
-/* The spacing presets block.json::supports.sgs.spacingDefaults declares for
-   panelFooterPadding (S top and bottom, M left and right), each with the theme's
-   own size as its fallback. */
+/* The defaults block.json::supports.sgs.spacingDefaults declares for
+   panelFooterPadding: top and bottom the S preset (16px exactly, the theme's own
+   size as its fallback), left and right a literal 20px (no preset is 20px). */
 :where(.sgs-cart__panel) .sgs-cart__panel-footer {
-	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
+	padding: var(--wp--preset--spacing--30, 1rem) 20px;
 	border-top: 1px solid rgba(128, 128, 128, 0.25);
 }
 
