@@ -22,13 +22,11 @@ block→kind dict):
   NOTE: D150 also defines criterion (c) — array-of-OBJECTS content attr
   (e.g. a block with a `type: "array"` attr whose items are objects
   representing child content units). This criterion is NOT currently
-  implemented in detection. Every block in the validated 28-block roster
-  qualifies via (a) or (b); the only candidate that is container-bearing
-  SOLELY via (c) is sgs/social-icons, which is intentionally excluded
-  (icon array, not child-block parenting). A future block that is
-  container-bearing ONLY via an array-of-objects attr would not be
-  detected by this script — tracked as a latent R-22-9 gap requiring a
-  future detection extension.
+  implemented in detection. Every block in the roster qualifies via (a)
+  or (b), and no current block is container-bearing SOLELY via (c). A
+  future block that is container-bearing ONLY via an array-of-objects
+  attr would not be detected by this script — tracked as a latent R-22-9
+  gap requiring a future detection extension.
   Excludes: sgs/container itself, chrome-only blocks (mobile-nav-toggle,
   mega-menu), pure-InnerBlocks blocks that have no layout surface (handled
   by KIND below).
@@ -508,6 +506,11 @@ def main() -> int:
             # signal. Listing them keeps the validator honest about what detection sees — it
             # does NOT assert wrapper delegation (same caveat as sgs/nav-drawer above).
             "sgs/mega-aside", "sgs/mega-group",
+            # sgs/social-icons added 2026-10-09: it is now a wrapper of Site Info-bound sgs/icon
+            # children (`allowedBlocks: ["sgs/icon"]`, InnerBlocks), so detection reads it on
+            # `InnerBlocks` alone, like sgs/mega-group above. The roster had not been refreshed
+            # since the rebuild; it does not assert wrapper delegation.
+            "sgs/social-icons",
             # sgs/mobile-nav REMOVED 2026-07-16 (qc-council, 2 raters): the block was
             # DELETED by `7c60b8ff` ("wire the theme to adaptive-nav drawer + delete
             # mobile-nav", Wave 2) and its off-canvas drawer absorbed into
