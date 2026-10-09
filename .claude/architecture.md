@@ -92,7 +92,7 @@ and `audit-feature-parity.py` do). For an ad-hoc query use
 `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
 
 **Key tables** (names only; query counts, never cache them): `blocks` (roster, `tier`, `variant_attr`),
-`block_attributes` (per-attribute `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/
+`block_attributes` (per-attribute `role`, `emit_shape`/`emit_shape_proof`, `box_family`/`box_side`, `css_property`/
 `css_element`/`css_state`/`css_tier`, `canonical_slot`), `block_composition` (`container_kind`,
 `wraps_block`), `block_supports` / `block_capabilities`, `slots` / `roles` (BEM vocabulary and role
 classification), `property_suffixes` (CSS property to device-tier attribute name, the D0/D1/D2 router's
@@ -125,7 +125,7 @@ Canonical spec: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 ### 6.2 `SGS_Container_Wrapper` and the composite wrapper rule
 
 `sgs/container` is the canonical wrapper block (background media, shape dividers, width capping, grid/flex
-layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, cta-section, trust-bar,
+layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, trust-bar,
 card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from the
 wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrapper rule", R-31-9). `block_composition.container_kind`
 (`section` / `layout` / `content`) is read from `block.json supports.sgs.containerKind` by `/sgs-update`.
@@ -133,7 +133,7 @@ wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrappe
 **A composite need not call `SGS_Container_Wrapper::render()`.** A content-KIND composite using only
 box + width (quote, info-box, testimonial, team-member) may render block-private, because the
 computed route writes settings by `block_attributes` keyed on `block_slug`, never by `wraps_block`. Section/layout-KIND
-composites (hero, cta-section, card-grid, feature-grid) keep the wrapper for its grid/section
+composites (hero, card-grid, feature-grid) keep the wrapper for its grid/section
 machinery. A capability gap on a composite is added to the composite, never worked around in the
 route. The shared helper is `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`.
 

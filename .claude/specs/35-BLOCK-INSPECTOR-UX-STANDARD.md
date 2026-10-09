@@ -202,7 +202,7 @@ system) T · repeaters/loops (N: `core/query`) T · counters/ratings/icons P.
 sets `aria-hidden="true"` from it. Present on `sgs/media` and `sgs/decorative-image` (both declare `imageDecorative`; decorative by default). Other image-rendering blocks with no decorative/ARIA attribute are listed by
 `inspector-scan` rule 18 (advisory) · heading-level (N) T · **General ARIA-label control** for icon-only buttons — PARTLY BUILT: `ariaLabel` is declared
 on both `button/block.json` and `icon/block.json` — the two blocks that actually render
-icon-only triggers. It is also on `sgs/container`, `sgs/cta-section` and `sgs/trust-bar` as a landmark
+icon-only triggers. It is also on `sgs/container` and `sgs/trust-bar` as a landmark
 label for `nav`/`aside`. **Not verified as universal across every block that could render icon-only** —
 that narrower question is the residual, not "no control exists" · schema → leave to `seo-schema` skill, don't duplicate in blocks.
 
@@ -663,8 +663,8 @@ fields). Therefore:
 3. **Banned lookalikes** — `ColorPalette`/`ColorGradientControl`/`GradientPicker`/
    `PanelColorGradientSettings`; `<TextControl type="color">`.
    `GradientOverlayControl.js` imports `SgsGradientPicker` (the SGS fork,
-   `src/components/gradient-picker/`), not core's `GradientPicker`. The 4
-   wrapper blocks (`container`, `hero`, `trust-bar`, `cta-section`) reach the fork, not the lookalike.
+   `src/components/gradient-picker/`), not core's `GradientPicker`. The 3
+   wrapper blocks (`container`, `hero`, `trust-bar`) reach the fork, not the lookalike.
 4. **Tab — SETTLED. Do not re-derive.**
 
  **(a) WHICH TAB — Styles.** The Colour panel renders in the **Styles** tab, first, above

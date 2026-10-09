@@ -14,7 +14,7 @@ authors: Bean + Claude
 > **Styling model: read [Spec 32](32-COMPONENT-STYLING-TOKEN-CONTRACT.md).** A button paints through a semantic BEM variant class plus custom properties fed by per-client tokens. This spec holds the two-block pair, the composition pattern and the button-specific rulings. The attribute surface is `plugins/sgs-blocks/src/blocks/button/block.json` and the framework DB (`/wp-blocks schema sgs/button`, `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/button`); never copy it into a doc.
 
 **Implements:** `sgs/button` (the canonical button block) and `sgs/multi-button` (its container).
-**Replaces:** every use of `core/button` inside SGS blocks, and the hand-coded CTA rendering that composite blocks (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid`) once carried.
+**Replaces:** every use of `core/button` inside SGS blocks, and the hand-coded CTA rendering that composite blocks (`sgs/hero`, `sgs/feature-grid`) once carried.
 
 ---
 
@@ -50,7 +50,7 @@ Holds 0..N `sgs/button` instances through InnerBlocks, restricted to `sgs/button
 
 ### Composition pattern in composite blocks
 
-Every block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid` and so on) exposes an `<InnerBlocks>` slot whose default template is `sgs/multi-button` holding two `sgs/button` instances. The user can delete one button (a one-CTA block), delete both (text and image only), add a third, and choose each button's variant independently. There is no "Match Style" extension: the variant lives once on `sgs/button` and every instance inherits it. New SGS blocks with CTAs MUST use this pattern; the one recorded exception, `sgs/product-card`, is described in `02-SGS-BLOCKS.md`.
+Every block that renders CTAs (`sgs/hero`, `sgs/feature-grid` and so on) exposes an `<InnerBlocks>` slot whose default template is `sgs/multi-button` holding two `sgs/button` instances. The user can delete one button (a one-CTA block), delete both (text and image only), add a third, and choose each button's variant independently. There is no "Match Style" extension: the variant lives once on `sgs/button` and every instance inherits it. New SGS blocks with CTAs MUST use this pattern; the one recorded exception, `sgs/product-card`, is described in `02-SGS-BLOCKS.md`.
 
 A dynamic block with an InnerBlocks slot must `save` as `<InnerBlocks.Content />`, never `null`, or the nested blocks are lost on save (`.claude/specs/common-wp-styling-errors.md` B4).
 
