@@ -13,7 +13,9 @@ const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..
 const SURFACE = 'mfx';
 const PANEL = 'cr-ref-mfx-0';
 const GROUP = 'cr-ref-mfx-1';
-const PANEL_PATH = '.sgs-mega-panel__content > .sgs-mega-group:nth-of-type(1)';
+// A group the panel's calibrated groupPadding slot (.sgs-mega-panel__content > .sgs-mega-group) does not cover, so no
+// enclosing setting decides the row and only the canvas citation can (the content tiles became settable 2026-10-09).
+const PANEL_PATH = '.sgs-mega-panel__aside > .sgs-mega-group:nth-of-type(1)';
 
 const tree = () => [ { name: 'sgs/mega-panel', attributes: { className: PANEL }, innerBlocks: [ { name: 'sgs/mega-group', attributes: { className: GROUP } } ] } ];
 const row = () => ( { kind: 'style', key: 'padding-top', draft: '26px', live: '0px', ref: GROUP, path: '', pair: 'grp', state: 'mfx-state', width: 1440, accepted: null,
