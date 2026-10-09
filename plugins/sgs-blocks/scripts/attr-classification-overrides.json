@@ -6652,6 +6652,14 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-drawer",
+			"attr": "closeFontStyle",
+			"fields": {
+				"css_property": "font-style",
+				"css_element": "close"
+			}
+		},
+		{
 			"slug": "sgs/product-card",
 			"attr": "pickerLabelFontSize",
 			"fields": {
@@ -7001,6 +7009,14 @@
 			"fields": {
 				"role": "boolean-visibility",
 				"_reason": "2026-10-09. A background ON/OFF switch: it paints nothing itself (the shape's colour comes from childIconBackground), so the seeder's colour role made check-element-manifest-conformance count it as an unclaimed style attribute (orphan style defect). Same shape as sgs/icon iconFill and shapeSizeLinked (boolean-visibility)."
+			}
+		},
+		{
+			"slug": "sgs/theme-toggle",
+			"attr": "labelLineHeight",
+			"fields": {
+				"css_property": "line-height",
+				"css_element": "label"
 			}
 		}
 	]
