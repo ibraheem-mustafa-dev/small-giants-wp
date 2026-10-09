@@ -46,4 +46,28 @@ final class TestimonialLinkUnderlineTest extends TestCase {
 		$this->assertStringNotContainsString( 'text-decoration-line', $unset['css'], 'negative control: nothing printed when unset' );
 		$this->assertStringNotContainsString( 'link-sweep', $unset['css'] );
 	}
+
+	public function test_the_block_wide_setting_reaches_every_link_and_the_quote_setting_stays_separate(): void {
+		$out = $this->render_block(
+			'sgs/testimonial',
+			array(
+				'quote'                  => 'Lovely <a href="/offers/">see offers</a>',
+				'name'                   => 'A. Client',
+				'variant'                 => 'pull-quote-editorial',
+				'summaryPhrase'           => 'More <a href="/more/">here</a>',
+				'linkUnderline'          => 'sweep',
+				'linkUnderlineThickness' => '3px',
+			)
+		);
+
+		$this->assertStringContainsString( '<a href="/more/">', $out['html'], 'positive control: the summary link rendered' );
+		$this->assertMatchesRegularExpression( '/\.sgs-testimonial-[0-9a-f]{8}\.wp-block-sgs-testimonial a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);[^}]*background-size:0 3px;/', $out['css'], 'block-wide rule on every anchor' );
+		$this->assertStringNotContainsString( '__quote a{', $out['css'], 'negative control: the quote has no setting of its own, so no quote-scoped rule' );
+	}
+
+	public function test_the_block_wide_setting_prints_nothing_when_unset(): void {
+		$out = $this->render_block( 'sgs/testimonial', array( 'quote' => 'Lovely <a href="/offers/">see offers</a>', 'name' => 'A. Client' ) );
+
+		$this->assertDoesNotMatchRegularExpression( '/wp-block-sgs-testimonial a\{text-decoration/', $out['css'] );
+	}
 }

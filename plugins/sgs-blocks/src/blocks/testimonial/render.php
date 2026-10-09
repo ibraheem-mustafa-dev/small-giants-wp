@@ -283,6 +283,12 @@ foreach ( array(
 	}
 }
 
+// How every link in the card (quote and summary) is underlined; the quote's own setting is more specific and wins on its links.
+$sgs_tm_underline_css = sgs_link_underline_css( $attributes, '', $root_sel );
+if ( '' !== $sgs_tm_underline_css ) {
+	$scoped_css[] = $sgs_tm_underline_css;
+}
+
 /**
  * Build one scoped CSS rule from a prop => value map. Empty values are
  * dropped; an all-empty map returns ''.

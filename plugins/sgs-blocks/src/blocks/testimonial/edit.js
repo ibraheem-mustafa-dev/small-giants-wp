@@ -278,7 +278,11 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		quoteLinkColourHoverGradient
 	)
 	// Block-wide link colours (every anchor inside the block).
-	const rootLinkPreviewCss = linkColourPreviewCss(
+	const rootLinkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid }`, {
+		mode: attributes.linkUnderline,
+		thickness: attributes.linkUnderlineThickness,
+		linkGradient: attributes.linkColourGradient,
+	} ) + linkColourPreviewCss(
 		`.${ linkPreviewUid }`,
 		attributes.linkColour,
 		attributes.linkColourHover,
@@ -419,18 +423,28 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 					   wp_kses_post(), which permits <a>. So the capability is added
 					   properly rather than dropped. Same `text` paint mechanism as the
 					   row above (css_property `color`), hence textRow, not fillRow. */
-					textRow( {
-						key: 'link',
-						label: __( 'Link colour', 'sgs-blocks' ),
-						attrs: {
-							base: 'linkColour',
-							hover: 'linkColourHover',
-							gradient: 'linkColourGradient',
-							hoverGradient: 'linkColourHoverGradient',
-						},
-						attributes,
-						setAttributes,
-					} ),
+					{
+						...textRow( {
+							key: 'link',
+							label: __( 'Link colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'linkColour',
+								hover: 'linkColourHover',
+								gradient: 'linkColourGradient',
+								hoverGradient: 'linkColourHoverGradient',
+							},
+							attributes,
+							setAttributes,
+						} ),
+						after: (
+							<LinkUnderlineControl
+								mode={ attributes.linkUnderline }
+								thickness={ attributes.linkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+							/>
+						),
+					},
 					{
 						key: 'border',
 						label: __( 'Border colour (hover)', 'sgs-blocks' ),

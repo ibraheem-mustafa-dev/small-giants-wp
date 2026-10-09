@@ -3207,6 +3207,26 @@
 			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on a link in the description (`{selector} a`) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, 'desc', ... ) once per description element. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
+			"slug": "sgs/testimonial",
+			"attr": "linkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "quote-box",
+				"role": "typography"
+			},
+			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-line on every link in the card (`{root} a`, quote and summary) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/testimonial",
+			"attr": "linkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "quote-box",
+				"role": "typography"
+			},
+			"_why": "2026-10-09, CR6 P2-n batch 3. Paints text-decoration-thickness on every link in the card (`{root} a`, quote and summary) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
 			"slug": "sgs/timeline",
 			"attr": "descriptionLinkColour",
 			"fields": {

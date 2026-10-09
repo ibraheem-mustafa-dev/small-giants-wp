@@ -81,6 +81,8 @@
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block.",
@@ -571,6 +573,17 @@
 		"textColourHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How every link in the card (quote and summary) is underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). The quote has its own setting that wins on the quote's links. sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the block-wide link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
 		},
 		"linkColour": {
 			"type": "string",
