@@ -223,9 +223,26 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		// eslint-disable-next-line no-new-func
 		trace = new Function( `return (${ traceSrc });` )()( el, carrier, refPrefix, pathSrc, layoutEl, iconEl );
 	}
+	// The words the element paints: innerText without visually hidden text (a screen-reader link name clipped to nothing,
+	// auto-collect.mjs::collectAuto's srOnly test). An element that paints no words is named by its aria-label, else
+	// by that hidden text, so an icon-only link still compares by its name.
+	const srOnly = ( a ) => {
+		const b = a.getBoundingClientRect();
+		const s = getComputedStyle( a );
+		return ( 'absolute' === s.position && b.width <= 2 && b.height <= 2 && 'visible' !== s.overflow ) || /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test( s.clip ) || /inset\(50%\)/.test( s.clipPath );
+	};
+	const hiddenEls = [ ...el.querySelectorAll( '*' ) ].filter( srOnly );
+	let paintedText = el.innerText || '';
+	for ( const h of hiddenEls ) {
+		const t = ( h.innerText || h.textContent || '' ).trim();
+		if ( t ) {
+			paintedText = paintedText.replace( t, ' ' );
+		}
+	}
+	const hiddenText = hiddenEls.map( ( h ) => h.textContent || '' ).join( ' ' );
 	return {
 		trace,
-		text: ( el.innerText || el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
+		text: ( paintedText.trim() || el.getAttribute( 'aria-label' ) || hiddenText ).replace( /\s+/g, ' ' ).trim().slice( 0, 400 ),
 		keyframes: cs.animationName.split( ',' ).every( ( n ) => 'none' === n.trim() ) ? 'none' : cs.animationName.split( ',' ).map( ( n ) => keyframes( n.trim() ) ).join( ' | ' ),
 		box: run ? run.box : { x: Math.round( r.x ), y: Math.round( r.y + window.scrollY ), w: Math.round( r.width ), h: Math.round( r.height ) },
 		// A text run's rows (paint.mjs::textRun): compared as the spacing between them.

@@ -52,10 +52,22 @@ export function layoutElement( el, styleOf = ( e ) => getComputedStyle( e ) ) {
 // Self-contained. The element painting the first visible text inside el (a button's label span, not the button),
 // or null. Text properties at rest and on hover are read from it.
 export function textCarrier( el ) {
+	// Visually hidden text (a screen-reader link name clipped to nothing) paints nothing; the same test as
+	// auto-collect.mjs::collectAuto's srOnly, walked up to `el`.
+	const srOnly = ( from ) => {
+		for ( let a = from; a && a !== el.parentElement; a = a.parentElement ) {
+			const r = a.getBoundingClientRect();
+			const cs = getComputedStyle( a );
+			if ( ( 'absolute' === cs.position && r.width <= 2 && r.height <= 2 && 'visible' !== cs.overflow ) || /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test( cs.clip ) || /inset\(50%\)/.test( cs.clipPath ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	const walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, {
 		// The text node's own rects: its parent can be display:contents (no box of its own) and still paint it.
 		acceptNode: ( n ) => {
-			if ( ! n.textContent.trim() ) {
+			if ( ! n.textContent.trim() || srOnly( n.parentElement ) ) {
 				return NodeFilter.FILTER_SKIP;
 			}
 			const range = document.createRange();
@@ -99,10 +111,21 @@ export function textRun( el, direct, match = null ) {
 		}
 		return out;
 	} )();
+	// Visually hidden text paints nothing (textCarrier's test).
+	const srOnly = ( from ) => {
+		for ( let a = from; a && a !== el.parentElement; a = a.parentElement ) {
+			const r = a.getBoundingClientRect();
+			const cs = getComputedStyle( a );
+			if ( ( 'absolute' === cs.position && r.width <= 2 && r.height <= 2 && 'visible' !== cs.overflow ) || /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test( cs.clip ) || /inset\(50%\)/.test( cs.clipPath ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
 	let box = null;
 	let carrier = null;
 	const tops = [];
-	for ( const n of nodes.filter( ( x ) => x.textContent.trim() && ( ! re || re.test( x.textContent ) ) ) ) {
+	for ( const n of nodes.filter( ( x ) => x.textContent.trim() && ( ! re || re.test( x.textContent ) ) && ! srOnly( x.parentElement ) ) ) {
 		const rg = document.createRange();
 		rg.selectNodeContents( n );
 		const b = rg.getBoundingClientRect();

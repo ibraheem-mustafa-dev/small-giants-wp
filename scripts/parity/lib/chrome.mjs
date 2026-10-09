@@ -69,6 +69,12 @@ export function inventory( [ finder, resolveSrc ] ) {
 	}
 	// Painted and inside the root's box: a closed pill that clips its menu does not count the menu.
 	const rb = root.getBoundingClientRect();
+	// Visually hidden (a screen-reader link name clipped to nothing): auto-collect.mjs::collectAuto's srOnly test.
+	const srOnly = ( a ) => {
+		const r = a.getBoundingClientRect();
+		const cs = getComputedStyle( a );
+		return ( 'absolute' === cs.position && r.width <= 2 && r.height <= 2 && 'visible' !== cs.overflow ) || /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test( cs.clip ) || /inset\(50%\)/.test( cs.clipPath );
+	};
 	const shown = ( e ) => {
 		const b = e.getBoundingClientRect();
 		const cs = getComputedStyle( e );
@@ -84,16 +90,34 @@ export function inventory( [ finder, resolveSrc ] ) {
 			if ( a !== e && 'visible' !== getComputedStyle( a ).overflow && ! ( b.right > ab.left && b.left < ab.right && b.bottom > ab.top && b.top < ab.bottom ) ) {
 				return false;
 			}
-			if ( /inset\((0(px|%)? )?0(px|%)? 100%|100%/.test( getComputedStyle( a ).clipPath ) ) {
+			if ( /inset\((0(px|%)? )?0(px|%)? 100%|100%/.test( getComputedStyle( a ).clipPath ) || srOnly( a ) ) {
 				return false;
 			}
 		}
 		return b.width > 0 && b.height > 0 && inside && cs.visibility !== 'hidden' && parseFloat( cs.opacity ) > 0.05;
 	};
 	const norm = ( s ) => ( s || '' ).replace( /[‘’]/g, "'" ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+	// The words an element paints: its text without visually hidden text (a screen-reader link name), which innerText keeps.
+	const paintedText = ( a ) => {
+		const out = [];
+		const tw = document.createTreeWalker( a, NodeFilter.SHOW_TEXT );
+		for ( let n = tw.nextNode(); n; n = tw.nextNode() ) {
+			let hiddenText = false;
+			for ( let p = n.parentElement; p && p !== a.parentElement; p = p.parentElement ) {
+				if ( srOnly( p ) ) {
+					hiddenText = true;
+					break;
+				}
+			}
+			if ( ! hiddenText ) {
+				out.push( n.textContent );
+			}
+		}
+		return out.join( ' ' );
+	};
 	const host = ( e ) => {
 		for ( let a = e.parentElement; a && a !== root.parentElement; a = a.parentElement ) {
-			const t = norm( a.innerText );
+			const t = norm( paintedText( a ) );
 			if ( t && t.length < 60 ) {
 				return t;
 			}

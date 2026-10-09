@@ -120,8 +120,12 @@ Fixed in the walker; keep them in mind when a number looks wrong:
   keyboard action, so a dialog heading or a returned-to button shows its `:focus-visible` ring in the shot.
   A real mouse click does not (proven on the shop drawer: mouse `focus-visible=false`, script and keyboard
   `true`). A ring that appears only after a scripted open is this trap, not a gap.
-- **Hidden text is read:** `innerText` includes screen-reader text and text painted at `font-size: 0`
-  (WooCommerce's count brackets), so a text difference can be unpainted; confirm on the shot before fixing.
+- **Hidden text:** visually hidden text (a screen-reader link name clipped to nothing, the same test as
+  `auto-collect.mjs::collectAuto`'s `srOnly`) is never a pair's text carrier (`paint.mjs::textCarrier`, `::textRun`),
+  never in a root inventory or a media name (`chrome.mjs::inventory`), and not in a pair's `text` unless the pair paints
+  no words (`collect.mjs::collectPair`; an icon-only link is then named by its aria-label or that hidden text). Text
+  painted at `font-size: 0` (WooCommerce's count brackets) is still read, so a text difference can be unpainted;
+  confirm on the shot before fixing.
 - **Colour formats:** `oklab()`/`color()` values are normalised to sRGB through a canvas, channels within
   2/255.
 
