@@ -8,9 +8,9 @@ an explicit Bean ruling that RECLASSIFIED a setting key away from what the
 automated Phase-1 pass concluded — e.g. `css:stroke` is a decoration toggle, not
 a colour; `css:background-image` is a background overlay, not a real image.
 
-Those rulings live ONLY in the golden master. The upstream Phase-1 artefacts
-(`setting-types.json`, `setting-registry-css.json`) still carry the ORIGINAL
-classification, because nothing ever rewrote them. There is no live
+Those rulings live ONLY in the golden master. The upstream Phase-1 artefact
+(`setting-registry-css.json`) still carries the ORIGINAL
+classification, because nothing ever rewrote it. There is no live
 inconsistency today *because the golden master is not currently regenerated from
 them* — but that is a property of nobody having run the regeneration, not a
 property of the system. The moment someone rebuilds the registry from Phase-1
@@ -33,7 +33,7 @@ BLOCKING, and it fails on any DIFFERENCE from the accepted state:
   * UNEXPECTED  (drift - accepted): a new (file, key) pair, or a HIGHER count for
     an already-accepted pair. Keying on COUNT rather than mere presence is what
     makes this change-keyed rather than state-keyed — a regeneration that adds a
-    third `css:stroke` row to `setting-types.json` trips the gate even though the
+    third `css:stroke` row to `setting-registry-css.json` trips the gate even though the
     pair was already accepted.
   * STALE       (accepted - drift): an accepted line whose upstream references
     are gone or reduced, i.e. someone fixed the drift upstream. That line is now
@@ -71,7 +71,6 @@ _BASELINE = _HERE / "reclassified-keys-baseline.json"
 
 # Upstream Phase-1 artefacts a regeneration could read FROM.
 _UPSTREAM = (
-    _HERE / "setting-types.json",
     _HERE / "setting-registry-css.json",
 )
 
@@ -320,8 +319,8 @@ def self_test() -> int:
         golden = tmp / _GOLDEN.name
         baseline = tmp / _BASELINE.name
         upstream = tuple(tmp / p.name for p in _UPSTREAM)
-        types_json = tmp / "setting-types.json"
         css_json = tmp / "setting-registry-css.json"
+        types_json = css_json
 
         # --- case 1: clean — drift == baseline => 0 -------------------------
         rc, out = run(golden, upstream, baseline)
@@ -344,13 +343,13 @@ def self_test() -> int:
         after = _count_key(types_json, "css:stroke")
         plant_landed = after == before + 1
         print(f"  [{'PASS' if plant_landed else 'BROKEN'}] case 2 plant verification: "
-              f"css:stroke rows in setting-types.json {before} -> {after} "
+              f"css:stroke rows in setting-registry-css.json {before} -> {after} "
               f"(expected {before + 1})")
         if not plant_landed:
             failures += 1
             print("        planted defect did NOT land — the exit code below proves nothing.")
         rc, out = run(golden, upstream, baseline)
-        named = any("css:stroke" in line and "setting-types.json" in line for line in out)
+        named = any("css:stroke" in line and "setting-registry-css.json" in line for line in out)
         ok = plant_landed and rc == 1 and named
         print(f"  [{'PASS' if ok else 'BROKEN'}] case 2 (negative control): "
               f"injected extra css:stroke row => exit {rc} (expected 1), "

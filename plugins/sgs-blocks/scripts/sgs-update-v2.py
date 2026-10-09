@@ -3175,7 +3175,9 @@ def _populate_emit_shape(
     attrs and a render.php that does NOT consume $content (so it should render its
     own content) but whose render-emit scan finds NOTHING is a suspected parse
     failure — printed as a loud WARN and NOT classified, never silently marked
-    all-child. Idempotent (write-on-drift).
+    all-child. Every run CLEARS all stored values first and reseeds from source, so a
+    value left by an older role or by a block that now trips FAIL-LOUD can never
+    survive as stale truth (clear and reseed share one transaction).
     """
     from render_emits import render_reads_attr
 
@@ -3193,6 +3195,15 @@ def _populate_emit_shape(
     ]
     if not content_roles:  # roles table lacks classification → FR-31-2.2 allowlist
         content_roles = ["text-content", "identity", "image-object", "content", "rating"]
+
+    # Clear first, reseed second: only what the scan below re-proves is stored.
+    stored_before = c.execute(
+        "SELECT COUNT(*) FROM block_attributes WHERE emit_shape IS NOT NULL"
+    ).fetchone()[0]
+    if dry_run:
+        print(f"[dry-run emit_shape] would clear {stored_before} stored value(s), then reseed")
+    else:
+        c.execute("UPDATE block_attributes SET emit_shape = NULL WHERE emit_shape IS NOT NULL")
 
     scanned = updated = nested = child = suspect = 0
     placeholders = ",".join("?" * len(content_roles))
@@ -3262,6 +3273,7 @@ def _populate_emit_shape(
         conn.commit()
     return {
         "emit_scanned": scanned,
+        "emit_cleared": 0 if dry_run else stored_before,
         "emit_updated": updated,
         "emit_nested": nested,
         "emit_child": child,
@@ -3469,7 +3481,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         es_counts = _populate_emit_shape(blocks_dir, conn, dry_run=False)
         print(
             f"Stage 1 (emit_shape): scanned={es_counts['emit_scanned']}, "
-            f"updated={es_counts['emit_updated']}, nested={es_counts['emit_nested']}, "
+            f"cleared={es_counts['emit_cleared']}, reseeded={es_counts['emit_updated']}, nested={es_counts['emit_nested']}, "
             f"child={es_counts['emit_child']}, suspect={es_counts['emit_suspect']}."
         )
 
