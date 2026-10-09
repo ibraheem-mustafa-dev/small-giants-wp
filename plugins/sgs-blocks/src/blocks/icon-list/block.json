@@ -181,6 +181,17 @@
 					},
 					"_note": "Wave 3C U-7, M-22: the ::marker of a `numbered` list item (a real <ol>)."
 				},
+				"item-link": {
+					"label": "Item link",
+					"order": 9,
+					"clusters": [ "text" ],
+					"prefix": "",
+					"attrMap": {
+						"css:text-decoration-link": "linkUnderline",
+						"css:text-decoration-thickness-link": "linkUnderlineThickness"
+					},
+					"_note": "The per-item link (`a.sgs-icon-list__item-link`, and any link in an item's text). How it is underlined is chosen with sgs_link_underline_css() from render.php, called as sgs_link_underline_css( $attributes, '', $root_sel . $root_sel )."
+				},
 				"item-description": {
 					"label": "Item description",
 					"order": 8,
@@ -206,6 +217,17 @@
 		"root": ".wp-block-sgs-icon-list"
 	},
 	"attributes": {
+		"linkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How the list's links are underlined: '' the theme's underline and site-wide link sweep, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"linkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
 		"separators": {
 			"type": "object",
 			"default": {},

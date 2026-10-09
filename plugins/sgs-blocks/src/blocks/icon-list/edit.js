@@ -27,6 +27,7 @@ import {
   SgsLengthControl,
   SgsSeparatorControl,
   SpacingControl,
+  LinkUnderlineControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview } from "../../utils";
@@ -206,6 +207,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     numberFormat,
     numberFontSize,
     numberFontWeight,
+    linkUnderline,
+    linkUnderlineThickness,
   } = attributes;
 
   // Contrast check for border — warn if border fails WCAG contrast against
@@ -790,6 +793,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
                 showWritingMode: true,
               },
             ]}
+          />
+        </PanelBody>
+
+        {/* The canvas edits item text and shows the link as plain text, so this
+           setting is read on the page: render.php prints it. */}
+        <PanelBody title={__("Links", "sgs-blocks")} initialOpen={false}>
+          <LinkUnderlineControl
+            mode={linkUnderline}
+            thickness={linkUnderlineThickness}
+            onModeChange={(val) => setAttributes({ linkUnderline: val })}
+            onThicknessChange={(val) => setAttributes({ linkUnderlineThickness: val })}
           />
         </PanelBody>
 

@@ -326,8 +326,17 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	// theme's own link underline, which a parent's `none` cannot remove. When
 	// itemTextDecoration is set, the link takes the row's value; unset leaves
 	// links with the theme's link style.
-	if ( ! empty( $attributes['itemTextDecoration'] ) ) {
+	if ( ! empty( $attributes['itemTextDecoration'] ) && empty( $attributes['linkUnderline'] ) ) {
 		$scoped_css[] = $item_row_sel . ' .sgs-icon-list__item-link{text-decoration:inherit}';
+	}
+	// How the list's links are underlined; an explicit choice here replaces the row's inherited decoration and the
+	// theme's site-wide link sweep (utilities.css), so one link never carries two. The doubled class outranks both.
+	$sgs_ilist_link_underline = sgs_link_underline_css( $attributes, '', $root_sel . $root_sel );
+	if ( '' !== $sgs_ilist_link_underline ) {
+		$scoped_css[] = $sgs_ilist_link_underline;
+		if ( in_array( $attributes['linkUnderline'] ?? '', array( 'none', 'always' ), true ) ) {
+			$scoped_css[] = $root_sel . $root_sel . ' .sgs-icon-list__item-link{--sgs-sweep-thickness:0px;}';
+		}
 	}
 	$text_typography_css = sgs_typography_css_rule( $attributes, 'textEl', $text_sel );
 	if ( '' !== $text_typography_css ) {

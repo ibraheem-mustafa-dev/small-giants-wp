@@ -3067,6 +3067,26 @@
 			"_why": "2026-10-08, CR6 P2-n. Paints text-decoration-thickness on the block's links (`{selector} a`, the phone, email and linked address) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
+			"slug": "sgs/icon-list",
+			"attr": "linkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "item-link",
+				"role": "typography"
+			},
+			"_why": "2026-10-09, CR6 P2-n batch 2. Paints text-decoration-line on the list's links (`{selector} a`, the per-item links) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel . $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline above."
+		},
+		{
+			"slug": "sgs/icon-list",
+			"attr": "linkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "item-link",
+				"role": "typography"
+			},
+			"_why": "2026-10-09, CR6 P2-n batch 2. Paints text-decoration-thickness on the list's links (`{selector} a`, the per-item links) via sgs_link_underline_css(), called from render.php as sgs_link_underline_css( $attributes, '', $root_sel . $root_sel ). Same dynamic-key scanning gap as sgs/business-info.linkUnderline above."
+		},
+		{
 			"slug": "sgs/timeline",
 			"attr": "descriptionLinkColour",
 			"fields": {
