@@ -282,3 +282,74 @@ describe( 'SgsBoxControl header and side icons', () => {
 		expect( container.querySelector( '[data-testid="slider"]' ) ).not.toBeNull();
 	} );
 } );
+
+describe( 'SgsBoxControl Custom state across link and unlink', () => {
+	const linkButton = () => container.querySelector( '[data-testid="link-button"]' );
+	const toggle = () => act( () => linkButton().click() );
+
+	// Rule: the linked row reads Custom when ANY side was Custom (or holds a typed length) before it linked.
+	test( 'Custom picked on the linked row (nothing typed) carries to every side row on unlink', () => {
+		renderControlled();
+		change( selects()[ 0 ], '__custom__' );
+		toggle();
+		expect( selects() ).toHaveLength( 4 );
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '__custom__', '__custom__', '__custom__', '__custom__' ] );
+	} );
+
+	test( 'a side set to Custom (nothing typed) makes the linked row Custom after re-linking, with no stale key', () => {
+		renderControlled( { right: '2px' } ); // Sides differ, so the box starts unlinked.
+		expect( selects() ).toHaveLength( 4 );
+		change( selects()[ 2 ], '__custom__' ); // Bottom: Custom, nothing typed.
+		toggle();
+		expect( selects() ).toHaveLength( 1 );
+		expect( selects()[ 0 ].value ).toBe( '__custom__' );
+		toggle(); // Back to sides: the linked key is spent, each side carries Custom.
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '__custom__', '__custom__', '__custom__', '__custom__' ] );
+	} );
+
+	test( 'negative control: nothing Custom stays Default through unlink and re-link', () => {
+		renderControlled();
+		toggle();
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '', '', '', '' ] );
+		toggle();
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '' ] );
+	} );
+
+	test( 'a side row switched off Custom does not leave the linked row on Custom', () => {
+		renderControlled();
+		change( selects()[ 0 ], '__custom__' );
+		toggle();
+		selects().forEach( ( s ) => change( s, '' ) );
+		toggle();
+		expect( selects()[ 0 ].value ).toBe( '' );
+	} );
+} );
+
+describe( 'SgsBoxControl never shows a raw var()', () => {
+	const preset = ( slug, fallback ) => `var(--wp--preset--spacing--${ slug }${ fallback ? `, ${ fallback }` : '' })`;
+	const all = ( value ) => ( { top: value, right: value, bottom: value, left: value } );
+
+	test( 'an unknown slug with no fallback reads plain Default with an empty placeholder', () => {
+		renderControlled( {}, { defaults: all( preset( 90 ) ) } );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '' );
+	} );
+
+	test( 'an unknown slug with a fallback length uses the fallback', () => {
+		renderControlled( {}, { defaults: all( preset( 90, '2rem' ) ) } );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default (2rem)' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '2rem' );
+	} );
+
+	test( 'a known slug still resolves to its name and size', () => {
+		renderControlled( {}, { defaults: all( preset( 40 ) ) } );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default (M)' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '1.5rem' );
+	} );
+
+	test( 'an inherited unknown slug is not shown raw either', () => {
+		renderControlled( {}, { inherited: all( preset( 90 ) ) } );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '' );
+	} );
+} );

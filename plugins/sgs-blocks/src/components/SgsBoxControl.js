@@ -88,7 +88,6 @@ import {
 import { UnitControl, VStack } from './primitives';
 import { InheritedBoxContext } from './InheritedBoxContext';
 import { flattenPresetSetting } from '../utils/presetSettings';
-import { inheritedValueLabel } from '../utils/inherited-box';
 
 const ALL_SIDES = [ 'top', 'right', 'bottom', 'left' ];
 
@@ -145,6 +144,34 @@ function presetSlugFromValue( value ) {
 	}
 	const match = value.trim().match( PRESET_VAR_RE );
 	return match ? match[ 1 ] : null;
+}
+
+/** A `var()` call with an optional fallback: `var(--name)` or `var(--name, 2rem)`. */
+const VAR_CALL_RE = /^var\(\s*(--[a-zA-Z0-9_-]+)\s*(?:,\s*(.+?)\s*)?\)$/;
+
+/**
+ * What an unset side's declared or inherited default reads as, never a raw `var()`: a known spacing preset gives
+ * its name and size; an unknown slug (or any other custom property) gives its own fallback, else nothing; a plain
+ * length gives itself.
+ *
+ * @param {string}   raw   Declared or inherited value.
+ * @param {Object[]} sizes The theme's spacing sizes, `{ slug, name, size }`.
+ * @return {{label: string, size: string}} Option-label text and placeholder text ('' when there is none).
+ */
+function resolveDefault( raw, sizes ) {
+	if ( typeof raw !== 'string' || ! raw.trim() ) {
+		return { label: '', size: '' };
+	}
+	const call = raw.trim().match( VAR_CALL_RE );
+	if ( ! call ) {
+		return { label: raw.trim(), size: raw.trim() };
+	}
+	const slug = call[ 1 ].startsWith( '--wp--preset--spacing--' ) ? call[ 1 ].slice( '--wp--preset--spacing--'.length ) : null;
+	const preset = slug ? sizes.find( ( s ) => s.slug === slug ) : undefined;
+	if ( preset ) {
+		return { label: preset.name || preset.slug, size: preset.size };
+	}
+	return call[ 2 ] ? resolveDefault( call[ 2 ], sizes ) : { label: '', size: '' };
 }
 
 /**
@@ -302,6 +329,27 @@ export default function SgsBoxControl( {
 		onChange( next );
 	};
 
+	// Custom… picked with nothing typed is held per row. Unlinking hands the linked row's Custom to every side;
+	// re-linking makes the linked row Custom when ANY side was Custom. The departing mode's keys are dropped.
+	const carryCustomRows = ( toLinked ) =>
+		setCustomRows( ( prev ) => {
+			const next = { ...prev };
+			const on = toLinked ? sides.some( ( s ) => prev[ s ] ) : !! prev.linked;
+			sides.forEach( ( s ) => {
+				if ( toLinked || ! on ) {
+					delete next[ s ];
+				} else {
+					next[ s ] = true;
+				}
+			} );
+			if ( toLinked && on ) {
+				next.linked = true;
+			} else {
+				delete next.linked;
+			}
+			return next;
+		} );
+
 	const toggleLinked = () => {
 		if ( ! isLinked ) {
 			// Re-linking collapses to the first side's value, mirroring core
@@ -309,6 +357,7 @@ export default function SgsBoxControl( {
 			// preset value collapses cleanly too — it's just another string.
 			setAllSides( values[ firstSide ] ?? '' );
 		}
+		carryCustomRows( ! isLinked );
 		setIsLinked( ! isLinked );
 	};
 
@@ -368,13 +417,14 @@ export default function SgsBoxControl( {
 		// "Default" (value '') is unset: the side paints what the block's stylesheet or a wider tier gives it,
 		// and an inherited value is named in the label. Nothing is written for it.
 		const inheritedRaw = inheritedFor( sideKey, value );
+		const inheritedText = resolveDefault( inheritedRaw, filteredSizes );
 		const options = [
 			{
-				label: inheritedRaw
+				label: inheritedText.label
 					? sprintf(
 							/* translators: %s: the length this side takes from a wider device, or the block's default spacing preset. */
 							__( 'Default (%s)', 'sgs-blocks' ),
-							inheritedValueLabel( inheritedRaw, filteredSizes )
+							inheritedText.label
 					  )
 					: __( 'Default', 'sgs-blocks' ),
 				value: '',
@@ -434,7 +484,7 @@ export default function SgsBoxControl( {
 						label={ rowLabel }
 						hideLabelFromVision
 						value={ num === undefined ? '' : `${ num }${ unit }` }
-						placeholder={ presetSize( inheritedRaw ) }
+						placeholder={ inheritedText.size }
 						onChange={ ( raw ) => {
 							setRowCustom( rowKey, true );
 							onSideChange( raw ?? '' );
@@ -454,7 +504,7 @@ export default function SgsBoxControl( {
 	 */
 	const plainRow = ( sideKey, value, onSideChange, rowLabel ) => {
 		const own = parseLength( value );
-		const inheritedRaw = presetSize( inheritedFor( sideKey, value ) );
+		const inheritedRaw = resolveDefault( inheritedFor( sideKey, value ), filteredSizes ).size;
 		const rest = parseLength( inheritedRaw );
 		const unit = own.num === undefined && rest.num !== undefined ? rest.unit : own.unit;
 		const unitRange = rangeForUnit( unit );
