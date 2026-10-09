@@ -195,8 +195,8 @@ plainly rather than implying the benefit already exists.
 | FR-42-1 | built | `sgs_form` capability = `edit_sgs_forms`, admin+editor only, `add_cap()` on activation |
 | FR-42-2 | built | `custom-fields` skipped entirely; settings stay root block attributes |
 | FR-42-3 | built | `revisions` retention cap = 10, via `wp_revisions_to_keep` |
-| FR-42-4 | built (not yet verified live) | `SavedPostPicker` (`plugins/sgs-blocks/src/components/SavedPostPicker.js`) searches the CPT's own REST collection, slug-keyed, shared with Spec 43 |
-| FR-42-5 | built (not yet verified live) | Every picker row shows a type badge from the post type's singular label (`plugins/sgs-blocks/src/components/SavedPostPicker.js::SavedPostPicker`, used by `plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker`) |
+| FR-42-4 | BUILT (verified live on sandybrown 2026-10-09) | `SavedPostPicker` (`plugins/sgs-blocks/src/components/SavedPostPicker.js`) searches the CPT's own REST collection, slug-keyed, shared with Spec 43 |
+| FR-42-5 | BUILT (verified live on sandybrown 2026-10-09) | Every picker row shows a type badge from the post type's singular label (`plugins/sgs-blocks/src/components/SavedPostPicker.js::SavedPostPicker`, used by `plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker`) |
 | FR-42-6 | NOT BUILT | Client-side draft resumption (only the step index is kept; answers are lost on refresh) |
 | FR-42-7a | built | Trashed/missing-form embed degrade: two audiences, two messages (`plugins/sgs-blocks/src/blocks/form/render.php`) |
 | FR-42-7b | built | Delete guard (hook-level) + Gutenberg #33234 race check |
