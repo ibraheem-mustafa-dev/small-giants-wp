@@ -531,7 +531,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `plainText(s)` → text without markup, whitespace collapsed.
 - `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
 - `textDecisions(input)` → the same for words, from calibration's `text`.
-- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry.
+- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry. A block whose `link` names one distinct path (the nested anchor `sgs/icon` calibrates as `.sgs-icon__link`) also takes the address at the draft's root slot when no slot names that path: the draft's own anchor, or the sole anchor inside the copied element, is that block's one link; a block with two link paths takes no root guess.
 
 ### `lib/brand-registry.mjs`
 
