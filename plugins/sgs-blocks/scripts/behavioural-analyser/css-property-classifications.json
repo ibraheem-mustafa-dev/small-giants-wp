@@ -5561,13 +5561,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color"
@@ -6642,13 +6635,6 @@
       "attr": "backgroundMedia",
       "fields": {
         "css_property": "background-image"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -12386,13 +12372,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "backgroundOverlayColour",
       "fields": {
         "css_property": "background-color",
@@ -13458,6 +13437,22 @@
       "fields": {
         "css_property": "transform",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "item-link"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "item-link"
       }
     },
     {
@@ -15262,13 +15257,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -17188,13 +17176,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22068,14 +22049,6 @@
     },
     {
       "slug": "sgs/separator",
-      "attr": "lineStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -22095,14 +22068,6 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/separator",
-      "attr": "thickness",
-      "fields": {
-        "css_property": "border-width",
         "css_element": "wrapper"
       }
     },
@@ -22156,13 +22121,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -22634,13 +22592,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -25674,13 +25625,6 @@
       "fields": {
         "css_property": "background-image",
         "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayBlendMode",
-      "fields": {
-        "css_property": "mix-blend-mode"
       }
     },
     {
@@ -35371,6 +35315,22 @@
         "css_property": "background-image",
         "css_element": "content",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "lineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "thickness",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
       }
     },
     {
