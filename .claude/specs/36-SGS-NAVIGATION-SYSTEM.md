@@ -1192,8 +1192,8 @@ command-palette modes are a native `<dialog>` DIALOG on the shared `store('sgs/n
 `sgs/social-icons` is a thin wrapper (`allowedBlocks: ["sgs/icon"]`) whose children are real `sgs/icon` blocks,
 each with `metadata.bindings.linkUrl = { source: "sgs/site-info", args: { key } }` and the brand registry glyph
 (`includes/data/brand-registry.json`). The bindings name Site Info keys, never a client's URL, so the same row
-works for every client: a key left empty hides its icon for visitors, and the editor shows it dimmed with a
-notice. A new row starts with one bound icon per filled Site Info key, in registry order (phone, email, address,
+works for every client: a key left empty falls back to the icon's own typed link and hides its icon for visitors only when
+it has none, and the editor shows a hidden icon dimmed with a notice. A new row starts with one bound icon per filled Site Info key, in registry order (phone, email, address,
 WhatsApp, Facebook, Instagram, X, LinkedIn, YouTube, TikTok, Google). The inspector's Links checklist lists every
 key with its filled or empty state: unticking hides a child without deleting it (`hiddenLinks`), ticking adds a
 missing key at the end, a filled key with no icon is flagged; List View drag reorders.

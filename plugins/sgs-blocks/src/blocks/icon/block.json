@@ -5,7 +5,7 @@
 	"version": "0.3.0",
 	"title": "SGS Icon",
 	"category": "sgs-content",
-	"description": "Icon from Lucide, the brand registry, WordPress icons, Dashicons, emoji or a pasted SVG, in an optional square, circle or pill with its own border, coloured by the theme, a brand or the client; linkable, and bindable to Site Info (a blank link hides).",
+	"description": "Icon from Lucide, the brand registry, WordPress icons, Dashicons, emoji or a pasted SVG, in an optional square, circle or pill with its own border, coloured by the theme, a brand or the client; linkable, and bindable to Site Info (the Site Info link wins, the icon's own link is the fallback, and it hides only when neither gives a link).",
 	"keywords": [
 		"icon",
 		"svg",

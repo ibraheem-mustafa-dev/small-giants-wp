@@ -2,7 +2,7 @@
 
 Measures a rendered design draft and writes block settings through the framework database, one surface at a time.
 **Solve** takes an existing layout tree, compares it with the draft through the parity walker, turns each difference
-into a setting write, rebuilds and repeats (at most three rounds). **Fill** (not built yet) fills a skeleton tree from
+into a setting write, rebuilds and repeats (at most three rounds). **Fill** fills a skeleton tree from
 the measured draft. Governing spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`.
 
 **Never touches:** `plugins/sgs-blocks/scripts/` (nothing is imported from it), the framework DB's contents (opened read-only, never written), the canary's homepage, posts page or motion-QA fixtures, and
