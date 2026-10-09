@@ -15,7 +15,7 @@ where it applies).
 
 Never hand-maintained: `sgs-update-v2.py` Stage 1 (`sgs_codebase_scan`)
 recomputes `tier_shape` fresh on every run via
-`orchestrator/object_attr_shape.py::classify_object_attr_shape()` — the
+`lib/object_attr_shape.py::classify_object_attr_shape()` — the
 same idempotent column-add guard also lives inline in that stage, so this
 migration is a convenience for a fresh/out-of-band DB, not the only path
 that can add the column.

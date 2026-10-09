@@ -19,7 +19,6 @@ PKG = HERE.parent
 SCRIPTS = PKG.parent
 REPO = SCRIPTS.parents[2]
 sys.path.insert(0, str(PKG))       # theme-extractor modules
-sys.path.insert(0, str(SCRIPTS))   # so `converter` package resolves for the freeze test
 
 import extract  # noqa: E402
 import token_map  # noqa: E402
@@ -257,14 +256,6 @@ def test_matches_golden_snapshot():
     assert got["settings"]["color"]["palette"] == golden["settings"]["color"]["palette"]
     assert got["styles"]["typography"] == golden["styles"]["typography"]
     assert got["styles"]["elements"] == golden["styles"]["elements"]
-
-
-# ── FR-33-10 — the frozen hex-only helper is byte-identical ─────────────────────────────────────
-def test_frozen_colour_map_unchanged():
-    from converter.services.styling_helpers import build_draft_root_colour_map
-    got = build_draft_root_colour_map(_css())
-    expected = json.loads((EXPECTED / "mamas-hex-colour-map.json").read_text(encoding="utf-8"))
-    assert got == expected   # widening/altering the frozen helper (D306/D307 risk) fails here
 
 
 # ── FR-33-6 — dark-theme / preview-shell background safety ────────────────────────────────────────

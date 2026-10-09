@@ -88,12 +88,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
 
-# Shared object-attribute shape discriminator (2026-09-10) — see
-# orchestrator/object_attr_shape.py's docstring for the full 5-shape
-# doctrine. Aliased to the private names this file already used, so every
-# existing call site (is_responsive computation, wrapper evidence, etc.)
-# is unchanged by the move.
-sys.path.insert(0, str(Path(__file__).resolve().parent / "orchestrator"))
+# Shared object-attribute shape discriminator — see lib/object_attr_shape.py's
+# docstring for the full 5-shape doctrine. Aliased to the private names this
+# file uses at its call sites (is_responsive computation, wrapper evidence, etc.).
 from object_attr_shape import (  # noqa: E402
     classify_object_attr_shape,
     context_tier_keys_from_php as _context_tier_keys_from_php,
@@ -360,44 +357,29 @@ def restore_wp_reference_archive(db_path: Path = None) -> None:
 
 
 def run_module_load_seeders(db_path: Path = None) -> None:
-    """Fire db_lookup's module-load seeders, which /sgs-update never triggers.
+    """Seed the reference tables that /sgs-update's stages do not write.
 
-    MEASURED 2026-08-02 (Phase 0 Step 0.5). ``converter/db/db_lookup.py`` runs
-    three idempotent seeders AT MODULE LOAD (`_migrate_roles_table`,
-    `_migrate_html_tag_to_core_block`, `_migrate_property_suffixes_kind_override`)
-    -- the self-healing pattern Phase 1 is meant to extend. But they only fire
-    when something IMPORTS db_lookup, i.e. when the CONVERTER runs. `/sgs-update`
-    does not import it, so a rebuild left those tables at zero and they looked
-    like missing seeders.
-
-    Proven in a sandbox: importing db_lookup against a freshly-schema'd empty DB
-    took `html_tag_to_core_block` 0 -> 17 (exactly live's count) and `roles`
-    0 -> 21. Neither is a Phase-1 gap; both were simply unwired.
-
-    This is deliberately a subprocess: db_lookup binds its connection at import
-    time, so it must start AFTER the schema exists, in a clean interpreter.
+    ``roles``, ``modifier_suffixes``, ``property_suffixes``, ``slots`` and the
+    ``scalar-media`` role assignments have no stage writer: their rows live in
+    ``data/*.json`` and ``dbschema/seed_reference_data.py::seed_all`` loads them
+    idempotently. A rebuild from an empty database would otherwise leave them
+    at zero rows, which does not error but breaks suffix, slot and role lookups.
     """
     db_path = db_path or SGS_DB
     scripts = Path(__file__).resolve().parent
-    probe = (
-        "import sys;"
-        f"sys.path.insert(0, r'{scripts / 'converter' / 'db'}');"
-        f"sys.path.insert(0, r'{scripts / 'converter'}');"
-        "import db_lookup"
-    )
-    print("[--rebuild] firing db_lookup module-load seeders ...")
-    result = subprocess.run(
-        [sys.executable, "-c", probe], cwd=str(scripts),
-        capture_output=True, text=True,
-    )
-    if result.returncode != 0:
-        tail = (result.stderr or "").strip().splitlines()[-4:]
-        print("[--rebuild] WARNING: db_lookup seeders did not run cleanly:",
+    dbschema = scripts / "dbschema"
+    if str(dbschema) not in sys.path:
+        sys.path.insert(0, str(dbschema))
+    print("[--rebuild] seeding reference tables (roles, suffixes, slots, scalar-media) ...")
+    try:
+        import seed_reference_data  # noqa: PLC0415
+        seed_reference_data.seed_all(db_path)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[--rebuild] WARNING: reference seeders did not run cleanly: {exc}",
               file=sys.stderr)
-        for line in tail:
-            print(f"    {line}", file=sys.stderr)
         return
-    print("[--rebuild] db_lookup seeders done\n")
+    print("[--rebuild] reference seeders done")
+    print()
     _run_standalone_seeders(scripts)
 
 
@@ -3601,33 +3583,25 @@ def _load_fx_qualifying_block_slugs(path: Path = _FX_QUALIFYING_BLOCKS_JSON) -> 
         return set()
 
 
-_DB_LOOKUP_PY = Path(__file__).resolve().parent / "converter" / "db" / "db_lookup.py"
-
-
-def _load_fx_attr_roster(path: Path = _DB_LOOKUP_PY) -> dict[str, dict[str, str]]:
-    """Import `fx_attr_roster()` from `converter/db/db_lookup.py` (same
-    importlib pattern as `_load_fx_attr_css_property_map` above, targeting a
-    different sibling module) — the FULL fx* attribute roster (name -> real
-    JS type + data-attribute name), sourced from `includes/fx-attributes.php`
-    FX_ATTR_MAP + `includes/extension-attributes.generated.php`. Replaces
-    the narrower `FX_ATTR_CSS_PROPERTY` map (29 of ~79 names) as THIS
-    function's eligibility source — that map still exists and is still used
+def _load_fx_attr_roster() -> dict[str, dict[str, str]]:
+    """The FULL fx* attribute roster (name -> real JS type + data-attribute name),
+    from ``dbschema/seed_reference_data.py::fx_attr_roster``: sourced from
+    ``includes/fx-attributes.php`` FX_ATTR_MAP + ``includes/extension-attributes.generated.php``.
+    Replaces the narrower ``FX_ATTR_CSS_PROPERTY`` map (29 of ~79 names) as THIS
+    function's eligibility source - that map still exists and is still used
     unchanged for its own purpose (the fx: css_property classification
-    layer, `_collect_fx_attr_namespace_overrides`).
+    layer, ``_collect_fx_attr_namespace_overrides``).
 
     Soft-optional: a missing/unreadable module degrades to an empty roster
     rather than hard-failing an unrelated /sgs-update run.
     """
-    if not path.exists():
-        return {}
     try:
-        import importlib.util as _ilu
+        dbschema = str(Path(__file__).resolve().parent / "dbschema")
+        if dbschema not in sys.path:
+            sys.path.insert(0, dbschema)
+        import seed_reference_data as _srd  # noqa: PLC0415
 
-        spec = _ilu.spec_from_file_location("sgs_converter_db_lookup", str(path))
-        mod = _ilu.module_from_spec(spec)  # type: ignore[arg-type]
-        spec.loader.exec_module(mod)  # type: ignore[union-attr]
-        roster_fn = getattr(mod, "fx_attr_roster", None)
-        return roster_fn() if callable(roster_fn) else {}
+        return _srd.fx_attr_roster()
     except Exception as exc:  # noqa: BLE001
         print(f"Stage 1 (fx-attr-rows): WARN failed to import fx_attr_roster: {exc}")
         return {}
@@ -3673,7 +3647,7 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
     strict PHP `true === $value` check (as `includes/fx-attributes.php`
     genuinely uses) never matches — a client's "don't run this on mobile"
     setting would silently not apply. Now sources both the full name list
-    AND each attr's real type from `db_lookup.fx_attr_roster()` (see that
+    AND each attr's real type from `seed_reference_data.fx_attr_roster()` (see that
     function's docstring) — two already-maintained, build-generated
     artefacts, not hand-derived here.
 
@@ -4161,9 +4135,8 @@ def _populate_emit_shape(
     content-vs-styling filter, FR-31-2.2), the shape is 'nested' when the block's
     OWN render.php (+ require'd helpers) EMITS the attr as its own element, else
     'child' (the content lives in the $content InnerBlocks region). Read from block
-    SOURCE via converter.services.render_emits — the SAME signal the walk trusts,
-    so classification and runtime agree (no drift). R-31-1: this seeds a DB COLUMN
-    (read at convert-time via db_lookup) — NOT a live PHP scan at convert-time.
+    SOURCE via lib/render_emits.py. R-31-1: this seeds a DB COLUMN
+    (read by consistency/build-setting-types.py) — NOT a live PHP scan at read time.
 
     FAIL-LOUD (Rule 4, no silent misclassification): a block that HAS content-role
     attrs and a render.php that does NOT consume $content (so it should render its
@@ -4171,7 +4144,7 @@ def _populate_emit_shape(
     failure — printed as a loud WARN and NOT classified, never silently marked
     all-child. Idempotent (write-on-drift).
     """
-    from converter.services.render_emits import render_reads_attr
+    from render_emits import render_reads_attr
 
     c = conn.cursor()
     # Idempotent column-add (mirrors the array_item_schema.role column-add pattern).

@@ -963,23 +963,6 @@ def run() -> None:
 #      authoritative derivation function (this script is the DB enrichment
 #      path; db_lookup is the runtime library).
 
-# Import the shared derivation function. db_lookup.py's canonical implementation
-# lives at converter/db/db_lookup.py (moved there EXECUTION Step 9, Phase 3,
-# 2026-07-04 — orchestrator/converter_v2/db_lookup.py is now a re-export shim).
-# Add to sys.path so the runtime library and this enrichment script share the
-# SAME implementation. Renamed from _CONVERTER_V2_DIR -> _DB_LOOKUP_DIR
-# (2026-07-05) — the old name was a holdover from when db_lookup.py lived
-# inside orchestrator/converter_v2/; it has pointed at converter/db since
-# Step 9 and the frozen converter_v2 tree no longer exists (Step 16).
-_DB_LOOKUP_DIR = (
-    Path(__file__).resolve().parents[1] / "converter" / "db"
-)
-if str(_DB_LOOKUP_DIR) not in sys.path:
-    sys.path.insert(0, str(_DB_LOOKUP_DIR))
-
-# Imported lazily inside functions to keep module-import lightweight when this
-# script is invoked headlessly via subprocess from sgs-update-v2.py.
-
 TIER_B_SNAPSHOT_DIR = (
     Path(__file__).resolve().parents[4] / "pipeline-state" / "_snapshots"
 )
@@ -1005,28 +988,13 @@ TIER_B_SNAPSHOT_DIR = (
 #     "entries": [<entry>, ...]           # proposed updates only (unresolved logged separately)
 #   }
 
-# BEM element extractor — imported from db_lookup so derivation is single-source
-# (per /qc-council Rater B 2026-05-27 finding: previous duplicate regex was one
-# drift-PR away from divergence between enrichment + walker runtime).
-# Lazy import inside Tier B functions (lines below) to avoid circular load.
-# Lookup ALIAS: this var preserves the previous public name for callers within
-# this file but resolves to db_lookup._BEM_ELEMENT_RE at first use.
-_TIER_B_BEM_ELEMENT_RE = None  # populated lazily in _get_bem_regex()
+# BEM element extractor: matches the FIRST __element segment in a selector.
+# e.g. '.sgs-product-card__image' -> 'image'; 'audio' / 'figure > a' / 'h1,h2,h3' -> no match.
+_TIER_B_BEM_ELEMENT_RE = re.compile(r"__([a-z0-9-]+)")
 
 
 def _get_bem_regex():
-    """Return db_lookup._BEM_ELEMENT_RE via lazy sys.path import.
-
-    Avoids module-load circularity + keeps the headless subprocess
-    import surface light per the existing pattern at lines 725-729.
-    """
-    global _TIER_B_BEM_ELEMENT_RE
-    if _TIER_B_BEM_ELEMENT_RE is None:
-        # The sys.path setup for converter/db (Step 10, 2026-07-04 — was
-        # converter_v2 before Step 9) is done at the top of this file via
-        # _DB_LOOKUP_DIR; import is safe here.
-        from db_lookup import _BEM_ELEMENT_RE
-        _TIER_B_BEM_ELEMENT_RE = _BEM_ELEMENT_RE
+    """Return the BEM element extractor used by Tier B derivation."""
     return _TIER_B_BEM_ELEMENT_RE
 
 
