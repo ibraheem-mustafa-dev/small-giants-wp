@@ -8,7 +8,7 @@ created: 2026-09-14
 last_verified: 2026-10-09
 companions:
   - 27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (owns ALL pricing security for this spec's purchase path; the secure `/sgs/v1/cart/add-item` proxy is reused as-is, never re-derived)
-  - 42-SGS-FORM-CPT-AND-PRICING.md (shares the `LinkControl` picker component and the reference-lifecycle contract, built once, applied to both CPTs)
+  - 42-SGS-FORM-CPT-AND-PRICING.md (shares the `SavedPostPicker` component and the reference-lifecycle contract, built once, applied to both CPTs)
   - 32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no inline `style=` on any new markup)
 ---
 

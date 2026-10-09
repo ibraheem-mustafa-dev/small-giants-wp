@@ -97,9 +97,11 @@ export const TARGET_ENUM_OPTIONS = [
  *                                                accessible-label field).
  * @param {Object}    [props.suggestionsQuery]   Passed straight to LinkControl's own
  *                                                suggestionsQuery prop (e.g. { type: 'post',
- *                                                subtype: 'sgs_form' }) to scope suggestions to
- *                                                one post type/subtype. Omit for the default
- *                                                unscoped search.
+ *                                                subtype: 'page' }) to scope suggestions to
+ *                                                one PUBLIC post type/subtype. Core search
+ *                                                rejects non-public post types (HTTP 400); use
+ *                                                SavedPostPicker for those. Omit for the
+ *                                                default unscoped search.
  */
 export function LinkPopoverContent( {
 	anchor,
@@ -247,9 +249,11 @@ export function LinkPopoverContent( {
  *                                                the show* props.
  * @param {Object}   [props.suggestionsQuery]     Passed straight to LinkControl's own
  *                                                suggestionsQuery prop (e.g. { type: 'post',
- *                                                subtype: 'sgs_form' }) to scope suggestions to
- *                                                one post type/subtype. Omit for the default
- *                                                unscoped search.
+ *                                                subtype: 'page' }) to scope suggestions to
+ *                                                one PUBLIC post type/subtype. Core search
+ *                                                rejects non-public post types (HTTP 400); use
+ *                                                SavedPostPicker for those. Omit for the
+ *                                                default unscoped search.
  * @param {string}   [props.emptyLabel]           Button text while nothing is chosen (default
  *                                                "Add link"), e.g. "Choose a saved form".
  */

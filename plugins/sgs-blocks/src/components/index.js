@@ -50,6 +50,7 @@ export {
 	LinkPopoverContent,
 	TARGET_ENUM_OPTIONS,
 } from './LinkPopoverControl';
+export { default as SavedPostPicker } from './SavedPostPicker';
 export { default as DateTimePickerField } from './DateTimePickerField';
 export { default as SgsBooleanField } from './SgsBooleanField';
 export { default as SgsFreeTextField } from './SgsFreeTextField';

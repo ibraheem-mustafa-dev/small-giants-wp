@@ -67,22 +67,27 @@ decisions are explicit, not inherited silently:**
   (2026-06-02, product-card meta).
 - **FR-42-3 -- `revisions`.** Revisions stay on (the shared default) as plain editorial history; retention cap 10 via a `wp_revisions_to_keep` filter scoped to `post_type === 'sgs_form'` and `sgs_choice_flow` (Spec 43 FR-43-8), matching this project's existing per-post-type revision-cap pattern.
 
-## 4. The picker — WordPress's own `LinkControl`, not a bespoke REST widget
+## 4. The picker: one shared `SavedPostPicker`, reading the CPT's own REST collection
 
-Do **not** build a custom `ComboboxControl` + a new REST endpoint for "pick a form by
-slug". WordPress core already ships exactly this interaction — `wp.blockEditor.LinkControl`
-(the same component behind the Navigation and Button blocks' "Add link"), filterable to one
-post type via `suggestionsQuery={ type: 'post', subtype: 'sgs_form' }`, resolving through the
-standard `__experimentalFetchLinkSuggestions` REST search. This requires only
-`show_in_rest: true` on the CPT (§3) — zero new REST surface. **Spec 43's "Linked flow" picker
-(`sgs/choice-flow` `flowId` + `flowIsLinked`, FR-43-6) uses this exact same mechanism, filtered to
-`sgs_choice_flow` — one picker component, two post-type filters, never two implementations.**
+No new REST endpoint and no bespoke search widget. `SavedPostPicker`
+(`plugins/sgs-blocks/src/components/SavedPostPicker.js`) is a popover with a search box and a
+result list, fed by core-data (`getEntityRecords( 'postType', <cpt>, { search, per_page: 20,
+status: 'publish' } )`) from the post type's own `/wp/v2/<rest_base>` collection. This needs only
+`show_in_rest: true` on the CPT (§3). It is deliberately not `LinkControl` with
+`suggestionsQuery`: that calls core's `/wp/v2/search`, which lists only post types registered
+`public` AND `show_in_rest`, and these CPTs are non-public (no front-end singles, no sitemap
+entries), so the request fails with HTTP 400. **Spec 43's "Linked flow" picker (`sgs/choice-flow`
+`flowId` + `flowIsLinked`, FR-43-6) uses the same component with `sgs_choice_flow` -- one picker
+component, two post types, never two implementations.**
 
 **FR-42-4:** the form-embed block/attribute stores the resolved slug (not a raw post ID —
-see §2) via `LinkControl`, filtered to `sgs_form`.
+see §2). The picker (`SavedPostPicker`) searches the `sgs_form` post type's own REST collection
+(`getEntityRecords( 'postType', 'sgs_form', { search } )`), because core's `/wp/v2/search` lists
+only public post types and `sgs_form` is non-public.
 
 **FR-42-5 (client-clarity fix):** the picker must show more than a bare title in its
-suggestion list — at minimum a "Form" type badge — because two similarly-named draft forms
+suggestion list. Every row carries a type badge naming the post type's singular label (read from
+`getPostType`, so "Form" for `sgs_form`), because two similarly-named draft forms
 are otherwise indistinguishable in the list.
 
 ## 5. No pricing in forms
@@ -190,8 +195,8 @@ plainly rather than implying the benefit already exists.
 | FR-42-1 | built | `sgs_form` capability = `edit_sgs_forms`, admin+editor only, `add_cap()` on activation |
 | FR-42-2 | built | `custom-fields` skipped entirely; settings stay root block attributes |
 | FR-42-3 | built | `revisions` retention cap = 10, via `wp_revisions_to_keep` |
-| FR-42-4 | built | `LinkControl`-based picker, slug-keyed, shared component with Spec 43 |
-| FR-42-5 | NOT BUILT | Picker shows a type badge, not a bare title (`plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker` only scopes the link search to `sgs_form`; checked live on 2026-10-09: the picker's `/wp/v2/search?type=post&subtype=sgs_form` request returns HTTP 400 because `sgs_form` is not a searchable subtype (the CPT is registered non-public), so the picker lists no forms at all and FR-42-4 is also not met live) |
+| FR-42-4 | built (not yet verified live) | `SavedPostPicker` (`plugins/sgs-blocks/src/components/SavedPostPicker.js`) searches the CPT's own REST collection, slug-keyed, shared with Spec 43 |
+| FR-42-5 | built (not yet verified live) | Every picker row shows a type badge from the post type's singular label (`plugins/sgs-blocks/src/components/SavedPostPicker.js::SavedPostPicker`, used by `plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker`) |
 | FR-42-6 | NOT BUILT | Client-side draft resumption (only the step index is kept; answers are lost on refresh) |
 | FR-42-7a | built | Trashed/missing-form embed degrade: two audiences, two messages (`plugins/sgs-blocks/src/blocks/form/render.php`) |
 | FR-42-7b | built | Delete guard (hook-level) + Gutenberg #33234 race check |

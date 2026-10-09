@@ -503,57 +503,55 @@ if ( '' !== $close_colour_hover_effective ) {
 	}
 }
 
-// ── Anchor geometry (desktop variants). Guard on "is either attribute
-// actually set" so the zero-attribute default emits no geometry rule —
-// style.css's base rule already IS the full-screen geometry, so emitting it
-// again here for the untouched default would be a redundant duplicate rule.
-// A non-modal drawer always emits: its full-screen default differs from style.css's base rule.
-if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set || $sgs_nd_offset_is_set || 'non-modal' === $modality ) {
-	$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
-	$sgs_nd_anchor_tablet  = sgs_resolve_tier( $anchor_attr_raw, 'tablet', 'full-screen' )['value'];
-	$sgs_nd_anchor_mobile  = sgs_resolve_tier( $anchor_attr_raw, 'mobile', 'full-screen' )['value'];
+// ── Anchor geometry. Always emitted, including for the untouched full-screen
+// default, so the drawer's position and size ship in this inline scoped <style>
+// and survive a late, blocked or optimised-away external stylesheet (FR-36-16,
+// the late-CSS A/B). Without it a stylesheet-less load falls back to the UA's
+// centred dialog box. style.css keeps the same full-screen rule as the baseline.
+$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
+$sgs_nd_anchor_tablet  = sgs_resolve_tier( $anchor_attr_raw, 'tablet', 'full-screen' )['value'];
+$sgs_nd_anchor_mobile  = sgs_resolve_tier( $anchor_attr_raw, 'mobile', 'full-screen' )['value'];
 
-	$sgs_nd_anchor_desktop = in_array( $sgs_nd_anchor_desktop, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_desktop : 'full-screen';
-	$sgs_nd_anchor_tablet  = in_array( $sgs_nd_anchor_tablet, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_tablet : 'full-screen';
-	$sgs_nd_anchor_mobile  = in_array( $sgs_nd_anchor_mobile, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_mobile : 'full-screen';
+$sgs_nd_anchor_desktop = in_array( $sgs_nd_anchor_desktop, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_desktop : 'full-screen';
+$sgs_nd_anchor_tablet  = in_array( $sgs_nd_anchor_tablet, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_tablet : 'full-screen';
+$sgs_nd_anchor_mobile  = in_array( $sgs_nd_anchor_mobile, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_mobile : 'full-screen';
 
-	// panelSize is a free-text CSS length expression (calc()/clamp() are valid
-	// operator input, e.g. 'calc(100% - 40px)') — the strict digits/dot/%/unit-
-	// letters-only $sgs_nd_css_length sanitiser would mangle it:
-	// 'calc(100% - 40px)' → 'calc10040px'. Use the
-	// shared free-text CSS-value sanitiser instead (permits the math-function
-	// character set while still stripping anything that could break out of the
-	// declaration).
-	$sgs_nd_panel_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'desktop', '' )['value'] );
-	$sgs_nd_panel_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
-	$sgs_nd_panel_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
+// panelSize is a free-text CSS length expression (calc()/clamp() are valid
+// operator input, e.g. 'calc(100% - 40px)') — the strict digits/dot/%/unit-
+// letters-only $sgs_nd_css_length sanitiser would mangle it:
+// 'calc(100% - 40px)' → 'calc10040px'. Use the
+// shared free-text CSS-value sanitiser instead (permits the math-function
+// character set while still stripping anything that could break out of the
+// declaration).
+$sgs_nd_panel_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'desktop', '' )['value'] );
+$sgs_nd_panel_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
+$sgs_nd_panel_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
 
-	$sgs_nd_offset_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'desktop', '' )['value'] );
-	$sgs_nd_offset_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'tablet', '' )['value'] );
-	$sgs_nd_offset_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'mobile', '' )['value'] );
+$sgs_nd_offset_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'desktop', '' )['value'] );
+$sgs_nd_offset_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'tablet', '' )['value'] );
+$sgs_nd_offset_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $anchor_offset_raw, 'mobile', '' )['value'] );
 
-	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop, $modality, $sgs_nd_offset_desktop );
-	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet, $modality, $sgs_nd_offset_tablet );
-	$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile, $modality, $sgs_nd_offset_mobile );
-	// When any tier grows from the header, the other tiers switch it back off.
-	if ( in_array( 'header-box', array( $sgs_nd_anchor_desktop, $sgs_nd_anchor_tablet, $sgs_nd_anchor_mobile ), true ) ) {
-		$sgs_nd_grown_off     = '--sgs-nd-grows:0;--sgs-nd-hb-row:0px;--sgs-nd-zoom:1;zoom:1;';
-		$sgs_nd_geom_desktop .= 'header-box' === $sgs_nd_anchor_desktop ? '' : $sgs_nd_grown_off;
-		$sgs_nd_geom_tablet  .= 'header-box' === $sgs_nd_anchor_tablet ? '' : $sgs_nd_grown_off;
-		$sgs_nd_geom_mobile  .= 'header-box' === $sgs_nd_anchor_mobile ? '' : $sgs_nd_grown_off;
-	}
+$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop, $modality, $sgs_nd_offset_desktop );
+$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet, $modality, $sgs_nd_offset_tablet );
+$sgs_nd_geom_mobile  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_mobile, $sgs_nd_panel_mobile, $modality, $sgs_nd_offset_mobile );
+// When any tier grows from the header, the other tiers switch it back off.
+if ( in_array( 'header-box', array( $sgs_nd_anchor_desktop, $sgs_nd_anchor_tablet, $sgs_nd_anchor_mobile ), true ) ) {
+	$sgs_nd_grown_off     = '--sgs-nd-grows:0;--sgs-nd-hb-row:0px;--sgs-nd-zoom:1;zoom:1;';
+	$sgs_nd_geom_desktop .= 'header-box' === $sgs_nd_anchor_desktop ? '' : $sgs_nd_grown_off;
+	$sgs_nd_geom_tablet  .= 'header-box' === $sgs_nd_anchor_tablet ? '' : $sgs_nd_grown_off;
+	$sgs_nd_geom_mobile  .= 'header-box' === $sgs_nd_anchor_mobile ? '' : $sgs_nd_grown_off;
+}
 
-	if ( '' !== $sgs_nd_geom_desktop ) {
-		$css .= $root_sel . '{' . $sgs_nd_geom_desktop . '}';
-	}
-	// Tier-diff: only emit a tier's @media rule when it genuinely differs from
-	// the tier above (mirrors sgs_emit_tier_rules()'s own convention).
-	if ( $sgs_nd_geom_tablet !== $sgs_nd_geom_desktop ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_tablet . '}}';
-	}
-	if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
-	}
+if ( '' !== $sgs_nd_geom_desktop ) {
+	$css .= $root_sel . '{' . $sgs_nd_geom_desktop . '}';
+}
+// Tier-diff: only emit a tier's @media rule when it genuinely differs from
+// the tier above (mirrors sgs_emit_tier_rules()'s own convention).
+if ( $sgs_nd_geom_tablet !== $sgs_nd_geom_desktop ) {
+	$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_tablet . '}}';
+}
+if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
+	$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
 }
 
 // ── Scrim: the see-through layer that dims the page behind the open drawer
