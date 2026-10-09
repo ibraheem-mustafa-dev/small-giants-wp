@@ -35,7 +35,9 @@ ORDER (the first test that answers wins; the proof records which one)
     -> ``nested`` / ``closure-key``.
 4.  own render calls a function defined under includes/ WITH ``$attributes`` as an argument, and that
     function's body reads ``$attributes['x']`` (or ``$attrs`` / ``$atts``)
-    -> ``nested`` / ``helper-read:<function>`` (one call deep). A function called without the attributes,
+    -> ``nested`` / ``helper-read:<function>`` (one call deep). The same when the function lists the key
+    ('x' => ...) and reads the attributes by a variable key (``$attributes[ $key ]``)
+    -> ``nested`` / ``helper-read-dynamic:<function>``. A function called without the attributes,
     or one that reads some other array's ``['x']``, proves nothing.
 5.  block.json ``providesContext`` maps a context key to the attribute -> ``context`` / ``provides-context:<key>``.
 6.  the name is a slot name or alias whose standalone block is among the declared children
@@ -72,6 +74,7 @@ _DECL_RE = re.compile(r"\b(template|allowedBlocks)\s*[:=][\s{]*(\[|[A-Za-z_]\w*)
 _PREFIX_RE = re.compile(r"""['"]([A-Za-z][A-Za-z0-9]{3,})['"]\s*\.\s*\$""")
 _SUFFIX_RE = re.compile(r"""\$\w+(?:\[[^\]]*\])?\s*\.\s*['"]([A-Za-z][A-Za-z0-9]{3,})['"]""")
 _FUNCTION_RE = re.compile(r"\bfunction\s+&?([A-Za-z_]\w*)\s*\(")
+_DYNAMIC_READ_RE = re.compile(r"\$(?:attributes|attrs|atts|block_attributes)\s*\[\s*\$\w+\s*\]")
 _CALL_ARGS_RE = re.compile(r"\b([A-Za-z_]\w*)\s*\(([^;]{0,240})")
 _EDITOR_ONLY_RE = re.compile(r"editor[- ]only|never rendered", re.I)
 _PHP_WORDS = frozenset(
@@ -284,9 +287,15 @@ def _helper_read(ctx: EmitContext, slug: str, attr: str) -> Verdict:
     """Only the block's OWN files count as the caller (render.php plus the helpers it requires directly)."""
     read = _php_read(attr)
     known = ctx.functions()
+    listed = _quoted(attr)
     for name in ctx.handed_functions(RE._own_source(slug)):
-        if any(read.search(body) for body in known.get(name, [])):
+        bodies = known.get(name, [])
+        if any(read.search(body) for body in bodies):
             return "nested", f"helper-read:{name}"
+        # The key is listed in the function and the function reads the attributes by a variable key
+        # (``foreach ( array( 'columnHeading' => ... ) as $key ) { $attributes[ $key ] }``).
+        if any(listed.search(body) and _DYNAMIC_READ_RE.search(body) for body in bodies):
+            return "nested", f"helper-read-dynamic:{name}"
     return None
 
 
@@ -389,7 +398,8 @@ def _fixtures(root: Path) -> None:
            "$g = $attributes['gatedText'];\n$r = $attributes['rows'];\n$k = $attributes['tags'];\n"
            "$tier = function ( $k ) { return $attributes[ $k ]; };\n$f = $tier( 'framesUrl' );\n"
            "echo field_input_attrs( $id, $attributes );\n$labels = array( 'errorText' => 'x' );\n"
-           "echo brand_registry();\necho helper_two( $other );\n")
+           "echo brand_registry();\necho helper_two( $other );\n"
+           "echo field_headings( $attributes );\necho listed_only( $attributes );\n")
     _write(root, demo + "block.json", json.dumps({
         "name": "sgs/demo",
         "providesContext": {"sgs/demoHidden": "hiddenLinks"},
@@ -419,6 +429,10 @@ def _fixtures(root: Path) -> None:
     _write(root, "includes/brand.php",
            "<?php\nfunction brand_registry() {\n\treturn $entry['wibble'];\n}\n"
            "function helper_two( $x ) {\n\treturn $attributes['wobble'];\n}\n")
+    _write(root, "includes/headings.php",
+           "<?php\nfunction field_headings( array $attributes ) {\n\tforeach ( array( 'columnHeading' => 'a' ) as $key => $c ) {\n"
+           "\t\t$t = $attributes[ $key ];\n\t}\n}\nfunction listed_only( array $attributes ) {\n"
+           "\t$m = array( 'rowHeading' => 'b' );\n\treturn $attributes['other'];\n}\n")
     _write(root, "includes/account/dash.php", "<?php\necho $attrs['noOrdersText'];\n")
     _write(root, "includes/canonical.php", "<?php\n$v = $attrs['indexUrl'];\n$l = $attrs['label'];\n")
 
@@ -472,6 +486,10 @@ def self_test() -> int:
         check("NEG: array nobody reads", c("unusedList", "array"), "unresolved", "no-reader-found")
         check("NEG: alias, but the block declares no children", c("headline", None, bare), "unresolved", "no-reader-found")
         check("NEG: shared name is not unique, so an include read proves nothing", c("label", None, bare),
+              "unresolved", "no-reader-found")
+        check("key listed in a function that reads attributes by a variable key", c("columnHeading"),
+              "nested", "helper-read-dynamic:field_headings")
+        check("NEG: key is listed but the function reads no attribute by variable", c("rowHeading"),
               "unresolved", "no-reader-found")
         check("NEG: called function reads some other array's key", c("wibble"), "unresolved", "no-reader-found")
         check("NEG: called function reads $attributes but was not handed them", c("wobble"),

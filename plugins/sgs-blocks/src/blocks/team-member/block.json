@@ -337,14 +337,6 @@
 			"type": "string",
 			"default": "circle"
 		},
-		"sgsBlockLink": {
-			"type": "string",
-			"default": ""
-		},
-		"sgsBlockLinkTarget": {
-			"type": "boolean",
-			"default": false
-		},
 		"scaleHover": {
 			"type": "string",
 			"default": ""

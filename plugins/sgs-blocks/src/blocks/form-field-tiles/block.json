@@ -109,11 +109,6 @@
 			"default": "",
 			"role": "content"
 		},
-		"placeholder": {
-			"type": "string",
-			"default": "",
-			"role": "content"
-		},
 		"helpText": {
 			"type": "string",
 			"default": "",
