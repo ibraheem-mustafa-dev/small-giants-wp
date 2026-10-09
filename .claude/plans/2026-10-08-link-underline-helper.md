@@ -45,13 +45,12 @@ Open, each for a later batch:
 - **Multi-line linked address (code `2b2204129`, not yet deployed or read live):** the link is a flex box, so the sweep
   now lives on an inline `.sgs-business-info__text` span inside it (`sgs_link_underline_css`'s optional `$paint`
   argument) and follows every wrapped line. Open: deploy, then read the two-line address at 375 / 768 / 1440.
-- **`socials.google` can hold a review link (later, Bean 2026-10-09):** Site Info documents it as the Google Business
-  Profile or review link, and `sgs/business-info`'s address link falls back to it, so a client storing a "write a
-  review" URL gets the review form. Fix: a dedicated Maps link Site Info field (`includes/class-sgs-site-info.php`
-  plus its admin field) read by both `render.php` (`case 'address'`) and
-  `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key` (which already uses `maps_cid`, else
-  an address search, and never `socials.google`) so every block shares one rule. Eye Care sets no Maps CID today, so
-  its footer address currently links to its `socials.google` value until the field exists.
+- **Maps link field (code `41ce51659`, not yet deployed or read live):** Site Info has a `maps_url` field ("Google Maps
+  link"). `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key( 'address' )` is the one rule
+  (Maps link, else Maps CID, else a Maps search for the address) and `sgs/business-info`'s linked address calls it, so it
+  no longer falls back to `socials.google`, which may hold a review link. Open: deploy, set Eye Care's `maps_url` in
+  Site Info (it has no Maps CID, so its footer address would otherwise link to a Maps search), then read the footer
+  address href live.
 - **Batch 2:** `icon-list` and `sgs/button` link style already sweep through `utilities.css`
   (`:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label)`); adopting the control there means
   retiring those selectors so one element never has two sweeps.
