@@ -30,7 +30,7 @@ import {
   LinkUnderlineControl,
 } from "../../components";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
-import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview } from "../../utils";
+import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview, linkUnderlinePreviewCss } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
 const ICON_SIZE_OPTIONS = [
@@ -327,6 +327,18 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   // all — `bullet`/`numbered` get their marker from the list element itself
   // (CSS list-style / native <ol> numbering), `none` gets none.
   const showMarkerIcon = ["icon", "emoji"].includes(resolvedMarkerType);
+  // The item's text and optional description, as render.php prints them (inside the link when the item has a url).
+  const itemTextNodes = (item) => (
+    <>
+      {item.text}
+      {item.description && " "}
+      {item.description && (
+        <span className="sgs-icon-list__description" style={descriptionStyle}>
+          {item.description}
+        </span>
+      )}
+    </>
+  );
   const listItemNodes = items.map((item, index) => {
     const resolved = resolveItemIcon(item, fallback);
     return (
@@ -341,12 +353,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
           </span>
         )}
         <span className="sgs-icon-list__text" style={textStyle}>
-          {item.text}
-          {item.description && " "}
-          {item.description && (
-            <span className="sgs-icon-list__description" style={descriptionStyle}>
-              {item.description}
-            </span>
+          {item.url ? (
+            <a
+              href={item.url}
+              className="sgs-icon-list__item-link"
+              onClick={(event) => event.preventDefault()}
+              tabIndex={-1}
+            >
+              {itemTextNodes(item)}
+            </a>
+          ) : (
+            itemTextNodes(item)
           )}
         </span>
       </li>
@@ -392,6 +409,12 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   } else {
     canvasPreview = <ListTag {...blockProps}>{listItemNodes}</ListTag>;
   }
+
+  // How the list's links are underlined: the same rules render.php prints (includes/helpers-link-underline.php).
+  const linkUnderlineCss = linkUnderlinePreviewCss(`.sgs-ed-sep-${clientId}`, {
+    mode: linkUnderline,
+    thickness: linkUnderlineThickness,
+  });
 
   // Lines between items: the canvas mirrors render.php's item-drawn rules for the
   // previewed device (includes/helpers-separators-line-css.php).
@@ -796,8 +819,8 @@ export default function Edit({ attributes, setAttributes, clientId }) {
           />
         </PanelBody>
 
-        {/* The canvas edits item text and shows the link as plain text, so this
-           setting is read on the page: render.php prints it. */}
+        {/* The canvas shows each linked item as a link and previews this setting
+           on it (linkUnderlinePreviewCss), as render.php prints it. */}
         <PanelBody title={__("Links", "sgs-blocks")} initialOpen={false}>
           <LinkUnderlineControl
             mode={linkUnderline}
@@ -896,6 +919,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
       </InspectorControls>
 
       {separatorsCss && <style>{separatorsCss}</style>}
+      {linkUnderlineCss && <style>{linkUnderlineCss}</style>}
       {canvasPreview}
     </>
   );
