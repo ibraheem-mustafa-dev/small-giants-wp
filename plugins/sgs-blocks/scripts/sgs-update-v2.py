@@ -5790,7 +5790,8 @@ def _prune_orphans_on_conn(
     Four categories of stale rows are handled:
 
     (a) BLOCK-LEVEL ORPHANS — block_slug absent from `blocks` table (block retired/renamed).
-        All child rows (block_supports, block_capabilities, block_attributes) are always deleted.
+        All child rows (block_supports, block_capabilities, block_attributes, including the
+        sgs-ext and sgs-fx attribute rows of an sgs/* block) are always deleted.
 
     (b) STALE SUPPORTS — block exists but support_name removed from block.json.
         aggressive   → DELETE the row.
@@ -5854,9 +5855,13 @@ def _prune_orphans_on_conn(
         SELECT id FROM block_capabilities
         WHERE block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
     """
+    # The extension (sgs-ext) and effect (sgs-fx) seeders only ever INSERT, so a retired
+    # sgs/* block's rows from those sources would otherwise outlive it for ever. Native
+    # core/* rows (source native_wp) belong to Stage 2 and are never touched here.
     orphan_attrs_block_level_q = """
         SELECT id FROM block_attributes
-        WHERE source = 'sgs'
+        WHERE (source = 'sgs'
+               OR (source IN ('sgs-ext', 'sgs-fx') AND block_slug LIKE 'sgs/%'))
           AND block_slug NOT IN (SELECT slug FROM blocks WHERE source = 'sgs')
     """
 
