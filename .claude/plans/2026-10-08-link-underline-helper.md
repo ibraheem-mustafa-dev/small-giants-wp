@@ -2,7 +2,7 @@
 title: Link underline helper for text blocks, and the Eye Care footer "Visit or call" column
 project: small-giants-wp
 created: 2026-10-08
-status: batch 1 live on eye-care-test (blocks at 872a8434a) and read live 2026-10-09; batches 2 (icon-list, label) and 3 (collapsible-text, quote, testimonial, timeline, product-card) open
+status: batch 1 live on eye-care-test and read live 2026-10-09; batch 2 (icon-list) built, deploy and live read pending; batch 3 (collapsible-text, quote, testimonial, timeline, product-card) open
 authors: Bean, Claude (small-giants-wp-57)
 governs: register CR6 P2-n (moved here from .claude/plans/archive/2026-10-07-cr6-box-longhand-migration.md, which is box-longhand work only)
 ---
@@ -52,9 +52,14 @@ Open, each for a later batch:
   calls it, so it no longer falls back to `socials.google`, which may hold a review link. Eye Care's `maps_url` is set
   to its Google share link and the footer address links to it. Open: sandybrown and the other sites get the field when
   next deployed; open the Eye Care link once in a browser to confirm it lands on the listing, not a review form.
-- **Batch 2:** `icon-list` and `sgs/button` link style already sweep through `utilities.css`
-  (`:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label)`); adopting the control there means
-  retiring those selectors so one element never has two sweeps.
+- **Batch 2 (`icon-list`; code `e75081461`, `52ca75bac`, reseed `d997cec75`; deploy and live read pending):** the
+  list has `linkUnderline` and `linkUnderlineThickness` (a "Links" panel; element `item-link`) and its canvas shows
+  linked items as links. The theme's site-wide sweep (`utilities.css`, selector `.sgs-icon-list__item-link`, on when
+  `custom.linkSweep.thickness` is set) stays: it is the "Theme default" mode. An explicit choice overrides it by
+  specificity (`sweep` replaces its paint; `none` and `always` set `--sgs-sweep-thickness:0px` on the links), so no link
+  carries two sweeps, and the row's `itemTextDecoration` no longer forces the link's decoration when a choice is set.
+  `sgs/label` takes no setting: its text field allows no formats, so it holds no links. `sgs/button`'s link style keeps
+  its `utilities.css` sweep (a button label, not text in a paragraph).
 - **Ledger:** the footer walk now reports the decided differences (the sweep's `background-image` on refs 23-25, the
   address colour and its link box's `gap`/`display` rows). They need divergence entries citing Bean's 2026-10-08
   decision (S2 covers the sweep; the address colour and link need a register row first).
