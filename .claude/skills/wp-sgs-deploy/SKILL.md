@@ -1,6 +1,6 @@
 ---
 name: wp-sgs-deploy
-description: "Use when deploying sgs-blocks plugin, sgs-theme, or both to an SGS site (sandybrown canary by default; indus-test and eye-care-test on explicit opt-in). Stage 1 = pre-flight check; Stages 2-5 = build + `build-deploy.py` (the ONE deploy path, never hand-rolled tar/scp) + cache + OPcache reset + verify. Invoke as /wp-sgs-deploy plugin, /wp-sgs-deploy theme, or /wp-sgs-deploy both. Optional --skip-check flag for trusted micro-patches on the default canary only. Do NOT invoke for: Next.js projects (use /deploy-nextjs), DB-only refresh after code changes (use /sgs-update), per-page cv2-output deploy to a client's staging site (use /sgs-clone --deploy-target page:<id> — Stage 10 of the cloning pipeline), verification + QA without deploying (use /qc), pre-flight checklist alone without the actual deploy step (still use /wp-sgs-deploy — Phase 1 is the checklist and always runs with the deploy)."
+description: "Use when deploying sgs-blocks plugin, sgs-theme, or both to an SGS site (sandybrown canary by default; indus-test and eye-care-test on explicit opt-in). Stage 1 = pre-flight check; Stages 2-5 = build + `build-deploy.py` (the ONE deploy path, never hand-rolled tar/scp) + cache + OPcache reset + verify. Invoke as /wp-sgs-deploy plugin, /wp-sgs-deploy theme, or /wp-sgs-deploy both. Optional --skip-check flag for trusted micro-patches on the default canary only. Do NOT invoke for: Next.js projects (use /deploy-nextjs), DB-only refresh after code changes (use /sgs-update), building a client page or surface from a draft (use /sgs-clone, the computed route), verification + QA without deploying (use /qc), pre-flight checklist alone without the actual deploy step (still use /wp-sgs-deploy — Phase 1 is the checklist and always runs with the deploy)."
 ---
 
 # SGS Deploy (consolidated)
@@ -172,7 +172,7 @@ When deploying a change to `class-sgs-safety-guard.php` or `class-sgs-migrations
 
 - **Next.js projects** → `/deploy-nextjs`
 - **DB-only refresh** → `/sgs-update`
-- **Per-page client deploys** → `/sgs-clone --deploy-target page:<id>` (Stage 10)
+- **Per-page client builds** → `/sgs-clone` (the computed route)
 - **Verification + QA without deploying** → `/qc`
 
 ---
@@ -185,7 +185,7 @@ When deploying a change to `class-sgs-safety-guard.php` or `class-sgs-migrations
 | Forgetting `npm run build` before plugin deploys | Phase 2 must run for plugin / both scopes. Skipping it ships stale build/ output. |
 | Hand-rolling a tar / `scp` / `ssh` deploy instead of running `build-deploy.py` | Skips the dirty gate, the fail-closed verify and the `.bak` rotation, and a hand-rolled `rm -rf` of the live directory before the extract succeeds takes the site down. Stage 3 is one command. |
 | Resetting OPcache via WP-CLI | CLI runs in a separate OPcache pool and has no effect on web requests. `build-deploy.py` resets it over HTTP (Stage 4). |
-| Mistaking `/wp-sgs-deploy` for `/sgs-clone --deploy-target` | This skill is framework-wide (sgs-blocks + sgs-theme to a test site). The clone Stage 10 is per-page on a client staging site. Use the right one. |
+| Mistaking `/wp-sgs-deploy` for `/sgs-clone` | This skill is framework-wide (sgs-blocks + sgs-theme to a test site). `/sgs-clone` builds one client page or surface. Use the right one. |
 | Running on a fresh CC session without WP context | Phase 1 needs the operator to see what's being deployed. Do not invoke from a context that has not read the diff. |
 | Adding `Co-Authored-By:` to deploy commit messages | Banned globally. Deploy commits never carry co-author attribution. |
 
