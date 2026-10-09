@@ -278,7 +278,7 @@
 	border: 0;
 }
 
-/* ── Visible label: after the shape (end), before it (start; both follow the reading direction) or below it ── */
+/* ── Visible label: after the shape (end), before it (start; both follow the reading direction), below it or above it ── */
 .sgs-icon__inner {
 	display: inline-flex;
 	align-items: center;
@@ -299,7 +299,12 @@
 	flex-direction: column;
 }
 
-:where(.sgs-icon--label-below .sgs-icon__label-text) {
+.sgs-icon--label-above .sgs-icon__link,
+.sgs-icon--label-above .sgs-icon__inner {
+	flex-direction: column-reverse;
+}
+
+:where(.sgs-icon--label-below .sgs-icon__label-text, .sgs-icon--label-above .sgs-icon__label-text) {
 	text-align: center;
 }
 

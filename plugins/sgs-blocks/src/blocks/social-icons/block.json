@@ -277,7 +277,8 @@
 				"",
 				"end",
 				"start",
-				"below"
+				"below",
+				"above"
 			],
 			"description": "Label position for every icon left on end. '' leaves each icon's own."
 		},

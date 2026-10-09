@@ -15,6 +15,7 @@ const LABEL_POSITIONS = [
 	{ label: __( 'After the icon', 'sgs-blocks' ), value: 'end' },
 	{ label: __( 'Before the icon', 'sgs-blocks' ), value: 'start' },
 	{ label: __( 'Below the icon', 'sgs-blocks' ), value: 'below' },
+	{ label: __( 'Above the icon', 'sgs-blocks' ), value: 'above' },
 ];
 
 /**

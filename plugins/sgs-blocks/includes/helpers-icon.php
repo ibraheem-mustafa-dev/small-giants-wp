@@ -138,10 +138,10 @@ if ( ! function_exists( 'sgs_icon_label_position' ) ) {
 	 *
 	 * @param mixed  $own   The block's `labelPosition`.
 	 * @param string $group The row's position from sgs_icon_group_context(), or ''.
-	 * @return string end | start | below.
+	 * @return string end | start | below | above.
 	 */
 	function sgs_icon_label_position( $own, string $group ): string {
-		$own = is_string( $own ) && in_array( $own, array( 'end', 'start', 'below' ), true ) ? $own : 'end';
+		$own = is_string( $own ) && in_array( $own, array( 'end', 'start', 'below', 'above' ), true ) ? $own : 'end';
 		return 'end' === $own && '' !== $group ? $group : $own;
 	}
 }
@@ -195,7 +195,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 			'border_width'   => $width,
 			'border_style'   => is_string( $context['sgs/socialIconsBorderStyle'] ?? null ) ? $context['sgs/socialIconsBorderStyle'] : '',
 			'show_label'     => ! empty( $context['sgs/socialIconsShowLabel'] ),
-			'label_position' => in_array( $label_pos, array( 'end', 'start', 'below' ), true ) ? $label_pos : '',
+			'label_position' => in_array( $label_pos, array( 'end', 'start', 'below', 'above' ), true ) ? $label_pos : '',
 		);
 	}
 }

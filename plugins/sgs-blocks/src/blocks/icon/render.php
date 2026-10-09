@@ -27,8 +27,8 @@
  * takes the row's shape; the row can switch the background on and give every icon a border, and an icon's own border
  * wins.
  *
- * Visible label (`showLabel`, or the row's group switch): `.sgs-icon__label-text` inside the link, after the shape (start
- * and below are layout classes on the root), its text `labelText` else the accessible name (sgs_icon_visible_label()).
+ * Visible label (`showLabel`, or the row's group switch): `.sgs-icon__label-text` inside the link, after the shape (start,
+ * below and above are layout classes on the root), its text `labelText` else the accessible name (sgs_icon_visible_label()).
  * The visible text then is the link's name, so the visually hidden name is not printed as well; " (opens in new
  * tab)" stays visually hidden. An unlinked labelled icon wraps the shape and label in `.sgs-icon__inner` and is plain
  * text, not an image. Label colour: own (--sgs-icon-label-colour), the row's (--sgs-si-label-colour), then the icon

@@ -42,6 +42,9 @@ describe( 'label position and the row', () => {
 		expect( labelPositionFor( undefined, 'start' ) ).toBe( 'start' );
 		expect( labelPositionFor( 'start', 'below' ) ).toBe( 'start' );
 		expect( labelPositionFor( 'sideways', '' ) ).toBe( 'end' );
+		expect( labelPositionFor( 'above', 'below' ) ).toBe( 'above' );
+		expect( labelPositionFor( 'end', 'above' ) ).toBe( 'above' );
+		expect( labelPositionFor( undefined, 'above' ) ).toBe( 'above' );
 	} );
 
 	it( 'the row switch and position reach the icon through context', () => {
@@ -50,6 +53,7 @@ describe( 'label position and the row', () => {
 		expect( group.labelPosition ).toBe( 'below' );
 		expect( attributesInGroup( { showLabel: false }, group ) ).toMatchObject( { showLabel: true, labelPosition: 'below' } );
 		expect( attributesInGroup( { labelPosition: 'start' }, group ).labelPosition ).toBe( 'start' );
+		expect( iconGroupContext( { 'sgs/socialIconsColourMode': 'inherit', 'sgs/socialIconsLabelPosition': 'above' } ).labelPosition ).toBe( 'above' );
 		expect( iconGroupContext( { 'sgs/socialIconsColourMode': 'inherit', 'sgs/socialIconsLabelPosition': 'x' } ) ).toMatchObject( { showLabel: false, labelPosition: '' } );
 	} );
 } );
@@ -103,6 +107,8 @@ describe( 'editor canvas', () => {
 		mount( { showLabel: true, labelText: 'Free delivery', labelPosition: 'start' } );
 		expect( container.querySelector( '.sgs-icon__inner > .sgs-icon__label-text' ).textContent ).toBe( 'Free delivery' );
 		expect( container.querySelector( '.sgs-icon' ).classList.contains( 'sgs-icon--label-start' ) ).toBe( true );
+		mount( { showLabel: true, labelText: 'Free delivery', labelPosition: 'above' } );
+		expect( container.querySelector( '.sgs-icon' ).classList.contains( 'sgs-icon--label-above' ) ).toBe( true );
 	} );
 
 	it( 'the row switch and position show on a child in the canvas', () => {

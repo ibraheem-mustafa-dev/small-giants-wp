@@ -165,7 +165,7 @@ export function visibleLabel( labelText, nameArgs ) {
 }
 
 /** The label positions, in the order the inspector offers them. */
-export const LABEL_POSITIONS = [ 'end', 'start', 'below' ];
+export const LABEL_POSITIONS = [ 'end', 'start', 'below', 'above' ];
 
 /**
  * Where the visible label sits: the icon's own position, except that an icon left on `end` inside a row takes the
@@ -173,7 +173,7 @@ export const LABEL_POSITIONS = [ 'end', 'start', 'below' ];
  *
  * @param {string} own   The block's labelPosition.
  * @param {string} group The row's position (iconGroupContext().labelPosition), or ''.
- * @return {string} end | start | below.
+ * @return {string} end | start | below | above.
  */
 export function labelPositionFor( own, group ) {
 	const mine = LABEL_POSITIONS.includes( own ) ? own : 'end';

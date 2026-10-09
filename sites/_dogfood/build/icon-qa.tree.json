@@ -48,5 +48,7 @@
  { "name": "sgs/social-icons", "attributes": { "className": "iqa-23", "colourMode": "theme", "childIconShape": "pill", "childIconShowBackground": true, "childIconSize": { "desktop": "16px" }, "childIconShowLabel": true, "childIconLabelFontSize": { "desktop": 13 }, "childIconLabelFontWeight": "500" }, "innerBlocks": [
   { "name": "sgs/icon", "attributes": { "iconSource": "brand", "brandName": "instagram", "linkUrl": "https://www.instagram.com/", "ariaLabel": "Instagram" } },
   { "name": "sgs/icon", "attributes": { "iconSource": "brand", "brandName": "whatsapp", "linkUrl": "/contact/", "ariaLabel": "WhatsApp" } }
- ] }
+ ] },
+ { "name": "sgs/heading", "attributes": { "content": "24. Label above a circle with background", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-24", "iconName": "phone", "shape": "circle", "showBackground": true, "linkUrl": "tel:+441234567890", "showLabel": true, "labelText": "Call us", "labelPosition": "above" } }
 ]

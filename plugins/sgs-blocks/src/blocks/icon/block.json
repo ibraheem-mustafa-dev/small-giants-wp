@@ -143,7 +143,7 @@
 							}
 						}
 					},
-					"_note": "`.sgs-icon__label-text`: the optional visible label inside the link (showLabel), beside or below the shape (labelPosition). Its text is the link's accessible name. labelGap is the space between the shape and the label (the link's gap). Colours print as --sgs-icon-label-colour[-hover] only when set, so a wrapping sgs/social-icons group default (--sgs-si-label-colour) shows through; unset, the label takes the icon colour a client set, else the site's text colour."
+					"_note": "`.sgs-icon__label-text`: the optional visible label inside the link (showLabel), beside, below or above the shape (labelPosition). Its text is the link's accessible name. labelGap is the space between the shape and the label (the link's gap). Colours print as --sgs-icon-label-colour[-hover] only when set, so a wrapping sgs/social-icons group default (--sgs-si-label-colour) shows through; unset, the label takes the icon colour a client set, else the site's text colour."
 				}
 			}
 		}
@@ -355,7 +355,7 @@
 		"showLabel": {
 			"type": "boolean",
 			"default": false,
-			"description": "Shows a visible text label inside the link, beside or below the icon. The label then is the link's name for screen readers. Inside an sgs/social-icons row, the row can switch it on for every icon."
+			"description": "Shows a visible text label inside the link, beside, below or above the icon. The label then is the link's name for screen readers. Inside an sgs/social-icons row, the row can switch it on for every icon."
 		},
 		"labelText": {
 			"type": "string",
@@ -369,9 +369,10 @@
 			"enum": [
 				"end",
 				"start",
-				"below"
+				"below",
+				"above"
 			],
-			"description": "Where the label sits: after the icon (end), before it (start; both follow the reading direction) or below it. Inside a row, an icon left on end takes the row's position."
+			"description": "Where the label sits: after the icon (end), before it (start; both follow the reading direction), below it or above it. Inside a row, an icon left on end takes the row's position."
 		},
 		"labelGap": {
 			"type": "object",

@@ -225,6 +225,7 @@ final class IconLabelTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-icon--label-', $end );
 		$this->assertStringContainsString( 'sgs-icon--label-start', $this->root_classes( $this->icon( $base + array( 'labelPosition' => 'start' ) ) ) );
 		$this->assertStringContainsString( 'sgs-icon--label-below', $this->root_classes( $this->icon( $base + array( 'labelPosition' => 'below' ) ) ) );
+		$this->assertStringContainsString( 'sgs-icon--label-above', $this->root_classes( $this->icon( $base + array( 'labelPosition' => 'above' ) ) ) );
 		$this->assertStringNotContainsString( 'sgs-icon--label-', $this->root_classes( $this->icon( $base + array( 'labelPosition' => 'sideways"><script>' ) ) ) );
 	}
 
@@ -357,6 +358,36 @@ final class IconLabelTest extends TestCase {
 		$this->assertStringNotContainsString( 'role="img"', $html );
 	}
 
+	public function test_row_default_above_reaches_a_child_left_on_end(): void {
+		$html = $this->row(
+			array(
+				'childIconShowLabel'     => true,
+				'childIconLabelPosition' => 'above',
+			),
+			array(
+				array(
+					array(
+						'iconSource' => 'brand',
+						'brandName'  => 'instagram',
+						'ariaLabel'  => 'Instagram',
+					),
+					'socials.instagram',
+				),
+				array(
+					array(
+						'iconSource'    => 'brand',
+						'brandName'     => 'whatsapp',
+						'ariaLabel'     => 'WhatsApp',
+						'labelPosition' => 'start',
+					),
+					'socials.whatsapp',
+				),
+			)
+		);
+		$this->assertSame( 1, preg_match_all( '#class="[^"]*sgs-icon--label-above#', $html ), 'the row position above reaches the child left on end' );
+		$this->assertSame( 1, preg_match_all( '#class="[^"]*sgs-icon--label-start#', $html ), 'an own position still wins' );
+	}
+
 	public function test_row_without_the_switch_shows_no_labels(): void {
 		$html = $this->row(
 			array( 'childIconLabelPosition' => 'below' ),
@@ -402,6 +433,7 @@ final class IconLabelTest extends TestCase {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/icon/style.css' );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon__link \{[^}]*min-inline-size: 44px;[^}]*min-block-size: 44px;#s', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-below \.sgs-icon__link,\s*\.sgs-icon--label-below \.sgs-icon__inner \{\s*flex-direction: column;#', $css );
+		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-above \.sgs-icon__link,\s*\.sgs-icon--label-above \.sgs-icon__inner \{\s*flex-direction: column-reverse;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-start \.sgs-icon__link,\s*\.sgs-icon--label-start \.sgs-icon__inner \{\s*flex-direction: row-reverse;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon__label-text \{\s*color: var\(--sgs-icon-label-colour, var\(--sgs-si-label-colour, var\(--sgs-icon-colour,#', $css );
 	}
