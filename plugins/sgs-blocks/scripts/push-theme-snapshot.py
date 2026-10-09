@@ -496,9 +496,6 @@ def discover_global_styles_state(target: str, port: int, wp_root: str) -> tuple[
 # Deliberately NOT stripped -- these are genuinely per-client and the user layer is the
 # only place a Site-Editor edit to them can live:
 #   color.palette / color.gradients   -- per-client brand colours (Spec 33 Pass A/B)
-#   typography.fontSizes              -- per-client scales really do differ (the optician client and
-#                                        the sgs-* templates use a 6-slug clamp() scale
-#                                        with an `xxx-large` the framework has no slug for)
 #   typography.fontFamilies           -- Font Library installs land here
 # `color.duotone` is absent from the framework theme.json AND every snapshot, so it is
 # omitted rather than listed inert -- add it here only once something actually emits one.
