@@ -1063,7 +1063,7 @@ always cheaper than a fresh build plus its brainstorm, QC and tests.
 for the SUBJECT (colour, gradient, token, element, inline, parity), never
 for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 885 scripts
+#### `plugins/sgs-blocks/scripts/` — 886 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1849,6 +1849,7 @@ for the verb you happen to have in mind.
 | `survey-border-control-migration.py` | manifest+npm+script-call | Classify every block's border UI against the SgsBorderControl target shape. |
 | `survey-flex-row-shape.py` | manifest+script-call | Classify every authored sgs/container flex ROW by what it is actually doing. |
 | `survey-icon-oldshape.py` | manifest | find stored blocks that still carry the pre-rebuild icon shapes. |
+| `survey-spacing-defaults.py` | — | census of the Spacing control's untouched sides. |
 | `surveys/audit-css-element-drift.py` | manifest | Audit `block_attributes.css_element` against each block's own element manifest. |
 | `surveys/census-media-control-instances.py` | manifest | Every CONTROL INSTANCE in the library, for every media-atom attribute. |
 | `surveys/census-media-presentation.py` | manifest+npm | Census extension — the PRESENTATION half of the media-element manifest. |
