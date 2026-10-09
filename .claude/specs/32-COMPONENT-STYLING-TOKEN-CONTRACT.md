@@ -685,6 +685,8 @@ blast-radius change that needs Bean's explicit go-ahead.
 
 **Rule for the `border` slot (§12.5(a)).** The fix for a saturated `border` is to re-derive it as a low-chroma neutral near that site's `surface`/`surface-alt` tones, the way `helping-doctors` and `eye-care-ward-end` have it. That is a per-client `theme-snapshot.json` VALUE change and needs Bean's explicit go-ahead.
 
+**Not built: an extractor guard for `border`.** `plugins/sgs-blocks/scripts/theme-extractor/` accepts a saturated `border` from a draft's declared palette. A guard that re-derives a high-chroma `border` as a low-chroma neutral near the site's `surface` would fix every future client at once and leave existing snapshots untouched; no client palette is changed by hand (draft client setups under `sites/` are not real clients).
+
 **Rule for `surface-alt` distinctness.** A pair whose `surface` and `surface-alt` differ by only a few RGB units makes raised blocks (§12.3) look flat. If the declared `surface-alt` is a token in the source draft, changing it overwrites draft content rather than fixing an extraction bug, so the fix is a value change in `sites/<client>/theme-snapshot.json` and in the source draft's declaration, never a code change. Measure the pair with the §12.5(a)-style command before proposing a change.
 
 ### 12.7 Verification method (rule 4a — computed, content-keyed, not source-diff) + extractor proof

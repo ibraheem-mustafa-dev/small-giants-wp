@@ -31,10 +31,10 @@ Keep (live): `parity/draft-live-walk.mjs`, `parity/lib/`, `parity/GAP-CHECKLIST.
 1. For each row, prove no live reader: `git grep` the directory name and its module names from every live entry point (`gates.json`, `run-gates.py`, `package.json`, `build-deploy.py`, `sgs-update-v2.py`, `.claude/hooks/`, `~/.claude/skills/*`, PHP runtime). Run `audit-script-reachability.py` before and after; run `gate:full` to prove nothing went red.
 2. Cut each wire in the same commit as the delete it frees: the `package.json` scripts, `gates.json` entries, the `sgs-update-v2.py` seeder stage, the `db-consistency` checks that import the converter, and the `block_render_*` tables with their seeders and DB schema.
 3. Reseed the framework DB from HEAD (never from a dirty tree) and diff the role map and tables against the previous seed.
-4. Delete `.claude/rules/cloning-pipeline.md`'s converter paths, and the LEDGER Front E and Front N blocks.
+4. Remove the converter lines from `.claude/LEDGER.md` (Summary and Front S, and the two old-converter entries under Known failing tests) and from `.claude/architecture.md` (the remaining "converter" mentions in §5 and §6).
 5. Move the deletions in one commit per directory, `gate:full` green before each push. Archive nothing: git history keeps it.
 
-## Open decisions for Bean
+## Decisions (Bean, 2026-10-09)
 
-- Whether the `block_render_*` DB tables and their seeders go in this plan (recommended) or stay as unused data.
-- Whether the R8 motion-recognition rules in the deleted Spec 31 §14 are dropped or logged as a deferred item in Spec 47.
+- The `block_render_*` tables, their seeders (`seed-render-composition.py`, `seed-render-singletons.py`, `recogniser/render_repeater_seeder.py`) and their DB schema go with the removal.
+- The old motion recognition (CSS-shape guessing of `sgsAnimation` presets) is dropped. One item stays: Spec 47 section 3.6 carries "detect a JS motion library or WebGL canvas in a draft and report it" as not built.

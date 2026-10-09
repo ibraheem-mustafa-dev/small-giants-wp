@@ -166,7 +166,7 @@ teardown finds an effect no Spec 38 tier (V, G, H, W) can express. Warm is not o
 
 **Test.** Happy: computed parity against the reference plus Bean's eye per clone. Edge: mobile drawer parity;
 content-role migrations. Fail: a DP7 harness mismatch fails the build. Integration: presets restyle under each
-client's theme-snapshot tokens. W4-b's evidence pack is fixed in advance: computed-parity JSON, DP7 captures, the
+client's theme-snapshot tokens. W4-b's evidence pack is fixed in advance: parity-walker output, DP7 captures, the
 homes table and the labels fidelity output; Bean judges from the pack and the live URL.
 
 ## 6. Wave 5: header and footer cloning through the computed route (Spec 47)
