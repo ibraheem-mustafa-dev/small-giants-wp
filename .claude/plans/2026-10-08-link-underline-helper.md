@@ -42,9 +42,16 @@ are sweep-only by decision and lists of links are not the running-text case WCAG
 links in paragraphs to Always.
 
 Open, each for a later batch:
-- **Multi-line linked address:** business-info's link is one flex box, so the sweep draws under the last line only.
-- **`socials.google` can hold a review link:** Site Info documents it as the Google Business Profile or review link;
-  a client storing a "write a review" URL gets the review form from the address. Consider a dedicated Maps link field.
+- **Multi-line linked address (code `2b2204129`, not yet deployed or read live):** the link is a flex box, so the sweep
+  now lives on an inline `.sgs-business-info__text` span inside it (`sgs_link_underline_css`'s optional `$paint`
+  argument) and follows every wrapped line. Open: deploy, then read the two-line address at 375 / 768 / 1440.
+- **`socials.google` can hold a review link (later, Bean 2026-10-09):** Site Info documents it as the Google Business
+  Profile or review link, and `sgs/business-info`'s address link falls back to it, so a client storing a "write a
+  review" URL gets the review form. Fix: a dedicated Maps link Site Info field (`includes/class-sgs-site-info.php`
+  plus its admin field) read by both `render.php` (`case 'address'`) and
+  `includes/class-sgs-site-info-binding.php::Sgs_Site_Info_Binding::link_for_key` (which already uses `maps_cid`, else
+  an address search, and never `socials.google`) so every block shares one rule. Eye Care sets no Maps CID today, so
+  its footer address currently links to its `socials.google` value until the field exists.
 - **Batch 2:** `icon-list` and `sgs/button` link style already sweep through `utilities.css`
   (`:where(.sgs-icon-list__item-link, .sgs-button--link .sgs-button__label)`); adopting the control there means
   retiring those selectors so one element never has two sweeps.
