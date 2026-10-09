@@ -300,6 +300,18 @@
 					"description": {
 						"type": "string",
 						"description": "Optional second line under this item's text (a smaller, muted description). Empty renders nothing."
+					},
+					"siteInfoSource": {
+						"type": "string",
+						"description": "Where this item takes its text from: empty (the typed text) or phone | email | address | hours, read from Site Info and shown as sgs/business-info shows it. A blank Site Info value hides the item. No enum: render.php allow-lists it, so an unknown value falls back to the typed text."
+					},
+					"siteInfoLink": {
+						"type": "boolean",
+						"description": "Site Info items only. Address: link to the Site Info Maps link. Opening hours: link to the item's typed url, else the Google Business profile. Phone and email always link."
+					},
+					"newTab": {
+						"type": "boolean",
+						"description": "Open this item's link in a new tab."
 					}
 				}
 			}

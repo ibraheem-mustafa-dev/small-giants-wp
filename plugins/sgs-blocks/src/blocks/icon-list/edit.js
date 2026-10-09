@@ -28,7 +28,10 @@ import {
   SgsSeparatorControl,
   SpacingControl,
   LinkUnderlineControl,
+  LinkPopoverField,
 } from "../../components";
+import { SITE_INFO_ADMIN_URL } from "../icon/icon-state";
+import { CONTENT_SOURCE_OPTIONS, usesSiteInfo, siteInfoItemPreview } from "./site-info-items";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview, linkUnderlinePreviewCss } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -99,6 +102,12 @@ function resolveItemIcon(item, fallback) {
 
 function ItemEditor({ item, fallback, onChange, onRemove }) {
   const resolved = resolveItemIcon(item, fallback);
+  const fromSiteInfo = usesSiteInfo(item);
+  const siteInfoPreview = siteInfoItemPreview(
+    item,
+    window.sgsBlocksData?.siteInfo,
+    window.sgsBlocksData?.siteInfoHours,
+  );
   return (
     <div
       className="sgs-icon-list-item-editor"
@@ -116,13 +125,76 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
           onChange({ ...item, iconSource: source, iconName: name, icon: undefined })
         }
       />
-      <TextControl
-        label={__("Text", "sgs-blocks")}
-        value={item.text || ""}
-        onChange={(val) => onChange({ ...item, text: val })}
+      <SelectControl
+        label={__("Content", "sgs-blocks")}
+        value={item.siteInfoSource || ""}
+        options={CONTENT_SOURCE_OPTIONS}
+        onChange={(val) =>
+          onChange({
+            ...item,
+            siteInfoSource: val,
+            // An address or opening-hours item links by default (to the map / the Google profile); phone and
+            // email always link, so the switch does not apply to them.
+            siteInfoLink: "address" === val || "hours" === val ? true : undefined,
+          })
+        }
         __nextHasNoMarginBottom
-      	__next40pxDefaultSize
+        __next40pxDefaultSize
       />
+      {fromSiteInfo ? (
+        <>
+          <p className="sgs-icon-list-item-editor__site-info">
+            {siteInfoPreview.hidden
+              ? __("Not set in Site Info, so this item is hidden on the site until you add it.", "sgs-blocks")
+              : siteInfoPreview.text}{" "}
+            <a href={SITE_INFO_ADMIN_URL} target="_blank" rel="noopener noreferrer">
+              {__("Edit in Site Info", "sgs-blocks")}
+            </a>
+          </p>
+          {("address" === item.siteInfoSource || "hours" === item.siteInfoSource) && (
+            <ToggleControl
+              label={
+                "address" === item.siteInfoSource
+                  ? __("Link the address to its map", "sgs-blocks")
+                  : __("Link to the Google Business profile", "sgs-blocks")
+              }
+              checked={!!item.siteInfoLink}
+              onChange={(val) => onChange({ ...item, siteInfoLink: val })}
+              __nextHasNoMarginBottom
+            />
+          )}
+        </>
+      ) : (
+        <TextControl
+          label={__("Text", "sgs-blocks")}
+          value={item.text || ""}
+          onChange={(val) => onChange({ ...item, text: val })}
+          __nextHasNoMarginBottom
+          __next40pxDefaultSize
+        />
+      )}
+      {(!fromSiteInfo || ("hours" === item.siteInfoSource && item.siteInfoLink)) && (
+        <LinkPopoverField
+          label={
+            fromSiteInfo
+              ? __("Link instead of the Google Business profile (optional)", "sgs-blocks")
+              : __("Link (optional)", "sgs-blocks")
+          }
+          help={__("Search your site or paste a URL to make this item a link.", "sgs-blocks")}
+          value={{
+            url: item.url || "",
+            linkTarget: item.newTab ? "_blank" : "_self",
+            rel: "",
+          }}
+          targetMode="boolean"
+          onChange={(next) => {
+            const patch = { ...item };
+            if (undefined !== next.url) patch.url = next.url;
+            if (undefined !== next.linkTarget) patch.newTab = "_blank" === next.linkTarget ? true : undefined;
+            onChange(patch);
+          }}
+        />
+      )}
       <TextControl
         label={__("Description (optional)", "sgs-blocks")}
         help={__("A smaller second line under the text.", "sgs-blocks")}
@@ -341,8 +413,24 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   );
   const listItemNodes = items.map((item, index) => {
     const resolved = resolveItemIcon(item, fallback);
+    // A Site Info item prints Site Info's value and link; a blank value hides it on the site, so the canvas
+    // keeps it selectable but dims it and says why.
+    const siteInfoItem = usesSiteInfo(item)
+      ? siteInfoItemPreview(item, window.sgsBlocksData?.siteInfo, window.sgsBlocksData?.siteInfoHours)
+      : null;
+    const shownItem = siteInfoItem
+      ? {
+          ...item,
+          text: siteInfoItem.hidden ? __("(Not set in Site Info, hidden on the site)", "sgs-blocks") : siteInfoItem.text,
+          url: siteInfoItem.url,
+        }
+      : item;
     return (
-      <li key={index} className="sgs-icon-list__item" style={itemStyle}>
+      <li
+        key={index}
+        className="sgs-icon-list__item"
+        style={siteInfoItem?.hidden ? { ...itemStyle, opacity: 0.5 } : itemStyle}
+      >
         {showMarkerIcon && (
           <span
             className="sgs-icon-list__icon"
@@ -353,17 +441,17 @@ export default function Edit({ attributes, setAttributes, clientId }) {
           </span>
         )}
         <span className="sgs-icon-list__text" style={textStyle}>
-          {item.url ? (
+          {shownItem.url ? (
             <a
-              href={item.url}
+              href={shownItem.url}
               className="sgs-icon-list__item-link"
               onClick={(event) => event.preventDefault()}
               tabIndex={-1}
             >
-              {itemTextNodes(item)}
+              {itemTextNodes(shownItem)}
             </a>
           ) : (
-            itemTextNodes(item)
+            itemTextNodes(shownItem)
           )}
         </span>
       </li>
@@ -373,7 +461,10 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   // FR-36-26a rule 3: the `<nav>` landmark is opt-in for typed lists, and
   // NEVER offered for a url-less typed list — a list nobody can navigate
   // through is not a navigation landmark.
-  const itemsHaveUrls = (items || []).some((item) => item.url);
+  const itemsHaveUrls = (items || []).some((item) => {
+    if (!usesSiteInfo(item)) return !!item.url;
+    return !!siteInfoItemPreview(item, window.sgsBlocksData?.siteInfo, window.sgsBlocksData?.siteInfoHours).url;
+  });
 
   // FR-36-26c editor-canvas preview: heading blank = no heading element
   // (matches render.php exactly); marker types other than icon/emoji render

@@ -983,3 +983,17 @@ if ( ! function_exists( 'get_terms' ) ) {
 		return array_map( static fn( array $t ): object => (object) $t, $rows );
 	}
 }
+
+if ( ! function_exists( 'is_email' ) ) {
+	function is_email( $email ) {
+		// A plain shape check (one @, a dotted domain, no spaces): enough for a render test, not core's full RFC rules.
+		return is_string( $email ) && 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $email ) ? $email : false;
+	}
+}
+
+if ( ! function_exists( 'antispambot' ) ) {
+	function antispambot( $email_address, $hex_encoding = 0 ) {
+		// Core hides characters as HTML entities at random; the harness keeps the address readable so a test can match it.
+		return (string) $email_address;
+	}
+}

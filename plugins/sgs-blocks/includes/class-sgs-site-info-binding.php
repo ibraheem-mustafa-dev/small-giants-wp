@@ -76,8 +76,26 @@ final class Sgs_Site_Info_Binding {
 				),
 				JSON_HEX_TAG | JSON_HEX_AMP
 			) . ';' .
-			'window.sgsBlocksData.siteInfo = ' . \wp_json_encode( self::editor_site_info(), JSON_HEX_TAG | JSON_HEX_AMP ) . ';',
+			'window.sgsBlocksData.siteInfo = ' . \wp_json_encode( self::editor_site_info(), JSON_HEX_TAG | JSON_HEX_AMP ) . ';' .
+			'window.sgsBlocksData.siteInfoHours = ' . \wp_json_encode( self::editor_hours(), JSON_HEX_TAG | JSON_HEX_AMP ) . ';',
 			'before'
+		);
+	}
+
+	/**
+	 * The opening-hours line an icon-list item shows and the link it makes, for the editor preview
+	 * (`window.sgsBlocksData.siteInfoHours`). Same text sgs/icon-list prints, from the shared formatter.
+	 *
+	 * @return array{text:string,link:string} Both '' for a user who cannot edit posts or when no hours are set.
+	 */
+	public static function editor_hours(): array {
+		if ( ! \current_user_can( 'edit_posts' ) ) {
+			return array( 'text' => '', 'link' => '' );
+		}
+		require_once __DIR__ . '/helpers-site-info-items.php';
+		return array(
+			'text' => \sgs_site_info_hours_text(),
+			'link' => \esc_url_raw( self::link_for_key( 'socials.google' ) ),
 		);
 	}
 

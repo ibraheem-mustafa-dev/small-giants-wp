@@ -127,6 +127,10 @@
  *   helpers-site-info-binding.php   — sgs_bound_site_info_key,
  *                                     sgs_bound_site_info_is_empty (which Site
  *                                     Info key an attribute is bound to)
+ *   helpers-site-info-items.php     — sgs_site_info_item, sgs_site_info_hours_groups,
+ *                                     sgs_site_info_hours_text (a phone, email,
+ *                                     address or condensed opening-hours line as
+ *                                     business-info and icon-list show it)
  *   helpers-icon.php                — sgs_icon_length_value,
  *                                     sgs_icon_accessible_name,
  *                                     sgs_icon_is_editor_render (sgs/icon's
@@ -188,6 +192,7 @@ require_once __DIR__ . '/helpers-button-note.php';
 require_once __DIR__ . '/helpers-empty-tab.php';
 require_once __DIR__ . '/helpers-reviews-inline.php';
 require_once __DIR__ . '/helpers-site-info-binding.php';
+require_once __DIR__ . '/helpers-site-info-items.php';
 require_once __DIR__ . '/helpers-icon.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';

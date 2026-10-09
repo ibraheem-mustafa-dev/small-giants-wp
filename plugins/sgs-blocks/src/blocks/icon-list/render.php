@@ -188,7 +188,31 @@ if ( 'menu' === $source ) {
 		}
 	}
 } else {
-	$resolved_items = $items;
+	// An item may take its text and link from Site Info (`siteInfoSource`: phone | email | address | hours, with
+	// `siteInfoLink`) instead of typed text. It is resolved here, through the same formatter sgs/business-info
+	// uses, into the plain {text, url} shape the loop below renders; a blank Site Info value drops the item (as
+	// a blank Site Info key hides an sgs/icon), so the loop's :nth-child numbering matches the printed list.
+	$resolved_items = array();
+	foreach ( is_array( $items ) ? $items : array() as $maybe_site_info_item ) {
+		if ( ! is_array( $maybe_site_info_item ) ) {
+			continue;
+		}
+		$site_info_source = (string) ( $maybe_site_info_item['siteInfoSource'] ?? '' );
+		if ( ! in_array( $site_info_source, sgs_site_info_item_sources(), true ) ) {
+			$resolved_items[] = $maybe_site_info_item;
+			continue;
+		}
+		$site_info_item = sgs_site_info_item( $site_info_source, ! empty( $maybe_site_info_item['siteInfoLink'] ) );
+		if ( null === $site_info_item ) {
+			continue;
+		}
+		$maybe_site_info_item['text'] = $site_info_item['html'];
+		// Phone, email and a linked address take Site Info's link; hours take the item's own typed link first.
+		$maybe_site_info_item['url'] = 'hours' === $site_info_source && ! empty( $maybe_site_info_item['siteInfoLink'] ) && ! empty( $maybe_site_info_item['url'] )
+			? $maybe_site_info_item['url']
+			: $site_info_item['url'];
+		$resolved_items[]            = $maybe_site_info_item;
+	}
 }
 
 // --- FR-36-26a heading contract. An operator-entered `heading` is STICKY —
