@@ -436,6 +436,8 @@ Variant background, border and colour are overridable via `:where()` (E9). `icon
 
 **Block Selectors:** `"typography"` targets `.sgs-icon-list__text` for native font controls.
 
+**Site Info items:** an item's `siteInfoSource` (`phone` | `email` | `address` | `hours`, empty = typed text) takes its text and link from Site Info through the formatter `sgs/business-info` uses (`includes/helpers-site-info-items.php`); `siteInfoLink` links an address to the Site Info Maps link and hours to the item's own `url`, else the Google Business profile (phone and email always link, `tel:` / `mailto:`, never in a new tab). A blank Site Info value hides the item before the loop, so the per-item `:nth-child` colour rules stay aligned. Condensed hours group equal days into ranges, and a hidden closed day ends a range.
+
 ---
 
 ### Google Reviews (`sgs/google-reviews`)
@@ -1070,6 +1072,7 @@ SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--s
 - Hover transform is one list, scale then translate then rotate: `scaleHover`, `offsetXHover` / `offsetYHover` (px, -40 to 40) and `iconRotateHover` (deg, added to `iconRotate`); a translate is scaled with the shape. Reduced motion drops all of it.
 - Motion: `transitionDuration` (the transform, ms), `paintDuration` (shadow, colour and border, ms), `transitionEasing` (+ `transitionEasingCustom`, the shared motion easing names, `spring` included). 0 / empty = the theme's fast transition.
 - Shadow: `boxShadow` + `boxShadowColour`, `boxShadowHover` + `boxShadowColourHover`, `shadowLiftOnHover`, through the shared `ShadowControl` and `sgs_shadow_decls()` (a preset slug, or layers with the site colour, a palette slug or a hex, with an optional `N%`). Box shapes only; an own resting shadow pins its own hover so a row's hover shadow cannot replace it.
+- Colour mode `brand-glyph` ("Brand colour: logo only", also the `sgs/social-icons` row choice): only the logo takes the brand colour (Google's four-colour mark; the registry's `logoGradient`, Instagram's, through `sgs_icon_gradient_css()`), the shape keeps its own ground and border, and hover and focus-visible turn the border and a 1px ring the brand colour (outline shapes: the outline stroke), touch-guarded through `sgs_hover_state_rules()`. A client's own colour, hover colour or hover border wins. Official brand colours stay even below 3:1 on the ground (Bean, 2026-10-09).
 - Brand colours: the registry may carry `groundGradient` (Instagram's radial gradient), painted over the flat brand colour (the fallback) in colour mode Brand colours; a row or icon background of any kind replaces it. `brandHover` (`inherit` | `swap` | `hold`; row `childIconBrandHover`) chooses whether the ground and the logo trade colours on hover or hold.
 - Row defaults: `childIconScaleHover` (0 = each icon's own), `childIconOffsetXHover`, `childIconOffsetYHover`, `childIconRotateHover`, `childIconTransitionDuration`, `childIconPaintDuration`, `childIconTransitionEasing(+Custom)`, `childIconBoxShadow(+Colour, +Hover, +ColourHover)`, `childIconShadowLiftOnHover`, `childIconBrandHover`.
 

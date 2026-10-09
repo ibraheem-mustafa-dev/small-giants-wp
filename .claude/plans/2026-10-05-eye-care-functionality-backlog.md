@@ -41,7 +41,6 @@ nothing. Tier 4 is small setting additions. Within a tier, the order is the orde
 |---|---|
 | **N5.5** | **Mega menu items you can click through to their page.** The ordinary dropdown renders a link plus a separate open button; mega items render a button only. Give mega items with a page the same link-plus-button pattern (button discreet, still 44px), then add page links to Sunglasses, Lenses and Help (Brands stays button-only) |
 | **N5** | **Mega panel setting: "width limit applies to panel / content".** Content mode paints the ground edge to edge and centres the content at 1440. Today the panel stops at 1440 and sits left-aligned at wide screens |
-| **N7** | Swap the drawer's three hand-styled social buttons for the `sgs/social-icons` block the footer uses, with a **"fill the row" option** to keep the full-width buttons |
 
 ### Motion on Home
 
@@ -53,8 +52,6 @@ nothing. Tier 4 is small setting additions. Within a tier, the order is the orde
 
 | Ref | The feature |
 |---|---|
-| **39-43** | **Social icons: a brand-colour variant that colours only the glyph** (Google in four colours, Instagram in its gradient, which needs a new glyph, WhatsApp green), the box staying white with a light border. Hover gives a border and a 1px ring in the network's colour, no scale-up. Plus a **"networks" setting** for order. Boxes stay 44px |
-| **37** | **`sgs/business-info` setting: address link, none / Google Business profile / directions.** The Google Business link is already in Site Info |
 | **135** | The contact form's narrow-width stretch becomes **switchable**, so Send can be full width on a phone |
 
 ### Checkout and confirmation

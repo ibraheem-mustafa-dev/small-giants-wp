@@ -56,11 +56,7 @@ property side by side). Remaining differences are listed with their reason.
 - Built, tested and committed (PHPUnit `IconDraftStylesTest`, JS `icon-motion-parity` and brand parity, editor panels and canvas checked on the local sandybrown mirror).
 - Measured on the local sandybrown mirror (real WordPress, the repo build): `plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs`
   against the QA page built from `plugins/sgs-blocks/scripts/qa/social-icon-draft-rows.tree.json`: 0 unexplained differences at 1440 and 375.
-- Deferred: the deploy to the sandybrown canary. `build-deploy.py` stops at `check-wiring-fingerprint` and
-  `check-element-manifest-conformance` because the framework DB has not been reseeded for the new attributes (this task did not reseed it).
-  Next step: reseed from HEAD (`/sgs-update`), run `python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`, then
-  `node scripts/wp-build-page.js --env-file .claude/secrets/sandybrown.env --env-key SANDYBROWN --tree plugins/sgs-blocks/scripts/qa/social-icon-draft-rows.tree.json --create page --title "QA social icon draft styles" --slug qa-social-icon-draft-styles`
-  and `node plugins/sgs-blocks/scripts/qa/social-icon-draft-compare.mjs --live-url <the page link>`.
+- Deployed to the sandybrown canary and eye-care-test after the reseed (`9bca19170`) and the rule 21 fix in `social-icons/group-motion.js`. The QA page is canary page 5193 (`/qa-social-icon-draft-styles/`); `social-icon-draft-compare.mjs` against it: 0 unexplained differences at 1440 and 375, rest, hover and focus.
 - Not built here: the labelled "Follow along" pill in the first draft's footer is a call-to-action button (icon, label, border, hard shadow, hover
   background), which is `sgs/button`'s job (its presets), not an icon.
 - The two drafts' glyph artwork (their own SVG paths) differs from the registry and Lucide glyphs; a client pastes the draft SVG as a custom glyph.
