@@ -283,6 +283,8 @@ $css_attrib_typography = sgs_typography_css_rule( $attributes, 'attribution', $a
 // Two-state link colour (Task 3, 2026-09-07) — the attribution field permits
 // `core/link`, so a linked selection needs its own colour.
 $css_attrib_typography .= sgs_link_colour_css( $attributes, 'attribution', $attrib_scope );
+// How a link in the attribution is underlined (empty when unset).
+$css_attrib_typography .= sgs_link_underline_css( $attributes, 'attribution', $attrib_scope );
 
 // Attribution margin-top — base + tablet + mobile on the SAME selector
 // (Pattern A). A KEPT-SCALAR single-side family (contract §C), NOT part of

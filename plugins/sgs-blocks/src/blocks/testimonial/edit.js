@@ -24,12 +24,13 @@ import {
 	ToggleControl,
 	BaseControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	fontSizeVar,
 	resolveTextColourPreviewStyle,
 	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
 	usePreviewTier,
 	typographyPreviewStyle,
 	tierBoxLonghands,
@@ -199,6 +200,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		quoteLinkColourHover,
 		quoteLinkColourGradient,
 		quoteLinkColourHoverGradient,
+		quoteLinkUnderline,
+		quoteLinkUnderlineThickness,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
@@ -267,7 +270,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	// Editor-canvas preview scope for the quote link-colour CSS below (Task 3,
 	// 2026-09-07).
 	const linkPreviewUid = `sgs-testimonial-link-preview-${ clientId }`;
-	const linkPreviewCss = linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-testimonial__quote`, { mode: quoteLinkUnderline, thickness: quoteLinkUnderlineThickness, linkGradient: quoteLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-testimonial__quote`,
 		quoteLinkColour,
 		quoteLinkColourHover,
@@ -1275,6 +1278,12 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 										setAttributes( { quoteLinkColourHoverGradient: val ?? '' } ),
 								},
 							] }
+						/>
+						<LinkUnderlineControl
+							mode={ quoteLinkUnderline }
+							thickness={ quoteLinkUnderlineThickness }
+							onModeChange={ ( val ) => setAttributes( { quoteLinkUnderline: val } ) }
+							onThicknessChange={ ( val ) => setAttributes( { quoteLinkUnderlineThickness: val } ) }
 						/>
 						{ showSummary && (
 							<>

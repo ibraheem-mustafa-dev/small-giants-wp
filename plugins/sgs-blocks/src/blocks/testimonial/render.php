@@ -156,9 +156,8 @@ $summary_colour_raw      = (string) ( $attributes['summaryColour'] ?? '' );
 $summary_colour_gradient = (string) ( $attributes['summaryColourGradient'] ?? '' );
 $name_colour_raw         = (string) ( $attributes['nameColour'] ?? '' );
 $name_colour_gradient    = (string) ( $attributes['nameColourGradient'] ?? '' );
-$name_font_weight        = in_array( (string) ( $attributes['nameFontWeight'] ?? '700' ), array( '400', '500', '600', '700', '800', '900' ), true )
-	? (string) $attributes['nameFontWeight']
-	: '700';
+$name_font_weight_raw    = (string) ( $attributes['nameFontWeight'] ?? '700' );
+$name_font_weight        = in_array( $name_font_weight_raw, array( '400', '500', '600', '700', '800', '900' ), true ) ? $name_font_weight_raw : '700';
 $role_colour_raw         = (string) ( $attributes['roleColour'] ?? '' );
 $role_colour_gradient    = (string) ( $attributes['roleColourGradient'] ?? '' );
 $org_colour_raw          = (string) ( $attributes['orgColour'] ?? '' );
@@ -391,6 +390,11 @@ if ( '' !== $quote_colour_hover ) {
 // `core/link`, so a linked selection needs its own colour, independent of the
 // ancestor-hover mechanism above.
 $scoped_css[] = sgs_link_colour_css( $attributes, 'quote', $quote_colour_sel );
+// How a link in the quote is underlined.
+$quote_link_underline_css = sgs_link_underline_css( $attributes, 'quote', $quote_colour_sel );
+if ( '' !== $quote_link_underline_css ) {
+	$scoped_css[] = $quote_link_underline_css;
+}
 	// Quote typography (font-size, weight, style, line-height, letter-spacing,
 	// text-decoration, text-transform, text-align, text-wrap, text-columns,
 	// text-indent, writing-mode — via the shared sgs_typography_css_rule()

@@ -17,7 +17,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	SsrPreviewGuard, SgsBoxControl } from '../../components';
+	SsrPreviewGuard, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
@@ -42,7 +42,7 @@ import {
 	ToolsPanel,
 	ToolsPanelItem,
 } from '../../components/primitives';
-import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
+import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
 import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
 
 /** Sentinel value for the "No product connected" option. */
@@ -702,6 +702,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		descLinkColourHover,
 		descLinkColourGradient,
 		descLinkColourHoverGradient,
+		descLinkUnderline,
+		descLinkUnderlineThickness,
 		priceNoteColour,
 		priceNoteColourGradient,
 		// Frame Card component (Task 4, 2026-09-14) — operator-authored,
@@ -993,7 +995,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	// `core/link`) and the paragraph-after-paragraph text indent render.php
 	// emits on both description markups, in the same clientId-derived scope
 	// as the CTA hover CSS above.
-	const descLinkPreviewCss = linkColourPreviewCss(
+	const descLinkPreviewCss = linkUnderlinePreviewCss( `.${ ctaPreviewUid } .sgs-product-card__description`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
+		+ linkUnderlinePreviewCss( `.${ ctaPreviewUid } .product-desc`, { mode: descLinkUnderline, thickness: descLinkUnderlineThickness, linkGradient: descLinkColourGradient } )
+		+ linkColourPreviewCss(
 		`.${ ctaPreviewUid } .sgs-product-card__description, .${ ctaPreviewUid } .product-desc`,
 		descLinkColour,
 		descLinkColourHover,
@@ -1226,6 +1230,14 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					onGradientChange: ( val ) => setAttributes( { descLinkColourHoverGradient: val ?? '' } ),
 				},
 			],
+			after: (
+				<LinkUnderlineControl
+					mode={ descLinkUnderline }
+					thickness={ descLinkUnderlineThickness }
+					onModeChange={ ( val ) => setAttributes( { descLinkUnderline: val } ) }
+					onThicknessChange={ ( val ) => setAttributes( { descLinkUnderlineThickness: val } ) }
+				/>
+			),
 		} );
 		colourRows.push( {
 			key: 'price',

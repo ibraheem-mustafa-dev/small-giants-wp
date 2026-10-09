@@ -44,11 +44,12 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import {
 	colourVar,
 	resolveTextColourPreviewStyle,
 	linkColourPreviewCss,
+	linkUnderlinePreviewCss,
 	isTierBoxEmpty,
 	usePreviewTier,
 	typographyPreviewStyle,
@@ -193,6 +194,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributionLinkColourHover,
 		attributionLinkColourGradient,
 		attributionLinkColourHoverGradient,
+		attributionLinkUnderline,
+		attributionLinkUnderlineThickness,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -244,7 +247,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview scope for the attribution link-colour CSS below
 	// (Task 3, 2026-09-07). Extended to include gradient params (2026-09-07).
 	const linkPreviewUid = `sgs-quote-link-preview-${ clientId }`;
-	const linkPreviewCss = linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .wp-block-sgs-quote__attribution`, { mode: attributionLinkUnderline, thickness: attributionLinkUnderlineThickness, linkGradient: attributionLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
 		attributionLinkColour,
 		attributionLinkColourHover,
@@ -418,6 +421,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { attributionLinkColourHoverGradient: val ?? '' } ),
 							},
 						],
+						after: (
+							<LinkUnderlineControl
+								mode={ attributionLinkUnderline }
+								thickness={ attributionLinkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { attributionLinkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { attributionLinkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 				] }
 			/>

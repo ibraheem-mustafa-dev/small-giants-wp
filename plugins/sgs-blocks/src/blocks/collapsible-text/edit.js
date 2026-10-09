@@ -18,11 +18,11 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { textPaintPreview, linkColourPreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, tierBoxLonghands } from '../../utils';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, textRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
+import { textPaintPreview, linkColourPreviewCss, linkUnderlinePreviewCss, backgroundPaintPreview, typographyPreviewStyle, textIndentPreviewCss, usePreviewTier, tierBoxLonghands } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient } = attributes;
+	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient, linkUnderline, linkUnderlineThickness } = attributes;
 
 	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
 	// 2026-09-07) — mirrors render.php's uid scope, matching product-card's
@@ -39,7 +39,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The block's own fill and spacing sit on the root, at the previewed tier;
 	// its typography sits on the body (render.php's `.sgs-collapsible-text__body`).
 	const previewTier = usePreviewTier();
-	const scopedPreviewCss = linkPreviewCss + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
+	const scopedPreviewCss = linkPreviewCss + linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-collapsible-text__body`, { mode: linkUnderline, thickness: linkUnderlineThickness, linkGradient: linkColourGradient } ) + textIndentPreviewCss( attributes, '', `.${ linkPreviewUid } .sgs-collapsible-text__body`, previewTier );
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const blockProps = useBlockProps( {
 		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
@@ -112,6 +112,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { linkColourHoverGradient: val ?? '' } ),
 							},
 						],
+						after: (
+							<LinkUnderlineControl
+								mode={ linkUnderline }
+								thickness={ linkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { linkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { linkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 				] }
 			/>

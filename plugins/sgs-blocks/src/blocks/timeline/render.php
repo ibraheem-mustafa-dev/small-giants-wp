@@ -365,6 +365,11 @@ $description_link_css = sgs_link_colour_css( $attributes, 'description', $descri
 if ( '' !== $description_link_css ) {
 	$scoped_css[] = $description_link_css;
 }
+// How a link in an entry's description is underlined.
+$description_link_underline_css = sgs_link_underline_css( $attributes, 'description', $description_sel );
+if ( '' !== $description_link_underline_css ) {
+	$scoped_css[] = $description_link_underline_css;
+}
 
 // --- Root border declarations + gradient ring. ---
 $root_decls = $border['base'];

@@ -16,8 +16,8 @@ import {
 	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
-import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
-import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
+import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls, LinkUnderlineControl } from '../../components';
+import { colourVar, linkColourPreviewCss, linkUnderlinePreviewCss, resolveTextColourPreviewStyle,  tierBoxLonghands, usePreviewTier, typographyPreviewStyle, sgsBorderPreview } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
@@ -460,6 +460,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descriptionLinkColourGradient,
 		descriptionLinkColourHover,
 		descriptionLinkColourHoverGradient,
+		descriptionLinkUnderline,
+		descriptionLinkUnderlineThickness,
 		scrollEffect,
 		revealOnScroll,
 		revealTrigger,
@@ -532,7 +534,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview CSS for the per-entry description link colour
 	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
 	// Extended with gradient support (CHECK A, 2026-09-07).
-	const linkPreviewCss = linkColourPreviewCss(
+	const linkPreviewCss = linkUnderlinePreviewCss( `.${ linkPreviewUid } .sgs-timeline__description`, { mode: descriptionLinkUnderline, thickness: descriptionLinkUnderlineThickness, linkGradient: descriptionLinkColourGradient } ) + linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-timeline__description`,
 		descriptionLinkColour,
 		descriptionLinkColourHover,
@@ -919,6 +921,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { descriptionLinkColourHoverGradient: val ?? '' } ),
 							},
 						],
+						after: (
+							<LinkUnderlineControl
+								mode={ descriptionLinkUnderline }
+								thickness={ descriptionLinkUnderlineThickness }
+								onModeChange={ ( val ) => setAttributes( { descriptionLinkUnderline: val } ) }
+								onThicknessChange={ ( val ) => setAttributes( { descriptionLinkUnderlineThickness: val } ) }
+							/>
+						),
 					},
 				] }
 			/>

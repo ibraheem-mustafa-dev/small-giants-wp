@@ -104,6 +104,8 @@ $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_sel
 // `core/link`, so a linked selection needs its own colour independent of the
 // surrounding text.
 $typography_css      .= sgs_link_colour_css( $attributes, '', $typography_selector );
+// How a link in the body is underlined (empty when unset).
+$typography_css      .= sgs_link_underline_css( $attributes, '', $typography_selector );
 
 // ---------------------------------------------------------------------------
 // 2. Box shorthand builder (hand-built, mirrors sgs/label/sgs/container).

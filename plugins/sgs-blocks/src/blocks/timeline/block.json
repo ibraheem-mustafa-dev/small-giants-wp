@@ -172,6 +172,8 @@
 						"text"
 					],
 					"attrMap": {
+						"css:text-decoration-link": "descriptionLinkUnderline",
+						"css:text-decoration-thickness-link": "descriptionLinkUnderlineThickness",
 						"css:min-height": "milestoneMinHeight",
 						"css:margin-bottom": "entryGap",
 						"css:color-link": "descriptionLinkColour"
@@ -186,6 +188,17 @@
 		"typography": ".sgs-timeline__title"
 	},
 	"attributes": {
+		"descriptionLinkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"descriptionLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
 		"shadowLiftOnHover": {
 			"type": "boolean",
 			"default": true

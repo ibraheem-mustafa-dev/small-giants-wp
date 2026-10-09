@@ -213,6 +213,8 @@
 					],
 					"prefix": "desc",
 					"attrMap": {
+						"css:text-decoration-link": "descLinkUnderline",
+						"css:text-decoration-thickness-link": "descLinkUnderlineThickness",
 						"css:color-link-gradient": "descLinkColourGradient"
 					},
 					"states": {
@@ -574,6 +576,17 @@
 		}
 	},
 	"attributes": {
+		"descLinkUnderline": {
+			"type": "string",
+			"enum": [ "", "none", "always", "sweep" ],
+			"default": "",
+			"description": "How a link inside the text is underlined: '' the theme's underline, none, always, or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
+		},
+		"descLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline for always and sweep (a CSS length); empty uses the theme's link-sweep thickness or the browser's."
+		},
 		"sourceMode": {
 			"type": "string",
 			"default": "typed",
