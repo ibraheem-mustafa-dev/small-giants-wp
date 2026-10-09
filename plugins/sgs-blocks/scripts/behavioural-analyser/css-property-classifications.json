@@ -12330,6 +12330,28 @@
     },
     {
       "slug": "sgs/icon",
+      "attr": "brandHover",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "brandName",
+      "fields": {
+        "css_property": "background-image,border-color,box-shadow,stroke",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "colourMode",
+      "fields": {
+        "css_property": "stroke"
+      }
+    },
+    {
+      "slug": "sgs/icon",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -22568,6 +22590,13 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "childIconScaleHover",
+      "fields": {
+        "css_property": "transform"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "childIconShapeSize",
       "fields": {
         "css_property": "width",
@@ -30286,6 +30315,23 @@
     },
     {
       "slug": "sgs/icon",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -35353,6 +35399,23 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "childIconBoxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconBoxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "childIconColour",
       "fields": {
         "css_property": "color",
@@ -35423,6 +35486,22 @@
         "css_property": "background-image",
         "css_element": "label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconTransitionDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconTransitionEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "shape"
       }
     },
     {
