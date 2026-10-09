@@ -6,7 +6,7 @@ import { SgsLengthControl } from '../../components';
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: "Featured" PanelBody (featured
  * item checklist, corner radius, font weight).
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
+ * Split out of edit.js (Spec 36 §14 step 7, pure refactor) to keep the file under
  * the project's 250-line JS budget. No behaviour change — verbatim JSX.
  * Text/background colour (Normal + Hover) lives in the top-level
  * SgsColourPanel (D618/D609), unchanged by this split.

@@ -13,7 +13,7 @@
  * the existing sgs/product-card context — no new actions or state are added.
  *
  * @package SGS\Blocks
- * @since   1.18.0 (FR-30-10 Spec 30 Step 10)
+ * @since   1.18.0 (FR-30-10 Spec 27 Part 3 Step 10)
  */
 
 defined( 'ABSPATH' ) || exit;

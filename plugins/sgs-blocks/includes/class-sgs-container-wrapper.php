@@ -429,7 +429,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// DECLARES these attrs in its own block.json (undeclared attrs are
 			// never passed by WordPress, so this is safe by construction, not by
 			// a runtime check). The old zero-out branch existed because these were
-			// architecturally "section-only concepts" (Spec 31 KIND doctrine); Bean
+			// architecturally "section-only concepts" (Spec 02 "Composite wrapper rule"); Bean
 			// overruled that scope restriction directly rather than leaving it as
 			// a control that can't apply on some blocks.
 			$bg_image         = $attributes['backgroundImage'] ?? null;
@@ -599,7 +599,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// Default flipped `start`→'' (D306, 2026-07-11):
 			// a blank align falls to the CSS-initial `stretch` (see the guards below),
 			// so a cloned grid/flex with NO draft `align-items` renders equal-height
-			// columns like the draft (FR-31-5.1 absent→initial). The injected `start`
+			// columns like the draft (absent means CSS initial). The injected `start`
 			// default was the cause of unequal product/gift cards + the brand button
 			// not stretching full-width. Blast-radius verified: on page 8 every
 			// container relying on the old `start` default wants `stretch`.
@@ -1483,7 +1483,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					 *
 					 * Until 2026-08-24 this line read `'' !== $flex_wrap ? $flex_wrap :
 					 * 'wrap'` -- a default invented in PHP, invisible to the operator and
-					 * to the cloning pipeline. Three problems, all real:
+					 * to the computed route. Three problems, all real:
 					 *   1. It broke faithful transfer. A draft with no flex-wrap means
 					 *      `nowrap` (CSS's initial value); the clone rendered `wrap`.
 					 *      Absence is a value that must transfer, same as a missing
@@ -2445,7 +2445,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			// Hover-spill-scale capability (2026-09-10, Bean-directed) — universal,
 			// composite-agnostic. Two-part shared mechanism mirroring the composite-
-			// mirror rule (Spec 31 §13.6): the wrapper owns the OUTER stacking/overflow
+			// mirror rule (Spec 02 "Composite wrapper rule"): the wrapper owns the OUTER stacking/overflow
 			// promotion, and the media-atom markers (`assets/css/media-element.css`)
 			// already own the transform target, so this capability needs zero
 			// block-specific selector knowledge.

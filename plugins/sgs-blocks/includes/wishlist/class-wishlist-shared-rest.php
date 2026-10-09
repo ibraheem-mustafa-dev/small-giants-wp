@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Wishlist — public shared-list REST API (Spec 30 P5 FR-30-14/15).
+ * SGS Wishlist — public shared-list REST API (Spec 27 Part 3 P5 FR-30-14/15).
  *
  * A single PUBLIC, read-only route so a shopper can send someone their
  * saved-items list without either party logging in. The token IS the

@@ -13,7 +13,7 @@
  * defence-in-depth guard.
  *
  * @package SGS\Blocks
- * @since   1.18.0 (FR-30-10 Spec 30 Step 10)
+ * @since   1.18.0 (FR-30-10 Spec 27 Part 3 Step 10)
  */
 
 namespace SGS\Blocks;

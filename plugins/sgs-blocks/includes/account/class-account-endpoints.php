@@ -3,7 +3,7 @@
  * SGS Account Endpoints — the `saved-items` My Account endpoint, hidden-item
  * filtering, and the request-scoped flag `sgs/account`'s render.php sets so
  * every hook in this file only acts while that block is actually rendering
- * (Spec 30 FR-30-14).
+ * (Spec 27 Part 3 FR-30-14).
  *
  * @package SGS\Blocks
  */

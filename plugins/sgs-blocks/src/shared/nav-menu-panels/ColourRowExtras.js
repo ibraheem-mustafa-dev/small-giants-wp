@@ -1,6 +1,6 @@
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) —
- * the per-row `after` nodes for the Colour panel (Spec 41 §9.6) that are
+ * the per-row `after` nodes for the Colour panel (Spec 36 §14.9.6) that are
  * BOTH-classified: `ItemTextTreatment`, `ItemBgTreatment`, `ItemBorderTreatment`,
  * `SubmenuTextTreatment`, `SubmenuLinkBgTreatment`.
  *

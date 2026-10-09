@@ -25,7 +25,7 @@
  * block's OWN scoped `.{uid}`
  * `<style>` tag, never as an inline `style="--var:…"` attribute. This is
  * also what makes the pill states CLONEABLE: the universal styling-lift
- * (Spec 31 §3.B B2) matches each attr's `derived_selector` against the draft's
+ * (Spec 32 section 6.1) matches each attr's `derived_selector` against the draft's
  * DOM by BEM class — resting on `.sgs-option-picker__pill`, selected on the
  * draft's static `--active` modifier class (the mockup shows one pill
  * selected by baking the modifier class directly into the markup).
@@ -785,7 +785,7 @@ foreach ( $valid_items as $item ) {
 			// <label for>), so it doubles as a safe, unique scoped-CSS anchor for
 			// this one pill's swatch vars (no cross-pill collision, no clash
 			// with $root_sel's class-level scoping — a per-item ID selector is a
-			// distinct, legitimate use, unlike FR-31-22.3's block-ROOT rule).
+			// distinct, legitimate use, unlike Spec 32 section 6.1's block-ROOT rule).
 			$contrast_colour = sgs_wcag_text_colour_for_bg( $color );
 			$sel_this_pill   = '#' . $input_id . ' + .sgs-option-picker__pill';
 

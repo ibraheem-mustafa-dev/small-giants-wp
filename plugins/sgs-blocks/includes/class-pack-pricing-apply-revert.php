@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — apply revert + lock-release worker (Spec 28 P4, FR-28-13/14).
+ * SGS Smart Bulk Pricing — apply revert + lock-release worker (Spec 27 Part 2 P4, FR-28-13/14).
  *
  * Two handlers:
  *   revert()       — POST /sgs/v1/pack-pricing/revert

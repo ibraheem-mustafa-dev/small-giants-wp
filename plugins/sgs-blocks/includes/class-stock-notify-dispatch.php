@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Stock Notify Dispatch — sends the back-in-stock webhook (Spec 30 P5).
+ * SGS Stock Notify Dispatch — sends the back-in-stock webhook (Spec 27 Part 3 P5).
  *
  * `Stock_Notify` captures {email, ts} subscribers in `_sgs_stock_notify`
  * post-meta but never sends anything. This class watches WooCommerce's
@@ -10,7 +10,7 @@
  * send succeeds — clears the list so each request is answered once.
  *
  * @package SGS\Blocks
- * @since   1.19.0 (FR-30-14/15 Spec 30 P5)
+ * @since   1.19.0 (FR-30-14/15 Spec 27 Part 3 P5)
  */
 
 namespace SGS\Blocks;

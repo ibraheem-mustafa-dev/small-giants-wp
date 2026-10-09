@@ -206,7 +206,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		 * "follow the header" is the single rule that reproduces all of them.
 		 */
 		/*
-		 * TOP EDGE, both kinds (Spec 36 FR-36-4 "Gap below the header", Spec 41
+		 * TOP EDGE, both kinds (Spec 36 FR-36-4 "Gap below the header", Spec 36 §14
 		 * FR-41-11): mega-disclosure.js::repositionPanel publishes the header's
 		 * bottom as --sgs-mm-panel-top (a pill publishes its own bottom), and
 		 * `submenuTopOffset` is the gap below it. Empty offset: no gap.

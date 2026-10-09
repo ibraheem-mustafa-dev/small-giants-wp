@@ -281,7 +281,7 @@ body.admin-bar html {
 }
 
 /* Global keyboard-focus ring (WCAG 2.2 AA). Framework a11y default for EVERY client — migrated
-   out of the per-client theme snapshot (Spec 33 D322) where it was mislocated; it is not
+   out of the per-client theme snapshot (Spec 32 Part C, D322) where it was mislocated; it is not
    client-specific, so it belongs in the theme, applied on every site. Uses the client's own
    --text token so the ring reads against their palette. */
 /*

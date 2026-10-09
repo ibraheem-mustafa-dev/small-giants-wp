@@ -1,12 +1,12 @@
 <?php
 /**
- * SGS Stock Notify — back-in-stock email capture (Spec 30 Step 10).
+ * SGS Stock Notify — back-in-stock email capture (Spec 27 Part 3 Step 10).
  *
  * Stores ONLY {email, ts} per subscriber in _sgs_stock_notify post-meta.
  * No IP ever persisted; rate-limit uses a SHA-256(ip+salt) transient key.
  *
  * @package SGS\Blocks
- * @since   1.18.0 (FR-30-10 Spec 30 Step 10)
+ * @since   1.18.0 (FR-30-10 Spec 27 Part 3 Step 10)
  */
 
 namespace SGS\Blocks;

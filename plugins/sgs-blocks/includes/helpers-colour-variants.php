@@ -44,7 +44,7 @@ declare( strict_types = 1 );
  *                            'gradient' => 'navBgGradient', 'hover_gradient' => '…',
  *                            'current' => '…', 'current_gradient' => '…' ]
  *                          Only 'base' is required; the rest are optional. 'current'
- *                          (Spec 41 FR-41-3(b)) is the Current/`[aria-current="page"]`
+ *                          (Spec 36 §14 FR-41-3(b)) is the Current/`[aria-current="page"]`
  *                          state — populated only when the caller's map carries it.
  * @return array{normal: string[], hover: string[], current: string[]} Declarations
  *                          per state. All three arrays empty when nothing is set, so
@@ -87,7 +87,7 @@ function sgs_fill_decls( array $attributes, array $map ): array {
 		$out['hover'][] = $decl_hover;
 	}
 
-	// Current state (Spec 41 FR-41-3(b)) — populated ONLY when the caller's
+	// Current state (Spec 36 §14 FR-41-3(b)) — populated ONLY when the caller's
 	// $map carries a 'current' key, so an unmigrated caller's returned array
 	// keeps an empty 'current' bucket and behaves exactly as today.
 	if ( isset( $map['current'] ) ) {
@@ -167,7 +167,7 @@ function sgs_fill_states_css( string $selector, array $attributes, array $map ):
  *                          [ 'base' => 'titleColour', 'hover' => 'titleColourHover',
  *                            'gradient' => '…', 'hover_gradient' => '…',
  *                            'current' => '…', 'current_gradient' => '…' ].
- *                          'current' (Spec 41 FR-41-3(b)) is the Current/
+ *                          'current' (Spec 36 §14 FR-41-3(b)) is the Current/
  *                          `[aria-current="page"]` state — populated only when the
  *                          caller's map carries it.
  * @return array{normal: string[], hover: string[], current: string[]} Declarations
@@ -209,7 +209,7 @@ function sgs_text_decls( array $attributes, array $map ): array {
 		$out['hover'][] = $hover_decl;
 	}
 
-	// Current state (Spec 41 FR-41-3(b)) — populated ONLY when the caller's
+	// Current state (Spec 36 §14 FR-41-3(b)) — populated ONLY when the caller's
 	// $map carries a 'current' key, so an unmigrated caller's returned array
 	// keeps an empty 'current' bucket and behaves exactly as today.
 	if ( isset( $map['current'] ) ) {
@@ -309,7 +309,7 @@ function sgs_text_states_css( string $selector, array $attributes, array $map ):
  *                           none of its values exist as classes in the tree).
  * @param array  $attributes The block's attributes.
  * @param array  $map        The block's OWN attribute names, plus optional 'width' and
- *                           'current' (Spec 41 FR-41-3(c) — the Current/
+ *                           'current' (Spec 36 §14 FR-41-3(c) — the Current/
  *                           `[aria-current="page"]` state, FLAT-PATH ONLY: it is
  *                           gradient-exempt at the ring level, because
  *                           sgs_border_gradient_css() composes exactly two paints and
@@ -317,7 +317,7 @@ function sgs_text_states_css( string $selector, array $attributes, array $map ):
  *                           `'page'` default or `'true'`: which `aria-current` value
  *                           marks the Current element, `true` for the selected item
  *                           of a set such as sgs/buybox's gallery thumbnails), and
- *                           'suppress_edges' (Spec 41
+ *                           'suppress_edges' (Spec 36 §14
  *                           FR-41-8, v0.4.7 — a box object
  *                           `[ 'top' => bool, 'right' => bool, 'bottom' => bool,
  *                           'left' => bool ]`, absent key/edge = false). FLAT-PATH
@@ -377,7 +377,7 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		$hover_paint = sgs_colour_value( $hover_paint );
 	}
 
-	// Current state (Spec 41 FR-41-3(c)) — FLAT-PATH ONLY, resolved here so the
+	// Current state (Spec 36 §14 FR-41-3(c)) — FLAT-PATH ONLY, resolved here so the
 	// early-return below already accounts for it. There is no 'current_gradient'
 	// key: the ring primitive that a border gradient requires takes exactly two
 	// paints, so Current is gradient-exempt at the ring level (see the fork
@@ -410,7 +410,7 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		|| ( '' !== $read( $map['hover_gradient'] ?? null ) );
 
 	if ( ! $has_gradient ) {
-		// suppress_edges (Spec 41 FR-41-8, v0.4.7) — FLAT-PATH ONLY, box-object
+		// suppress_edges (Spec 36 §14 FR-41-8, v0.4.7) — FLAT-PATH ONLY, box-object
 		// shaped exactly like every other 4-side attr in the tree. Absent
 		// key/edge behaves as false. Governs ONLY the non-resting rules below;
 		// the resting rule above keeps its shorthand unconditionally.
@@ -447,7 +447,7 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 		if ( '' !== $normal_paint ) {
 			$css .= $selector . '{border-color:' . $normal_paint . ';}';
 		}
-		// Current is emitted BEFORE the hover pair (Spec 41 FR-41-3, binding
+		// Current is emitted BEFORE the hover pair (Spec 36 §14 FR-41-3, binding
 		// rule 3) and is never guarded — it is not pointer-dependent.
 		if ( '' !== $current_paint ) {
 			$current_decl = $non_resting_decl( $current_paint );
@@ -474,12 +474,12 @@ function sgs_border_states_css( string $selector, array $attributes, array $map 
 	// Current is gradient-exempt at the ring level: sgs_border_gradient_css()
 	// composes exactly two paints into one masked ::before construction, and a
 	// border gradient has no single hex to add a third paint alongside. Silently
-	// omitted here rather than attempted (Spec 41 FR-41-3(c)).
+	// omitted here rather than attempted (Spec 36 §14 FR-41-3(c)).
 	//
 	// suppress_edges is ALSO silently ignored here, for the same structural
 	// reason: the masked ::before ring paints one uniform ring, with no
 	// per-edge concept to suppress — a per-edge request on this path is
-	// unexpressible, not merely unimplemented (Spec 41 FR-41-8, v0.4.7).
+	// unexpressible, not merely unimplemented (Spec 36 §14 FR-41-8, v0.4.7).
 
 	return sgs_border_gradient_css(
 		$selector,

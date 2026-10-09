@@ -1,7 +1,7 @@
 <?php
 /**
  * Stock Notify Mailer — sends the back-in-stock notice through the
- * `sgs_back_in_stock` WooCommerce email, one per subscriber (Spec 30
+ * `sgs_back_in_stock` WooCommerce email, one per subscriber (Spec 27 Part 3
  * FR-30-15, unified-email plan phase 3).
  *
  * Extracted out of {@see Stock_Notify_Dispatch} to keep that file's dispatch

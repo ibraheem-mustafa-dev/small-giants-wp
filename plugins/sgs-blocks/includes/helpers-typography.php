@@ -168,7 +168,7 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 *   UA default (e.g. a `<button>`'s ~13.3px) must be actively contested
 	 *   rather than left silent. Set true ONLY when the caller has made
 	 *   that per-attribute decision — e.g. nav-menu's `burgerFontSize`
-	 *   (Spec 41 Wave 2 J1): an unset value must inherit the ancestor's
+	 *   (Spec 36 §14 Wave 2 J1): an unset value must inherit the ancestor's
 	 *   real font-size (the theme's body-copy rule on every real page),
 	 *   never a hardcoded px literal that could drift from a given
 	 *   client's theme. Leave false for every existing caller — this is

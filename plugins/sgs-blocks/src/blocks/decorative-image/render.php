@@ -10,7 +10,7 @@
  *
  * Scoping: this block declares `supports.anchor` — the scope token is
  * therefore a CLASS (`.sgs-di-XXXXXXXX`), never an id, so it can never
- * collide with a user-set anchor id (Spec 31 §B3), mirroring sgs/label +
+ * collide with a user-set anchor id (Spec 32 FR-32-4), mirroring sgs/label +
  * sgs/media.
  *
  * Runtime scroll effects (parallax / fade-on-scroll, `view.js`) mutate two
@@ -125,7 +125,7 @@ if ( empty( $decor_media['url'] ) && ! $image_url ) {
 
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
-// `supports.anchor`, so the scope token must never be an id (Spec 31 §B3).
+// `supports.anchor`, so the scope token must never be an id (Spec 32 FR-32-4).
 // ---------------------------------------------------------------------------
 
 $uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );

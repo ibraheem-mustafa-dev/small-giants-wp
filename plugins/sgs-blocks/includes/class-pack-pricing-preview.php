@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — preview REST endpoint (Spec 28 P3, FR-28-10).
+ * SGS Smart Bulk Pricing — preview REST endpoint (Spec 27 Part 2 P3, FR-28-10).
  *
  * Registers POST /sgs/v1/pack-pricing/preview.
  *

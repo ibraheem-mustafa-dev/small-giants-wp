@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — WooCommerce settings tab (Spec 28 P3, FR-28-11).
+ * SGS Smart Bulk Pricing — WooCommerce settings tab (Spec 27 Part 2 P3, FR-28-11).
  *
  * Adds a "SGS Pack Pricing" section under WooCommerce → Settings → Products,
  * exposing the site-level defaults for the pricing cascade (FR-28-6):

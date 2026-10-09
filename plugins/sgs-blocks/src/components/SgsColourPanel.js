@@ -107,7 +107,7 @@
  *                             is unaffected.
  *
  *                             THREE MORE OPTIONAL PER-ROW KEYS, all additive
- *                             (2026-09-11, Spec 41 §9.6 / FR-41-23 / FR-41-24 —
+ *                             (2026-09-11, Spec 36 §14.9.6 / FR-41-23 / FR-41-24 —
  *                             the same shape and the same zero-blast-radius
  *                             argument as `heading` above):
  *

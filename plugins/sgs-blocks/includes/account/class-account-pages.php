@@ -3,7 +3,7 @@
  * SGS Account Pages — makes `woocommerce_create_pages()` create the My
  * Account page with `sgs/account` instead of the bare shortcode, creates the
  * Saved items page alongside it, and adds "Saved items page" to WooCommerce's
- * own Settings > Advanced > Page setup screen (Spec 30 FR-30-14 §4a/§4b).
+ * own Settings > Advanced > Page setup screen (Spec 27 Part 3 FR-30-14 §4a/§4b).
  *
  * Verified against the installed WooCommerce 11.1 source on sandybrown
  * (2026-09-26): `WC_Install::create_pages()` builds its `$pages` array with

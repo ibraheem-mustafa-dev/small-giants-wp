@@ -7,7 +7,7 @@
  * active pointer, list saved layouts, seed a new layout from a starter
  * pattern. Explicitly NOT a client-facing surface — clients use the "Advanced
  * Headers"/"Advanced Footers"/"Menu drawers" admin screens exclusively. It
- * gives the cloning pipeline (FR-37-22) and developers a programmatic path.
+ * gives the computed route (Spec 47) and developers a programmatic path.
  *
  * One class serves `wp sgs header`, `wp sgs footer` and `wp sgs drawer` — each
  * is registered as a separate instance carrying its own area token (see the

@@ -2,7 +2,7 @@
 /**
  * SGS Account Dashboard — swaps WooCommerce's two-sentence dashboard
  * paragraph for the greeting/latest-order/quick-cards template, ONLY while
- * an `sgs/account` block is rendering (Spec 30 FR-30-14 §4a).
+ * an `sgs/account` block is rendering (Spec 27 Part 3 FR-30-14 §4a).
  *
  * @package SGS\Blocks
  */

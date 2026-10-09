@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, ToggleControl } from '@wordpress/components';
 
 /**
- * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Effects" panel (Spec 41 §9.11).
+ * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Effects" panel (Spec 36 §14.9.11).
  *
  * ⚠ The control is unchanged; only its home is. It used to sit at the bottom of the
  * "Items" panel, which §9 renames to "Menu item" and narrows to border SHAPE. §9.11

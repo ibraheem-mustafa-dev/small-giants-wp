@@ -247,7 +247,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( { ref: contrastRefEl } );
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
-	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────
+	// ── The Colour panel (Spec 36 §14.9.6) ──────────────────────────────────
 	//
 	// ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
 	// FIRST so it sits at the top of the Styles tab; WordPress concatenates

@@ -2,7 +2,7 @@
 /**
  * Product-level value-ladder authoring fields on the WooCommerce product editor.
  *
- * Wave-2 #1 authoring UI for the Spec 28 P1 comparative value-ladder. Adds a
+ * Wave-2 #1 authoring UI for the Spec 27 Part 2 P1 comparative value-ladder. Adds a
  * dedicated "SGS Value Ladder" panel inside the WooCommerce product data meta-box
  * (General tab section) exposing:
  *

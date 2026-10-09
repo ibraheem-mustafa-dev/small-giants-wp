@@ -19,7 +19,7 @@
  * by writing to the native control and reading block attributes:
  * `attributes.style.css` populated, `attributes.sgsCustomCss` untouched.
  * `sgsCustomCss` is the one load-bearing attribute (the cloning pipeline's
- * residual-band passthrough, Spec 31 FR-31-5.2) — never remove it. Disabling
+ * residual-band passthrough, Spec 32 FR-32-13) — never remove it. Disabling
  * the native support here, not deleting our own control.
  */
 import { addFilter } from '@wordpress/hooks';

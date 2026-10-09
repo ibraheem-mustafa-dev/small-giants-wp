@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Wishlist — site-wide feature switches (Spec 30 P5 FR-30-14/15).
+ * SGS Wishlist — site-wide feature switches (Spec 27 Part 3 P5 FR-30-14/15).
  *
  * Registers `sgs_wishlist_features` (price alerts / stock alerts / sharing,
  * all off by default) via `register_setting()` with a strict object schema

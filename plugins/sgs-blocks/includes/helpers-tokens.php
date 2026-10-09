@@ -1376,7 +1376,7 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
  *                               `sgs_hover_state_rules()`'s touch-safe guard pair when `guarded`
  *                               is true (via `sgs_hover_guarded_rule()`) and emitted plainly when
  *                               false. Emitted BEFORE `$decls_hover` — ordering is a property of
- *                               this emitter, not of every call site (Spec 41 FR-41-3(a); on the
+ *                               this emitter, not of every call site (Spec 36 §14 FR-41-3(a); on the
  *                               nav-menu use case this means hover wins over Current when a
  *                               visitor points at the item for the page they are already on).
  *                               Default `[]` is the acceptance condition: every existing caller

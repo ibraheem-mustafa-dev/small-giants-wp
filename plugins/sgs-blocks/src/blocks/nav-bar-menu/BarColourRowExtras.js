@@ -1,6 +1,6 @@
 /**
  * SGS Nav Bar Menu (sgs/nav-bar-menu) — the per-row `after` nodes for the
- * Colour panel (Spec 41 §9.6) that are BAR-only: `BurgerIconTreatment` /
+ * Colour panel (Spec 36 §14.9.6) that are BAR-only: `BurgerIconTreatment` /
  * `BurgerBgTreatment` (the whole burger family is bar-only — only this block
  * ever renders a burger).
  *

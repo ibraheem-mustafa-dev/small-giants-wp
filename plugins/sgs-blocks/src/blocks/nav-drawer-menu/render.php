@@ -83,7 +83,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-caret-css.php';
 
 if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	/**
-	 * BLOCK-PRIVATE hover-typography emitter (Spec 41 FR-41-21, owner ruling 2).
+	 * BLOCK-PRIVATE hover-typography emitter (Spec 36 §14 FR-41-21, owner ruling 2).
 	 *
 	 * ⛔ Declared HERE, in this block's own render.php, NOT in `includes/` —
 	 * `includes/` is the SHARED folder even for a file only this block requires,

@@ -6,7 +6,7 @@
  * Emits item typography, nav container
  * colour, the item text / background / border THREE-STATE emission (Normal,
  * Hover, Current) with its paired hover treatments (None / Swap / Sweep /
- * Highlight, Spec 41 FR-41-23), and the featured-item styling.
+ * Highlight, Spec 36 §14 FR-41-23), and the featured-item styling.
  *
  * ⚠ The Sweep eligibility predicate, the treatment resolution and the shared
  * glyph-sweep emitter are NOT here — they live in
@@ -433,7 +433,7 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * ── ITEM OPACITY + hover padding shift (M-21, item_states). ───────────────
 	 *
 	 * `itemOpacity`/`itemOpacityHover` are the TOP-LEVEL item link's own resting
-	 * and hover opacity (Spec 41 M-21 exit cell: buck/fantasy fade the hovered
+	 * and hover opacity (Spec 36 §14 M-21 exit cell: buck/fantasy fade the hovered
 	 * item 1 to 0.5). Deliberately NOT reused on `.{bem}__sublink` — fantasy's
 	 * own reference needs a GENUINELY DIFFERENT rest/hover opacity pair on its
 	 * submenu link (0.6 to 1, the opposite direction), so the sublink has its own

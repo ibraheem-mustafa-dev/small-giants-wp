@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — pure write-path helpers (Spec 28 P4, FR-28-5).
+ * SGS Smart Bulk Pricing — pure write-path helpers (Spec 27 Part 2 P4, FR-28-5).
  *
  * Contains ONLY logic that is testable without a WordPress / WooCommerce
  * environment:

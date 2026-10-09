@@ -55,7 +55,7 @@ $sgs_md_ext_style = isset( $attributes['extensionStyle'] ) && in_array( $attribu
 	: 'solid';
 
 // uid is a CLASS — this block declares supports.anchor, so the scope token is
-// never an id (Spec 31 §B3).
+// never an id (Spec 32 FR-32-4).
 $uid        = wp_unique_id( 'sgs-measured-diagram-' );
 $scoped_css = array();
 $sgs_md_defs = '';

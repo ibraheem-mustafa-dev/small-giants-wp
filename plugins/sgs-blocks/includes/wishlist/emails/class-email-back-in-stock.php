@@ -1,6 +1,6 @@
 <?php
 /**
- * Back-in-stock notice — WC_Email subclass (Spec 30 FR-30-15, unified-email
+ * Back-in-stock notice — WC_Email subclass (Spec 27 Part 3 FR-30-15, unified-email
  * plan phase 3). Sent once to a shopper who asked to be told when a product
  * came back in stock.
  *

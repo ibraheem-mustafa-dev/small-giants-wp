@@ -4,7 +4,7 @@
  * served face gets its files downloaded onto the site automatically, with no person uploading
  * anything and no visitor ever contacting Google.
  *
- * How it fits with the Spec 33 extractor (FR-33-18): the extractor normally self-hosts a draft's
+ * How it fits with the Spec 32 Part D extractor (FR-33-18): the extractor normally self-hosts a draft's
  * Google fonts at extract time into the theme's assets/fonts/ folder, so a deployed snapshot
  * already has local `file:./` faces and this class does nothing. It acts only when a `google: true`
  * entry reaches a site with NO loadable local face: a hand-edited snapshot, a face file missing on

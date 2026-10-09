@@ -1,7 +1,7 @@
 /**
  * SeparatorsPanel: the lines between a wrapper-routed composite's items.
  *
- * A composite opts in to sgs/container's Separators setting (Spec 31 §13.6): the
+ * A composite opts in to sgs/container's Separators setting (Spec 02 "Composite wrapper rule"): the
  * `separators` attribute is read by SGS_Container_Wrapper
  * (includes/helpers-container-separators.php), which draws the lines between the
  * items of a grid or flex layout. The panel shows only where that can draw: the block

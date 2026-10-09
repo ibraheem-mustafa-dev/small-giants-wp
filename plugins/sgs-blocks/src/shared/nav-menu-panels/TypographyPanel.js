@@ -3,7 +3,7 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 import { SGS_FONT_WEIGHT_OPTIONS } from '../../components';
 
 /**
- * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Typography" panel (Spec 41 §9.10 /
+ * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Typography" panel (Spec 36 §14.9.10 /
  * FR-41-22 / FR-41-29). RESTORED in step 14; it was fully specified in prose and
  * entirely absent from the built inspector.
  *

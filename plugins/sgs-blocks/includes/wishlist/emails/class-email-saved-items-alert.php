@@ -1,6 +1,6 @@
 <?php
 /**
- * Saved-items alert — WC_Email subclass (Spec 30 FR-30-15, unified-email
+ * Saved-items alert — WC_Email subclass (Spec 27 Part 3 FR-30-15, unified-email
  * plan phase 3). Sent to a shopper when a saved item's price has dropped, or
  * a saved item has come back in stock.
  *

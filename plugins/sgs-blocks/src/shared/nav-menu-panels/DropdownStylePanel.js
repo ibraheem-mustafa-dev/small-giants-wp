@@ -11,7 +11,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) —
- * Styles tab: "Submenu — Container" (Spec 41 §9.9).
+ * Styles tab: "Submenu — Container" (Spec 36 §14.9.9).
  *
  * Merged from nav-menu/DropdownStylePanel.js (the bar's full version) and the
  * drawer's own heavily-trimmed copy (D1059 split + D1060 ruling 6,

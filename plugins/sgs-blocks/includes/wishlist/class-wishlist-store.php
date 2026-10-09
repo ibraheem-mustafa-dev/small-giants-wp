@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Wishlist — storage layer (Spec 30 P5 FR-30-14/15). Every read/write of
+ * SGS Wishlist — storage layer (Spec 27 Part 3 P5 FR-30-14/15). Every read/write of
  * the wishlist user-meta keys goes through this class — no REST controller
  * touches `get_user_meta()`/`update_user_meta()` for wishlist data directly.
  *

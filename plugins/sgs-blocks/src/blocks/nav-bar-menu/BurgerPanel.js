@@ -34,7 +34,7 @@ const BURGER_MORPH_OPTIONS = [
 ];
 
 /**
- * SGS Nav Bar Menu (sgs/nav-bar-menu) — General tab: the "Menu Button" panel (Spec 41
+ * SGS Nav Bar Menu (sgs/nav-bar-menu) — General tab: the "Menu Button" panel (Spec 36 §14
  * §9.3 / FR-41-12 / FR-41-30a / FR-41-31).
  *
  * ⚠ RENAMED FROM "Burger" — a LABEL change only. ⛔ No attribute is renamed:

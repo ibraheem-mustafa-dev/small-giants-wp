@@ -198,7 +198,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		( sublinkMarkerIcon?.name ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name ) !==
 			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name;
 
-	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────────
+	// ── The Colour panel (Spec 36 §14.9.6) ──────────────────────────────────────
 	//
 	// Unlike the bar block's `colourRows`, this has no "Menu button" rows
 	// (burger-icon / burger-bg — the whole burger family is BAR-only). The

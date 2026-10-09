@@ -438,7 +438,7 @@ if ( '' !== $sgs_pc_price_note_colour_effective ) {
 	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_price_note_colour_sel, $sgs_pc_price_note_colour_effective );
 }
 
-// Card ROOT padding (FR-31-22). cardPadding is a {top,right,bottom,left}
+// Card ROOT padding (Spec 32 section 6.1). cardPadding is a {top,right,bottom,left}
 // box-object attr (mirrors ctaPadding/tagPadding), shorthanded via the shared
 // sgs_box_object_shorthand() helper (helpers-box.php, auto-loaded via
 // render-helpers.php) into ONE scoped <style> rule — never an inline

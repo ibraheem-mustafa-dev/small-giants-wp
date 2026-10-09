@@ -316,7 +316,7 @@ function unlockScroll() {
  * them — so the toggle stays live and reachable while its own surroundings are
  * still frozen. Focus containment is EMERGENT from this: with everything else
  * inert, the browser's own Tab order cycles {live header + toggle + drawer}
- * only, so no hand-rolled trap is needed (FR-34-1). The drawer is never an
+ * only, so no hand-rolled trap is needed. The drawer is never an
  * ancestor of a frozen node — it is re-parented to <body> first.
  *
  * The ancestor chain is descended, not skipped, because the chain of a toggle

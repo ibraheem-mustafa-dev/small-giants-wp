@@ -281,7 +281,7 @@ function auditFileFast(filePath, content) {
  * `.has-*-background-color` class (NOT via inline style), the shorthand silently
  * paints over it. The `:not(.has-background)` guard prevents this — WordPress
  * adds `.has-background` to ANY block that has a background colour or gradient set
- * via the editor. See common-wp-styling-errors.md Section R (R4) and H-9.
+ * via the editor. See common-wp-styling-errors.md Section R (R4, R5).
  *
  * Exemptions (NOT block-wrapper rules — cannot receive .has-background):
  *   - Rules on pseudo-elements (::before, ::after)
@@ -340,7 +340,7 @@ function checkBackgroundShorthand(cssContent, filePath) {
                 line: i + 1,
                 selector,
                 value: lines[i].trim(),
-                message: `Selector '${selector}' has :not(.has-background) guard (good) but uses 'background:' shorthand — prefer 'background-image:' to avoid resetting background-color (Section R, H-9).`,
+                message: `Selector '${selector}' has :not(.has-background) guard (good) but uses 'background:' shorthand — prefer 'background-image:' to avoid resetting background-color (Section R, R5).`,
                 fix: "Replace 'background:' with 'background-image:' for the gradient/image value.",
             });
         } else if (isInnerElement) {
@@ -352,7 +352,7 @@ function checkBackgroundShorthand(cssContent, filePath) {
                 line: i + 1,
                 selector,
                 value: lines[i].trim(),
-                message: `Inner-element selector '${selector}' uses 'background:' shorthand. Convert to 'background-image:' to avoid resetting background-color (Section R, H-9). No :not(.has-background) guard needed (inner element cannot receive the WP class).`,
+                message: `Inner-element selector '${selector}' uses 'background:' shorthand. Convert to 'background-image:' to avoid resetting background-color (Section R, R5). No :not(.has-background) guard needed (inner element cannot receive the WP class).`,
                 fix: "Replace 'background:' with 'background-image:'.",
             });
         } else {

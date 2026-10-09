@@ -1,7 +1,7 @@
 <?php
 /**
  * SGS Wishlist — two-tier saved-items REST API (Wave 3C U-12 §E; extended
- * for the account-area build, Spec 30 P5 FR-30-14/15).
+ * for the account-area build, Spec 27 Part 3 P5 FR-30-14/15).
  *
  * Mirrors `includes/class-stock-notify.php`'s shape (namespace, args,
  * validate/sanitize callbacks, WP_Error status codes). Guest visitors keep

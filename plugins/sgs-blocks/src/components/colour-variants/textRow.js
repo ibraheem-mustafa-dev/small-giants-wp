@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
  * or a gradient toggle bound to nowhere is refused rather than silently half-wired.
  * `linked` is unconditional on both paths.
  *
- * THIRD STATE (`current`, added 2026-09-11, Spec 41 FR-41-3 / FR-41-2) — identical
+ * THIRD STATE (`current`, added 2026-09-11, Spec 36 §14 FR-41-3 / FR-41-2) — identical
  * contract to fillRow's; see that file's header for the full rationale, the
  * byte-identity acceptance condition, and the `describeRow()` same-commit coupling.
  * `attrs.currentGradient` also feeds `gradientCapable`, for the same reason
@@ -125,7 +125,7 @@ export default function textRow( {
 	if ( current && ! hover ) {
 		throw new Error(
 			`textRow( "${ key }" ): attrs.current requires attrs.hover — Current is the ` +
-				'THIRD state of the three-state model (Spec 41 §1.3), never a substitute ' +
+				'THIRD state of the three-state model (Spec 36 §14.1.3), never a substitute ' +
 				'for Hover. A row with Normal + Current and no Hover has no meaning in ' +
 				'this framework and would silently score as a 2-state row.'
 		);
@@ -162,7 +162,7 @@ export default function textRow( {
 			: {} ),
 	};
 
-	// Spec 41 FR-41-3's THIRD state — a literal entry appended at ARRAY level, the
+	// Spec 36 §14 FR-41-3's THIRD state — a literal entry appended at ARRAY level, the
 	// same D738-safe shape as `hoverState`. Mirrors fillRow exactly.
 	const currentState = {
 		key: 'current',

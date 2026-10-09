@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'sgs_nav_shared_sweep_eligible' ) ) {
 	/**
-	 * Evaluate ONE declared `sweepEligibility` row (Spec 41 FR-41-26).
+	 * Evaluate ONE declared `sweepEligibility` row (Spec 36 §14 FR-41-26).
 	 *
 	 * ⛔ This applies the three mechanical checks and NOTHING else. The rule is
 	 * DATA, not a function: `block.json::supports.sgs.sweepEligibility` is the
@@ -171,7 +171,7 @@ if ( ! function_exists( 'sgs_nav_shared_resolved_treatments' ) ) {
 
 if ( ! function_exists( 'sgs_nav_shared_text_sweep_css' ) ) {
 	/**
-	 * The glyph colour-sweep (Spec 41 FR-41-26) — the shipped
+	 * The glyph colour-sweep (Spec 36 §14 FR-41-26) — the shipped
 	 * `sgs/business-info` attribution-link technique, adopted rather than
 	 * reinvented. Colour-only: it claims NO pseudo-element, so it never collides
 	 * with the item background layer on `::before` or the border band on
@@ -246,7 +246,7 @@ if ( ! function_exists( 'sgs_nav_shared_text_sweep_css' ) ) {
 
 if ( ! function_exists( 'sgs_nav_shared_icon_markup' ) ) {
 	/**
-	 * Resolve an IconPicker `{source,name}` object to markup (Spec 41 FR-41-30).
+	 * Resolve an IconPicker `{source,name}` object to markup (Spec 36 §14 FR-41-30).
 	 *
 	 * ⛔ Not a bespoke lookup — this is the SAME four-source resolution
 	 * `src/blocks/icon/render.php` performs (`sgs_get_lucide_icon()` /

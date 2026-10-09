@@ -1,7 +1,7 @@
 /**
  * SGS Nav Bar/Drawer Menu (shared) — shared editor helpers.
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
+ * Split out of edit.js (Spec 36 §14 step 7, pure refactor) to keep the file under
  * the project's 250-line JS budget. No behaviour change — every export here
  * is verbatim from edit.js.
  *

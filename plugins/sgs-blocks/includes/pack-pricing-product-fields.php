@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — product-level authoring panel (Spec 28 P3, FR-28-10).
+ * SGS Smart Bulk Pricing — product-level authoring panel (Spec 27 Part 2 P3, FR-28-10).
  *
  * Adds a "Smart Pricing" section to the WooCommerce product data meta-box
  * (General tab, after the existing SGS Value Ladder section).  Exposes:

@@ -1,7 +1,7 @@
 <?php
 /**
  * SGS Shop Emails — registers the saved-items-alert and back-in-stock
- * `WC_Email` subclasses with WooCommerce (Spec 30 FR-30-15, unified-email
+ * `WC_Email` subclasses with WooCommerce (Spec 27 Part 3 FR-30-15, unified-email
  * plan phase 3), so a client sees and switches them on WooCommerce > Settings
  * > Emails beside the sales emails.
  *

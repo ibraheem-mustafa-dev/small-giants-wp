@@ -80,7 +80,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-hover-scope-css.ph
 
 if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	/**
-	 * BLOCK-PRIVATE hover-typography emitter (Spec 41 FR-41-21, owner ruling 2).
+	 * BLOCK-PRIVATE hover-typography emitter (Spec 36 §14 FR-41-21, owner ruling 2).
 	 *
 	 * ⛔ Declared HERE, in this block's own render.php, NOT in `includes/` —
 	 * `includes/` is the SHARED folder even for a file only this block requires,
@@ -106,7 +106,7 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	 * @param string $selector           Base selector (no `:hover`).
 	 * @param string $sweep_hover_colour RESOLVED sweep hover colour, or '' when this
 	 *                                   prefix's resolved treatment is not 'sweep'.
-	 *                                   Spec 41 FR-41-26 "SWEEP + A HOVER
+	 *                                   Spec 36 §14 FR-41-26 "SWEEP + A HOVER
 	 *                                   TEXT-DECORATION": `text-decoration-color` is
 	 *                                   NOT governed by `-webkit-text-fill-color`, so
 	 *                                   without this the glyphs travel and the line

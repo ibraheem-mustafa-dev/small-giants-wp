@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Wishlist — alert opt-in and sharing REST API (Spec 30 P5 FR-30-14/15).
+ * SGS Wishlist — alert opt-in and sharing REST API (Spec 27 Part 3 P5 FR-30-14/15).
  *
  * The LOGGED-IN, self-service half of the account-area build: a shopper
  * opts in/out of price-drop and back-in-stock alerts, and switches their

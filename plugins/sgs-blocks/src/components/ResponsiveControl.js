@@ -26,7 +26,7 @@
  * own evidence, not this docblock's say-so.
  *
  * ⚠ CORRECTED 2026-08-19 — this used to say the accessible `DeviceTabs`
- * component (FR-37-29) "still exists and is still used by `ResponsiveOverride`
+ * component "still exists and is still used by `ResponsiveOverride`
  * and `ResponsiveTriStateControl`; it is simply no longer used here." That was
  * true only through Phase 1.2. Phase 1.3 (2026-08-10) removed the per-control
  * `<DeviceTabs>` strip from those two consumers as well — see

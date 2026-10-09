@@ -40,7 +40,7 @@
  * once JS is available, and the conversion to <dialog> happens here. Before
  * that, the existing no-JS CSS (aside stacks above the grid) is untouched.
  *
- * Spec: Spec 30 FR-30-3
+ * Spec: Spec 27 Part 3 FR-30-3
  * @package SGS\Theme
  */
 

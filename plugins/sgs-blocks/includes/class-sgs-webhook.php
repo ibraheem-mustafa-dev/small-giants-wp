@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Webhook — single N8N dispatch point (Spec 30 P5, FR-30-14/15 contract).
+ * SGS Webhook — single N8N dispatch point (Spec 27 Part 3 P5, FR-30-14/15 contract).
  *
  * Every SGS notification (forms, back-in-stock, wishlist alerts) that needs
  * to leave the site goes through here (or through `Form_Processor`'s own
@@ -8,7 +8,7 @@
  * `sgs_n8n_webhook_url` option, HTTPS only, non-blocking by default.
  *
  * @package SGS\Blocks
- * @since   1.19.0 (FR-30-14/15 Spec 30 P5)
+ * @since   1.19.0 (FR-30-14/15 Spec 27 Part 3 P5)
  */
 
 namespace SGS\Blocks;

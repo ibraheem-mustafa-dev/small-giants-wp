@@ -15,7 +15,7 @@
  * footer + apply button) has already completed, so every element this file
  * needs is guaranteed present with no race.
  *
- * Spec: Spec 30 FR-30-3 (shares the drawer this extends).
+ * Spec: Spec 27 Part 3 FR-30-3 (shares the drawer this extends).
  * @package SGS\Theme
  */
 

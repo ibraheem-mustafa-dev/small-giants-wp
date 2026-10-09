@@ -1,7 +1,7 @@
 <?php
 /**
  * Item effects shared by list-shaped blocks: sibling dim and the two-copy
- * label roll (Wave 3C U-6; families M-24, M-25; Spec 41).
+ * label roll (Wave 3C U-6; families M-24, M-25; Spec 36 §14).
  *
  * Used by `sgs/nav-drawer-menu`, `sgs/nav-bar-menu` (roll only) and
  * `sgs/icon-list`, so one mechanism serves the drawer, the bar, the trigger

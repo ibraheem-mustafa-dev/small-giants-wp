@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — settings registration hooks (Spec 28 P3, FR-28-11).
+ * SGS Smart Bulk Pricing — settings registration hooks (Spec 27 Part 2 P3, FR-28-11).
  *
  * Hooks the Pack_Pricing_Settings_Page class into WooCommerce's settings stack
  * via the woocommerce_get_settings_pages filter.  The class itself lives in

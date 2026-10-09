@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Wishlist — WP core Privacy Tools exporter/eraser (Spec 30
+ * SGS Wishlist — WP core Privacy Tools exporter/eraser (Spec 27 Part 3
  * FR-30-14/15). The one writer for the privacy surface, independent of
  * which REST controller owns a given route.
  *

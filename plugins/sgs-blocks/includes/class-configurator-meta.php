@@ -223,10 +223,10 @@ final class Configurator_Meta {
 		);
 	}
 
-	// ─── Product-level meta (Spec 28 P1 value-ladder) ───
+	// ─── Product-level meta (Spec 27 Part 2 P1 value-ladder) ───
 
 	/**
-	 * Register product-level meta used by the Spec 28 comparative value-ladder.
+	 * Register product-level meta used by the Spec 27 Part 2 comparative value-ladder.
 	 *
 	 *  - `_sgs_base_price_pence`: a single-item reference price in pence (KJC-A). When > 0
 	 *    AND `_sgs_base_price_attested` is true, the ladder frames savings "vs buying singly".
@@ -315,7 +315,7 @@ final class Configurator_Meta {
 			)
 		);
 
-		// ── Spec 28 P3 — Smart Bulk Pricing product-level overrides ──────────────
+		// ── Spec 27 Part 2 P3 — Smart Bulk Pricing product-level overrides ──────────────
 		// These keys store per-product smart-pricing settings that override the
 		// site/category cascade (FR-28-6).  show_in_rest:false on all — values
 		// are authored exclusively via the WC product-data panel and must pass
@@ -726,10 +726,10 @@ final class Configurator_Meta {
 		return \current_user_can( 'edit_post', (int) $post_id );
 	}
 
-	// ─── Spec 28 P3 sanitisers ───
+	// ─── Spec 27 Part 2 P3 sanitisers ───
 
 	/**
-	 * Sanitise a pack-sizes array (FR-28-15, Spec 28 P3).
+	 * Sanitise a pack-sizes array (FR-28-15, Spec 27 Part 2 P3).
 	 *
 	 * Accepts an array of pack counts; drops any entry that is not an integer
 	 * in the range 2–500.  Deduplicates and sorts ascending.  Returns [] on
@@ -755,7 +755,7 @@ final class Configurator_Meta {
 	}
 
 	/**
-	 * Sanitise the per-pack manual overrides map (Spec 28 P3, FR-28-10).
+	 * Sanitise the per-pack manual overrides map (Spec 27 Part 2 P3, FR-28-10).
 	 *
 	 * Accepts an array of { pack_size => price_pence } pairs or a
 	 * JSON-encoded string of the same shape.  Each override must have:

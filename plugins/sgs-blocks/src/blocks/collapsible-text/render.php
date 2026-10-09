@@ -273,7 +273,7 @@ if ( '' !== $text_align ) {
 
 // --sgs-collapsible-text-collapsed-lines VALUE — scoped rule (contract §A
 // amended D345: inline `--var` is FORBIDDEN too), not an inline `style=`.
-// Class-level selector per FR-31-22.3 (never #uid). Pushed here (before the
+// Class-level selector per Spec 32 section 6.1 (never #uid). Pushed here (before the
 // <style> tag is assembled below) regardless of $collapsible so the custom
 // property is always available to the body element.
 $collapsed_lines_attr = esc_attr( (string) $collapsed_lines );

@@ -16,7 +16,7 @@
  *
  * Scoping: this block declares `supports.anchor` — the internal CSS-scope
  * token is therefore a CLASS (`.sgs-media-XXXXXXXX`), never an id, so it can
- * never collide with a user-set anchor id (Spec 31 §B3). The block wrapper's
+ * never collide with a user-set anchor id (Spec 32 FR-32-4). The block wrapper's
  * `id` attribute is left entirely to WP core's native anchor handling
  * (`get_block_wrapper_attributes()` applies it automatically from
  * `$attributes['anchor']` when the operator sets one — this file never
@@ -222,7 +222,7 @@ if ( ! function_exists( 'sgs_media_css_length' ) ) {
 // scope token used to build every scoped CSS selector below is a CLASS —
 // deterministic from the attribute fingerprint so it survives fragment-cached
 // re-renders (same attrs → same class on every request) without ever
-// colliding with the anchor id (Spec 31 §B3).
+// colliding with the anchor id (Spec 32 FR-32-4).
 // ---------------------------------------------------------------------------
 $scope_class = 'sgs-media-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $scope_esc   = esc_attr( $scope_class );

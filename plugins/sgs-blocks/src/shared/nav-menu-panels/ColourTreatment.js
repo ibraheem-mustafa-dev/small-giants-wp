@@ -1,6 +1,6 @@
 /**
  * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — the hover-treatment selector and the Colour
- * panel's cross-reference notes (Spec 41 §9.6 / FR-41-23 / FR-41-24).
+ * panel's cross-reference notes (Spec 36 §14.9.6 / FR-41-23 / FR-41-24).
  *
  * ⛔ BLOCK-PRIVATE, DELIBERATELY — not a new `src/components/` export.
  * FR-41-24 checked the whole plugin tree and found no second adopter of this
@@ -28,7 +28,7 @@ import { resolveTier } from '../../utils/responsive';
 /**
  * Is the `Sweep` segment offered on this row?
  *
- * ⛔ THE PREDICATE IS DATA, NOT LOGIC (Spec 41 FR-41-26, "ONE DECLARED SOURCE,
+ * ⛔ THE PREDICATE IS DATA, NOT LOGIC (Spec 36 §14 FR-41-26, "ONE DECLARED SOURCE,
  * TWO EVALUATORS"). The rule lives in `block.json::supports.sgs.sweepEligibility`
  * and is read by BOTH surfaces — this one decides whether to OFFER Sweep,
  * `render.php` decides whether to EMIT Sweep CSS — with neither re-deriving it.

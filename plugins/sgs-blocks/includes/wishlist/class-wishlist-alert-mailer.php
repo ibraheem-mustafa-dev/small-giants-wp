@@ -2,7 +2,7 @@
 /**
  * Wishlist Alert Mailer — sends the saved-items alert through the
  * `sgs_saved_items_alert` WooCommerce email, and fires the optional N8N
- * automation event alongside it (Spec 30 FR-30-15, unified-email plan
+ * automation event alongside it (Spec 27 Part 3 FR-30-15, unified-email plan
  * phase 3).
  *
  * Extracted out of {@see Wishlist_Alerts_Scan} to keep that file under its

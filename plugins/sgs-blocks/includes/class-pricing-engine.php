@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — pure engine (Spec 28, P2).
+ * SGS Smart Bulk Pricing — pure engine (Spec 27 Part 2, P2).
  *
  * Two public functions:
  *   sgs_charm_round()       — idempotent charm-rounding on the inc-VAT shopper price.
@@ -11,7 +11,7 @@
  * a WordPress environment.  Any WP integration (options, REST, WC writes) belongs
  * in the P3/P4 layer files that require this file.
  *
- * Formula (FR-28-1, Spec 28 §"Corrected worked example"):
+ * Formula (FR-28-1, Spec 27 Part 2 §"Corrected worked example"):
  *   raw_pack_pence = base_pence × n^(1 − k)
  *   per_unit_pence = round( charmed_pack_pence / n )
  *

@@ -770,7 +770,7 @@ if ( '' !== $custom_css ) {
 // decision on THAT block; nothing in this file depends on the answer.
 //
 // The × button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
-// Spec 41 FR-41-12: `icon-and-text` is the FOURTH value.
+// Spec 36 §14 FR-41-12: `icon-and-text` is the FOURTH value.
 // ⛔ THIS LIST AND block.json::attributes.closeStyle.enum MUST AGREE, ALWAYS.
 // A value one side accepts and the other rejects coerces the stored value away
 // with NO error on either side, so the operator's choice vanishes silently.

@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — shared cascade+engine resolver (Spec 28 P3/P4).
+ * SGS Smart Bulk Pricing — shared cascade+engine resolver (Spec 27 Part 2 P3/P4).
  *
  * THE SINGLE FUNCTION that both the preview endpoint (P3) and the apply
  * endpoint (P4) call to turn a product + optional request overrides into

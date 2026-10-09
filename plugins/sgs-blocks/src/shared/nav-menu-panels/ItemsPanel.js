@@ -3,7 +3,7 @@ import { PanelBody, RangeControl } from '@wordpress/components';
 import { SgsBorderControl, SgsLengthControl } from '../../components';
 
 /**
- * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Menu item" panel (Spec 41 §9.7).
+ * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Menu item" panel (Spec 36 §14.9.7).
  *
  * ⚠ WHAT LEFT THIS PANEL IN STEP 14, each to a NAMED new home — nothing was
  * dropped:

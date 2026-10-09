@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — cascade config resolver (Spec 28 P3, FR-28-6).
+ * SGS Smart Bulk Pricing — cascade config resolver (Spec 27 Part 2 P3, FR-28-6).
  *
  * Single public entry point: sgs_get_pack_pricing_config( int $product_id ).
  * Resolves the 3-layer cascade: site → category → product; most-specific wins.
@@ -19,7 +19,7 @@
  * Per-pack manual overrides are an additive product-level map; they never
  * derive from site or category layers.
  *
- * Default values (magic numbers from Spec 28 §Principles):
+ * Default values (magic numbers from Spec 27 Part 2 §Principles):
  *   k             = 0.12   (Standard)
  *   pack_sizes    = [6,12,24,48]
  *   charm_round   = true

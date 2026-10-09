@@ -21,7 +21,7 @@
  * container wrapper (prepended tag) + custom-css residual (appended tag) are both
  * caught without touching either file.
  *
- * D303 residual precedence (Spec 31 FR-31-5.2): custom-css.php APPENDS its
+ * D303 residual precedence (Spec 32 FR-32-13): custom-css.php APPENDS its
  * `sgsCustomCss` residual `<style>` after the block's own output (priority 10).
  * This filter runs LATER (priority 99), so for each block the tags appear in
  * document order [block-own … residual] and are buffered in that order —

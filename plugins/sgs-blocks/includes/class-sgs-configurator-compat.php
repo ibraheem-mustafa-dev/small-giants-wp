@@ -49,8 +49,8 @@ final class Sgs_Configurator_Compat {
 	 *
 	 * Filterable via `sgs_configurator_supported` — lets a site override the floor
 	 * and lets tests simulate an old WooCommerce without changing the WC_VERSION
-	 * constant. WC absent entirely also resolves false (the CPT fallback path,
-	 * FR-27-A3, handles no-WC sites separately).
+	 * constant. WC absent entirely also resolves false (FR-27-A3: a site
+	 * without WooCommerce renders Typed mode and attempts no commerce).
 	 *
 	 * @return bool
 	 */

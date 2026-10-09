@@ -4,7 +4,7 @@
  *
  * Provides sgs_saving_display() and sgs_value_ladder() — computing per-pack
  * saving labels and building sorted comparative value-ladder row arrays for
- * the product configurator (Spec 28 P1) — and sgs_value_ladder_markup(), the
+ * the product configurator (Spec 27 Part 2 P1) — and sgs_value_ladder_markup(), the
  * one renderer both sgs/product-card and sgs/buybox print those rows through.
  *
  * Requires helpers-configurator-pricing.php for sgs_configurator_format_minor().
@@ -15,7 +15,7 @@
 require_once __DIR__ . '/helpers-configurator-pricing.php';
 
 /**
- * Plain-text saving label for one row of the comparative value ladder (Spec 28 P1).
+ * Plain-text saving label for one row of the comparative value ladder (Spec 27 Part 2 P1).
  *
  * Returns '' in any of these cases:
  *  - The anchor is not a genuine single price (!$anchor_is_genuine_single).
@@ -98,7 +98,7 @@ function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_penc
 }
 
 /**
- * Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1).
+ * Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1).
  *
  * Collapses to ONE row per distinct unitDivisor value: where multiple combos share
  * the same divisor (e.g. different flavours of the same pack size), the lowest-priced
@@ -286,7 +286,7 @@ function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode
 }
 
 /**
- * Markup for the comparative value ladder: one <ul> of pack rows (Spec 28 P1).
+ * Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1).
  *
  * The single renderer for sgs/product-card and sgs/buybox. The caller decides
  * WHETHER a ladder shows (its showLadder attribute and its own hidden flag) and

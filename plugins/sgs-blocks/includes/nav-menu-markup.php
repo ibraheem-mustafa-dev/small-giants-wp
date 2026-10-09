@@ -546,7 +546,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 		 * interpolated here, never a `%s` inside the format string — feeding ''
 		 * into an `aria-label="%s"` literal emits `aria-label=""`, an EMPTY
 		 * accessible name, strictly worse than the Label-in-Name mismatch the
-		 * omission exists to fix (Spec 41 FR-41-12). A caller that passes nothing
+		 * omission exists to fix (Spec 36 §14 FR-41-12). A caller that passes nothing
 		 * under `icon` mode still gets the label, so no route emits a nameless
 		 * icon-only button.
 		 */

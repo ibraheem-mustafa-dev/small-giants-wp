@@ -1079,7 +1079,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				{ /* Spec 41 FR-41-12 — the close button offers the same three things
+				{ /* Spec 36 §14 FR-41-12 — the close button offers the same three things
 				   the OPEN side does: a chosen icon, a chosen word, and both
 				   together. A ToolsPanel, so the `closeStyle` row keeps the
 				   hasValue/onDeselect idiom, with the trio sitting together in
@@ -1134,7 +1134,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						hasValue={ () => !! closeStyle && Object.keys( closeStyle ).length > 0 }
 						onDeselect={ () => setAttributes( { closeStyle: {} } ) }
 					>
-						{ /* ⚠ FIVE values now (Spec 41 FR-41-12's four plus NEW `trigger`,
+						{ /* ⚠ FIVE values now (Spec 36 §14 FR-41-12's four plus NEW `trigger`,
 						   §4.2 — "the menu button closes it"). `burger-morph` is NOT a
 						   display mode — it is a GLYPH choice (a CSS-drawn two-bar span, no
 						   icon and no text). That is why this enum was EXTENDED rather than

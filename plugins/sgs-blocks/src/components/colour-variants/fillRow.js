@@ -56,7 +56,7 @@ import { __ } from '@wordpress/i18n';
  *   linked — unconditional on both paths; it is a property of DesignTokenPicker, not
  *   of how the value is read/written, so the get/set path carries it identically.
  *
- * THIRD STATE (`current`, added 2026-09-11, Spec 41 FR-41-3 / FR-41-2). Purely
+ * THIRD STATE (`current`, added 2026-09-11, Spec 36 §14 FR-41-3 / FR-41-2). Purely
  * ADDITIVE, and shaped deliberately to mirror the PHP side's own third-state
  * extension (`sgs_fill_decls()`'s optional `current` key) rather than inventing a
  * second vocabulary for the same idea. A caller that supplies no `attrs.current`
@@ -70,7 +70,7 @@ import { __ } from '@wordpress/i18n';
  *   direction). It was changed in the same commit that added this paragraph.
  *   ⚠ A `current` state is appended only when `hover` is also supplied. A
  *   Current-without-Hover row has no caller in this tree and no meaning in the
- *   three-state model (Spec 41 §1.3: Current is the third state, not a substitute
+ *   three-state model (Spec 36 §14.1.3: Current is the third state, not a substitute
  *   for the second), so it is refused loudly rather than half-wired.
  *
  * @param {Object}   o
@@ -177,7 +177,7 @@ export default function fillRow( {
 	if ( current && ! hover ) {
 		throw new Error(
 			`fillRow( "${ key }" ): attrs.current requires attrs.hover — Current is the ` +
-				'THIRD state of the three-state model (Spec 41 §1.3), never a substitute ' +
+				'THIRD state of the three-state model (Spec 36 §14.1.3), never a substitute ' +
 				'for Hover. A row with Normal + Current and no Hover has no meaning in ' +
 				'this framework and would silently score as a 2-state row.'
 		);
@@ -221,7 +221,7 @@ export default function fillRow( {
 			: {} ),
 	};
 
-	// Spec 41 FR-41-3: the THIRD state. Built as its own literal entry and appended
+	// Spec 36 §14 FR-41-3: the THIRD state. Built as its own literal entry and appended
 	// at ARRAY level below, exactly like `hoverState` — never generated, never
 	// `.map()`-ed, for the same D738 reason recorded above.
 	const currentState = {

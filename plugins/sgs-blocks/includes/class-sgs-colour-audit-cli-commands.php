@@ -1,6 +1,6 @@
 <?php
 /**
- * `wp sgs audit-colour-tokens` — orphaned design-token slug discovery (Spec 41 follow-up).
+ * `wp sgs audit-colour-tokens` — orphaned design-token slug discovery (Spec 36 §14 follow-up).
  *
  * Mirrors `Sgs_Cli_Commands`'s registration pattern (class-sgs-cli-commands.php):
  *

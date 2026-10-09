@@ -339,7 +339,7 @@ $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_se
 $responsive_css .= sgs_typography_css_rule( $attributes, 'ribbon', $root_sel . ' .sgs-cta-section__ribbon' );
 $responsive_css .= sgs_typography_css_rule( $attributes, 'stats', $root_sel . ' .sgs-cta-section__stats' );
 
-// Text alignment — bare `textAlign` attribute (Spec 31/converter routing:
+// Text alignment — bare `textAlign` attribute (computed-route routing:
 // `block_attributes` maps textAlign → css_property `text-align`, css_element
 // `headline`; the cloning converter writes this TOP-LEVEL attribute on cloned
 // content). Migrated off the native "Align text" toolbar control (D971/D972

@@ -132,7 +132,7 @@ export default function DropdownSettingsPanel( {
 					__next40pxDefaultSize
 				/>
 
-				{ /* Spec 41 §9.5 / FR-41-27. It sits beside the navigation label
+				{ /* Spec 36 §14.9.5 / FR-41-27. It sits beside the navigation label
 				   because both answer "does this menu behave safely for every
 				   visitor", which is what a General-tab Accessibility panel is for.
 				   Default OFF — an explicit colour always renders as-authored

@@ -576,7 +576,7 @@ function repositionPanel( root ) {
 		 * top (the header's bottom padding plus the offset), which the pointer
 		 * crosses over neither element. The disclosure root's `::after` (published
 		 * on the root, the element that owns the hover) takes this height so
-		 * the parent item keeps its hover PAINT across it (Spec 41 FR-41-11);
+		 * the parent item keeps its hover PAINT across it (Spec 36 §14 FR-41-11);
 		 * openness is the close grace's job, not the bridge's.
 		 */
 		const placedRect = panel.getBoundingClientRect();

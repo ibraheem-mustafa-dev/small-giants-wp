@@ -3,7 +3,7 @@ import { PanelBody } from '@wordpress/components';
 import { IconPicker } from '../../components';
 
 /**
- * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Submenu — Items" panel (Spec 41
+ * SGS Nav Bar/Drawer Menu (shared, sgs/nav-bar-menu + sgs/nav-drawer-menu) — Styles tab: the "Submenu — Items" panel (Spec 36 §14
  * §9.8 / FR-41-30b). NEW in step 14: everything specific to the LINKS inside a
  * dropdown or drawer panel, as distinct from the panel container itself (§9.9).
  *

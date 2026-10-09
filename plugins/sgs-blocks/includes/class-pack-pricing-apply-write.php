@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — apply write worker (Spec 28 P4, FR-28-5/11/13/14).
+ * SGS Smart Bulk Pricing — apply write worker (Spec 27 Part 2 P4, FR-28-5/11/13/14).
  *
  * The variation write loop for the apply endpoint:
  *   - resolves engine rows via the SHARED Pack_Pricing_Resolver (preview==apply);

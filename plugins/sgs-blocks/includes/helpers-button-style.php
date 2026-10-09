@@ -83,7 +83,7 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
  *   ctaLineHeight             string  (unitless number, e.g. "1.4", or a CSS
  *                                     length, e.g. "24px")
 	 *   ctaPadding                object  {top,right,bottom,left} box padding
-	 *                                     (box-object standard, FR-31-22 —
+	 *                                     (box-object standard, Spec 32 section 6.1 —
 	 *                                     shorthanded via the shared
 	 *                                     sgs_box_object_shorthand() helper)
 	 *   ctaWidthType              string  (fit|full)
@@ -242,7 +242,7 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( '' !== $line_height ) {
 			$base_decls[] = 'line-height:' . $line_height . ';';
 		}
-		// Padding — box-object standard (FR-31-22): a single {top,right,bottom,left}
+		// Padding — box-object standard (Spec 32 section 6.1): a single {top,right,bottom,left}
 		// object attr, shorthanded via the shared sgs_box_object_shorthand() helper
 		// (the same one sgs/label + the product-card trial tag use, via
 		// sgs_label_box_css_rule()). An unset side falls back to '0' inside the

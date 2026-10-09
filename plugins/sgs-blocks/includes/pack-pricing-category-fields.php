@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — product_cat term fields (Spec 28 P3, FR-28-6).
+ * SGS Smart Bulk Pricing — product_cat term fields (Spec 27 Part 2 P3, FR-28-6).
  *
  * Adds a "Discount strength" override field to the WooCommerce product
  * category (product_cat) Add-term and Edit-term admin screens.

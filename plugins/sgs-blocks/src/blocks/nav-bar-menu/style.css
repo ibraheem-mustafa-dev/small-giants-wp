@@ -227,7 +227,7 @@
 }
 
 /*
- * Magnetic-pull companion rule (Spec 41 FR-41-31). Required the moment
+ * Magnetic-pull companion rule (Spec 36 §14 FR-41-31). Required the moment
  * `triggerMagnetEnabled` emits `data-sgs-fx="magnet"` on this element: the
  * shared `fx-magnet` runtime's own stylesheet (`assets/css/fx-magnet.css`)
  * declares `[data-sgs-fx="magnet"]{transition:var(--sgs-magnet-transition)}`

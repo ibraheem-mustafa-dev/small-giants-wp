@@ -186,13 +186,13 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-litespeed-compat.php';
 		LiteSpeed_Compat::register();
 
-		// Smart Bulk Pricing P3 (Spec 28 FR-28-3/4/6/10/11) — PREVIEW: cascade
+		// Smart Bulk Pricing P3 (Spec 27 Part 2 FR-28-3/4/6/10/11) — PREVIEW: cascade
 		// site→category→product, WC settings tab, term/product fields, and POST
 		// /sgs/v1/pack-pricing/preview. The fields/settings files self-register
 		// their hooks on require; the REST controller registers explicitly.
 		require_once SGS_BLOCKS_PATH . 'includes/class-pack-pricing-preview.php';
 		Pack_Pricing_Preview::register();
-		// Smart Bulk Pricing P4 (Spec 28 FR-28-5/10/11/13/14) — the WC-WRITE path.
+		// Smart Bulk Pricing P4 (Spec 27 Part 2 FR-28-5/10/11/13/14) — the WC-WRITE path.
 		// Registers POST /sgs/v1/pack-pricing/{apply,revert,release-lock}. The
 		// ONLY write trigger is the explicit two-step "Apply prices to your live
 		// shop" button — never an auto save_post hook.

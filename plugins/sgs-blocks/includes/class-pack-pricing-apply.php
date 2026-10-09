@@ -1,6 +1,6 @@
 <?php
 /**
- * SGS Smart Bulk Pricing — apply REST controller (Spec 28 P4, FR-28-5/10/11/13/14).
+ * SGS Smart Bulk Pricing — apply REST controller (Spec 27 Part 2 P4, FR-28-5/10/11/13/14).
  *
  * Route registration + handler SHELLS only.  The heavy logic lives in two
  * companion classes (each ≤300 lines, each requiring its own deps):

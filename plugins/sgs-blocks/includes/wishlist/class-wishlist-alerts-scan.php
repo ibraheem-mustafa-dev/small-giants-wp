@@ -1,7 +1,7 @@
 <?php
 /**
  * Wishlist Alerts Scan — the recurring price-drop / back-in-stock sweep
- * (Spec 30 P5, FR-30-15). A 12-hourly job compares every opted-in
+ * (Spec 27 Part 3 P5, FR-30-15). A 12-hourly job compares every opted-in
  * shopper's saved list against live WooCommerce data and sends at most
  * one `sgs_wishlist_alert` webhook event per shopper per run.
  *

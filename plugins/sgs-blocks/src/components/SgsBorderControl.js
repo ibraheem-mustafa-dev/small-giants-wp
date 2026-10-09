@@ -86,7 +86,7 @@ import BorderStyleControl from './BorderStyleControl';
  *                                               case (WCAG 1.4.11, 3:1), never body text —
  *                                               callers should not need to remember to flip
  *                                               this for the one shape this control ever draws.
- * @param {boolean}  [props.showColour=true]     Additive (Spec 41 FR-41-33/FR-41-2b). `true`
+ * @param {boolean}  [props.showColour=true]     Additive (Spec 36 §14 FR-41-33/FR-41-2b). `true`
  *                                               (the default) is byte-identical to this
  *                                               control's pre-existing behaviour. `false`
  *                                               suppresses the `.sgs-border-control__colour`
@@ -189,7 +189,7 @@ export default function SgsBorderControl( {
 						/>
 					</FlexItem>
 				) }
-				{ /* Colour suppressed (Spec 41 FR-41-33/FR-41-2b): border style re-parents here
+				{ /* Colour suppressed (Spec 36 §14 FR-41-33/FR-41-2b): border style re-parents here
 				     as SgsBorderControl's own sibling, matching GradientCapableColourControl's
 				     own gate so a caller that never wired border style gets no orphan control. */ }
 				{ ! showColour && typeof onStyleChange === 'function' && (

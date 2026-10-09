@@ -531,7 +531,7 @@ function enqueue_styles(): void {
 	// Animation system is now in sgs-blocks plugin (extensions.css + animation-observer.js).
 	// Old theme files (sgs-animations.css, sgs-animations.js) removed in Session 11.
 
-	// WooCommerce brand styles — Cart, Checkout, Mini-Cart drawer (FR-30-4, Spec 30).
+	// WooCommerce brand styles — Cart, Checkout, Mini-Cart drawer (FR-30-4, Spec 27 Part 3).
 	// Only loaded when WooCommerce is active.
 	if ( class_exists( 'WooCommerce' ) ) {
 		wp_enqueue_style(
@@ -542,7 +542,7 @@ function enqueue_styles(): void {
 		);
 	}
 
-	// Shop archive filter drawer — mobile off-canvas, focus-trap, a11y (FR-30-3, Spec 30).
+	// Shop archive filter drawer — mobile off-canvas, focus-trap, a11y (FR-30-3, Spec 27 Part 3).
 	// Only on shop archive surfaces; guard with function_exists so non-WC installs are safe.
 	if (
 		function_exists( 'is_shop' ) &&
@@ -573,7 +573,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
  * before applying its own fallback button rules. Adding this class prevents
  * WC from overriding our themed buttons on cart/checkout/mini-cart surfaces.
  *
- * Spec 30 FR-30-4.
+ * Spec 27 Part 3 FR-30-4.
  */
 add_filter(
 	'body_class',

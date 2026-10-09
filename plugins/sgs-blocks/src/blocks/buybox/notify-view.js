@@ -8,7 +8,7 @@
  * Status messages are written via textContent (XSS-inert). Turnstile is reset
  * on error so the user can retry without a page reload.
  *
- * @since 1.18.0 (FR-30-10 Spec 30 Step 10)
+ * @since 1.18.0 (FR-30-10 Spec 27 Part 3 Step 10)
  */
 
 /**
