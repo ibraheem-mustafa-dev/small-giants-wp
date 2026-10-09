@@ -150,14 +150,14 @@ describe( 'the control label follows the previewed device', () => {
 		] );
 	} );
 
-	it( 'sgs/tabs tabPadding reads Default (0.875rem) / (1rem) on mobile for stacked horizontal tabs only', () => {
+	it( 'sgs/tabs tabPadding reads Default (0.875rem) / (S) on mobile for stacked horizontal tabs only', () => {
 		const stacked = { orientation: 'horizontal', mobileLayout: 'stack' };
-		// The unlinked box lists one row per side; the stylesheet paints 1rem as a literal, so it is declared as one.
+		// The unlinked box lists one row per side; left and right paint preset S (1rem), so they are declared as the preset.
 		expect( labelsFor( 'tabs', 'tabPadding', { attributes: stacked, tier: 'mobile' } ) ).toEqual( [
 			'Default (0.875rem)',
-			'Default (1rem)',
+			'Default (S)',
 			'Default (0.875rem)',
-			'Default (1rem)',
+			'Default (S)',
 		] );
 	} );
 

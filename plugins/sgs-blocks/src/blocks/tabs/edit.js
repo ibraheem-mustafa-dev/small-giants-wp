@@ -28,6 +28,7 @@ import { LogicalAlignControl,
 } from '../../components';
 import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, BandWrap } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { spacingAxesFor } from '../../utils/spacing-axes';
 import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
 
 const TEMPLATE = [
@@ -520,6 +521,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						units={ BOX_UNITS }
 						presets
 						defaults={ spacingDefaultsFor( name, 'tabPadding', { attributes, tier: previewTier } ) }
+						splitOnAxis={ spacingAxesFor( name, 'tabPadding' ) }
 						onChange={ ( next ) => setAttributes( { tabPadding: next || {} } ) }
 					/>
 					<SgsLengthControl

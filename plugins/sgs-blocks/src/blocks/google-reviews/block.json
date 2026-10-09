@@ -591,10 +591,10 @@
 							"classes": [
 								"sgs-google-reviews--card-wall-tile"
 							],
-							"top": "16px",
-							"right": "16px",
-							"bottom": "16px",
-							"left": "16px"
+							"top": "var(--wp--preset--spacing--30)",
+							"right": "var(--wp--preset--spacing--30)",
+							"bottom": "var(--wp--preset--spacing--30)",
+							"left": "var(--wp--preset--spacing--30)"
 						}
 					]
 				},
@@ -602,6 +602,9 @@
 					"top": "22px",
 					"bottom": "14px"
 				}
+			},
+			"spacingAxes": {
+				"cardPadding": true
 			}
 		},
 		"align": [

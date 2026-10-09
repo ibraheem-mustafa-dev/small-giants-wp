@@ -195,7 +195,7 @@ describe( 'the shipped declarations resolve per tier and setting', () => {
 		const at = ( attributes, tier ) => resolve( 'tabs', 'tabPadding', { attributes, tier } );
 		const stacked = { orientation: 'horizontal', mobileLayout: 'stack' };
 		expect( at( stacked, 'desktop' ) ).toEqual( { top: '12px', right: '20px', bottom: '12px', left: '20px' } );
-		expect( at( stacked, 'mobile' ) ).toEqual( { top: '0.875rem', right: '1rem', bottom: '0.875rem', left: '1rem' } );
+		expect( at( stacked, 'mobile' ) ).toEqual( { top: '0.875rem', right: 'var(--wp--preset--spacing--30)', bottom: '0.875rem', left: 'var(--wp--preset--spacing--30)' } );
 		expect( at( { ...stacked, mobileLayout: 'row' }, 'mobile' ).top ).toBe( '12px' );
 		expect( at( { ...stacked, orientation: 'vertical' }, 'mobile' ).top ).toBe( '12px' );
 	} );
@@ -204,7 +204,7 @@ describe( 'the shipped declarations resolve per tier and setting', () => {
 		const at = ( cardStyle ) =>
 			resolve( 'google-reviews', 'cardPadding', { attributes: { cardStyle }, tier: 'desktop' } ).top;
 		expect( [ 'google-card', 'flat', 'bordered', 'elevated' ].map( at ) ).toEqual( [ '20px', '20px', '20px', '20px' ] );
-		expect( [ 'boxed', 'wall-tile', 'bubble', 'quote-minimal' ].map( at ) ).toEqual( [ '28px', '16px', '0', '0' ] );
+		expect( [ 'boxed', 'wall-tile', 'bubble', 'quote-minimal' ].map( at ) ).toEqual( [ '28px', 'var(--wp--preset--spacing--30)', '0', '0' ] );
 	} );
 } );
 

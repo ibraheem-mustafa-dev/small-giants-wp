@@ -989,7 +989,7 @@ a.sgs-google-reviews__author:hover {
 
 .sgs-google-reviews--card-wall-tile .sgs-google-reviews__review {
 	gap: 8px;
-	padding: 16px;
+	padding: var(--wp--preset--spacing--30, 1rem);
 	border-radius: 0;
 	box-shadow: none;
 }

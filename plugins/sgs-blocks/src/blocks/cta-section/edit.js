@@ -17,6 +17,7 @@ import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting, usePreviewTier, textIndentPreviewCss, typographyPreviewCss, wrapperToneClass, tierBackgroundImageUrl } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { spacingAxesFor } from '../../utils/spacing-axes';
 import { applyCtaWrapperPreview } from './preview-style';
 import ShapeDividerPreview from '../../components/ShapeDividerPreview';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
@@ -681,6 +682,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								units={ BOX_UNITS }
 								presets
 								defaults={ spacingDefaultsFor( name, 'padding', { attributes, tier } ) }
+								splitOnAxis={ spacingAxesFor( name, 'padding' ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

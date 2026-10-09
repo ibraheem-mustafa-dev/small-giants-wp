@@ -388,7 +388,7 @@
 		display: block;
 		width: 100%;
 		text-align: left;
-		padding: 0.875rem 1rem;
+		padding: 0.875rem var(--wp--preset--spacing--30, 1rem);
 		/* 2px in every state. A state that changes border-width cannot be
 		   balanced with padding: the browser snaps a border to whole device
 		   pixels (a 1px border computes to 0.8px here) while padding keeps its
