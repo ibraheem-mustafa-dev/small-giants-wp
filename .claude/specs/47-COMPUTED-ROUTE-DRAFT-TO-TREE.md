@@ -44,14 +44,13 @@ from CSS property to block setting. It works one surface at a time, in two direc
 The corrections phase then holds only intended divergences and genuine framework gaps.
 
 **Routing.** Every draft clones through this route, whether it renders by script or is static, and whatever classes it
-carries. The route reads the framework database, the parity walker and the page builder, and shares no code with the old
-converter (`plugins/sgs-blocks/scripts/converter/`). The binding cloning rules are in `.claude/rules/framework-principles.md`.
+carries. The route reads the framework database, the parity walker and the page builder, and shares no code with `plugins/sgs-blocks/scripts/`. The binding cloning rules are in `.claude/rules/framework-principles.md`.
 
 ## 1. Binding rules
 
 | Rule | Statement |
 |---|---|
-| **R-47-1 Isolation** | All route code lives in `scripts/computed-route/`. Its `README.md` lists every file and every exported function with a one-line purpose, inputs, outputs and external imports; `lint.mjs` fails on a file or export missing from it. The route never edits, imports or copies the retired converter code (`plugins/sgs-blocks/scripts/`): most converter modules import `converter/db/db_lookup.py`, which runs schema migrations on import, so even a read would write to the shared database. Changes to the retired converter's own files are made under the retired converter's plans, never from this route. |
+| **R-47-1 Isolation** | All route code lives in `scripts/computed-route/`. Its `README.md` lists every file and every exported function with a one-line purpose, inputs, outputs and external imports; `lint.mjs` fails on a file or export missing from it. The route never edits, imports or copies code from `plugins/sgs-blocks/scripts/`, and opens the framework DB read-only; `lint.mjs` enforces the import ban. |
 | **R-47-2 Read-only database** | The framework database (`~/.claude/skills/sgs-wp-engine/sgs-framework.db`) is opened read-only with Node's built-in `node:sqlite` (`file:<path>?mode=ro`, which refuses writes on Node 24). The route never seeds, migrates or writes it. |
 | **R-47-3 One engine** | Solve and Fill write settings only through `lib/resolve.mjs`. There is no second property-to-setting mapping in the route. |
 | **R-47-4 Measured, not copied** | Every written value comes from a computed style read in a real browser. Draft source text is never parsed for values. |

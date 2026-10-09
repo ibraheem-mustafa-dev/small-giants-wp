@@ -43,7 +43,7 @@ small-giants-wp/
 │   ├── src/             # blocks/ (+ extensions/), components/, header-behaviours/, shared/, utils/
 │   ├── build/           # compiled output (gitignored; build-deploy.py ships it)
 │   ├── assets/          # frontend CSS/JS for extensions, media atoms, effects
-│   └── scripts/         # build, deploy, gate and cloning-pipeline tooling (build-deploy.py, gates.json, converter/)
+│   └── scripts/         # build, deploy, gate and cloning-pipeline tooling (build-deploy.py, gates.json, computed-route/, parity/)
 ├── plugins/             # also sgs-booking, client-notes, accessibility, configurator
 ├── sites/               # per-client content, mockups, theme-snapshot.json
 └── .claude/             # specs, ledger, plans, reports, catalogues
@@ -74,16 +74,13 @@ The build uses `--experimental-modules` to support `viewScriptModule` (the Inter
 
 A `prebuild` / `prestart` hook runs `scripts/generate-icons.js` automatically. This generates `includes/lucide-icons.php` from the `lucide-static` package — a flat PHP array of 1,900+ SVG icons. Do not edit `lucide-icons.php` directly.
 
-`prebuild` runs the generators (roster, icons, extension attributes, SVG allowlist, media attributes and stylesheet, motion-fx generators) as a fail-fast chain, then `python scripts/run-gates.py --tier fast`. The runner executes every fast-tier gate, collects every failure, and prints one consolidated report, so one build shows every defect. The gate roster is `plugins/sgs-blocks/scripts/gates.json` (one record per gate: `id`, `cmd`, `tier`, `budget_ms`, `order`). Heavyweight gates sit in the `full` tier, which `build-deploy.py` runs before it ships (`npm run gate:full`; `--skip-gate-full` disables that tier for a deploy). The commit-time chain is small: the per-machine `.git/hooks/pre-commit` runs gitleaks, then `.githooks/sgs-gates.sh` (Gate A only: converter golden fixtures, when converter code is staged), then `.githooks/pre-commit` (the extension-attribute drift check and the cloning-pipeline gates). No visual-diff gate runs at commit, so a clean commit is never gate evidence; the gates run at build.
+`prebuild` runs the generators (roster, icons, extension attributes, SVG allowlist, media attributes and stylesheet, motion-fx generators) as a fail-fast chain, then `python scripts/run-gates.py --tier fast`. The runner executes every fast-tier gate, collects every failure, and prints one consolidated report, so one build shows every defect. The gate roster is `plugins/sgs-blocks/scripts/gates.json` (one record per gate: `id`, `cmd`, `tier`, `budget_ms`, `order`). Heavyweight gates sit in the `full` tier, which `build-deploy.py` runs before it ships (`npm run gate:full`; `--skip-gate-full` disables that tier for a deploy). The commit-time chain is small: the per-machine `.git/hooks/pre-commit` runs gitleaks, then `.githooks/sgs-gates.sh` (an empty slot), then `.githooks/pre-commit` (the extension-attribute drift check only). No visual-diff gate runs at commit, so a clean commit is never gate evidence; the gates run at build.
 
 Gate commands (from `plugins/sgs-blocks`): `npm run gate:list` (the roster), `gate:fast`, `gate:full`, `gate:all`, `gate:wired` (asserts the deploy script runs the full tier), `gate:selftest`.
 
 Two of the gates, as examples of what the roster covers: `check-empty-inspector-containers.js` (an inspector container rendered with no children — a client-visible dead control that `check-dead-controls.js`, which checks the opposite direction, cannot see) and `check-wrapper-capability-preconditions.js` (`gridItems` requires `layout`; a `supports.sgs.gridAreas` declaration must have a live reader). Per-gate rationale and `--self-test` shapes are in each script's own header; the tooling catalogue below lists them. **Never trust a doc's claim that a gate runs — read `scripts/gates.json`, or run `npm run gate:wired`.**
 
-**Converter conformance:**
-- **Gate A (golden-fixture harness):** `plugins/sgs-blocks/scripts/tests/test_converter_conformance.py` — fixture count is DB/dir-authoritative (`scripts/tests/fixtures/conformance/`, do not hard-code a number), run manually with `pytest plugins/sgs-blocks/scripts/tests/`. This is the pre-commit gating harness.
-
-**Dated migration pattern (mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` under `plugins/sgs-blocks/scripts/migrations/` beside the existing siblings — never a module-load side-effect in `db_lookup.py`. Example: `plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py`.
+**Dated migration pattern (mandatory):** any new `property_suffixes` row or other DB seed data MUST live in a dated `migrations/YYYY-MM-DD-<descriptor>.py` under `plugins/sgs-blocks/scripts/migrations/` beside the existing siblings — never a module-load side-effect. Reference tables (`roles`, `slots`, `property_suffixes`, `modifier_suffixes`, `html_tag_to_core_block`) are seeded by `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`. Example: `plugins/sgs-blocks/scripts/migrations/2026-06-26-testimonial-media-role-selector.py`.
 
 **Output:** `build/blocks/{block-name}/` contains the compiled files. `build/` is gitignored: `npm run build` produces it locally and `build-deploy.py` ships it — Node.js is not available on the Hostinger host.
 
@@ -110,13 +107,13 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 - `role`: What KIND of thing the attribute is — the single best attribute classifier here. A gate (db-consistency/check_orphan_roles.py) fails the build if a value has no `roles` row, so it cannot rot quietly.
 - `css_property`: The CSS longhand(s) this attribute writes. WARNING: a NULL means TWO different things — for a painting role it is a real gap; for `text-content`/`content`/`boolean-visibility` it is correct by design (100% NULL, they do not paint). Condition on `role` before reading a NULL as a defect.
-- `css_element`: Which sub-element inside the block it paints. Must be paired with `css_layer` — matching on element alone mis-routes (converter/db/db_lookup.py).
+- `css_element`: Which sub-element inside the block it paints. Must be paired with `css_layer` — matching on element alone mis-routes.
 - `css_state`: Pseudo-state the value applies to. Exact where present; the only state marker.
 - `css_layer`: Which layer of the 3-layer wrapper model (OUTER / CONTENT / GRID / GRID_AREA) the attribute belongs to.
-- `css_tier`: Responsive tier. Deliberately SPARSE — responsive siblings intentionally carry NULL and only anomalies keep a value. Do NOT treat these NULLs as gaps; 'fixing' them breaks db_lookup's base-row query.
+- `css_tier`: Responsive tier. Deliberately SPARSE — responsive siblings intentionally carry NULL and only anomalies keep a value. Do NOT treat these NULLs as gaps; 'fixing' them breaks the base-row lookups that treat NULL as the base tier.
 - `box_family`: Merged box-object family. Narrow but authoritative — the DB-first replacement for name-regex box detection. No box_family means provably not a box attribute.
 - `inspector_control_type`: The editor control the client actually sees. Cross-tab against `attr_type` to find controls whose shape cannot hold their setting.
-- `emit_shape`: How the converter emits it. Fails closed at converter/walk.py when unseeded on a content-role attribute, so its NULLs are tracked gaps rather than silent ones.
+- `emit_shape`: How the block's render emits the attribute. Read by `consistency/build-setting-types.py`, which requires members of a proposed shared setting to agree on role and `emit_shape`; a NULL on a content-role attribute is a tracked gap.
 - `derived_selector`: A NAMED TRAP. Reads like a CSS emit target; is a synthetic per-attribute identifier. colour-codemod/survey.js measured 58% autofixable off it and the figure was wrong — ZERO of its values exist as classes in the tree. Never classify on it.
 
 **`roles`**
@@ -131,17 +128,17 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 **`block_capabilities`**
 
-- `kind`: THE LOAD-BEARING SPLIT. `functional` = real converter behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are.
+- `kind`: THE LOAD-BEARING SPLIT. `functional` = real block behaviour; `discovery` = search keywords from the block title. Without it the table looks like hundreds of behavioural facts when only a few dozen are.
 
 **`block_composition`**
 
-- `container_kind`: The D294 pattern selector, and a converter recognition input (l2_qualify.py tests PRESENCE; recognise_helpers.py uses the VALUE as a priority tie-break). NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py::main) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong.
+- `container_kind`: The D294 pattern selector, read by the db-consistency tier-composition checks. NULL means never-written, NOT not-container-bearing — the writer (sync-container-wrapping-blocks.py::main) only ever SETS and has no statement clearing back to NULL, so a block that stops qualifying keeps its old value permanently. An earlier version of this cell claimed it disagrees with render.php in 14 of 58 blocks — that used the predicate content-kind-must-not-call-the-wrapper, but D294 says content-kind MAY render block-private. A permission read as an obligation; the figure was wrong.
 - `composition_role`: The block's structural shape. See the container_kind warning — the two columns disagree.
-- `wraps_block`: NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py::main), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Its only reader (db_lookup.py) asks which wraps_block value is most common: a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762).
+- `wraps_block`: NOT A MEASUREMENT. The value sgs/container is a hardcoded string literal inside the writer SQL (sync-container-wrapping-blocks.py::main), asserted for every roster member regardless of truth — 14 of the 38 make no real SGS_Container_Wrapper call, so the column is false for ~37% of its rows. Any query that counts or ranks `wraps_block` values asks a self-fulfilling question about a constant. Same trap shape as blocks.status and derived_selector. Verified 2026-08-24 (D762).
 
 **`property_suffixes`**
 
-- `kind_override`: Parse-type escape hatch (D99). `number_unitless` doubles as a cheat-gate sentinel.
+- `kind_override`: Parse-type escape hatch (D99). Seeded by `dbschema/seed_reference_data.py`.
 
 **`slots`**
 
@@ -161,14 +158,10 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 - `unique_slot`: The slot ONLY this variant has — the discriminator, computed by set-difference against the block's other variants.
 
-**`preset_implications`**
-
-- `is_neutral`: Marks preset values that genuinely imply nothing (`none`, `flat`), so the converter can tell 'no styling' from 'not set'.
-
 **`array_item_schema`**
 
-- `role`: A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and the reader (array_content.py) deliberately falls back to name-derivation for those.
-- `field_order`: STRUCTURAL and implicit — it is the block.json key order of items.properties, captured by enumerate() at sgs-update-v2.py, not anything an author declares. Consumed as a tie-break (array_content.py). Any tool that sorts or reformats block.json keys would silently change converter behaviour with no error.
+- `role`: A SEPARATE 3-VALUE VOCABULARY — icon-slug / text-content / url-href, plus NULL. NEVER join it to block_attributes.role (34 values); they are unrelated despite the shared column name. DECLARED from block.json items.properties.<field>.role, never name-parsed (FR-31-2.1a). NULL means no role was declared, and a consumer must not infer one from the field name.
+- `field_order`: STRUCTURAL and implicit — it is the block.json key order of items.properties, captured by enumerate() at sgs-update-v2.py, not anything an author declares. Any tool that sorts or reformats block.json keys would silently change this order with no error.
 
 **`design_tokens`**
 
@@ -542,7 +535,7 @@ Row counts drift — query `/sgs-db` (or the column meanings above) rather than 
 - **`block_composition`** — the container roster has `wraps_block` + `container_kind` populated (values `section|layout|content`).
 - **`slots`** — composite PK on `(slot_name, scope)`; element-scope and section-scope rows. Role is derived from `property_suffixes`, not stored on the slot row.
 - **`roles`** — base roles plus `scalar-media`. `INSERT OR REPLACE` from `_ROLE_CLASSIFICATION_MAP`.
-- **`html_tag_to_core_block`** — idempotent migration at module load; the source of the atomic-tag map (no hardcoded dict).
+- **`html_tag_to_core_block`** — seeded by `dbschema/seed_reference_data.py` from `plugins/sgs-blocks/scripts/data/atomic-tag-map.json`; the source of the atomic-tag map (no hardcoded dict).
 
 ### canonical_slot assignment
 

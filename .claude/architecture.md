@@ -44,7 +44,7 @@ Query them live:
 small-giants-wp/
 ├── theme/sgs-theme/           # Block theme — theme.json, templates/, parts/, patterns/, styles/ (empty, see §7)
 ├── plugins/
-│   ├── sgs-blocks/            # Gutenberg blocks + forms + the converter scripts (own CLAUDE.md)
+│   ├── sgs-blocks/            # Gutenberg blocks + forms + build, gate and DB tooling (own CLAUDE.md)
 │   ├── sgs-booking/           # Appointment + event booking (own CLAUDE.md; deferred, Spec 03)
 │   ├── sgs-client-notes/      # Visual annotation system (own CLAUDE.md; deferred, Spec 05)
 │   ├── sgs-accessibility/     # A11y helpers (masonry, min-height, ARIA roles, form errors) — no own CLAUDE.md yet
@@ -82,12 +82,11 @@ copying the draft's DOM or classes. Spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT
 
 ## 5. The data layer — `sgs-framework.db`
 
-**DB-first, no hardcoded dicts (R-31-1).** Every converter lookup (block to slot, role classification, CSS
-property routing, variant discrimination) reads `sgs-framework.db` through the accessor layer. The only
-permitted hardcoded constant is `SKIP_TOP_LEVEL_TAGS` (header/footer/nav).
+**DB-first, no hardcoded dicts (R-31-1).** Every framework lookup (block to slot, role classification, CSS
+property routing, variant discrimination) reads `sgs-framework.db`.
 
-**Access pattern.** `converter/db/db_lookup.py` runs schema migrations against the shared live DB as an
-import side effect, so a read-only reporter must not import it. Open the DB directly read-only:
+**Access pattern.** `sgs-update-v2.py` (with `dbschema/seed_reference_data.py` for the reference tables) is
+the only writer; every other script opens the DB directly read-only:
 `sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)` (as `audit-declared-vs-seeded-roles.py`
 and `audit-feature-parity.py` do). For an ad-hoc query use
 `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
@@ -97,8 +96,7 @@ and `audit-feature-parity.py` do). For an ad-hoc query use
 `css_element`/`css_state`/`css_tier`, `canonical_slot`), `block_composition` (`container_kind`,
 `wraps_block`), `block_supports` / `block_capabilities`, `slots` / `roles` (BEM vocabulary and role
 classification), `property_suffixes` (CSS property to device-tier attribute name, the D0/D1/D2 router's
-core lookup), `variant_slots` / `variant_composition_slots` (discriminating slots and child-block sets),
-`preset_implications` (implied CSS for preset-selector attrs, parsed from each block's `style.css`) and
+core lookup), `variant_slots` (discriminating slots) and
 `array_item_schema` (per-field roles for repeater attributes).
 
 `/sgs-update` (`sgs-update-v2.py`) rebuilds the DB from block.json files, render.php parsing,
@@ -134,10 +132,10 @@ wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrappe
 
 **A composite need not call `SGS_Container_Wrapper::render()`.** A content-KIND composite using only
 box + width (quote, info-box, testimonial, team-member) may render block-private, because the
-converter routes CSS by `block_attributes` keyed on `block_slug`, never by `wraps_block`. Section/layout-KIND
+computed route writes settings by `block_attributes` keyed on `block_slug`, never by `wraps_block`. Section/layout-KIND
 composites (hero, cta-section, card-grid, feature-grid) keep the wrapper for its grid/section
 machinery. A capability gap on a composite is added to the composite, never worked around in the
-converter. The shared helper is `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`.
+route. The shared helper is `plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`.
 
 ### 6.3 Block customisation standard
 
@@ -176,7 +174,7 @@ computed styles before any block conversion) and deploy via
 admitted only for what V cannot do (pin+scrub, SplitText, Flip, Draggable, ScrollSmoother, DrawSVG,
 MorphSVG, image-sequence); H (a single-purpose helper) is a closed list, currently Lenis alone; W (WebGL)
 is a different rendering substrate with its own five-part test and a named 120KB JS allowance for
-Tier-W pages alone. All tiers are npm-bundled and conditionally loaded, with no CDN. The converter's
+Tier-W pages alone. All tiers are npm-bundled and conditionally loaded, with no CDN. The
 `data-sgs-fx-*` grammar (Spec 38 §11) is how a draft declares a section's motion. Canonical spec:
 `.claude/specs/38-SGS-MOTION-SYSTEM.md` (§1 is the constitutional statement, §3 the capability roster).
 
@@ -219,10 +217,7 @@ source. The decision log is `.claude/archive/decisions.md`.
 11. **Motion follows the four-tier doctrine** (§8).
 12. **Scalar-media routing covers all three device tiers and all three media types**, so a draft's
     art-directed image, video or SVG has a routing path.
-13. **Composition-based variant tiebreaker.** `variant_composition_slots` resolves variants that share
-    every attribute value with a sibling by their child-block-name set; it fires only when the
-    attribute-value pass ties.
-14. **Deploy isolates via `git worktree add HEAD` by default**, so a concurrent build cannot clobber `build/`.
+13. **Deploy isolates via `git worktree add HEAD` by default**, so a concurrent build cannot clobber `build/`.
 
 ## 11. Known technical debt
 

@@ -954,7 +954,7 @@ Every global declaration is extracted to a slot or logged as a gap candidate. In
 *Done when:* every draft `:root` and base declaration appears in the snapshot or the gap log; a once-used decorative rgba is in the trace, not the palette; a grep finds no client literal.
 
 #### FR-33-10 — Reuse by composition, not by widening a live helper (BUILT)
-The extractor owns a new `plugins/sgs-blocks/scripts/theme-extractor/token_map.py::build_draft_root_token_map` (hex, non-hex and `var()`-chain resolution, fallback handling). The older hex-only `converter/services/styling_helpers.py::build_draft_root_colour_map` stays byte-identical, and a golden (`expected/mamas-hex-colour-map.json`) asserts its output is unchanged.
+The extractor owns a new `plugins/sgs-blocks/scripts/theme-extractor/token_map.py::build_draft_root_token_map` (hex, non-hex and `var()`-chain resolution, fallback handling).
 *Done when:* the older map's output is byte-identical for the golden draft and the extractor consumes the new composed map.
 
 #### FR-33-11 — Deploy safety: backup, rollback, diff-approve, drift detection (BUILT)
@@ -967,7 +967,7 @@ The extractor must run and validate for the current draft before any cloning for
 - For that kind of draft the snapshot also embeds `_sgsExtractor.draft_source_sha256` (`plugins/sgs-blocks/scripts/shared_utils.py::draft_source_sha256`): a hash of the style blocks, every inline and hover style value, the script and the README, with line endings normalised. Static drafts carry no second key.
 - `_sgsExtractor.source_draft` records the file the extractor ran on. The extractor runs on a client's source draft only: `shared_utils.py::is_part_draft` is true when a snapshot records a source draft and the draft passed is a different file, and `extract.py` refuses to overwrite a snapshot recorded from a different draft unless `--replace-source` is given. A snapshot with no recorded source is checked against every draft.
 
-*Status.* The keys are written and the `--replace-source` refusal is built. The fail-closed freshness gate that reads them (`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py::_freshness_gate`) belongs to the old orchestrator. The computed route (`scripts/computed-route/lib/normalise.mjs`) loads the snapshot without checking freshness, so a freshness check in the route is not built.
+*Status.* The keys are written and the `--replace-source` refusal is built. No fail-closed freshness gate reads them yet. The computed route (`scripts/computed-route/lib/normalise.mjs`) loads the snapshot without checking freshness, so a freshness check in the route is not built.
 *Done when:* a clone run with a stale or absent generated snapshot fails closed with a clear message; a run after a fresh extraction proceeds.
 
 #### FR-33-13 — Namespace reservation and the token-map service (BUILT)
@@ -990,7 +990,7 @@ Alongside the global-styles extraction, the site's business DATA (the `Sgs_Site_
 
 **Placeholder map.** `--map-out` writes `sites/<client>/site-info-placeholder-map.json`, mapping each template binding that resolves to a saved setting (`{{ phone }}` to `phone` as text, `{{ phoneHref }}` to `phone` as a `tel:` link). Replacing the bindings in a cloned page with the saved values is NOT built.
 
-**Wiring.** The automatic run at deploy was wired through the old orchestrator (`plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py`, behind `--client` and `--push-theme-snapshot`). The computed route does not call it, so run the script directly after extraction.
+**Wiring.** The computed route does not push the snapshot automatically, so run `push-theme-snapshot.py` directly after extraction.
 **Depends on:** FR-33-11 (push moment and credentials), Spec 37 FR-37-10 and FR-37-11 (the `sgs/business-info` consumer), Spec 36 (the Site Info store).
 *Done when:* a draft's email and copyright land in the store, socials that are `#` placeholders are skipped, an existing value is skipped, and a map link with no Site Info key is reported as unmapped.
 

@@ -127,7 +127,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 5. Use Block Selectors API in `block.json` to target native typography to the primary text
    element.
 6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/
-   slot names that variant uses]`) so the cloning converter can detect the correct variant, and
+   slot names that variant uses]`) so the right variant can be detected the correct variant, and
    register the variant-selector attr name to the `blocks.variant_attr` DB column via
    `/sgs-update` (R-31-1).
 

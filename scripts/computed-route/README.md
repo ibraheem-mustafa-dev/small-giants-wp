@@ -5,8 +5,7 @@ Measures a rendered design draft and writes block settings through the framework
 into a setting write, rebuilds and repeats (at most three rounds). **Fill** (not built yet) fills a skeleton tree from
 the measured draft. Governing spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`.
 
-**Never touches:** `plugins/sgs-blocks/scripts/` (the Spec 31 converter: its `db_lookup.py` migrates the shared DB on
-import), the framework DB's contents (opened read-only), the canary's homepage, posts page or motion-QA fixtures, and
+**Never touches:** `plugins/sgs-blocks/scripts/` (nothing is imported from it), the framework DB's contents (opened read-only, never written), the canary's homepage, posts page or motion-QA fixtures, and
 any site's active header, footer, drawer or snapshot pointer (R-47-1, R-47-2, R-47-11). `lint.mjs` enforces the index
 below and the import ban.
 
@@ -21,7 +20,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | File | Job |
 |---|---|
 | `README.md` | This index. |
-| `lint.mjs` | The route's gate: README index, converter-import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
+| `lint.mjs` | The route's gate: README index, plugins/sgs-blocks/scripts import ban, no core `style` or `native_wp` writes in a `--tree`, no style values in a `--skeleton`, every printed post owned by a surface in a `--surfaces` manifest, every divergence-ledger entry beside that manifest citing register items its register holds (`--register`, else the `register` of `qa/ledger.config.json` beside the ledger; B4), client names. |
 | `calibrate.mjs` | Calibration command: refuses on a deploy mismatch, builds each block's markers on the calibration page (a marker with `base` beside a baseline instance carrying those attributes, in every chunk), reads them at 375/768/1440 (hover under a real mouse and focus by keyboard on the styled element, its panel opened when hidden; a shrunk marker with its ancestor class; scrolled markers with the window scrolled, against a scrolled default), writes `cache/<block>.json` (one library-wide cache: a block measured on another site is skipped unless `--recalibrate`), empties the page. |
 | `solve.mjs` | Solve command: refs, then up to three build, walk and write rounds, a final build and walk, classification and the solve report. Each `surfaces.json` entry must carry `states` (walker state → setting state; unmapped states are reported, never written) and may carry `walkStates` (passed to the walker as `--states`) and `provides` (the linked blocks and template parts whose post it is, `"<block>:<value>"`). A linked placeholder is never written. |
 | `fill.mjs` | Fill command (FR-47-4): a skeleton tree plus a draft (a hosted url or a local folder) to a tree resolved root-down in one pass, before anything is built. Needs `--client`, `--surface`, `--skeleton`, `--live-url` and one of `--draft-url` / `--draft-dir`; `--serve <folder>` serves a draft until Ctrl-C. Reads `surfaces.json`, the snapshot and the ledger; writes only into `--out`: `filled.tree.json`, `fill-report.md`/`.json`, `unmapped.json`, `handover.json`, `breakpoints.json` and the generated walker config. |
@@ -637,7 +636,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lint.mjs`
 - `routeFiles(root)` → every route file, relative.
 - `exportsOf(src)` → exported names.
-- `lintFolder(root)` → problems (README index, converter imports).
+- `lintFolder(root)` → problems (README index, scripts imports).
 - `lintTree(tree, db, label?)` → problems (core style, native_wp).
 - `lintSkeleton(tree, db, label?)` → problems (style values).
 - `registerIds(markdown)` → the item ids a fix register holds (table first cells, comma-split, and ids leading a bullet).

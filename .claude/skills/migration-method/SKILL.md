@@ -76,7 +76,7 @@ his judgement, not yours, is needed.
 8. **Step 3 applies and Bean is not available.** A client-visible shape needs his eye
    (R-31-13) and you cannot proceed past Step 3 without it. Hand back with the census
    and the ONE instance built: that is the useful state to hand over, not nothing.
-9. **The change touches a shared wrapper, the walker, `converter/`, or ANY helper whose blast
+9. **The change touches a shared wrapper, the walker, `scripts/computed-route/`, or ANY helper whose blast
    radius spans many blocks.** The three named systems are examples, not the boundary: a shared
    helper in `includes/` called by 40 blocks is inside this condition. If you are deciding whether
    your change qualifies, it qualifies: ask Bean. Rule 7 requires a
@@ -106,7 +106,7 @@ Build **one** instance. Deploy it. Get Bean's eye on it (R-31-13). Write the set
 
 ⚠ **Deploying ONE uncommitted instance trips the dirty gate** (`deployed-files-dirty`). **Commit your one block first, or declare `--payload <path>`.** Never `--allow-dirty`, the flag that caused D336.
 
-A shape decided against a rendered page costs one block. The same decision discovered on block 9 costs nine. **This is also the Rule 7 design gate**: for a shared wrapper, the walker or `converter/`, Bean's approval here is mandatory, not advisory.
+A shape decided against a rendered page costs one block. The same decision discovered on block 9 costs nine. **This is also the Rule 7 design gate**: for a shared wrapper, the walker or `scripts/computed-route/`, Bean's approval here is mandatory, not advisory.
 
 ## Step 4 — Choose the recogniser, then copy the skeleton
 

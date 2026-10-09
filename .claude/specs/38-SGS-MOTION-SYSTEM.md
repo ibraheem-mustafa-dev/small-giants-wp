@@ -1611,8 +1611,7 @@ taxonomy table, not in this list** — this section is infrastructure only:
 - **`block_attributes`.** The fx param attributes carry `css_property` under the **`fx:*`**
   pseudo-namespace, a sibling of the `anim:*` pseudo-namespace in `css_property`
   (`anim:duration|easing|preset|parallax|stagger|trigger`); the `fx` cluster registers
-  alongside it, never replacing it. `roles` has `motion`; `preset_implications` (`effectHover`)
-  is the registry-shape precedent.
+  alongside it, never replacing it. `roles` has `motion`.
 - **`animation_tokens`** is the Tier V preset store; Tier G does not read it.
 - **`design_tokens.token_type`** allows only colour, font, spacing, size and shadow, so there is
   no `motion` type: motion tokens use theme.json `--wp--custom--duration--*` and
