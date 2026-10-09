@@ -133,10 +133,10 @@ def find_unclassified_hover_states(rows: Iterable[Row]) -> list[Row]:
 def load_rows() -> list[Row]:
     """Read the shared framework DB READ-ONLY.
 
-    Deliberately a plain `sqlite3` connect rather than importing
-    `converter/db/db_lookup.py`: that module runs six schema-migration functions
-    against this same shared DB as an import side effect, which a read-only
-    reporter must never trigger.
+    Deliberately a plain `sqlite3` connect rather than importing a
+    framework-DB helper module: such a module can run schema migrations against
+    this shared DB as an import side effect, which a read-only reporter must
+    never trigger.
     """
     if not SGS_DB.exists():
         print(f"FAIL: framework DB not found at {SGS_DB}", file=sys.stderr)

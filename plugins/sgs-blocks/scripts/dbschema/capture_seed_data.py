@@ -7,7 +7,7 @@ WHY THIS EXISTS
 ---------------
 ``property_suffixes`` and ``slots`` are load-bearing
 and had NO WRITER ANYWHERE — a rebuild-from-empty produced 0 rows in both, which
-does not error, it just makes the converter answer wrongly. Their only historical
+does not error, it just makes every lookup against them answer wrongly. Their only historical
 source was a set of one-off migrations, and **migration replay is a proven dead end**
 (Phase 0 Step 0.5: three migrations reference ``slot_synonyms``, retired in favour of
 ``slots``, so a May migration cannot run against an August schema).
@@ -77,14 +77,13 @@ DOCS: dict[str, dict[str, str]] = {
     "property_suffixes": {
         "__doc": "CSS-property → attribute-suffix vocabulary. THE source of truth for "
                  "the `property_suffixes` table (Spec 31 §4). "
-                 "db_lookup._migrate_property_suffixes() seeds from this file at module load.",
-        "__why": "Converter-load-bearing with NO writer anywhere: read by the typography "
-                 "lift, the kind resolver, the attr-name proposer, the excluded-gate and "
-                 "the cheat-gate. A rebuild-from-empty produced 0 rows — no error, just "
+                 "dbschema/seed_reference_data.py seeds the table from this file.",
+        "__why": "Load-bearing with NO writer other than the seeder: read by the typography "
+                 "lift, the kind resolver and the attr-name proposer. A rebuild-from-empty produced 0 rows — no error, just "
                  "wrong answers. Captured from live 2026-08-02 (Phase 1).",
-        "__ORDER_IS_LOAD_BEARING": "db_lookup.py reads this table with `ORDER BY rowid` in "
-                                   "several places, and `ORDER BY rowid LIMIT 1` in "
-                                   "propose_attr_name() — so for a css_property with more "
+        "__ORDER_IS_LOAD_BEARING": "readers query this table with `ORDER BY rowid` in "
+                                   "several places, and `ORDER BY rowid LIMIT 1` when "
+                                   "proposing an attribute name — so for a css_property with more "
                                    "than one suffix row, THE FIRST ROW WINS. `Colour` "
                                    "precedes `Color` for `color` deliberately (UK English "
                                    "is the SGS convention). NEVER alphabetise this list; "
@@ -97,9 +96,9 @@ DOCS: dict[str, dict[str, str]] = {
     "slots": {
         "__doc": "Canonical slot vocabulary (element + section scope) with aliases and "
                  "standalone-block routing. THE source of truth for the `slots` table "
-                 "(Spec 31 §13.5). db_lookup._migrate_slots() seeds it at module load.",
-        "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every "
-                 "BEM element name through `slots.aliases` and every section through "
+                 "(Spec 31 §13.5). dbschema/seed_reference_data.py seeds it from this file.",
+        "__why": "Load-bearing with NO writer other than the seeder: every BEM element name "
+                 "resolves through `slots.aliases` and every section through "
                  "`slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live "
                  "2026-08-02 (Phase 1).",
         "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 "

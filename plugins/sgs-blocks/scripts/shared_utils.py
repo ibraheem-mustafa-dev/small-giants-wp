@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Shared, zero-dependency utilities for the SGS clone scripts.
 
-Deliberately tiny + stdlib-only so BOTH the orchestrator (``sgs-clone-orchestrator.py``)
-and the Spec 33 theme-extractor (``theme-extractor/extract.py``) import the SAME
-functions. The FR-33-12 freshness gate hashes the extractor-consumed draft CSS on
-both sides (the extractor stamps it, the orchestrator re-checks it) — a single source
+Deliberately tiny + stdlib-only so BOTH the Spec 33 theme-extractor (``theme-extractor/extract.py``)
+and whatever re-checks its freshness stamp import the SAME functions. The FR-33-12 freshness gate hashes the extractor-consumed draft CSS on
+both sides (the extractor stamps it, the freshness check re-checks it) — a single source
 of truth is therefore a CORRECTNESS requirement: a duplicated regex could let the two
 hashes drift apart silently and either wrongly pass or wrongly fail the gate.
 """
@@ -27,7 +26,7 @@ def css_sha256(css: str) -> str:
     """Stable, cross-process sha256 of a draft-CSS string — the FR-33-12 freshness key.
 
     ``hashlib.sha256`` (not the built-in ``hash()``, which is per-process salted) so the
-    value the extractor embeds and the value the orchestrator re-computes always match.
+    value the extractor embeds and the value the freshness check re-computes always match.
     """
     return hashlib.sha256(css.encode("utf-8")).hexdigest()
 
@@ -44,8 +43,7 @@ def draft_css_sha256(html: str) -> str:
 # leave the FR-33-12 key identical. ``draft_source_sha256`` hashes them as well, for those drafts
 # only; static drafts return None and keep their existing key, snapshot bytes unchanged.
 
-# Content signal, not a filename. A copy of ``orchestrator/draft_server.py::_DSL_DRAFT_RE`` (that
-# module is not importable from here without dragging in the orchestrator package): keep in step.
+# Content signal, not a filename. The pattern that recognises a DSL draft by its markup.
 _DSL_DRAFT_RE = re.compile(r"<x-dc\b|\bdata-dc-script\b|<sc-(?:for|if)\b", re.IGNORECASE)
 _DC_SCRIPT_RE = re.compile(r"<script\b[^>]*\btype\s*=\s*[\"']text/x-dc[\"']", re.IGNORECASE)
 # ``style="…"`` / ``style-hover="…"`` (either quote), preceded by whitespace so ``data-style=`` and
@@ -81,7 +79,7 @@ def read_readme_text(folder) -> "str | None":
     """Text of the ``README.md`` (any letter case) beside a draft, or None when there is none.
 
     Same lookup as ``theme-extractor/declared_sources.py::read_readme_tokens`` (first match in
-    sorted directory order), kept here so the orchestrator can use it without importing the
+    sorted directory order), kept here so callers can use it without importing the
     extractor package.
     """
     from pathlib import Path

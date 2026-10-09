@@ -1,5 +1,5 @@
 {
-  "__comment__": "Canonical core->SGS block-replacement record (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for which WordPress core blocks each SGS block replaces. Moved here out of the individual block.json 'replaces' fields so the mapping lives in one version-controlled place (the DB copy in blocks.replaces is derived from this by /sgs-update). Keyed sgs_slug -> [core_slugs]. Reference/equivalence record only: atomic-tag cloning routes bare tags straight to SGS via db_lookup._HTML_TAG_TO_BLOCK_SEED, so this is not consulted for tag routing. Keys starting with __ are ignored by the loader. Edit HERE, then run /sgs-update.",
+  "__comment__": "Canonical core->SGS block-replacement record (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for which WordPress core blocks each SGS block replaces. Moved here out of the individual block.json 'replaces' fields so the mapping lives in one version-controlled place (the DB copy in blocks.replaces is derived from this by /sgs-update). Keyed sgs_slug -> [core_slugs]. Reference/equivalence record only: bare HTML tags route to SGS blocks through the html_tag_to_core_block table, so this is not consulted for tag routing. Keys starting with __ are ignored by the loader. Edit HERE, then run /sgs-update.",
   "sgs/accordion": [
     "core/accordion"
   ],

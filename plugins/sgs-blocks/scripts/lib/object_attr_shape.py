@@ -22,14 +22,8 @@ shapes (`.claude/plans/cloning-pipeline-tier-migration-requirements.md` G5):
 Both `attr_type` and `box_family` are IDENTICAL for shape 2 and shape 3
 (verified live against sgs-framework.db, G5) — only the property's REAL PHP
 consumer tells them apart. This module is the ONE place that logic lives,
-so it is never duplicated or allowed to drift between its two callers:
+so it is never duplicated or allowed to drift:
 
-  - `orchestrator/check_flat_tier_regression.py` — the D554 clone-output
-    regression gate. Uses ONLY the evidence-required, no-elimination-
-    fallback discriminator (`attr_tier_consumer_evidence` +
-    `has_declared_tier_sibling`) via its own, deliberately CONSERVATIVE
-    `build_migrated_property_map()` — a hard build-failing gate must never
-    false-positive, so it stays narrower than the full classifier below.
   - `sgs-update-v2.py` — Stage 1 (`sgs_codebase_scan`) seeding. Uses the
     FULL 5-shape doctrine via `classify_object_attr_shape()` to populate
     both `block_attributes.is_responsive` (0/1, pre-existing) and
@@ -113,10 +107,9 @@ def _framework_db_path() -> Path:
 def breakpoint_suffixes() -> tuple[str, ...]:
     """{'Mobile', 'Tablet', 'Desktop'} from modifier_suffixes WHERE kind='breakpoint'.
 
-    R-31-1: the breakpoint suffix vocabulary is DB-owned. Used by
-    `check_flat_tier_regression.py`'s own candidate filter (which needs the
-    full DB-derived set, including 'Desktop', to exclude any suffix-named
-    sibling attr from self-promoting to "migrated base").
+    R-31-1: the breakpoint suffix vocabulary is DB-owned. A caller that needs the
+    full DB-derived set, including 'Desktop', uses it to exclude any
+    suffix-named sibling attr from self-promoting to "migrated base".
     """
     db = _framework_db_path()
     conn = sqlite3.connect(f"file:{db.as_posix()}?mode=ro", uri=True)
@@ -147,9 +140,8 @@ def has_declared_tier_sibling(
     behaviour byte-for-byte (mechanism 1a/1b) — this refactor must not ride
     an unrelated behaviour change (D734 doctrine: "a real behaviour change
     stacked onto a refactor makes both unfalsifiable"). A caller needing the
-    DB-derived breakpoint vocabulary (`check_flat_tier_regression.py`'s own
-    candidate filter, which also needs 'Desktop') passes `suffixes=
-    breakpoint_suffixes()` explicitly.
+    DB-derived breakpoint vocabulary (which also includes 'Desktop') passes
+    `suffixes=breakpoint_suffixes()` explicitly.
     """
     for suffix in suffixes:
         if f"{attr_name}{suffix}" in attrs:

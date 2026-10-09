@@ -15,8 +15,8 @@ Algorithm (per Spec 31, §5.1, §5.2):
 3. Resolve canonical_slot via slots (direct slot_name match then alias search).
 4. Resolve role via property_suffixes (the property suffix that was peeled).
 5. Derive selector as  .sgs-<block-short-slug>__<canonical_slot>.
-6. Apply v1 fingerprint overrides where an explicit selector is declared in
-   tools/recogniser/data/fingerprints.json attr_extractors.
+6. Explicit selector overrides come from sgs-update-v2.py
+   ATTR_CLASSIFICATION_OVERRIDES and are applied after this pass.
 7. UPDATE block_attributes; INSERT gap candidates for unresolved rows.
 8. Print self-check counts and 5 sample rows.
 
@@ -30,8 +30,8 @@ Spec 22 Phase 0.1 extension (scope-corrected per D84, 2026-05-27):
     pipeline-state/_snapshots/tier-b-backfill-diff-<UTC-timestamp>.json).
     `--apply` (or `--apply --diff-file <path>`) writes the approved rows.
   - Tier C ships dormant: 0 candidates in current DB state (D84 audit).
-    Logic exists in converter_v2/db_lookup.equivalent_block_for() for future-
-    proofing per Spec 22 FR-22-2.1, but no rows match Tier C input shape today.
+    The Tier C logic was dropped (Spec 22 FR-22-2.1 is a 2-tier system); no rows
+    match the Tier C input shape today.
 """
 
 import argparse
@@ -428,11 +428,10 @@ _OVERRIDES_JSON_PATH = Path(__file__).resolve().parent.parent / "attr-classifica
 
 # TIER 3.7 (2026-08-05, Bean) reads this file directly for the optional 3rd array
 # element roles.json entries may carry (`{"excludes_attr_types": [...]}`) — see
-# `_load_role_type_exclusions()` below. Same file db_lookup.py's `_migrate_roles_table()`
-# syncs into the `roles` DB table; that loader only ever reads val[0]/val[1] (classification,
-# description) by INDEX, not tuple-unpack, so a 3rd element is invisible to it and safe to add
-# without touching db_lookup.py (verified: `_load_roles_seed()` does
-# `out[name] = (val[0], val[1] if len(val) > 1 else "")`).
+# `_load_role_type_exclusions()` below. The same file is synced into the
+# `roles` DB table by dbschema/seed_reference_data.py, which reads only the
+# classification and description columns, so a 3rd element is invisible to it
+# and safe to add.
 _ROLES_JSON_PATH = Path(__file__).resolve().parent.parent / "data" / "roles.json"
 
 
@@ -471,8 +470,7 @@ def load_override_keys(path: Path = _OVERRIDES_JSON_PATH) -> frozenset[tuple[str
 def load_content_bearing_roles(conn: sqlite3.Connection) -> frozenset[str]:
     """Return role_names classified 'content-bearing' in the `roles` table.
 
-    Mirrors converter/db/db_lookup.py's `_content_bearing_roles()` — DB-driven,
-    never a hardcoded role list (R-31-1).
+    DB-driven, never a hardcoded role list (R-31-1).
     """
     try:
         rows = conn.execute(
@@ -639,7 +637,7 @@ def run() -> None:
     modifier_map = load_modifier_suffixes(conn)
 
     # Fingerprint selector overrides RETIRED 2026-07-03 (P-FINGERPRINT-MIGRATION):
-    # the stale tools/recogniser/data/fingerprints.json attr_extractors are folded
+    # the old fingerprint attr_extractors are folded
     # into sgs-update-v2.py ATTR_CLASSIFICATION_OVERRIDES (the live, reseed-surviving
     # channel that runs as Stage 1 sub-step C, the FINAL derived_selector writer).
     # The formula-derived selector below stands on its own; the override layer
@@ -956,12 +954,7 @@ def run() -> None:
 #   3. Dry-run output: JSON at pipeline-state/_snapshots/tier-b-backfill-diff-
 #      <UTC-timestamp>.json with per-entry schema documented in TIER_B_DIFF_SCHEMA
 #      below. Bean reviews the diff before --apply.
-#   4. Tier C ships dormant: 0 candidates in current DB state (D84). Logic in
-#      converter_v2/db_lookup.equivalent_block_for() handles Tier C for future-
-#      proofing but no inputs match today.
-#   5. Refactor shares db_lookup.equivalent_block_for() as the single
-#      authoritative derivation function (this script is the DB enrichment
-#      path; db_lookup is the runtime library).
+#   4. Tier C is not implemented: 0 candidates in current DB state (D84).
 
 TIER_B_SNAPSHOT_DIR = (
     Path(__file__).resolve().parents[4] / "pipeline-state" / "_snapshots"
@@ -1206,9 +1199,7 @@ def run_tier_b_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
     return {"applied": applied, "skipped": skipped}
 
 
-# Tier C dormant warning DELETED 2026-05-27 (D86): Tier C was removed from
-# db_lookup.equivalent_block_for() per /qc-council Task 2 Rater B verdict.
-# Spec 22 §FR-22-2.1 is now a 2-tier system. Re-add Tier C with empirical
+# Spec 22 §FR-22-2.1 is a 2-tier system (D86). Add Tier C with empirical
 # evidence + tests when P-SGS-UPDATE-ROLE-DETECTION-IMPROVE generates Tier C
 # inputs (canonical_slot NULL + derived_selector NULL + role set).
 
@@ -1218,17 +1209,16 @@ def run_tier_b_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
 # (P-SGS-UPDATE-ROLE-DETECTION-IMPROVE, /qc-council Rater A 2026-05-27)
 # ---------------------------------------------------------------------------
 # Problem: 171 DB rows have canonical_slot populated but role IS NULL. Per the
-# positive-allowlist role-exclusion in db_lookup.equivalent_block_for(), the
-# walker treats role=NULL as styling-safe (returns None) — correct-by-default
-# but means content-bearing attrs like sgs/icon.iconSource stay dormant at
-# walker level. This pass infers `role` for plausibly content-bearing attrs
+# positive-allowlist role-exclusion, role=NULL is treated as styling-safe —
+# correct-by-default but means content-bearing attrs like sgs/icon.iconSource
+# stay dormant at content-lift level. This pass infers `role` for plausibly content-bearing attrs
 # from heuristics over the attr's name / format / description.
 #
 # IRONCLAD RULES:
 #   1. Only proposes role values from _CONTENT_BEARING_ROLES (text-content,
 #      image-object, content, link-href, identity). NEVER proposes styling
 #      roles (typography/colour/spacing/etc.) — those would defeat the
-#      positive-allowlist guard in db_lookup.
+#      positive-allowlist guard.
 #   2. Only touches rows where role IS NULL (additive only).
 #   3. Default mode dry-run (writes JSON diff). --apply-roles for explicit
 #      write opt-in (separate from --apply for Tier B canonical_slot writes,
@@ -1236,7 +1226,7 @@ def run_tier_b_apply(conn: sqlite3.Connection, diff_path: Path) -> dict:
 #   4. Conservative: when no heuristic matches, returns None and the row
 #      stays NULL (operator can populate manually via DB edit).
 
-# Content-bearing roles — must match db_lookup._CONTENT_BEARING_ROLES verbatim.
+# Content-bearing roles — the roles the content lookups treat as content-bearing.
 _CONTENT_BEARING_ROLES = frozenset({
     "text-content",
     "image-object",
@@ -1257,19 +1247,10 @@ _ATTR_NAME_RULES = [
     # ⛔ REGRESSION + REVERT, 2026-08-05. `dashiconName`/`wpIconName` were briefly added here
     # (and `sgs/icon.iconName`'s override deleted so this rule would claim it) on the belief
     # — taken from `roles.json`'s own description — that `icon-lucide`/`icon-dashicon`/
-    # `icon-wp-icon` have "NO consumer in the converter". THAT DESCRIPTION IS WRONG. The
-    # consumer is `resolve_icon_kind()` (converter/services/field_extractors.py:100-142) plus
-    # the ICON arm in `converter/services/extraction.py:1100-1141`, which dispatches on
-    # `role.startswith("icon-")` — shipped at D263 (2026-07-03) and live-verified on page 8.
-    # Routing these attrs to `identity` removed them from that dispatch and broke 3 tests
-    # (`test_icon_leaf_lifts_lucide_slug`, `..._dashicon_by_kind`, `..._wp_icon_by_kind`).
-    #
-    # Proven by experiment, not inferred: restoring the three `icon-*` roles in the DB turned
-    # 3 failed / 3 passed back into 6 passed with no other change.
-    #
-    # ⚠ THE BUILD DID NOT CATCH THIS. `npm run build`'s prebuild pytest step runs only
-    # `scripts/oracle/tests/`; `scripts/converter/tests/` is outside it, so a converter
-    # regression ships green. That gap is the real lesson here.
+    # `icon-wp-icon` have "NO consumer". THAT DESCRIPTION IS WRONG. The
+    # icon-source lookup dispatches on `role.startswith("icon-")` (D263).
+    # Routing these attrs to `identity` removes them from that dispatch,
+    # so the three `icon-*` roles must stay on them.
     (re.compile(r"^(icon|iconName|iconSource|glyph|productName|productSlug)$"),
      "identity", "high"),
     # link-href — URL-like attrs
@@ -2058,8 +2039,8 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # only two places in this file that touch an already-assigned role sit together.
     #
     # THE BUG (measured, real, not speculative): the four `icon-<kind>` roles are a
-    # ROUTING KEY, not decoration -- the converter's icon arm
-    # (converter/services/extraction.py ~1110-1121) builds `{role: attr_name}` for every
+    # ROUTING KEY, not decoration -- the icon-source lookup
+    # builds `{role: attr_name}` for every
     # role starting `icon-` and does `.get("icon-" + kind)`. A family member filed under
     # any OTHER role is invisible to that lookup, so a draft's dashicon/wp-icon/emoji
     # choice never routes for that block. `sgs/icon` (the reference block) holds all four
@@ -2080,7 +2061,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # (`enum-class-probe`, `text-content`) -- so its guard is instead "the stored role is
     # NOT ALREADY an icon-* role". Within a RESOLVED icon-source family, the icon-<kind>
     # role for a value slot is the ONLY correct answer -- it IS the routing key the
-    # converter dispatches on -- so any non-icon-* role on a family member is wrong by
+    # icon-source lookup dispatches on -- so any non-icon-* role on a family member is wrong by
     # construction. Refusing to touch a row that already holds SOME icon-* role prevents
     # both churn (re-writing icon-lucide with icon-lucide) and any cross-family clobber
     # (a row correctly resolved to one kind being overwritten by a stale verdict for
@@ -2186,7 +2167,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # core/image, core/latest-posts, core/media-text, core/cover, ~70 other core blocks --
     # seeded by the dbschema/ WP-reference-archive tooling, never by the SGS block-scanning
     # side) sit outside the content/styling taxonomy this file's other tiers all reason
-    # about: they aren't a converter-routing signal, so no content tier, no css_property
+    # about: they aren't a routing signal, so no content tier, no css_property
     # backstop, and no name-regex ever assigns them a role. MEASURED 2026-08-13: every
     # `source='native_wp'` row with `role IS NULL` also has `css_property IS NULL` (0
     # exceptions) -- confirming this population is invisible to every css_property-keyed
@@ -2207,7 +2188,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     #
     # WHY 'core' AND NOT AN EXISTING ROLE: every existing role belongs to one of two
     # `roles.classification` buckets, `content-bearing` or `styling-behaviour` -- both
-    # describe how an SGS-cloned attribute is CONSUMED by the converter. A native_wp
+    # describe how an SGS-cloned attribute is CONSUMED. A native_wp
     # reference-data row is consumed by neither; it is comparison data for
     # `audit-feature-parity.py`, not a cloning-pipeline input. `core` is registered in the
     # `roles` table (migration `2026-08-13-register-core-role.py`) under the schema's own
@@ -2307,16 +2288,12 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # `css_element='behaviour'` here; the two columns describe the same underlying fact
     # (pure JS configuration, zero visual output) from two different angles.
     #
-    # SAFETY, VERIFIED NOT ASSUMED: `converter/db/db_lookup.py`'s root-domain resolver
-    # (`_base_domain_attrs_for_css_property`, ~lines 1696-1783 + twin queries at
-    # 1840/3710/3720) treats `(css_element IS NULL OR css_element IN ('', 'root',
-    # 'self'))` as an ACTIVE routing condition -- so flipping `css_element` away from
-    # NULL is not automatically safe everywhere in this codebase. Checked before writing
-    # this tier, not inferred from the TIER 3.17 precedent: a fresh grep of the entire
-    # `converter/` tree for the literal string `"fx:"` returns ZERO hits (2026-08-28).
-    # `fx:*` rows are never routed through that resolver at all, so this tier cannot
-    # collide with it. If a future change ever starts feeding `fx:*` properties through
-    # that resolver, this safety check must be re-run before trusting this tier further.
+    # SAFETY: root-domain resolvers treat
+    # `(css_element IS NULL OR css_element IN ('', 'root', 'self'))` as an ACTIVE
+    # routing condition -- so flipping `css_element` away from NULL is not
+    # automatically safe everywhere. `fx:*` rows are never routed through such a
+    # resolver, so this tier cannot collide with one. If a future change starts
+    # feeding `fx:*` properties through a root-domain resolver, re-check this tier.
     #
     # THE GUARD: `css_property LIKE 'fx:%' AND css_element IS NULL`. Idempotent (a row
     # already carrying a css_element is never touched) and keyed on the SAME `fx:*`
@@ -2334,7 +2311,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # exists to catch automatically, not a bug in the tier itself.
     fx_css_element_seeded = 0
     # SCHEMA GUARD (2026-08-28): this function also runs against databases that predate
-    # the `css_element` column -- the converter test fixtures build a minimal
+    # the `css_element` column -- test fixtures build a minimal
     # block_attributes without it. Unguarded, the query below raises
     # `sqlite3.OperationalError: no such column: css_element` and aborts the ENTIRE
     # role-detection pass, not just this tier (caught by gate:full, which the fast
@@ -2508,8 +2485,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # contract ("a CONCATENATED FRAGMENT of a URL, not a whole href").
     #
     # WHY THIS TIER HAD TO EXIST. The role, its extractor
-    # (services/field_extractors.extract_link_fragment) and its reader
-    # (db_lookup.link_template_for) were all built and threaded on 2026-08-06 (d5766eff,
+    # and its reader were all built and threaded on 2026-08-06 (d5766eff,
     # 580f7885) -- and the whole chain was INERT, because nothing ever assigned the role.
     # Measured before this tier: `link-content` on ZERO rows, and no row anywhere carried
     # a link_template, because /sgs-update only ever runs extract-signatures with
@@ -2551,9 +2527,9 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     #
     # ROLE = 'enum-mode', NOT 'select-from-enum'. The first draft of this tier used
     # select-from-enum and was WRONG: that role's contract is "a string CSS VALUE chosen
-    # from a fixed enum", and two live consumers rely on that promise -- _kind_for()
-    # (db_lookup.py:1964-1965) resolves it to CSS kind 'string', and the BEM-modifier probe
-    # (db_lookup.py:4889-4896) may WRITE a draft's modifier into it. Most enum attrs are
+    # from a fixed enum", and two live consumers rely on that promise -- the CSS kind lookup
+    # resolves it to kind 'string', and the BEM-modifier probe
+    # may WRITE a draft's modifier into it. Most enum attrs are
     # not CSS values at all (sgs/card-grid.source = manual|query|wc-product,
     # sgs/container.tagName, sgs/audio.audioSource), so filing them there feeds both
     # consumers a falsehood. `enum-mode` is in neither consumer group. See its roles.json
@@ -2574,7 +2550,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # NO earlier tier reaches; the fix then is to reach it in the structural tier, not to
     # loosen this gate. The self-test plants that shape.
     #
-    # NOT tag-identity: `tag_identity_attrs` (db_lookup.py:1107) gates on
+    # NOT tag-identity: `tag_identity_attrs` gates on
     # role='tag-identity' set through the override channel, and its own docstring rejects
     # bare enum-contains as over-broad (naming quote.attributionTag). Overrides are
     # applied AFTER this pass (sgs-update-v2.py Stage 1C), so promoting any of these rows
@@ -2633,10 +2609,10 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # closes by DATA, not by a third bespoke sweep.
     #
     # WHY A ROLES.JSON FIELD, NOT A DB COLUMN (R-31-1 read the correct way here): roles.json
-    # is ALREADY the two-way-synced truth source for the `roles` table
-    # (db_lookup.py:_migrate_roles_table, INSERT OR REPLACE + delete-not-in). Adding a 3rd
+    # is ALREADY the truth source for the `roles` table (seeded by
+    # dbschema/seed_reference_data.py). Adding a 3rd
     # array element to a role's entry needs NO schema change and NO reseed to take effect in
-    # THIS script, because `_load_roles_seed()` (db_lookup.py:127-144) reads `val[0]`/`val[1]`
+    # THIS script, because the seeder reads `val[0]`/`val[1]`
     # by INDEX, not by tuple-unpack arity -- a 3rd element is structurally invisible to it.
     # (`roles` table itself gains no new column here; that is a separate, later change if the
     # DB ever needs to query this compatibility fact directly.)
@@ -4459,8 +4435,8 @@ def _load_role_type_exclusions(path: Path = _ROLES_JSON_PATH) -> dict[str, froze
     This function only ever NARROWS what TIER 3.7 touches; it can never invent a restriction
     the data file does not state.
 
-    Soft-fails to ``{}`` on a missing/unreadable file, matching db_lookup.py's
-    `_load_roles_seed()` soft-fail contract -- a degraded run should skip TIER 3.7 rather than
+    Soft-fails to ``{}`` on a missing/unreadable file, matching the roles seeder's
+    soft-fail contract -- a degraded run should skip TIER 3.7 rather than
     crash the whole assignment pass over a walked-away data file.
     """
     try:

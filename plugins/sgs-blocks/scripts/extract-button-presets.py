@@ -37,7 +37,7 @@ _MODIFIER_TO_PRESET = {"primary": "primary", "secondary": "secondary", "outline"
 
 # Which CSS declarations we lift, and the snapshot key they map to.
 # Colours (base + hover) are the load-bearing part; geometry is captured too so
-# the snapshot is a complete faithful record (the converter chooses what to use).
+# the snapshot is a complete faithful record (the consumer chooses what to use).
 _BASE_COLOUR = {"background": "background", "background-color": "background", "color": "text", "border-color": "border"}
 _HOVER_COLOUR = {"background": "hover-background", "background-color": "hover-background", "color": "hover-text", "border-color": "hover-border"}
 _GEOMETRY = {"border-width": "border-width", "border-radius": "border-radius", "padding": "padding",
@@ -81,7 +81,7 @@ def _palette_map(snapshot: dict) -> dict[str, str]:
 def _resolve_colour(raw: str, draft_root: dict[str, str], palette: dict[str, str]) -> str:
     """Resolve a draft colour value to `var(--wp--preset--color--{slug})`.
 
-    `transparent`/`none` -> that keyword (the converter maps it to '' = no colour).
+    `transparent`/`none` -> that keyword (consumers map it to '' = no colour).
     `var(--X)` -> draft :root hex -> palette slug -> theme token; unknown -> raw.
     A raw hex is snapped to a palette slug when it matches, else kept verbatim.
     """

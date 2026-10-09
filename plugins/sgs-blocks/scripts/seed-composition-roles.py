@@ -4,7 +4,7 @@
 The block_composition table (D108) seeds each block's composition_role
 (section-root | wrapper-shell | content-block | leaf). A few rows were seeded
 before the FR-22-6 InnerBlocks migration (2026-05-31) and no longer reflect the
-block's real shape. The modular converter (converter.db.db_lookup) reads
+block's real shape. Composition lookups read
 composition_role to decide leaf-text-lifting and the wrapper-to-leaf container
 guard, so these must be correct or content renders empty / mis-routes.
 
@@ -19,8 +19,7 @@ NOTE — has_inner_blocks responsibility RETIRED TWICE:
   (EXECUTION Step 16, 2026-07-05) block_composition.has_inner_blocks the
   COLUMN is dropped entirely (migration
   2026-07-05-drop-has-inner-blocks-column.py); has_inner_blocks is now
-  derived FRESH at convert-time by converter.services.has_inner
-  .derive_delegates_content (the AND rule: save emits InnerBlocks.Content
+  derived on demand (the AND rule: save emits InnerBlocks.Content
   AND render.php consumes $content non-trivially) — never a cached column,
   never a seed-script override dict, anywhere.
 
@@ -74,8 +73,8 @@ CORRECTIONS: dict[str, str] = {
     "sgs/gallery": "content-block",
     "sgs/card-grid": "content-block",
     # FR-24-15 (Phase D, 2026-06-02) — option-picker renders from optionItems array,
-    # not from InnerBlocks children.  The converter uses G3 (has_inner_blocks=0) to
-    # suppress child recursion and calls _atomic_attrs_for to extract the items array.
+    # not from InnerBlocks children.  Child recursion is suppressed (has_inner_blocks=0)
+    # and the items array is extracted from the attribute.
     # composition_role stays content-block (not leaf) so the misresolution guard
     # (which fires for leaf + sgs-classed children) does NOT trigger.
     "sgs/option-picker": "content-block",
@@ -103,8 +102,7 @@ CORRECTIONS: dict[str, str] = {
 #
 # block_composition.has_inner_blocks itself is DROPPED (migration
 # 2026-07-05-drop-has-inner-blocks-column.py). has_inner_blocks is now derived
-# FRESH at convert-time by converter.services.has_inner.derive_delegates_content
-# (the AND rule: save.js/index.js emits <InnerBlocks.Content AND render.php
+# on demand (the AND rule: save.js/index.js emits <InnerBlocks.Content AND render.php
 # consumes $content/$block->inner_blocks non-trivially) — never a cached
 # column or a manual override dict anywhere (Spec 31 §12.7). This dict + its
 # apply loop are removed; there is no column left to override.

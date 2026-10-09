@@ -121,8 +121,8 @@ function parseGradientPathDeferredRows( lines ) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 2 — DB lookup (read-only connection, per project rule: never import
-// converter/db/db_lookup.py — it runs schema migrations as an import side
+// Step 2 — DB lookup (read-only connection, per project rule: never import a
+// framework-DB helper that runs schema migrations as an import side
 // effect).
 // ---------------------------------------------------------------------------
 function dbLookup( rows ) {

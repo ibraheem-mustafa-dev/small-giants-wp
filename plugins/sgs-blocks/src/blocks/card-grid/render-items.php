@@ -45,7 +45,7 @@ foreach ( $items as $index => $item ) :
 	// form, and `sgs_render_media()` bails on anything that is not an array
 	// (helpers-media.php:168) — so a string URL would render NOTHING, silently,
 	// with an empty `.sgs-card-grid__image-wrap` left behind. Normalising here
-	// fixes every caller at once — patterns, and any converter/clone output
+	// fixes every caller at once — patterns, and any clone output
 	// that emits the documented string shape.
 	// `alt` is deliberately '': these cards carry a visible title, so an alt
 	// that repeated it would double-announce to a screen reader.

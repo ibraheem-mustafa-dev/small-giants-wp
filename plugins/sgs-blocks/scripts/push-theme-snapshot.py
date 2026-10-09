@@ -1151,8 +1151,8 @@ def main() -> int:
         persist_backup(args.client, args.target_domain, server, global_styles, stamp)
         # The decision is a pure function (`backup_gate`, unit-tested). Situations:
         #   fresh          neither layer is available -> nothing live to clobber. The normal
-        #                  first-deploy path for a NEW CLIENT (orchestrator/upload_and_patch.py
-        #                  does not pass --force-no-backup), so it must not abort.
+        #                  first-deploy path for a NEW CLIENT (which does not pass
+        #                  --force-no-backup), so it must not abort.
         #   no-user-layer  theme.json fetched and the post lookup SUCCEEDED but no wp_global_styles
         #                  post exists (new site, Site Editor never opened): that layer holds
         #                  nothing to back up; the disk theme.json was backed up above.

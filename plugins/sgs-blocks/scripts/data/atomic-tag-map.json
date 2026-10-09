@@ -1,5 +1,5 @@
 {
-  "__comment__": "Canonical bare-HTML-tag -> SGS-block bridge (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for what SGS block an un-BEM-classed HTML tag becomes during cloning (the atomic-tag walker exception, Spec 31 §13.2 FR-31-3). Encodes universal HTML semantics (every <h2> -> sgs/heading), NOT per-block or per-case routing. Loaded once into the html_tag_to_core_block DB table by db_lookup._migrate_html_tag_to_core_block(); the runtime reads the DB, never this file. Values are [target_sgs_block_slug, note]. Keys starting with __ are ignored. Edit HERE.",
+  "__comment__": "Canonical bare-HTML-tag -> SGS-block bridge (D270, 2026-07-04). SINGLE SOURCE OF TRUTH for what SGS block an un-BEM-classed HTML tag becomes during cloning (the atomic-tag walker exception, Spec 31 §13.2 FR-31-3). Encodes universal HTML semantics (every <h2> -> sgs/heading), NOT per-block or per-case routing. Loaded into the html_tag_to_core_block DB table by dbschema/seed_reference_data.py; readers query the DB, never this file. Values are [target_sgs_block_slug, note]. Keys starting with __ are ignored. Edit HERE.",
   "h1": ["sgs/heading", "Heading level 1 — atomic walker fallback"],
   "h2": ["sgs/heading", "Heading level 2"],
   "h3": ["sgs/heading", "Heading level 3"],

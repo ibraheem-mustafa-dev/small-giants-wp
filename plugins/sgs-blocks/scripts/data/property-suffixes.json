@@ -1,7 +1,7 @@
 {
-  "__doc": "CSS-property → attribute-suffix vocabulary. THE source of truth for the `property_suffixes` table (Spec 31 §4). db_lookup._migrate_property_suffixes() seeds from this file at module load.",
-  "__why": "Converter-load-bearing with NO writer anywhere: read by the typography lift, the kind resolver, the attr-name proposer, the excluded-gate and the cheat-gate. A rebuild-from-empty produced 0 rows — no error, just wrong answers. Captured from live 2026-08-02 (Phase 1).",
-  "__ORDER_IS_LOAD_BEARING": "db_lookup.py reads this table with `ORDER BY rowid` in several places, and `ORDER BY rowid LIMIT 1` in propose_attr_name() — so for a css_property with more than one suffix row, THE FIRST ROW WINS. `Colour` precedes `Color` for `color` deliberately (UK English is the SGS convention). NEVER alphabetise this list; the seeder rewrites the table in exactly this sequence.",
+  "__doc": "CSS-property → attribute-suffix vocabulary. THE source of truth for the `property_suffixes` table (Spec 31 §4). dbschema/seed_reference_data.py seeds the table from this file.",
+  "__why": "Load-bearing with NO writer other than the seeder: read by the typography lift, the kind resolver and the attr-name proposer. A rebuild-from-empty produced 0 rows — no error, just wrong answers. Captured from live 2026-08-02 (Phase 1).",
+  "__ORDER_IS_LOAD_BEARING": "readers query this table with `ORDER BY rowid` in several places, and `ORDER BY rowid LIMIT 1` when proposing an attribute name — so for a css_property with more than one suffix row, THE FIRST ROW WINS. `Colour` precedes `Color` for `color` deliberately (UK English is the SGS convention). NEVER alphabetise this list; the seeder rewrites the table in exactly this sequence.",
   "__kind_override": "Captured POST-migration: _migrate_property_suffixes_kind_override() seeds 17 rows from _KIND_BY_SUFFIX with `WHERE kind_override IS NULL`. Capturing the post-migration state keeps the two writers in agreement, so neither rewrites the other on the next module load.",
   "__columns": [
     "suffix",

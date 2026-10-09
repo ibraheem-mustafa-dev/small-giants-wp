@@ -1042,7 +1042,7 @@ def _derive_bem_element_from_selector(selector: str, block_short_slug: str) -> "
     proven live before this line existed: it returned `element='cta--primary'`,
     which would have OUTRANKED the clean prefix-convention element `cta` for every
     attr not covered by an explicit attrMap entry. Confirmed no `block_attributes`
-    consumer (`converter/db/db_lookup.py`) ever expects a compound `el--modifier`
+    consumer ever expects a compound `el--modifier`
     value — every declared manifest element key in every block.json is a bare
     name — so the base element is the correct value to store, not a raw truncation
     the audit detector would then need to strip again downstream.
@@ -1424,7 +1424,7 @@ def _build_php_var_attr_map(php_src: str) -> dict[str, str]:
         visited = visited | {var}
         if direct_attr.get(var):
             # First (leftmost-declared) candidate wins — deterministic, matches the
-            # existing codebase convention of "first match wins" in db_lookup.py.
+            # codebase convention of "first match wins".
             return sorted(direct_attr[var])[0]
         for other in sorted(direct_var.get(var, ())):
             found = resolve(other, depth + 1, visited)

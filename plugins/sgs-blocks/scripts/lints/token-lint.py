@@ -28,7 +28,7 @@ New --no-new-tokens flag re-enables the old verdict behaviour:
   legacy + --no-new-tokens — always bypass.
 
 Used by:
-  - /sgs-clone orchestrator (Stage 0.5) — reads .passed to decide whether to
+  - Draft checks run before a clone (Stage 0.5) — read .passed to decide whether to
     halt (always True in additive mode; may be False in --no-new-tokens strict).
   - Pre-commit hook on sites/*/mockups/ files (FR39).
 
@@ -150,7 +150,7 @@ class TokenWritePlan:
 # ---------------------------------------------------------------------------
 # Deprecated shims — kept for callers that iterate result.violations
 # ---------------------------------------------------------------------------
-# The orchestrator (sgs-clone-orchestrator.py Stage 0.5) accesses
+# Older callers access
 # result.violations, result.total_declarations_checked, result.passed, and
 # result.exit_code by attribute.  Those callers need updating to use
 # TokenWritePlan.new_tokens.  Until they are updated these shim types remain

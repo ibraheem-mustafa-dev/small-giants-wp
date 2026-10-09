@@ -91,7 +91,6 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     "tests/",
     "plugins/sgs-blocks/tests/",
     "plugins/sgs-blocks/scripts/tests/",
-    "plugins/sgs-blocks/scripts/converter/tests/",
     "plugins/sgs-blocks/scripts/theme-extractor/tests/",
     "plugins/sgs-blocks/scripts/theme-extractor/expected/",
     "plugins/sgs-blocks/scripts/nav-qa/",

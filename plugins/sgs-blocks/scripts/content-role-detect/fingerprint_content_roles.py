@@ -38,7 +38,7 @@ WHY a11y-metadata IS DELIBERATELY NOT ASSIGNED
 ``ariaLabel``-shaped rows are genuinely content-bearing in the everyday sense, but there is
 no correct role for them today. The obvious candidate, ``image-alt``, is specifically "alt
 text for a SIBLING image-object attr", resolved via ``block_attributes.alt_companion_attr``
-and consumed by the image arm (``db_lookup.py:2611-2636``, ``walk.py:485``). Assigning it to
+and consumed by the image arm of the content lookups. Assigning it to
 a button's aria-label would feed a consumer that expects a companion image and has none.
 
 So these rows are REPORTED and left NULL. Inventing a plausible-looking role is exactly the
@@ -597,7 +597,7 @@ def fingerprint(findings: dict[str, list[dict]], pool: set[tuple[str, str]]) -> 
     #
     # Both answer D4's open question ("technical, or styling painted later?") with a
     # SPECIFIC role rather than a generic one, which is the whole point: `enum-class-probe`
-    # and `color` each have a live converter consumer, and filing those rows as generic
+    # and `color` each have a live consumer, and filing those rows as generic
     # `styling` would measure the right thing and then throw the consumer away.
     #
     # CANDIDATE SET = `d4_review` + `report_only` (widened 2026-08-06).
@@ -754,8 +754,8 @@ def _icon_family_corrections(rows: list[tuple[str, str, str | None]]) -> list[di
     whose STORED role disagrees with the resolved verdict.
 
     THE BUG THIS REPAIRS (measured 2026-08-06, D503): the four `icon-<kind>` roles are a
-    ROUTING KEY, not decoration -- the converter's icon arm
-    (`converter/services/extraction.py` ~1110) builds `{role: attr_name}` for every role
+    ROUTING KEY, not decoration -- the icon-source lookup
+    builds `{role: attr_name}` for every role
     starting `icon-` and looks up `icon-<resolved-kind>`. A family member filed under any
     OTHER role is invisible to that lookup, so a draft's icon choice never routes for that
     block. `sgs/icon` (the reference block) holds all four correctly; `sgs/separator`
@@ -1032,7 +1032,7 @@ def self_test() -> int:
         # CONTRACT CHANGED 2026-08-05. This assertion previously required a11y-metadata to
         # be REPORTED and never assigned, because no correct role existed. 'a11y-text' now
         # does. It must be assigned THAT and nothing else -- assigning 'image-alt' would
-        # still feed a consumer expecting a companion image (db_lookup.py:2611-2636).
+        # still feed a consumer expecting a companion image.
         a11y_roles = {a["attr_name"]: a["role"] for a in a11y["assignments"]}
         if a11y_roles.get("plantedVisible") != "a11y-text":
             failures.append(
@@ -1044,7 +1044,7 @@ def self_test() -> int:
         # 7. authored-alt-text (split from a11y-metadata 2026-08-05, D483/D484) must
         #    map to text-content, and must NOT collapse back into a11y-text — that
         #    collapse is exactly the defect being fixed (alt/placeholder silently
-        #    excluded from the converter's content walk via the a11y-text role).
+        #    excluded from content lifting via the a11y-text role).
         alt_text = fingerprint(
             {"D1": [{"block_slug": "sgs/plantblock", "attr_key": "plantedVisible",
                      "final_category": "authored-alt-text"}], "D2": [], "D3": []},

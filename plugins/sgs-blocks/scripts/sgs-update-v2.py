@@ -138,14 +138,14 @@ _DECLARATIVE_CAPABILITIES = {
     "collection": "collection",
     # Offers the client an icon chooser via the shared `IconPicker`. This is the
     # CONTROL-SURFACE fact, deliberately kept SEPARATE from `role LIKE 'icon-%'`:
-    # that role family is the cloning converter's icon-SOURCE discriminator
+    # that role family is the icon-SOURCE discriminator
     # (lucide / emoji / dashicon / wp-icon) and answers a different question, which
     # is why it tags 2 blocks where the picker is mounted by 13. Widening the role
-    # to cover control-surface scope would have broken the converter's arm.
+    # to cover control-surface scope would have broken the icon-source lookups.
     "iconPicker": "icon-picker",
 }
 
-# The FUNCTIONAL capability namespace — the 3 converter-read lift flags plus the 2
+# The FUNCTIONAL capability namespace — the 3 lift flags plus the 2
 # declarative facts above. A discovery keyword must never enter this set (D528): a
 # block would gain a functional capability by using the word as a search term.
 _FUNCTIONAL_CAPABILITY_NAMES = frozenset(
@@ -410,9 +410,8 @@ _REBUILD_SEEDERS: tuple[tuple[str, str, str], ...] = (
 #    writes `slot_synonyms` — a table RETIRED in favour of `slots`. It also loops
 #    over both DB paths, which are one inode today, so each target would run twice
 #    against the same file. Needs a --only <target> selector before it is safe.
-#  * pattern-register.py / orchestrator/register_patterns.py -> patterns.
-#    Writer B is idempotent but needs a live clone-run artefact, so it cannot
-#    reseed from nothing; Writer A is a manual single-pattern CLI. Note
+#  * pattern-register.py -> patterns.
+#    A manual single-pattern CLI, so it cannot reseed from nothing. Note
 #    pattern_coverage reads FROM patterns, so it is order-dependent on this.
 
 
@@ -478,8 +477,7 @@ def _canonical_attr_type(raw) -> str:
 
     block.json may declare e.g. ["number","string"] (sgs/heading + sgs/text
     fontSize accept a numeric size OR a theme preset slug). The
-    block_attributes.attr_type column is a single string and the converter's
-    attr_is_number() matches attr_type IN ('number','integer') — so prefer the
+    block_attributes.attr_type column is a single string and readers match attr_type IN ('number','integer') — so prefer the
     numeric member when present (preserves the numeric font-size lift), else
     take the first entry. Binding the raw list crashes sqlite3.
     """
@@ -1026,9 +1024,8 @@ def _index_sgs_block_files(
         replacements_record = {}
 
     # --- Ensure variant-detection schema (FR-31-20 D133) ---
-    # Idempotent: matches db_lookup._migrate_variant_detection_schema so an
-    # update run can populate blocks.variant_attr + variant_slots without
-    # depending on the converter module being imported. Guarded ALTER +
+    # Idempotent, so an update run can populate blocks.variant_attr +
+    # variant_slots on its own. Guarded ALTER +
     # CREATE IF NOT EXISTS — safe on every run.
     #
     # ADDITIVE (2026-09-05, VALUE-aware variant discrimination): variant_slots
@@ -1127,7 +1124,7 @@ def _index_sgs_block_files(
         # Only the FIRST parent is taken when block.json declares more than one
         # (e.g. the form-field family declares `["sgs/form", "sgs/form-step"]`).
         # A join table for the second parent was considered and rejected: token
-        # derivation at converter/db/db_lookup.py's child_block_for_parent_token
+        # derivation from a parent token
         # requires the child slug to start with the parent's name plus a hyphen.
         # sgs/form-field-text under parent sgs/form-step derives the useless
         # token 'form-field-text' (a draft would need class
@@ -1314,8 +1311,8 @@ def _index_sgs_block_files(
         # --- Variant-detection population (FR-31-20 D133) ---
         # blocks.variant_attr ← supports.sgs.variantAttr; variant_slots ← each
         # variant's DISCRIMINATING slots (set-difference vs sibling variants)
-        # from supports.sgs.variants. So the converter detects a block's variant
-        # from the draft's extracted fingerprint, universally, without per-block
+        # from supports.sgs.variants. So a block's variant is detected
+        # from an extracted fingerprint, universally, without per-block
         # code (R-31-1 DB-driven, R-31-9 universal). Idempotent: variant_attr
         # writes only on drift; variant_slots is delete-then-insert.
         variant_attr_name = sgs_supports.get("variantAttr") if isinstance(sgs_supports, dict) else None
@@ -1355,7 +1352,7 @@ def _index_sgs_block_files(
         # UNIVERSAL EXCLUSION (both paths): the block's own variant-selector
         # attribute (`variant_attr_name`) is never itself a candidate
         # discriminator — it is exactly what detection exists to DERIVE, and
-        # the cloning converter's extracted `populated_attrs` never contains
+        # extracted `populated_attrs` never contains
         # it (it comes from CSS/DOM extraction, not the block's own stored
         # selector). For capability blocks this changes nothing (verified:
         # none of hero/trust-bar/testimonial/product-card list their own
@@ -1408,8 +1405,8 @@ def _index_sgs_block_files(
         # --- scalar-content-lift capability (council opt-in gate) ---
         # block.json supports.sgs.scalarContentLift === true → upsert a
         # block_capabilities row (slug, 'scalar-content-lift'); absent/false →
-        # remove it. This is the DATA half of the converter's universal
-        # _lift_scalar_attrs_by_selector opt-in gate (R-31-1 DB-driven /
+        # remove it. This is the DATA half of the universal
+        # scalar-content-lift opt-in gate (R-31-1 DB-driven /
         # R-31-9 universal mechanism). Idempotent: present→INSERT OR IGNORE
         # (UNIQUE(block_slug, capability)); absent→DELETE. Mirrors variant_attr's
         # presence/absence handling.
@@ -1519,7 +1516,7 @@ def _index_sgs_block_files(
         #
         # WHY THIS EXISTS. `block_capabilities` held two unrelated things under one
         # name. The three lift flags are declarative, written here, and read by the
-        # converter. The other ~36 semantic tags ('carousel', 'grid-layout',
+        # lift code. The other ~36 semantic tags ('carousel', 'grid-layout',
         # 'logo-strip', 'icon-text' …) have NO writer in this repo (they were seeded by
         # the former populate-db.py's hardcoded CAPABILITY_RULES dict) AND no live reader, since the capability-aware tiebreaker that consumed them
         # was retired at D278. Measured 2026-08-08: every live `capabilities_for()`
@@ -1548,8 +1545,7 @@ def _index_sgs_block_files(
         # --- array_item_schema seeder (2026-07-02) ---
         # The DB-recognition array field-lift reads a block's item field NAMES from
         # here — the block's own data model (attributes.<attr>.items.properties) —
-        # and derives each field's slot/role from the DB (Spec 31 §3.B4 / FR-31-2.5,
-        # converter/resolvers/array_content.py). This REPLACES the retired
+        # and derives each field's slot/role from the DB (Spec 31 §3.B4 / FR-31-2.5). This REPLACES the retired
         # hand-declared arrayItemSchema → array_item_fields mechanism (D248): prune
         # its stale rows so they can't mis-drive a lift, then seed the field names.
         c.execute(
@@ -2184,8 +2180,7 @@ _DYNAMIC_SKIP = object()
 # _is_js_comment_line / _has_save_inner_blocks_marker /
 # _has_inner_blocks_from_block_json / _derive_has_inner_blocks /
 # _populate_has_inner_blocks) are deleted with it — has_inner_blocks is now
-# derived FRESH at convert-time by converter.services.has_inner
-# .derive_delegates_content, never a cached/seeded column (Spec 31 §12.7).
+# derived on demand, never a cached/seeded column (Spec 31 §12.7).
 # _render_consumes_content below is KEPT — it also feeds the still-live
 # emit_shape stage (Stage 1 sub-step D) independently of has_inner_blocks.
 # ---------------------------------------------------------------------------
@@ -2431,7 +2426,7 @@ def _collect_fx_attr_namespace_overrides(c: sqlite3.Cursor) -> dict[tuple[str, s
 # _derive_has_inner_blocks / _populate_has_inner_blocks RETIRED (EXECUTION
 # Step 16, 2026-07-05) — see the retirement banner near
 # _render_consumes_content's definition. has_inner_blocks is now derived
-# fresh at convert-time (converter.services.has_inner), never seeded here.
+# on demand, never seeded here.
 
 
 _VARIATIONS_VALUE_EXTRACTOR = (
@@ -2442,12 +2437,11 @@ _VARIATIONS_VALUE_EXTRACTOR = (
 def _canon_slot_value(value) -> str:
     """Canonical string form of a variant discriminator's value.
 
-    MUST behave identically to `converter/db/db_lookup.py::_canon_slot_value`
-    — one writes `variant_slots.slot_value`, the other reads it back to score
-    a candidate against the draft's extracted attrs. A duplicated 3-line pure
-    function (not a lookup dict — R-31-1 doesn't apply) is simpler and safer
-    than plumbing a shared import between a one-off writer script and the
-    converter package.
+    MUST behave identically to `db-consistency/check_variant_reseed.py::_canon_slot_value`
+    — one writes `variant_slots.slot_value`, the other re-derives it from
+    source to verify the DB. A duplicated 3-line pure function (not a lookup
+    dict — R-31-1 doesn't apply) is simpler and safer than plumbing a shared
+    import between the seeder and the check.
     """
     try:
         return json.dumps(value, sort_keys=True, separators=(",", ":"))
@@ -2665,8 +2659,8 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
     vanish on clone (FR-38-22).
 
     Deliberately minimal, additive-only INSERT — sets only the columns the
-    converter's read path actually consumes (`db_lookup.block_attrs()`:
-    attr_name/attr_type/role/canonical_slot/derived_selector) plus `source`.
+    readers actually consume (attr_name/attr_type/role/canonical_slot/
+    derived_selector) plus `source`.
     Leaves `css_property` NULL on insert; the EXISTING layer 2.5 step
     (`_collect_fx_attr_namespace_overrides`, called right after this from
     `_apply_attr_classification_overrides`) then classifies it in the SAME
@@ -2702,7 +2696,7 @@ def _seed_missing_fx_attr_rows(conn: sqlite3.Connection, dry_run: bool = False) 
     deleted again the very next full `/sgs-update` run, silently reverting
     FR-38-22. `source='sgs-fx'` is invisible to that query's `WHERE
     ba.source = 'sgs'` filter by construction. No other block_attributes
-    query anywhere in this file or in db_lookup.py filters on `source` (only
+    query anywhere in this file filters on `source` (only
     the `blocks` table's own rows use `source='sgs'` as a filter elsewhere) —
     verified by grep before choosing this fix, not assumed.
 
@@ -2803,7 +2797,7 @@ def _seed_extension_attr_rows(
 
     The extension attributes are added client-side (`addFilter('blocks.registerBlockType')`)
     and appear in no block.json, so Stage 1's block.json discovery never made rows for
-    them. Downstream tools (the computed route, the converter) then needed special cases
+    them. Downstream tools (the computed route) then needed special cases
     for child sizing, entrance start and the rest. The roster
     (src/blocks/extensions/extension-roster.json) declares each attribute and its opt-in
     rule; this function applies the rule to every `blocks.source='sgs'` block's block.json.
@@ -3095,8 +3089,8 @@ def _reconcile_object_family_tiers(conn: sqlite3.Connection, dry_run: bool = Fal
 
       * A base attr whose per-tier SIBLING ROWS exist is ONE TIER AMONG SEVERAL ROWS,
         so it correctly carries css_tier='desktop' while its siblings carry
-        'tablet'/'mobile'. This is the model db_lookup.py:1216-1242 describes and
-        `_base_clause` selects on. sgs/hero's imageBorderRadius / imagePadding /
+        'tablet'/'mobile'. This is the per-tier row model that
+        base selection relies on. sgs/hero's imageBorderRadius / imagePadding /
         contentPadding / mediaPadding are all this shape and are CORRECT.
       * A base attr with NO sibling rows holds every tier INSIDE its own value, so
         there is no tier to name and css_tier must be NULL. Every pre-existing
@@ -3114,7 +3108,7 @@ def _reconcile_object_family_tiers(conn: sqlite3.Connection, dry_run: bool = Fal
 
     Caught on the first real case: sgs/hero.imageHeight was retyped object-with-no-
     siblings and kept css_tier='desktop' from its scalar days. Harmless to base
-    SELECTION (db_lookup's clause accepts NULL *or* 'desktop'), but it makes the row
+    SELECTION (base selection accepts NULL *or* 'desktop'), but it makes the row
     disagree with every other collapsed family, and a disagreement nobody reconciles
     is how the next reader concludes the wrong thing. All 160 planned migrations
     would leave the same fossil.
@@ -3126,8 +3120,8 @@ def _reconcile_object_family_tiers(conn: sqlite3.Connection, dry_run: bool = Fal
     # rule inverts and eats the very identity it exists to protect: `contentPaddingMobile`
     # is ALSO object-typed (a box object), and asking whether IT has siblings named
     # `contentPaddingMobileTablet` always answers no -- so a sibling reads as a collapsed
-    # base and its css_tier='mobile' gets cleared. That is the exact column db_lookup's
-    # `_base_clause` uses to EXCLUDE siblings from base selection, so stripping it makes
+    # base and its css_tier='mobile' gets cleared. That is the exact column base
+    # selection uses to EXCLUDE siblings, so stripping it makes
     # every sibling look like a base and reintroduces the ambiguity errors this whole
     # session removed. Caught by the idempotency control on the first re-run: 12 sibling
     # rows across sgs/hero, sgs/label and sgs/team-member were wrongly cleared.
@@ -3389,9 +3383,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     Sub-steps:
       - scrapes edit.js allowedBlocks into block_composition (write-on-drift).
 
-    (has_inner_blocks auto-derivation sub-step RETIRED EXECUTION Step 16,
-    2026-07-05 — the column it wrote is dropped; has_inner_blocks is now
-    derived fresh at convert-time by converter.services.has_inner.)
+    (There is no has_inner_blocks column; it is derived on demand.)
 
     PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + the former populate-db.py
     """
@@ -6318,9 +6310,8 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
       - consistency/run-consistency-gates.py --report — runs
         check-cluster-coverage, check-box-family-guard, check-box-flat,
         report-colour-alpha, check-reclassified-keys as sub-gates
-      - db-consistency/run.py --report — runs check_routing,
-        check_composition, check_variants, check_overrides_drift,
-        check_variant_reseed, check_orphan_roles, check_tier_composition,
+      - db-consistency/run.py --report — runs check_composition,
+        check_variants, check_variant_reseed, check_orphan_roles, check_tier_composition,
         check_css_property_reseed, check_motion_fx_reseed,
         check_fx_qualifying_blocks_stale as sub-gates
 

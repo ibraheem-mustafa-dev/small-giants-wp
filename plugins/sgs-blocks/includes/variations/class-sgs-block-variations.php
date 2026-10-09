@@ -6,10 +6,6 @@
  * Each sibling file registers one or more block variations via
  * `register_block_variation()` or inline JS on `enqueue_block_editor_assets`.
  *
- * Generated variation files are produced by:
- *   python plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py php \
- *     --parent sgs/product-card --slug featured --attrs '{"variantStyle":"featured"}'
- *
  * Naming convention: `sgs-<block-name>-variations.php`
  * Example:           `sgs-product-card-variations.php`
  *

@@ -130,10 +130,9 @@ WHAT THIS SCRIPT DOES
 ============================================================================
 Read-only query against `sgs-framework.db` (never mutates it — a read-only
 URI connection is used deliberately, matching the convention of the sibling
-audit/report scripts in this directory; `converter/db/db_lookup.py` was NOT
-used here even though it is a "db_lookup.py" in this repo, because importing
-it runs six schema-migration functions against the LIVE, SHARED DB as a
-side effect of import — wrong tool for a plain reporter, especially with
+audit/report scripts in this directory; no framework-DB helper module is
+imported here, because importing one can run schema migrations against the
+LIVE, SHARED DB as a side effect of import — wrong tool for a plain reporter, especially with
 another track's work in flight this session).
 
 For every `sgs/%` (block_slug, base_property) family derived from a surviving

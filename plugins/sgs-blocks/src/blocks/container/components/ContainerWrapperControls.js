@@ -229,7 +229,7 @@ const KIND_PANELS = {
  * @param {string}   [props.kind]        'section' | 'layout' | 'content'. Default 'section'.
  * ⛔ `props.gridAreas` was REMOVED 2026-08-16 (D639) along with GridAreaPanel — see that
  * tombstone above. No consumer ever passed it, and the capability it gated is delivered by
- * the block's own controls (editor) and `resolvers/grid_area.py` (converter).
+ * the block's own per-area controls.
  * @param {boolean}  [props.showLayout]  Forwarded to LayoutPanel. Pass false when the block owns its OWN
  *                                       layout control — rendering both is silent DATA LOSS, because this
  *                                       panel writes stack/flex/grid into a `layout` attr whose block.json

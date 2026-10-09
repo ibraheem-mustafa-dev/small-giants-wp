@@ -1132,8 +1132,8 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     #
     # `fxPath` -> fx:path. The curated motion-path route (s11.2, D427). This is
     # the AUTHORING surface; `data-sgs-fx-motion-path-target` is render-layer
-    # OUTPUT and deliberately gets no row - a draft never writes it, and the
-    # converter maps the route, never the resolved selector.
+    # OUTPUT and deliberately gets no row - a draft never writes it, and only
+    # the route is mapped, never the resolved selector.
     "fxPath": "fx:path",
     "fxPathAsset": "fx:path-asset",
     "fxPathRotate": "fx:path-rotate",

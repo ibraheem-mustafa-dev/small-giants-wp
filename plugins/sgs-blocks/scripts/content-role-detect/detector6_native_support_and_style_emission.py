@@ -72,9 +72,9 @@ MECHANISM C -- ICON-SOURCE FAMILY ==> role "icon-lucide" / "icon-wp-icon" /
 `sgs/icon` is the reference: `iconSource` is a hard 4-value enum
 (`lucide`/`wp-icon`/`dashicon`/`emoji`) and its four sibling value attrs
 (`iconName`/`wpIconName`/`dashiconName`/`emojiChar`) each carry the ROUTING
-role that matches the kind they feed. `converter/services/extraction.py`
-builds `{role: attr_name}` for every role starting `icon-` and dispatches on
-it (D503) -- getting this wrong breaks icon cloning, not just misfiles a row.
+role that matches the kind they feed. Icon-source lookups build
+`{role: attr_name}` for every role starting `icon-` and dispatch on
+it (D503) -- getting this wrong breaks icon routing, not just misfiles a row.
 
 The mechanism is DERIVED, never a per-block dict (R-31-1): (1) find the
 attribute in the block's `block.json` whose OWN `enum` declaration is
@@ -762,8 +762,8 @@ def self_test() -> int:
     if not got or got[0].get("role") != "layout":
         failures.append(
             f"sgs/responsive-logo.align role should be 'layout', got {got!r}. "
-            "align carries real layout the converter must be able to target; "
-            "'technical' would exclude it from the walk."
+            "align carries real layout that must stay targetable; "
+            "'technical' would exclude it from content lifting."
         )
     # And the per-key map must NOT have flipped anchor/className to layout.
     got_anchor = detect([("sgs/button", "anchor")])

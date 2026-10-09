@@ -1,7 +1,7 @@
 {
-  "__doc": "Attribute-name modifier suffix vocabulary. THE source of truth for the `modifier_suffixes` table (Spec 31 §4). db_lookup._migrate_modifier_suffixes() seeds from this file at module load.",
-  "__why": "Had NO writer anywhere, yet is CONVERTER-LOAD-BEARING: read at db_lookup.py:585, :2146 (kind='breakpoint') and :2262. A rebuild-from-empty produced 0 rows, which silently breaks breakpoint/side resolution. Captured from live 2026-08-02.",
-  "__ORDER_IS_LOAD_BEARING": "db_lookup.py:2262 selects `WHERE kind = ? ORDER BY rowid`, so the order of this list IS the order the resolver sees. `side` is Top/Right/Bottom/Left — CSS shorthand order. NEVER alphabetise or reorder this list; the seeder rewrites the table in exactly this sequence to guarantee rowid order matches.",
+  "__doc": "Attribute-name modifier suffix vocabulary. THE source of truth for the `modifier_suffixes` table (Spec 31 §4). dbschema/seed_reference_data.py seeds the table from this file.",
+  "__why": "Had NO writer other than the seeder, yet is load-bearing: readers select kind='breakpoint' and kind='side' rows. A rebuild-from-empty produced 0 rows, which silently breaks breakpoint/side resolution. Captured from live 2026-08-02.",
+  "__ORDER_IS_LOAD_BEARING": "readers select `WHERE kind = ? ORDER BY rowid`, so the order of this list IS the order the resolver sees. `side` is Top/Right/Bottom/Left — CSS shorthand order. NEVER alphabetise or reorder this list; the seeder rewrites the table in exactly this sequence to guarantee rowid order matches.",
   "__format": "[suffix, kind, notes] — ORDERED list, not a mapping",
   "suffixes": [
     [

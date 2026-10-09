@@ -4,7 +4,7 @@
 Decides whether a staged block.json change is METADATA-ONLY and therefore does
 NOT require a visual-diff report. Two recognised-safe cases:
 
-CASE 1 — ``supports.sgs`` only (the converter/capability object, which has ZERO
+CASE 1 — ``supports.sgs`` only (the capability object, which has ZERO
 render impact). A block whose only staged change is a ``supports.sgs`` edit
 (e.g. adding ``arrayContentLift``/``scalarContentLift``/``variantAttr``/
 ``containerKind``) paints identically.

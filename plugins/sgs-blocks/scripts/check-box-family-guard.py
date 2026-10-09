@@ -10,9 +10,8 @@ Binding rule (§3): "an attr is a merge/migration TARGET only if it (or the
 flat attr it replaces) carries a `box_family` [DB column]. ... The migration
 MUST query `box_family`, never a name regex (enforced by the AST gate)."
 
-This gate is a static AST scanner over the converter tree
-(`plugins/sgs-blocks/scripts/converter/**/*.py`) and the DB-seed/migration
-script (`plugins/sgs-blocks/scripts/sgs-update-v2.py`). It flags any
+This gate is a static AST scanner over the DB-seed/migration script
+(`plugins/sgs-blocks/scripts/sgs-update-v2.py`). It flags any
 per-side/per-corner box-grouping or migration operation that groups/merges/
 renames attributes by matching a SIDE token (Top/Right/Bottom/Left) or a
 CORNER token (TL/TR/BL/BR/TopLeft/TopRight/BottomLeft/BottomRight) via a
@@ -59,7 +58,6 @@ sys.stdout.reconfigure(encoding="utf-8")
 # Paths
 # ---------------------------------------------------------------------------
 _HERE = Path(__file__).resolve().parent  # plugins/sgs-blocks/scripts/
-_CONVERTER_DIR = _HERE / "converter"
 _SEED_SCRIPT = _HERE / "sgs-update-v2.py"
 _BASELINE_PATH = _HERE / "box-family-guard-baseline.json"
 
@@ -123,7 +121,7 @@ def _contains_box_token(s: str) -> bool:
 
             # A token that is merely a SUBSTRING of a longer word is not a
             # side/corner reference. Without this, 'top' matched inside
-            # 'Desktop' and flagged the converter's DEVICE-TIER regex
+            # 'Desktop' and flagged a DEVICE-TIER regex
             # `(Tablet|Mobile|Desktop)$` as a box-side regex — a false
             # positive that failed the build on 2026-08-26. The same bare
             # test also reaches 'stopPropagation', 'laptop', 'topic',
@@ -152,8 +150,7 @@ def _contains_box_token(s: str) -> bool:
                 continue
             # An ALL-CAPS corner token (TL/TR/BL/BR) touching another capital is
             # inside an upper-case word or constant ('SGS_|BL|OCKS_PATH', which
-            # failed the build 2026-09-24 on converter/services/render_emits.py's
-            # require-statement regex). A real corner reference stands alone:
+            # hit a require-statement regex in a PHP-source scanner). A real corner reference stands alone:
             # '(TL|TR|BL|BR)$', 'radiusTL'.
             if tok.isupper() and len(tok) == 2 and (
                 ( before.isalpha() and before.isupper() )
@@ -420,13 +417,6 @@ def _scan_file(path: Path) -> list[Violation]:
 
 def _iter_target_files() -> list[Path]:
     files: list[Path] = []
-    if _CONVERTER_DIR.exists():
-        for py_path in sorted(_CONVERTER_DIR.rglob("*.py")):
-            if "__pycache__" in py_path.parts:
-                continue
-            if py_path.name.startswith("test_") or "tests" in py_path.parts:
-                continue
-            files.append(py_path)
     if _SEED_SCRIPT.exists():
         files.append(_SEED_SCRIPT)
     return files

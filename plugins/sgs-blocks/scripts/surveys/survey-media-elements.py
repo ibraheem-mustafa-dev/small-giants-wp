@@ -31,7 +31,7 @@ TWO DETECTORS, AND THE DELTA BETWEEN THEM IS ITSELF A FINDING
 -------------------------------------------------------------
 (a) DB-FIRST (R-31-1). `block_attributes.role` in {image-object, svg,
     image-alt, scalar-media} - 104 rows framework-wide. This is the
-    converter's routing vocabulary and is authoritative for what the cloning
+    routing vocabulary and is authoritative for what the cloning
     pipeline recognises.
 (b) FAMILY EXPANSION. A named base attr plus its Id/Url/Tablet/Mobile
     siblings as actually declared in block.json.
@@ -317,9 +317,9 @@ def load_block_json(slug):
 def db_media_roles():
     """DB-first (R-31-1). Returns {(slug, attr): role}.
 
-    Read-only connection. NEVER import converter/db/db_lookup.py - it runs six
-    schema-migration functions against the shared live DB as an import side
-    effect, and this is a read-only reporter.
+    Read-only connection. NEVER import a framework-DB helper that runs
+    schema migrations against the shared live DB as an import side
+    effect; this is a read-only reporter.
     """
     if not DB_PATH.exists():
         return None

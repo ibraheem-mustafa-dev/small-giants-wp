@@ -10,16 +10,8 @@ then adds:
        AND-rule, AND no supports.sgs.hasInnerBlocksReason is present → Violation
        (the override may be masking a stale marker)
 
-RETIRED at EXECUTION Step 16 (2026-07-05): the CORE check — "does the cached
-block_composition.has_inner_blocks column match the AND-rule derivation" —
-is gone along with the column it compared (migration
-2026-07-05-drop-has-inner-blocks-column.py). has_inner_blocks is now derived
-FRESH at convert-time (converter.services.has_inner.derive_delegates_content),
-never a cached column, so there is nothing left to drift-guard (see
-converter/tests/test_has_inner_derive.py's retirement note for the sibling
-drift-guard TEST that was deleted for the same reason). G-A and G-B above are
-KEPT — both are purely source-derived (block.json + save.js + render.php)
-and never depended on the has_inner_blocks column value itself, only on a
+There is no cached has_inner_blocks column to compare. G-A and G-B are purely
+source-derived (block.json + save.js + render.php) and depend only on a
 block_composition ROW existing for the slug.
 
 FIX command for all violations: "run python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"

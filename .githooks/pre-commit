@@ -6,12 +6,6 @@
 # 1. The generated extension-attribute list must match the extension JS it is built
 #    from; a stale file brings back the block-renderer "Invalid parameter(s): attributes"
 #    400 on ServerSideRender previews.
-# 2. Cloning-pipeline gates run when the commit stages pipeline code. That code is pure
-#    Python, so the npm build never runs these; this is the only floor that catches a
-#    terminal or GUI commit.
-#    Scoped bypass for a gate tripped by unrelated shared-DB debt:
-#    SGS_F5_SKIP="<script>[,<script>]" SGS_F5_SKIP_REASON="..." git commit ...
-#    Skips only the named script(s) for this commit and logs it to reports/f5-manual-skips.log.
 
 GEN="plugins/sgs-blocks/scripts/generate-extension-attributes.js"
 
@@ -32,44 +26,6 @@ if git diff --cached --name-only | grep -Eq 'plugins/sgs-blocks/src/blocks/exten
 		echo "    node $GEN" >&2
 		echo "  (or: cd plugins/sgs-blocks && npm run build)" >&2
 		exit 1
-	fi
-fi
-
-PIPELINE_PATHS='^plugins/sgs-blocks/scripts/converter/'
-if git diff --cached --name-only | grep -Eq "$PIPELINE_PATHS"; then
-	if command -v python.exe >/dev/null 2>&1; then PY=python.exe
-	elif command -v python >/dev/null 2>&1; then PY=python
-	elif command -v py >/dev/null 2>&1; then PY=py
-	else PY=""; fi
-	if [ -z "$PY" ]; then
-		echo "pre-commit: python not found — pipeline gates SKIPPED (install python to enforce)." >&2
-	else
-		F5_DIR="plugins/sgs-blocks/scripts"
-		F5_FAIL=0
-		REPO_ROOT="$(git rev-parse --show-toplevel)"
-		for g in converter/gates/no_slug_literal.py converter/gates/import_ban.py converter/gates/check_raw_sqlite.py; do
-			SKIPPED=0
-			for _skip_name in $(printf '%s' "${SGS_F5_SKIP:-}" | tr ',' ' '); do
-				if [ "$_skip_name" = "$g" ]; then
-					if [ -z "${SGS_F5_SKIP_REASON:-}" ]; then
-						echo "   ✗ $g: SGS_F5_SKIP set but SGS_F5_SKIP_REASON is empty — refusing silent bypass" >&2
-					else
-						echo "   ⚠ $g: MANUAL SKIP — $SGS_F5_SKIP_REASON" >&2
-						printf '%s | %s | MANUAL SKIP | %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$g" "$SGS_F5_SKIP_REASON" >> "$REPO_ROOT/reports/f5-manual-skips.log"
-						SKIPPED=1
-					fi
-				fi
-			done
-			[ "$SKIPPED" -eq 1 ] && continue
-			if [ -f "$F5_DIR/$g" ]; then
-				if ! ( cd "$F5_DIR" && "$PY" "$g" --check ); then
-					echo "pre-commit BLOCKED by pipeline gate: $g found a NEW violation (run it with --report for detail)." >&2
-					echo "  Scoped bypass if this is genuinely unrelated debt: SGS_F5_SKIP=$g SGS_F5_SKIP_REASON=\"...\" git commit ..." >&2
-					F5_FAIL=1
-				fi
-			fi
-		done
-		[ "$F5_FAIL" -eq 0 ] || exit 1
 	fi
 fi
 

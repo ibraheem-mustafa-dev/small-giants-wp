@@ -9,7 +9,7 @@ ScrollTrigger / Three.js) onto the durable class/attribute strings it
 writes into the rendered DOM as a side effect of normal operation --
 per the research at
 `C:/Users/Bean/.claude/memory/research/2026-09-10-detecting-motion-libraries-in-bundled-js.md`.
-The detector module (`converter/resolvers/motion_library_signals.py`) reads
+Detector code reads
 this table at runtime; it never hand-types a signature dict itself -- that
 shape of lookup is banned outright by this project's R-31-1 ("no hardcoded
 Python dicts for exactly this kind of lookup").
@@ -36,7 +36,7 @@ spec's own fixed cubic-bezier control points) and `_DURATION_TOKEN_MS`
 (theme.json's own duration tokens) in the sibling seeder, a fixed external
 fact belongs in the ONE seeder that writes it to the DB, never in the
 detector that reads it. R-31-1 bans a shape/preset LOOKUP DICT hand-typed
-inside a detector/converter module -- it does not ban a seeder recording a
+inside a detector module -- it does not ban a seeder recording a
 literal, sourced, external fact once.
 
 SOURCES (verified in the 2026-09-10 research pass, high confidence)

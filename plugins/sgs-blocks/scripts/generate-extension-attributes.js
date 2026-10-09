@@ -188,9 +188,9 @@ function main() {
  * `main()` used to be called unconditionally at module scope, which meant any
  * `require()` of this file regenerated `includes/extension-attributes.generated.php`
  * as an import side effect. That is the exact shape this repo has already been
- * bitten by once — `scripts/converter/db/db_lookup.py` runs six schema
- * migrations against the shared live DB on import, and CLAUDE.md warns in
- * writing not to import it from a read-only reporter.
+ * bitten by once — a framework-DB helper module ran schema migrations
+ * against the shared live DB on import, which a read-only reporter must
+ * never trigger.
  *
  * `inspector-scan` rule 21 now reuses `collectAttributes()` to learn which
  * attributes are EXTENSION-OWNED. Sharing the parser is the point: a second

@@ -970,7 +970,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// axis is never the right answer for it. D742 changed the generic container's
 			// `layout` default to "flex" with flexDirection left blank — correct for a
 			// generic container, since blank resolves to CSS's own `row` and that keeps
-			// the converter's draft->clone mapping honest (R-1) — but it is retroactive
+			// the draft->clone mapping honest (R-1) — but it is retroactive
 			// across every instance that never set the attr, and NONE of the theme's nine
 			// <main> containers had. Measured live on the product page before this landed:
 			// three sections laid out horizontally at 634/1328/1328px on a 1454px viewport,
@@ -983,9 +983,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// direction control visibly present and silently inert, which is precisely the
 			// defect `supports.align` was removed for the day before this.
 			//
-			// No cloning impact: the converter never emits `tagName` at all (verified —
-			// zero occurrences across converter/), so `main` reaches this code only from a
-			// hand-authored theme template. `layout` cannot be the lever instead, because
+			// No cloning impact: cloning never emits `tagName` at all, so `main` reaches
+			// this code only from a hand-authored theme template. `layout` cannot be the lever instead, because
 			// it now DEFAULTS to "flex" and WP does not serialise a value equal to its
 			// default — an authored "flex" and an absent key are indistinguishable here,
 			// the same absent-vs-default trap this session already hit twice.

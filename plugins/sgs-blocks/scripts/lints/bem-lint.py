@@ -27,7 +27,7 @@ Exempt classes (Spec 00 §3.1 / lingua-franca-conversion rule):
      Tailwind exemption never applies to sgs-* classes.
 
 Used by:
-  - /sgs-clone orchestrator (Stage 0.1)
+  - Draft checks run before a clone (Stage 0.1)
   - Pre-commit hook enforcing Stage 0.1 on sites/*/mockups/ files (FR39)
 """
 
@@ -279,7 +279,7 @@ def lint_html_string(
     """
     Lint a string of HTML's classes against the SGS-BEM regex.
 
-    Used by the /sgs-clone orchestrator and the pre-commit hook.
+    Used by draft checks run before a clone, and by the pre-commit hook.
     """
     tokens = _extract_tokens(html)
     return _lint_tokens(tokens, mode, source_label)

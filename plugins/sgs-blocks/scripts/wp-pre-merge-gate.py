@@ -3,7 +3,7 @@
 
 5.3.5 integration: wires wp-blocks.py health, wp-docs.py validate-hook, and
 wp-hook-graph.py validate into a single advisory gate invoked before commits
-or merges that touch converter / pipeline / SGS block logic.
+or merges that touch pipeline / SGS block logic.
 
 Exit codes:
   0 — all checks clean (or soft-fail mode: warnings only)

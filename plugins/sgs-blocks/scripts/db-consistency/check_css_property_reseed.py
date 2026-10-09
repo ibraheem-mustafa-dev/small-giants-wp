@@ -53,7 +53,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 from .models import Violation, css_property_reseed_key
 
 # Load ATTR_CLASSIFICATION_OVERRIDES from sgs-update-v2.py (the reseed-durable source of
-# truth). Same importlib pattern as resolver_bridge — import the REAL constant so this
+# truth). Import the REAL constant via importlib so this
 # check can never drift from the seeder (R-22-1). FAIL LOUD if unavailable.
 _SEEDER_PATH = Path(__file__).resolve().parents[1] / "sgs-update-v2.py"
 

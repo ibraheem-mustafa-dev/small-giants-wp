@@ -17,7 +17,7 @@ PLUGIN = SCRIPTS.parent                           # plugins/sgs-blocks/
 REPO = PLUGIN.parent.parent                       # repo root
 
 # The same resolver the other DB-reading gates use
-# (check-hover-state-classification.py::SGS_DB, check-css-layer-orphans.py::DB_PATH).
+# (check-hover-state-classification.py::SGS_DB).
 DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 BASELINE = SCRIPTS / "wiring-fingerprint-baseline.json"

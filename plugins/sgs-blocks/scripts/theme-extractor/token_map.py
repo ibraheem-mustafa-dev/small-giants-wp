@@ -3,15 +3,13 @@
 Two jobs:
   1. ``build_draft_root_token_map(css)`` — the FR-33-10 service: parse every ``:root`` block, resolve
      ``var()`` chains (with fallbacks), return ``{name(lower): resolved_value_string}`` for ALL value
-     types (hex, non-hex, clamp/calc, refs). This is the NEW composed service; the frozen hex-only
-     ``converter/services/styling_helpers.build_draft_root_colour_map`` is left byte-identical.
+     types (hex, non-hex, clamp/calc, refs). This is the composed service for every value type, not hex alone.
   2. ``parse_base_rules(css)`` — the top-level (non-@media) rule stream as
      ``[(selector, prop, value, important, offset)…]`` so the role table + reconciliation can read
      what the draft DECLARES (names/roles only — the VALUE that ships comes from computed facts).
 
 Parsing is via ``tinycss2`` (a real CSS tokeniser) so brace-nesting, comments, and function values
-are handled correctly. This module lives OUTSIDE ``converter/`` so it may import tinycss2 without
-tripping ``converter/tests/test_import_ban.py``.
+are handled correctly. 
 """
 from __future__ import annotations
 

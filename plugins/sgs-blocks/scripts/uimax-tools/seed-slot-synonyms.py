@@ -46,7 +46,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # ---------------------------------------------------------------------------
-# DB path — single canonical file (matches db_lookup.SGS_DB)
+# DB path — single canonical file (the framework DB)
 # ---------------------------------------------------------------------------
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -152,7 +152,7 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     ]),
 
     # ----- subheading slot aliases -------------------------------------
-    # NOTE: this slot's converter ROUTING (which block it emits, and with which
+    # NOTE: this slot's block ROUTING (which block it emits, and with which
     # default attrs) is NOT set here — ALIAS_EXTENSIONS only ever widens the alias
     # vocabulary of an existing row. See STANDALONE_ROUTE_OVERRIDES below, where
     # `subheading` is routed to sgs/heading with headingRole='subheading'.
@@ -446,10 +446,9 @@ NEW_CANONICAL_ROWS: list[tuple[str, list[str], str | None, str, str | None]] = [
 # NEW STANDALONE ROWS — new canonical slots that ALSO emit a specific block
 # via standalone_block (and optionally standalone_block_default_attrs).
 #
-# These differ from NEW_CANONICAL_ROWS in that they carry the converter-routing
+# These differ from NEW_CANONICAL_ROWS in that they carry the routing
 # columns (standalone_block, standalone_block_default_attrs) in addition to the
-# base slot metadata.  The `_atomic_attrs_for` function in convert.py handles
-# content extraction for these blocks once routing lands them correctly.
+# base slot metadata.
 #
 # Format:
 #   (slot_name, aliases, standalone_block, standalone_block_default_attrs_dict,
@@ -496,7 +495,7 @@ NEW_STANDALONE_ROWS: list[tuple[str, list[str], str, dict, str]] = [
 ]
 
 # ---------------------------------------------------------------------------
-# STANDALONE ROUTE OVERRIDES — correct the converter routing of an EXISTING slot.
+# STANDALONE ROUTE OVERRIDES — correct the routing of an EXISTING slot.
 #
 # NEW_STANDALONE_ROWS above is INSERT OR IGNORE: it can only introduce a slot that
 # does not exist yet, so it is powerless to CORRECT a row already present. That gap
@@ -520,8 +519,8 @@ STANDALONE_ROUTE_OVERRIDES: list[tuple[str, str, dict, str]] = [
     # missing, so every cloned subheading landed as sgs/text and lost its semantic
     # + typographic identity. Bean's decision, 2026-08-07.
     #
-    # The default_attrs travel via the ELEMENT-keyed reader
-    # db_lookup.slot_default_attrs_for() (a `__subheading` is an element, not a
+    # The default_attrs travel via the ELEMENT-keyed reader of
+    # `standalone_block_default_attrs` (a `__subheading` is an element, not a
     # --modifier). The modifier-keyed sibling channel, inherit_style_for_modifier,
     # reads only `inheritStyle` and cannot carry this.
     (
@@ -689,7 +688,7 @@ def _apply_route_override(
     default_attrs: dict,
     dry_run: bool,
 ) -> int:
-    """UPDATE an EXISTING element-scope slot's converter routing. Returns 1 if changed.
+    """UPDATE an EXISTING element-scope slot's routing. Returns 1 if changed.
 
     Unlike `_insert_standalone_row` (INSERT OR IGNORE — powerless once the row
     exists) this restates the routing every run, so an authored decision cannot be

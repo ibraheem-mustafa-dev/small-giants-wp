@@ -34,7 +34,7 @@ FALSE-POSITIVE CLASSES ALREADY FOUND AND FIXED — each cost a wrong number firs
      A filename-reference detector reports every test as unreferenced. First run:
      29 "unreferenced", ALL of them tests. Excluded here, with this reason recorded.
   2. MODULE-STYLE REFERENCES. Python drops the extension — `_load_sibling("check_variant_reseed")`
-     and `from converter.context import ...` contain no ".py". Matching filenames alone
+     and `from dbschema.seed_reference_data import ...` contain no ".py". Matching filenames alone
      reported the db-consistency checks as unwired while run.py loads every one.
      131 -> 94 once import-aware patterns were added.
   3. MANIFEST REGISTRATION. `inspector-scan/rules.json` registers 16 rule modules that

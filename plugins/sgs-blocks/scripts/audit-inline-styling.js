@@ -67,7 +67,7 @@
  *   reports/inline-styling-audit-2026-07-09.json
  *   reports/inline-styling-audit-2026-07-09.md
  *
- * READ-ONLY: this script never writes to any block/converter/DB file. It
+ * READ-ONLY: this script never writes to any block or DB file. It
  * only creates the two report files above.
  */
 

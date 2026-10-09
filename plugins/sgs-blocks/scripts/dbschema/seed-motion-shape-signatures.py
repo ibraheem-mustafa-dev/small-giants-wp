@@ -10,7 +10,7 @@ instead of hand-authoring a shape->preset dict — banned outright by this
 project's R-31-1 ("no hardcoded Python dicts for exactly this kind of
 lookup").
 
-DECLARATIVE PATTERN (mirrors ``converter/db/db_lookup.py::fx_attr_roster``)
+DECLARATIVE PATTERN (mirrors ``dbschema/seed_reference_data.py::fx_attr_roster``)
 ----------------------------------------------------------------------------
 ``fx_attr_roster()`` never hand-types its attribute list — it regexes two
 already-maintained PHP source files (``FX_ATTR_MAP`` +

@@ -51,9 +51,8 @@ _VARIATIONS_VALUE_EXTRACTOR = (
 
 
 def _canon_slot_value(value) -> str:
-    """MUST match `converter/db/db_lookup.py::_canon_slot_value` and
-    `sgs-update-v2.py::_canon_slot_value` exactly — all three write/read/
-    re-derive the same canonical form independently."""
+    """MUST match `sgs-update-v2.py::_canon_slot_value` exactly — the seeder
+    writes and this check re-derives the same canonical form independently."""
     try:
         return json.dumps(value, sort_keys=True, separators=(",", ":"))
     except (TypeError, ValueError):

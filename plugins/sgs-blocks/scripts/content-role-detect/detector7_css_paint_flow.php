@@ -63,7 +63,7 @@ const MAX_HOPS = 3;
  * Helpers that exist SPECIFICALLY to resolve a colour. A carrier reaching one of these is
  * not merely "styling" — it is a colour value, which is the `color` role's own contract
  * ("an attr whose value is a colour"), and that role has a live consumer
- * (attr_is_colour_role(), converter/db/db_lookup.py). Kept separate from CSS_HELPERS so
+ * (the colour-role lookup). Kept separate from CSS_HELPERS so
  * the detector emits the SPECIFIC role rather than the coarsest one that fits.
  */
 const COLOUR_HELPERS = array(
@@ -115,8 +115,8 @@ function looks_like_css_text(string $s): bool {
  *
  * This shape maps to `enum-class-probe`, NOT to generic `styling`: that role's own
  * definition is "a BEM `--modifier` class carries this attr's value ... never as a CSS
- * declaration", and it has a live cloning consumer (db_lookup.py:4889-4896) that matches
- * the modifier against the draft's actual BEM class. Seeding `styling` here would be
+ * declaration", and it has a live consumer that matches
+ * the modifier against a draft's actual BEM class. Seeding `styling` here would be
  * measuring the right thing and then filing it under the coarsest role available, losing
  * that consumer.
  */

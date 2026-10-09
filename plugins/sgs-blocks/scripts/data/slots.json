@@ -1,6 +1,6 @@
 {
-  "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 §13.5). db_lookup._migrate_slots() seeds it at module load.",
-  "__why": "Converter-load-bearing with NO writer anywhere: the walker resolves every BEM element name through `slots.aliases` and every section through `slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
+  "__doc": "Canonical slot vocabulary (element + section scope) with aliases and standalone-block routing. THE source of truth for the `slots` table (Spec 31 §13.5). dbschema/seed_reference_data.py seeds it from this file.",
+  "__why": "Load-bearing with NO writer other than the seeder: every BEM element name resolves through `slots.aliases` and every section through `slots.standalone_block`. Empty ⇒ nothing resolves. Captured from live 2026-08-02 (Phase 1).",
   "__supersedes": "behavioural-analyser/seed-slot-alias-extensions.py — a 2026-05-30 one-off whose four alias additions are BAKED INTO this capture. It became redundant and was DELETED 2026-08-02. Extend THIS file to add an alias; there is no script to re-run.",
   "__aliases_format": "JSON array stored as TEXT, verbatim from live.",
   "__columns": [

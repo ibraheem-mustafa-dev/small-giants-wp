@@ -869,15 +869,6 @@
     "order": 94
   },
   {
-    "id": "check-preset-absence-no-slug-literal",
-    "cmd": "python scripts/converter/gates/check_preset_absence_no_slug_literal.py",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": null,
-    "budget_ms": 50,
-    "order": 95
-  },
-  {
     "id": "audit-bindable-attrs",
     "cmd": "python scripts/audit-bindable-attrs.py --check",
     "tier": "fast",

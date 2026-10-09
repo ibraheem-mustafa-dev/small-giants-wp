@@ -38,11 +38,11 @@ easily reclassified by an automated pass, and impossible to notice by eye. Asser
 every seeded value would make this a nuisance gate that gets switched off — which is
 exactly what happened to the floor.
 
-⚠ IMPORTS sqlite3 ONLY — NEVER ``db_lookup``. ``converter/db/db_lookup.py``
-re-asserts these roles at MODULE LOAD, so anything importing it silently repairs the
-drift before it can be observed; a pytest regression test for this is VACUOUS, proven
+⚠ IMPORTS sqlite3 ONLY — it never calls a seeder. ``dbschema/seed_reference_data.py``
+re-asserts these roles when run, so a check that ran it first would repair the
+drift before it could be observed; a pytest regression test for this is VACUOUS, proven
 by negative control rather than assumed. This script observes the true stored state.
-Keep it that way: importing db_lookup here would blind the check completely.
+Keep it that way: running a seeder here would blind the check completely.
 """
 
 from __future__ import annotations
@@ -123,9 +123,8 @@ VALUE_ASSERTIONS: list[dict] = [
     # `splitImage` at all (its own composite shape retired in favour of
     # splitImageId/Url/Alt — Bean-locked, R-31-14, no legacy read-time
     # fallback), and `run_mechanism_b`'s ScalarLift for `splitImage` is
-    # translated at write-time (`assembly.py`, via
-    # `db_lookup.scalar_media_emit_as()`) into those three new attrs instead
-    # of the composite object — so a future clone still produces content the
+    # translated at write-time into those three new attrs instead
+    # of the composite object — so a clone still produces content the
     # migrated block actually renders; `emit_shape` merely stopped being the
     # column that proves it.
     # ⛔ sgs/testimonial-slider.sideImage was asserted here on 2026-08-02 and REMOVED the
@@ -195,7 +194,7 @@ def cmd_check(live_db: Path) -> int:
             "\nA named row's value is not what it must be. This is NOT a row-count problem "
             "-- the row is present and populated, it simply holds the wrong value, which is "
             "why any count-based check reads clean. Re-assert it from its source of truth "
-            "(for scalar-media: import converter.db.db_lookup, which re-applies "
+            "(for scalar-media: run dbschema/seed_reference_data.py, which re-applies "
             "scripts/data/scalar-media-roles.json), then find what reclassified it."
         )
         return 1

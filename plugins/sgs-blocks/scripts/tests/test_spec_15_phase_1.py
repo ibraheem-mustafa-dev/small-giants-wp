@@ -2,7 +2,7 @@
 test_spec_15_phase_1.py
 =======================
 Pytest suite covering the four Phase 1 modules for the Spec 31 deterministic
-draft-to-SGS converter pipeline:
+draft-to-SGS pipeline:
 
   1. extract_signatures  — behavioural-analyser/extract-signatures.py
   2. assign_canonical    — behavioural-analyser/assign-canonical.py

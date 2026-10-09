@@ -128,7 +128,7 @@ def _classify_esc_attr_core(before: str, after: str, stmt: str, key: str) -> str
     # split in detector1_render_escaping.php's classify_call()). `alt` and
     # `placeholder` were classified 'a11y-metadata' alongside aria-label/
     # title. That routes them to the a11y-text role, classification
-    # styling-behaviour — EXCLUDED from the converter's content walk. Both
+    # styling-behaviour — EXCLUDED from content lifting. Both
     # are wrong there:
     #   * alt         — a client AUTHORS alt text and edits it; it must
     #                    transfer from a draft.

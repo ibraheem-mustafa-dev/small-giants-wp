@@ -52,7 +52,7 @@ const NATIVE_SUPPORT_ATTRS = {
 	'spacing.blockGap': [ 'gap' ],
 	// `typography.textAlign` makes WP render the "Align text" toolbar button —
 	// verified live on the canary 2026-08-15. Some blocks ALSO declare a
-	// top-level `textAlign` attribute for the cloning converter to write; the
+	// top-level `textAlign` attribute for cloning to write; the
 	// native control is a control either way, so the attribute is not orphaned.
 	// Missing this entry reported sgs/cta-section.textAlign as uncontrolled.
 	'typography.textAlign': [ 'textAlign' ],

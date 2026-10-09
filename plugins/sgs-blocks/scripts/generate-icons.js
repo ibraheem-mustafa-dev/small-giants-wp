@@ -6,7 +6,7 @@
  * Run: node scripts/generate-icons.js
  * Hooked into: npm run build (via prebuild script)
  *
- * Flags (all optional; used by tests and scripts/promote-icon.py):
+ * Flags (all optional; used by tests):
  *   --out-dir <dir>   write the PHP map + editor assets under <dir>, touching nothing tracked.
  *   --library <file>  read the SGS library from <file> instead of assets/icons/sgs-icons.json.
  *   --check           validate the library only; exit non-zero with a clear message; write nothing.
@@ -73,8 +73,7 @@ if ( fs.existsSync( WP_ICONS_PHP ) ) {
 // blocks echo. Lucide, WordPress and alias names are reserved.
 const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
 
-// Pictogram allowlist: ONE definition shared with scripts/promote-icon.py (read from the
-// same JSON), so the generator and the promote step cannot drift apart.
+// Pictogram allowlist: ONE definition, read from assets/icons/svg-allowlist.json.
 const ALLOWLIST_FILE = path.resolve( __dirname, '../assets/icons/svg-allowlist.json' );
 const ALLOW = JSON.parse( fs.readFileSync( ALLOWLIST_FILE, 'utf8' ) );
 const toRegexes = ( list ) => list.map( ( source ) => new RegExp( source, 'i' ) );

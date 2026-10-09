@@ -82,10 +82,10 @@ OVERRIDES_PATH = SCRIPT_DIR / "attr-classification-overrides.json"
 FINGERPRINT_DIR = SCRIPT_DIR / "content-role-detect"
 
 # --- Section 3 (kept, relabelled, informational-only): WP-core content-marker collision ---
-# Roles that DOWNSTREAM code branches on by exact value (converter/walk.py) — demoting
+# Roles that DOWNSTREAM code branches on by exact value — demoting
 # any of these to the generic `content` marker silently breaks identity resolution.
 DANGER_ROLES = {"link-href", "url-href", "image-object", "image-alt", "rating", "icon-slug"}
-# text-content and content are lift-equivalent (scalar_content.py:164 / walk.py:261).
+# text-content and content are lift-equivalent.
 BENIGN_TARGETS = {"text-content", "content"}
 
 # --- Section 2: language that admits "no mechanism reaches this row yet" -----------------

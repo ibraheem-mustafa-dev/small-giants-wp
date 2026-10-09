@@ -31,7 +31,7 @@ from sandbox import sandbox  # noqa: E402
 #
 # EMPTIED 2026-08-02 (Phase 1, T1.4). All four original members now regenerate:
 # `roles` and `modifier_suffixes` were wired first, then `property_suffixes`
-# and `slots` gained data-file seeders in db_lookup.py
+# and `slots` gained data-file seeders in dbschema/seed_reference_data.py
 # (captured from live by `dbschema/capture_seed_data.py`, which owns the JSON).
 # The set stays declared, not deleted: it is the honest place to record the next
 # table that turns out to have no source, and an empty set means every remaining

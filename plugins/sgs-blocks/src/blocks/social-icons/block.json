@@ -43,7 +43,7 @@
 			"siteInfoLinkRow": {
 				"bindingSource": "sgs/site-info",
 				"bindAttr": "linkUrl",
-				"_note": "The cloning converter (scripts/converter/resolvers/array_content.py::lift_site_info_link_row) lifts each draft link into an allowedBlocks child bound through this source and attribute when the brand registry knows its platform."
+				"_note": "Cloning lifts each draft link into an allowedBlocks child bound through this source and attribute when the brand registry knows its platform."
 			},
 			"imageControls": false,
 			"boxFamilies": {

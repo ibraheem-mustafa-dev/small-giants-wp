@@ -22,13 +22,13 @@
  *     building that reader is what proved the flag never needed one. Full
  *     reasoning sits on `checkRetiredGridAreas()` below; the short version is
  *     that the editor capability comes from each block's own per-area attrs and
- *     the converter derives area names from the DRAFT's CSS, so the flag was
+ *     area names come from the draft's CSS, so the flag was
  *     redundant by construction and could only ever drift.
  *
  * ── WHY A BUILD-TIME SCRIPT AND NOT A /sgs-update DB-SEED CHECK ─────────────
  * `enabledExtensions` is a flat block.json array with no DB table home and no
  * consumer that would justify creating one. That makes it unlike
- * `boxFamilies`/`variantAttr`, which genuinely feed the cloning converter and
+ * `boxFamilies`/`variantAttr`, which genuinely feed DB-driven lookups and
  * ARE legitimate R-31-1 DB-first cases. Checking it needs block.json and
  * nothing else, so it belongs in `prebuild` beside its siblings.
  *
@@ -237,8 +237,8 @@ function checkRetiredGridAreas( manifests ) {
 			message:
 				`${ slug } declares supports.sgs.gridAreas, which was RETIRED 2026-08-16 (D639). ` +
 				`It has no consumer and needs none: the editor capability comes from the block's ` +
-				`own per-area attrs, and the converter derives area names from the draft's CSS ` +
-				`via resolvers/grid_area.py. Remove the declaration — the per-area attrs ` +
+				`own per-area attrs, and area names come from the draft's CSS. ` +
+				`Remove the declaration — the per-area attrs ` +
 				`(<area>Padding/<area>Background) ARE the definition of the regions.`,
 		} );
 	}

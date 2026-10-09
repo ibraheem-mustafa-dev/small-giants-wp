@@ -284,8 +284,8 @@ def _companion_media_stem(attrs: dict, prop: str) -> bool:
 # reported "0 block(s) to migrate" against a real 63-block unmigrated surface (Ship-PM,
 # adversarial council, 2026-09-06).
 #
-# The discriminator is the DB's `box_family` column — the SAME column the converter's
-# `box_family_for()`/`tier_object_base()` already treat as the sole legitimate gate for
+# The discriminator is the DB's `box_family` column — the SAME column the framework lookups
+# already treat as the sole legitimate gate for
 # this exact question (R-31-1: never re-derive from the attr NAME). A read-only,
 # structural check: does ANY of this family's siblings carry a non-null box_family? A
 # genuine box-of-sides family's siblings DO (measured: sgs/container.paddingTablet ->
@@ -293,10 +293,7 @@ def _companion_media_stem(attrs: dict, prop: str) -> bool:
 # sgs/container.backgroundImageTablet -> box_family=None).
 #
 # ⛔ Deliberately a lightweight read-only sqlite3 query here, NOT an import of
-# `converter/db/db_lookup.py` — that module runs schema-migration side effects on import
-# (confirmed live this session: importing it deleted 2 stale `roles.json`-orphaned rows as
-# an "intended reconciliation" the module docstring never surfaces to a caller expecting a
-# read). A survey/census tool must never become a writer as a side effect of being run.
+# a framework-DB helper module that runs schema-migration side effects on import. A survey/census tool must never become a writer as a side effect of being run.
 @functools.lru_cache(maxsize=4096)
 def _sibling_box_family(block_slug: "str | None", sibling_attr: str) -> "str | None":
     """Read-only: the DB's `box_family` for one sibling attr, or None if unknown/absent.

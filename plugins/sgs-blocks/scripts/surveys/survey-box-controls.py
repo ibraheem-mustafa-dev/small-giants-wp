@@ -23,14 +23,14 @@ bypassing the tier wrapper.
 
 Why this is a SEPARATE script from check-box-family-guard.py (decision
 recorded in the task brief this script was built from — see report, not
-duplicated here): that guard is an AST scanner over CONVERTER/migration code
-(plugins/sgs-blocks/scripts/converter/**, sgs-update-v2.py) that polices
+duplicated here): that guard is an AST scanner over the seeder/migration code
+(plugins/sgs-blocks/scripts/sgs-update-v2.py) that polices
 whether a grouping/merge OPERATION in that code is gated on the box_family
 DB column rather than a name regex — a structural conformance question about
 migration code. This script census-scans BLOCK SOURCE (src/blocks/*/edit.js)
 against the DB schema to answer "what shapes exist today, with counts and
 file:line" for the box/border FAMILIES THEMSELVES — a question the guard's
-target files (converter/, sgs-update-v2.py) cannot answer because they do
+target file (sgs-update-v2.py) cannot answer because they do
 not contain any block's edit.js. Zero file overlap; zero question overlap.
 
 Usage:

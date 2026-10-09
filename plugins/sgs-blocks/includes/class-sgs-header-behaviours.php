@@ -9,9 +9,8 @@
  * desktop, off for mobile"). Contrast advisories are editor notices
  * (`sgs/site-header/edit.js`), never enforcement.
  *
- * This class emits exactly one body class, `sgs-has-header` — the cloning
- * recogniser's page-level marker that a page carries an SGS header (see
- * `tools/recogniser/test_matchers.py`) — and enqueues the shared
+ * This class emits exactly one body class, `sgs-has-header` — the page-level
+ * marker that a page carries an SGS header — and enqueues the shared
  * header-behaviour CSS/JS that `view.js` needs for scroll-state classes.
  *
  * @package SGS\Blocks

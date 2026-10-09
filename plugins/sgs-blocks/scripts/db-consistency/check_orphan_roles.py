@@ -4,8 +4,8 @@ Spec ref: F6 deferred follow-up (D237)
 
 Every block_attributes.role value (non-NULL, non-empty) MUST exist as a
 roles.role_name row.  An orphan role means an attr is classified against a role
-the roles table doesn't know about — the converter's role-based inference then
-falls through to a default, mis-routing the attr.
+the roles table doesn't know about, so any role-based lookup on that attr falls
+through to a default and mis-routes it.
 
 Today: empty (rating was registered via a dated migration before this check shipped).
 """

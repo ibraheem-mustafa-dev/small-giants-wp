@@ -274,9 +274,8 @@ def derive_kind(
 def ensure_container_kind_column(conn: sqlite3.Connection) -> None:
     """Idempotently add container_kind to block_composition if absent.
 
-    Applies the same migration as db_lookup.py so this
-    script can be run standalone without importing that module (which has
-    side-effects and path assumptions). The CHECK constraint matches exactly.
+    Applies the container_kind migration itself so this
+    script can be run standalone. The CHECK constraint matches exactly.
     """
     cur = conn.cursor()
     cols = {row[1] for row in cur.execute("PRAGMA table_info(block_composition)").fetchall()}

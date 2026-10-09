@@ -4,7 +4,7 @@ survey-spacing-defaults.py - census of the Spacing control's untouched sides.
 
 READ-ONLY. Writes nothing except `--out <file>` and `--write-baseline`; never builds, deploys
 or touches the database (it opens the framework DB with mode=ro, and never imports
-scripts/converter/db/db_lookup.py, which migrates the schema on import).
+a framework-DB helper module, which could migrate the schema on import).
 
 Plan: .claude/plans/2026-10-08-icon-unification-and-spacing-control.md, Bean decision D1 and
 Phase E. D1 (refined by Bean 2026-10-09) DECLARES every untouched Spacing side's default: a theme

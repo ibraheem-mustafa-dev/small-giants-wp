@@ -66,8 +66,8 @@ from token_map import build_draft_root_token_map, parse_base_rules
 HERE = pathlib.Path(__file__).resolve().parent
 
 # scripts/ (HERE.parent) holds shared_utils — the SINGLE source of the CSS-extraction
-# + hashing the FR-33-12 freshness gate depends on (both this extractor and the
-# orchestrator call it, so the two hashes can never drift). See shared_utils.py.
+# + hashing the FR-33-12 freshness gate depends on (this extractor and the
+# freshness check both call it, so the two hashes can never drift). See shared_utils.py.
 if str(HERE.parent) not in sys.path:
     sys.path.insert(0, str(HERE.parent))
 from shared_utils import (  # noqa: E402
@@ -534,8 +534,8 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
     snap["description"] = "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py."
 
     # FR-33-12 — embed the freshness key INSIDE the snapshot itself (not a sibling file).
-    # The /sgs-clone orchestrator reads THIS block from the exact `theme-snapshot.json` the
-    # converter's colour-snap loads, so the gate proves the file-that-is-used is fresh for the
+    # The freshness gate reads THIS block from the exact `theme-snapshot.json` that
+    # is used, so the gate proves the file-that-is-used is fresh for the
     # current draft (a sibling record could drift from the deployed file). WP ignores this
     # unknown top-level key; push-theme-snapshot pushes only styles+settings, never this block;
     # `merge_onto` keeps it (the generated snapshot is the merge base). Deterministic (no timestamp).

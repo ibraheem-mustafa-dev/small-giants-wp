@@ -26,7 +26,7 @@
    own editor styling; nothing emits .sgs-hero__cta, and --sgs-hero-cta-gap is no
    longer set by render.php or edit.js, so both rules were inert.
    NOTE: `.sgs-hero__ctas` (PLURAL) remains live DRAFT-side vocabulary — the
-   cloning converter recognises it in SGS-BEM mockups and maps it to
-   sgs/multi-button (converter/recognition.py:83). Do not reintroduce it here as
-   rendered-output styling, but do not purge the name from the converter either. */
+   cloning recognises it in SGS-BEM mockups and maps it to
+   sgs/multi-button. Do not reintroduce it here as
+   rendered-output styling, but do not purge the name from the draft vocabulary. */
 

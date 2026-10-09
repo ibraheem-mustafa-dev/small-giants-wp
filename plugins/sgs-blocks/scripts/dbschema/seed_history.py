@@ -59,10 +59,10 @@ successful run and 2 only for an operational error (unreadable/malformed history
 file). If a count needs to BLOCK a build, that is a value-identity assertion in
 ``check_value_identity.py``, not a count.
 
-⚠ IMPORTS sqlite3 ONLY — NEVER ``db_lookup``, DIRECTLY OR INDIRECTLY.
-``converter/db/db_lookup.py`` re-asserts seeded roles at MODULE LOAD. Anything that
-imports it REPAIRS the drift before it can be observed, so a recorder that imported
-it would faithfully record the healed state and report "nothing changed" through a
+⚠ IMPORTS sqlite3 ONLY — it never calls a seeder, directly or indirectly.
+``dbschema/seed_reference_data.py`` re-asserts seeded roles when run. A recorder that
+ran it first would REPAIR the drift before it could be observed and so
+would faithfully record the healed state and report "nothing changed" through a
 real loss. A history recorder that heals what it is measuring is worthless. This is
 the same constraint ``check_value_identity.py`` carries, for the same reason.
 """
@@ -102,7 +102,7 @@ MIN_ABS_ALARM = 5
 # single home).
 #
 # Every entry is a column known to hold structurally load-bearing data (not
-# free-text commentary) that the converter/pipeline actually reads. Extend it
+# free-text commentary) that the framework lookups actually read. Extend it
 # deliberately when a new column earns that status; never by mechanically adding
 # every nullable column in the schema (most populate opportunistically and would
 # only add noise).
@@ -110,7 +110,7 @@ MIN_ABS_ALARM = 5
 # NOTE: a population count is the right instrument for a CACHED fact and the wrong
 # one for a DERIVED fact. ``block_composition.has_inner_blocks`` is deliberately
 # absent: FR-31-2.6 RETIRED it as a cached column, and the surviving signal is
-# derived fresh at convert time by ``converter/services/has_inner.py``. Before
+# derived on demand. Before
 # adding an entry, confirm the value is genuinely STORED. Pairs absent from the
 # live schema are skipped silently by ``collect_counts`` (that is schema drift,
 # which ``check_schema_drift.py`` owns) — so a retired column left listed here

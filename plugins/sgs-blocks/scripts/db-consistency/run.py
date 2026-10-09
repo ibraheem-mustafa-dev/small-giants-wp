@@ -76,19 +76,15 @@ if "db_consistency" not in sys.modules:
     pkg.__package__ = "db_consistency"
     sys.modules["db_consistency"] = pkg
 
-# Load siblings (order matters — models first, then bridge, then checks).
+# Load siblings (models first, then the checks).
 _models_mod = _load_sibling("models")
-_resolver_mod = _load_sibling("resolver_bridge")
-_check_routing_mod = _load_sibling("check_routing")
 _check_composition_mod = _load_sibling("check_composition")
-_check_overrides_drift_mod = _load_sibling("check_overrides_drift")
 _check_variant_reseed_mod = _load_sibling("check_variant_reseed")
 _check_orphan_roles_mod = _load_sibling("check_orphan_roles")
 _check_tier_composition_mod = _load_sibling("check_tier_composition")
 _check_css_property_reseed_mod = _load_sibling("check_css_property_reseed")
 _check_motion_fx_reseed_mod = _load_sibling("check_motion_fx_reseed")
 _check_fx_qualifying_blocks_stale_mod = _load_sibling("check_fx_qualifying_blocks_stale")
-_check_role_resolution_guess_mod = _load_sibling("check_role_resolution_guess")
 
 Violation = _models_mod.Violation
 
@@ -98,28 +94,21 @@ _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework
 # ---------------------------------------------------------------------------
 
 _CHECK_LABELS = {
-    "routing": "Check #1 — Routing Determinism",
     "composition": "Check #2 — has_inner_blocks Sync",
-    "overrides_drift": "Check #4 — Override-Dict Drift",
     "variant_reseed": "Check #5 — variant_slots ↔ block.json Determinism",
     "orphan_roles": "Check #6 — Role Referential Integrity",
     "tier_composition": "Check #7 — tier ↔ composition_role/container_kind",
     "css_property_reseed": "Check #8 — css_property/css_layer/css_element/css_state/css_tier Reseed-Survival",
     "motion_fx_reseed": "Check #9 — Spec 38 fx_effects Reseed-Survival",
-    "role_resolution_guess": "Check #12 — Order-Dependent Role Resolution",
 }
 
 # Display order for the grouped report.
-# BUG FIXED 2026-07-21: "css_property_reseed" (Check #8) was collected into `groups`
-# but never listed here, so its violations were silently absent from the printed
-# report while still counting toward the top-line "N violation(s) total" — a report
-# that could show "0 violations" in its visible sections while 45 real Check #8
-# findings sat uncounted-by-eye in the total. Caught while verifying this task's own
-# acceptance criteria; see the session report for the discovery trail.
+# Every check that can raise a violation must be listed here, or its findings are
+# counted in the top-line total but missing from the printed groups.
 _CHECK_ORDER = (
-    "routing", "composition",
-    "overrides_drift", "variant_reseed", "orphan_roles", "tier_composition",
-    "css_property_reseed", "motion_fx_reseed", "role_resolution_guess",
+    "composition",
+    "variant_reseed", "orphan_roles", "tier_composition",
+    "css_property_reseed", "motion_fx_reseed",
 )
 
 
@@ -158,7 +147,7 @@ def _print_report(violations: list) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="F6 DB-as-code consistency suite for the SGS cloning pipeline."
+        description="F6 DB-as-code consistency suite for the SGS framework DB."
     )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
@@ -205,16 +194,13 @@ def main() -> int:
 
     try:
         violations: list = []
-        violations.extend(_check_routing_mod.run(conn))
         violations.extend(_check_composition_mod.run(conn))
-        violations.extend(_check_overrides_drift_mod.run(conn))
         violations.extend(_check_variant_reseed_mod.run(conn))
         violations.extend(_check_orphan_roles_mod.run(conn))
         violations.extend(_check_tier_composition_mod.run(conn))
         violations.extend(_check_css_property_reseed_mod.run(conn))
         violations.extend(_check_motion_fx_reseed_mod.run(conn))
         violations.extend(_check_fx_qualifying_blocks_stale_mod.run(conn))
-        violations.extend(_check_role_resolution_guess_mod.run(conn))
     except sqlite3.OperationalError as exc:
         # DB present but DRIFTED (e.g. a required table missing) — this is a
         # real integrity problem, distinct from plain absence, and must fail
