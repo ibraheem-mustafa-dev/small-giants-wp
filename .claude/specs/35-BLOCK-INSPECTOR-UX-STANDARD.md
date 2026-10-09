@@ -1,27 +1,28 @@
+---
+doc_type: spec
+spec_id: 35
+spec_version: "3.2"
+title: SGS Block Inspector UX, Control-Completeness & Capability Standard
+project: small-giants-wp
+status: active
+last_verified: 2026-10-09
+authors: Bean + Claude
+sub_specs:
+  - .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md
+---
+
 # Spec 35 — SGS Block Inspector UX, Control-Completeness & Capability Standard
 
 ⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
 `.claude/skills/migration-method/SKILL.md` before the 4th file edit.** A census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What decides the outcome is whether the TARGET SHAPE is settled first (migration-method/SKILL.md Step 3).
 
-```
-doc_type: spec
-spec_id: 35
-spec_version: 3.1
-status: ACTIVE
-last_verified: 2026-09-26
-owner: framework
-sub_specs: 35A (.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md)
-companions: Spec 32 (component styling/token contract — governs RENDERED output),
-            Spec 00 (naming). This spec governs the EDITOR-FACING control surface.
-```
-
-> **Sibling spec:** Spec 35 (this doc) owns the block INSPECTOR-UX standard (editor-facing controls). Spec 32 owns the styling/token EMISSION contract (no-inline, scoped CSS, box-object attrs). Both are separate documents and both gate every block build — read them together.
+> **Sibling spec:** Spec 35 (this doc, owner: framework) owns the block INSPECTOR-UX standard (editor-facing controls). Spec 32 owns the styling/token EMISSION contract (no-inline, scoped CSS, box-object attrs). Both are separate documents and both gate every block build — read them together.
 
 > **This spec is split across two files.** Spec 35 (this file) is the normative core: the layout, completeness, parity, responsive and accessibility standards (PART A–E) and the control-type contract (PART O). Spec 35A (`.claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`) holds the anti-pattern fail-list, the native-mechanism verdicts, the component reference and action layer, the rollout gates, the definition-of-done checklist, the implementation status, the role data layer, the enforcement layers and the carried obligations. PART letters, section numbers and IDs are unique across the pair. A citation that names no file resolves through this table.
 
 | File | Holds |
 |---|---|
-| **Spec 35** (this file) | Why this exists · PART A (layout and grouping) · B (control completeness) · C (feature-parity checklist) · D (responsive UX, D1–D5) · E (accessibility) · PART O colour-control rules · PART O control-type contract: THE PLACEMENT RULE, THE ELEMENT MANIFEST, the scoping axes and the EXTENSION SURFACE axis, §1 COLOUR to §14 BORDER · Sources |
+| **Spec 35** (this file) | Why this exists · PART A (layout and grouping) · B (control completeness) · C (feature-parity checklist) · D (responsive UX, D1–D5) · E (accessibility) · PART O-C colour-control rules · PART O control-type contract: THE PLACEMENT RULE, THE ELEMENT MANIFEST, the scoping axes and the EXTENSION SURFACE axis, §1 COLOUR to §14 BORDER · Sources |
 | **Spec 35A** | PART F (anti-patterns; F.1, F.2.1 to F.2.3) · G (prefer native) · H (component quick-reference) · I (component action layer) · J (upgrade roadmap) · K (rollout mechanism and gates) · L (per-block definition-of-done) · M (implementation status) · N (role data layer; N.1 to N.3, N-1 to N-11) · PART O enforcement layers O.15 and O.16 · CARRIED OBLIGATIONS (CO-2, CO-3, CO-9, CO-10, CO-11, CO-13, CO-15 to CO-21, CO-28; T1 to T3; rule-authoring discipline 22, 24, 25, 26) · Cross-cutting A and B |
 
 > **Implementation status.** This spec is **substantially but not completely implemented**. Never
@@ -54,7 +55,7 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 ## Why this exists
 
 Every SGS block builds its inspector ad hoc. Clients are non-technical and live in the block
-editor (CLAUDE.md "Client experience is primary"). Symptoms this fixes: cluttered/duplicated
+editor (root CLAUDE.md non-negotiable: "Every customisable property has a block-editor inspector control"). Symptoms this fixes: cluttered/duplicated
 sidebars, **half-built controls** (colour picker with no transparency; "shadow" = only Small/Medium;
 logos added one-at-a-time), missing table-stakes features every WP power-user expects (hover states,
 responsive-everywhere, alpha+gradient, real shadow/border builders, link controls), and
@@ -62,7 +63,7 @@ responsive-everywhere, alpha+gradient, real shadow/border builders, link control
 dynamic content, client-safe editing).
 
 This is the standard + fail-list + upgrade roadmap. It becomes an enforceable per-block
-definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a structural gate).
+definition-of-done (Part L → fold into `.claude/plans/archive/block-migration-DONE-checklist.md` + a structural gate).
 
 ---
 
@@ -198,9 +199,7 @@ system) T · repeaters/loops (N: `core/query`) T · counters/ratings/icons P.
 
 **A11y/SEO as controls:** alt-text field (N) T · **Decorative-image toggle** (empty alt + `aria-hidden`) — BUILT: `imageDecorative`
 (`plugins/sgs-blocks/src/blocks/media/block.json::attributes.imageDecorative`) is declared and wired to render — `media/render.php`
-sets `aria-hidden="true"` from it. Scoped to `sgs/media`; `sgs/decorative-image` needs no toggle because it
-hardcodes `aria-hidden="true"` on every image it emits, i.e. the whole block is
-decorative by construction. Other image-rendering blocks with no decorative/ARIA attribute are listed by
+sets `aria-hidden="true"` from it. Present on `sgs/media` and `sgs/decorative-image` (both declare `imageDecorative`; decorative by default). Other image-rendering blocks with no decorative/ARIA attribute are listed by
 `inspector-scan` rule 18 (advisory) · heading-level (N) T · **General ARIA-label control** for icon-only buttons — PARTLY BUILT: `ariaLabel` is declared
 on both `button/block.json` and `icon/block.json` — the two blocks that actually render
 icon-only triggers. It is also on `sgs/container`, `sgs/cta-section` and `sgs/trust-bar` as a landmark
@@ -239,23 +238,15 @@ that narrower question is the residual, not "no control exists" · schema → le
     Approved contract: `plans/archive/2026-07-28-resolveTier-cascade-design-gate.md`.
   - **Consumer:** Spec 37 §3.8 depends on this; that spec owns the requirement, this spec owns
     the build.
-  - **✅ BUILD STATUS: BUILT.** The canonical `resolveTier()` ships in JS (`src/utils/responsive.js`;
-    `resolveResponsiveTier` is a thin alias) + PHP (`sgs_resolve_tier()`, `helpers-responsive.php`) with
-    ONE shared golden fixture set passing in BOTH runtimes. The scoped per-tier emission helper
-    (`sgs_emit_tier_rules`) and `ResponsiveTriStateControl` consume it, and FR-37-14's site-header
-    behaviours are built on it (explicit-off override and sticky+transparent coexistence included).
-    General block VISIBILITY remains EXCLUDED (scope note above): `responsive-visibility.js` is three
-    INDEPENDENT flat booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no
-    inheritance — deliberately. Its fourth control, `sgsCollapseVisibility` (hide or show a header block while
-    the header's menu shows its burger), keys on one width, that menu's `collapsePoint`, and is no tier cascade
-    either (Spec 37 FR-37-24). The §3.8 header-CONTENT cascade feature is a separate consumer owned
-    by Spec 37. `headerSticky`/`headerTransparent`/`headerShrink`/`headerHideOnScroll` are
-    `{"type":"object","default":{}}` (`site-header/block.json`). Spec 37 FR-37-14 (behaviour
-    tri-state) consumes the canonical `resolveTier()` cascade — see Part M.
+  - **The one cascade.** `resolveTier()` (`plugins/sgs-blocks/src/utils/responsive.js`,
+    `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_resolve_tier`) is the only tier-inheritance
+    mechanism. General block VISIBILITY is excluded: `responsive-visibility.js` is three INDEPENDENT flat
+    booleans (`sgsHideOnMobile`/`Tablet`/`Desktop`, `default:false`) with no inheritance, deliberately.
+    `sgsCollapseVisibility` (hide or show a header block while the header's menu shows its burger) keys on one
+    width, that menu's `collapsePoint`, and is no tier cascade either (Spec 37 FR-37-24).
 
 - **D5. Per-device MEDIA SOURCE (art direction) — the canonical pattern.**
-  A client must be able to choose a different CROP per device wherever media appears, not only where
-  the cloning pipeline wrote the values. This is the standard for every media-bearing block and any
+  A client must be able to choose a different CROP per device wherever media appears. This is the standard for every media-bearing block and any
   NEW block with a media source.
 
   - **Attr shape:** `{base}` / `{base}Tablet` / `{base}Mobile`. An empty tier falls back UP
@@ -294,14 +285,13 @@ that narrower question is the residual, not "no control exists" · schema → le
     operator CSS is unfiltered and a nested `<style>` applies document-wide regardless of
     `display:none` on its wrapper. **This is NOT an escalation and must not be "fixed" by stripping
     the tag** — `sgsCustomCss` already gives every block a sanctioned raw-CSS `<style>` channel
-    (load-bearing, Spec 31 FR-31-5.2, undeletable), so the same actor already has the same
+    (Spec 32 FR-32-4; undeletable), so the same actor already has the same
     capability. Removing `style` would break design-tool SVG exports (which routinely carry `<style>`
     + classes) for zero security gain.
 
   - **IMAGES tier by MARKUP.** Emit all tiers as sibling elements carrying a BEM tier modifier and
     toggle them with breakpoint rules in the block's own scoped `<style>`. Three `<img>`s cost
-    nothing meaningful, it needs no JS, and the BEM modifier is the vocabulary the cloning pipeline
-    reads — one convention on both ends is what makes a clone round-trip.
+    nothing meaningful, it needs no JS, and the BEM tier modifier is the sibling-element convention for toggling them.
     - ⛔ Build tier selectors from the **BARE scope token**, never from a multi-member selector LIST:
       a descendant appended to a list binds to its LAST member only.
     - ⛔ **Naked-mode blocks** (the media element IS the block root, e.g. `sgs/decorative-image`)
@@ -337,7 +327,7 @@ that narrower question is the residual, not "no control exists" · schema → le
 
 ---
 
-## PART O — Colour-control rules (addenda to contract §1)
+## PART O-C — Colour-control rules (addenda to contract §1)
 
 Four rules for colour controls. The machine-readable contract is
 `plugins/sgs-blocks/scripts/consistency/golden-controls.json` `controls.colour`; this section records
@@ -725,7 +715,7 @@ fields). Therefore:
    Styles (same as every other colour). Storage: ONE string attribute per gradient holding the
    complete CSS value, not this contract's per-scalar `DesignTokenPicker` shape — gradient stays its
    OWN control type. Shipped on the overlay blocks; the universal rollout across all colour-capable
-   blocks is tracked as `P-GRADIENT-UNIVERSAL-ROLLOUT` (`.claude/LEDGER.md` / `.claude/archive/parking.md`), not yet done.
+   blocks is NOT BUILT (parked work, no plan yet).
 
 8a. ⭐ **Gradient is THREE mechanisms, element-dependent, not one.** Which mechanism is correct depends on
    what the row PAINTS:
@@ -999,7 +989,7 @@ its element's panel (TIER 1) regardless of this field.)*
 2. **Required props** — `values` per tier, `onChange(tier, next)`, real `units`.
 3. **Banned lookalikes** — core `BoxControl` in any form (gate `scripts/check-raw-box-control.py`); per-side
    scalars (none remain); regex side-token
-   grouping in the converter (already gated, converter-side only — nothing guards editor code).
+   grouping (gated in the cloning tooling only — nothing guards editor code).
 4. **Tab** — `dimensions` (padding/margin) / `border` (width, radius). Styles.
  *(Subordinate to THE PLACEMENT RULE: this Tab field only governs a control that STYLES NOTHING and
 lands in the pinned `Settings` panel. A control that has a real property family resolves to
@@ -1124,8 +1114,8 @@ its element's panel (TIER 1) regardless of this field.)*
    panel (TIER 1) regardless of this field.)*
 5. **Scope — `block_capabilities` capability `icon-picker`, declared via
    `supports.sgs.iconPicker`.** ⛔ **Never scope this contract by `role LIKE 'icon-%'`** — that role
-   family is the converter's icon-SOURCE discriminator, a different question; widening the role would
-   break the converter's arm.
+   family discriminates the icon SOURCE, a different question; widening the role would
+   break that routing.
    ⚠ The census must scan **past `edit.js`** — `sgs/cart` mounts the picker from
    `TriggerSettingsControls.js`, so a per-block `edit.js` scan under-reports. See the EXTENSION
    SURFACE axis.

@@ -1,18 +1,18 @@
-# Spec 35A — SGS Block Inspector UX: Enforcement, Build Reference & Obligations
-
-```
+---
 doc_type: spec
 spec_id: 35A
-spec_version: 1.0
-parent_spec: 35 (.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md)
-status: ACTIVE
-last_verified: 2026-09-19
-owner: framework
-companions: Spec 32 (component styling/token contract — governs RENDERED output),
-            Spec 00 (naming). This spec governs the EDITOR-FACING control surface.
-```
+spec_version: "1.1"
+title: SGS Block Inspector UX, Enforcement, Build Reference & Obligations
+project: small-giants-wp
+status: active
+last_verified: 2026-10-09
+authors: Bean + Claude
+parent_spec: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md
+---
 
-> **Parent spec.** Spec 35A is the sub-spec of Spec 35 (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`). Spec 35's header carries the migration-method gate, the implementation-status box and the table that maps every PART letter, section number and ID to its file — read it first. In this file a bare "PART A" to "PART E", "D1" to "D5", "PART O §N", "§N field M" or "contract §N" citation is Spec 35; "Part F" to "Part N", "CO-n", "O.15", "O.16" and "Cross-cutting A/B" are here.
+# Spec 35A — SGS Block Inspector UX: Enforcement, Build Reference & Obligations
+
+> **Parent spec.** Spec 35A (owner: framework; governs the EDITOR-FACING control surface, while Spec 32 governs RENDERED output and Spec 00 naming) is the sub-spec of Spec 35 (`.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md`). Spec 35's header carries the migration-method gate, the implementation-status box and the table that maps every PART letter, section number and ID to its file — read it first. In this file a bare "PART A" to "PART E", "D1" to "D5", "PART O §N", "§N field M" or "contract §N" citation is Spec 35; "Part F" to "Part N", "CO-n", "O.15", "O.16" and "Cross-cutting A/B" are here.
 
 ## PART F — Anti-patterns (fail-list)
 
@@ -26,9 +26,8 @@ animation with no reduced-motion gate · raw-px spacing instead of the token sca
 
 **⚠ EXEMPTION: `sgsCustomCss` is NOT the
 bespoke "Custom CSS" field this fail-list bans.** Spec 32 FR-32-4 names `sgsCustomCss` as **the
-only permitted non-attr, non-scoped-`<style>` styling output** framework-wide, and Spec 31
-FR-31-5.2 makes it **load-bearing** — it is the D3 passthrough channel that carries arbitrary
-non-device-tier draft breakpoints (`ResidualBand`) onto a clone; removing it breaks clone fidelity.
+only permitted non-attr, non-scoped-`<style>` styling output** framework-wide: the one sanctioned
+raw-CSS channel, which renders as a scoped rule, never inline, and must stay editable.
 It is registered on every block (`src/blocks/extensions/custom-css.js`) as a
 deliberate, framework-wide exception. The Part-F
 anti-pattern still stands for any OTHER bespoke per-block custom-CSS field — this exemption is not
@@ -75,7 +74,7 @@ non-existent grid items — `GridItemDefaultsPanel`'s own `if (layout !== 'grid'
 render-time bail, not a build-time guarantee the wrong combination can't be declared in the first
 place. Gate: a **build-time static script**, not a `/sgs-update` DB-seed check — `enabledExtensions`
 is a flat block.json array with no DB table home and no consumer that would justify creating one
-(unlike `boxFamilies`/`variantAttr`, which genuinely feed the cloning converter and are legitimate
+(unlike `boxFamilies`/`variantAttr`, which genuinely feed the DB-seeded cloning route and are legitimate
 R-31-1 DB-first cases). `plugins/sgs-blocks/scripts/check-wrapper-capability-preconditions.js`,
 same family as `check-shared-panel-schema.js` / `check-box-family-guard.py`
 (`--survey`/`--check`/`--json`/`--self-test`), fail-closed, no baseline, registered in
@@ -92,10 +91,8 @@ in `CAPABILITY_PRECONDITIONS`, assert every listed precondition is also present,
 under `--check`. No `--fix` mode — a codemod silently injecting `layout` into a block's declared
 extensions would change a block's capability set as a lint side effect.
 
-**F.2.2 — there is no `supports.sgs.gridAreas` flag.** The converter derives area names directly
-from the draft's BEM element token (`assembly.py` step 3d: `parse_sgs_bem(cls).element` —
-`sgs-hero__content` → `content`) and routes via `db.attr_for_area_property(block, area, prop)`, gated
-on the block declaring `<area>+<Suffix>` attrs, not on any block flag. "hero has areas content and
+**F.2.2 — there is no `supports.sgs.gridAreas` flag.** Cloning derives area names from the draft's computed layout
+(Spec 47) and routes onto the block's declared `<area>+<Suffix>` attrs, not on any block flag. "hero has areas content and
 media" is fully derivable from hero declaring `contentPadding`/`mediaPadding`.
 `check-wrapper-capability-preconditions.js` rule 2 FAILS the build on any declaration of
 `gridAreas` (including an empty array, which would otherwise silence the gate).
@@ -250,20 +247,20 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 |---|---|---|
 | Responsive per-breakpoint | `ResponsiveControl`, `ResponsiveBoxControl` EXIST | audit coverage; use everywhere responsive-worthy |
 | Typography per element | `TypographyControls` EXISTS (R-22-13). ✅ **DONE — architecture is "no curation": every text surface gets the full control set by default**, not a curated per-element subset. Two-state link colour ships via `sgs_link_colour_css()`. `audit-typography-attr-declarations.js` guards against attributes the controls write that are undeclared in block.json. | — |
-| Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; `DesignTokenPicker.js`). ⭐ **`SgsColourPanel`** (the shared per-element colour panel that groups `DesignTokenPicker` instances, Styles-tab placement): most colour-bearing blocks route colour through the shared panel — re-derive the split via `git grep -l SgsColourPanel -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`, do not trust a cached count here. Seven blocks (`notice-banner`, `quote`, `testimonial-slider`, `testimonial`, `option-picker`, `process-steps`, `product-card`) deliberately KEEP native `supports.color` sub-flags `true` alongside the panel — those flags are load-bearing for a root-level `style.color.*` mechanism the panel does not replace, so native colour UI may still appear alongside `SgsColourPanel` for those blocks specifically. `sgs/social-icons` has no custom colour attrs, only native supports — not a migration candidate; it needs its own design pass. | DONE |
+| Colour | `DesignTokenPicker` EXISTS — `enableAlpha` + `clearable` BUILT (both default true; `DesignTokenPicker.js`). ⭐ **`SgsColourPanel`** (the shared per-element colour panel that groups `DesignTokenPicker` instances, Styles-tab placement): most colour-bearing blocks route colour through the shared panel — re-derive the split via `git grep -l SgsColourPanel -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`, do not trust a cached count here. A block that routes colour through the shared panel may also deliberately KEEP native `supports.color` sub-flags `true` alongside the panel — those flags are load-bearing for a root-level `style.color.*` mechanism the panel does not replace, so native colour UI may still appear alongside `SgsColourPanel` for those blocks specifically. `sgs/social-icons` has no custom colour attrs, only native supports — not a migration candidate; it needs its own design pass. | DONE |
 | Normal/Hover state | `StateToggleControl` is not part of the codebase (`git grep -n "StateToggleControl" -- plugins/sgs-blocks/src` finds only comments; 0 imports, 0 mounts). | Hover/state colour is delivered by `SgsColourPanel`'s `rows[].states` array, passed through to `DesignTokenPicker`'s own `states` prop (e.g. `button/edit.js`). Normal/Hover lives INSIDE the colour popover. Do not wire a separate toggle component. |
 | Extension gating | `hideExtensions` (opt-out, most extensions) + `enabledExtensions` (opt-in, hover/blockLink only) EXIST | — |
-| **Shadow builder** | `ShadowControl` (`src/components/ShadowControl.js`) stores SHAPE only (X/Y/blur/spread/inset); colour is a split sibling `{name}Colour` attribute that appears as a normal row in the per-block `SgsColourPanel`, composed at render/preview via `sgs_shadow_value_composed()` (PHP) / `resolveShadowPreviewComposed()` (JS). Blocks on this shape: `cta-section`, `trust-bar` (`iconCircleShadow`/`badgeImageShadow` only — its own root shadow renders inside the shared container wrapper), `card-grid` (reference implementation), `team-member`, `brand-strip`, `testimonial`, `info-box`, `post-grid`, `before-after`, `media`, `button`, and `quote` (`ShadowControl` for shape + flat sibling `boxShadowColour`/`boxShadowHoverColour` surfaced in `SgsColourPanel`). | ✅ DONE |
-| **Link/CTA** | `LinkPopoverField` is canonical (PART O §2). No `SgsLinkControl` component exists in `plugins/sgs-blocks/src` (`git ls-files | grep SgsLinkControl` lists only `plugins/sgs-blocks/scripts/inspector-scan/fixtures/` files). Rule `27-superseded-link-control` is a guard that flags a new `<SgsLinkControl>` JSX mount in a block's `edit.js`, or in a component that block renders (`rules/27-superseded-link-control.js`); its coverage comes from its self-test fixtures only (`fixtures/27-superseded-link-control`, run by `node plugins/sgs-blocks/scripts/inspector-scan/run.js --self-test`). card-grid, media (4 fields), product-card (3 CTAs) and trust-bar item links use the shared link controls; rule 08 (raw-url-link) has 0 WARNs and 2 reasoned EXC exemptions | DONE |
+| **Shadow builder** | `ShadowControl` (`src/components/ShadowControl.js`) stores SHAPE only (X/Y/blur/spread/inset); colour is a split sibling `{name}Colour` attribute that appears as a normal row in the per-block `SgsColourPanel`, composed at render/preview via `sgs_shadow_value_composed()` (PHP) / `resolveShadowPreviewComposed()` (JS). `card-grid` is the reference implementation; list the adopters with `git grep -l "<ShadowControl" -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`. `trust-bar` uses it for `iconCircleShadow`/`badgeImageShadow` only (its own root shadow renders inside the shared container wrapper); `quote` pairs `ShadowControl` for shape with flat sibling `boxShadowColour`/`boxShadowHoverColour` surfaced in `SgsColourPanel`. | ✅ DONE |
+| **Link/CTA** | `LinkPopoverField` is canonical (PART O §2). No `SgsLinkControl` component exists in `plugins/sgs-blocks/src` (`git ls-files | grep SgsLinkControl` lists only `plugins/sgs-blocks/scripts/inspector-scan/fixtures/` files). Rule `27-superseded-link-control` is a guard that flags a new `<SgsLinkControl>` JSX mount in a block's `edit.js`, or in a component that block renders (`rules/27-superseded-link-control.js`); its coverage comes from its self-test fixtures only (`fixtures/27-superseded-link-control`, run by `node plugins/sgs-blocks/scripts/inspector-scan/run.js --self-test`). card-grid, media (4 fields), product-card (3 CTAs) and trust-bar item links use the shared link controls; rule 08 (raw-url-link) carries reasoned EXC exemptions only; re-run `node plugins/sgs-blocks/scripts/inspector-scan/run.js` for its findings | DONE |
 | **Bulk media/gallery** | **BUILT** — `MediaGalleryPicker` (extracted from `gallery/edit.js`) | DONE |
 | **Focal point / image size / aspect-ratio** | Blocks whose focal-point/image-size/aspect-ratio declaration had no effect carry no such declaration (`info-box`/`decorative-image`/`responsive-logo`/`timeline`/`brand-strip`/`trust-bar`/`hero`); blocks with a real crop scenario use an explicit mechanism (`before-after`/`team-member`/`testimonial-slider`/`gallery`/`card-grid`/`product-card`), each calling `includes/helpers-media-position.php` with its own known selector rather than a guessing filter. `testimonial`/`image-sequence` still declare the capability with a real crop scenario but are not converted — each needs its own per-item design decision. Design record: `plans/archive/spec-35-capability-routing-doctrine.md` Part 9. | ✅ **DONE** |
-| **Gradient / bg overlay** | `BackgroundPanel` covers 4 blocks (`container`, `cta-section`, `hero`, `trust-bar`): swatch+popover UI. Single-element blocks (text/button/heading/etc.) get colour/gradient via native WP colour support on a different mechanism (effect-verified by `survey-background-colour-support.py`), not via `BackgroundPanel`. | ✅ **DONE** |
+| **Gradient / bg overlay** | `BackgroundPanel` is the shared swatch+popover background UI; list its adopters with `git grep -l BackgroundPanel -- 'plugins/sgs-blocks/src/blocks/*/edit.js'`. Single-element blocks (text/button/heading/etc.) get colour/gradient via native WP colour support on a different mechanism (effect-verified by `survey-background-colour-support.py`), not via `BackgroundPanel`. | ✅ **DONE** |
 | **Spacing token control** | raw units | still open — not gated by Part K |
 | ToolsPanel disclosure | **BUILT + ROLLED OUT** — panels that are mode wizards, repeaters or variant-gated are skip-reasoned in-code | DONE |
 | **Client-safe editing** | `templateLock:"contentOnly"` is **PER-CLIENT OPT-IN ONLY** (Part G) | Not a framework rollout — deliberate, not a gap |
 | **Dynamic content** | BUILT: `includes/class-sgs-block-bindings-support.php` (`Sgs_Block_Bindings_Support`) is live and wired at `sgs-blocks.php`, widening the native Block Bindings API across the blocks listed in its `$supported_block_attributes` map. Two further binding SOURCES are registered: `class-sgs-site-info-binding.php` and `class-product-bindings.php` (with a PHPUnit test). This is the native mechanism Part G mandates, not a bespoke one. **Residual: confirm the block coverage in `$supported_block_attributes` is the intended scope, or extend it.** | DONE |
 | **Reduced-motion gate** | Every block is covered by one framework-wide gate, `theme/sgs-theme/assets/css/core-blocks-critical.css` (unconditionally enqueued by `theme/sgs-theme/functions.php`), detected live each run by `plugins/sgs-blocks/scripts/inspector-scan/rules/17-reduced-motion-gate.js` (reads `functions.php`'s enqueue chain + the CSS itself for a universal `prefers-reduced-motion` block — nothing hardcoded, so removing the gate re-flags every ungated block). A name-substring match on `supports.sgs` JSON is blind to negation: `build-roster.py` strips `hideExtensions` before matching, because `hideExtensions:["animation"]` is an opt-OUT. | DONE |
-| **Whole-card link** | **BUILT** — the block's own visible link to that destination owns the tab stop and the accessible name; the extension finds it in the rendered output, marks it `sgs-block-link-source`, demotes any FURTHER link to the same place to `tabindex="-1" aria-hidden="true"`, and injects a sibling overlay that is inert when such a link exists (hit-area geometry only) and focusable with an aria-label when none does. Never a whole-block `sgsBlockLink` wrap, so a nested `<a>` is impossible by construction; `.sgs-block-link-wrapper` has 0 occurrences repo-wide | DONE |
+| **Whole-card link** | **BUILT** — the block's own visible link to that destination owns the tab stop and the accessible name; the extension finds it in the rendered output, marks it `sgs-block-link-source`, demotes any FURTHER link to the same place to `tabindex="-1" aria-hidden="true"`, and injects a sibling overlay that is inert when such a link exists (hit-area geometry only) and focusable with an aria-label when none does. Never a whole-block `sgsBlockLink` wrap, so a nested `<a>` is impossible by construction | DONE |
 | Native duotone/aspectRatio/sticky | duotone + aspectRatio **ADOPTED native** on media/gallery (Part G verdict table); shadow/minHeight/sticky/gallery-lightbox **KEPT SGS** (deliberate) | DONE |
 
 ## PART J — Upgrade roadmap (priority-ordered, with build status)
@@ -284,7 +281,7 @@ className, align, aspectRatio, background, position, shadow, filter/duotone.
 ## PART K — Rollout mechanism
 
 Bean is QC-only long-term (CLAUDE.md SUCCESS). This standard must be enforced structurally, not by
-memory: (a) fold Part L into `block-migration-DONE-checklist.md`; (b) a lint/gate that flags a
+memory: (a) fold Part L into `.claude/plans/archive/block-migration-DONE-checklist.md`; (b) a lint/gate that flags a
 colour control without `enableAlpha`, a URL field not using the canonical link control, a preset-only
 "shadow", an animation without a reduced-motion gate; (c) `/doc-audit` cites Spec 35 per block.
 
@@ -298,7 +295,7 @@ Gates for the fast/full tier split and `npm run gate:list`).
 | Gate | Enforces | Why it exists |
 |---|---|---|
 | `scripts/check-empty-inspector-containers.js` | **Part F** — an inspector container rendered with NO children is a dead control. An empty `<ToolsPanelItem>` still shows in the "+" menu and in `resetAll`, then displays nothing when opened; an empty `<PanelBody>` opens onto blank space. | No other gate covers this class. `check-dead-controls.js` checks the INVERSE (an attribute whose control nothing renders) — a container whose children were deleted still has valid wiring, so it reads clean. ⛔ AST walk, never a regex: regexes gave inconsistent answers to the same question. |
-| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 is a retirement guard: the converter derives area names from the draft's CSS, so no reader is needed. No baseline (zero violations) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
+| `scripts/check-wrapper-capability-preconditions.js` | **§F.2.1** (`gridItems` requires `layout`) and **§F.2.2** (`supports.sgs.gridAreas` — any declaration fails the build). | `GridItemDefaultsPanel`'s `layout !== 'grid'` bail is render-time, not a declaration guarantee. Rule 2 is a retirement guard: cloning derives area names from the draft's computed layout (Spec 47), so no reader is needed. No baseline (zero violations) and no `--fix` (a codemod adding `layout` would change a block's capability set as a lint side effect). |
 
 **Gate enforcing the RENDER-side consolidation standard** — `scripts/remove-vacuous-style-engine-guard.py --check`,
 registered as a gate (with a `check:vacuous-guards` alias). This one guards Spec 32's contract rather
@@ -329,8 +326,8 @@ enforcement stack.
 
 - [x] **links use the popover link control (new-tab + rel)** — rule 08 `gate` (2 baselined non-content
       config URLs). Live control is `LinkPopoverField`; the popover placement rule holds
-- [x] **responsive props expose the 768/1024 device switcher** — rule 25 `gate`; `DeviceTabs` has zero
-      callers, so no per-control switcher survives anywhere
+- [x] **responsive props expose the 768/1024 device switcher** — rule 25 `gate`; the `DeviceTabs` component no longer exists and is a banned lookalike,
+      so no per-control switcher survives anywhere
 - [x] **`MediaUploadCheck` on every MediaUpload** — rule 14 `gate`; holds beyond the rule's
       `edit.js`-only corpus into `components/` + `extensions/`
 - [x] **animation `prefers-reduced-motion`-gated** — rule 17 `gate`; JS checks in the motion
@@ -340,7 +337,7 @@ enforcement stack.
       colour control (`DesignTokenPicker.js`). There is no separate state-toggle component (Part I)
 - [x] **decorative-image + ARIA-label where needed** — rule `18-decorative-image-aria` (advisory).
       `sgs/cta-section` and `sgs/nav-drawer` carry real toggles + ARIA wiring;
-      `sgs/media`'s `imageDecorative` and `sgs/decorative-image`'s hardcoded `aria-hidden` complete it
+      `sgs/media` and `sgs/decorative-image` both declare `imageDecorative`
 - [x] **help text linked via `aria-describedby`** (Part F) — rule `44-help-text-not-described`
       (advisory, whole-tree scope — its candidates are shared `src/components/*.js` files, not one
       block's edit.js). Scoped to a raw `<BaseControl help={...}>` mount wrapping a non-self-wiring
@@ -443,7 +440,7 @@ Named open items:
 
 **Flat-to-object migration is COMPLETE.** `gap`, `maxWidth`+`contentWidth`,
 `gridTemplateColumns`+`gridTemplateRows` and `columns` — all the properties that route through
-`class-sgs-container-wrapper.php` — are object-shaped, as are the 4 BOX-per-tier properties
+`class-sgs-container-wrapper.php` — are object-shaped, as are the BOX-per-tier properties
 (`contentBandPadding`, `contentPadding`, `pillPadding`, `padding`). One rule from that migration is a
 STANDARD-level rule: a responsive family's **control primitive must match its STORAGE SHAPE**, and the
 two change together in one commit — `ResponsiveControl` for flat sibling attrs, `ResponsiveOverride`
@@ -463,7 +460,7 @@ attribute registration and unit tests do not exercise the editor canvas (R-31-13
 crashed on first live render despite passing unit tests).
 
 **OPEN (parked, none blocking Spec 35):** `P-NO-INLINE-GATE-COVERAGE-GAPS` (gate canary page for
-var-driven features; see Spec 32 §6.2(a)) · `HeaderBehavioursTest.php` needs a composer/PHPUnit env
+var-driven features; see Spec 32 §6.2(a)) · `plugins/sgs-blocks/tests/php/HeaderBehavioursTest.php` needs a composer/PHPUnit env
 to execute · Shrink+Hide legacy-transition overlap on pre-animation-timeline browsers (documented,
 not speculatively fixed).
 
@@ -472,7 +469,7 @@ PLACEMENT RULE.
 - **A4's "block-level panel" does not exist.** Every root-scoped control resolves to a TIER 2
   property-family panel via `cluster-member-sets.json`, not a catch-all — see Spec 35 A4.
   `check-cluster-coverage.py`'s typo guard validates member keys against every registry row (not just
-  `css:*`/`anim:*`) and carries a 7-case `--self-test`.
+  `css:*`/`anim:*`) and carries a `--self-test`.
 - **Rule 22** (`inspector-scan/rules/22-placement-rule-surfaces.js` +
   `placement-rule-surfaces.json`, advisory) asserts every doc surface stating the placement rule
   states the CURRENT one. Re-run: `node plugins/sgs-blocks/scripts/inspector-scan/run.js`.
@@ -481,7 +478,7 @@ PLACEMENT RULE.
   `inspector-scan` rule 21 (`render-without-control`): re-run for the current count. ⚠ Count
   `status:"FLAGGED"` — `core/report.js` puts BASELINED entries in the `--json` array too, so a raw
   array length over-counts.
-- **The composite wrapper rule (Spec 31 §13.6 FR-31-21.1) has a fourth,
+- **The composite wrapper rule (`02-SGS-BLOCKS.md`, "Composite wrapper rule") has a fourth,
   measured exit condition: a block whose wrapper contributes ZERO live arrangement CSS
   to its own children may exit `SGS_Container_Wrapper` and render block-private — this is
   DIFFERENT from the KIND-based test and stands on its own measured evidence.**
@@ -627,14 +624,14 @@ boundary rather than inside one:
 
 | Layer | Answers | Lives in |
 |---|---|---|
-| **1. Contract** | *what shape* must a control have? | `scripts/consistency/golden-controls.json` — 14 control types |
+| **1. Contract** | *what shape* must a control have? | `scripts/consistency/golden-controls.json` — the control-type list |
 | **2. Corpus + attribution** | *which files* hold controls, *which blocks* own each finding | `inspector-scan/core/components.js` `resolveComponentFiles()` |
 | **3. Enforcer** | reads (1) over (2) | one rule/survey per concern; shared helpers in `core/golden.js` |
 
 ⛔ **A rule that hardcodes layer 1 is not generic, however generic its docblock claims to be.**
 `survey-golden-conformance.js`'s native-UI axis must not check `supports.color` for EVERY control
 type: that reports one colour answer under thirteen wrong headings. Axes read
-the support key from each type's own `nativeUi.detectVia`. Only 4 declare one: colour →
+the support key from each type's own `nativeUi.detectVia`. Only some declare one: colour →
 `supports.color`, `length-unit` and `box-4value` → `supports.spacing`, `typography` →
 `supports.typography`.
 
@@ -722,11 +719,11 @@ Reach is derived, not hardcoded: a block is in an extension's surface when it op
    `mega-panel.borderRadius` is correctly NULL (a scalar radius, not an object box-family attr) —
    check `attr_type` in the DB rather than compiling the list from `edit.js`.
 3. **`role LIKE 'icon-%'`** — tags far fewer blocks than use `IconPicker`. ⚠ The `icon-*` family is the
-   converter's SOURCE-disambiguation key, not a "uses IconPicker" tag, so the promotion pass is
+   icon SOURCE-disambiguation key, not a "uses IconPicker" tag, so the promotion pass is
    self-limiting and never admits a new member — widening it is a design choice, not a backfill.
    **OPEN.**
 4. **`block_capabilities`** — TWO different problems under one table name:
-   - **The 3 "lift" capabilities** (`scalar-content-lift`, `scalar-styling-lift`,
+   - **The "lift" capabilities** (`scalar-content-lift`, `scalar-styling-lift`,
      `array-content-lift`) are class (d) — read declaratively from `supports.sgs.*` in block.json,
      written idempotently, mechanism healthy. `sgs/testimonial-slider` and `sgs/card-grid` (collection mode)
      have real content arrays and are genuine omissions. ⛔ **`sgs/post-grid` is NOT one** — its
@@ -991,11 +988,11 @@ Revisit the assembler only if placement drifts again.
 self-classified utilities.
 
 ⛔ **No opt-out for these extensions:**
-- **`customCss`** — `sgsCustomCss` is load-bearing for clone fidelity (Spec 31 FR-31-5.2
-  residual-band passthrough), carries a deliberate framework-wide exemption in Spec 35A Part F, and
+- **`customCss`** — `sgsCustomCss` is the one sanctioned raw-CSS channel (Spec 32 FR-32-4),
+  carries a deliberate framework-wide exemption in Spec 35A Part F, and
   its own file header says "never remove it". The utility defence protects the attribute AND the
   panel (`check-universal-fit.js` argues explicitly about the PANEL — "an unused panel is inert").
-  Hiding the control makes a converter-written `ResidualBand` invisible and uneditable to the client.
+  Hiding the control removes the only escape hatch for arbitrary breakpoint rules and leaves the client unable to edit them.
   **See §G for the genuine alternative** — adopt WP 7.0's native per-block CSS and delete the
   extension, rather than hiding ours.
 - **`responsiveVisibility`** — it owns **no panel at all**; its toggles render from
