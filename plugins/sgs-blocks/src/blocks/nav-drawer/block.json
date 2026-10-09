@@ -348,7 +348,7 @@
 			"default": "",
 			"description": "Colour for a raw shadow shape in `shadow`; ignored when `shadow` is a theme preset slug."
 		},
-		"_comment_closeStyle": "Wave 3C U-9/U-11 (.claude/reports/2026-09-24-u9-u11-design.md §4.1): a TIER OBJECT -- desktop is concrete, tablet inherits desktop, mobile inherits tablet, fallback separate-x. FIVE values now (Spec 41 FR-41-12's four plus NEW `trigger`, §4.2 -- \"the menu button closes it\", the revised FR-36-6 predicate). `separate-x` and `text-swap` are the icon/text DISPLAY axis and mirror sgs/nav-bar-menu's triggerMode; `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span); `trigger` renders identically to `separate-x` whenever it actually renders -- the predicate decides whether it renders at all. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all five values -- a value one side accepts and the other rejects coerces silently, with no error on either side. A stored FLAT string (pre-migration content) is migrated by scripts/migrate-stored-tier-scalars.py (folds to {desktop:<value>}) -- render.php also defends against an unmigrated flat string directly.",
+		"_comment_closeStyle": "Wave 3C U-9/U-11 (.claude/reports/2026-09-24-u9-u11-design.md §4.1): a TIER OBJECT -- desktop is concrete, tablet inherits desktop, mobile inherits tablet, fallback separate-x. FIVE values now (Spec 36 section 14 FR-41-12's four plus NEW `trigger`, §4.2 -- \"the menu button closes it\", the revised FR-36-6 predicate). `separate-x` and `text-swap` are the icon/text DISPLAY axis and mirror sgs/nav-bar-menu's triggerMode; `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span); `trigger` renders identically to `separate-x` whenever it actually renders -- the predicate decides whether it renders at all. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all five values -- a value one side accepts and the other rejects coerces silently, with no error on either side. A stored FLAT string (pre-migration content) is migrated by scripts/migrate-stored-tier-scalars.py (folds to {desktop:<value>}) -- render.php also defends against an unmigrated flat string directly.",
 		"closeStyle": {
 			"type": "object",
 			"default": {}
@@ -424,7 +424,7 @@
 			"type": "boolean",
 			"default": true
 		},
-		"_comment_closeLabel_closeIcon": "Spec 41 FR-41-12 -- the close button's word and glyph, mirroring sgs/nav-bar-menu's triggerLabel / triggerIcon. NEITHER gets a JSON enum (closeLabel is free text; closeIcon is an object), and NEITHER gets a supports.sgs.elements member: they route no CSS property, so an element entry would be a phantom routing slot -- the same ruling Spec 41 section 8.6(e) makes for triggerMode/triggerLabel. The close button's COLOUR is wired via toggleCloseColour / toggleCloseColourHover / toggleCloseColourGradient on the `close` element.",
+		"_comment_closeLabel_closeIcon": "Spec 36 section 14 FR-41-12 -- the close button's word and glyph, mirroring sgs/nav-bar-menu's triggerLabel / triggerIcon. NEITHER gets a JSON enum (closeLabel is free text; closeIcon is an object), and NEITHER gets a supports.sgs.elements member: they route no CSS property, so an element entry would be a phantom routing slot -- the same ruling Spec 36 section 14.8.6(e) makes for triggerMode/triggerLabel. The close button's COLOUR is wired via toggleCloseColour / toggleCloseColourHover / toggleCloseColourGradient on the `close` element.",
 		"closeLabel": {
 			"type": "string",
 			"default": "Close"
@@ -915,12 +915,12 @@
 		"closeSize": {
 			"type": "string",
 			"default": "44px",
-			"description": "Mirrors nav-menu's burgerSize (css:width/css:height, Spec 41). Sets the close button's box size in px. Default 44px reproduces the CURRENT effective size exactly — style.css's base rule already sets min-width/min-height:44px with no explicit width/height, so an unset value renders byte-identical. Under text-swap/icon-and-text (closeStyle), render.php keeps width:auto (mirrors burgerSize's own triggerMode branch — a button carrying a word cannot be forced back to a fixed square) and applies this value to height/min-width/min-height only; under separate-x/burger-morph it sets a fixed width+height square, matching the current icon-only rendering."
+			"description": "Mirrors nav-menu's burgerSize (css:width/css:height, Spec 36 section 14). Sets the close button's box size in px. Default 44px reproduces the CURRENT effective size exactly — style.css's base rule already sets min-width/min-height:44px with no explicit width/height, so an unset value renders byte-identical. Under text-swap/icon-and-text (closeStyle), render.php keeps width:auto (mirrors burgerSize's own triggerMode branch — a button carrying a word cannot be forced back to a fixed square) and applies this value to height/min-width/min-height only; under separate-x/burger-morph it sets a fixed width+height square, matching the current icon-only rendering."
 		},
 		"closeFontSize": {
 			"type": "string",
 			"default": "14",
-			"description": "Spec 41 close-button typography (mirrors nav-menu's burgerFontSize mechanism, sgs_typography_css_rule()). Targets the close LABEL text span (.sgs-nav-drawer__close-text), only rendered under text-swap/icon-and-text closeStyle. Default '14' + closeFontSizeUnit 'px' reproduces style.css's pre-existing hardcoded font-size:14px exactly, so an untouched drawer (any closeStyle) renders byte-identical."
+			"description": "Spec 36 section 14 close-button typography (mirrors nav-menu's burgerFontSize mechanism, sgs_typography_css_rule()). Targets the close LABEL text span (.sgs-nav-drawer__close-text), only rendered under text-swap/icon-and-text closeStyle. Default '14' + closeFontSizeUnit 'px' reproduces style.css's pre-existing hardcoded font-size:14px exactly, so an untouched drawer (any closeStyle) renders byte-identical."
 		},
 		"closeFontSizeUnit": {
 			"type": "string",

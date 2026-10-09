@@ -1,6 +1,6 @@
 # Mama's Munches — accepted clone differences
 
-Per-draft design decisions that `computed-parity.js` will correctly score as a mismatch
+Per-draft design decisions that the parity walker (`scripts/parity/draft-live-walk.mjs`) will correctly score as a mismatch
 (they ARE a real, provable difference) but that Bean has explicitly approved as intentional.
 This is a human-readable note, not a tool feature — whoever reports a parity number should
 subtract these by hand, never wired into the scoring logic itself (Bean-directed, 2026-09-10,

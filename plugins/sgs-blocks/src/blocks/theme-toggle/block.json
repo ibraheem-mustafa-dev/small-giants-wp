@@ -54,7 +54,7 @@
 							}
 						}
 					},
-					"_note": "'current' = the toggle's own aria-pressed/aria-checked TRUE state (dark mode active) — Spec 41 FR-41-3's third state, reused here for a genuinely state-driven colour rather than a hover-adjacent one."
+					"_note": "'current' = the toggle's own aria-pressed/aria-checked TRUE state (dark mode active) — Spec 36 section 14 FR-41-3's third state, reused here for a genuinely state-driven colour rather than a hover-adjacent one."
 				},
 				"icon": {
 					"label": "Icon",

@@ -17,7 +17,7 @@
  * The three tiny pure helpers are therefore re-implemented locally, keeping the
  * drawer store untouched (CF-3).
  *
- * Handles: hover-intent open (300ms, non-touch) / tap (touch) / keyboard
+ * Handles: hover-intent open (80ms by default, set per block by the intent delay control; non-touch) / tap (touch) / keyboard
  * throughout; a bar+panel hover BRIDGE with a 170ms close-grace + cancel-on-
  * re-enter (CF-13 — the deterministic fallback core) PLUS a geometric safe
  * triangle (FR-36-4) layered in front of it: while the pointer is tracking

@@ -5,7 +5,7 @@
 	"version": "0.1.0",
 	"title": "SGS Account",
 	"category": "sgs-interactive",
-	"description": "Wraps WooCommerce's My Account page: styled sidebar/tabs menu, a dashboard with a latest-order status card and quick-links, and side-by-side/stacked logged-out log-in and register cards (Spec 30 FR-30-14).",
+	"description": "Wraps WooCommerce's My Account page: styled sidebar/tabs menu, a dashboard with a latest-order status card and quick-links, and side-by-side/stacked logged-out log-in and register cards (Spec 27 Part 3, FR-30-14).",
 	"keywords": [
 		"account",
 		"my account",
