@@ -1,5 +1,7 @@
 # SGS Client Notes — Visual Annotation & Feedback System
 
+**Status: active.** `plugins/sgs-client-notes` is built and live on sandybrown. It is a front-end annotation tool for clients; WordPress's native Notes are editor-side comments for people editing, so the two do not overlap.
+
 ## Purpose
 
 A lightweight WordPress plugin that lets clients pin visual notes/comments directly on their website pages. Notes are visible only to specific user roles and provide a structured way for clients to request changes, flag issues, or leave feedback — all without leaving the site.
