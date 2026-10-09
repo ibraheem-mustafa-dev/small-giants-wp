@@ -462,8 +462,11 @@
 /* ── Empty-cart state — distinct + actionable, not a blank panel ─────────────── */
 /* Block flow (not flex) so panelEmptyTextAlign can centre the message and
    the inline button together. */
+/* Top and bottom are the spacing presets block.json::supports.sgs.spacingDefaults
+   declares for panelEmptyPadding; each var() carries the theme's own size as its
+   fallback so the built shorthand stays valid on a scale without the slug. */
 :where(.sgs-cart__panel) .sgs-cart__panel-empty {
-	padding: 24px 0;
+	padding: var(--wp--preset--spacing--40, 1.5rem) 0;
 }
 
 :where(.sgs-cart__panel) .sgs-cart__panel-empty-message {
@@ -756,8 +759,11 @@
 }
 
 /* ── Footer — subtotal + transparency note + CTAs ────────────────────────────── */
+/* The spacing presets block.json::supports.sgs.spacingDefaults declares for
+   panelFooterPadding (S top and bottom, M left and right), each with the theme's
+   own size as its fallback. */
 :where(.sgs-cart__panel) .sgs-cart__panel-footer {
-	padding: 16px 20px;
+	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
 	border-top: 1px solid rgba(128, 128, 128, 0.25);
 }
 

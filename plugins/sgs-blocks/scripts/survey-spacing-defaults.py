@@ -33,6 +33,9 @@ census is the detector that runs first (THE migration method: survey, check, sel
      declaration. `sgs/button` padding is `exempt: theme-button-presets`.
   5. SNAPSHOTS: the spacing slugs each sites/*/theme-snapshot.json declares. A snapshot with no
      scale is assumed to inherit theme.json's (stated, not verified in WordPress core).
+  6. DECLARED DEFAULTS: block.json::supports.sgs.spacingDefaults names, per attribute and side,
+     the `var(--wp--preset--spacing--N)` an untouched side paints (Bean D1: declared, never
+     stored). A side whose stylesheet falls back to that same preset reports `declared`.
 
 Usage:
     python scripts/survey-spacing-defaults.py --survey [--out census.json]
@@ -41,10 +44,12 @@ Usage:
     python scripts/survey-spacing-defaults.py --self-test
 
 --check fails on (a) a proposed default slug missing from a snapshot's scale, unless the gap is
-acknowledged in the baseline (`--strict` ignores the acknowledgement) and (b) a stylesheet
+acknowledged in the baseline (`--strict` ignores the acknowledgement), (b) a stylesheet
 length on a Spacing-governed side that the committed baseline
-(scripts/data/spacing-defaults-census.json) does not hold. `var(--wp--preset--spacing--N)` is
-always allowed: that is the migration target.
+(scripts/data/spacing-defaults-census.json) does not hold, and (c) a declared default that is
+not a literal preset var(), names a side no Spacing control governs, whose stylesheet fallback
+is not that same preset, or whose slug a snapshot's scale lacks (never acknowledgeable).
+`var(--wp--preset--spacing--N)` is always allowed: that is the migration target.
 
 LIMITS (stated, not hidden): tier-conditional rules (@media/@container) are not base defaults;
 a stylesheet outside src/blocks/<block>/style.css (theme CSS, shared assets) is not read; a
@@ -75,6 +80,7 @@ SIDES = ('top', 'right', 'bottom', 'left')
 FAMILIES_WITH_DEFAULTS = ('padding', 'margin')
 DEFINITION_FILES = {'src/components/SgsBoxControl.js', 'src/components/ResponsiveBoxControl.js', 'src/components/ResponsiveOverride.js', 'src/components/SgsBorderControl.js'}
 PRESET_VAR = re.compile(r'var\(\s*--wp--preset--spacing--([\w-]+)\s*(?:,[^)]*)?\)')
+DECLARED_VAR = re.compile(r'var\(\s*--wp--preset--spacing--([\w-]+)\s*\)')
 BUTTON_PRESETS = '--wp--custom--button-presets--'
 MUTATE = set()  # self-test negative control: names of deliberately broken rules
 
@@ -1109,6 +1115,59 @@ def snapshot_report(tree, scale):
     return out
 
 
+def declared_report(blocks, rows, snaps):
+    """One entry per side a block.json::supports.sgs.spacingDefaults declares, with its problems.
+
+    A side whose declaration and stylesheet fallback name the same preset is marked `declared` on
+    its census row; a snapshot that lacks the slug is still a problem for the gate."""
+    out = []
+    for b, blk in sorted(blocks.items()):
+        decl = ((blk['json'].get('supports') or {}).get('sgs') or {}).get('spacingDefaults')
+        if decl is None:
+            continue
+        if not isinstance(decl, dict):
+            out.append({'block': b, 'attr': None, 'side': None, 'value': decl, 'slug': None, 'problems': ['supports.sgs.spacingDefaults is not an object']})
+            continue
+        for attr, sides in sorted(decl.items()):
+            row = rows.get((b, attr))
+            if not isinstance(sides, dict):
+                out.append({'block': b, 'attr': attr, 'side': None, 'value': sides, 'slug': None, 'problems': ['the attribute entry is not a {side: value} object']})
+                continue
+            got = {s['side']: s for s in row['sides']} if row else {}
+            for side, value in sorted(sides.items()):
+                problems = []
+                m = DECLARED_VAR.fullmatch(value.strip()) if isinstance(value, str) else None
+                slug = m.group(1) if m else None
+                if not m:
+                    problems.append(f'declared value {value!r} is not a literal var(--wp--preset--spacing--N)')
+                if side not in SIDES:
+                    problems.append(f'{side!r} is not a side')
+                elif not row:
+                    problems.append('no Spacing control edits this attribute')
+                elif row['family'] not in FAMILIES_WITH_DEFAULTS:
+                    problems.append(f'the attribute is {row["family"]}, not padding or margin')
+                elif side not in got:
+                    problems.append('no Spacing control governs this side')
+                else:
+                    srow = got[side]
+                    sm = PRESET_VAR.fullmatch((srow.get('raw') or '').strip())
+                    if not sm:
+                        problems.append(f'stylesheet paints {srow.get("raw")!r} ({srow["status"]}), not the declared preset')
+                    elif slug and sm.group(1) != slug and 'declared-ignore-slug' not in MUTATE:
+                        problems.append(f'stylesheet falls back to preset {sm.group(1)}, the declaration names {slug}')
+                agree = not problems
+                gaps = sorted(site for site, v in snaps.items() if slug and slug not in v['slugs'])
+                if gaps:
+                    problems.append(f'slug {slug} is missing from snapshot(s) {gaps}')
+                if row and side in got:
+                    got[side]['declared'] = slug
+                    if agree:
+                        got[side]['status'] = 'declared'
+                        got[side]['reason'] = f'declared default (supports.sgs.spacingDefaults); the stylesheet falls back to the same preset {slug}'
+                out.append({'block': b, 'attr': attr, 'side': side, 'value': value, 'slug': slug, 'problems': problems})
+    return out
+
+
 def build_census(tree):
     scale = load_scale(tree.theme_json)
     ast = run_ast(tree)
@@ -1119,7 +1178,8 @@ def build_census(tree):
     unresolved += [{'what': 'file did not parse', 'where': p} for p in ast['parseErrors']]
     delegating = sorted({f'{m["file"]}:{m["line"]}' for m in ast['mounts'] if m['file'] == 'src/components/SgsBorderControl.js'})
     snaps = snapshot_report(tree, scale)
-    proposed = sorted({s['nearest']['slug'] for r in rows.values() for s in r['sides'] if s['status'] == 'default'})
+    declared = declared_report(blocks, rows, snaps)
+    proposed = sorted({s['nearest']['slug'] for r in rows.values() for s in r['sides'] if s['status'] == 'default'} | {d['slug'] for d in declared if d['slug']})
     gaps = {site: sorted(set(proposed) - set(v['slugs']), key=int) for site, v in snaps.items() if set(proposed) - set(v['slugs'])}
     allsides = [s for r in rows.values() for s in r['sides']]
     spacing = [r for r in rows.values() if r['family'] in FAMILIES_WITH_DEFAULTS]
@@ -1128,7 +1188,7 @@ def build_census(tree):
         'scale': scale,
         'attributes': [rows[k] for k in sorted(rows)],
         'db_crosscheck': db_crosscheck(tree, rows, db_rows(tree), blocks),
-        'snapshots': snaps, 'proposed_slugs': proposed, 'slug_gaps': gaps,
+        'snapshots': snaps, 'proposed_slugs': proposed, 'slug_gaps': gaps, 'declared_defaults': declared,
         'unresolved': unresolved, 'delegating_border_mounts': delegating,
         'mounts_without_presets': [{'block': r['block'], 'attr': r['attr'], 'file': m['file'], 'line': m['line'], 'presets': m['presets']} for r, m in mounts_flat if m['presets'] in ('absent', 'false')],
         'mounts_with_dynamic_presets': [{'block': r['block'], 'attr': r['attr'], 'file': m['file'], 'line': m['line'], 'presets': m['presets']} for r, m in mounts_flat if isinstance(m['presets'], str) and m['presets'].startswith('dynamic')],
@@ -1140,7 +1200,8 @@ def build_census(tree):
         'sides_with_stylesheet_default': st('default') + st('em-ambiguous'), 'default': st('default'), 'em_ambiguous': st('em-ambiguous'),
         'already_preset': sum(1 for s in allsides if s.get('already_preset')),
         'lengths_to_snap': sum(1 for s in allsides if s['status'] == 'default' and not s.get('already_preset')),
-        'stay_unset': st('stay-unset'), 'unknown': st('unknown'), 'exempt': st('exempt'),
+        'stay_unset': st('stay-unset'), 'unknown': st('unknown'), 'exempt': st('exempt'), 'declared': st('declared'),
+        'declared_problems': sum(1 for d in declared if d['problems']),
         'flagged_over_50pc': sum(1 for s in allsides if s['status'] == 'default' and s['nearest']['over_50pc']),
         'ties': sum(1 for s in allsides if s['status'] == 'default' and s['nearest']['tie']),
         'mounts_without_presets': len(census['mounts_without_presets']),
@@ -1184,6 +1245,9 @@ def run_check(census, baseline, strict=False):
             fails.append(f'snapshot {site} lacks proposed default slug(s) {new} (not acknowledged in the baseline)')
         elif missing:
             notes.append(f'snapshot {site} lacks slug(s) {missing} (acknowledged in the baseline; --strict fails on it)')
+    for d in census.get('declared_defaults', []):
+        for problem in d['problems']:
+            fails.append(f'declared default {d["block"]}:{d["attr"]}:{d["side"]}: {problem}')
     stale = sorted(set(base_len) - set(length_map(census)))
     if stale:
         notes.append(f'{len(stale)} baseline entr(ies) no longer hold a stylesheet length (migrated or removed)')
@@ -1207,7 +1271,7 @@ def top_defaults(census, n=15):
 def human_summary(census):
     s = census['summary']
     lines = ['spacing-defaults census', '=' * 23]
-    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'lengths_to_snap', 'stay_unset', 'unknown', 'exempt', 'flagged_over_50pc', 'ties', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
+    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'lengths_to_snap', 'stay_unset', 'unknown', 'exempt', 'declared', 'declared_problems', 'flagged_over_50pc', 'ties', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
         lines.append(f'  {k:32} {s[k]}')
     dbc = census['db_crosscheck']
     if dbc.get('available'):
@@ -1269,6 +1333,17 @@ def assertions(census):
     for k, v in exp.get('summary', {}).items():
         if census['summary'].get(k) != v:
             fails.append(f'summary.{k} = {census["summary"].get(k)!r}, expected {v!r}')
+    declared = {f'{d["block"]}:{d["attr"]}:{d["side"]}': d['problems'] for d in census.get('declared_defaults', [])}
+    for key, want in exp.get('declared_defaults', {}).items():
+        if key not in declared:
+            fails.append(f'declared default {key}: not reported')
+            continue
+        have = declared[key]
+        if not want and have:
+            fails.append(f'declared default {key}: expected no problem, got {have}')
+        for needle in want:
+            if not any(needle in x for x in have):
+                fails.append(f'declared default {key}: expected a problem containing {needle!r}, got {have}')
     return fails
 
 
@@ -1276,8 +1351,11 @@ def gate_assertions(census):
     fails = []
     base = make_baseline(census)
     f, _ = run_check(census, base)
-    if f:
-        fails.append(f'check must pass on its own baseline: {f[:2]}')
+    planted = [x for x in f if x.startswith('declared default ')]
+    if [x for x in f if x not in planted]:
+        fails.append(f'check must pass on its own baseline apart from the planted declared defaults: {[x for x in f if x not in planted][:2]}')
+    if not planted or any(not x.startswith('declared default declaredbad:') for x in planted):
+        fails.append(f'check must fail on exactly the planted declared-default problems (declaredbad), got {planted}')
     broken = copy.deepcopy(base)
     key = next((k for k, v in broken['lengths'].items() if not PRESET_VAR.fullmatch(v.strip())), None)
     broken['lengths'].pop(key, None)
@@ -1298,7 +1376,8 @@ def gate_assertions(census):
 def self_test():
     census = build_census(fixture_tree())
     fails = assertions(census) + gate_assertions(census)
-    controls = {'tie-smaller': 'tie must resolve to the larger preset', 'no-flag': 'the >50% flag'}
+    controls = {'tie-smaller': 'tie must resolve to the larger preset', 'no-flag': 'the >50% flag',
+                'declared-ignore-slug': 'a declared preset that differs from the stylesheet fallback'}
     for name, what in controls.items():
         MUTATE.add(name)
         try:

@@ -10,6 +10,7 @@ import {
 	shadowAttrKeys,
 	TypographyControls,
 } from '../../components';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Typography per panel text element: [prefix, label, fields]. The fields match
 // the attributes block.json declares for that prefix.
@@ -73,12 +74,13 @@ const RADII = [
  * includes/helpers-cart-panel.php::sgs_cart_panel_css().
  *
  * @param {Object}   root0               Props.
+ * @param {string}   root0.name          The block's registered name (reads its declared spacing defaults).
  * @param {Object}   root0.attributes    The block's current attributes.
  * @param {Function} root0.setAttributes The block's attribute setter.
  * @param {boolean}  root0.hasPanel      Whether displayMode is flyout|drawer.
  * @param {boolean}  root0.hasDrawer     Whether displayMode is drawer.
  */
-export default function PanelDesignControls( { attributes, setAttributes, hasPanel, hasDrawer } ) {
+export default function PanelDesignControls( { name, attributes, setAttributes, hasPanel, hasDrawer } ) {
 	if ( ! hasPanel ) {
 		return null;
 	}
@@ -123,6 +125,7 @@ export default function PanelDesignControls( { attributes, setAttributes, hasPan
 						key={ attr }
 						label={ label }
 						presets
+						defaults={ spacingDefaultsFor( name, attr ) }
 						values={ {
 							base: attributes[ attr ]?.desktop ?? {},
 							tablet: attributes[ attr ]?.tablet ?? {},

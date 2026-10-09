@@ -6,12 +6,6 @@
   "accordion:headerPadding:left": "var(--sgs-accordion-header-pad-base-x)",
   "accordion:headerPadding:right": "var(--sgs-accordion-header-pad-base-x)",
   "accordion:headerPadding:top": "var(--sgs-accordion-header-pad-base-y)",
-  "cart:panelEmptyPadding:bottom": "24px",
-  "cart:panelEmptyPadding:top": "24px",
-  "cart:panelFooterPadding:bottom": "16px",
-  "cart:panelFooterPadding:left": "20px",
-  "cart:panelFooterPadding:right": "20px",
-  "cart:panelFooterPadding:top": "16px",
   "google-reviews:cardPadding:bottom": "20px",
   "google-reviews:cardPadding:left": "20px",
   "google-reviews:cardPadding:right": "20px",
@@ -48,18 +42,5 @@
   "tabs:tabPadding:right": "20px",
   "tabs:tabPadding:top": "12px"
  },
- "acknowledged_slug_gaps": {
-  "sgs-construction": [
-   "10"
-  ],
-  "sgs-healthcare": [
-   "10"
-  ],
-  "sgs-mosque": [
-   "10"
-  ],
-  "sgs-professional": [
-   "10"
-  ]
- }
+ "acknowledged_slug_gaps": {}
 }

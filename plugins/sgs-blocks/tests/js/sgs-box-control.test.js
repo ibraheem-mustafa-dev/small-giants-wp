@@ -170,6 +170,60 @@ describe( 'SgsBoxControl preset row', () => {
 	} );
 } );
 
+describe( 'SgsBoxControl declared defaults', () => {
+	const preset = ( slug ) => `var(--wp--preset--spacing--${ slug })`;
+	const footer = { top: preset( 30 ), right: preset( 40 ), bottom: preset( 30 ), left: preset( 40 ) };
+
+	test( 'an untouched side shows its declared preset as "Default (name)" with the size as placeholder, writing nothing', () => {
+		const writes = renderControlled( {}, { defaults: footer } );
+		// The sides differ, so the box starts unlinked: one row per side.
+		expect( selects() ).toHaveLength( 4 );
+		expect( selects().map( ( s ) => s.value ) ).toEqual( [ '', '', '', '' ] );
+		expect( selects().map( ( s ) => s.options[ 0 ].textContent ) ).toEqual( [
+			'Default (S)',
+			'Default (M)',
+			'Default (S)',
+			'Default (M)',
+		] );
+		expect( valueBoxes().map( ( b ) => b.placeholder ) ).toEqual( [ '1rem', '1.5rem', '1rem', '1.5rem' ] );
+		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '', '', '', '' ] );
+		expect( writes ).toEqual( [] );
+	} );
+
+	test( 'a side with only some sides declared names the declared ones and leaves the rest plain', () => {
+		renderControlled( {}, { defaults: { top: preset( 40 ), bottom: preset( 40 ) } } );
+		expect( selects().map( ( s ) => s.options[ 0 ].textContent ) ).toEqual( [
+			'Default (M)',
+			'Default',
+			'Default (M)',
+			'Default',
+		] );
+	} );
+
+	test( 'a value inherited from a wider tier beats the declared default', () => {
+		renderControlled(
+			{},
+			{ defaults: footer, inherited: { top: '20px', right: '20px', bottom: '20px', left: '20px' } }
+		);
+		expect( selects() ).toHaveLength( 1 );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default (20px)' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '20px' );
+	} );
+
+	test( 'a stored side shows its own value, not the default', () => {
+		renderControlled( { top: preset( 40 ) }, { defaults: footer } );
+		expect( selects()[ 0 ].value ).toBe( '40' );
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );
+		expect( selects()[ 1 ].options[ 0 ].textContent ).toBe( 'Default (M)' );
+	} );
+
+	test( 'negative control: without defaults an untouched side reads plain Default with no placeholder', () => {
+		renderControlled();
+		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );
+		expect( valueBoxes()[ 0 ].placeholder ).toBe( '' );
+	} );
+} );
+
 describe( 'SgsBoxControl header and side icons', () => {
 	test( 'the link button sits in the header, small and never pressed', () => {
 		renderControlled();

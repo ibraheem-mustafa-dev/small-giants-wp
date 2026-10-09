@@ -40,6 +40,18 @@
 				}
 			},
 			"shadowLift": false,
+			"spacingDefaults": {
+				"panelFooterPadding": {
+					"top": "var(--wp--preset--spacing--30)",
+					"right": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--30)",
+					"left": "var(--wp--preset--spacing--40)"
+				},
+				"panelEmptyPadding": {
+					"top": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--40)"
+				}
+			},
 			"iconPicker": true,
 			"headerEssential": true,
 			"imageControls": false,

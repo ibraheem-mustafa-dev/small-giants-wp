@@ -29,8 +29,9 @@ import { triggerStyles } from './panel-preview-style';
  * @param {Object}   root0               Block edit props.
  * @param {Object}   root0.attributes    The block's current attributes.
  * @param {Function} root0.setAttributes Setter for the block's attributes.
+ * @param {string}   root0.name          The block's registered name.
  */
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		displayMode,
 		iconName,
@@ -178,6 +179,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelDesignControls
+					name={ name }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }

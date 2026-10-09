@@ -96,6 +96,24 @@
   },
   "mapped:footPadding": {
    "sides": {"top": {"status": "default", "raw": "3rem", "slug": "60"}}
+  },
+  "declared:padding": {
+   "family": "padding", "presets": "true", "root_element": true,
+   "sides": {
+    "top": {"status": "declared", "raw": "var(--wp--preset--spacing--30, 1rem)", "reason": "falls back to the same preset 30"},
+    "right": {"status": "declared", "raw": "var(--wp--preset--spacing--40, 1.5rem)"},
+    "bottom": {"status": "declared", "raw": "var(--wp--preset--spacing--30, 1rem)"},
+    "left": {"status": "declared", "raw": "var(--wp--preset--spacing--40, 1.5rem)"}
+   }
+  },
+  "declaredbad:padding": {
+   "family": "padding", "presets": "true", "root_element": true,
+   "sides": {
+    "top": {"status": "default", "raw": "var(--wp--preset--spacing--30, 1rem)", "reason": "already a preset"},
+    "right": {"status": "stay-unset", "raw": "0"},
+    "bottom": {"status": "declared", "raw": "var(--wp--preset--spacing--10, 0.25rem)"},
+    "left": {"status": "default", "raw": "12px", "slug": "30", "tie": true}
+   }
   }
  },
  "absent_attributes": ["dbonly:padding"],
@@ -103,8 +121,15 @@
   "source_only": ["tie:padding"],
   "db_only": ["dbonly:padding"]
  },
+ "declared_defaults": {
+  "declared:padding:top": [], "declared:padding:right": [], "declared:padding:bottom": [], "declared:padding:left": [],
+  "declaredbad:padding:top": ["falls back to preset 30, the declaration names 40"],
+  "declaredbad:padding:bottom": ["missing from snapshot(s) ['alpha']"],
+  "declaredbad:padding:left": ["is not a literal var(--wp--preset--spacing--N)", "stylesheet paints '12px'"]
+ },
  "summary": {
-  "attributes_surveyed": 23, "sides_total": 92, "default": 51, "em_ambiguous": 4, "already_preset": 4,
-  "stay_unset": 25, "unknown": 8, "exempt": 4, "flagged_over_50pc": 2, "ties": 5, "mounts_without_presets": 1
+  "attributes_surveyed": 25, "sides_total": 100, "default": 53, "em_ambiguous": 4, "already_preset": 10,
+  "stay_unset": 26, "unknown": 8, "exempt": 4, "flagged_over_50pc": 2, "ties": 6, "mounts_without_presets": 1,
+  "declared": 5, "declared_problems": 3
  }
 }

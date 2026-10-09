@@ -208,6 +208,12 @@ function parseLength( raw ) {
  *                                   it as placeholder text and the slider rests
  *                                   at it; nothing is written until the client
  *                                   types (`utils/inherited-box.js`).
+ * @param {Object}   [props.defaults] { side: value } — the spacing preset the
+ *                                   block declares for each untouched side
+ *                                   (`utils/spacing-defaults.js`). An unset side
+ *                                   that inherits nothing from a wider tier
+ *                                   shows it exactly as an inherited value;
+ *                                   nothing is written.
  * @param {Object}   [props.labels]  { side: label } — names for non-side keys
  *                                   (the four corners of a radius).
  * @param {number}   [props.min]     RangeControl minimum override. Omit to
@@ -240,6 +246,7 @@ export default function SgsBoxControl( {
 	max,
 	presets = false,
 	inherited: inheritedProp,
+	defaults = {},
 	labels = SIDE_LABELS,
 } ) {
 	// A caller that knows the tiers passes `inherited`; inside a ResponsiveOverride it comes from the override.
@@ -260,9 +267,12 @@ export default function SgsBoxControl( {
 		: spacingSizes;
 	const hasPresets = ( presets === true || Array.isArray( presets ) ) && filteredSizes.length > 0;
 
+	// What an unset side paints: a wider tier's value first, else the block's declared default.
+	const unsetValue = ( key ) => inherited[ key ] || defaults?.[ key ] || '';
+
 	// Starts linked only when every side reads the same, counting what an unset side inherits.
 	const [ isLinked, setIsLinked ] = useState( () => {
-		const raw = sides.map( ( s ) => values[ s ] || inherited[ s ] || '' );
+		const raw = sides.map( ( s ) => values[ s ] || unsetValue( s ) );
 		return raw.every( ( v ) => v === raw[ 0 ] );
 	} );
 
@@ -274,9 +284,9 @@ export default function SgsBoxControl( {
 	const setRowCustom = ( rowKey, on ) =>
 		setCustomRows( ( prev ) => ( !! prev[ rowKey ] === on ? prev : { ...prev, [ rowKey ]: on } ) );
 
-	// What an unset row takes from a wider tier: the side's own inherited value, or the first side's on the
-	// linked row. '' when the row has its own value.
-	const inheritedFor = ( sideKey, value ) => ( value ? '' : inherited[ sideKey || firstSide ] ?? '' );
+	// What an unset row takes from a wider tier or, failing that, the block's declared default: the side's own,
+	// or the first side's on the linked row. '' when the row has its own value.
+	const inheritedFor = ( sideKey, value ) => ( value ? '' : unsetValue( sideKey || firstSide ) );
 
 	const setSide = ( side, raw ) => {
 		onChange( { ...values, [ side ]: raw } );
@@ -360,7 +370,7 @@ export default function SgsBoxControl( {
 			{
 				label: inheritedRaw
 					? sprintf(
-							/* translators: %s: the length this side takes from a wider device. */
+							/* translators: %s: the length this side takes from a wider device, or the block's default spacing preset. */
 							__( 'Default (%s)', 'sgs-blocks' ),
 							inheritedValueLabel( inheritedRaw, filteredSizes )
 					  )

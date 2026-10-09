@@ -134,6 +134,9 @@ export const normaliseResponsiveBox = ( box ) => {
  *                                 offer the theme.json spacing-scale dropdown
  *                                 per side (C16, 2026-08-27). OPT-IN, default
  *                                 OFF; see SgsBoxControl.js's file header.
+ * @param {Object}   [props.defaults] Passed through to SgsBoxControl — the
+ *                                 block's declared spacing preset per side
+ *                                 (`utils/spacing-defaults.js::spacingDefaultsFor`).
  * @return {JSX.Element} Controls fragment.
  */
 export default function ResponsiveBoxControl( {
@@ -143,6 +146,7 @@ export default function ResponsiveBoxControl( {
 	sides,
 	showResponsive = true,
 	presets = false,
+	defaults,
 } ) {
 	const tierValues = {
 		base: values.base ?? {},
@@ -158,6 +162,7 @@ export default function ResponsiveBoxControl( {
 				sides={ sides }
 				units={ BOX_UNITS }
 				presets={ presets }
+				defaults={ defaults }
 				onChange={ ( next ) => onChange( 'base', next ) }
 			/>
 		);
@@ -178,6 +183,7 @@ export default function ResponsiveBoxControl( {
 						sides={ sides }
 						units={ BOX_UNITS }
 						presets={ presets }
+						defaults={ defaults }
 						onChange={ ( next ) => onChange( tier, next ) }
 					/>
 				);

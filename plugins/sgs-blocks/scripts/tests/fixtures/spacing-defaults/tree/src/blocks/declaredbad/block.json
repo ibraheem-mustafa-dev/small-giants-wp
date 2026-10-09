@@ -1,0 +1,30 @@
+{
+ "name": "sgs/declaredbad",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ },
+ "supports": {
+  "sgs": {
+   "elements": {
+    "wrapper": {
+     "isWrapper": true,
+     "attrMap": {
+      "css:padding": "padding"
+     }
+    }
+   },
+   "spacingDefaults": {
+    "padding": {
+     "top": "var(--wp--preset--spacing--40)",
+     "bottom": "var(--wp--preset--spacing--10)",
+     "left": "12px"
+    }
+   }
+  }
+ }
+}
