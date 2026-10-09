@@ -516,8 +516,7 @@ h2.wc-block-mini-cart__title {
  * container block's own overlay-stacking guard in
  * plugins/sgs-blocks/src/blocks/container/style.css:63 —
  *   .sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay)
- *                     :not(.sgs-cta-section__overlay):not(.sgs-fx-path-route)
- *                     :not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target)
+ *                     :not(.sgs-fx-path-route):not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target)
  *   { position: relative; z-index: 1 }
  * `:not()` contributes no specificity ITSELF but counts its ARGUMENT at full
  * weight, so those six chained class arguments plus the leading class make that

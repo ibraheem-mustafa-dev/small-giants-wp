@@ -65,7 +65,7 @@ if ( ! empty( $card_state_vars ) ) {
 
 // --- Hover COLOUR, via the one shared helper. The helper emits the real
 // declarations on this instance's own scoped selector, matching sgs/info-box,
-// sgs/hero, sgs/process-steps, sgs/cta-section and sgs/post-grid. Emitting
+// sgs/hero, sgs/process-steps and sgs/post-grid. Emitting
 // here rather than per-branch also collapses the two duplicate emission
 // sites into one — both branches resolve the SAME $hover_* variables further
 // up.

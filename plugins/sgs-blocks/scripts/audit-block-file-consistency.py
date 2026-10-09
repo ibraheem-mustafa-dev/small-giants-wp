@@ -182,7 +182,7 @@ def compute_support_injected_attrs(supports):
                                  that shipped 5 false positives here) for
                                  typography.textAlign / __experimentalTextAlign
                                  — CONFIRMED against this repo's own live
-                                 render.php comments (hero, cta-section,
+                                 render.php comments (hero,
                                  notice-banner, team-member, countdown-timer
                                  all read `$attributes['textAlign']` with a
                                  documented "WP core applies has-text-align-*

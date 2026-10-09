@@ -8,7 +8,7 @@
 import { getBlockType } from '@wordpress/blocks';
 
 /**
- * @param {string} blockName The registered block name (`sgs/cta-section`).
+ * @param {string} blockName The registered block name (`sgs/container`).
  * @param {string} attr      The box attribute (`padding`).
  * @return {boolean} True only when the block declares `true` for the attribute.
  */

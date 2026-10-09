@@ -368,7 +368,7 @@ $scoped_css[]      = sgs_block_background_layer_css(
  * text-align is the ONE declared typography support the wholesale passthrough
  * above cannot carry: it is not a style-engine key, so
  * wp_style_engine_get_styles() silently ignores it (same reason
- * sgs/notice-banner and sgs/cta-section each emit it by hand). Every other
+ * sgs/notice-banner emits it by hand). Every other
  * declared support — fontSize / lineHeight / letterSpacing / textTransform /
  * fontWeight / fontStyle — already reaches $root_sel through
  * $style_typography_args, so this is the only gap.

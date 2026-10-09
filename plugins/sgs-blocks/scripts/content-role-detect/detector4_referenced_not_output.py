@@ -155,7 +155,7 @@ def find_reference(block_slug: str, attr: str) -> tuple[str, int] | None:
 
     Measured failure that prompted this: `sgs/container.shapeDividerTop` resolved to
     `components/ContainerWrapperControls.js:1002`, a `SelectControl value={...}` binding,
-    while the SAME attribute on hero / cta-section / trust-bar / site-header / site-footer
+    while the SAME attribute on hero / trust-bar / site-header / site-footer
     / physics-canvas resolved to the shared wrapper that actually paints it. Those six have
     no block-local control file, so the iterator reached the wrapper first. One attribute,
     one shared consumer, two different buckets -- decided by directory layout. The 2 odd

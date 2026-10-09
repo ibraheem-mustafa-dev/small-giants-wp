@@ -186,8 +186,8 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 			/>
 			{ /* D717 (2026-08-21). REPLACES the colour picker's alpha channel as the
 			   overlay's transparency mechanism — see the help-text comment above for
-			   why alpha was actively harmful. Reaches all eight blocks that mount this
-			   panel (container, cta-section, hero, multi-button, physics-canvas,
+			   why alpha was actively harmful. Reaches all seven blocks that mount this
+			   panel (container, hero, multi-button, physics-canvas,
 			   site-footer, site-header, trust-bar) with no per-block wiring, and is
 			   painted by the one shared owner, sgs_overlay_decls(). */ }
 			<ResponsiveControl label={ __( 'Overlay opacity', 'sgs-blocks' ) }>
@@ -479,7 +479,7 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 								     (isSimpleBackgroundImage — the runtime needs a real nested <img> to
 								     repaint; a CSS background-image on ::before has no pixel source for
 								     it); (c) not already offered via the shared fx ToolsPanel on this
-								     block (hero/cta-section/trust-bar already have it there — checked
+								     block (hero/trust-bar already have it there — checked
 								     against the same generated roster, never hardcoded). */ }
 								{ hasBgImage && isSimpleBackgroundImage( attributes ) &&
 									! alreadyOffersSurfaceTreatmentViaFxPanel( name ) && (

@@ -11,7 +11,7 @@ else the container-wrapper logic can't route it through the shared
 3-layer model.  NOTE: 'content-block' IS allowed (trust-bar uses it) — do NOT
 require 'section-root'.
 
-Today: all 3 class-section blocks (cta-section, hero, trust-bar) pass.
+Today: all 2 class-section blocks (hero, trust-bar) pass.
 """
 from __future__ import annotations
 

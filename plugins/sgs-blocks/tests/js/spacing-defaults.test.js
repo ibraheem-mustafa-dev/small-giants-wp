@@ -178,19 +178,6 @@ describe( 'the shipped declarations resolve per tier and setting', () => {
 	};
 	afterEach( () => getBlockType.mockReset() );
 
-	it( 'sgs/cta-section padding: 3rem/1.5rem on desktop and tablet, 1.5rem/1rem on mobile', () => {
-		const p = ( slug ) => `var(--wp--preset--spacing--${ slug })`;
-		const wide = { top: p( 60 ), right: p( 40 ), bottom: p( 60 ), left: p( 40 ) };
-		expect( resolve( 'cta-section', 'padding', { tier: 'desktop' } ) ).toEqual( wide );
-		expect( resolve( 'cta-section', 'padding', { tier: 'tablet' } ) ).toEqual( wide );
-		expect( resolve( 'cta-section', 'padding', { tier: 'mobile' } ) ).toEqual( {
-			top: p( 40 ),
-			right: p( 30 ),
-			bottom: p( 40 ),
-			left: p( 30 ),
-		} );
-	} );
-
 	it( 'sgs/tabs tabPadding: the compact mobile padding only for horizontal tabs that stack', () => {
 		const at = ( attributes, tier ) => resolve( 'tabs', 'tabPadding', { attributes, tier } );
 		const stacked = { orientation: 'horizontal', mobileLayout: 'stack' };

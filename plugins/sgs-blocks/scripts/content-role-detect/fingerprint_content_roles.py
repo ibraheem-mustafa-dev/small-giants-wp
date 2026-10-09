@@ -846,7 +846,7 @@ def _styling_upgrades(rows: list[tuple[str, str]]) -> list[dict]:
     with `styling` is churn that would make a reseed look like it changed something.
 
     THE BUILT-IN NEGATIVE CONTROL is a real row, not a fixture: `gridItemBorder` on
-    container/cta-section/hero ALSO carries css_property='border-color' and looks
+    container/hero ALSO carries css_property='border-color' and looks
     identical to the four upgradeable rows in a GROUP BY — but its value is a border
     SHORTHAND (`1px solid #ccc`), sanitised by a regex that deliberately permits spaces
     and emitted raw into `--sgs-gi-border`. Filing it `color` would hand

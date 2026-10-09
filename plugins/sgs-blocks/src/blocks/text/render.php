@@ -190,7 +190,7 @@ if ( ! function_exists( 'sgs_text_nearest_ancestor_establishes_own_alignment' ) 
 	 * True when the nearest ancestor WP_Block already controls its children's
 	 * horizontal position via its own flex/grid/stack layout (the same
 	 * 'layout' attribute contract shared by sgs/container, sgs/hero,
-	 * sgs/multi-button, sgs/feature-grid, sgs/cta-section, sgs/card-grid —
+	 * sgs/multi-button, sgs/feature-grid, sgs/card-grid —
 	 * D152's composite wrapper rule) — i.e. pairing a maxWidth child with
 	 * margin-inline:auto there would FIGHT that machinery rather than
 	 * respect it. False (including "no ancestor found") means the ancestor

@@ -238,10 +238,6 @@ def derive_block_composition(soup: BeautifulSoup) -> list[str]:
     if soup.find("footer") or _any_class(soup, r"footer"):
         suggestions.append("sgs/footer")
 
-    # --- sgs/cta-section ---
-    if _any_class(soup, r"^cta"):
-        suggestions.append("sgs/cta-section")
-
     # --- sgs/accordion ---
     if soup.find("details") or _any_class(soup, r"faq|accordion"):
         suggestions.append("sgs/accordion")

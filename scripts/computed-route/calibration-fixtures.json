@@ -2153,25 +2153,6 @@
       "label": "Sample count"
     }
   },
-  "sgs/cta-section": {
-    "attributes": {
-      "headline": "A sample headline",
-      "buttons": [
-        {
-          "text": "Get started",
-          "style": "accent",
-          "url": "/"
-        }
-      ],
-      "backgroundMedia": {
-        "id": 3459,
-        "url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-        "alt": "Sample image",
-        "type": "image",
-        "mime": "image/jpeg"
-      }
-    }
-  },
   "sgs/decorative-image": {
     "attributes": {
       "decorMedia": {

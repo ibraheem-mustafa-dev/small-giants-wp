@@ -68,7 +68,6 @@ class RenderOutputTest extends TestCase {
     public static function key_block_element_provider(): array {
         return [
             'hero outputs section'       => [ 'hero',        "SGS_Container_Wrapper::resolve_kind( \$block, 'section' )" ],
-            'cta-section outputs section'=> [ 'cta-section', "SGS_Container_Wrapper::resolve_kind( \$block, 'section' )" ],
             'icon-list outputs ul'       => [ 'icon-list',   '<ul'      ],
             'form contains form element' => [ 'form',        '<form'    ],
         ];

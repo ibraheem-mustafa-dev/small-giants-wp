@@ -3,7 +3,7 @@
  * Standalone runner for SGS_Container_Wrapper (class-sgs-container-wrapper.php).
  *
  * This is the highest-blast-radius render helper in the plugin — 28 dependent
- * blocks (sgs/container, hero, cta-section, trust-bar, card-grid, feature-grid,
+ * blocks (sgs/container, hero, trust-bar, card-grid, feature-grid,
  * etc.) all call SGS_Container_Wrapper::render() to assemble their outer wrapper.
  * It had ZERO tests before this file. Mirrors run-responsive-engine-standalone.php
  * (plain PHP, no PHPUnit/composer required) — exits non-zero on any failure and

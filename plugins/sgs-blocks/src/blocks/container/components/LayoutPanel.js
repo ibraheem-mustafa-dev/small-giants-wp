@@ -75,8 +75,7 @@ export function LayoutPanel( {
 	// own block.json today. LayoutPanel is shared by ~30 blocks (see file header);
 	// rendering this control unconditionally would destructure an attribute most
 	// callers' schemas don't declare, which WordPress silently discards on save
-	// (caught live by check-undeclared-attrs.py flagging sgs/cta-section,
-	// sgs/gallery, sgs/trust-bar). Opt-in, same shape as `showLayout` above — a
+	// (caught live by check-undeclared-attrs.py flagging sgs/gallery, sgs/trust-bar). Opt-in, same shape as `showLayout` above — a
 	// caller whose own block.json declares supports.sgs.intrinsicColumns passes
 	// true.
 	enableIntrinsicColumns = false,
@@ -112,7 +111,7 @@ export function LayoutPanel( {
 	// ever declared on a caller whose own block.json opts in (see the prop
 	// docblock above), and destructuring it unconditionally at the top of a
 	// shared component used by ~30 blocks is exactly what check-undeclared-attrs
-	// flags (caught live on sgs/cta-section, sgs/gallery, sgs/trust-bar).
+	// flags (caught live on sgs/gallery, sgs/trust-bar).
 
 	return (
 		<>
@@ -503,8 +502,8 @@ export function LayoutPanel( {
  * `name` is an OPTIONAL prop: the block name (or a settings object), passed
  * through to `isExtensionEnabled()` exactly as the HOC-injected universal
  * extensions already do (`hover-effects.js`). It is deliberately NOT a new
- * required prop — every one of today's 6 call sites (`container`,
- * `cta-section`, `trust-bar`, `hero`, `site-footer`, `site-header`, all in
+ * required prop — every one of today's 5 call sites (`container`,
+ * `trust-bar`, `hero`, `site-footer`, `site-header`, all in
  * `src/blocks/*\/edit.js`, plus the `kind='section'` aggregator branch further
  * down this file) mounts `<BackgroundPanel attributes={…} setAttributes={…} />`
  * with no `name` — none of those 6 blocks declare `supports.sgs.enabledExtensions`

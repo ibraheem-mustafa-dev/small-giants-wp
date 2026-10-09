@@ -124,14 +124,6 @@
 			}
 		},
 		{
-			"slug": "sgs/cta-section",
-			"attr": "bgSvgTextShadow",
-			"fields": {
-				"role": "behaviour",
-				"derived_selector": null
-			}
-		},
-		{
 			"slug": "sgs/container",
 			"attr": "bgSvgTextShadow",
 			"fields": {
@@ -663,13 +655,6 @@
 			"attr": "label",
 			"fields": {
 				"derived_selector": ".sgs-counter__label"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "headline",
-			"fields": {
-				"derived_selector": ".sgs-cta-section__headline, h1, h2"
 			}
 		},
 		{
@@ -1355,15 +1340,6 @@
 			}
 		},
 		{
-			"_why": "Track B, 2026-08-04. The `price` slot lists \"ribbon\" among its own aliases, and load_slot_aliases() builds its map first-writer-wins over an unordered scan, so `price` claims the name before the dedicated `ribbon` slot (which exists) can register its own. A draft authoring a cta-section ribbon writes .sgs-cta-section__ribbon, which the price-derived selector cannot match. Measured: 10 such alias collisions exist, 4 touch a live sgs/% attr, 3 are wrong. Fixed by override, NOT by de-duplicating slots.aliases: 179 of 1170 attrs depend on that alias layer for genuine synonym work (title->heading, url->link, columns->column), so removing it would break ~175 rows to fix 3.",
-			"slug": "sgs/cta-section",
-			"attr": "ribbon",
-			"fields": {
-				"canonical_slot": "ribbon",
-				"derived_selector": ".sgs-cta-section__ribbon"
-			}
-		},
-		{
 			"_why": "Track B, 2026-08-04. Same alias-collision class: the `text` slot claims \"caption\" as an alias, so sgs/media.caption seeded canonical_slot='text'. The block genuinely renders .sgs-media__caption (verified: 2 occurrences in its own source), which is what a draft would author.",
 			"slug": "sgs/media",
 			"attr": "caption",
@@ -1586,14 +1562,6 @@
 			}
 		},
 		{
-			"slug": "sgs/cta-section",
-			"attr": "bgKenBurns",
-			"fields": {
-				"role": "boolean-visibility",
-				"_reason": "2026-09-21 (F3). Was role css-gate + css_property animation + css_element wrapper. bgKenBurns is a Ken Burns ON/OFF toggle: the animation itself is fixed in the block's stylesheet, so no raw CSS animation value can be a value for it. The css-gate role is only honest when a value parser turns the draft declaration into on/off (transform scale -> imageZoomHover, filter grayscale -> grayscaleHover, state_value_lift); there is no parser for the animation shorthand, so the converter routed any draft animation (a marquee, a pulse) to bgKenBurns as the raw string and emitted bgKenBurns:none, which PHP reads as true. Now matches sgs/multi-button and sgs/physics-canvas bgKenBurns (boolean-visibility, no css_property)."
-			}
-		},
-		{
 			"slug": "sgs/hero",
 			"attr": "bgKenBurns",
 			"fields": {
@@ -1717,34 +1685,6 @@
 		},
 		{
 			"slug": "sgs/container",
-			"attr": "shapeDividerBottomInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerTopFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerTopInvert",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shapeDividerBottomFlip",
-			"fields": {
-				"role": "styling"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
 			"attr": "shapeDividerBottomInvert",
 			"fields": {
 				"role": "styling"
@@ -2042,20 +1982,6 @@
 			"attr": "threshold",
 			"fields": {
 				"role": "technical"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "buttons",
-			"fields": {
-				"role": "content"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "stats",
-			"fields": {
-				"role": "content"
 			}
 		},
 		{
@@ -2432,14 +2358,6 @@
 			"_why": "MIS-DERIVED css_property cleared 2026-08-29 — the mobile twin of the sgs/team-member.photoTablet entry directly above; see that entry for the full root cause. Here the derived layer claims css_property='max-width' + css_tier='mobile', read out of `<source media=\"(max-width:767px)\">` at render.php:261. NOTE for anyone carrying forward the 2026-08-29 handoff prompt: that prompt stated `photoMobile` NO LONGER EXISTS in the DB, removed by the 2026-08-28 ghost-row prune. That is FALSE — re-verified against the live DB on 2026-08-29, both rows are present and both were mis-derived identically."
 		},
 		{
-			"slug": "sgs/cta-section",
-			"attr": "textAlign",
-			"fields": {
-				"css_property": null
-			},
-			"_why": "STRAY css_property cleared 2026-08-15. The attribute is NOT the emitter — the block's own docblock (render.php:14,21) states 'textAlign (native typography support — targets the headline child)' and 'textAlign is handled by the single native textAlign support'. block.json confirms supports.typography.textAlign=true, and the headline element's attrMap routes css:text-align to `native:typography.textAlign`, NOT to this attr. The bare `textAlign` string attribute is a vestigial declaration; its css_property='text-align' was a rogue seed the derived classifier never claims, so db-consistency flagged it as 'would vanish on the next reseed'. Pinning it to null makes the DB state match the truth durably instead of oscillating each reseed."
-		},
-		{
 			"slug": "sgs/testimonial",
 			"attr": "ratingScaleMax",
 			"fields": {
@@ -2462,17 +2380,6 @@
 				"role": "technical"
 			},
 			"_why": "2026-08-15 element-manifest style-defect audit. Found while checking the blast radius of removing the sibling 'Max' suffix row (property_suffixes had a parallel 'Min' row, same role='layout', same 'Added by Spec 15 P3 §3.8 gap remediation' seed, also now REMOVED -- see property-suffixes.json '__why_min_max_removed'). This is the suffix's ONLY real occurrence. Verified against render.php:19 ($min = $attributes['min'] ?? '') and :25-26 (if (!empty($min)) { $extra_attrs[] = 'min=\"' . esc_attr($min) . '\"'; }) -- renders as the native HTML <input type=number min=\"\"> validation attribute, never CSS. role='technical' for the same reason as its sibling 'max' attr on this block."
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "shadowColour",
-			"fields": {
-				"css_property": "box-shadow-color",
-				"css_element": "wrapper",
-				"derived_selector": ".sgs-cta-section__shadow",
-				"css_layer": "OUTER"
-			},
-			"_why": "2026-08-15 shadow colour-architecture redesign (D621/D622) — ShadowControl now stores a SHAPE-only string (no colour), with colour split into a sibling {name}Colour attr composed back in at render time via sgs_shadow_value_composed($shape, $colour). The shape+colour pair is passed as two arguments on the SAME render.php line (the compose call), which made the static extractor mis-derive the colour attr as css_property=box-shadow — either colliding with the shape attr for the identical (property, layer/element, state) slot (AmbiguousLayerAttrError, sgs/card-grid + sgs/testimonial), or landing with no resolvable css_element/derived_selector at all (undeclared-subelement, sgs/team-member; unclassified, sgs/trust-bar + sgs/brand-strip + sgs/cta-section). Overridden to a distinct sub-property key box-shadow-color (mirrors the existing border-width/border-style/border-color decomposition already used elsewhere in this table for one CSS shorthand split across several attrs) so the colour attr no longer contends with its shape sibling for the box-shadow slot, with css_element/css_state/derived_selector copied from the shape sibling so cloning still scopes the colour to the correct element/state."
 		},
 		{
 			"slug": "sgs/trust-bar",
@@ -2734,14 +2641,6 @@
 				"css_element": "dialog"
 			},
 			"_why": "2026-08-28 NULL css_element fix (§6). Fallback-mechanism-only attr — an enum driving a multi-property geometry function, not a clean 1:1 attrMap shape. css_property is already correctly derived as 'max-width' (verified against block_attributes before writing this entry) — only css_element was missing. 'dialog' is the block's own declared root element (block.json supports.sgs.elements.dialog)."
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "backgroundMedia",
-			"fields": {
-				"css_element": "decorative"
-			},
-			"_why": "2026-08-28 NULL css_element fix (§6). The proposal doc flagged this row as needing the element key CONFIRMED before writing, not assumed as 'wrapper'. Read cta-section/block.json directly: its 'decorative' element (order 9) is explicitly documented as covering 'Background image/video (backgroundImage*/backgroundMedia/bgVideo*)... governed by dedicated controls outside the Text/Fill/Layout style clusters' — NOT the 'wrapper' element, which is a separate manifest entry scoped to fill/layout/animation clusters (background-color, padding, margin, border, max-width, min-height, box-shadow, parallax/duration, text colour). css_property is already correctly derived as 'background-image' (verified against block_attributes before writing this entry) — only css_element was missing."
 		},
 		{
 			"slug": "sgs/form",
@@ -3338,22 +3237,6 @@
 		},
 		{
 			"slug": "sgs/container",
-			"attr": "overlayGradientHover",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
-			"attr": "overlayGradient",
-			"fields": {
-				"css_property": "background-image",
-				"css_element": "overlay"
-			}
-		},
-		{
-			"slug": "sgs/cta-section",
 			"attr": "overlayGradientHover",
 			"fields": {
 				"css_property": "background-image",
@@ -6966,14 +6849,6 @@
 		},
 		{
 			"slug": "sgs/container",
-			"attr": "backgroundOverlayBlendMode",
-			"fields": {
-				"css_property": "mix-blend-mode"
-			},
-			"_why": "2026-10-07: behavioural-analyser/extract-signatures.py cannot derive this property at all (it has no mix-blend-mode branch), so every regeneration of behavioural-analyser/css-property-classifications.json silently DROPPED these 8 entries and the attr reseeded with css_property NULL - losing the routing for the overlay blend control on 8 blocks, with no gate catching it (db-consistency reports 0 violations either way). Recorded here instead because this file is the hand-authored, reseed-durable layer: the derived file is generated output and cannot hold an entry its generator does not produce. Remove these only when extract-signatures.py learns the sgs_overlay_decls() blend-mode argument."
-		},
-		{
-			"slug": "sgs/cta-section",
 			"attr": "backgroundOverlayBlendMode",
 			"fields": {
 				"css_property": "mix-blend-mode"

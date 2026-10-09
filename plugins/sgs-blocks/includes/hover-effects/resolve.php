@@ -123,9 +123,7 @@ function resolve_hover_defaults( string $block_name ): array {
  * Gate A cleanup (D808 follow-up, 2026-08-27): pricing-table, google-reviews
  * and whatsapp-cta are root-hover blocks (D808) but have no image element for
  * the panel's "Zoom image on hover" / "Grayscale to colour" toggles to bind
- * to — cta-section is the only one of the four with a real (optional
- * background) image; see plugins/sgs-blocks/src/blocks/cta-section/style.css.
- * Leaving the toggles present-but-inert on the other three is exactly the
+ * to. Leaving the toggles present-but-inert is exactly the
  * D805 failure shape (a control the client can flip that does nothing), so
  * they are suppressed structurally rather than left for the client to
  * discover are dead.

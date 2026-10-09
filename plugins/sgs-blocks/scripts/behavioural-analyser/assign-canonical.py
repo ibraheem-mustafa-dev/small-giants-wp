@@ -2020,7 +2020,7 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # being filed two ways depending on which mechanism reached it first.
     #
     # NEGATIVE CONTROL, and it is a REAL row not a fixture: gridItemBorder on
-    # container/cta-section/hero also carries css_property='border-color' and is
+    # container/hero also carries css_property='border-color' and is
     # indistinguishable from the upgraded rows in a GROUP BY -- but its value is a border
     # SHORTHAND emitted raw, so `color` would be WRONG. It must survive unchanged; the
     # self-test asserts that.

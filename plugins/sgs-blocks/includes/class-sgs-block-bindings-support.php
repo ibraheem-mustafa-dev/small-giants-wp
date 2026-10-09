@@ -87,7 +87,7 @@ final class Sgs_Block_Bindings_Support {
 	 *     bookkeeping, not client content); `sgs/heading`'s `headingRole` (an
 	 *     enum UI selector, not authored text) — deliberately curated out.
 	 *   - `sgs/info-box` (`heading`/`description`), `sgs/hero` (`label`),
-	 *     `sgs/notice-banner` (`text`), `sgs/cta-section` (`headline`),
+	 *     `sgs/notice-banner` (`text`),
 	 *     `sgs/tab` (`label`) — DECLARED `role:content` in block.json but
 	 *     genuinely DEAD at render: each was FR-22-6-migrated to an InnerBlocks
 	 *     child (sgs/heading/sgs/text/sgs/label) that owns the real text, and

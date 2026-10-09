@@ -46,7 +46,7 @@ WHAT COUNTS AS "PROVIDING" A REQUIREMENT (ground truth, not invented)
                 Before the split both DrawSVG and MorphSVG shared a single
                 'svg' requirement, computed as one union below. That
                 conflated two different facts about a block and had a real
-                consequence: `sgs/container`/`sgs/hero`/`sgs/cta-section`/
+                consequence: `sgs/container`/`sgs/hero`/
                 `sgs/trust-bar` (the `bgSvgContent` providers — a `<div>`
                 wrapper with an operator-supplied decorative background SVG
                 blob, no shape geometry at its OWN root) satisfied the

@@ -238,7 +238,7 @@ INSERTS: list[dict] = [
     },
     {
         # sgs/site-header (2026-07-13, Spec 17 §S9 / FR-S9-2, D323) — section-KIND
-        # header shell; mirrors cta-section/hero (section-root). wraps_block +
+        # header shell; mirrors hero (section-root). wraps_block +
         # container_kind='section' are set by sync-container-wrapping-blocks.py --apply.
         "block_slug": "sgs/site-header",
         "wraps_block": None,
@@ -388,11 +388,11 @@ INSERTS: list[dict] = [
         # accessibility, structure, or cloning — it is operator-discretion
         # decoration. Seeded so the F6 db-consistency gate passes; NOT seeded
         # into slots/roles, because it is intentionally unclonable.
-        # Field values verified against the live table, NOT assumed: sgs/hero and
-        # sgs/cta-section both read wraps_block='sgs/container' +
+        # Field values verified against the live table, NOT assumed: sgs/hero
+        # reads wraps_block='sgs/container' +
         # composition_role='section-root' (there is no 'section' role — the four
         # in use are content-block / leaf / section-root / wrapper-shell), and
-        # accepts_allowed_blocks holds a JSON ARRAY of slugs, as cta-section does,
+        # accepts_allowed_blocks holds a JSON ARRAY of slugs,
         # not a boolean. container_kind is deliberately absent here: it is set by
         # sync-container-wrapping-blocks.py --apply, like every other row.
         "block_slug": "sgs/physics-canvas",

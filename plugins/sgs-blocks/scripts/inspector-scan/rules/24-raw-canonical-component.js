@@ -84,7 +84,7 @@
 //     identical class of gap for `<img>`/MediaPicker.js). The contract names
 //     a live instance of exactly this: `GradientOverlayControl.js:191`
 //     renders a raw `GradientPicker` reaching `container`/`hero`/
-//     `trust-bar`/`cta-section` indirectly (§1.3/§1.7) — that file lives in
+//     `trust-bar` indirectly (§1.3/§1.7) — that file lives in
 //     `src/components/`, not `src/blocks/*/edit.js`, so it is out of this
 //     rule's scope by the same per-block-edit.js boundary rules 04/08 use,
 //     not by an oversight.

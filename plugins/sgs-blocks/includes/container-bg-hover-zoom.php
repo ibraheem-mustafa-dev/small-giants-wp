@@ -3,7 +3,7 @@
  * Background image zoom on hover — the Background panel's "Zoom background on hover".
  *
  * For every block that renders through SGS_Container_Wrapper and mounts the Background
- * panel (container, hero, cta-section, site-header, site-footer, trust-bar, multi-button,
+ * panel (container, hero, site-header, site-footer, trust-bar, multi-button,
  * physics-canvas). Hovering the block, or focusing into it, scales its background image
  * inside the block's own frame: the root already clips a background image
  * (`.sgs-container--has-bg-image{overflow:hidden}` in container/style.css), so the image

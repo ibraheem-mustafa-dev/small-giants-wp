@@ -96,9 +96,9 @@
 
    That list was self-defeating. Each `:not(.x)` ADDS a class's specificity, so the
    base rule reached (0,10,0) while a layer's own rule sits at (0,1,0). Every member
-   added made the NEXT unlisted layer more certain to lose. SIX separate features
+   added made the NEXT unlisted layer more certain to lose. FIVE separate features
    learned this independently, each fixed by appending one more name: the shared
-   overlay, hero's overlay, cta-section's overlay, the fx path/shape visuals, the
+   overlay, hero's overlay, the fx path/shape visuals, the
    container image background, the FR-38-31 wave-gradient canvas (which rendered
    24px inset and 146px down, and grew its section to 5170px — an in-flow
    height:100% child feeds its height back into the parent that sizes it, pushing

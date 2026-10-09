@@ -2,7 +2,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, BoxControl } from '@wordpress/components';
 import { ResponsiveOverride } from '../../components';
 
-// Mirrors the live container/edit.js:381-395 + cta-section/edit.js:398-412 +
+// Mirrors the live container/edit.js:381-395 +
 // hero/edit.js:1463-1477 shape: contentBandPadding is object-typed
 // ({desktop,tablet,mobile}), so Spec 35 §12 field 3 row 2 mandates
 // <ResponsiveOverride> wrapping a PLAIN <BoxControl> — ResponsiveOverride

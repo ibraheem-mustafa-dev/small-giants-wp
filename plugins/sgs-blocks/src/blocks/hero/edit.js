@@ -1819,7 +1819,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				</PanelBody>
 
 				{ /* Root padding & margin — box-object interface contract (mirrors
-					sgs/cta-section + sgs/container). `padding` and `margin` are each
+					sgs/container). `padding` and `margin` are each
 					ONE tier-of-boxes object attr {desktop,tablet,mobile}, each tier a
 					{top,right,bottom,left} box; the shared wrapper reads the tiers at
 					@media breakpoints. */ }

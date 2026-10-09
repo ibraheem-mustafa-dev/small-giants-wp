@@ -229,7 +229,7 @@ def has_inner_blocks(bj: dict) -> bool:
         'accordion', 'tabs', 'form', 'form-step', 'multi-button',
         'card-grid', 'mega-menu', 'mobile-nav', 'container', 'pricing-table',
         'gallery', 'feature-grid', 'icon-grid', 'stats-bar', 'timeline',
-        'process-steps', 'cta-section',
+        'process-steps',
     }
     # 2026-05-25 D72: old 'trust-bar' (stat-counter block) retired in favour of
     # universal-nesting via sgs/container + sgs/icon-list / sgs/counter.

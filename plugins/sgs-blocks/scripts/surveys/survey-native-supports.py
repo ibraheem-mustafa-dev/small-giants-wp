@@ -1055,7 +1055,7 @@ def self_test():
 
         # --- Negative control: delegates_to_wrapper rescues a skip-serialised
         #     family even with no direct self-apply call in this block's own
-        #     render.php (matches hero/cta-section/trust-bar's real shape).
+        #     render.php (matches hero/trust-bar's real shape).
         d = make_block('delegate-block', {
             'spacing': {'padding': True, '__experimentalSkipSerialization': True},
         }, render_php=(

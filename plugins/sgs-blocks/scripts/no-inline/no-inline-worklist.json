@@ -673,34 +673,6 @@
     "class": "done"
   },
   {
-    "block": "cta-section",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [
-        "wrapper_styles"
-      ],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color"
-      ],
-      "skip_serialization": {
-        "color": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "done",
-    "class": "done"
-  },
-  {
     "block": "decorative-image",
     "static": {
       "render_php": true,

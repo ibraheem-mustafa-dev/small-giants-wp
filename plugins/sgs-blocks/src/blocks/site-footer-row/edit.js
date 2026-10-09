@@ -57,8 +57,8 @@ const FX_EFFECT_OPTIONS = [
 // isWrapper element with clusters [text, fill, layout], so its controls
 // resolve to property-family panels rather than one catch-all. These local
 // constants deliberately DUPLICATE the ones inside the shared
-// `ResponsiveBoxControls` component: that component is mounted by 6 OTHER
-// blocks (gallery/cta-section/trust-bar/hero/container/physics-canvas) and
+// `ResponsiveBoxControls` component: that component is mounted by 5 OTHER
+// blocks (gallery/trust-bar/hero/container/physics-canvas) and
 // editing it would change their inspector layout as a side effect of this
 // fix, which is out of scope. Padding/margin/max-width move into `row`'s own
 // Layout panel here; `contentWidth` moves into `content-band`'s own TIER 1

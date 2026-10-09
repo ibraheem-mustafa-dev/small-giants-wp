@@ -85,22 +85,6 @@
 		"scrub",
 		"split-reveal"
 	],
-	"sgs/cta-section": [
-		"cursor-field",
-		"draw",
-		"generative-background",
-		"grid-dots",
-		"horizontal-panel",
-		"lottie",
-		"magnet",
-		"morph",
-		"motion-path",
-		"particles",
-		"pin-scrub",
-		"scrub",
-		"surface-treatment",
-		"wave-gradient"
-	],
 	"sgs/decorative-image": [
 		"lottie",
 		"magnet",

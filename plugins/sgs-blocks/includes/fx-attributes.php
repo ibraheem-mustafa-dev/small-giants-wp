@@ -92,7 +92,7 @@ const FX_ATTR_MAP = array(
 	 * Cursor field (FR-38-25). These three MUST be here, not just in `fx.js`'s
 	 * save filter: that filter only bakes attributes into STATIC blocks'
 	 * markup, and most qualifying hosts (`sgs/container`, `sgs/hero`,
-	 * `sgs/cta-section`, `sgs/trust-bar`) are DYNAMIC. Without these rows a
+	 * `sgs/trust-bar`) are DYNAMIC. Without these rows a
 	 * client's chosen field type and colour never reach the rendered root, and
 	 * `fx-cursor-field.php` silently falls back to the default `glow` with no
 	 * colour override — an effect that looks configured and renders something
@@ -145,7 +145,7 @@ const FX_ATTR_MAP = array(
 	/*
 	 * Particle trail (FR-38-32). Same reasoning as cursor-field/magnet/
 	 * wave-gradient above: most qualifying hosts (`sgs/container`,
-	 * `sgs/hero`, `sgs/cta-section`, `sgs/button`…) are DYNAMIC blocks, so
+	 * `sgs/hero`, `sgs/button`…) are DYNAMIC blocks, so
 	 * these MUST be injected here, not just baked in by `fx.js`'s save
 	 * filter for static blocks.
 	 */
@@ -169,7 +169,7 @@ const FX_ATTR_MAP = array(
 	/*
 	 * Generative background (Spec 38, D874 technique spec — v1 static build
 	 * only). Same reasoning as wave-gradient/surface-treatment above: most
-	 * qualifying hosts (`sgs/container`, `sgs/hero`, `sgs/cta-section`,
+	 * qualifying hosts (`sgs/container`, `sgs/hero`,
 	 * `sgs/trust-bar`) are DYNAMIC blocks, so these MUST be injected here,
 	 * not just baked in by `fx.js`'s save filter for static blocks — without
 	 * this row a dynamic block's chosen colours/ground never reach the

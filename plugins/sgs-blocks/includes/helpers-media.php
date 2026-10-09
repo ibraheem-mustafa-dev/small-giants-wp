@@ -78,7 +78,7 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
  * per-block one: `fetchpriority="high"` should land on whichever background
  * image renders FIRST on the page, full stop. Every block that renders its
  * own background <img> (sgs/hero, the shared SGS_Container_Wrapper used by
- * sgs/container/cta-section/trust-bar/etc.) must therefore share ONE counter
+ * sgs/container/trust-bar/etc.) must therefore share ONE counter
  * — a private `static` inside each block's own render path only knows "am I
  * first within MY code path", not "am I first on the page". Two independent
  * counters both returning 1 for their own first call means a page with (say)

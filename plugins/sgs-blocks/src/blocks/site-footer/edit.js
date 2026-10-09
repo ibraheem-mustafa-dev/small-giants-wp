@@ -13,7 +13,7 @@ import { PanelBody, Notice, SelectControl } from '@wordpress/components';
 // ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
 // class-sgs-container-wrapper.php, so this block's own "Padding & margin"
 // panel below uses ResponsiveBoxControl bound to those object attrs (as
-// sgs/container's and sgs/cta-section's own edit.js do).
+// sgs/container's own edit.js does).
 import {
 	WidthPanel,
 	BackgroundPanel,

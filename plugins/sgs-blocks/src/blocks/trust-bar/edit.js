@@ -1060,8 +1060,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     painted nothing. The 15 gridItem* attrs stay DECLARED in
 				     block.json (removing them is a stored-content migration risk,
 				     out of scope for this fix) — this only withdraws the dead UI.
-				     See sibling withdrawal in cta-section/edit.js for the same
-				     defect + fix shape. ─────────────────────────────────────── */ }
+				     ─────────────────────────────────────── */ }
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 					box-shadow CSS string built by ShadowControl), resolved by

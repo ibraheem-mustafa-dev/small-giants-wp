@@ -14,7 +14,7 @@ import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-
 // Grid/Masonry/Carousel. Measured 2026-08-07: writing "flex" is accepted, stored,
 // then SILENTLY reverted to "grid" on reload by WordPress's enum coercion. So we take
 // the wrapper's width/spacing panels and LayoutPanel's GAP only.
-// Precedent: sgs/hero and sgs/cta-section already skip the aggregator for this reason.
+// Precedent: sgs/hero already skips the aggregator for this reason.
 //
 // NOT imported: ContentBandPanel. It targets the `.sgs-container__inner` band, which
 // only section/layout containerKind blocks render — gallery declares no containerKind

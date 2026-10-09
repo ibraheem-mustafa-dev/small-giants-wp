@@ -200,7 +200,7 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 #                                            block whose wrapper renders an
 #                                            operator-supplied `bgSvgContent`
 #                                            decorative layer (sgs/container,
-#                                            sgs/hero, sgs/cta-section,
+#                                            sgs/hero,
 #                                            sgs/trust-bar — verified via
 #                                            block.json attribute presence).
 #                                            Correct target for DrawSVG,
@@ -436,8 +436,8 @@ FX_EFFECTS: list[dict] = [
         # `collectDrawTargets()` as searching descendants, not just the
         # root), so 'svg-subtree' — not 'svg' — is the honest requirement:
         # it also correctly covers `sgs/container`/`sgs/hero`/
-        # `sgs/cta-section`/`sgs/trust-bar`, whose `bgSvgContent` layer is a
-        # real drawable SVG subtree even though none of those 4 blocks IS a
+        # `sgs/trust-bar`, whose `bgSvgContent` layer is a
+        # real drawable SVG subtree even though none of those 3 blocks IS a
         # shape at its own root. The qualifying-blocks generator keys
         # 'svg-subtree' off the union of this literal spec citation and the
         # `bgSvgContent` attribute, not an inferred rule.
@@ -888,7 +888,7 @@ FX_EFFECTS: list[dict] = [
         # 'surface' — it paints a background field across an area, so it needs a
         # paintable surface, exactly as cursor-field and wave-gradient do. This
         # is the field that decides the qualifying roster, and 'surface' is what
-        # scopes it to the section-shaped blocks (container / cta-section /
+        # scopes it to the section-shaped blocks (container /
         # hero) rather than offering a full-bleed dot lattice on a button.
         "requires": "surface",
         # Offered where a panel exists; never creates one. Same containment

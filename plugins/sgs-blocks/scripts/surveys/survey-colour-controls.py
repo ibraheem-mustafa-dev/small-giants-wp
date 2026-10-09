@@ -18,7 +18,7 @@ Governing doc: .claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §1 COLOUR
 Canonical component: src/components/DesignTokenPicker.js.
 Banned lookalikes (per spec): ColorPalette, ColorGradientControl, GradientPicker,
 PanelColorGradientSettings, <TextControl type="color">, and the raw GradientPicker
-inside GradientOverlayControl.js (reaches container/hero/trust-bar/cta-section
+inside GradientOverlayControl.js (reaches container/hero/trust-bar
 indirectly, alongside the DesignTokenPicker it ALSO uses for the solid-colour
 fallback path — see the ambiguous-wrapper handling below).
 

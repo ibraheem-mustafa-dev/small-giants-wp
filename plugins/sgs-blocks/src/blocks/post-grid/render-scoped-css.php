@@ -196,7 +196,7 @@ if ( '' !== ( $attributes['categoryBadgeColourHover'] ?? '' ) ) {
 }
 
 // Hover colour shifts (background/text/border) — per-instance scoped rules via
-// sgs_emit_state_colour_css(), same as sgs/info-box and sgs/cta-section.
+// sgs_emit_state_colour_css(), same as sgs/info-box.
 // Bean-locked: no hardcoded fallback colour — an unset hover colour renders NO
 // hover change at all.
 $post_grid_card_sel = $root_sel . ' .sgs-post-grid__card';

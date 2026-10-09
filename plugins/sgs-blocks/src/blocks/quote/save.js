@@ -12,7 +12,7 @@
  *
  * Pattern reference: SGS Blocks CLAUDE.md gotcha "Dynamic blocks with
  * InnerBlocks slots MUST `save: () => <InnerBlocks.Content />`" — caught 2026-05-04
- * in product-card / cta-section / info-box. common-wp-styling-errors.md row B4.
+ * in product-card / info-box. common-wp-styling-errors.md row B4.
  */
 import { InnerBlocks } from '@wordpress/block-editor';
 

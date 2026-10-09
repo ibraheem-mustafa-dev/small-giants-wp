@@ -124,32 +124,6 @@ function labelsFor( dir, attr, context ) {
 }
 
 describe( 'the control label follows the previewed device', () => {
-	it( 'sgs/cta-section padding reads Default (XL) / (M) on desktop and Default (M) / (S) on mobile', () => {
-		expect( labelsFor( 'cta-section', 'padding', { tier: 'desktop' } ) ).toEqual( [
-			'Default (XL)',
-			'Default (M)',
-			'Default (XL)',
-			'Default (M)',
-		] );
-		act( () => root.unmount() );
-		root = createRoot( container );
-		expect( labelsFor( 'cta-section', 'padding', { tier: 'mobile' } ) ).toEqual( [
-			'Default (M)',
-			'Default (S)',
-			'Default (M)',
-			'Default (S)',
-		] );
-	} );
-
-	it( 'negative control: a mount that resolves with no context shows the desktop label on mobile', () => {
-		expect( labelsFor( 'cta-section', 'padding' ) ).toEqual( [
-			'Default (XL)',
-			'Default (M)',
-			'Default (XL)',
-			'Default (M)',
-		] );
-	} );
-
 	it( 'sgs/tabs tabPadding reads Default (0.875rem) / (S) on mobile for stacked horizontal tabs only', () => {
 		const stacked = { orientation: 'horizontal', mobileLayout: 'stack' };
 		// The unlinked box lists one row per side; left and right paint preset S (1rem), so they are declared as the preset.
@@ -181,12 +155,6 @@ describe( 'the control label follows the previewed device', () => {
 
 describe( 'the shipped mounts pass the device and the settings', () => {
 	const source = ( ...parts ) => fs.readFileSync( path.join( SRC, ...parts ), 'utf8' ).replace( /\s+/g, ' ' );
-
-	it( 'sgs/cta-section hands the ResponsiveOverride tier to its padding control', () => {
-		const edit = source( 'blocks', 'cta-section', 'edit.js' );
-		expect( edit ).toMatch( /\{ tier, ownValue, setOwnValue \} \) => \( <SgsBoxControl label=\{ __\( 'Padding'/ );
-		expect( edit ).toContain( "defaults={ spacingDefaultsFor( name, 'padding', { attributes, tier } ) }" );
-	} );
 
 	it( 'sgs/tabs hands the previewed tier and the attributes to its tab padding control', () => {
 		const edit = source( 'blocks', 'tabs', 'edit.js' );

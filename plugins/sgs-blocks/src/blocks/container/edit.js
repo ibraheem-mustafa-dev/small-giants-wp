@@ -453,7 +453,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
           it belongs beside colour, which D621/D622 already placed in Styles.
           Standardised 2026-08-16 (Bean-ruled): this panel previously rendered
           in Settings on container/site-header/site-footer/physics-canvas and in
-          Styles on cta-section/hero — the same panel in two different tabs
+          Styles on hero — the same panel in two different tabs
           depending on which block the client had selected. */}
       <InspectorControls group="styles">
         {/* Base background colour — the OUTER-most paint layer, BELOW the

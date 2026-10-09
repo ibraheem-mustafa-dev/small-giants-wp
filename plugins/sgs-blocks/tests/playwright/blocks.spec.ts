@@ -34,7 +34,7 @@ test('SGS Theme is active', async ({ request }) => {
 const EXPECTED_BLOCKS = [
   'accordion', 'accordion-item', 'announcement-bar', 'back-to-top', 'brand-strip',
   'breadcrumbs', 'card-grid', 'container', 'countdown-timer', // certification-bar retired 2026-05-29 D95 — merged into trust-bar
-  'counter', 'cta-section', 'decorative-image', 'form', 'form-field-address',
+  'counter', 'decorative-image', 'form', 'form-field-address',
   'form-field-checkbox', 'form-field-consent', 'form-field-date', 'form-field-email',
   'form-field-file', 'form-field-hidden', 'form-field-number', 'form-field-phone',
   'form-field-radio', 'form-field-select', 'form-field-text', 'form-field-textarea',
@@ -110,10 +110,6 @@ test('create page with SGS blocks and verify frontend render', async ({ request,
 <!-- wp:sgs/counter {"target":500,"label":"Projects"} -->
 <div class="wp-block-sgs-counter" data-target="500"><span>0</span><span>Projects</span></div>
 <!-- /wp:sgs/counter -->
-
-<!-- wp:sgs/cta-section {"heading":"Get Started","buttonText":"Contact Us"} -->
-<section class="wp-block-sgs-cta-section"><h2>Get Started</h2><a>Contact Us</a></section>
-<!-- /wp:sgs/cta-section -->
 
 <!-- wp:sgs/tabs -->
 <div class="wp-block-sgs-tabs">

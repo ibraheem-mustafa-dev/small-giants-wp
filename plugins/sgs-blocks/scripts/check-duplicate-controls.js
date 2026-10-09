@@ -728,8 +728,7 @@ function collectIndirectFromOneFile( src, declaredAttrs, out, label ) {
 	// controlled `shadowHover` was reported as a DEAD attribute. Per D785 a
 	// false DEAD makes an agent add a duplicate control the client then sees
 	// twice — so this defect actively manufactures the bug the gate exists to
-	// find. `sgs/cta-section` had the same blind spot (0 computed writes, 2
-	// dispatcher mounts).
+	// find.
 	//
 	// The right question already had a helper: `componentIsDispatcher()` walks
 	// the RESOLVED COMPONENT FILE and is memoised. Asking it PER JSX ELEMENT is

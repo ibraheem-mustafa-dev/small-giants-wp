@@ -40,8 +40,8 @@
  *   - `check-box-family-guard.py` IS baseline-gated (hash-locked,
  *     `--update-baseline`) because it was retrofitted onto pre-existing
  *     violations that could not all be fixed at once.
- * RULE 1 has ZERO current violations (verified live: `container` and
- * `cta-section` are the only `gridItems` declarers and both also declare
+ * RULE 1 has ZERO current violations (verified live: `container`
+ * is the only `gridItems` declarer and also declares
  * `layout`), so there is nothing to baseline and a baseline would only be a
  * hole for the next violation to hide in.
  *

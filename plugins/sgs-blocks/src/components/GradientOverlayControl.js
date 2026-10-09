@@ -2,8 +2,8 @@
  * GradientOverlayControl
  *
  * Shared "background colour or gradient" picker. Originally built for the
- * whole-block "background overlay" used by container / cta-section / hero
- * (all three render through the same `BackgroundPanel` in
+ * whole-block "background overlay" used by container / hero
+ * (both render through the same `BackgroundPanel` in
  * `blocks/container/components/ContainerWrapperControls.js`), and reused as
  * of Phase 4 Item 5 (D561 inspector-standardisation plan) for hero's
  * per-element `mediaBackground`/`contentBackground` colour+gradient controls.
@@ -28,7 +28,7 @@
  * caller's `attrNames` grows hover siblings and this file's `states` array
  * is extended to a second entry — no rewrite needed here.
  *
- * Every existing call site (container/cta-section/hero's whole-block
+ * Every existing call site (container/hero's whole-block
  * overlay, hero's mediaOverlay/contentBackground/mediaBackground, the two
  * shape-divider rows) keeps its exact props — `attributes`, `setAttributes`,
  * `attrNames`, `solidLabel` — so this is a one-file rebuild, not a migration
@@ -59,7 +59,7 @@ import DesignTokenPicker from './DesignTokenPicker';
 // different map lets other elements (e.g. hero's mediaBackground/
 // contentBackground, Item 5 of the D561 inspector-standardisation plan) reuse
 // this exact control without duplicating it, while every EXISTING call site
-// (container / cta-section / hero's own overlay usage) keeps working
+// (container / hero's own overlay usage) keeps working
 // unchanged because it relies on this default.
 const DEFAULT_ATTR_NAMES = {
 	gradient: 'overlayGradient',

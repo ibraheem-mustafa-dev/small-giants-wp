@@ -58,7 +58,7 @@ _SHARED_RENDER_FILES: "dict[str, Path]" = {
 # per-block guess. `class-sgs-container-wrapper.php` renders every consuming
 # block's shared markup (e.g. the overlay span) with a LITERAL, non-slug-
 # interpolated class name — `.sgs-container__overlay`, verbatim, regardless
-# of which block (cta-section, site-header, …) is the caller (confirmed by
+# of which block (site-header, hero, …) is the caller (confirmed by
 # reading the file: `'.' . $uid . ' .sgs-container__overlay{' . ...`). So a
 # selector found WHILE SCANNING THIS SHARED FILE'S OWN TEXT should resolve its
 # BEM element against the file's OWN identity ("container"), never the
@@ -1709,7 +1709,7 @@ def _attrs_from_state_colour_helper_calls(
         # file's OWN fixed slug (see that helper's docblock) — needed because
         # class-sgs-container-wrapper.php's overlay selector is the LITERAL
         # `.sgs-container__overlay` regardless of which block (site-header,
-        # cta-section, …) is the caller, so the plain per-block-slug lookup
+        # hero, …) is the caller, so the plain per-block-slug lookup
         # never matches for 5 of the 6 wrapper-routed blocks.
         bem_element = _derive_bem_element_with_fallback(selector_arg, block_short_slug)
         for position, decls_arg in (("normal", normal_arg), ("hover", hover_arg)):

@@ -4,7 +4,7 @@
  *
  * SGS_Container_Wrapper (class-sgs-container-wrapper.php, ~1671 lines) is the
  * shared OUTER-wrapper render helper for every SGS container-style block — 28
- * dependent composites (sgs/container, hero, cta-section, trust-bar,
+ * dependent composites (sgs/container, hero, trust-bar,
  * card-grid, feature-grid, etc.) all call ::render() to assemble their wrapper.
  * It had ZERO tests before this file — a regression here dark-ships across the
  * whole block library. This is the PHPUnit companion to the always-runnable
@@ -110,7 +110,7 @@ final class ContainerWrapperTest extends TestCase {
 	 * Representative attrs for the 'section' KIND — exercises outer max-width,
 	 * content-band (contentWidth), flex + gap (grid-on-inner), and base
 	 * (non-responsive) padding, mirroring what a real composite (hero,
-	 * cta-section) passes through.
+	 * trust-bar) passes through.
 	 *
 	 * @return array
 	 */

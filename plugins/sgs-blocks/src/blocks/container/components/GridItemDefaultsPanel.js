@@ -270,8 +270,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 			     via a row-level `gradientCapable` flag, but this panel mounts
 			     controls directly (no SgsColourPanel), so that flag does nothing on
 			     a bare DesignTokenPicker — the component itself must change. Same
-			     trap this session's Step 3 negative control caught on sgs/container
-			     and sgs/cta-section's OWN root text rows. */ }
+			     trap this session's Step 3 negative control caught on sgs/container's OWN root text rows. */ }
 			{ /* Contrast warning: text defaults are paired with background defaults
 			     set in this same panel. When a grid item child uses both defaults
 			     (no override), the text renders on the background. Warn if that
@@ -344,9 +343,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 //     block to ONE object-typed `contentBandPadding`, so as of that commit
 //     ZERO block.json anywhere declares a single flat key this panel wrote —
 //     and WordPress SILENTLY DISCARDS a write to an undeclared attribute
-//     (D338). `cta-section/edit.js:20` already carried a comment recording
-//     exactly this ("ContentBandPanel sub-panels still write to LEGACY FLAT
-//     attrs"), which is WHY that block refused to mount the aggregator. Known,
+//     (D338). Known,
 //     never fixed, invisible to every gate: `check-shared-panel-schema.js`
 //     cannot see these keys because they are COMPUTED (`side[breakpoint]`),
 //     not literals.
@@ -360,7 +357,7 @@ export function GridItemDefaultsPanel( { attributes, setAttributes } ) {
 //     Zero stored instances existed on the canary (verified by DB query before
 //     deletion), so nothing to migrate.
 //
-// The blocks that genuinely HAVE a content band (container, cta-section, hero,
+// The blocks that genuinely HAVE a content band (container, hero,
 // physics-canvas, site-header, site-footer, trust-bar) never mounted this panel
 // — each controls its own `contentBandPadding` locally with the canonical
 // <ResponsiveBoxControl> against the object-shaped attr. That is the working

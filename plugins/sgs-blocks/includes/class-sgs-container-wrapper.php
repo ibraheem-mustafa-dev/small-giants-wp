@@ -3,7 +3,7 @@
  * SGS_Container_Wrapper — shared OUTER-wrapper render helper for SGS container blocks.
  *
  * Extracts the full wrapper-assembly logic from sgs/container so every composite block
- * (sgs/hero, sgs/cta-section, sgs/trust-bar, etc.) can MIRROR sgs/container's wrapper
+ * (sgs/hero, sgs/trust-bar, etc.) can MIRROR sgs/container's wrapper
  * capabilities instead of re-implementing them divergently.
  *
  * IMPORTANT — get_block_wrapper_attributes() constraint
@@ -68,9 +68,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		 * (D626 "hard sequencing dependency" / D633 calibration; built as
 		 * part of the wrapper-decomposition step 6 background pilot).
 		 *
-		 * WIRED into all 7 direct-panel blocks' render.php as of Phase B/D
+		 * WIRED into all 6 direct-panel blocks' render.php as of Phase B/D
 		 * of `~/.claude/plans/go-read-the-track-encapsulated-hare.md`
-		 * (2026-08-16) — `container`/`cta-section`/`trust-bar`/`hero`/
+		 * (2026-08-16) — `container`/`trust-bar`/`hero`/
 		 * `site-header`/`site-footer`/`physics-canvas` each now call
 		 * `SGS_Container_Wrapper::resolve_kind( $block, 'section' )` in the
 		 * same commit that added `enabledExtensions` to that block's
@@ -1200,8 +1200,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// ⚠ VISIBLE CHANGE, declared not slipped in: a RAW shape with no
 				// colour set previously emitted no colour at all, so the browser used
 				// `currentColor` — i.e. the shadow tracked the TEXT colour and went
-				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1),
-				// matching cta-section (render.php:125), which has composed since D621.
+				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1).
 				// The resting declaration carries the forced-colours outline fallback.
 				$base_outer_decls = array_merge( $base_outer_decls, sgs_shadow_box_decls( $shadow, $shadow_colour ) );
 			}

@@ -29,7 +29,7 @@ const DECORATIVE_ATTR_RE = /decorative|arialabel|alttext/i;
 
 // S1 fix (2026-09-02): an attribute literally named `ariaLabel` (exact
 // case-sensitive name) is the D647 LANDMARK-LABEL convention — confirmed by
-// reading render.php in hero/cta-section/trust-bar/container/site-header/
+// reading render.php in hero/trust-bar/container/site-header/
 // site-footer: it is applied ONLY to the section root, gated on
 // `tag === 'nav' || 'aside'`, never to any <img>. It coincidentally matched
 // the /arialabel/i branch of DECORATIVE_ATTR_RE, false-clearing 3 blocks that

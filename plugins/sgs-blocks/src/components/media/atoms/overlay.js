@@ -23,7 +23,7 @@
  * custom properties. `assets/css/media-atoms/overlay.css` applies them via
  * `background-color`/`background-image`/`opacity`/`mix-blend-mode` on a
  * `.sgs-media-el::after` layer, which is how every existing overlay
- * (container/hero/cta-section) paints today.
+ * (container/hero) paints today.
  *
  * NAMING IS INCONSISTENT INSIDE THE FAMILY, and this atom does NOT rename
  * either side (D338 — zero attribute renames): `backgroundOverlayColour`/

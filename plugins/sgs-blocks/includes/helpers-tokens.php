@@ -683,7 +683,7 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 		// a functional-colour token). Non-colour tokens + hex + var() are untouched.
 		//
 		// SECURITY (2026-07-28): this raw value reaches scoped <style>
-		// elements in every caller (container wrapper, cta-section,
+		// elements in every caller (container wrapper,
 		// trust-bar, …); reject any declaration breakout before emission —
 		// see sgs_css_value_has_breakout().
 		$normalised = sgs_normalise_css_functional_colours( $value );

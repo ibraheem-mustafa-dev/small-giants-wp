@@ -96,29 +96,8 @@
 	z-index: 0;
 }
 
-.home .wp-block-sgs-cta-section {
-	position: relative;
-	overflow: hidden;
-}
-.home .wp-block-sgs-cta-section::before {
-	content: '';
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%) rotate(-8deg);
-	width: 180px;
-	height: 180px;
-	background-image: var(--sgs-deco-curry);
-	background-size: contain;
-	background-repeat: no-repeat;
-	opacity: .15;
-	pointer-events: none;
-	z-index: 0;
-}
-
 .home .wp-block-group.alignwide:has(.service-card) > *,
-.home .wp-block-group.alignfull.has-accent-background-color > *,
-.home .wp-block-sgs-cta-section > * {
+.home .wp-block-group.alignfull.has-accent-background-color > * {
 	position: relative;
 	z-index: 1;
 }
@@ -127,8 +106,7 @@
 	.home .wp-block-group.alignwide:has(.service-card)::before,
 	.home .wp-block-group.alignwide:has(.service-card)::after,
 	.home .wp-block-group.alignfull.has-accent-background-color::before,
-	.home .wp-block-group.alignfull.has-accent-background-color::after,
-	.home .wp-block-sgs-cta-section::before {
+	.home .wp-block-group.alignfull.has-accent-background-color::after {
 		display: none;
 	}
 }
@@ -219,16 +197,4 @@
 	background-color: var(--wp--preset--color--accent, #d8ca50) !important;
 	color: var(--wp--preset--color--text, #1e1e1e) !important;
 	border-radius: 4px;
-}
-
-/* H6: CTA section buttons — full invert on hover */
-.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:hover,
-.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:focus {
-	background-color: var(--wp--preset--color--surface, #fff) !important;
-	color: var(--wp--preset--color--primary, #0a7ea8) !important;
-}
-.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):hover,
-.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):focus {
-	background-color: var(--wp--preset--color--accent, #d8ca50) !important;
-	color: var(--wp--preset--color--text, #1e1e1e) !important;
 }

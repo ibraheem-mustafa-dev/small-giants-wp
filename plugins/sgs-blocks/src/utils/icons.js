@@ -92,14 +92,6 @@ export const cardGridIcon = icon(
 	</SVG>
 );
 
-/** CTA Section — button with forward arrow */
-export const ctaSectionIcon = icon(
-	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-		<Rect x="2" y="6" width="20" height="12" rx="2" />
-		<Path d="M10 12h5m0 0l-2-2m2 2l-2 2" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-	</SVG>
-);
-
 /** Process Steps — three connected numbered circles */
 export const processStepsIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

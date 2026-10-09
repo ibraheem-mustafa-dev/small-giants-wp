@@ -476,7 +476,7 @@
  * self-hover on the card) + a hand-built ancestor-hover rule (text, since the
  * colour applies to descendant elements) as per-instance scoped rules — no
  * static rule here, no hardcoded fallback colour. Unset hover colour = no
- * visible change on hover (matches sgs/info-box / sgs/cta-section).
+ * visible change on hover (matches sgs/info-box).
  */
 
 /* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */

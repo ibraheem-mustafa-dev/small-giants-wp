@@ -860,24 +860,6 @@
       null
     ],
     [
-      "cta",
-      "section",
-      "[]",
-      "sgs/cta-section",
-      "Call-to-action section",
-      null,
-      null
-    ],
-    [
-      "cta-section",
-      "section",
-      "[]",
-      "sgs/cta-section",
-      "Alternative kebab for CTA",
-      null,
-      null
-    ],
-    [
       "core/group",
       "section",
       "[]",

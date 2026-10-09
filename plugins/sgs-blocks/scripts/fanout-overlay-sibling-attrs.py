@@ -2,10 +2,10 @@
 """
 fanout-overlay-sibling-attrs.py — D6 (hover + responsive-tier siblings) and
 Step 8 (blend mode) fan-out for the overlay paint attrs
-(`backgroundOverlayColour` / `overlayGradient`) across the eight blocks that
+(`backgroundOverlayColour` / `overlayGradient`) across the seven blocks that
 mount `<BackgroundPanel>`.
 
-WHY A SCRIPT, NOT A HAND EDIT (D542): this touches 8 block.json files with one
+WHY A SCRIPT, NOT A HAND EDIT (D542): this touches 7 block.json files with one
 fixed key list — the project rule is that anything over ~3 blocks gets a
 detector first, not an edit. The triad:
 
@@ -25,7 +25,7 @@ error and no failing test.
 
 Anchor strategy: the new keys are inserted immediately after the
 `overlayGradient` attribute definition — present, identically shaped, in all
-8 target files (verified by hand before writing this script; see
+7 target files (verified by hand before writing this script; see
 `_ANCHOR_RE`). Refuses to write (never emits invalid JSON) if the anchor is
 missing or the resulting file fails to json.loads() cleanly. Preserves each
 file's existing line-ending convention — opens with `newline=''` so Python
@@ -49,11 +49,10 @@ BLOCKS_DIR = Path(__file__).resolve().parent.parent / 'src' / 'blocks'
 
 # Measured 2026-08-22 by grepping every edit.js under src/blocks for a literal
 # `<BackgroundPanel` JSX mount (not a comment mention referencing it). Exactly
-# these 8 files matched. Fixed list, not derived at run time — a block.json
+# these 7 files matched. Fixed list, not derived at run time — a block.json
 # fan-out must be reviewable and reproducible, not re-discovered per run.
 TARGET_BLOCKS = [
     'container',
-    'cta-section',
     'hero',
     'multi-button',
     'physics-canvas',
@@ -111,7 +110,7 @@ BLEND_MODE_VALUES = [
 ALL_NEW_KEYS = SIBLING_KEYS + [BLEND_MODE_KEY]
 
 # The exact, verified-identical shape of the `overlayGradient` attribute
-# definition in all 8 target files (2-tab key indent, 3-tab field indent, LF
+# definition in all 7 target files (2-tab key indent, 3-tab field indent, LF
 # line endings). Used both as the insertion anchor and as the negative-control
 # fixture body in --self-test.
 _ANCHOR_RE = re.compile(
@@ -231,7 +230,7 @@ def cmd_fix(apply: bool) -> int:
         new_text = compute_fixed_text(original)
         if new_text is None:
             print(f'REFUSED {block}: anchor ("overlayGradient" attribute block) not found — '
-                  f'file shape differs from the verified 8, will not guess')
+                  f'file shape differs from the verified 7, will not guess')
             refused += 1
             continue
 
@@ -310,7 +309,7 @@ _FIXTURE_BODY = (
 
 def _check_single_file(path: Path):
     """Same logic as cmd_check but scoped to one arbitrary path — used by
-    --self-test so the negative control never touches the real 8 files."""
+    --self-test so the negative control never touches the real 7 files."""
     return missing_keys(path)
 
 
@@ -401,7 +400,7 @@ def cmd_self_test() -> int:
         reread = _read(tmp_path)
         check('CRLF fixture round-trips with CRLF intact', '\r\n' in reread and reread.count('\r\n') == crlf_fixture.count('\r\n'))
         crlf_fixed = compute_fixed_text(crlf_fixture)
-        # The anchor regex is LF-specific by design (all 8 real files are LF —
+        # The anchor regex is LF-specific by design (all 7 real files are LF —
         # verified before writing this script), so a CRLF file correctly
         # fails to match and the tool refuses rather than mangling it.
         check('CRLF file (unsupported shape) is REFUSED, not silently corrupted', crlf_fixed is None)

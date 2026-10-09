@@ -15,19 +15,6 @@
     },
     {
       "check": "parent-child-duplicate",
-      "block": "sgs/cta-section",
-      "attr": "textAlign",
-      "severity": "parent-child:heuristic",
-      "keeper": "child sgs/text's own typography/colour controls",
-      "sources": [
-        "sgs/cta-section edit.js: parent-level control for \"textAlign\"",
-        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
-      ],
-      "reason": "\"textAlign\" (role \"text\") is a parent-level styling attr on sgs/cta-section, which also mounts a sgs/text InnerBlock for that same role. sgs/text owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?",
-      "disposition": "accepted-debt"
-    },
-    {
-      "check": "parent-child-duplicate",
       "block": "sgs/hero",
       "attr": "imageBorderColour",
       "severity": "parent-child:heuristic",
@@ -138,19 +125,6 @@
       "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
       "sources": [
         "sgs/hero edit.js: parent-level control for \"textColour\"",
-        "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
-      ],
-      "reason": "RULED 2026-08-21 (Bean), and this settles the pattern across EVERY parent that mounts sgs/text — not per block, which is what HANDOVER-3 asked for. A section-class block can be the parent of ANY non-section block that has no forced parent (you cannot parent sgs/tab, because tab must nest under sgs/tabs — you get tabs instead). So a parent-level textColour is NOT a second control for the same thing: it is the root-scoped INHERITABLE cascade default for whatever the client nests inside, and the child's own control overrides that default for one instance. Two different jobs, correctly two controls. KEEP BOTH. This is the HC2 carve-out with a principled boundary rather than two examples. The UX objection HANDOVER-3 recorded is still real and is answered by LABELLING, not by deleting either control.",
-      "disposition": "by-design"
-    },
-    {
-      "check": "parent-child-duplicate",
-      "block": "sgs/cta-section",
-      "attr": "textColour",
-      "severity": "parent-child:heuristic",
-      "keeper": "BOTH — parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",
-      "sources": [
-        "sgs/cta-section edit.js: parent-level control for \"textColour\"",
         "sgs/text (mounted via this block's InnerBlocks template, role \"text\"): its own native typography/colour controls"
       ],
       "reason": "RULED 2026-08-21 (Bean), and this settles the pattern across EVERY parent that mounts sgs/text — not per block, which is what HANDOVER-3 asked for. A section-class block can be the parent of ANY non-section block that has no forced parent (you cannot parent sgs/tab, because tab must nest under sgs/tabs — you get tabs instead). So a parent-level textColour is NOT a second control for the same thing: it is the root-scoped INHERITABLE cascade default for whatever the client nests inside, and the child's own control overrides that default for one instance. Two different jobs, correctly two controls. KEEP BOTH. This is the HC2 carve-out with a principled boundary rather than two examples. The UX objection HANDOVER-3 recorded is still real and is answered by LABELLING, not by deleting either control.",
@@ -344,20 +318,6 @@
         "universal Hover Effects panel: \"sgsHoverGrayscale\" (the only LIVE control for this effect)"
       ],
       "reason": "RULED 2026-08-26 (D808), per-instance. Same as info-box.grayscaleHover; team-member is also one of the four blocks that style `sgs-has-grayscale`, so the panel toggle becomes live here rather than inert. Zero authorings measured.",
-      "disposition": "by-design"
-    },
-    {
-      "check": "hover-duplicate",
-      "block": "sgs/cta-section",
-      "attr": "shadowHover",
-      "category": "shadow",
-      "severity": "hover:controlled",
-      "keeper": "BOTH — the block-owned pair carries a colour the panel cannot express",
-      "sources": [
-        "sgs/cta-section edit.js: own control for \"shadowHover\"",
-        "universal Hover Effects panel: \"sgsHoverShadow\""
-      ],
-      "reason": "RULED 2026-08-26 (D808), per-instance — same shape as sgs/info-box.shadowHover and sgs/team-member.cardShadowHover (see those entries above). `shadowHover` ships beside the pre-existing `shadowColourHover` (block.json) and the pair feeds sgs_shadow_decls()/sgs_shadow_value_composed(). The panel's ENTIRE shadow vocabulary is four slugs (subtle/raised/floating/glow) with NO colour input anywhere, so deleting the block's attr swaps a brand-colour swatch for a four-word dropdown. `shadowHover` (the hover SHAPE half) was added 2026-09-07 to complete cta-section's existing shadowColourHover with the missing shape control per Bean's ruling that hover state needs shape AND colour — this is the exact case D796/D808 examined and refused deleting.",
       "disposition": "by-design"
     },
     {

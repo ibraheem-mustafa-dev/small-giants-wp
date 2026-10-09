@@ -10,7 +10,7 @@ WHY A SCRIPT, NOT A HAND EDIT: more than 3 blocks (project rule, CLAUDE.md
 `scripts/fanout-overlay-sibling-attrs.py` (D6/Step 8 overlay siblings) —
 same triad, same self-test shape, same line-ending discipline.
 
-WHAT MAKES THIS ONE DIFFERENT FROM THE PRECEDENT: the precedent's 8 target
+WHAT MAKES THIS ONE DIFFERENT FROM THE PRECEDENT: the precedent's 7 target
 files all share ONE indentation convention (2-tab key / 3-tab field) and are
 all LF. This fan-out's target set has TWO indent conventions —
 `multi-button/block.json` is 2-space indented, the other 7 are tab-indented —
@@ -28,9 +28,9 @@ only when BOTH are true —
   (b) its `render.php` REALLY calls `SGS_Container_Wrapper::render(` — a
       comment merely mentioning the call does not count, so comments are
       stripped (`//` and `/* */`) before the source is searched.
-Verified by hand before writing this script: container, cta-section, hero,
+Verified by hand before writing this script: container, hero,
 multi-button, physics-canvas, site-footer, site-header, trust-bar — exactly
-the 8 the design doc names. `site-header` already declares both attributes
+the 7 the design doc names. `site-header` already declares both attributes
 (it shipped them in an earlier sub-commit of this unit), so `--fix` reports
 it SKIP rather than writing anything.
 
@@ -82,7 +82,6 @@ BLOCKS_DIR = PLUGIN_ROOT / 'src' / 'blocks'
 # time — reviewable and reproducible, matching the overlay-sibling precedent.
 TARGET_BLOCKS = [
     'container',
-    'cta-section',
     'hero',
     'multi-button',
     'physics-canvas',
@@ -146,8 +145,8 @@ _PRE_EXISTING = {'site-header'}
 # the match is a genuinely well-formed, still-closed JSON object and not a
 # coincidental substring.
 #
-# `\r?\n` (not a bare `\n`): measured by hand across the 8 real files —
-# `hero/block.json` and `physics-canvas/block.json` are CRLF, the other 6 are
+# `\r?\n` (not a bare `\n`): measured by hand across the 7 real files —
+# `hero/block.json` and `physics-canvas/block.json` are CRLF, the other 5 are
 # LF. A bare `\n` anchor silently refused to match on those two (proved
 # during this fan-out's own build, not assumed), which would have looked
 # like "file shape differs" when the real cause was the line ending. The
@@ -162,7 +161,7 @@ _ANCHOR_RE = re.compile(
 
 
 def _line_ending_of(text: str) -> str:
-    """'\r\n' if the file uses CRLF anywhere, else '\n'. All 8 real target
+    """'\r\n' if the file uses CRLF anywhere, else '\n'. All 7 real target
     files are consistently one or the other (verified by hand); this is not
     a per-line mixed-ending resolver."""
     return '\r\n' if '\r\n' in text else '\n'
@@ -171,7 +170,7 @@ def _line_ending_of(text: str) -> str:
 # `// SGS_Container_Wrapper::render()` MENTION does not count as a real call
 # (task instruction). Good enough for this repo's PHP (no `//` or `/* */`
 # inside a string literal that also contains the exact call text — checked
-# by hand against all 8 render.php files).
+# by hand against all 7 render.php files).
 _PHP_COMMENT_RE = re.compile(r'/\*.*?\*/|//[^\n]*', re.DOTALL)
 
 _WRAPPER_CALL_RE = re.compile(r'SGS_Container_Wrapper::render\s*\(')

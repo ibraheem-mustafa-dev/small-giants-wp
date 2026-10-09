@@ -206,7 +206,7 @@ def attr_tier_consumer_evidence(
     sibling-free box attribute with NO device-tier destination at all).
     Scans the block's own render.php PLUS the shared
     class-sgs-container-wrapper.php, since composite blocks (container,
-    hero, cta-section, trust-bar, accordion, …) delegate wrapper-level
+    hero, trust-bar, accordion, …) delegate wrapper-level
     properties like `gap`/`gridItemPadding` to that one shared file rather
     than reading them inline. Also covers the sibling tier-boolean pair
     `sgs_resolve_on_tiers()` / `sgs_emit_tier_rules()` — traced via the

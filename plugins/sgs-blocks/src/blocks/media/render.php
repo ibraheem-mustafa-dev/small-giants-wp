@@ -1001,7 +1001,7 @@ if ( 'video' === $media_type ) {
 		 * rather than a shortcut: every other <video> in the plugin is emitted
 		 * through a shared helper whose callers all pass muted => true
 		 * (helpers-media.php's defaults, class-sgs-container-wrapper, hero,
-		 * before-after, cta-section). A permanently-silent decorative video has
+		 * before-after). A permanently-silent decorative video has
 		 * no audio content to caption, so 1.2.2 is not engaged. `sgs/media` is
 		 * the ONLY surface exposing a client control to unmute (videoMuted,
 		 * default true) alongside real player chrome (videoControls, default

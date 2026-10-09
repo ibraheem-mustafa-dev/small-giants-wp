@@ -18,7 +18,7 @@ import {
 // ResponsiveSpacingPanel: padding and margin are box OBJECT attrs read by
 // class-sgs-container-wrapper.php, so this block's own "Padding & margin"
 // panel below uses ResponsiveBoxControl bound to those object attrs (as
-// sgs/container's and sgs/cta-section's own edit.js do).
+// sgs/container's own edit.js does).
 import {
 	WidthPanel,
 	BackgroundPanel,
@@ -675,7 +675,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 				{ /* SHADOW — the shared ShadowControl (X/Y/blur/spread/
 				     colour+alpha/inset) every other SGS_Container_Wrapper block
-				     mounts — matches sgs/cta-section's reference wiring. The
+				     mounts. The
 				     `shadow`/`shadowColour`/`shadowColourHover` attrs are already
 				     read by class-sgs-container-wrapper.php via
 				     sgs_shadow_value_composed(); a bare preset slug (from an

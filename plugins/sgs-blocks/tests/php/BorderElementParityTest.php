@@ -87,7 +87,6 @@ final class BorderElementParityTest extends TestCase {
 		array( 'product-search', '' ),
 		array( 'star-rating', '' ),
 		array( 'text', '' ),
-		array( 'cta-section', '' ),
 		array( 'modal', '' ),
 		array( 'form', '' ),
 		array( 'container', '' ),

@@ -1,6 +1,6 @@
 /**
  * The editor-canvas style builders that mirror what render.php paints for the
- * notice banner, tab, gallery, post grid, CTA section, nav drawer chrome and
+ * notice banner, tab, gallery, post grid, nav drawer chrome and
  * cart panel. Each builder is called with a setting on and off: the value must
  * appear on and only on the "on" call, so a builder that stopped reading its
  * attribute fails here (the wiring gate proves the read exists; this proves it
@@ -11,7 +11,6 @@ import { buildTabPreview } from '../../src/blocks/tab/preview-style';
 import { wrapperBorderPreview } from '../../src/utils/wrapper-border-preview';
 import { captionPreviewStyle } from '../../src/blocks/gallery/preview-style';
 import { postGridWrapperPreview, cardGradientPreview } from '../../src/blocks/post-grid/preview-style';
-import { applyCtaWrapperPreview } from '../../src/blocks/cta-section/preview-style';
 import { tierBackgroundImageUrl } from '../../src/utils/background-preview';
 import { chromeRowStyle, chromeSlotStyle, shellBorderStyle, closeBorderStyle } from '../../src/blocks/nav-drawer/chrome-preview-style';
 import { tierLengthPreview } from '../../src/utils/cssLength';
@@ -99,29 +98,7 @@ describe( 'post-grid preview', () => {
 	} );
 } );
 
-describe( 'cta-section preview', () => {
-	it( 'paints text, spacing, size, gap and the band at the previewed tier', () => {
-		const style = {};
-		const { bandStyle, hasBandProps } = applyCtaWrapperPreview(
-			{
-				textColour: 'brand',
-				padding: { desktop: BOX },
-				minHeight: { desktop: 300, tablet: '200px' },
-				gap: { desktop: '10px' },
-				contentWidth: { desktop: '700px' },
-			},
-			'tablet',
-			PALETTE,
-			style
-		);
-		expect( style.color ).toBe( '#112233' );
-		expect( [ style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft ] ).toEqual( [ '2px', '2px', '2px', '2px' ] );
-		expect( style.minHeight ).toBe( '200px' );
-		expect( style.gap ).toBe( '10px' );
-		expect( hasBandProps ).toBe( true );
-		expect( bandStyle.maxWidth ).toBe( '700px' );
-		expect( applyCtaWrapperPreview( {}, 'desktop', PALETTE, {} ).hasBandProps ).toBe( false );
-	} );
+describe( 'tier background image preview', () => {
 	it( 'swaps in the tablet and mobile background images as the wrapper does', () => {
 		const attributes = { backgroundImageTablet: { url: 't.jpg' }, backgroundImageMobile: { url: 'm.jpg' } };
 		expect( tierBackgroundImageUrl( null, attributes.backgroundImageTablet, attributes.backgroundImageMobile, 'desktop' ) ).toBe( '' );

@@ -47,7 +47,6 @@ sgs-blocks/
 │   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants; wc-product + cpt-collection modes)
 │   │   ├── testimonial/          # Single testimonial — 7-variant typed-attr block. See Testimonial below.
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
-│   │   ├── cta-section/          # Call-to-action section
 │   │   ├── icon-list/            # Checkmark/icon list
 │   │   ├── icon/                 # Single icon (Lucide, WordPress icons, Dashicons or emoji) with optional shape and link
 │   │   ├── process-steps/        # Horizontal step timeline
@@ -185,7 +184,7 @@ Full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). S
 
 - **`sgs/button`** is the canonical button block. Replaces all uses of `core/button` inside SGS blocks; its attribute surface is `plugins/sgs-blocks/src/blocks/button/block.json` (`/wp-blocks schema sgs/button`).
 - **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + alignment. Gap is provided by the shared `ContainerWrapperControls` gap control (raw-px free-input, `sgs_container_gap_value()`) — no separate per-block gap control.
-- **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode. CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle.
+- **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes. **RECORDED EXCEPTION (Bean sign-off):** `sgs/product-card` is a BUILT-IN-ELEMENT card — its CTA (and every other commerce element) renders from the block's own typed attributes via the element-MIRROR pattern (the CTA mirrors `sgs/button`'s control set through shared helpers; auto-propagation: a new `sgs/button` capability is a gap candidate on the mirror), with ZERO InnerBlocks in typed mode. CTA model (approved): max 2 text buttons (1 primary + 1 secondary), behaviours add-to-basket / buy-now / learn-more, express-pay as a phase-2 gateway-rendered toggle.
 - **Preset binding.** `inheritStyle` (primary | secondary | outline | link | custom) selects the BEM variant class `.sgs-button--{preset}`, which consumes the per-client `settings.custom.buttonPresets` tokens (Spec 32 FR-32-2/5); the tokens come from `sites/<client>/theme-snapshot.json` or the Customiser panel (`plugins/sgs-blocks/includes/class-button-presets-customiser.php`). There is no Settings page and no `wp_options` bridge (Bean-approved, Decision 22).
 - **Button content and hover controls.** `sgs/button` owns `contentAlign` (tier: `flex-start` | `center` | `flex-end`; unset keeps the centred `justify-content`, which `textAlign` cannot move because the button is a flex row), `iconGap` (tier length: the gap between label and icon; unset adds none) and `liftHover` (px, 0 to 24, default 0: `translate: 0 -N px` on hover/focus, its own property so it never contends with `scaleHover`'s `transform`); with no explicit lift, the site's `buttonPresets.default` hover lift applies (Spec 32 Part C), and an explicit lift replaces it rather than stacking. `render.php` emits the first two on the button root and, when `scaleHoverTarget` is `face`, on `.sgs-button__face`. The universal `sgsHoverLift` extension is not used because enabling the `hover` extension would also mount its scale and shadow controls beside the button's own. The hover transition is `transitionDuration` (ms) and `transitionEasing`, a name from the shared motion list (`plugins/sgs-blocks/includes/helpers-motion-easing.php::sgs_motion_easing_css`, editor `MotionEasingControl`) or `custom` with a validated `transitionEasingCustom` curve.
 - **Existing CTA-rendering blocks** (sgs/hero etc.) use InnerBlocks composition. No deprecation path (pre-production policy; `.claude/rules/block-authoring.md`).
@@ -345,16 +344,6 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 `supports.sgs.containerKind: layout`: renders its outer wrapper through `SGS_Container_Wrapper`.
 
 **Render:** Dynamic `render.php` (via `SGS_Container_Wrapper::render(..., 'layout', ...)`) + `viewScriptModule` for carousel logic. **No external carousel library**: CSS scroll-snap plus minimal JS for autoplay/navigation.
-
----
-
-### CTA Section (`sgs/cta-section`)
-
-**Purpose:** Call-to-action section with headline, supporting text, and multiple button options. Attributes: `/wp-blocks schema sgs/cta-section`.
-
-**Tier:** `class-section`; declares `supports.sgs.is_section_root: true` (populated into `blocks.tier` by `/sgs-update`).
-
-**Render:** **Dynamic** (`render.php`). `save.js` returns the InnerBlocks marker / `null`.
 
 ---
 
@@ -967,7 +956,7 @@ Lets users save the currently-configured attributes of any SGS block as the defa
 
 **Permission:** `edit_theme_options` (same level as Customiser).
 
-**Storage format:** `{"sgs/hero": {"textAlign": "left", "minHeight": 600, ...}, "sgs/cta-section": {...}}` — JSON object, single option row.
+**Storage format:** `{"sgs/hero": {"textAlign": "left", "minHeight": 600, ...}}` — JSON object, single option row.
 
 ---
 

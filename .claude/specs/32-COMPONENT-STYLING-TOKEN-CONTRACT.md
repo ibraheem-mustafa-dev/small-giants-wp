@@ -97,7 +97,7 @@ The design is a semantic BEM variant class consuming `--wp--custom--{component}-
 
   ⭐ **CANONICAL EMITTER for hover COLOUR: `sgs_emit_state_colour_css( $selector, $decls_normal, $decls_hover )`** in `plugins/sgs-blocks/includes/helpers-tokens.php`, modelled on `sgs_border_gradient_css()`. It emits `{$selector}:hover,{$selector}:focus-visible{…}` as real declarations on the block's own scoped selector, and returns `''` when nothing is set so an unset instance renders byte-identical CSS to before it existed.
 
-  Blocks routing through the helper: `info-box`, `hero`, `process-steps`, `cta-section`, `post-grid`, `card-grid`, `testimonial`, `testimonial-slider`. A block does not write `--sgs-hover-bg/text/border` custom-property VALUES for a static `style.css` rule to read back through `var()`.
+  Blocks routing through the helper: `info-box`, `hero`, `process-steps`, `post-grid`, `card-grid`, `testimonial`, `testimonial-slider`. A block does not write `--sgs-hover-bg/text/border` custom-property VALUES for a static `style.css` rule to read back through `var()`.
 
   ⛔ **`sgs/button` is EXEMPT** — its `--sgs-btn-*-hover` vars feed a static `style.css` rule AND three preset classes with `theme.json` fallback chains, which is the mechanism this very requirement describes. Do not "finish the job" and break the preset cascade; the exemption is recorded in the helper's own docblock.
 
@@ -325,7 +325,7 @@ Block membership per family is DB-authoritative:
 | WP-native root (4-side) | `padding{side}` | every block declaring root padding | base → `style.spacing.padding` object; tiers → SGS `paddingTablet`/`paddingMobile` object |
 | WP-native root (4-side) | `margin{side}` | every block declaring root margin | base → `style.spacing.margin` object; tiers → `marginTablet`/`marginMobile` object |
 | SGS custom (4-side) | `borderWidth{side}` | every block with a border-width control | SGS object `borderWidth:{...}` — colour/style stay single scalar attrs (no per-side colour/style family exists) |
-| SGS custom (4-side) | `contentBandPadding{side}` | `container`, `cta-section`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` | SGS object + tiers + BoxControl (per-band, not root) |
+| SGS custom (4-side) | `contentBandPadding{side}` | `container`, `hero`, `physics-canvas`, `site-footer`, `site-header`, `trust-bar` | SGS object + tiers + BoxControl (per-band, not root) |
 | SGS custom (4-side) | per-area families: `contentPadding`, `mediaPadding`, `splitMediaPadding`, `splitMediaBorderWidth` | `hero` | SGS object + tiers + BoxControl |
 | SGS custom root (4-corner) | `borderRadius` | every block with a root radius | one tier object `{desktop,tablet,mobile}`, each a corner object `{topLeft,…}` (read by `sgs_border_radius_tiers()`); WordPress's native `style.border` is never read |
 | SGS custom (4-corner) | `splitMediaBorderRadius{TL,TR,BL,BR}` | `hero` | SGS custom corner object + corner control |
@@ -337,7 +337,7 @@ Block membership per family is DB-authoritative:
 | `attributionMarginTop` | quote | Single side only — a 4-side BoxControl would show 3 dead controls |
 | `labelMarginBottom` | option-picker | Single side |
 | `quoteMarginBottom` | testimonial | Single side |
-| `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | container, cta-section, hero, site-footer, site-header, trust-bar | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
+| `shapeDivider{Top,Bottom}` + `…Colour/Flip/Height/Invert` | container, hero, site-footer, site-header, trust-bar | Not a box property — two independent decorative SVG slots each with its own sub-settings; `{top,right,bottom,left}` is semantically wrong (no left/right divider). Keep the named-slot structure. |
 
 > **`box_family` is seeded declaratively and guards every merge.** The `block_attributes.box_family`
 > DB column is seeded only for the genuine box families, from each block's own
@@ -627,8 +627,8 @@ by a line number cached in a doc.
 
 | Bucket | Token | Where the framework uses it |
 |---|---|---|
-| Raised | `surface-alt` | brand-strip tile bg + hover; countdown-timer `--elevated`/`--filled`; accordion `--card` item; button outline hover bg fallback; cta-section gradient; card-grid card bg + hover; buybox `value-ladder` selected row; form hover/preview-box states; google-reviews card, avatar and badge; info-box `--elevated`/`--filled`; modal dialog panel; product-faq hover/open; post-grid card + shimmer; product-card no-image box / media / thumb-strip bg (generic `#f5f7f7` fallback) and `value-ladder` selected row; product-search; table-of-contents `--card`; tabs; team-member; testimonial classic-card / rating-led / corporate-logo / case-study-media / pull-quote-editorial; trust-bar |
-| Inverse ink | `text-inverse` | `color:` on a coloured/dark fill: business-info icon/text on the primary-filled button; cta-section text; card-grid; google-reviews dark-theme review text; hero; product-card badge fg default; process-steps; social-icons; label |
+| Raised | `surface-alt` | brand-strip tile bg + hover; countdown-timer `--elevated`/`--filled`; accordion `--card` item; button outline hover bg fallback; card-grid card bg + hover; buybox `value-ladder` selected row; form hover/preview-box states; google-reviews card, avatar and badge; info-box `--elevated`/`--filled`; modal dialog panel; product-faq hover/open; post-grid card + shimmer; product-card no-image box / media / thumb-strip bg (generic `#f5f7f7` fallback) and `value-ladder` selected row; product-search; table-of-contents `--card`; tabs; team-member; testimonial classic-card / rating-led / corporate-logo / case-study-media / pull-quote-editorial; trust-bar |
+| Inverse ink | `text-inverse` | `color:` on a coloured/dark fill: business-info icon/text on the primary-filled button; card-grid; google-reviews dark-theme review text; hero; product-card badge fg default; process-steps; social-icons; label |
 | Substrate | `surface` | The deliberate-blend cases in §12.4 |
 
 `sgs/testimonial-slider` uses `surface` for one background fill (`testimonial-slider/style.css`); classify it under §12.1 before changing it.

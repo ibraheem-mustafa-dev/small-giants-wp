@@ -204,7 +204,7 @@ module.exports = {
 							'3): (a) if it should vary per breakpoint, either replace this control with ' +
 							'<ResponsiveBoxControl> and add the Tablet/Mobile sibling attributes to block.json, ' +
 							'or change the attribute to the tiered-object shape ({desktop,tablet,mobile}) and ' +
-							'wrap this <BoxControl> in <ResponsiveOverride> (mirrors container/cta-section/' +
+							'wrap this <BoxControl> in <ResponsiveOverride> (mirrors container/' +
 							'hero\'s contentBandPadding pattern); (b) if it is deliberately NOT responsive, ' +
 							'register it in baselines/30-raw-box-control.json with that specific reason — do ' +
 							'not leave it silently matching neither sanctioned shape.',

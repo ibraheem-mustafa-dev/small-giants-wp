@@ -12,7 +12,7 @@ TARGET SET — every block confirmed (by hand, against the real block.json + ren
 guessed) to declare a real shadow-shape attribute (`boxShadow`/`cardShadow`/`tileShadow`/
 `shadow`/`iconCircleShadow`/`badgeImageShadow`/`gridItemShadow`, or the native
 `supports.shadow` style-engine key) AND actually emit a `box-shadow` declaration for it in
-render.php: before-after, brand-strip, button, card-grid, container, cta-section, heading,
+render.php: before-after, brand-strip, button, card-grid, container, heading,
 hero, info-box, media, physics-canvas, post-grid, process-steps, quote, site-footer,
 site-header, team-member, testimonial, text, timeline, trust-bar.
 
@@ -46,7 +46,7 @@ PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_DIR = PLUGIN_ROOT / 'src' / 'blocks'
 
 TARGET_BLOCKS = [
-    'before-after', 'brand-strip', 'button', 'card-grid', 'container', 'cta-section',
+    'before-after', 'brand-strip', 'button', 'card-grid', 'container',
     'heading', 'hero', 'info-box', 'media', 'physics-canvas', 'post-grid', 'process-steps',
     'quote', 'site-footer', 'site-header', 'team-member', 'testimonial', 'text', 'timeline',
     'trust-bar',

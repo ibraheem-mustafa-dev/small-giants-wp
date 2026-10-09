@@ -60,7 +60,7 @@
 //   MARKUP-CARRYING (13 attrs, matched by this rule): svgContent /
 //     svgContentTablet / svgContentMobile (sgs/media); beforeSvgContent /
 //     afterSvgContent (sgs/before-after); bgSvgContent (one each on
-//     sgs/container, sgs/cta-section, sgs/hero, sgs/multi-button,
+//     sgs/container, sgs/hero, sgs/multi-button,
 //     sgs/physics-canvas, sgs/site-footer, sgs/site-header, sgs/trust-bar);
 //     splitSvg / splitSvgTablet / splitSvgMobile (sgs/hero).
 //   STYLING/BEHAVIOUR, never markup (excluded): bgSvgPosition /

@@ -203,8 +203,7 @@ function readIfExists( p ) {
  * Blank out // and /* *\/ comments IN PLACE (same length, newlines kept) so
  * every later index/line-number computed against the result still lines up
  * with the original file. This is what stops a comment-only mention (e.g.
- * cta-section's "ContentBandPanel sub-panels still write to LEGACY FLAT
- * attrs") from being read as a real JSX mount — the project's own recorded
+ * "ContentBandPanel sub-panels still write to LEGACY FLAT attrs") from being read as a real JSX mount — the project's own recorded
  * failure mode (`a-grep-for-a-class-name-is-not-a-usage-census`).
  *
  * Deliberately naive about strings containing `//` or `/*` (this codebase's

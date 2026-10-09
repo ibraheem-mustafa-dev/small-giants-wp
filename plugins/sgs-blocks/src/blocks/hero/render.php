@@ -1186,10 +1186,9 @@ if ( '' !== $hero_preset_text_slug ) {
 // image always paints over the colour. Measured live on a homepage
 // clone, where a correct `background-color: surface-pink` sat invisible beneath
 // the framework's primary-dark->primary gradient.
-// `sgs/cta-section` already sets `has-background` from its own `backgroundColour`
-// (cta-section/render.php:391) — this makes the hero mirror it, per the
+// This sets `has-background`, per the
 // composite wrapper rule. Only the suppression flag is added, NOT the
-// `has-<slug>-background-color` class: unlike cta-section, the hero paints its
+// `has-<slug>-background-color` class: the hero paints its
 // colour through the scoped `.{uid}` rule, so the preset class would be a second
 // owner for one value.
 if ( ( '' !== $overlay_colour_raw || $overlay_gradient_value
@@ -1255,7 +1254,7 @@ if ( $has_attr_video ) {
 	// Position controls now write into them too, via the object-fit/
 	// focal-point media atoms at backdrop scope — no second attribute
 	// family). Mirrors SGS_Container_Wrapper::render()'s equivalent
-	// `.sgs-container__video-bg` rule for sgs/container, cta-section,
+	// `.sgs-container__video-bg` rule for sgs/container,
 	// multi-button, physics-canvas, site-footer, site-header, trust-bar —
 	// but hero hand-rolls its OWN video markup rather than calling the
 	// wrapper for it (see the "composite wrapper divergence" note above this

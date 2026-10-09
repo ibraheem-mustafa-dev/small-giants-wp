@@ -116,7 +116,7 @@ class Finding:
 # camelCase stem -> kebab-case block slug
 # ---------------------------------------------------------------------------
 def _camel_stem_to_kebab(stem: str) -> str:
-    """'button' -> 'button'; 'cardGrid' -> 'card-grid'; 'ctaSection' -> 'cta-section'."""
+    """'button' -> 'button'; 'cardGrid' -> 'card-grid'; 'infoBox' -> 'info-box'."""
     s = re.sub(r"(?<!^)(?=[A-Z])", "-", stem)
     return s.lower()
 

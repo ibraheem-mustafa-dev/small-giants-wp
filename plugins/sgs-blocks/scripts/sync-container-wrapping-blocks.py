@@ -422,7 +422,7 @@ def main() -> int:
         # sgs/site-footer added 2026-07-13 (Spec 17 §S9 / FR-S9-3, D325 footer system):
         # section-KIND footer shell delegating to SGS_Container_Wrapper.
         "section": {
-            "sgs/cta-section", "sgs/hero", "sgs/modal", "sgs/trust-bar",
+            "sgs/hero", "sgs/modal", "sgs/trust-bar",
             "sgs/site-header", "sgs/site-footer",
             # sgs/mega-panel + sgs/physics-canvas CONFIRMED + added 2026-08-05. Both were
             # reported as "EXTRA (detected but not expected)" — the roster had not been
