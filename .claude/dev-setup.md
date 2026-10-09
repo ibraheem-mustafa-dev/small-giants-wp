@@ -177,7 +177,7 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 **`block_selectors`**
 
-- `selector`: A PASSIVE MIRROR of each block.json own selectors key. WordPress reads block.json directly at register_block_type and never consults this table, so editing a row changes nothing at runtime. Its single reader is generate-block-reference.py, a docs generator. Two writers exist with undocumented last-one-wins semantics (sgs-update-v2.py and an out-of-repo populate-db.py), self-flagged in the code at :1165-1170.
+- `selector`: A PASSIVE MIRROR of each block.json own selectors key. WordPress reads block.json directly at register_block_type and never consults this table, so editing a row changes nothing at runtime. Its single reader is generate-block-reference.py, a docs generator. Its only writer is sgs-update-v2.py.
 
 **`animation_tokens`**
 

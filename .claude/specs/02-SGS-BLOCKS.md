@@ -1043,7 +1043,7 @@ add_filter( 'block_categories_all', 'sgs_block_categories' );
 
 ## Integration with SGS Theme
 
-Blocks read design tokens from `theme.json` at both build time and runtime. In the editor, the `DesignTokenPicker` component reads the theme's colour palette and offers those as options. On the frontend, blocks output CSS custom properties that resolve to whatever the active style variation defines.
+Blocks read design tokens from `theme.json` at both build time and runtime. In the editor, the `DesignTokenPicker` component reads the theme's colour palette and offers those as options. On the frontend, blocks output CSS custom properties that resolve to whatever the client's pushed theme snapshot defines.
 
 This means: build blocks once, and they automatically adapt to any client site's colour scheme.
 

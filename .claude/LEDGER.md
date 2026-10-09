@@ -57,13 +57,13 @@ Open owed items:
 **Blockers:** Bean's hPanel action (allow-list the canary's "Checking your browser" page) blocks only Gate 3C's final walk (plan §2.4 step 5).
 **Resume from:** `plans/2026-10-01-header-nav-thread-plan.md` §2.4 to close Gate 3C, or §4 to prepare Wave 4.
 **Bean-only tasks:** the drawer-burger click retest (does the intermittent click-miss still occur now the duplicate-burger fix has shipped? If so, dispatch `/systematic-debugging`), and the mega-motion eye check (R-31-13), booked with the next live URL.
-**Also open:** `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
+**Also open (Spec 36 Status lines hold the detail):** FR-36-16, the late-CSS A/B (`plugins/sgs-blocks/scripts/nav-qa/late-css-ab.mjs`) still fails on the canary header drawer because the close control and first link are placed by `nav-drawer/style.css`, not the block's scoped rules; Bean decides whether to relax the test to the dialog box plus dismissal or to emit the drawer's whole layout in the scoped rules. FR-36-17, the mega pages exceed the 100 KB CSS and 50 KB JS budget. FR-36-11 (the active-item state under forced colours) and FR-36-26c (`aria-current` across two pages and axe) are not yet re-measured live. The homepage layout shift (0.82 at 375) is untraced. FR-38-31, the aurora and ink wave styles painted black in a local Chrome (Bean's eye on a real GPU, Spec 38). `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
 
 ### Front S: Spec set and old converter removal
 
-**State:** the spec tidy is committed and pushed. Specs 41, 28, 30, 26 and 33 are merged into Specs 36, 27 and 32 (FR ids unchanged); `.claude/rules/framework-principles.md` holds the nine binding rules R-31-n; `lint-spec-drift.py` has 0 gating findings and the preflight passes.
+**State:** the spec tidy and its leftovers are done and pushed. Specs 41, 28, 30, 26 and 33 are merged into Specs 36, 27 and 32 (FR ids unchanged); Spec 36 Part 14 is condensed; Spec 05 client notes is active; every spec carries its own FR status; `lint-spec-drift.py` has 0 gating findings. The framework DB was reseeded for the new gradient and spacing attributes and sandybrown runs them (blocks-only deploy, 2026-10-09).
 **Blockers:** none.
-**Resume from:** `prompts/Spec Tidy Leftovers Prompt.md` (four decisions for Bean, then small fixes and live checks) and `prompts/Remove Old Converter Prompt.md` (remove the old converter, a separate session).
+**Resume from:** `prompts/Remove Old Converter Prompt.md` (remove the old converter; session 6f is mid-way, so check `git log` before starting).
 
 ## Parked
 

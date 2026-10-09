@@ -205,6 +205,7 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
   attribute and side, the stylesheet paints it as `var(--wp--preset--spacing--N, <theme size>)`, and the mount passes
   `defaults={ spacingDefaultsFor( name, attr ) }` (`src/utils/spacing-defaults.js`). Never store the preset in the
   attribute default. Gate: `scripts/survey-spacing-defaults.py --check --strict`.
+- **Gaps and single lengths:** a gap, row gap or other single spacing length mounts `<SpacingControl custom>` (preset dropdown plus a Custom length; stored as a preset slug such as `"20"` or a length such as `"12px"`, read through `sgs_css_length_value()`, previewed in the canvas with `gapVar()`), never a `RangeControl` or `UnitControl`. Inside a `ResponsiveControl` that already shows the label, pass `hideLabelFromVision` (inspector-scan rule 29). Detector: `scripts/check-raw-spacing-controls.py --check`.
 - **Inspector spacing:** separate SGS controls stack 16px apart (`assets/css/inspector-controls.css`), because SGS
   controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap.
 Test: `tests/js/sgs-box-control.test.js`.
