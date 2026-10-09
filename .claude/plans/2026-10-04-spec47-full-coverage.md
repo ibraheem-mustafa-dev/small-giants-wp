@@ -111,7 +111,9 @@ of a block (§5 Residual), so an S9 entry on the product card would accept every
 **Framework gaps closed:** `sgs/mega-panel` `groupPadding` and `groupTransitionDuration` (`a5977f7a7`, manifest `8e0e32a01`;
 20 rows on the mega surfaces); WooCommerce filter chips `sgsChipGap` extension (`371d8a27a`, wired `a56437129`). Reseed
 `76835cca7` from a clean HEAD worktree; a full `sgs-update-v2.py` run left `sgs/hero.splitMediaType` reclassified, which
-`dbschema/seed_reference_data.py` re-asserts (do this after every reseed until the reclassifying stage is found).
+`dbschema/seed_reference_data.py` re-asserts (do this after every reseed until the reclassifying stage is found). The next reseed also applies `d025d6935`
+(new `block_attributes.emit_shape_proof` column; 390 content attributes classified, up from 379, so a seed-history or
+value-identity flag on that count is expected) and `a2a524b38` (prunes the 93 retired `sgs/cta-section` effect rows).
 Assessed and NOT gaps: the lens configurator's 28 rows (the draft pads the outer panel, live the inner one by the same
 amounts, `lensAsidePad`) and 40 of the shop's 43 (invisible, mispaired, or existing settings). Product's related cards are
 `sgs/product-card` with hover lift and shadow off: an existing setting Solve never wrote (a tool defect, below).
