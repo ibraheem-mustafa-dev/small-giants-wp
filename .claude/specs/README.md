@@ -21,58 +21,54 @@ Specs are versioned, status-tracked artifacts that document architectural commit
 
 | # | File | Subject | Status |
 |---|---|---|---|
-| 00 | [00-OVERVIEW.md](00-OVERVIEW.md) | Framework overview + philosophy | shipped |
-| 00 | [00-naming-conventions.md](00-naming-conventions.md) | Naming rules + CI linter | shipped |
+| 00 | [00-OVERVIEW.md](00-OVERVIEW.md) | Framework overview + philosophy | active |
+| 00 | [00-naming-conventions.md](00-naming-conventions.md) | Naming rules + the naming linter | active |
 | 01 | [01-SGS-THEME.md](01-SGS-THEME.md) | Block theme (theme.json v3, templates, fonts) | shipped |
 | 02 | [02-SGS-BLOCKS.md](02-SGS-BLOCKS.md) | Block specifications + customisation standards, including the variation + style registration pattern | active |
-| 02 | [02-SGS-BLOCKS-REFERENCE.md](02-SGS-BLOCKS-REFERENCE.md) | Auto-generated per-block attribute reference. Gitignored: generated locally by `/sgs-update`, never hand-edited — fix the generator instead | active |
+| 02 | [02-SGS-BLOCKS-REFERENCE.md](02-SGS-BLOCKS-REFERENCE.md) | Auto-generated per-block attribute reference. Gitignored: generated locally by `/sgs-update` (`generate-block-reference.py`), never hand-edited: fix the generator instead | active |
 | 03 | [03-SGS-BOOKING.md](03-SGS-BOOKING.md) | Booking plugin | deferred |
-| 04 | [04-SGS-FORMS.md](04-SGS-FORMS.md) | Forms (built into sgs-blocks) | shipped |
+| 04 | [04-SGS-FORMS.md](04-SGS-FORMS.md) | Forms (built into sgs-blocks) | active |
 | 05 | [05-SGS-CLIENT-NOTES.md](05-SGS-CLIENT-NOTES.md) | Visual annotation system | deferred |
 | 07 | [07-SGS-POPUPS.md](07-SGS-POPUPS.md) | Conversion pop-ups plugin | deferred |
 | 08 | [08-SGS-CHATBOT.md](08-SGS-CHATBOT.md) | Live chat + AI chatbot | deferred |
-| 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
-| 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
-| 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | `sgs/button` + `sgs/multi-button` canonical architecture | shipped |
+| 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis (dated research report) | active |
+| 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research (dated research report) | shipped |
+| 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | `sgs/button` + `sgs/multi-button` architecture | shipped |
 | 18 | [18-SGS-FLOATING-UI.md](18-SGS-FLOATING-UI.md) | Back to Top + Reading Progress | shipped |
-| 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree | shipped |
-| 20 | [20-CLONE-FIDELITY-MEASUREMENT.md](20-CLONE-FIDELITY-MEASUREMENT.md) | Clone fidelity measurement: the computed-parity tool, pipeline Stage 11.6 and rule 4a. The canonical rendered-fidelity signal | shipped |
-| 26 | [26-SGS-GLOBAL-STYLES-AND-THEMING.md](26-SGS-GLOBAL-STYLES-AND-THEMING.md) | Global styles + per-client theming (variation-delta + `wp_global_styles` REST sync) + pipeline style derivation | draft |
-| 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER — SGS product + WooCommerce layer (CPT, collection, cart, dual-mode card, option-picker, configurator) | active |
-| 28 | [28-SGS-SMART-BULK-PRICING.md](28-SGS-SMART-BULK-PRICING.md) | Smart bulk pricing / comparative value-ladder | complete |
-| 30 | [30-SGS-WOOCOMMERCE-PAGE-TYPES.md](30-SGS-WOOCOMMERCE-PAGE-TYPES.md) | WC page types — single-product/archive/cart/checkout templates, SGS search + searchable filter, option-picker WC binding, schema; customer account area (`sgs/account`, Saved items page and endpoint) and saved-item alerts (FR-30-14/15, shipped 2026-09-26) | active |
-| 31 | [31-UNIVERSAL-CLONING-PIPELINE.md](31-UNIVERSAL-CLONING-PIPELINE.md) | **THE cloning pipeline blueprint** — DB-driven name-free routing engine, the modular `converter/` engine, binding rules R-31-1..15. Read §0 + §12 first | active |
-| 32 | [32-COMPONENT-STYLING-TOKEN-CONTRACT.md](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) | **Framework-wide styling contract** — semantic BEM classes consume per-client design tokens (`settings.custom.{component}Presets` → WP CSS vars); no inline property declarations; overrides via CSS custom-property values only. Owns styling/token EMISSION; read with Spec 35 | active |
-| 33 | [33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md](33-DRAFT-GLOBAL-STYLES-EXTRACTOR.md) | **Draft global-styles / token extractor** — the opening step of the cloning pipeline: measures the draft's rendered computed styles → `sites/<client>/theme-snapshot.json`, which the converter's token-snap depends on. Part 1 (13/13 FRs) built. Part 2 = draft header/footer → `sgs/site-header`/`sgs/site-footer`/`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` + `sgs/nav-drawer`, NOT started | complete (Part 1) |
-| 35 | [35-BLOCK-INSPECTOR-UX-STANDARD.md](35-BLOCK-INSPECTOR-UX-STANDARD.md) | SGS block inspector-UX standard — layout and grouping, control completeness, feature parity, responsive UX (D1-D5), accessibility, and the Part O control-type contract (THE PLACEMENT RULE, THE ELEMENT MANIFEST, control types §1-§14). Owns inspector-UX; read with Spec 32 and its sub-spec 35A. Current completion state is single-sourced to `.claude/LEDGER.md` | active |
-| 35A | [35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md](35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md) | Sub-spec of Spec 35 — anti-pattern fail-list (Part F), native-mechanism verdicts (Part G), component reference and action layer (Parts H-I), roadmap, rollout gates and per-block definition-of-done (Parts J-L), implementation status (Part M), role data layer (Part N), and the Part O enforcement layers (O.15, O.16), carried obligations (CO-n) and cross-cutting rules. Read with Spec 35 | active |
-| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) (v2.9) | **THE canonical SGS Navigation System** — nav bar (`sgs/nav-bar-menu`), mega CPT, off-canvas drawer (`sgs/nav-drawer-menu` + `sgs/nav-drawer`, `sgs_drawer` CPT) and utility pieces (cart/search/social/logo/business-info); classic-menu primary; WCAG 2.1 AA; crawlable; converter-emittable | active |
-| 37 | [37-HEADER-FOOTER-BUILDER.md](37-HEADER-FOOTER-BUILDER.md) (v1.7.0) | SGS Header/Footer Builder — CPT editing home (header, footer, drawer, mega), container blocks, behaviours, binding | active |
-| 38 | [38-SGS-MOTION-SYSTEM.md](38-SGS-MOTION-SYSTEM.md) | SGS Motion System — the four-tier motion doctrine (Tier V vanilla default / Tier G GSAP / Tier H helper / Tier W rendering substrate), the Tier G effect roster, the `data-sgs-fx-*` cloning grammar, and the flowing-gradient and surface-treatment effects | active |
-| 40 | [40-GENERATIVE-COVER-IMAGES.md](40-GENERATIVE-COVER-IMAGES.md) | Generative cover images — deterministic, brand-coloured artwork generated OFFLINE and cached as real files, for blog headers / section backgrounds / OG share images / product cards. Scope only (v0.1.0); a build gate at §5 blocks implementation until an approved reference exists. Not motion and not the generative-background effect (Spec 38); §0 carries the disambiguation table | draft |
-| 41 | [41-NAV-MENU-COLOUR-STATE-SYSTEM.md](41-NAV-MENU-COLOUR-STATE-SYSTEM.md) (v0.5.0) | `sgs/nav-bar-menu` + `sgs/nav-drawer-menu` colour, state + control system: three colour states (Normal / Hover / current), one colour picker per element property, one universal hover-treatment selector, the item border, the submenu colour + typography split, the "Menu Button" panel. Satisfies Spec 36 FR-36-4 and the colour half of FR-36-11. Read with Spec 36 and Spec 35 | active |
-| 42 | [42-SGS-FORM-CPT-AND-PRICING.md](42-SGS-FORM-CPT-AND-PRICING.md) (v2.1.0) | `sgs_form` CPT (slug-keyed identity), the `requireLogin` fix (FR-42-0), the reference-lifecycle contract shared with Spec 43, and the cloning-pipeline CPT-creation gap (FR-42-10). Pricing content lives in Spec 43 | active |
-| 43 | [43-SGS-CHOICE-FLOW.md](43-SGS-CHOICE-FLOW.md) (v1.13.0) | `sgs/choice-flow` — the step-wizard block family for qualification quizzes, priced configurators and WooCommerce option-picking; branching via `nextStepMap`; purchase endings reuse Spec 27's add-to-cart proxy; the `sgs_choice_flow` CPT owns a flow's content and look and is shown by a linked block or a product's buybox (FR-43-6, FR-43-25); add-on price list (FR-43-17 to 20); answers and fields on the bag line (FR-43-21); product-option steps over any attribute (FR-43-10); email ending (FR-43-4); compact and showcase layouts (FR-43-24); guided buybox (FR-43-23). Phases 0-5, the v1.8.0 follow-up and the v1.9.0 showcase parity with the Eye Care draft, v1.10.0's per-device picture size, and v1.13.0's advance-on-pick mode, step announcer and skip-adds-to-bag built; cloning-pipeline creation and analytics parked (`plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md`) | active |
-| 44 | [44-CLASSLESS-REPEATER-RECOGNITION.md](44-CLASSLESS-REPEATER-RECOGNITION.md) (v2.4.0) | Classless repeater recognition — Stage A + Stage B (within-page repeated content) recognise repeated structures in class-less drafts and route them to blocks, behind `--classless-match` / `--classless-auto-complete` (both off by default). The AI-fallback tier (§11) is parked | active (built) |
-| 45 | [45-CLASSLESS-FIELD-RESOLUTION.md](45-CLASSLESS-FIELD-RESOLUTION.md) (v1.6.0) | Classless field-mapping resolver — maps each JS-object field of a parent block already resolved by Spec 44 (or by Tier 4's own classifier for one-off content) to the correct block attribute / array-item field / nested child block, in four tiers. All four tiers built | active (built) |
-| 47 | [47-COMPUTED-ROUTE-DRAFT-TO-TREE.md](47-COMPUTED-ROUTE-DRAFT-TO-TREE.md) (v0.15.5) | Computed route: the cloning route for script-rendered drafts and static classless drafts. Measures the rendered draft and writes block settings through the framework DB in two directions sharing one resolver: Solve (compare, write, rebuild, classify survivors) and Fill (AI skeleton plus measured styles), with block calibration, a per-site divergence ledger, the walker, and the sweep, triage and register tools. Own folder `scripts/computed-route/`, no converter code. Everything except stage 5 (a second draft) is built; all 17 Eye Care surfaces are paired and measured (current counts: `sites/eye-care-ward-end/build/qa/triage/*.json`, never a cached figure), and the W-to-F reclassification is applied. Open route work is §5 Residual; per-surface Solve work is Session D in `plans/2026-10-04-spec47-full-coverage.md`. |
+| 27 | [27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md](27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md) | MASTER: the SGS product + WooCommerce layer. Part 1 cards, collection, cart, option-picker and configurator; Part 2 smart bulk pricing (FR-28-n); Part 3 WooCommerce page types, search, filter, account area and saved-item alerts (FR-30-n) | active |
+| 32 | [32-COMPONENT-STYLING-TOKEN-CONTRACT.md](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) | **Styling, tokens and theming contract.** Part A the component styling contract (semantic BEM classes consume per-client tokens; no inline declarations); Part B global styles and theming; Part C the `theme-snapshot.json` format; Part D the draft-to-snapshot extractor (FR-33-n). Read with Spec 35 | active |
+| 35 | [35-BLOCK-INSPECTOR-UX-STANDARD.md](35-BLOCK-INSPECTOR-UX-STANDARD.md) | Block inspector-UX standard: layout and grouping, control completeness, feature parity, responsive UX, accessibility, and the Part O control-type contract. Read with Spec 32 and 35A. Completion state is single-sourced to `.claude/LEDGER.md` | active |
+| 35A | [35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md](35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md) | Sub-spec of Spec 35: anti-pattern fail-list, native-mechanism verdicts, component reference, rollout gates, definition-of-done, role data layer and enforcement layers. Read with Spec 35 | active |
+| 36 | [36-SGS-NAVIGATION-SYSTEM.md](36-SGS-NAVIGATION-SYSTEM.md) | **THE SGS Navigation System:** nav bar (`sgs/nav-bar-menu`), mega CPT, off-canvas drawer and utility pieces; Part 14 is the nav menu colour, state and control system (FR-41-n) | active |
+| 37 | [37-HEADER-FOOTER-BUILDER.md](37-HEADER-FOOTER-BUILDER.md) | SGS Header/Footer Builder: CPT editing home (header, footer, drawer, mega), container blocks, behaviours, binding | active |
+| 38 | [38-SGS-MOTION-SYSTEM.md](38-SGS-MOTION-SYSTEM.md) | SGS Motion System: the four-tier motion doctrine (V vanilla default / G GSAP / H helper / W rendering substrate), the Tier G effect roster, the `data-sgs-fx-*` grammar and the surface-treatment effects | active |
+| 40 | [40-GENERATIVE-COVER-IMAGES.md](40-GENERATIVE-COVER-IMAGES.md) | Generative cover images: deterministic, brand-coloured artwork generated offline and cached as real files. Scope only; a build gate blocks implementation until an approved reference exists | draft |
+| 42 | [42-SGS-FORM-CPT-AND-PRICING.md](42-SGS-FORM-CPT-AND-PRICING.md) | `sgs_form` CPT (slug-keyed identity), the `requireLogin` fix, and the reference-lifecycle contract shared with Spec 43 | active |
+| 43 | [43-SGS-CHOICE-FLOW.md](43-SGS-CHOICE-FLOW.md) | `sgs/choice-flow`: the step-wizard block family for qualification quizzes, priced configurators and WooCommerce option-picking, and the `sgs_choice_flow` CPT | active |
+| 47 | [47-COMPUTED-ROUTE-DRAFT-TO-TREE.md](47-COMPUTED-ROUTE-DRAFT-TO-TREE.md) | **THE cloning route.** Measures the rendered draft and writes block settings through the framework DB in two directions sharing one resolver: Solve and Fill; block calibration, a per-site divergence ledger, the walker, and the sweep, triage and register tools. Own folder `scripts/computed-route/`. Open route work is its section 5 Residual; per-surface Solve work is in `plans/2026-10-04-spec47-full-coverage.md` | active |
 
 ## Not a live spec
 
+Old numbers still appear in code comments, reports and history. Read them as follows.
+
 | Number | Cite instead |
 |---|---|
-| 06 | — |
-| 13 | — |
-| 15 | 31, 00-naming-conventions |
-| 16 | 31 |
+| 06, 13, 24, 39 | none |
+| 15 | 00-naming-conventions |
+| 16, 22, 29 | 47 (cloning); DB slots; Spec 02 |
 | 17 | 37, 36 |
-| 21 | 20 |
-| 22 | 31 §13 |
-| 24 | — |
-| 25 | 27, 30 |
-| 29 | 31 §13.6 |
+| 19 | `.claude/wp-sgs-cli.md` (the `wp sgs` command reference) |
+| 20 | `scripts/parity/GAP-CHECKLIST.md` (fidelity measurement is the parity walker; its unbuilt additions are Spec 47 §3.6) |
+| 21 | `scripts/parity/GAP-CHECKLIST.md` |
+| 25 | 27 |
+| 26 | 32 Part B |
+| 28 | 27 Part 2 (FR-28-n unchanged) |
+| 30 | 27 Part 3 (FR-30-n unchanged) |
+| 31 | 47 (cloning); `.claude/rules/framework-principles.md` for R-31-n (R-22-n is the same rule); Spec 02 "Composite wrapper rule"; Spec 32 FR-32-13 and §6.1 |
+| 33 | 32 Part C (snapshot format) and Part D (extractor); FR-33-n unchanged |
 | 34 | 36 |
-| 39 | — |
+| 41 | 36 Part 14: `Spec 41 §N.M` is `Spec 36 §14.N.M`; FR-41-n unchanged |
+| 44, 45 | 47 |
 
 ## Working specs / research artefacts (not numbered)
 

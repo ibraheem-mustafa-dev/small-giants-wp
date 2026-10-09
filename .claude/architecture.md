@@ -10,8 +10,8 @@ title: SGS WordPress Framework — System Architecture
 
 SGS is an AI website-builder built by Small Giants Studio: a WordPress block theme
 (`sgs-theme`) + a Gutenberg blocks plugin (`sgs-blocks`, including forms) + a booking plugin
-(`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus two draft-to-page routes (§4): the
-computed route (Spec 47) and the converter (`/sgs-clone`, Spec 31). It competes with Kadence, Spectra
+(`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus a draft-to-page route (§4): the
+computed route (Spec 47). It competes with Kadence, Spectra
 and GenerateBlocks, so every block must be fully configurable by a non-technical client through the
 block editor alone (root `CLAUDE.md` "Non-negotiables"). The framework is client-agnostic: no client
 colour, copy, imagery or structure is hard-coded into the base theme or blocks plugin (root
@@ -58,15 +58,11 @@ small-giants-wp/
 `plugins/sgs-blocks/src/blocks/` holds one directory per block, each following the standard
 5-file pattern (`block.json`, `edit.js`, `render.php`, `style.css`, optionally `view.js`/
 `view-module.js`) — see `plugins/sgs-blocks/CLAUDE.md` "Block Pattern".
-`plugins/sgs-blocks/scripts/converter/` is the Spec 31 converter engine and `scripts/computed-route/` the Spec 47 route (§4).
+`scripts/computed-route/` is the Spec 47 route (§4).
 
 ## 4. Draft → page routes
 
-A design draft reaches a WordPress page by exactly one of two routes. The routing rule is Spec 31 §0
-(ROUTE): a draft that renders by script goes to the computed route whatever classes it carries, and so
-does a static classless draft; a static draft that carries SGS class names stays on the converter. The
-two routes share the framework DB (§5), the parity walker and the page builder, and no code (Spec 47
-R-47-1).
+A design draft reaches a WordPress page by the computed route (Spec 47): script-rendered and static classless drafts alike. It shares the framework DB (§5), the parity walker and the page builder with nothing else.
 
 ### 4.1 Computed route (Spec 47)
 
@@ -83,40 +79,6 @@ copying the draft's DOM or classes. Spec: `.claude/specs/47-COMPUTED-ROUTE-DRAFT
   `scripts/parity/draft-live-walk.mjs` compares draft and live.
 - **Accepted differences:** the divergence ledger `sites/<client>/build/qa/divergences.json`, linted
   against the client's fix register.
-
-### 4.2 Converter (Spec 31)
-
-**What it does.** `/sgs-clone` converts a static draft authored in SGS-BEM (`.sgs-<block>__<element>--
-<modifier>`, Spec 00 §3.1) into native SGS blocks driven by their own attributes. Engine:
-`plugins/sgs-blocks/scripts/converter/` (entry `entry.py::convert_section`). Spec:
-`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`, read in full at the start of any converter session.
-
-**The walker.** ONE recursive function with three permitted exceptions (R-31-3 / FR-31-3): atomic-tag
-swap (a bare `<p>`/`<h1>`/`<img>` with no SGS classes, via a DB-driven tag map), top-level chrome-skip
-(`header`/`footer`/`nav`, R-31-1) and top-level container wrap. Every other decision comes from DB row
-data. BEM is the only recognition signal (R-31-2).
-
-**The content fork.** A content-bearing attribute's functional identity (`equivalent_block_for`) is separate
-from its emit shape (`block_attributes.emit_shape`, `nested` or `child`); one per-attribute walk decides the
-shape (Spec 31 §13.3, FR-31-2.6).
-
-**CSS routing (Spec 31 §13.4 FR-31-5):**
-
-| Destination | What |
-|---|---|
-| D0 | Global design tokens → `theme.json` |
-| D1 | Typed-attr lift → a native block attribute (when a `property_suffixes` row matches) |
-| D2 | Scoped variation CSS, inlined at deploy (`variation-d0-d2.css`) |
-
-A property with none of these is captured as a `ResidualBand` and serialised into the block's own
-`sgsCustomCss`, never silently dropped (R-31-15). The 3-layer wrapper model (OUTER / CONTENT-WIDTH /
-PER-GRID-ITEM) is how a composite offers the `sgs/container` panels it opts into (§6.2).
-
-**Fidelity.** `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Stage 11.6, Spec 20) compares
-`getComputedStyle` on the clone against the draft, matched by text content. It is a per-commit diagnostic,
-never the closing gate (R-31-4); closure needs the live visual check and Bean's eye (R-31-13).
-
-**Stage map.** Not cached here: see `plugins/sgs-blocks/scripts/sgs-update-v2.py`'s docstring or Spec 31 Appendix D.
 
 ## 5. The data layer — `sgs-framework.db`
 
@@ -167,7 +129,7 @@ Canonical spec: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
 `sgs/container` is the canonical wrapper block (background media, shape dividers, width capping, grid/flex
 layout, responsive gap, shadow). Every composite with a built-in outer wrapper (hero, cta-section, trust-bar,
 card-grid, …) offers the container panels it needs, opt-in per block, and must not diverge from the
-wrapper's computed behaviour with per-block CSS hacks (Spec 31 §13.6 FR-31-21.1). `block_composition.container_kind`
+wrapper's computed behaviour with per-block CSS hacks (Spec 02 "Composite wrapper rule", R-31-9). `block_composition.container_kind`
 (`section` / `layout` / `content`) is read from `block.json supports.sgs.containerKind` by `/sgs-update`.
 
 **A composite need not call `SGS_Container_Wrapper::render()`.** A content-KIND composite using only
@@ -202,7 +164,7 @@ per-bundle and would desynchronise.
 ## 7. Per-client theming
 
 `theme/sgs-theme/styles/` is deliberately empty: the framework uses no WordPress style variations.
-Per-client tokens live at `sites/<client>/theme-snapshot.json` (Spec 33, extracted from the draft's rendered
+Per-client tokens live at `sites/<client>/theme-snapshot.json` (Spec 32 Parts C and D, extracted from the draft's rendered
 computed styles before any block conversion) and deploy via
 `plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`, which writes
 `wp_global_styles`. Client CSS overrides go into the snapshot's `styles.css` or
@@ -224,8 +186,6 @@ Tier-W pages alone. All tiers are npm-bundled and conditionally loaded, with no 
 |---|---|
 | Theme → blocks plugin | `theme.json` design tokens as CSS custom properties (`--wp--preset--*`); Block Selectors API targets native typography per block |
 | Blocks plugin → DB | Read-only queries against `sgs-framework.db` (§5's access pattern); `/sgs-update` writes it |
-| Converter → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
-| Converter → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
 | Computed route → WordPress | `scripts/wp-build-page.js` builds trees through the editor; `scripts/parity/draft-live-walk.mjs` measures draft against live; both read the framework DB read-only (§4.1) |
 | Blocks plugin → email | Every email goes through `wp_mail()` (SGS code via `Sgs_Mailer`, shop alerts as `WC_Email` subclasses) over the site's SMTP mailbox via FluentSMTP; N8N receives optional automation events only |
 | Blocks plugin → WooCommerce cart lines | One server-built line summary feeds the bag drawer, cart, checkout, emails and order screens. No spec governs it; the code and docblocks in `plugins/sgs-blocks/includes/cart-line-summary/` are the reference, and the Store API `extensions` stdClass trap is in auto memory |
@@ -249,10 +209,8 @@ source. The decision log is `.claude/archive/decisions.md`.
    computed behaviour; `container_kind` gates which 3-layer panels a block exposes (§6.2).
 6. **Content-KIND composites may render block-private**; section/layout-KIND composites keep the
    shared wrapper (§6.2).
-7. **One canonical converter spec**: Spec 31. Older `R-22-N`/`FR-22-N` citations map 1:1 to
-   `R-31-N`/`FR-31-N`.
-8. **Two routes, one per draft.** The Spec 31 converter takes static drafts carrying SGS class names,
-   the Spec 47 computed route takes the rest (§4). No flag, no fallback between them, no shared code.
+7. **One cloning route**: Spec 47. The binding rules `R-31-N` (also cited as `R-22-N`) live in `.claude/rules/framework-principles.md`.
+8. **No fallback route.** Every draft takes the computed route (§4); there is no second route to fall back to.
 9. **Root-cause methodology is mandatory.** No fix without a proven cause; verify every dependency
    a theory rests on. Full statement: root `CLAUDE.md` "How to work here".
 10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash`.** A stash or a
@@ -303,7 +261,6 @@ This file stays at system altitude. Follow the pointer for anything lower:
 | Structural defences / lessons | Claude Code auto memory (not a repo path) |
 | D-numbered decision log | `.claude/archive/decisions.md` (frozen) |
 | Open deferred work | relevant plan/spec + `.claude/LEDGER.md` |
-| Converter full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Computed route full detail | `.claude/specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`, `scripts/computed-route/README.md` |
 | Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |

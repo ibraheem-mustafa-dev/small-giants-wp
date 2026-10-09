@@ -52,7 +52,7 @@ generated cover appearing over a client's own photograph is a defect, not a feat
 - **FR-40-5 Offline generation.** A script produces real image files, written once. Zero runtime
   cost, zero page-weight risk, and it satisfies FR-40-3, which nothing else does.
 - **FR-40-6 Palette from the client's own tokens.** Colour is read from
-  `sites/<client>/theme-snapshot.json` (Spec 33), so re-theming a client re-colours their covers.
+  `sites/<client>/theme-snapshot.json` (Spec 32 Part C), so re-theming a client re-colours their covers.
   ⛔ Never hardcode a client colour — the framework rule.
 - **FR-40-7 Deterministic from a seed.** The same post must always produce the same cover. Seed
   from a stable identifier (post ID or slug). A cover that changes on regeneration is a bug: it
@@ -95,6 +95,6 @@ live in the uploads directory or the client site repo · the regeneration trigge
 
 ## 7. Dependencies
 
-- **Spec 33** — `theme-snapshot.json` is the palette source (FR-40-6).
+- **Spec 32 Part C** — `theme-snapshot.json` is the palette source (FR-40-6).
 - **Spec 32** — no inline styling if a cover is ever applied via a block.
 - **NOT Spec 38.** See §0. Nothing here is motion.

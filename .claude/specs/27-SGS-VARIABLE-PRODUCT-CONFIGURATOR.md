@@ -12,7 +12,7 @@ absorbs: [24, 25, 28, 30]
 absorbed_by: null
 related:
   - specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md
-  - specs/26-SGS-GLOBAL-STYLES-AND-THEMING.md
+  - specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
   - specs/02-SGS-BLOCKS.md
   - plugins/sgs-blocks/src/blocks/product-card/
   - plugins/sgs-blocks/src/blocks/option-picker/
@@ -451,7 +451,7 @@ Each FR carries a holistic test strategy. Status is a plain word: built, or NOT 
 
 **FR-27-PREFLIGHT -- Go-live + setup pre-flight check.** Status: built (`plugins/sgs-blocks/includes/class-product-preflight.php`). `Product_Preflight::evaluate()` runs the blocker checks listed in the class header on variable products only, and surfaces a client-legible "ready / N issues" report. Also built: (a) a `transition_post_status` HARD block (SEC-5) that reverts a blocked publish to draft, writes `_sgs_preflight_issues` meta and shows a dismissible admin notice, with a dual re-entrancy guard; (b) a `GET /sgs/v1/products/{id}/preflight` pre-check endpoint (nonce + per-object edit_post) for the authoring UI/agent; (c) a `no_variesby` check; (d) the cart £0 422 guard layer (`sgs_price_not_set` in `plugins/sgs-blocks/includes/class-cart-proxy.php` + the `woocommerce_add_to_cart_validation` filter for the Store-API path); (e) a weekly `sgs_preflight_health_check` cron (batched, at most 50) that flags degraded products. The `invalid_jsonld` check is publish-gated: the manifest/schema only builds for a published product, so a pre-publish readiness check on a draft does not falsely flag empty JSON-LD; it validates at the publish transition and on every re-save of a published product. Test: a deliberately-misconfigured product surfaces each issue; the QA-AUTHORING end-to-end run proves the author -> publish -> rich-results journey.
 
-**FR-27-I2 -- Theme / Spec 26 alignment.** Status: built. Swatch/pill colours derive from theme tokens (Spec 26); respect the per-client global-styles layer; auto-contrast (build-time luminance: at render, compute WCAG luminance of the swatch/pill background; text = `#000`/`#fff` whichever passes 4.5:1) applies to pill text. Test: client-palette restyle + contrast.
+**FR-27-I2 -- Theme / Spec 32 Part B alignment.** Status: built. Swatch/pill colours derive from theme tokens (Spec 32 Part B); respect the per-client global-styles layer; auto-contrast (build-time luminance: at render, compute WCAG luminance of the swatch/pill background; text = `#000`/`#fff` whichever passes 4.5:1) applies to pill text. Test: client-palette restyle + contrast.
 
 **FR-27-I3 -- Spec 24/25 reconciliation.** Status: built. The card-system (FR-24-x) and WooCommerce experience layer requirements are folded into this spec. `render.php`: WC variations present means ignore `_sgs_variation_sets` for commerce.
 
@@ -518,7 +518,7 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 
 ### Cross-references
 
-- **Aligns with:** Spec 47 (the computed route that clones product cards and option pickers), Spec 26 (global styles / auto-contrast), Spec 11 (button presets).
+- **Aligns with:** Spec 47 (the computed route that clones product cards and option pickers), Spec 32 Part B (global styles / auto-contrast), Spec 11 (button presets).
 - **Key decisions:** D144 (option-picker ratification), D148 (cart + option-picker), D149 (dual-source architecture), D151 (wrapper + bridge model, add-to-cart), Option A ratified (WC source of truth; no mirror; clean slate; closed-loop moat; AI-builder = roadmap).
 - **Primary files:** `plugins/sgs-blocks/includes/class-product-bindings.php`, `plugins/sgs-blocks/src/blocks/product-card/`, `plugins/sgs-blocks/src/blocks/option-picker/`, `plugins/sgs-blocks/src/blocks/card-grid/`, `plugins/sgs-blocks/src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).
 

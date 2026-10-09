@@ -26,7 +26,7 @@ The control is a PAIR: border width (box object) + colour, with border STYLE ins
 popover, plus the SGS-wrapped native radius as a second control when the caller wires
 `onRadiusChange`.
 
-**`showColour` prop (Spec 41 FR-41-33/FR-41-2b).** `true` (default) renders the colour swatch as
+**`showColour` prop (Spec 36 FR-41-33/FR-41-2b).** `true` (default) renders the colour swatch as
 part of the control. Pass `showColour={false}` when border colour should live in `SgsColourPanel`
 instead — this omits the swatch entirely (not a disabled picker) and re-parents
 `BorderStyleControl` as `SgsBorderControl`'s own sibling. Twelve props become inert under
@@ -95,13 +95,13 @@ non-colour sibling control `SgsColourPanel` has no slot for.
   returns `null` if every row is falsy.
 - There is no `borderRow` helper — only `fillRow.js` and `textRow.js` exist. Border colour is
   owned by `SgsBorderControl`.
-- Third state `attrs.current`/`attrs.currentGradient` (Spec 41 FR-41-3/FR-41-2) requires
+- Third state `attrs.current`/`attrs.currentGradient` (Spec 36 FR-41-3/FR-41-2) requires
   `attrs.hover` first (both helpers throw otherwise) — Current is never a substitute for Hover.
   Every state entry is a literal array element, never `.map()`-generated, because
   `describeRow()` in `scripts/inspector-scan/core/golden.js` resolves a row's state count
   statically.
 - Row `heading` (a label before the row) and `after` (an arbitrary node after the row, e.g. a
-  hover-treatment toggle) group and append controls (Spec 41 §9.6/FR-41-23/24). Both omitted when
+  hover-treatment toggle) group and append controls (Spec 36 §14.9.6/FR-41-23/24). Both omitted when
   absent.
 - `contrastLargeText` reaches only the `gradientCapable` branch (FR-41-33) — a plain
   `DesignTokenPicker` row carries no contrast check at all.
@@ -172,7 +172,7 @@ that wraps, auto-fits, or whose items it does not own (native `column-rule` / `r
 `src/shared/separators/` where the browser lacks them). Never select a flow list's items by position. Gate:
 `scripts/check-separators-through-helper.py` fails a between-item line drawn outside the helper (ratcheted baseline in
 `scripts/check-separators-through-helper-baseline.json`; adopting a block deletes its entry). A composite that mirrors
-`sgs/container` (Spec 31 §13.6) declares `separators` and mounts `SeparatorsPanel`; the wrapper reads `separators` for the
+`sgs/container` (Spec 02 "Composite wrapper rule") declares `separators` and mounts `SeparatorsPanel`; the wrapper reads `separators` for the
 block's own grid, so a block's OTHER list takes its own name (`featureSeparators`), and a block whose grid is a child element
 (post-grid, gallery) calls the helper itself and hands the wrapper no `separators`.
 

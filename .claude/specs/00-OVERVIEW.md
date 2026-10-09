@@ -143,7 +143,7 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 
 - **Source code:** Git repository (GitHub monorepo)
 - **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336).
-- **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
+- **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 32 Part C), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
 - **Targets, canary, page IDs, WP version:** `.claude/dev-setup.md` and `.claude/LEDGER.md` (query `wp core version` for the live value).
 - **Automation:** N8N workflows (see `.claude/dev-setup.md` §N8N) for notifications, webhooks, scheduled tasks

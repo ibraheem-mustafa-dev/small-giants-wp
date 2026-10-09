@@ -49,9 +49,9 @@ At 4 instances the detector costs more than the edit. Measured floor: **131 line
 buying the `--check` gate that stops instance 5 arriving next month. **If the change
 genuinely cannot regress, the threshold does not apply.**
 
-### If this migration is a declared Spec 31 PHASE
+### If this migration is a multi-commit phase
 
-⚠ **Then R-31-5 governs and you split it** into that phase's agreed commit boundaries. The
+⚠ **Then R-31-5 governs (`.claude/rules/framework-principles.md`) and you split it** into three or more commits. The
 single-landing-commit assumption elsewhere in this document describes a standalone codemod, not
 a phase.
 

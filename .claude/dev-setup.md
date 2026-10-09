@@ -449,8 +449,7 @@ The `wp sgs` namespace is the developer and pipeline command surface for SGS sit
 template-part seeding and reset, conditional header/footer rules, migrations, the CPT-backed
 header / footer / drawer lifecycle (`wp sgs header|footer|drawer set-active | clear-active | list
 | seed-starter`), `wp sgs audit-colour-tokens` and `wp sgs media measure-tone` (photo brightness for section tone). It runs on the server over SSH (`ssh hd`),
-and write commands need `--user=<id>`. Full reference: `.claude/specs/19-SGS-CLI-COMMANDS.md`
-(Spec 19).
+and write commands need `--user=<id>`. Full reference: `.claude/wp-sgs-cli.md`.
 
 ---
 

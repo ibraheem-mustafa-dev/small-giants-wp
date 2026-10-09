@@ -348,7 +348,7 @@ Every element in both containers MUST default
 from two shared sources, never from per-block literals:
 
 1. **Global style tokens** — `theme.json` / `wp_global_styles`, and for client sites
-   `sites/<client>/theme-snapshot.json` (Spec 33).
+   `sites/<client>/theme-snapshot.json` (Spec 32 Part C).
 2. **The Site Info store** — `sgs_site_info` via the `sgs/site-info` bindings source.
 
 A value set once in Site Info renders identically in header and footer with no re-entry.
@@ -910,8 +910,8 @@ Six header/footer furniture blocks plus link-source and style additions on two e
 - **`sgs/local-time`**: a live clock for one time zone.
 - **`sgs/language-switch`**: a hand-set list of language links showing the current language via `aria-current`; language names and tags come from PHP's `intl` extension when available. Polylang/WPML as a language-list source is not built.
 - **`sgs/store-selector`**: a trigger button plus a disclosure list of country/store links; the current store is detected from the visitor's host and path.
-- **`sgs/theme-toggle`**: a dark-mode switch or light/dark/auto segmented control wired to the site's automatic dark palette (the site's `custom.dark` theme.json setting, derived by `plugins/sgs-blocks/scripts/derive-dark-palette.py`). The palette itself (derived at snapshot push time by a minimum-change rule, every colour checked against every ground it is used on, failing closed) is Spec 33 FR-33-20.
-- **`sgs/wishlist-link`** (header/footer icon-link with a live saved-item count badge) and **`sgs/wishlist-panel`** (the saved-items panel) implement the two-tier wishlist (a browser-stored list merged into the account on log-in), with Move to basket and Notify me actions (`plugins/sgs-blocks/includes/wishlist/`). The customer account area and saved-item alerts are Spec 30 FR-30-14/FR-30-15, not this spec.
+- **`sgs/theme-toggle`**: a dark-mode switch or light/dark/auto segmented control wired to the site's automatic dark palette (the site's `custom.dark` theme.json setting, derived by `plugins/sgs-blocks/scripts/derive-dark-palette.py`). The palette itself (derived at snapshot push time by a minimum-change rule, every colour checked against every ground it is used on, failing closed) is Spec 32 Part C FR-33-20.
+- **`sgs/wishlist-link`** (header/footer icon-link with a live saved-item count badge) and **`sgs/wishlist-panel`** (the saved-items panel) implement the two-tier wishlist (a browser-stored list merged into the account on log-in), with Move to basket and Notify me actions (`plugins/sgs-blocks/includes/wishlist/`). The customer account area and saved-item alerts are Spec 27 Part 3 FR-30-14/FR-30-15, not this spec.
 - **`sgs/button`** supports `linkSource: 'top'` (scroll to the top of the page) and `'account'` (the WooCommerce My Account page, or the login screen when WooCommerce is inactive) alongside `url`/`phone`/`email`/`whatsapp` (`plugins/sgs-blocks/src/blocks/button/block.json::attributes.linkSource`).
 - **`sgs/audio`** supports `playerStyle: 'toggle'`, a compact sound on/off button that mutes every other player on the page, for a header/footer sound-mute control (`plugins/sgs-blocks/src/blocks/audio/block.json::attributes.playerStyle`).
 - `supports.sgs.headerEssential` is declared on `sgs/product-search` and `sgs/wishlist-link` among these, so those two are protected from a shrink-hide target by default (FR-37-39).

@@ -780,7 +780,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   whose children become bodies — NOT a physics toggle bolted onto existing blocks with preset
   shapes.** A preset-shape toggle locks operators into whatever shapes we happened to imagine; a
   container-kind block gives them anything they can put in a container. It therefore inherits the
- **composite wrapper rule** (`.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.6) and MUST offer the `sgs/container` wrapper
+ **composite wrapper rule** (`.claude/specs/02-SGS-BLOCKS.md` "Composite wrapper rule") and MUST offer the `sgs/container` wrapper
   capabilities it needs (opt-in per panel) rather than diverging — its `container_kind` follows from that, and any missing
   capability is a gap to add to the block, never a converter workaround.
 

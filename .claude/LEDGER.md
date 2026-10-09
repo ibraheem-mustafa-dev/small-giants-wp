@@ -59,12 +59,6 @@ Open owed items:
 **Bean-only tasks:** the drawer-burger click retest (does the intermittent click-miss still occur now the duplicate-burger fix has shipped? If so, dispatch `/systematic-debugging`), and the mega-motion eye check (R-31-13), booked with the next live URL.
 **Also open:** `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
 
-### Front E: Spec 45 classless FIELD resolution
-
-**State:** built, all 4 tiers, validated, but it has no live pipeline input because Spec 44 does not yet produce real matches on real data.
-**Blockers:** Spec 44 real-data matches.
-**Resume from:** `specs/45-CLASSLESS-FIELD-RESOLUTION.md`.
-
 ## Parked
 
 - **CR12, PARKED pending Bean:** the deriver hard-refuses Eye Care on contrast; 3 design options sit on its register row (`plans/2026-10-02-eye-care-fix-register.md`).
@@ -89,6 +83,6 @@ Open owed items:
 
 ## Known failing tests
 
-- `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: serve the cloning-pipeline gate work in `specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
+- `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: belong to the old converter and go with it (`plans/2026-10-09-retire-old-converter-code.md`).
 - `test_wp_integration::test_native_hover_zoom_routes`: serves the card-grid zoom control (Parked).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (README exports, D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.

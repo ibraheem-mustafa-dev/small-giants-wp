@@ -26,7 +26,7 @@ SGS is a standalone WordPress block framework and AI website-builder: theme + bl
 - **No SGS block renders an inline `style="…"` declaration** (Spec 32). `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` must exit 0.
 - **Every customisable property has a block-editor inspector control** — clients never touch code or WP-CLI.
 - No hard-coded environment paths: `get_theme_file_uri()`, `wp_upload_dir()`, CSS custom properties.
-- Per-client tokens live in `sites/<client>/theme-snapshot.json` (Spec 33), deployed with `push-theme-snapshot.py`; `theme/sgs-theme/styles/` stays empty.
+- Per-client tokens live in `sites/<client>/theme-snapshot.json` (Spec 32 Part C), deployed with `push-theme-snapshot.py`; `theme/sgs-theme/styles/` stays empty.
 - No client or reference-site name in code or file names outside `sites/<client>/` and `reference/` (docs, tests, fixtures and dated reports may carry them): `python scripts/check-no-client-names.py --check`, rules at the top of the script.
 - Naming (full rules: Spec 00): `.sgs-` BEM (`.sgs-<block>__<element>--<modifier>`), block namespace `sgs/`, PHP namespaces `SGS\…`, hook prefix `sgs_`, options `sgs_*`. UK English everywhere.
 - A change to the sgs-booking REST API also updates `.claude/specs/03-SGS-BOOKING.md` and `plugins/sgs-booking/CLAUDE.md`.

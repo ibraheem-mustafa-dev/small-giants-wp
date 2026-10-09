@@ -1,7 +1,7 @@
 ---
 doc_type: reference
 version: "1.0"
-spec_ref: .claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md#fr-30-13
+spec_ref: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md#fr-30-13
 last_verified: 2026-10-09
 purpose: Repeatable pre-launch gate run before any SGS client shop takes real money.
 scope: Run once per client, top-to-bottom. Every item must be ✅ or a recorded conscious N/A before the shop accepts live payments.
@@ -10,7 +10,7 @@ scope: Run once per client, top-to-bottom. Every item must be ✅ or a recorded 
 # SGS WooCommerce Shop — Go-Live Checklist
 
 **Version:** 1.0  
-**Spec source:** `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13  
+**Spec source:** `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` §FR-30-13  
 **Applies to:** every SGS client shop before first live payment is taken.
 
 ---
@@ -107,7 +107,7 @@ Add one row per client run.
 
 ## Notes
 
-- **Spec source:** `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` §FR-30-13.
+- **Spec source:** `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` §FR-30-13.
 - **FR-30-11 audit script:** `scripts/wc-pages-responsive-audit.js` — run it against the live client domain (not the canary) for the RA-1 gate.
 - **SE-6:** `FAQPage` is expected where FAQ/accordion content exists; AI search (ChatGPT/Perplexity/AI Overviews) and Bing consume it (D215). On-page copy frames FAQs as AI-search/Bing visibility, never as a Google rich result.
 - **N/A policy:** an item may be recorded as N/A only with a written reason. Examples of valid N/A: IF-1 when notify-me is not active; PD-1/PD-2 for a handmade product without a barcode (state why). An N/A without a reason is treated as ☐ (incomplete).

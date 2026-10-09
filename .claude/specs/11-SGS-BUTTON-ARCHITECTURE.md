@@ -56,7 +56,7 @@ A dynamic block with an InnerBlocks slot must `save` as `<InnerBlocks.Content />
 
 ## 4. Button presets are native theme.json
 
-Per-client preset values live in `settings.custom.buttonPresets` of the client's `sites/<client>/theme-snapshot.json` (Spec 33), pushed by `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, and in the Customiser panel `plugins/sgs-blocks/includes/class-button-presets-customiser.php`. WordPress generates the `--wp--custom--button-presets--*` properties itself; the framework emits no bridge and has no Settings page for them.
+Per-client preset values live in `settings.custom.buttonPresets` of the client's `sites/<client>/theme-snapshot.json` (Spec 32 Part C), pushed by `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, and in the Customiser panel `plugins/sgs-blocks/includes/class-button-presets-customiser.php`. WordPress generates the `--wp--custom--button-presets--*` properties itself; the framework emits no bridge and has no Settings page for them.
 
 | Path | Audience | UX |
 |---|---|---|

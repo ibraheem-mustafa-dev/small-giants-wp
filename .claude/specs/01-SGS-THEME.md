@@ -29,7 +29,7 @@ A lightweight, performance-first WordPress block theme that replaces Astra Pro. 
 | Custom fonts | `theme.json` font face declarations (local hosting, no Google Fonts CDN) |
 | White label | Not needed (we own the theme) |
 | Blog layouts | Block patterns for archive/single templates |
-| WooCommerce integration | Full WC block-theme layer via `add_theme_support('woocommerce')` + custom templates/parts (Spec 30) |
+| WooCommerce integration | Full WC block-theme layer via `add_theme_support('woocommerce')` + custom templates/parts (Spec 27 Part 3) |
 
 ---
 
@@ -43,11 +43,11 @@ Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files t
 | `theme.json` | Design tokens, settings, styles (the framework default; per-client values come from snapshots) |
 | `functions.php` | Minimal: enqueue assets, register patterns, theme support |
 | `inc/` | PHP includes (colour helpers, core block styles, font preloading, shop filter and toolbar settings) |
-| `assets/css/` | Stylesheets: core-block overrides, critical-path subset, dark mode, `type-scale.css` (per-device font-size ladder), utilities, `woocommerce.css` (Spec 30) |
-| `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, shop filter scripts (Spec 30) |
+| `assets/css/` | Stylesheets: core-block overrides, critical-path subset, dark mode, `type-scale.css` (per-device font-size ladder), utilities, `woocommerce.css` (Spec 27 Part 3) |
+| `assets/js/` | Vanilla JS: dark-mode toggle, nav accessibility, smooth scroll, viewport width, shop filter scripts (Spec 27 Part 3) |
 | `assets/fonts/` | Self-hosted font files (WOFF2) |
-| `templates/` | Block templates (index, front-page, home, page, single, archive, 404, search, and the WooCommerce templates of Spec 30) |
-| `parts/` | Template parts: `header.html` (a one-line `wp:pattern` reference to `framework-header-default`, search-free; hosts `sgs/site-header` and `sgs/nav-bar-menu`), `footer.html` (hosts `sgs/site-footer`), and the WooCommerce parts of Spec 30 |
+| `templates/` | Block templates (index, front-page, home, page, single, archive, 404, search, and the WooCommerce templates of Spec 27 Part 3) |
+| `parts/` | Template parts: `header.html` (a one-line `wp:pattern` reference to `framework-header-default`, search-free; hosts `sgs/site-header` and `sgs/nav-bar-menu`), `footer.html` (hosts `sgs/site-footer`), and the WooCommerce parts of Spec 27 Part 3 |
 | `patterns/` | Block patterns by category: content, footers, headers (`sgs-headers`), drawers, mega panels. List: `git ls-files theme/sgs-theme/patterns` or the framework DB |
 | `styles/` | Empty by design: per-client snapshots live at `sites/<client>/theme-snapshot.json` (see §Per-site theme.json Model) |
 
@@ -65,7 +65,7 @@ The authoritative token set is `theme/sgs-theme/theme.json` (read it; never cach
 
 ### Type scale
 
-The preset list is not reproduced here; a copy of a generated ladder rots. Presets and per-device sizes: `theme/sgs-theme/theme.json` `settings.typography.fontSizes` and `theme/sgs-theme/assets/css/type-scale.css`. Per-client display tiers: Spec 33.
+The preset list is not reproduced here; a copy of a generated ladder rots. Presets and per-device sizes: `theme/sgs-theme/theme.json` `settings.typography.fontSizes` and `theme/sgs-theme/assets/css/type-scale.css`. Per-client display tiers: Spec 32 Part C.
 
 **Binding decision: no fluid typography.** Font sizes are explicit per device via the SGS tier system (`plugins/sgs-blocks/includes/helpers-responsive.php`: base rule, `@media (max-width:1023px)` tablet, `@media (max-width:767px)` mobile), never WordPress's `clamp()` interpolation. `clamp()` on `vw` units can fail WCAG 1.4.4 (resize text to 200 %) because viewport units do not respond to browser zoom.
 
@@ -135,14 +135,14 @@ A block that *subsumes* the template-part/Site-Info/rules system remains forbidd
 
 Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-bar-menu`/`sgs/nav-drawer-menu` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
 
-1. **Global style tokens** — the framework `theme/sgs-theme/theme.json` settings and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
+1. **Global style tokens** — the framework `theme/sgs-theme/theme.json` settings and, for cloned sites, the Spec 32 Part D draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
 
 ### Responsive model (never-overflow) + the drawer a11y contract
 
 The header/footer never overflow at any width down to 320px by construction — a Cluster layout (`flex-wrap` + `min-width:0` + fluid `clamp()` spacing) plus a per-breakpoint override model (768/1024 + a custom-px 4th tier, shared source per R-31-1) rather than per-element overflow hacks. The off-canvas drawer is the a11y benchmark (focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock). Full mechanics: Spec 37 (never-overflow layout) + Spec 36 (drawer a11y).
 
-## WooCommerce Layer (Spec 30)
+## WooCommerce Layer (Spec 27 Part 3)
 
 The theme provides a full WC block-theme layer declared via `add_theme_support('woocommerce')` in `functions.php`. It is a first-class framework feature.
 
@@ -254,7 +254,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 ## WordPress Requirements
 
 - WordPress 6.7+ (theme.json v3) and PHP 8.0+, as declared in `theme/sgs-theme/style.css` (`Requires at least` / `Requires PHP`)
-- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30). There is no runtime version-check or admin notice (see "Compatibility check" above). Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
+- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 27 Part 3). There is no runtime version-check or admin notice (see "Compatibility check" above). Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency
 
 ---
@@ -293,11 +293,11 @@ Snapshot format: **full `theme.json` copy** (not a diff). File is ~5–20 KB; si
 
 ### Push-theme-snapshot CLI
 
-Spec 19 §7 documents `plugins/sgs-blocks/scripts/push-theme-snapshot.py`.
+`.claude/dev-setup.md` documents `plugins/sgs-blocks/scripts/push-theme-snapshot.py`.
 
-### Live-style precedence (see Spec 26 for the canonical mental model)
+### Live-style precedence (see Spec 32 Part B for the canonical mental model)
 
-> **Framing note:** [Spec 26](26-SGS-GLOBAL-STYLES-AND-THEMING.md) owns the conceptual model — a data-layer merge: `wp_global_styles` is where a site's live styles live and `theme.json` is the factory-default seed, not a thing being overridden. The operational facts below (the post wins wherever both define a property) are the day-to-day guidance.
+> **Framing note:** [Spec 32 Part B](32-COMPONENT-STYLING-TOKEN-CONTRACT.md) owns the conceptual model — a data-layer merge: `wp_global_styles` is where a site's live styles live and `theme.json` is the factory-default seed, not a thing being overridden. The operational facts below (the post wins wherever both define a property) are the day-to-day guidance.
 
 WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. Consequence: a change written ONLY to `theme.json` on disk, including a `push-theme-snapshot.py` push, has **no live effect** for any property the post also defines. It is not a conflict, it is a deterministic override.
 

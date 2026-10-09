@@ -169,13 +169,13 @@ content-role migrations. Fail: a DP7 harness mismatch fails the build. Integrati
 client's theme-snapshot tokens. W4-b's evidence pack is fixed in advance: computed-parity JSON, DP7 captures, the
 homes table and the labels fidelity output; Bean judges from the pack and the live URL.
 
-## 6. Wave 5: the header and footer clone walker (Spec 33 Part 2)
+## 6. Wave 5: header and footer cloning through the computed route (Spec 47)
 
 | ID | Unit | Output | CP |
 |---|---|---|---|
-| W5-a | FR-37-22 emittable by construction, plus the header/footer clone walker | the pipeline clones header and footer through the walker; the roster clones become regression fixtures. Includes writing and reviewing Spec 33 Part 2 first (Spec 33 holds Part 1 only). `section_passes.py::SKIP_TOP_LEVEL_TAGS` still skips header, footer and nav | yes |
+| W5-a | FR-37-22 emittable by construction; header and footer cloned as Spec 47 surfaces | the computed route clones header, footer and drawer (Spec 47 §2 inputs); the roster clones become regression fixtures | yes |
 | W5-b | FR-37-23 final acceptance | live FRs, never-overflow on every live site, no inline styles, Bean's eye | yes |
-| W5-c | 36-18 Indus branded-header cutover through the pipeline, plus 36-25 structured data emitted once and 36-26a discoverability | the branded Indus header from the Indus Foods Mega Menu design (its inline-style source has no SGS-BEM classes, so W5-a's input contract decides how it enters the pipeline); one client feedback round | no |
+| W5-c | 36-18 Indus branded-header cutover through the pipeline, plus 36-25 structured data emitted once and 36-26a discoverability | the branded Indus header from the Indus Foods Mega Menu design (its inline-style source has no SGS-BEM classes, so it enters the computed route as a Spec 47 surface); one client feedback round | no |
 
 **Order:** W4-a2 → W4-b → Bean's eye (Gate 4) → W4-c (clones parallelise only after W4-b is accepted) → W4-d/e/f →
 W5-a → W5-b; W5-c after W5-a.

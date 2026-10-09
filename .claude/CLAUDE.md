@@ -10,6 +10,7 @@ One home per job:
 | Rules | `../CLAUDE.md`, plus path-scoped `rules/*.md` |
 | Lessons | Claude Code auto memory (its `MEMORY.md` index loads every session) |
 | Build, deploy, SSH, DB column meanings | `dev-setup.md` |
+| The `wp sgs` command reference | `wp-sgs-cli.md` |
 | Generated catalogues (every gate/script, every helper/component) | `catalogues/` |
 | System design | `architecture.md` |
 | Why something was decided | the doc it changed, and the commit message |

@@ -129,7 +129,7 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/
    slot names that variant uses]`) so the cloning converter can detect the correct variant, and
    register the variant-selector attr name to the `blocks.variant_attr` DB column via
-   `/sgs-update` (FR-31-20, Spec 31 §13).
+   `/sgs-update` (R-31-1).
 
 ## Utility Functions
 
@@ -202,7 +202,8 @@ Seven path-scoped rule files in `.claude/rules/` load when you touch their paths
 - `block-authoring.md`: saved-defaults channels, no deprecations, undeclared attributes, WooCommerce loop pinning
 - `block-editor-controls.md`: border, separator, colour and alignment controls, editor-canvas mirrors, grid-item qualification
 - `colour-emission.md`: colour-emission helpers, precedent registry, shadows, scrims, touch-safe hover
-- `cloning-pipeline.md`: the Spec 31 converter's binding rules and fidelity measures
+- `cloning-pipeline.md`: the computed route's cloning rules and fidelity measures
+- `framework-principles.md`: the binding rules R-31-n (also cited as R-22-n)
 - `migration-scripts.md`: migration/survey script triad, tier-object taxonomy, S1-S5 doctrine
 - `motion-qa.md`: live motion QA and canary fixture pages
 - `backend-integrations.md`: Google Reviews, Trustpilot, Font Collection

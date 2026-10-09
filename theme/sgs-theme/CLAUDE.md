@@ -18,7 +18,7 @@ sgs-theme/
 │   │                         #   index, page, single, archive, home, front-page, 404, search
 │   │                         #   archive-product, single-product, product-search-results,
 │   │                         #   taxonomy-product_attribute, cart, checkout, order-confirmation
-│   │                         #     — WooCommerce (Spec 30)
+│   │                         #     — WooCommerce (Spec 27 Part 3)
 ├── parts/                    # Template parts:
 │   │                         #   header.html, footer.html
 │   │                         #   sgs-archive-toolbar.html — shop filter/search bar
@@ -99,7 +99,7 @@ Everything else is inherited.
 
 - WordPress 6.7+ (theme.json v3 support)
 - PHP 8.0+
-- WooCommerce — **optional** shop/PDP/cart layer (Spec 30). The theme activates and functions fully without WooCommerce. When WooCommerce is active, the theme registers `add_theme_support('woocommerce')` and the `sgs-*` template parts/`woocommerce.css`/`sgs-shop-filters.js` assets are loaded.
+- WooCommerce — **optional** shop/PDP/cart layer (Spec 27 Part 3). The theme activates and functions fully without WooCommerce. When WooCommerce is active, the theme registers `add_theme_support('woocommerce')` and the `sgs-*` template parts/`woocommerce.css`/`sgs-shop-filters.js` assets are loaded.
 - No page builder dependency
 
 ## Browser Support
