@@ -8,8 +8,17 @@
 // element (the slot key is the element's path from the block root, the format of calibration's `elements` keys), so
 // it needs no knowledge of the page around it.
 import { handoverProblems } from './fill-handover.mjs';
+import { brandRegistry } from './brand-registry.mjs';
 
 const isStr = ( v ) => 'string' === typeof v && '' !== v.trim();
+
+// A skeleton `sgs/social-icons` node may also carry Fill-only keys that name a row of Site Info-bound brand icons:
+//   siteInfoRow:     [ brand slug, ... ] from the brand registry (absent: every registry brand, in registry order)
+//   childAttributes: { attr: value } merged into every generated icon's attributes
+//   childRefs:       { "<slug>": selector } the draft element each icon copies, resolved inside the row's own draftRef
+//                    (a selector string), so the icon can take the draft's typed address as its fallback link
+export const ROW_KEYS = [ 'siteInfoRow', 'childAttributes', 'childRefs' ];
+const hasRow = ( node ) => 'sgs/social-icons' === node.name && ROW_KEYS.some( ( k ) => undefined !== node[ k ] );
 
 // The attribute Fill puts on a node's draft element while its slots resolve (scopeSelector names it).
 export const SCOPE_ATTR = 'data-fill-scope';
@@ -103,6 +112,49 @@ export function skeletonNodes( tree ) {
 	return nodes;
 }
 
+// What is wrong with a node's Site Info row keys, as readable lines.
+function rowProblems( node, label ) {
+	const given = ROW_KEYS.filter( ( k ) => undefined !== node[ k ] );
+	if ( ! given.length ) {
+		return [];
+	}
+	if ( 'sgs/social-icons' !== node.name ) {
+		return [ `${ label } ${ given.join( ', ' ) } belongs to sgs/social-icons only` ];
+	}
+	const problems = [];
+	const known = brandRegistry().map( ( b ) => b.slug );
+	const row = node.siteInfoRow;
+	if ( undefined !== row && ( ! Array.isArray( row ) || ! row.every( isStr ) ) ) {
+		problems.push( `${ label } siteInfoRow must be a list of brand slugs` );
+	} else {
+		( row || [] ).forEach( ( slug, i ) => {
+			if ( ! known.includes( slug ) ) {
+				problems.push( `${ label } siteInfoRow brand "${ slug }" is not in the brand registry (${ known.join( ', ' ) })` );
+			} else if ( row.indexOf( slug ) !== i ) {
+				problems.push( `${ label } siteInfoRow lists "${ slug }" twice` );
+			}
+		} );
+	}
+	const plain = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
+	if ( undefined !== node.childAttributes && ! plain( node.childAttributes ) ) {
+		problems.push( `${ label } childAttributes must be an object of attribute to value` );
+	}
+	if ( ( node.innerBlocks || [] ).length ) {
+		problems.push( `${ label } has siteInfoRow and its own innerBlocks: the row generates its icons` );
+	}
+	if ( undefined !== node.childRefs ) {
+		if ( ! plain( node.childRefs ) || ! Object.values( node.childRefs ).every( isStr ) ) {
+			problems.push( `${ label } childRefs must be an object of brand slug to selector` );
+		} else {
+			Object.keys( node.childRefs ).filter( ( k ) => ! ( Array.isArray( row ) ? row : known ).includes( k ) ).forEach( ( k ) => problems.push( `${ label } childRefs names "${ k }", which siteInfoRow does not list` ) );
+			if ( ! isStr( node.draftRef ) ) {
+				problems.push( `${ label } childRefs needs the row draftRef as a selector string, which each icon finder is resolved inside` );
+			}
+		}
+	}
+	return problems;
+}
+
 // What is wrong with a skeleton's draft keys, as readable lines (empty when sound). The style lint (R-47-10) is
 // lint.mjs::lintSkeleton; this checks only what Fill itself reads.
 export function skeletonProblems( tree ) {
@@ -129,12 +181,41 @@ export function skeletonProblems( tree ) {
 				problems.push( `${ label } slot "${ slot }": ${ finderProblem( finder ) }` );
 			}
 		}
-		problems.push( ...handoverProblems( node.handover, label ) );
+		problems.push( ...handoverProblems( node.handover, label ), ...rowProblems( node, label ) );
 	}
 	return problems;
 }
 
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'handover' ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'handover', ...ROW_KEYS ];
+
+// The skeleton with each Site Info row node expanded into its `sgs/icon` innerBlocks: `{ iconSource: 'brand', brandName,
+// metadata.bindings.linkUrl -> sgs/site-info <registry siteInfoKey>, ...childAttributes }`. The Fill-only keys stay on the
+// node (cleanTree strips them). Run skeletonProblems first: an unknown slug is a problem there. The input is not changed.
+export function expandSiteInfoRows( tree ) {
+	const brands = brandRegistry();
+	const go = ( list ) => list.map( ( node ) => {
+		const out = { ...node };
+		if ( node.innerBlocks ) {
+			out.innerBlocks = go( node.innerBlocks );
+		}
+		if ( hasRow( node ) ) {
+			const slugs = node.siteInfoRow ?? brands.map( ( b ) => b.slug );
+			out.innerBlocks = slugs.map( ( slug ) => {
+				const brand = brands.find( ( b ) => b.slug === slug );
+				const child = {
+					name: 'sgs/icon',
+					attributes: structuredClone( { iconSource: 'brand', brandName: slug, metadata: { bindings: { linkUrl: { source: 'sgs/site-info', args: { key: brand?.siteInfoKey } } } }, ...( node.childAttributes || {} ) } ),
+				};
+				if ( node.childRefs?.[ slug ] && isStr( node.draftRef ) ) {
+					child.draftRef = `${ node.draftRef } ${ node.childRefs[ slug ] }`;
+				}
+				return child;
+			} );
+		}
+		return structuredClone( out );
+	} );
+	return go( tree );
+}
 
 // A copy of the tree without the draft keys: what Fill writes, and what wp-build-page.js receives.
 export function cleanTree( tree ) {

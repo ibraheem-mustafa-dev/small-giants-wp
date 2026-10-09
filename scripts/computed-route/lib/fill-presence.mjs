@@ -152,9 +152,17 @@ export function normaliseHref( href, origin ) {
 	return u.origin === origin ? `${ u.pathname }${ u.search }${ u.hash }` : h;
 }
 
+// The Site Info key a node's own binding gives a setting (`metadata.bindings.<attr>.args.key` with source sgs/site-info), or null.
+const siteInfoKey = ( attributes, attr ) => {
+	const b = attributes?.metadata?.bindings?.[ attr ];
+	return 'sgs/site-info' === b?.source && 'string' === typeof b?.args?.key && '' !== b.args.key ? b.args.key : null;
+};
+
 // The draft's links into the link settings calibration's `link` ties to each element. slots: { path: href | null }.
+// A setting bound to Site Info still receives the draft address (it is the fallback shown when Site Info is blank) and
+// also yields a `handover` row { attr, slot, siteInfoKey, address } so the clone reports the address for Site Info.
 export function linkDecisions( { calibration, attributes = {}, slots = {}, origin = '' } ) {
-	const out = empty();
+	const out = { ...empty(), handover: [] };
 	const link = calibration?.link;
 	if ( ! link ) {
 		return out;
@@ -167,6 +175,9 @@ export function linkDecisions( { calibration, attributes = {}, slots = {}, origi
 			continue;
 		}
 		claimed.add( hit[ 0 ] );
+		if ( siteInfoKey( attributes, attr ) ) {
+			out.handover.push( { attr, slot: hit[ 0 ], siteInfoKey: siteInfoKey( attributes, attr ), address: hit[ 1 ] } );
+		}
 		if ( unset( attributes[ attr ] ) ) {
 			out.writes.push( { attr, value: hit[ 1 ], merge: 'replace' } );
 		} else if ( String( attributes[ attr ] ) !== hit[ 1 ] ) {

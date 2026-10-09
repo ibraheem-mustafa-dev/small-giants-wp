@@ -54,6 +54,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `lib/fill-spacing.mjs` | Spacing ownership per tier from rendered border-box gaps (equal within 0.5px). |
 | `lib/fill-values.mjs` | Fluid fit and `clamp()`, the 16px breakpoint sweep against the SGS boundaries, and the sweep log. |
 | `lib/fill-presence.mjs` | Visibility and variant settings from calibration `presence`, words from `text`, links from `link`. |
+| `lib/brand-registry.mjs` | Reads the one brand and contact registry (`plugins/sgs-blocks/includes/data/brand-registry.json`) and derives which addresses belong to which brand (scheme for phone and email, domain for socials); no platform table of its own. |
 | `lib/fill-handover.mjs` | The handover entry shape Fill declares, validated against the five shared owners and four kinds. |
 | `lib/fill-page.mjs` | The page baseline for inherited properties from the theme snapshot (root typography and colour, heading and element styles, CSS initial values), which calibration deliberately does not record. |
 | `lib/fill-entrance.mjs` | Samples a draft's entrances (delay, duration, first-frame pose) and writes them through the resolver. |
@@ -130,6 +131,8 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/fill-presence.test.mjs` | FR-47-4: a draft showing the badge flips its visibility setting on and a draft without it leaves the default (MUST FAIL); variant, words and links, against fixture calibration keys. |
 | `tests/fill-page.test.mjs` | FR-47-4: the theme baseline for the inherited properties calibration does not record. |
 | `tests/fill-entrance.test.mjs` | FR-47-4: entrance timing and distance, a loop is not an entrance (MUST FAIL), and the resolver writes. |
+| `tests/fill-site-info.test.mjs` | A link setting bound to Site Info keeps the draft address as its fallback and yields one `site-info` handover entry (MUST FAIL without it); an unbound node, a bound node with no draft link and a non-Site-Info binding yield none. |
+| `tests/fill-site-rows.test.mjs` | A `sgs/social-icons` skeleton node with `siteInfoRow` expands to the Site Info-bound icons the committed Eye Care footer and drawer trees hold; the Fill-only keys are stripped; an unknown slug is a skeleton problem. |
 | `tests/fill-handover.test.mjs` | FR-47-4/§3.3: the five owners, four kinds, and an entry with no evidence is refused. |
 | `tests/fill-config.test.mjs` | FR-47-4 step 4: a pair for every node with a `draftRef` and none without (MUST FAIL); the generated config passes the walker's own lint. |
 | `tests/fill-resolve.test.mjs` | FR-47-4: whole-tree resolution with fixture reads and calibration over the real database. |
@@ -486,7 +489,9 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `scopeFinder(f, scope)` → the finder rewritten to resolve inside the scoped element.
 - `skeletonNodes(tree)` → depth-first nodes with parent, children and targets.
 - `skeletonProblems(tree)` → readable problems in a skeleton's draft keys.
-- `cleanTree(tree)` → a copy without `draftRef`, `draftSlots` and `handover`.
+- `cleanTree(tree)` → a copy without `draftRef`, `draftSlots`, `handover`, `siteInfoRow`, `childAttributes` and `childRefs`.
+- `ROW_KEYS` → the Fill-only keys of a `sgs/social-icons` Site Info row. `siteInfoRow` is a list of registry brand slugs (absent: every registry brand in order); `childAttributes` is merged into every generated `sgs/icon`; `childRefs` maps a slug to the selector of the draft element it copies, resolved inside the row's own `draftRef`.
+- `expandSiteInfoRows(tree)` → a copy where each such node holds `sgs/icon` innerBlocks (`iconSource: "brand"`, `brandName`, and `metadata.bindings.linkUrl` to Site Info's registry key); `fill.mjs` runs it after `skeletonProblems` and the lint.
 
 ### `lib/fill-read.mjs` (Playwright by path; imports `scripts/parity/lib/*`)
 - `READ_WIDTHS`: 375, 768, 1440. `DECLARED`: properties whose computed value is a used size. `PRESENT`: the render-presence sweep series. `PROPS`: the properties Fill resolves.
@@ -526,7 +531,13 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `plainText(s)` → text without markup, whitespace collapsed.
 - `presenceDecisions(input)` → `{ writes, unmapped, notes }` for visibility and variant settings, from calibration's `presence`.
 - `textDecisions(input)` → the same for words, from calibration's `text`.
-- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`.
+- `normaliseHref(href, origin)` → the href as WordPress holds it, or null. `linkDecisions(input)` → the same for links, from calibration's `link`; a setting bound to Site Info (`metadata.bindings.<attr>.args.key`) is still written and also returns a `handover` row, which `fill-resolve.mjs::fillContent` records as a `site-info` / `link` handover entry.
+
+### `lib/brand-registry.mjs`
+
+- `REGISTRY_FILE` → the registry's path. `brandRegistry(file?)` → its brands in file order. `brandBySlug(slug, brands?)` → one brand or null.
+- `brandDomains(brand)` → the domain names a social brand's addresses live on (its slug and the name inside its `socials.<name>` Site Info key).
+- `brandOwnsAddress(brand, address)` → whether the address is that brand's own: `tel:` for phone, `mailto:` for email, a host `<domain>.<tld>` (or a subdomain of it) for a social; a brand with no Site Info key, address, short links (`wa.me`) and country second-level domains are not claimed.
 
 ### `lib/fill-handover.mjs`
 - `HANDOVER_OWNERS`: re-exported from `lib/issue-classes.mjs`, the one definition Solve and Fill share. `HANDOVER_KINDS`: `text`, `presence`, `link`, `behaviour`.
@@ -653,7 +664,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `exportsOf(src)` → exported names.
 - `lintFolder(root)` → problems (README index, scripts imports).
 - `lintTree(tree, db, label?)` → problems (core style, native_wp).
-- `lintSkeleton(tree, db, label?)` → problems (style values).
+- `lintSkeleton(tree, db, label?)` → problems (style values; and a brand `sgs/icon` that types its own brand's address in `linkUrl` with no `metadata.bindings.linkUrl`).
 - `registerIds(markdown)` → the item ids a fix register holds (table first cells, comma-split, and ids leading a bullet).
 - `HOUSE_RULES`: ledger rules that are house rules (`touch-target`, `accessibility`): their entries cite no register item.
 - `lintLedger(entries, ids, label?)` → problems: an entry (not a house rule) whose `register` ids are missing or not in `ids`.

@@ -21,6 +21,7 @@ import { openDb, attrRow } from './lib/db.mjs';
 import { readTree, walk } from './lib/tree.mjs';
 import { lintSurfaces } from './lib/references.mjs';
 import { load } from './lib/ledger.mjs';
+import { brandBySlug, brandOwnsAddress } from './lib/brand-registry.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -101,10 +102,17 @@ export function lintTree( tree, db, label = 'tree' ) {
 	return problems;
 }
 
-// R-47-10 on a Fill skeleton: no attribute that paints a CSS property.
+// R-47-10 on a Fill skeleton: no attribute that paints a CSS property. Also, a brand icon (sgs/icon, iconSource
+// "brand") that types its own brand's address in linkUrl must bind linkUrl to Site Info, so the address stays editable
+// in one place; ordinary icons and every other block are not checked (lib/brand-registry.mjs derives ownership).
 export function lintSkeleton( tree, db, label = 'skeleton' ) {
 	const problems = [];
 	walk( tree, ( n, i ) => {
+		const a = n.attributes || {};
+		const brand = 'sgs/icon' === n.name && 'brand' === a.iconSource ? brandBySlug( a.brandName ) : null;
+		if ( brand && brandOwnsAddress( brand, a.linkUrl ) && ! a.metadata?.bindings?.linkUrl ) {
+			problems.push( `${ label } node ${ i } (${ n.name }) types ${ brand.label }'s address in linkUrl for brand "${ brand.slug }" with no metadata.bindings.linkUrl to Site Info "${ brand.siteInfoKey }"` );
+		}
 		for ( const k of Object.keys( n.attributes || {} ) ) {
 			if ( 'style' === k || attrRow( db, n.name, k )?.css_property ) {
 				problems.push( `${ label } node ${ i } (${ n.name }) carries style value ${ k }` );

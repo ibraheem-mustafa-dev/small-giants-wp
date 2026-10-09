@@ -295,6 +295,10 @@ function fillContent( st, rec, ref, cal ) {
 		}
 		st.out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		local.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
+		// A link setting bound to Site Info: the draft address stays in the setting as the fallback, and Site Info is handed it.
+		for ( const h of r.handover || [] ) {
+			st.out.handover.push( handoverEntry( { owner: 'site-info', kind: 'link', node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.address, width: 1440, siteInfoKey: h.siteInfoKey }, reason: `${ h.attr } is bound to Site Info "${ h.siteInfoKey }"; the draft links to ${ h.address }, kept as the fallback. Fill Site Info "${ h.siteInfoKey }" from it` } ) );
+		}
 	};
 	const absent = [ 'presence', 'text', 'link' ].filter( ( k ) => ! cal?.[ k ] );
 	if ( absent.length && ! st.notedBlocks.has( rec.name ) ) {

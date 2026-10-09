@@ -18,7 +18,7 @@ import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
 import { load as loadLedger } from './lib/ledger.mjs';
 import { serveDraft } from './lib/draft.mjs';
-import { skeletonNodes, skeletonProblems, cleanTree } from './lib/fill-skeleton.mjs';
+import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows } from './lib/fill-skeleton.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { sampleEntrances, shapeEntrance, entranceWrites } from './lib/fill-entrance.mjs';
@@ -82,11 +82,12 @@ export async function fillSurface( o ) {
 	const snapshotFile = path.join( repo, 'sites', o.client, 'theme-snapshot.json' );
 	const snapshot = loadSnapshot( snapshotFile );
 	const rawSnapshot = JSON.parse( fs.readFileSync( snapshotFile, 'utf8' ) );
-	const skeleton = readTree( o.skeleton );
-	const problems = [ ...skeletonProblems( skeleton ), ...lintSkeleton( skeleton, db, path.basename( o.skeleton ) ) ];
+	const authored = readTree( o.skeleton );
+	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
 	}
+	const skeleton = expandSiteInfoRows( authored );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );

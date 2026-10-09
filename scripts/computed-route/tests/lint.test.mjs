@@ -160,3 +160,43 @@ test( 'MUST FAIL TO RUN: the walker exits 1 on a mispaired config before launchi
 	assert.equal( good.status, 0 );
 	assert.match( good.stdout, /config lint passed/ );
 } );
+
+// Brand icons must keep Site Info authoritative: a brand icon whose typed address is its own brand's must bind linkUrl.
+const brandIcon = ( brandName, linkUrl, extra = {} ) => ( { name: 'sgs/icon', attributes: { iconSource: 'brand', brandName, ...( undefined === linkUrl ? {} : { linkUrl } ), ...extra } } );
+const bindingFor = ( key ) => ( { metadata: { bindings: { linkUrl: { source: 'sgs/site-info', args: { key } } } } } );
+
+test( 'MUST FAIL: a brand icon typing its own brand\'s address with no Site Info binding', () => {
+	for ( const [ brand, url ] of [ [ 'instagram', 'https://www.instagram.com/eyecare/' ], [ 'facebook', 'https://facebook.com/x' ], [ 'x', 'https://twitter.com/a' ], [ 'x', 'https://x.com/a' ], [ 'phone', 'tel:+447700900123' ], [ 'email', 'mailto:hi@example.org' ] ] ) {
+		const p = lintSkeleton( [ brandIcon( brand, url ) ], db );
+		assert.equal( p.length, 1, `${ brand } ${ url }` );
+		assert.match( p[ 0 ], /node 0 \(sgs\/icon\).*brand "/ );
+	}
+} );
+
+test( 'a bound brand icon, an unlinked brand icon, a brand with no host rule and a foreign address all pass', () => {
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'instagram', 'https://instagram.com/a', bindingFor( 'socials.instagram' ) ) ], db ), [] );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'instagram', undefined ) ], db ), [] );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'instagram', '' ) ], db ), [] );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'address', 'https://maps.example/x' ) ], db ), [], 'address has no scheme or domain of its own' );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'instagram', '/contact/' ) ], db ), [], 'a link that is not the brand\'s own' );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'phone', 'https://example.org/call' ) ], db ), [] );
+	assert.deepEqual( lintSkeleton( [ brandIcon( 'not-in-registry', 'https://instagram.com/a' ) ], db ), [] );
+} );
+
+test( 'whole host only: a look-alike host or a path that merely names the brand is not that brand', () => {
+	for ( const url of [ 'https://instagram.com.evil.example/a', 'https://notinstagram.com/a', 'https://example.org/instagram.com', 'https://evil.example/?u=instagram.com', 'https://instagram.evil.example/' ] ) {
+		assert.deepEqual( lintSkeleton( [ brandIcon( 'instagram', url ) ], db ), [], url );
+	}
+	assert.equal( lintSkeleton( [ brandIcon( 'instagram', 'https://m.instagram.com/a' ) ], db ).length, 1, 'a subdomain of the brand is the brand' );
+} );
+
+test( 'only brand icons are checked: an ordinary icon, a button and any other block pass with any address', () => {
+	const bare = [
+		{ name: 'sgs/icon', attributes: { iconSource: 'lucide', iconName: 'phone', linkUrl: 'tel:+447700900123' } },
+		{ name: 'sgs/icon', attributes: { iconName: 'truck', linkUrl: '/delivery/' } },
+		{ name: 'sgs/icon', attributes: { iconName: 'camera', linkUrl: 'https://instagram.com/a' } },
+		{ name: 'sgs/button', attributes: { linkUrl: 'https://instagram.com/a' } },
+		{ name: 'sgs/text', attributes: { brandName: 'instagram', linkUrl: 'https://instagram.com/a' } },
+	];
+	assert.deepEqual( lintSkeleton( bare, db ), [] );
+} );
