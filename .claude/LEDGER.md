@@ -16,14 +16,14 @@ last_updated: 2026-10-09
 
 ## Blockers
 
-- **Sandybrown deploy is blocked:** the gates are red on another session's uncommitted `sgs/social-icons` work. Blocks the live read of the editor-canvas longhand fix (owed item below).
+- None.
 
 ## Fronts
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
 **State:** every surface built and live on eye-care-test; both sites run WooCommerce 11.1.2. Draft `https://mintcream-lyrebird-224487.hostingersite.com/`; test site `https://darkcyan-grouse-898606.hostingersite.com` (credentials `.claude/secrets/eye-care-test.env`). Spec 47's computed route (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`) is built except stage 5 (a second draft); route defects with owners are in its §5 Residual.
-**Blockers:** the sandybrown deploy (see above), for the owed live read.
+**Blockers:** none.
 **Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the next tier of `plans/2026-10-05-eye-care-functionality-backlog.md`.
 
 Governing documents (one job each):
@@ -41,7 +41,6 @@ Operating rules:
 - Never remove `section.sgs-hero{max-width:none}` (D725); `sgs/hero`'s `maxWidth` is a real gap (backlog). The focus ring stays the client accent (D467).
 
 Open owed items:
-- **Live read of the editor-canvas longhand fix (680409c60):** after the next sandybrown deploy run `node plugins/sgs-blocks/scripts/qa/check-box-longhands-blocks-live.mjs`; the product-card editor row must read `20 30 30 30`.
 - **F3/E14** (every element the gate found has a control or a zero-specificity default): ceilings CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0; only the advisory backlogs rule 03 and rule 31 remain (triage §6). Owner: the backlog.
 - **Box alignment** (`check:box-alignment`): indus-test's next deploy must carry `b90def34b`, `50449c17e` and `afae93d66`; the front-end separator at a numeric 40% width is not yet read in LTR and RTL. Owner: the backlog.
 - **CR6 phase 2** is live; the cart free-delivery bar is unmeasured. Owner: `plans/archive/2026-10-07-cr6-box-longhand-migration.md`. The 31 held routing rows stay NULL on purpose.
