@@ -80,13 +80,15 @@ Open, each for a later batch:
   wins on the quote's links). The `css_element` on the link-underline override rows needs no alignment: nothing reads it for
   these rows (the converter's typography list holds `text-decoration`, not `text-decoration-line` / `-thickness`; the
   resolver and the F6 consistency checks key on `css_property` first), so the older rows' `-link` values and the bare element
-  keys do not conflict. Not yet live: the testimonial change is committed and unit-tested, the next eye-care-test deploy
-  carries it, and the DB rows for `sgs/testimonial.linkUnderline*` arrive with the next stage-1 reseed.
+  keys do not conflict. The testimonial change is reseeded (`2f458e858`) and live on eye-care-test; no Eye Care page uses a
+  testimonial, so it is proven by PHPUnit only.
 - **Ledger (2026-10-09, `sites/eye-care-ward-end/build/qa/divergences.json` D-101 to D-119, register row 163):** the sweep line,
   its timing, the dark hover colour and the links hugging their words on footer refs 23 and 24 are logged as the footer twins of
   S2; the address colour and Google link are logged under rows 37 and 163; the address's 7px gap is logged as not painted (the
   link has one child and no icon); the hours `<dl>` is accepted. Open on the footer walk for refs 23 to 26: the phone link's
   box height (44px tap area), its text inset and three `y-after` positions, which hang on that one box. Bean asked for the
   phone link to look like the other footer links, so `sgs/business-info` now draws the phone and email line on the text
-  inside the link (`235e3699b`); once it is deployed, read the phone line against the About link and decide whether the 44px
-  box stays.
+  inside the link (`235e3699b`, live on eye-care-test 2026-10-09). Read live at 375, 768 and 1440: the phone, address, About
+  and Shop lines all rest at `0px 1px`, sweep to `100% 1px` on hover, and sit within 0.1px of the text bottom (the phone's
+  line had been 4.5px below the text). The phone link's 44px tap area is unchanged; Bean decides whether it stays once he has
+  seen the page.
