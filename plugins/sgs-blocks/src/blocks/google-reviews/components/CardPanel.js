@@ -45,7 +45,7 @@ export const CARD_ATTRS = [
 	...typographyAttrs( [ '' ] ),
 ];
 
-export default function CardPanel( { attributes, setAttributes } ) {
+export default function CardPanel( { name, attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	// The card border sits on the card background, or on the panel behind it when the card has none.
 	const cardBackdrop =
@@ -80,7 +80,7 @@ export default function CardPanel( { attributes, setAttributes } ) {
 				{ ...shared }
 			/>
 			<Row label={ __( 'Review card padding', 'sgs-blocks' ) } attrs={ [ 'cardPadding' ] } { ...shared }>
-				<TierBox label={ __( 'Review card padding', 'sgs-blocks' ) } attr="cardPadding" { ...shared } />
+				<TierBox label={ __( 'Review card padding', 'sgs-blocks' ) } attr="cardPadding" blockName={ name } { ...shared } />
 			</Row>
 			<Row label={ __( 'Review card border', 'sgs-blocks' ) } attrs={ BORDER_ATTRS } { ...shared }>
 				<BorderField

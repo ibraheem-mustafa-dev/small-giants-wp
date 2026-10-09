@@ -1,0 +1,11 @@
+.sgs-whenbad {
+	padding: 20px;
+}
+
+.sgs-whenbad.sgs-whenbad--look-big {
+	padding: 28px;
+}
+
+.sgs-whenbad.sgs-whenbad--look-wide {
+	padding-left: 36px;
+}

@@ -214,9 +214,21 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
   block's declared default the same way ("Default (M)", "Default (20px)"): `block.json::supports.sgs.spacingDefaults`
   names per attribute and side a spacing preset when the stylesheet value equals that preset's size exactly (painted
   as `var(--wp--preset--spacing--N, <theme size>)`), otherwise the literal length the stylesheet already paints (never
-  snapped). The mount passes `defaults={ spacingDefaultsFor( name, '<attr>' ) }` (`src/utils/spacing-defaults.js`).
-  Never store the default in the attribute default. A side a variant class or @media rule repaints with another value
-  has no single default and is left undeclared. Gate: `scripts/survey-spacing-defaults.py --check --strict`.
+  snapped). The mount passes `defaults={ spacingDefaultsFor( name, '<attr>', { attributes, tier } ) }`
+  (`src/utils/spacing-defaults.js`; the context is optional and without it the base is returned). Never store the
+  default in the attribute default.
+  A side a variant class or @media rule repaints is declared on the same attribute, one shape for both:
+  `"<attr>": { "top|right|bottom|left": base, "tablet": { … }, "mobile": { … }, "when": [ { "attrs": { "<attr>": value, … },
+  "classes": [ "sgs-x--variant", "!sgs-x--other" ], "top|right|bottom|left": value, "tablet": { … }, "mobile": { … } } ] }`.
+  The base is every tier and setting; `tablet` / `mobile` are partial overrides for the previewed device (Mobile is
+  under 768px, Tablet 768 to 1023px; tablet inherits desktop and mobile inherits tablet, side by side, as a stored
+  wider-tier value does); a `when` entry is the first whose `attrs` all equal the block's attributes, its `classes` name
+  the variant classes the stylesheet keys on (`!` for a `:not()`), and its own `tablet` / `mobile` apply on top. Each
+  value follows the same rule as the base (a preset var only on an exact size match, else the literal length the rule
+  paints; `0` is the literal `"0"`). The mount passes the tier from its `ResponsiveOverride` (or `usePreviewTier()`)
+  and `attributes`; google-reviews' `TierBox` takes `blockName` for this. Gate: `scripts/survey-spacing-defaults.py
+  --check --strict` (every repaint covered by an entry that equals what its rule paints; a `when` that names an
+  attribute, enum value or class the block lacks fails).
 - **Gaps and single lengths:** a gap, row gap or other single spacing length mounts `<SpacingControl custom>` (preset dropdown plus a Custom length; stored as a preset slug such as `"20"` or a length such as `"12px"`, read through `sgs_css_length_value()`, previewed in the canvas with `gapVar()`), never a `RangeControl` or `UnitControl`. Inside a `ResponsiveControl` that already shows the label, pass `hideLabelFromVision` (inspector-scan rule 29). Detector: `scripts/check-raw-spacing-controls.py --check`.
 - **Inspector spacing:** separate SGS controls stack 16px apart (`assets/css/inspector-controls.css`), because SGS
   controls pass `__nextHasNoMarginBottom` and a plain `PanelBody` adds no gap.

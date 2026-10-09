@@ -1,0 +1,36 @@
+{
+ "name": "sgs/tieredbad",
+ "attributes": {
+  "padding": {
+   "type": "object",
+   "default": {
+    "desktop": {}
+   }
+  }
+ },
+ "supports": {
+  "sgs": {
+   "elements": {
+    "wrapper": {
+     "isWrapper": true,
+     "attrMap": {
+      "css:padding": "padding"
+     }
+    }
+   },
+   "spacingDefaults": {
+    "padding": {
+     "top": "var(--wp--preset--spacing--40)",
+     "right": "20px",
+     "bottom": "var(--wp--preset--spacing--40)",
+     "left": "20px",
+     "mobile": {
+      "top": "var(--wp--preset--spacing--40)",
+      "bottom": "24px",
+      "left": "12px"
+     }
+    }
+   }
+  }
+ }
+}

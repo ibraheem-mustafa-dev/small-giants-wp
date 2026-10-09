@@ -248,7 +248,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			{ /* Six collapsed styling sections (Styles tab). Each is one component in ./components: a PanelBody
 			   holding a ToolsPanel, every row built from a shared SGS control. Navigation exists only for the
 			   Slider display type, the one variant that has a rail and arrows. */ }
-			<CardPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<CardPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
 			<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewerPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewTextPanel attributes={ attributes } setAttributes={ setAttributes } />

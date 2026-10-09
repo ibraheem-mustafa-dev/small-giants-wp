@@ -187,5 +187,40 @@
   "css_property": "padding",
   "box_family": "padding",
   "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/tiered",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/looked",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/tieredbad",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/whenbad",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
+ },
+ {
+  "block_slug": "sgs/noctx",
+  "attr_name": "padding",
+  "css_property": "padding",
+  "box_family": "padding",
+  "inspector_control_type": null
  }
 ]

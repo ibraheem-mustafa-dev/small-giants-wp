@@ -17,6 +17,20 @@
 	"icon": "megaphone",
 	"supports": {
 		"sgs": {
+			"spacingDefaults": {
+				"padding": {
+					"top": "var(--wp--preset--spacing--60)",
+					"right": "var(--wp--preset--spacing--40)",
+					"bottom": "var(--wp--preset--spacing--60)",
+					"left": "var(--wp--preset--spacing--40)",
+					"mobile": {
+						"top": "var(--wp--preset--spacing--40)",
+						"right": "var(--wp--preset--spacing--30)",
+						"bottom": "var(--wp--preset--spacing--40)",
+						"left": "var(--wp--preset--spacing--30)"
+					}
+				}
+			},
 			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"imageControls": false,
 			"is_section_root": true,

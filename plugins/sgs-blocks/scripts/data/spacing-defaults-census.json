@@ -6,21 +6,13 @@
   "accordion:headerPadding:left": "var(--sgs-accordion-header-pad-base-x)",
   "accordion:headerPadding:right": "var(--sgs-accordion-header-pad-base-x)",
   "accordion:headerPadding:top": "var(--sgs-accordion-header-pad-base-y)",
-  "google-reviews:cardPadding:bottom": "20px",
-  "google-reviews:cardPadding:left": "20px",
-  "google-reviews:cardPadding:right": "20px",
-  "google-reviews:cardPadding:top": "20px",
   "nav-bar-menu:itemBadgePadding:bottom": "0.2em",
   "nav-bar-menu:itemBadgePadding:left": "0.45em",
   "nav-bar-menu:itemBadgePadding:right": "0.45em",
   "nav-bar-menu:itemBadgePadding:top": "0.2em",
   "nav-drawer:drawerPadding:bottom": "clamp(16px, 6vw, 32px)",
   "nav-drawer:drawerPadding:left": "clamp(16px, 6vw, 32px)",
-  "nav-drawer:drawerPadding:right": "clamp(16px, 6vw, 32px)",
-  "tabs:tabPadding:bottom": "12px",
-  "tabs:tabPadding:left": "20px",
-  "tabs:tabPadding:right": "20px",
-  "tabs:tabPadding:top": "12px"
+  "nav-drawer:drawerPadding:right": "clamp(16px, 6vw, 32px)"
  },
  "acknowledged_slug_gaps": {}
 }

@@ -18,6 +18,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../../components';
+import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 import { Row, borderStyleValue, typographyAttrs } from './panel-kit';
 
 /** A tier object of CSS lengths ({desktop, tablet, mobile}), one length per device. */
@@ -34,21 +35,23 @@ export function TierLength( { label, attr, attributes, setAttributes } ) {
 
 /**
  * A tier object of four-side boxes (padding), one box per device. `defaults` is the block's declared default per
- * side (`spacingDefaultsFor( name, attr )`), shown on an untouched side.
+ * side (`spacingDefaultsFor( name, attr )`), shown on an untouched side. `blockName` instead resolves the declaration
+ * for the device being edited and the block's settings (`spacingDefaultsFor( blockName, attr, { attributes, tier } )`),
+ * for an attribute whose default differs by tier or by a setting; it takes precedence over `defaults`.
  */
-export function TierBox( { label, attr, attributes, setAttributes, defaults } ) {
+export function TierBox( { label, attr, attributes, setAttributes, defaults, blockName } ) {
 	return (
 		<ResponsiveOverride
 			value={ attributes[ attr ] }
 			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
 		>
-			{ ( { ownValue, setOwnValue } ) => (
+			{ ( { tier, ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
 					values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
 					units={ BOX_UNITS }
 					presets
-					defaults={ defaults }
+					defaults={ blockName ? spacingDefaultsFor( blockName, attr, { attributes, tier } ) : defaults }
 					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 				/>
 			) }

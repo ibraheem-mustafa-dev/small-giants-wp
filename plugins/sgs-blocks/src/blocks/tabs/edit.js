@@ -27,6 +27,7 @@ import { LogicalAlignControl,
 	resolveColourToken,
 } from '../../components';
 import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPreview, usePreviewTier, BandWrap } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
 
 const TEMPLATE = [
@@ -46,7 +47,7 @@ const STYLE_OPTIONS = [
 	{ label: __( 'Pills', 'sgs-blocks' ), value: 'pills' },
 ];
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		blockLabel,
 		orientation,
@@ -518,6 +519,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						values={ tabPadding && typeof tabPadding === 'object' ? tabPadding : {} }
 						units={ BOX_UNITS }
 						presets
+						defaults={ spacingDefaultsFor( name, 'tabPadding', { attributes, tier: previewTier } ) }
 						onChange={ ( next ) => setAttributes( { tabPadding: next || {} } ) }
 					/>
 					<SgsLengthControl

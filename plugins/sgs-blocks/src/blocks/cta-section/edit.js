@@ -16,6 +16,7 @@ import {
 import MediaPicker from '../../components/MediaPicker';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPreview, svgBackgroundPreview, applyGridLayoutPreview, flattenPresetSetting, usePreviewTier, textIndentPreviewCss, typographyPreviewCss, wrapperToneClass, tierBackgroundImageUrl } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { applyCtaWrapperPreview } from './preview-style';
 import ShapeDividerPreview from '../../components/ShapeDividerPreview';
 import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
@@ -673,12 +674,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						value={ attributes.padding }
 						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
 					>
-						{ ( { ownValue, setOwnValue } ) => (
+						{ ( { tier, ownValue, setOwnValue } ) => (
 							<SgsBoxControl
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 								units={ BOX_UNITS }
 								presets
+								defaults={ spacingDefaultsFor( name, 'padding', { attributes, tier } ) }
 								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 							/>
 						) }

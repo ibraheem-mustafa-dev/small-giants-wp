@@ -33,12 +33,17 @@ first (THE migration method: survey, check, self-test):
   4. STAY-UNSET: 0, auto, inherit-likes, percentages, the container layout gutter, or no
      declaration. `sgs/button` padding is `exempt: theme-button-presets`. VARIANT-DEPENDENT: a
      side some variant-class or @media/@container rule on the element itself repaints with
-     another value has no single default, so it is reported and never declared.
+     another value has no single default for the base alone: it is reported as variant-dependent until a
+     `tablet` / `mobile` tier entry (a media rule) or a `when` entry (a variant class) declares every repaint.
   5. SNAPSHOTS: the spacing slugs each sites/*/theme-snapshot.json declares. A snapshot with no
      scale is assumed to inherit theme.json's (stated, not verified in WordPress core).
   6. DECLARED DEFAULTS: block.json::supports.sgs.spacingDefaults names, per attribute and side,
      what an untouched side paints (Bean D1: declared, never stored): `var(--wp--preset--spacing--N)`
      or a literal length. A side whose stylesheet paints exactly that reports `declared`.
+     A declaration may add `tablet` / `mobile` overrides and `when` entries ({attrs, classes, sides, tablet, mobile});
+     see src/utils/spacing-defaults.js. Each tier or when value is checked against the media or variant rule that
+     paints it (tier: Mobile < 768px, Tablet 768-1023px), a `when` against block.json (attribute, enum or type) and
+     the PHP that emits its class, and each mount against the `{ attributes, tier }` context it must pass.
 
 Usage:
     python scripts/survey-spacing-defaults.py --survey [--out census.json]
@@ -54,10 +59,16 @@ neither a literal preset var() nor a length, names a side no Spacing control gov
 from what the stylesheet paints (another preset, a var() fallback that is not the preset's theme
 size, or another length), is a length equal to a preset's size (declare the preset), or names a
 slug a snapshot's scale lacks, or is edited by a mount that passes no `defaults` prop (or reads
-another attribute's spacingDefaultsFor) (never acknowledgeable). `--strict` also fails (d) a governed side
-the stylesheet paints (a length or a preset) that no declaration covers.
+another attribute's spacingDefaultsFor, or omits the tier or attributes its tier and when entries need)
+(never acknowledgeable). A preset's var() fallback is optional; one that is present must be the preset's theme size.
+A tier or when value must equal what its rule paints (the literal "0" is allowed there); a literal equal to a preset
+size is a note (the rule paints the literal, so painting the preset is owed), not a failure. A variant or media rule
+no entry covers fails the declaration of that side. `--strict` also fails (d) a governed side the stylesheet paints
+(a length or a preset) that no declaration covers, and (e) any side still variant-dependent.
 
-LIMITS (stated, not hidden): tier-conditional rules (@media/@container) are not base defaults;
+LIMITS (stated, not hidden): tier-conditional rules (@media/@container) are not base defaults, and a tier or when
+entry is matched to its rule by (tier, variant classes, side) with no model of specificity between a variant rule
+and a media rule on the same side;
 a stylesheet outside src/blocks/<block>/style.css (theme CSS, shared assets) is not read; a
 custom property defined in another file stays `unknown`; logical sides assume left-to-right;
 border-width and corner mounts are listed but not given defaults (not Spacing sides).
@@ -194,12 +205,20 @@ function presetsOf(el) {
 	if (e && e.type === 'ArrayExpression' && e.elements.every((x) => x && strOf(x) !== null)) return { kind: 'list', value: e.elements.map(strOf) };
 	return { kind: 'dynamic', value: null, expr: CODE.slice(e.start, e.end) };
 }
+function findDefaultsCall(node) {
+	if (!node || typeof node.type !== 'string') return null;
+	if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === 'spacingDefaultsFor') return node;
+	let found = null;
+	kids(node, (c) => { if (!found) found = findDefaultsCall(c); });
+	return found;
+}
 function defaultsOf(el) {
 	const a = attrOf(el, 'defaults');
 	const e = exprOf(a);
 	if (!e) return null;
-	const call = e.type === 'CallExpression' && e.callee.type === 'Identifier' && e.callee.name === 'spacingDefaultsFor';
-	return { expr: CODE.slice(e.start, e.end), attr: call && e.arguments[1] ? strOf(e.arguments[1]) : null, call };
+	const c = findDefaultsCall(e);
+	const ctx = c && c.arguments[2] ? CODE.slice(c.arguments[2].start, c.arguments[2].end) : null;
+	return { expr: CODE.slice(e.start, e.end), attr: c && c.arguments[1] ? strOf(c.arguments[1]) : null, call: !!c, ctx };
 }
 function sidesOf(el) {
 	const a = attrOf(el, 'sides');
@@ -717,18 +736,66 @@ def resolve_element_css(rules, names, aliases):
     }
 
 
-def variant_side_values(css_info, fam, root_custom):
-    """{side: [{'sel', 'cond', 'raw'}]}: what each variant or media/container rule paints the element's sides."""
+def cond_tier(cond):
+    """The device tier a media condition paints (Mobile < 768, Tablet 768-1023, Desktop >= 1024), else None.
+
+    '' is no condition. A condition that is not one of the fixed tier ranges maps to no tier, so no tier entry covers it."""
+    c = re.sub(r'\s+', '', cond.lower())
+    if c == '@media(max-width:767px)':
+        return 'mobile'
+    if c in ('@media(min-width:768px)and(max-width:1023px)', '@media(max-width:1023px)'):
+        return 'tablet'
+    return None
+
+
+def variant_tokens(sel, names, aliases):
+    """The variant classes a selector keys on, apart from the element's own and the root's classes.
+
+    A class is `name`; a :not() of classes is `!name`; any other qualifier (attribute, pseudo-class) is `?text`, which
+    no declaration can name, so a rule keyed on one is never covered."""
+    own = set(names) | set(aliases)
+    out = set()
+    for comp in split_compounds(sel):
+        for t in tokenize(comp):
+            if t[0] == 'class':
+                if t[1] not in own:
+                    out.add(t[1])
+            elif t[0] == 'pseudo' and t[1] in ('where', 'is'):
+                inner = _plain_classes(t[2])
+                if inner is None:
+                    out.add(f'?:{t[1]}({t[2]})')
+                else:
+                    out |= {c for c in inner if c not in own}
+            elif t[0] == 'pseudo' and t[1] == 'not':
+                inner = _plain_classes(t[2])
+                if inner is None:
+                    out.add(f'?:not({t[2]})')
+                else:
+                    out |= {'!' + c for c in inner}
+            elif t[0] in ('attr', 'id'):
+                out.add(f'?{t[0]}:{t[1]}')
+            elif t[0] == 'pseudo':
+                out.add(f'?:{t[1]}')
+    return sorted(out)
+
+
+def variant_side_values(css_info, fam, root_custom, names=(), aliases=()):
+    """{side: [{'sel', 'cond', 'raw', 'tier', 'variant'}]}: what each variant or media/container rule paints the element's sides.
+
+    `tier` is the device tier its media condition is (None for no condition or a condition that is no tier);
+    `variant` is the variant classes its selector keys on (variant_tokens)."""
     custom = dict(root_custom)
     custom.update(css_info['custom'])
     out = {}
     for m in css_info['variant_rules']:
+        cond = ' '.join(m['rule']['cond'])
         for prop, val, _ in m['rule']['decls']:
             if not prop.startswith(fam):
                 continue
             resolved, _ = resolve_vars(val, custom)
             for side, tok in side_values(prop, resolved, fam).items():
-                out.setdefault(side, []).append({'sel': m['sel'], 'cond': ' '.join(m['rule']['cond']), 'raw': tok})
+                out.setdefault(side, []).append({'sel': m['sel'], 'cond': cond, 'raw': tok, 'tier': cond_tier(cond) if cond else None,
+                                                 'variant': variant_tokens(m['sel'], names, aliases)})
     return out
 
 
@@ -790,6 +857,7 @@ def load_blocks(tree):
             'rules': parse_css(css_path.read_text(encoding='utf-8')) if css_path.exists() else [],
             'has_css': css_path.exists(), 'has_scss': (d / 'style.scss').exists(),
             'php': strip_php_comments(php_path.read_text(encoding='utf-8')) if php_path.exists() else '',
+            'php_all': ' '.join(strip_php_comments(f.read_text(encoding='utf-8')) for f in sorted(d.glob('*.php'))),
         }
     for blk in blocks.values():
         text = ' '.join(s for r in blk['rules'] for s in r['sels'])
@@ -1082,7 +1150,7 @@ def build_rows(tree, blocks, hits, scale):
             root_info = resolve_element_css(blk['rules'], *element_classes(blk, 'wrapper', True))
             painted = painted_sides(info, fam, root_info['custom'])
             ctx = {'scale': scale, 'fam': fam, 'block': b, 'attr': attr, 'css_info': info, 'font_size': info['font_size'], 'php_fb': render_fallbacks(blk['php'], fam), 'names': names, 'custom_names': blk['custom_names'], 'has_css': blk['has_css'], 'has_scss': blk['has_scss'], 'mentioned': mentions(blk['rules'], names)}
-            overrides = variant_side_values(info, fam, root_info['custom'])
+            overrides = variant_side_values(info, fam, root_info['custom'], names, aliases)
             for s in SIDES:
                 if s in sides_gov:
                     srow = side_row({'side': s, 'painted': painted.get(s)}, ctx)
@@ -1158,10 +1226,10 @@ def snapshot_report(tree, scale):
 
 
 def declared_problems(value, srow, scale):
-    """Why a declared side's value is not what its stylesheet paints (Bean D1, 2026-10-09)."""
-    if srow.get('overridden_by') and 'declared-ignore-variant' not in MUTATE:
-        o = srow['overridden_by'][0]
-        return [f'a variant or media rule repaints this side ({o["sel"]}{" " + o["cond"] if o["cond"] else ""} = {o["raw"]}), so one declared default would misreport it']
+    """Why a declared side's value is not what its stylesheet paints (Bean D1, 2026-10-09).
+
+    A preset's var() fallback is optional (a shorthand of presets such as `padding: var(--a) var(--b)` needs none);
+    one that is present must be the preset's theme size."""
     raw = (srow.get('raw') or '').strip()
     sm = PRESET_VAR.fullmatch(raw)
     m = DECLARED_VAR.fullmatch(value.strip())
@@ -1174,9 +1242,8 @@ def declared_problems(value, srow, scale):
         preset = next((p for p in scale if p['slug'] == slug), None)
         fb = PRESET_FALLBACK.fullmatch(raw)
         fb_px = to_px(fb.group(1))[0] if fb else None
-        if preset and (fb_px is None or abs(fb_px - preset['px']) > 1e-9) and 'declared-ignore-fallback' not in MUTATE:
-            have = fb.group(1) if fb else None
-            return [f"the stylesheet var() fallback {have!r} is not preset {slug}'s theme size {preset['size']}"]
+        if preset and fb and (fb_px is None or abs(fb_px - preset['px']) > 1e-9) and 'declared-ignore-fallback' not in MUTATE:
+            return [f"the stylesheet var() fallback {fb.group(1)!r} is not preset {slug}'s theme size {preset['size']}"]
         return []
     px = to_px(value)[0]
     if sm:
@@ -1200,12 +1267,193 @@ def is_declarable(value):
     return px is not None and px > 0 and unit in ('px', 'rem') and not note
 
 
+def is_declarable_override(value):
+    """A tier or when value is declarable, or the literal "0" (a base side that paints 0 stays unset; a repaint can paint it)."""
+    return isinstance(value, str) and (value.strip() == '0' or is_declarable(value))
+
+
+RESERVED_KEYS = ('tablet', 'mobile', 'when')
+CLASS_TOKEN = re.compile(r'^!?[a-z][a-z0-9_-]*$')
+BAD_VALUE = 'declared value {0!r} is neither a literal var(--wp--preset--spacing--N), a px/rem length nor "0"'
+
+
+def override_value_problems(value, raw, scale):
+    """(problems, notes): a tier or when value against what the media or variant rule paints.
+
+    A literal that equals a preset size exactly is a note, not a failure: the rule paints the literal, and the
+    declaration must say what the stylesheet paints; painting var(--wp--preset--spacing--N, size) is then owed."""
+    if 'tier-ignore-value' in MUTATE:
+        return [], []
+    raw = (raw or '').strip()
+    sm = PRESET_VAR.fullmatch(raw)
+    m = DECLARED_VAR.fullmatch(value.strip())
+    if m:
+        if not sm:
+            return [f'the rule paints {raw!r}, not the declared preset {value!r}'], []
+        if sm.group(1) != m.group(1):
+            return [f'the rule paints preset {sm.group(1)}, the declaration names {m.group(1)}'], []
+        preset = next((p for p in scale if p['slug'] == m.group(1)), None)
+        fb = PRESET_FALLBACK.fullmatch(raw)
+        if preset and fb:
+            fb_px = to_px(fb.group(1))[0]
+            if fb_px is None or abs(fb_px - preset['px']) > 1e-9:
+                return [f"the rule's var() fallback {fb.group(1)!r} is not preset {m.group(1)}'s theme size {preset['size']}"], []
+        return [], []
+    if sm:
+        return [f'the rule paints the preset {raw!r}, the declaration names the length {value!r}'], []
+    px = to_px(value)[0]
+    have = to_px(raw)[0] if raw else None
+    if px is None or have is None or abs(px - have) > 1e-9:
+        return [f'the rule paints {raw!r}, the declaration names {value!r}'], []
+    exact = exact_preset(px, scale) if px > 0 else None
+    notes = [f'{value!r} equals preset {exact["slug"]} ({exact["size"]}) exactly; the rule paints the literal, so painting var(--wp--preset--spacing--{exact["slug"]}, {exact["size"]}) is owed'] if exact else []
+    return [], notes
+
+
+def attr_value_problem(blk, attr, value):
+    """Why `attr` cannot take `value` (block.json attributes, type and enum), else None."""
+    spec = (blk['json'].get('attributes') or {}).get(attr)
+    if spec is None:
+        return f'names attribute {attr!r}, which block.json does not declare'
+    if 'when-ignore-attrs' in MUTATE:
+        return None
+    enum = spec.get('enum')
+    if enum is not None and value not in enum:
+        return f'names {value!r} for {attr!r}, which is not in its enum {enum}'
+    typ = spec.get('type')
+    if enum is None and ((typ == 'boolean' and not isinstance(value, bool)) or (typ == 'string' and not isinstance(value, str))
+                         or (typ in ('number', 'integer') and (isinstance(value, bool) or not isinstance(value, (int, float))))):
+        return f'names {value!r} for {attr!r}, which is not of its type {typ}'
+    return None
+
+
+def class_emission_problem(blk, token, attrs):
+    """Why the block's PHP is not seen emitting variant class `token` (`!` marks a :not()), else None.
+
+    The class is emitted when the PHP holds it literally, or holds the class minus a trailing attribute value (the
+    `'sgs-x--card-' . $card_style` shape). A block with no PHP is not checked."""
+    php = blk.get('php_all') or ''
+    if not php or 'when-ignore-classes' in MUTATE:
+        return None
+    c = token.lstrip('!')
+    if c in php:
+        return None
+    for v in attrs.values():
+        if isinstance(v, str) and v and c.endswith(v) and c[:-len(v)] in php:
+            return None
+    return f"class {c} is not emitted by the block's PHP for {attrs}"
+
+
+def parse_overrides(sides, blk):
+    """(entries, structure): the tier and when values of one attribute's declaration.
+
+    entries: [{'label', 'side', 'value', 'tier', 'variant' (sorted tokens), 'problems'}]; the label reads
+    'mobile.top' or 'when[0].mobile.top'. structure: [(label, problem)], the problems with the shape itself (a non-object tier, a when entry
+    with no attrs or classes, an attribute or value the block cannot take, a class the PHP never emits)."""
+    entries, structure = [], []
+
+    def tier_obj(obj, tier, variant, prefix):
+        if not isinstance(obj, dict):
+            structure.append(('shape', f'{prefix}{tier} is not a {{side: value}} object'))
+            return
+        for side, value in sorted(obj.items()):
+            probs = []
+            if side not in SIDES:
+                probs.append(f'{side!r} is not a side')
+            elif not is_declarable_override(value):
+                probs.append(BAD_VALUE.format(value))
+            entries.append({'label': f'{prefix}{tier}.{side}', 'side': side, 'value': value, 'tier': tier, 'variant': variant, 'problems': probs})
+
+    for tier in ('tablet', 'mobile'):
+        if tier in sides:
+            tier_obj(sides[tier], tier, [], '')
+    whens = sides.get('when')
+    if whens is None:
+        return entries, structure
+    if not isinstance(whens, list):
+        return entries, structure + [('shape', 'when is not a list')]
+    for i, w in enumerate(whens):
+        prefix = f'when[{i}].'
+        if not isinstance(w, dict):
+            structure.append(('shape', f'when[{i}] is not an object'))
+            continue
+        probs = []
+        attrs, classes = w.get('attrs'), w.get('classes')
+        if not isinstance(attrs, dict) or not attrs:
+            probs.append(f'when[{i}] has no attrs object (attribute name -> value)')
+            attrs = {}
+        if not isinstance(classes, list) or not classes or any(not isinstance(c, str) or not CLASS_TOKEN.match(c) for c in classes):
+            probs.append(f'when[{i}] needs classes: the variant class names the stylesheet keys on ("!name" for a :not())')
+            classes = []
+        for attr, value in attrs.items():
+            pr = attr_value_problem(blk, attr, value)
+            if pr:
+                probs.append(f'when[{i}] {pr}')
+        for c in classes:
+            pr = class_emission_problem(blk, c, attrs)
+            if pr:
+                probs.append(f'when[{i}] {pr}')
+        for k in w:
+            if k not in SIDES + ('attrs', 'classes', 'tablet', 'mobile'):
+                probs.append(f'when[{i}] has an unknown key {k!r}')
+        variant = sorted(classes)
+        for side, value in sorted((k, v) for k, v in w.items() if k in SIDES):
+            entries.append({'label': f'{prefix}{side}', 'side': side, 'value': value, 'tier': None, 'variant': variant,
+                            'problems': [] if is_declarable_override(value) else [BAD_VALUE.format(value)]})
+        for tier in ('tablet', 'mobile'):
+            if tier in w:
+                tier_obj(w[tier], tier, variant, prefix)
+        if probs:
+            structure.append((f'when[{i}]', '; '.join(probs)))
+    return entries, structure
+
+
+def entry_problems(entry, got, scale):
+    """(problems, notes) for one tier or when value against the rule that repaints its side at that tier and setting.
+
+    With no such rule the side keeps what the stylesheet's base paints, so the value must equal that."""
+    problems = list(entry['problems'])
+    notes = []
+    srow = got.get(entry['side'])
+    if not srow:
+        return problems + ['no Spacing control governs this side'], notes
+    if problems:
+        return problems, notes
+    rules = [o for o in srow.get('overridden_by', []) if o['tier'] == entry['tier'] and o['variant'] == entry['variant']]
+    for o in rules or [{'raw': srow.get('raw')}]:
+        pr, nt = override_value_problems(entry['value'], o['raw'], scale)
+        problems += pr
+        notes += nt
+        if pr:
+            break
+    return problems, notes
+
+
+def coverage_problems(side, got, entries):
+    """Why a variant or media rule that repaints `side` is not covered by a tier or when entry; [] when every one is."""
+    if 'declared-ignore-variant' in MUTATE:
+        return []
+    out = []
+    for o in (got.get(side) or {}).get('overridden_by', []):
+        where = f'({o["sel"]}{" " + o["cond"] if o["cond"] else ""} = {o["raw"]})'
+        if o['cond'] and o['tier'] is None:
+            out.append(f'a variant or media rule repaints this side {where}; its condition is no device tier (mobile < 768px, tablet 768-1023px), so no entry can cover it')
+        elif any(t.startswith('?') for t in o['variant']):
+            out.append(f'a variant or media rule repaints this side {where}; its selector keys on something a when entry cannot name')
+        elif not any(e['side'] == side and e['tier'] == o['tier'] and e['variant'] == o['variant'] and isinstance(e['value'], str) for e in entries):
+            kind = 'when' if o['variant'] else 'tier'
+            out.append(f'a variant or media rule repaints this side {where}; no {kind} entry declares it')
+    return out
+
+
 def declared_report(blocks, rows, snaps, scale):
     """One entry per side a block.json::supports.sgs.spacingDefaults declares, with its problems.
 
-    A side whose stylesheet paints exactly its declaration (the same preset with the theme size as
-    its fallback, or the same length) is marked `declared` on its census row; a snapshot that lacks
-    a declared slug is still a problem for the gate."""
+    A declaration is a base (the four sides) plus optional `tablet` / `mobile` overrides and `when` entries (see
+    src/utils/spacing-defaults.js). A side whose stylesheet paints exactly its base (the same preset, or the same
+    length) and whose every variant or media repaint a tier or when entry declares correctly is marked `declared` on
+    its census row; a snapshot that lacks a declared slug is still a problem for the gate. Tier and when values get
+    their own entries (side `mobile.top`, `when[0].top`) checked against the rules that paint them."""
     out = []
     for b, blk in sorted(blocks.items()):
         decl = ((blk['json'].get('supports') or {}).get('sgs') or {}).get('spacingDefaults')
@@ -1220,7 +1468,11 @@ def declared_report(blocks, rows, snaps, scale):
                 out.append({'block': b, 'attr': attr, 'side': None, 'value': sides, 'slug': None, 'problems': ['the attribute entry is not a {side: value} object']})
                 continue
             got = {s['side']: s for s in row['sides']} if row else {}
+            entries, structure = parse_overrides(sides, blk)
+            has_overrides = any(k in sides for k in RESERVED_KEYS)
             for side, value in sorted(sides.items()):
+                if side in RESERVED_KEYS:
+                    continue
                 problems = []
                 m = DECLARED_VAR.fullmatch(value.strip()) if isinstance(value, str) else None
                 slug = m.group(1) if m else None
@@ -1236,6 +1488,7 @@ def declared_report(blocks, rows, snaps, scale):
                     problems.append('no Spacing control governs this side')
                 elif not problems:
                     problems += declared_problems(value, got[side], scale)
+                    problems += coverage_problems(side, got, entries)
                 if row and 'mount-ignore-defaults' not in MUTATE:
                     for mt in row['mounts']:
                         md = mt.get('defaults')
@@ -1243,6 +1496,12 @@ def declared_report(blocks, rows, snaps, scale):
                             problems.append(f'the mount at {mt["file"]}:{mt["line"]} passes no defaults prop, so the control cannot show the declared default')
                         elif md['call'] and md['attr'] is not None and md['attr'] != attr:
                             problems.append(f'the mount at {mt["file"]}:{mt["line"]} reads {md["expr"]}, not this attribute ({attr})')
+                        elif has_overrides and md['call'] and 'mount-ignore-context' not in MUTATE:
+                            ctx = md.get('ctx') or ''
+                            need = (['tier'] if any(e['tier'] for e in entries) else []) + (['attributes'] if any(e['variant'] for e in entries) else [])
+                            missing = [n for n in need if not re.search(r'\b' + n + r'\b', ctx)]
+                            if missing:
+                                problems.append(f'the mount at {mt["file"]}:{mt["line"]} resolves this attribute\'s tier or when entries but passes no {" or ".join(missing)} in the spacingDefaultsFor context, so the control shows only the base')
                 agree = not problems
                 gaps = sorted(site for site, v in snaps.items() if slug and slug not in v['slugs'])
                 if gaps:
@@ -1254,6 +1513,16 @@ def declared_report(blocks, rows, snaps, scale):
                         got[side]['reason'] = (f'declared default (supports.sgs.spacingDefaults); the stylesheet falls back to the same preset {slug}' if slug
                                                else f'declared default (supports.sgs.spacingDefaults); the stylesheet paints the same length {value}')
                 out.append({'block': b, 'attr': attr, 'side': side, 'value': value, 'slug': slug, 'problems': problems})
+            for label, text in structure:
+                out.append({'block': b, 'attr': attr, 'side': label, 'value': None, 'slug': None, 'problems': [text]})
+            for e in entries:
+                problems, notes = entry_problems(e, got, scale) if row else (e['problems'] + ['no Spacing control edits this attribute'], [])
+                dm = DECLARED_VAR.fullmatch(e['value'].strip()) if isinstance(e['value'], str) else None
+                slug = dm.group(1) if dm else None
+                gaps = sorted(site for site, v in snaps.items() if slug and slug not in v['slugs'])
+                if gaps:
+                    problems.append(f'slug {slug} is missing from snapshot(s) {gaps}')
+                out.append({'block': b, 'attr': attr, 'side': e['label'], 'value': e['value'], 'slug': slug, 'tier': e['tier'], 'when': e['variant'] or None, 'problems': problems, 'notes': notes})
     return out
 
 
@@ -1295,6 +1564,9 @@ def build_census(tree):
         'declared_presets': sum(1 for s in allsides if s['status'] == 'declared' and DECLARED_VAR.fullmatch(s.get('declared') or '')),
         'declared_literals': sum(1 for s in allsides if s['status'] == 'declared' and not DECLARED_VAR.fullmatch(s.get('declared') or '')),
         'declared_problems': sum(1 for d in declared if d['problems']),
+        'declared_tier_values': sum(1 for d in declared if d.get('tier') and not d.get('when')),
+        'declared_when_values': sum(1 for d in declared if d.get('when')),
+        'tier_values_owing_preset_paint': sum(1 for d in declared if d.get('notes')),
         'mounts_without_presets': len(census['mounts_without_presets']),
         'mounts_with_dynamic_presets': len(census['mounts_with_dynamic_presets']),
         'snapshot_slug_gaps': {k: v for k, v in gaps.items()},
@@ -1345,6 +1617,15 @@ def run_check(census, baseline, strict=False):
         fails.append(f'undeclared default {r["block"]}:{r["attr"]}:{s["side"]} = {s["raw"]!r}; declare {s["proposed"]["value"]!r} in block.json::supports.sgs.spacingDefaults')
     if undeclared and not strict:
         notes.append(f'{len(undeclared)} governed side(s) paint a default no declaration covers (--strict fails on them)')
+    repainted = [(r, s) for r in census['attributes'] for s in r['sides'] if s['status'] == 'variant-dependent']
+    for r, s in repainted if strict else ():
+        o = s['overridden_by'][0]
+        fails.append(f'uncovered repaint {r["block"]}:{r["attr"]}:{s["side"]}: {o["sel"]}{" " + o["cond"] if o["cond"] else ""} paints {o["raw"]}; declare it as a tier or when entry in block.json::supports.sgs.spacingDefaults')
+    if repainted and not strict:
+        notes.append(f'{len(repainted)} governed side(s) are repainted by a variant or media rule no tier or when entry covers (--strict fails on them)')
+    owed = [(d, n) for d in census.get('declared_defaults', []) for n in d.get('notes') or []]
+    if owed:
+        notes.append(f'{len(owed)} tier or when value(s) equal a preset size exactly but their rule paints the literal (painting var(--wp--preset--spacing--N, size) there is owed): ' + ', '.join(sorted(f'{d["block"]}:{d["attr"]}:{d["side"]}' for d, _ in owed)[:6]) + (' ...' if len(owed) > 6 else ''))
     stale = sorted(set(base_len) - set(length_map(census)))
     if stale:
         notes.append(f'{len(stale)} baseline entr(ies) no longer hold a stylesheet length (migrated or removed)')
@@ -1368,7 +1649,7 @@ def top_defaults(census, n=15):
 def human_summary(census):
     s = census['summary']
     lines = ['spacing-defaults census', '=' * 23]
-    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'undeclared_presets', 'undeclared_lengths', 'undeclared_exact_matches', 'stay_unset', 'unknown', 'exempt', 'variant_dependent', 'declared', 'declared_presets', 'declared_literals', 'declared_problems', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
+    for k in ('mounts_found', 'attributes_surveyed', 'spacing_attributes', 'non_spacing_attributes', 'sides_total', 'sides_with_stylesheet_default', 'default', 'em_ambiguous', 'already_preset', 'undeclared_presets', 'undeclared_lengths', 'undeclared_exact_matches', 'stay_unset', 'unknown', 'exempt', 'variant_dependent', 'declared', 'declared_presets', 'declared_literals', 'declared_tier_values', 'declared_when_values', 'tier_values_owing_preset_paint', 'declared_problems', 'mounts_without_presets', 'mounts_with_dynamic_presets'):
         lines.append(f'  {k:32} {s[k]}')
     dbc = census['db_crosscheck']
     if dbc.get('available'):
@@ -1451,8 +1732,12 @@ def gate_assertions(census):
     planted = [x for x in f if x.startswith('declared default ')]
     if [x for x in f if x not in planted]:
         fails.append(f'check must pass on its own baseline apart from the planted declared defaults: {[x for x in f if x not in planted][:2]}')
-    if not planted or any(not x.startswith(('declared default declaredbad:', 'declared default variant:')) for x in planted):
-        fails.append(f'check must fail on exactly the planted declared-default problems (declaredbad, variant), got {planted}')
+    bad_blocks = ('declaredbad', 'variant', 'tieredbad', 'whenbad', 'noctx')
+    if not planted or any(not x.startswith(tuple(f'declared default {b}:' for b in bad_blocks)) for x in planted):
+        fails.append(f'check must fail on exactly the planted declared-default problems ({", ".join(bad_blocks)}), got {planted}')
+    missed = [b for b in bad_blocks if not any(x.startswith(f'declared default {b}:') for x in planted)]
+    if missed:
+        fails.append(f'check did not fail on the planted blocks {missed}')
     broken = copy.deepcopy(base)
     key = next((k for k, v in broken['lengths'].items() if not PRESET_VAR.fullmatch(v.strip())), None)
     broken['lengths'].pop(key, None)
@@ -1473,6 +1758,12 @@ def gate_assertions(census):
         fails.append(f'--strict must fail on exactly the undeclared governed defaults ({len(want)}), got {len(undeclared)}')
     if any(x.startswith('undeclared default ') for x in run_check(census, base)[0]):
         fails.append('an undeclared default failed without --strict')
+    repainted = sorted(x.split(':', 3)[0] + ':' + x.split(':', 3)[1] + ':' + x.split(':', 3)[2] for x in f if x.startswith('uncovered repaint '))
+    want = sorted(f'uncovered repaint {r["block"]}:{r["attr"]}:{s["side"]}' for r in census['attributes'] for s in r['sides'] if s['status'] == 'variant-dependent')
+    if not want or repainted != want:
+        fails.append(f'--strict must fail on exactly the variant-dependent sides ({len(want)}), got {len(repainted)}')
+    if any(x.startswith('uncovered repaint ') for x in run_check(census, base)[0]):
+        fails.append('an uncovered repaint failed without --strict')
     return fails
 
 
@@ -1484,7 +1775,11 @@ def self_test():
                 'declared-ignore-fallback': 'a declared preset whose stylesheet fallback is not its theme size',
                 'declared-ignore-exact': 'a declared length that equals a preset size exactly',
                 'mount-ignore-defaults': 'a declared attribute whose mount passes no defaults prop',
-                'declared-ignore-variant': 'a declared side a variant or media rule repaints'}
+                'declared-ignore-variant': 'a declared side a variant or media rule repaints with no tier or when entry covering it',
+                'tier-ignore-value': 'a tier or when value that is not what its media or variant rule paints',
+                'when-ignore-attrs': 'a when entry naming an enum value the attribute does not have',
+                'when-ignore-classes': 'a when entry naming a variant class the block never emits',
+                'mount-ignore-context': 'a tier or when declaration whose mount resolves the base only'}
     for name, what in controls.items():
         MUTATE.add(name)
         try:

@@ -379,6 +379,107 @@
      "proposed": "var(--wp--preset--spacing--30)"
     }
    }
+  },
+  "tiered:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--40, 1.5rem)",
+     "declared": "var(--wp--preset--spacing--40)"
+    },
+    "right": {
+     "status": "declared",
+     "raw": "20px",
+     "declared": "20px"
+    },
+    "bottom": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--40, 1.5rem)"
+    },
+    "left": {
+     "status": "declared",
+     "raw": "20px"
+    }
+   }
+  },
+  "looked:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "declared",
+     "raw": "20px",
+     "declared": "20px"
+    },
+    "left": {
+     "status": "declared",
+     "raw": "20px"
+    }
+   }
+  },
+  "tieredbad:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "declared",
+     "raw": "var(--wp--preset--spacing--40, 1.5rem)"
+    },
+    "right": {
+     "status": "variant-dependent",
+     "raw": "20px",
+     "reason": "(max-width: 767px)"
+    },
+    "left": {
+     "status": "declared",
+     "raw": "20px"
+    }
+   }
+  },
+  "whenbad:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "declared",
+     "raw": "20px"
+    },
+    "bottom": {
+     "status": "variant-dependent",
+     "raw": "20px",
+     "declared": "20px",
+     "reason": "28px"
+    },
+    "left": {
+     "status": "variant-dependent",
+     "raw": "20px",
+     "declared": "20px",
+     "reason": "28px"
+    }
+   }
+  },
+  "noctx:padding": {
+   "family": "padding",
+   "presets": "true",
+   "root_element": true,
+   "sides": {
+    "top": {
+     "status": "variant-dependent",
+     "raw": "var(--wp--preset--spacing--40, 1.5rem)",
+     "declared": "var(--wp--preset--spacing--40)"
+    },
+    "right": {
+     "status": "variant-dependent",
+     "raw": "20px",
+     "declared": "20px"
+    }
+   }
   }
  },
  "absent_attributes": [
@@ -417,23 +518,75 @@
   ],
   "variant:padding:top": [
    "a variant or media rule repaints this side (.sgs-variant.sgs-variant--big = 28px)"
+  ],
+  "tiered:padding:top": [],
+  "looked:padding:top": [],
+  "looked:padding:when[0].top": [],
+  "looked:padding:when[0].mobile.top": [],
+  "tiered:padding:mobile.top": [],
+  "tiered:padding:right": [],
+  "looked:padding:right": [],
+  "looked:padding:when[0].right": [],
+  "looked:padding:when[0].mobile.right": [],
+  "tiered:padding:mobile.right": [],
+  "tiered:padding:bottom": [],
+  "looked:padding:bottom": [],
+  "looked:padding:when[0].bottom": [],
+  "looked:padding:when[0].mobile.bottom": [],
+  "tiered:padding:mobile.bottom": [],
+  "tiered:padding:left": [],
+  "looked:padding:left": [],
+  "looked:padding:when[0].left": [],
+  "looked:padding:when[0].mobile.left": [],
+  "tiered:padding:mobile.left": [],
+  "tieredbad:padding:top": [],
+  "tieredbad:padding:right": [
+   "a variant or media rule repaints this side (.sgs-tieredbad @media (max-width: 767px) = 12px); no tier entry declares it"
+  ],
+  "tieredbad:padding:mobile.top": [
+   "the rule paints preset 30, the declaration names 40"
+  ],
+  "tieredbad:padding:mobile.bottom": [
+   "the rule paints the preset",
+   "the declaration names the length '24px'"
+  ],
+  "tieredbad:padding:mobile.left": [],
+  "whenbad:padding:top": [],
+  "whenbad:padding:bottom": [
+   "a variant or media rule repaints this side (.sgs-whenbad.sgs-whenbad--look-big = 28px); no when entry declares it"
+  ],
+  "whenbad:padding:left": [
+   "(.sgs-whenbad.sgs-whenbad--look-big = 28px); no when entry declares it",
+   "(.sgs-whenbad.sgs-whenbad--look-wide = 36px); no when entry declares it"
+  ],
+  "noctx:padding:top": [
+   "passes no tier in the spacingDefaultsFor context, so the control shows only the base"
+  ],
+  "whenbad:padding:when[0]": [
+   "names 'huge' for 'look', which is not in its enum"
+  ],
+  "whenbad:padding:when[1]": [
+   "names attribute 'nope', which block.json does not declare"
+  ],
+  "whenbad:padding:when[2]": [
+   "class sgs-whenbad--look-zzz is not emitted by the block's PHP"
   ]
  },
  "summary": {
-  "attributes_surveyed": 27,
-  "sides_total": 105,
+  "attributes_surveyed": 32,
+  "sides_total": 125,
   "default": 58,
   "em_ambiguous": 4,
-  "already_preset": 10,
+  "already_preset": 16,
   "undeclared_exact_matches": 31,
   "stay_unset": 25,
   "unknown": 8,
   "exempt": 4,
   "mounts_without_presets": 1,
-  "declared": 4,
-  "declared_presets": 3,
-  "declared_literals": 1,
-  "declared_problems": 6,
-  "variant_dependent": 2
+  "declared": 17,
+  "declared_presets": 7,
+  "declared_literals": 10,
+  "declared_problems": 18,
+  "variant_dependent": 9
  }
 }

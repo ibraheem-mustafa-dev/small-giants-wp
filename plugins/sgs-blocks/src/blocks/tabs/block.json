@@ -34,6 +34,32 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"spacingDefaults": {
+				"tabPadding": {
+					"top": "12px",
+					"right": "20px",
+					"bottom": "12px",
+					"left": "20px",
+					"when": [
+						{
+							"attrs": {
+								"orientation": "horizontal",
+								"mobileLayout": "stack"
+							},
+							"classes": [
+								"sgs-tabs--horizontal",
+								"!sgs-tabs--mobile-row"
+							],
+							"mobile": {
+								"top": "0.875rem",
+								"right": "1rem",
+								"bottom": "0.875rem",
+								"left": "1rem"
+							}
+						}
+					]
+				}
+			},
 			"collection": true,
 			"elements": {
 				"wrapper": {

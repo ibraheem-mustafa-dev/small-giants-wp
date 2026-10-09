@@ -1,0 +1,13 @@
+.sgs-looked {
+	padding: 20px;
+}
+
+.sgs-looked.sgs-looked--look-big {
+	padding: 28px;
+}
+
+@media (max-width: 767px) {
+	.sgs-looked.sgs-looked--look-big {
+		padding: 18px;
+	}
+}
