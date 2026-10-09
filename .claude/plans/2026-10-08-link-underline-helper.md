@@ -82,6 +82,11 @@ Open, each for a later batch:
   resolver and the F6 consistency checks key on `css_property` first), so the older rows' `-link` values and the bare element
   keys do not conflict. Not yet live: the testimonial change is committed and unit-tested, the next eye-care-test deploy
   carries it, and the DB rows for `sgs/testimonial.linkUnderline*` arrive with the next stage-1 reseed.
-- **Ledger:** the footer walk now reports the decided differences (the sweep's `background-image` on refs 23-25, the
-  address colour and its link box's `gap`/`display` rows). They need divergence entries citing Bean's 2026-10-08
-  decision (S2 covers the sweep; the address colour and link need a register row first).
+- **Ledger (2026-10-09, `sites/eye-care-ward-end/build/qa/divergences.json` D-101 to D-119, register row 163):** the sweep line,
+  its timing, the dark hover colour and the links hugging their words on footer refs 23 and 24 are logged as the footer twins of
+  S2; the address colour and Google link are logged under rows 37 and 163; the address's 7px gap is logged as not painted (the
+  link has one child and no icon); the hours `<dl>` is accepted. Open on the footer walk for refs 23 to 26: the phone link's
+  box height (44px tap area), its text inset and three `y-after` positions, which hang on that one box. Bean asked for the
+  phone link to look like the other footer links, so `sgs/business-info` now draws the phone and email line on the text
+  inside the link (`235e3699b`); once it is deployed, read the phone line against the About link and decide whether the 44px
+  box stays.

@@ -1464,5 +1464,308 @@
       "127"
     ],
     "decided": "2026-10-08 Session D (draft flaw: a truncated phone number)"
+  },
+  {
+    "id": "D-101",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-102",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "transition-duration",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-103",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "transition-timing-function",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-104",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-105",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "background-image",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-106",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "transition-duration",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-107",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "transition-timing-function",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the hover underline is a background line that sweeps in left to right over 0.25s ease-out (sgs/text and sgs/business-info linkUnderline = sweep); the draft draws no line and no transition.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-108",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "hover",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision): footer link words stay their own dark colour on hover and take the underline sweep; the draft's taupe hover colour is not applied. Twin of D-96 and D-97.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-109",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "display",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-110",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "width",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-111",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "w",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-112",
+    "scope": "footer",
+    "node": "cr-ref-footer-23",
+    "state": "opening",
+    "property": "h",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-113",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "width",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-114",
+    "scope": "footer",
+    "node": "cr-ref-footer-24",
+    "state": "opening",
+    "property": "w",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register S2 (Bean's decision), footer 'Visit or call' links: the sweep line has to be as wide as the words, so the link is as wide as its text (inline) instead of the draft's full-column block; Bean confirmed 2026-10-09.",
+    "register": [
+      "2",
+      "S2"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-115",
+    "scope": "footer",
+    "node": "cr-ref-footer-25",
+    "state": "opening",
+    "property": "color",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 37 and 163 (Bean's decision): the footer address is a link to the clinic's Google Business link and takes the same dark text colour as the rest of the footer, not the draft's muted taupe text.",
+    "register": [
+      "37",
+      "163"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-116",
+    "scope": "footer",
+    "node": "cr-ref-footer-25",
+    "state": "opening",
+    "property": "gap",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+    "register": [
+      "37",
+      "163"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-117",
+    "scope": "footer",
+    "node": "cr-ref-footer-25",
+    "state": "opening",
+    "property": "column-gap",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+    "register": [
+      "37",
+      "163"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-118",
+    "scope": "footer",
+    "node": "cr-ref-footer-25",
+    "state": "opening",
+    "property": "row-gap",
+    "expected": {
+      "rule": "not-painted"
+    },
+    "reason": "Measured 2026-10-09 on cr-ref-footer-25: the address block carries the business-info 0.5em flex gap, but its link has a single child (the text; this address has no icon on the draft or live), so the gap separates nothing and paints nothing.",
+    "register": [
+      "37",
+      "163"
+    ],
+    "decided": "2026-10-09 Bean"
+  },
+  {
+    "id": "D-119",
+    "scope": "footer",
+    "node": "cr-ref-footer-26",
+    "state": "opening",
+    "property": "tag",
+    "expected": {
+      "rule": "bean-choice"
+    },
+    "reason": "Register 30 (Bean's decision): the condensed hours are a description list (dl) of day and time pairs so the time sits beside its day; the draft's inline span paints the same words. Bean confirmed 2026-10-09 the element type changes nothing visible.",
+    "register": [
+      "30"
+    ],
+    "decided": "2026-10-09 Bean"
   }
 ]

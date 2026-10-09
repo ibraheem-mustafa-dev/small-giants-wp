@@ -357,6 +357,7 @@
 | 160 | Keep the pre-filled WhatsApp message (decided) | closed | closed earlier | closed |
 | 161 | Brand links go to brand pages, each with a short unique intro (D9); filtered shop links point to them | content + tree | not walker-measurable | Fix: D9 brand pages |
 | 162 | Keep the contact form's empty-submit messages (decided) | closed | closed earlier | closed |
+| 163 | Footer address colour: the draft shows muted taupe | Same dark text colour as the rest of the footer, and linked to the Google Business link (row 37). Bean, 2026-10-09. | tree | accepted in the divergence ledger (D-115 colour, D-116 to D-118 the empty gap) | closed |
 
 ## Computed route findings (Spec 47 stage 3)
 
