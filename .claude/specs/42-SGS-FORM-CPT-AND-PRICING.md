@@ -191,7 +191,7 @@ plainly rather than implying the benefit already exists.
 | FR-42-2 | built | `custom-fields` skipped entirely; settings stay root block attributes |
 | FR-42-3 | built | `revisions` retention cap = 10, via `wp_revisions_to_keep` |
 | FR-42-4 | built | `LinkControl`-based picker, slug-keyed, shared component with Spec 43 |
-| FR-42-5 | NOT BUILT | Picker shows a type badge, not a bare title (`plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker` only scopes the link search to `sgs_form`; WordPress's own search may label the post type, to be checked in the editor) |
+| FR-42-5 | NOT BUILT | Picker shows a type badge, not a bare title (`plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker` only scopes the link search to `sgs_form`; checked live on 2026-10-09: the picker's `/wp/v2/search?type=post&subtype=sgs_form` request returns HTTP 400 because `sgs_form` is not a searchable subtype (the CPT is registered non-public), so the picker lists no forms at all and FR-42-4 is also not met live) |
 | FR-42-6 | NOT BUILT | Client-side draft resumption (only the step index is kept; answers are lost on refresh) |
 | FR-42-7a | built | Trashed/missing-form embed degrade: two audiences, two messages (`plugins/sgs-blocks/src/blocks/form/render.php`) |
 | FR-42-7b | built | Delete guard (hook-level) + Gutenberg #33234 race check |

@@ -942,7 +942,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   reach. Axis lock proven with a genuine negative control: a locked instance held `y=0.00` while an
   unlocked neighbour moved `y=-19.25` under identical pointer input.
 
-- **FR-38-31 Wave gradient — the SECOND Tier W entry. BUILT + LIVE.**
+- **FR-38-31 Wave gradient — the SECOND Tier W entry. BUILT + LIVE.** Checked on the canary on 2026-10-09: the four CSS styles paint light gradients and freeze under `prefers-reduced-motion: reduce`; the two WebGL styles (aurora, ink) painted opaque black in a local Chrome while the page colours were light, cause unproven (local GPU or a real defect), so Bean's eye on a real GPU is the closing check.
   ⭐ **SIX STYLES.** One `fxWaveVariant` attribute:
   `pastel | horizon | ribbon | veil` paint in pure CSS and boot no canvas at all;
   `aurora | ink` run the WebGL shader (`src/shared/effects/webgl/aurora.js`) and are the
