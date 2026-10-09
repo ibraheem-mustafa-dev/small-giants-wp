@@ -734,11 +734,14 @@ foreach ( $resolved_items as $item ) {
 		// target. Allow inline formatting but strip anchors for the linked case.
 		$linked_allowed = wp_kses_allowed_html( 'post' );
 		unset( $linked_allowed['a'] );
+		// A tel: or mailto: link hands off to the phone or mail app, so a new tab (a stale `newTab` left from an item's typed
+		// past) is never opened for it.
+		$item_new_tab = ! empty( $item['newTab'] ) && ! preg_match( '/^(?:tel|mailto):/i', $item_url );
 		$text_content = sprintf(
 			'<a href="%s" class="sgs-icon-list__item-link" data-sgs-nav-path="%s"%s>%s</a>',
 			$item_url,
 			esc_attr( wp_parse_url( $item_url, PHP_URL_PATH ) ?? '' ),
-			! empty( $item['newTab'] ) ? ' target="_blank" rel="noopener noreferrer"' : '',
+			$item_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '',
 			// The label roll (M-25) wraps the text INSIDE the link, so the link
 			// stays the one focus target; unchanged when the roll is off.
 			sgs_label_roll_wrap_html( wp_kses( $item_text, $linked_allowed ), $sgs_ilist_roll ) . $item_description_html

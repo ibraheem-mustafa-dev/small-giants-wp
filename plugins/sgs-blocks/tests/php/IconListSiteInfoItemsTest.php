@@ -67,6 +67,24 @@ final class IconListSiteInfoItemsTest extends TestCase {
 		$this->assertStringContainsString( 'hello@example.test', $html );
 	}
 
+	public function test_a_stale_new_tab_never_opens_a_tel_or_mailto_link_in_a_new_tab(): void {
+		$html = $this->list(
+			array(
+				array( 'siteInfoSource' => 'phone', 'newTab' => true ),
+				array( 'siteInfoSource' => 'email', 'newTab' => true ),
+				array( 'text' => 'Call', 'url' => 'tel:01217298233', 'newTab' => true ),
+				array( 'text' => 'Write', 'url' => 'mailto:hi@example.test', 'newTab' => true ),
+			)
+		);
+		$this->assertSame( 4, substr_count( $html, 'class="sgs-icon-list__item-link"' ), 'positive control: all four link' );
+		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	public function test_new_tab_still_applies_to_a_web_link(): void {
+		$html = $this->list( array( array( 'text' => 'Docs', 'url' => 'https://example.test/docs/', 'newTab' => true ) ) );
+		$this->assertStringContainsString( 'target="_blank" rel="noopener noreferrer"', $html );
+	}
+
 	public function test_address_links_to_the_maps_link_only_when_asked(): void {
 		$linked = $this->list( array( array( 'siteInfoSource' => 'address', 'siteInfoLink' => true ) ) );
 		$this->assertStringContainsString( 'href="https://maps.google.com/?cid=1234567890"', $linked );

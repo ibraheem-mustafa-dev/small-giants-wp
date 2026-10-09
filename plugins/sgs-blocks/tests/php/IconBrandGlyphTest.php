@@ -198,6 +198,41 @@ final class IconBrandGlyphTest extends TestCase {
 		$this->assertStringContainsString( '-ig"', $own_gradient );
 	}
 
+	public function test_a_flat_hover_colour_wins_over_the_gradient_on_hover_and_focus(): void {
+		$css = $this->css(
+			$this->glyph_mode(
+				array(
+					'iconSource'      => 'brand',
+					'brandName'       => 'instagram',
+					'linkUrl'         => 'https://instagram.com/x',
+					'iconColourHover' => 'accent',
+				)
+			)
+		);
+		$chain = 'stroke:var\(--sgs-icon-colour-hover,var\(--sgs-si-colour-hover,var\(--sgs-icon-colour,var\(--sgs-si-colour,url\(\#sgs-icn-[0-9a-f]{8}-bg\)\)\)\)\)';
+		$this->assertMatchesRegularExpression(
+			'#@media \(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__svg svg\{' . $chain . '#',
+			$css,
+			'a hover colour beats the gradient, behind the touch guard'
+		);
+		$this->assertMatchesRegularExpression( '#\.sgs-icon__link:focus-visible \.sgs-icon__svg svg\{' . $chain . '#', $css, 'keyboard focus gets the same stroke' );
+		$this->assertStringContainsString( '--sgs-icon-colour-hover:var(--wp--preset--color--accent', $css );
+	}
+
+	public function test_no_client_hover_colour_keeps_the_gradient_as_the_hover_stroke(): void {
+		$css = $this->css(
+			$this->glyph_mode(
+				array(
+					'iconSource' => 'brand',
+					'brandName'  => 'instagram',
+					'linkUrl'    => 'https://instagram.com/x',
+				)
+			)
+		);
+		$this->assertStringNotContainsString( '--sgs-icon-colour-hover:', $css, 'the client set no hover colour' );
+		$this->assertMatchesRegularExpression( '#\.sgs-icon__link:hover \.sgs-icon__svg svg\{stroke:var\(--sgs-icon-colour-hover,var\(--sgs-si-colour-hover,var\(--sgs-icon-colour,var\(--sgs-si-colour,url\(\#sgs-icn-[0-9a-f]{8}-bg\)\)\)\)\)#', $css, 'the chain ends in the gradient' );
+	}
+
 	public function test_an_own_hover_border_colour_wins(): void {
 		$css = $this->css(
 			$this->glyph_mode(

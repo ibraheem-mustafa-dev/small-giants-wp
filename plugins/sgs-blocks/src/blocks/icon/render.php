@@ -459,6 +459,12 @@ if ( $glyph_only && 'lucide' === $gradient_source && '' === (string) ( $attribut
 	$logo_stroke = preg_replace( '/^stroke:(url\(#[A-Za-z0-9-]+\))$/', 'stroke:var(--sgs-icon-colour,var(--sgs-si-colour,$1))', $logo_grad['css'] );
 	if ( is_string( $logo_stroke ) && '' !== $logo_stroke ) {
 		$scoped_css[] = $root_sel . $glyph_suffix . '{' . $logo_stroke . ';}';
+		// A flat hover colour (own, then the row's) wins over the gradient on hover and keyboard focus; with none the
+		// chain falls through to the resting stroke, so the gradient stays.
+		$logo_stroke_hover = preg_replace( '/^stroke:var\(--sgs-icon-colour,/', 'stroke:var(--sgs-icon-colour-hover,var(--sgs-si-colour-hover,var(--sgs-icon-colour,', $logo_stroke );
+		if ( is_string( $logo_stroke_hover ) && $logo_stroke_hover !== $logo_stroke ) {
+			$scoped_css[] = sgs_hover_state_rules( $link_sel, $logo_stroke_hover . '))', ':focus-visible', $glyph_suffix );
+		}
 	}
 }
 // Hover and keyboard focus: the border turns the brand colour (an own border hover colour, or the row's, first) and a
@@ -476,6 +482,17 @@ if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
 		$ring_decls[] = 'color:var(--sgs-icon-colour-hover,var(--sgs-si-colour-hover,var(--sgs-icon-colour,var(--sgs-si-colour,var(--sgs-icon-brand-glyph,var(--wp--preset--color--primary))))))';
 	}
 	$scoped_css[] = sgs_hover_state_rules( $link_sel, implode( ';', $ring_decls ) . ';' . sgs_shadow_forced_colours_decl(), ':focus-visible', ' .sgs-icon__shape' );
+}
+
+// An outline shape takes no ring: its stroke is the border, so hover and focus turn the stroke the brand colour (an own
+// border hover colour, or the row's, first), guarded like the ring above.
+if ( $glyph_only && '' !== $brand_paint['border_hover'] && $is_outline ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$link_sel,
+		'stroke:var(--sgs-icon-border-colour-hover,var(--sgs-si-border-colour-hover,' . sgs_colour_value( $brand_paint['border_hover'] ) . '))',
+		':focus-visible',
+		' .sgs-icon__outline-path'
+	);
 }
 
 // ── Label: gradient text (resting and hover) and typography ──────────────────

@@ -1,4 +1,5 @@
 import { __ } from "@wordpress/i18n";
+import { Fragment } from "@wordpress/element";
 import { useBlockProps, InspectorControls, useSettings } from "@wordpress/block-editor";
 import { iconListPreview } from "./preview-style";
 import { useEntityRecords } from "@wordpress/core-data";
@@ -31,7 +32,7 @@ import {
   LinkPopoverField,
 } from "../../components";
 import { SITE_INFO_ADMIN_URL } from "../icon/icon-state";
-import { CONTENT_SOURCE_OPTIONS, usesSiteInfo, siteInfoItemPreview } from "./site-info-items";
+import { CONTENT_SOURCE_OPTIONS, usesSiteInfo, siteInfoItemPreview, contentSourcePatch } from "./site-info-items";
 import ItemEffectsPanel from "../../shared/nav-menu-panels/ItemEffectsPanel";
 import { colourVar, gapVar, separatorsLineCss, usePreviewTier, tierBoxLonghands, sgsBorderPreview, linkUnderlinePreviewCss } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -100,6 +101,16 @@ function resolveItemIcon(item, fallback) {
 }
 
 
+/** Lines of text with a <br> between them, as the site prints an address. */
+function lineNodes(lines) {
+  return lines.map((line, i) => (
+    <Fragment key={i}>
+      {i > 0 && <br />}
+      {line}
+    </Fragment>
+  ));
+}
+
 function ItemEditor({ item, fallback, onChange, onRemove }) {
   const resolved = resolveItemIcon(item, fallback);
   const fromSiteInfo = usesSiteInfo(item);
@@ -129,15 +140,7 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         label={__("Content", "sgs-blocks")}
         value={item.siteInfoSource || ""}
         options={CONTENT_SOURCE_OPTIONS}
-        onChange={(val) =>
-          onChange({
-            ...item,
-            siteInfoSource: val,
-            // An address or opening-hours item links by default (to the map / the Google profile); phone and
-            // email always link, so the switch does not apply to them.
-            siteInfoLink: "address" === val || "hours" === val ? true : undefined,
-          })
-        }
+        onChange={(val) => onChange(contentSourcePatch(item, val))}
         __nextHasNoMarginBottom
         __next40pxDefaultSize
       />
@@ -145,8 +148,10 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         <>
           <p className="sgs-icon-list-item-editor__site-info">
             {siteInfoPreview.hidden
-              ? __("Not set in Site Info, so this item is hidden on the site until you add it.", "sgs-blocks")
-              : siteInfoPreview.text}{" "}
+              ? siteInfoPreview.invalid
+                ? __("The email in Site Info is not a valid address, so this item is hidden on the site until you fix it.", "sgs-blocks")
+                : __("Not set in Site Info, so this item is hidden on the site until you add it.", "sgs-blocks")
+              : lineNodes(siteInfoPreview.lines)}{" "}
             <a href={SITE_INFO_ADMIN_URL} target="_blank" rel="noopener noreferrer">
               {__("Edit in Site Info", "sgs-blocks")}
             </a>
@@ -402,7 +407,7 @@ export default function Edit({ attributes, setAttributes, clientId }) {
   // The item's text and optional description, as render.php prints them (inside the link when the item has a url).
   const itemTextNodes = (item) => (
     <>
-      {item.text}
+      {item.lines ? lineNodes(item.lines) : item.text}
       {item.description && " "}
       {item.description && (
         <span className="sgs-icon-list__description" style={descriptionStyle}>
@@ -421,7 +426,12 @@ export default function Edit({ attributes, setAttributes, clientId }) {
     const shownItem = siteInfoItem
       ? {
           ...item,
-          text: siteInfoItem.hidden ? __("(Not set in Site Info, hidden on the site)", "sgs-blocks") : siteInfoItem.text,
+          text: siteInfoItem.hidden
+            ? siteInfoItem.invalid
+              ? __("(Invalid email in Site Info, hidden on the site)", "sgs-blocks")
+              : __("(Not set in Site Info, hidden on the site)", "sgs-blocks")
+            : siteInfoItem.text,
+          lines: siteInfoItem.hidden ? null : siteInfoItem.lines,
           url: siteInfoItem.url,
         }
       : item;

@@ -312,6 +312,34 @@ final class IconOutlineShapesTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-icon--group-border', $html, 'the box group border rule never paints an outline' );
 	}
 
+	public function test_brand_glyph_outline_gets_a_guarded_brand_hover_stroke(): void {
+		foreach ( self::OUTLINES as $shape ) {
+			$css = $this->css(
+				$this->render(
+					array(
+						'iconSource' => 'brand',
+						'brandName'  => 'whatsapp',
+						'linkUrl'    => 'https://wa.me/1',
+						'colourMode' => 'brand-glyph',
+						'shape'      => $shape,
+					)
+				)
+			);
+			$this->assertMatchesRegularExpression(
+				'#@media \(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#',
+				$css,
+				$shape . ': hover stroke is the brand colour, behind the touch guard'
+			);
+			$this->assertMatchesRegularExpression( '#\.sgs-icon__link:focus-visible \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#', $css, $shape . ': focus stroke' );
+			$this->assertStringNotContainsString( 'box-shadow:0 0 0 1px', $css, $shape . ': no ring for an outline' );
+		}
+	}
+
+	public function test_a_non_brand_glyph_outline_prints_no_brand_hover_stroke(): void {
+		$css = $this->css( $this->render( array( 'iconName' => 'phone', 'linkUrl' => 'https://x.test', 'shape' => 'hexagon' ) ) );
+		$this->assertStringNotContainsString( 'sgs-icon__outline-path{stroke', $css );
+	}
+
 	// ── Stylesheet and registry ───────────────────────────────────────────────
 
 	public function test_stylesheet_paints_the_outline_through_classes(): void {
