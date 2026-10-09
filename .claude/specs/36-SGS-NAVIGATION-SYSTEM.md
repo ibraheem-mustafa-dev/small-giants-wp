@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 3.0
+spec_version: 3.1
 title: SGS Navigation System
 project: small-giants-wp
 status: active
@@ -78,8 +78,10 @@ model/behaviours (Spec 37).
 FR-36-24 between FR-36-8 and FR-36-9; FR-36-19…26 are grouped in §4. They are cited from live PHP/JS
 comments and other specs, so ⛔ **do NOT renumber**. Use this index instead.
 
-⛔ **No status column, deliberately.** Live build status single-sources to **`.claude/LEDGER.md`**; a status
-column here would drift against the code.
+⛔ **Status lives on each FR, not in this index.** Every FR in this spec carries a one-line `Status:` (BUILT /
+PARTLY BUILT: what is missing / NOT BUILT) with its evidence in `path::symbol` form, directly under its heading
+(Part 14's FRs: §14.0a). `.claude/LEDGER.md` holds only short notes on work in progress. Do not cache a step
+count or percentage; re-verify the evidence before relying on a `Status:` line.
 
 | FR | § | Topic |
 |---|---|---|
@@ -118,6 +120,7 @@ column here would drift against the code.
 ## 2. Architecture
 
 ### FR-36-1 — Menu data = native WP menus (CLASSIC primary; block-menu support = Phase 3)
+**Status:** BUILT: `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::get_menu_blocks` resolves an explicit `ref`, then the header nav, a classic theme location, the newest `wp_navigation` post, the newest classic menu and a page-list, and both menu blocks call it. `::blocks_from_ref` already resolves `wp_navigation` posts, ahead of the Phase 3 label above.
 The nav renders from a **native WordPress menu the operator picks** — **primary/MVP = classic menus**
 (*Appearance → Menus*, `nav_menu` terms rendered via `wp_get_nav_menu_items()`), which reliably supports the
 mega-attach (FR-36-5). **Block-based `wp_navigation` support is a Phase-3 extra** (§7). `sgs/nav-bar-menu`
@@ -134,6 +137,7 @@ A different drawer menu is an explicit `ref` on the drawer's `sgs/nav-drawer-men
 FR-36-24). Neither instance reads the other's state.
 
 ### FR-36-2 — Block + CPT + plumbing roster
+**Status:** BUILT: every roster row exists (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`, `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json`, `plugins/sgs-blocks/src/blocks/nav-drawer/block.json`, `plugins/sgs-blocks/src/blocks/mega-panel/block.json`, `plugins/sgs-blocks/src/blocks/cart/block.json`, `plugins/sgs-blocks/src/blocks/product-search/block.json`, `plugins/sgs-blocks/src/blocks/social-icons/block.json`, `plugins/sgs-blocks/src/blocks/responsive-logo/block.json`, `plugins/sgs-blocks/src/blocks/business-info/block.json`); `sgs_mega_menu` is registered in `plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php` and `sgs_drawer` in `plugins/sgs-blocks/includes/class-sgs-block-cpts.php`. Not built: the optional pre-set flavours of `sgs/nav-bar-menu` (no `registerBlockVariation` in its folder).
 | Part | Type | Responsibility |
 |---|---|---|
 | `sgs/nav-bar-menu` | block (dynamic), `"ancestor": ["sgs/site-header-row"]` | The menu on a header row: a horizontal **bar** with dropdown/mega triggers (desktop); **below its collapse point it renders a burger that opens the drawer** (FR-36-8) — NOT an inline list. Split layout (`splitAfterItemId` / `splitSide` / `showBurger`), a menu-item-description badge (e.g. "SOON"), and the menu-button presentation (`triggerMode` / `triggerIcon` / `triggerLabel`, FR-36-27) are built. Block-private root (no `SGS_Container_Wrapper`) — see FR-36-13. May ship pre-set flavours via `registerBlockVariation`. |
@@ -141,7 +145,7 @@ FR-36-24). Neither instance reads the other's state.
 | `sgs_mega_menu` | **CPT** (block-based, container-like) | A rich mega panel = a per-client editable, block-based post (`sgs/mega-panel` with `sgs/mega-group` / `sgs/mega-aside` columns and any SGS blocks), edited in its own findable admin screen. **Attached to a menu item the normal WP way** (add it to the menu in Appearance → Menus like a page — FR-36-5). Rendered at the item's real position; inside the drawer the same panel renders in the item's accordion by default (FR-36-6). KIND = section/layout (keeps `SGS_Container_Wrapper`). |
 | `sgs_drawer` | **CPT** ("Menu drawer"), revisions, template-locked | The off-canvas panel a burger opens, edited on its own screen. Registered in `plugins/sgs-blocks/includes/class-sgs-block-cpts.php`; Active model in `plugins/sgs-blocks/includes/class-sgs-active-layout.php` (`Sgs_Active_Layout::AREA_DRAWER`); printed on `wp_footer` by `plugins/sgs-blocks/includes/class-sgs-drawer-render.php`. Owned by Spec 37 FR-37-43; drawer BEHAVIOUR is FR-36-6. |
 | `sgs/nav-drawer` | block (dynamic) | The off-canvas **container** the burger opens — the content of an `sgs_drawer` post. A fixed × close (chrome) above ONE InnerBlocks body seeded with `sgs/nav-drawer-menu`. A native `<dialog>` (default `showModal()`, top-layer → survives a transformed header ancestor; `.show()` opt-in). No child blocks; no header-row import (FR-36-6). |
-| Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | One open/close/focus/`inert`/intent-timing utility for the disclosure (dropdown + mega) + dialog (drawer) surfaces. Framework-reusable. |
+| Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | Open/close/focus/`inert`/intent-timing plumbing: `store('sgs/nav')` for the dialog surfaces (drawer, search overlay) and the separate `store('sgs/mega')` (`mega-disclosure.js`) for the disclosure surfaces (dropdown + mega). Framework-reusable. |
 | `sgs/cart` (extend) | block (dynamic) | Header cart — count badge + mini-cart (`displayMode` link / flyout / drawer). FR-36-19. |
 | `sgs/product-search` / `filter-search` (extend) | block (dynamic) | Predictive search combobox with four display modes. FR-36-20. |
 | `sgs/social-icons` (rebuilt) | block | Social and contact row: a wrapper of `sgs/icon` children bound to Site Info, one source rendered in header + footer + drawer. FR-36-21. |
@@ -149,6 +153,7 @@ FR-36-24). Neither instance reads the other's state.
 | `sgs/business-info` (extend) | block | The Site-Info source of truth (name/phone/email/address/hours → header + footer + contact + schema). FR-36-23. |
 
 ### FR-36-3 — CPT model consistent with P2 (precise reuse)
+**Status:** BUILT: `plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php` references neither `Sgs_Header_Rules` nor `sgs_active_header_cpt_id`; the mega starters are the `mega-*.php` files in `theme/sgs-theme/patterns/`; `plugins/sgs-blocks/src/blocks/mega-panel/edit.js` sets no `templateLock` on the panel.
 `sgs_mega_menu` mirrors P2's "per-client editable structural content = a CPT" (`sgs_header`). Reuses: the
 CPT editing home + native block editor; the **starter-template picker** (P2 §2.5 — the mega starters are
 git-versioned theme patterns, FR-36-5). Does NOT use `Sgs_Header_Rules` / `sgs_active_header_cpt_id`. The panel's `templateLock` is `false`,
@@ -158,6 +163,7 @@ findability + header-consistency + zero bespoke admin UX.
 ## 3. Behaviour
 
 ### FR-36-4 — Desktop disclosure (dropdown + mega)
+**Status:** PARTLY BUILT: hover-intent, open mode, hover bridge, safe triangle, outside-click and Escape dismiss, placement and the item hover controls are built (`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::isHeadingIntoOpenPanel`, `::repositionPanel`, `::onDocumentEscape`; `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuIntentDelay` default 80, `::attributes.submenuCloseGrace` default 170, `::attributes.submenuOpenOn`; drawer parity `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemHoverScope`; `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css`). Not built: the ARIA active-trail (FR-41-20); only the CSS ancestor-Current styling exists.
 Top-level items are real links; an item with a submenu renders a **disclosure** (`<button aria-expanded>`,
 §5), NOT `role="menu"`. **Which kind:** mega iff the menu item links to a `sgs_mega_menu` post (FR-36-5);
 else its submenu is a simple dropdown. Dropdowns/mega exist only on `sgs/nav-bar-menu`;
@@ -357,6 +363,7 @@ open dropdown is hovered, and the hover-highlight background is painted from the
 swatch when `itemBgHoverTreatment === 'highlight'`.
 
 ### FR-36-5 — The mega CPT + the native-menu association
+**Status:** PARTLY BUILT: built are the CPT (`plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php::force_publish`, `show_in_nav_menus`), resolution by `object_id` (`plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php::resolve_panel_for_menu_item`), the eight starter patterns (`theme/sgs-theme/patterns/mega-brands-1.php`, `mega-general-1col.php`, `mega-general-2col.php`, `mega-general-2col-aside.php`, `mega-media-cards-1.php`, `mega-links-with-tiles.php`, `mega-compact-links.php`, `mega-compact-links-numbered.php`) and the aside and surface controls (`plugins/sgs-blocks/src/blocks/mega-aside/block.json::attributes.asideGap`, `plugins/sgs-blocks/src/blocks/mega-panel/block.json::attributes.surfaceBlur`). Not built: the inline authoring affordance (no `sgs_mega_menu` match under `plugins/sgs-blocks/src/blocks/nav-bar-menu`); `plugins/sgs-blocks/src/blocks/mega-panel/block.json::attributes.borderRadius` is still a plain string (default `20px`), awaiting Bean's ruling.
 
 ⛔ **Panel locking contract — `templateLock:false` + `allowedBlocks`, NEVER `contentOnly`.** `contentOnly`
 hides child settings, so a client could not edit the icon-list link lists. The panel
@@ -430,6 +437,7 @@ DISCLOSURE semantics, never `role="menu"` (FR-36-10), and are block-based CPT po
   awaits Bean's ruling.
 
 ### FR-36-6 — The drawer (`sgs/nav-drawer`) — native `<dialog>` container in the `sgs_drawer` CPT
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_geometry_for_anchor`, `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::whenAnimationsSettle`, `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::publishHeaderBox`, `plugins/sgs-blocks/includes/nav-drawer-chrome.php::sgs_nav_drawer_chrome`, `plugins/sgs-blocks/includes/class-sgs-drawer-render.php::render_active_drawer`, `plugins/sgs-blocks/includes/helpers-mega-render.php::sgs_mega_render_item_panel`; the `sgs_drawer` CPT template-locks one `sgs/nav-drawer` (`plugins/sgs-blocks/includes/class-sgs-block-cpts.php`); `variantPreset` appears nowhere under `plugins/sgs-blocks/src`. Not built, by design: a keyboard hotkey and history-back as closers; the `auto` z-index value awaits Bean.
 **ONE block, ONE InnerBlocks region, NO child blocks.** The drawer is `sgs/nav-drawer` and nothing else. It
 LIVES INSIDE the `sgs_drawer` CPT as that post's content (the CPT's template is a single locked
 `sgs/nav-drawer` block); there is no CPT-native "no block" model.
@@ -856,6 +864,7 @@ STOP-DIALOG-DISPLAY-GATE stays intact. This is an editor-UX rule inside FR-36-6'
 capability.
 
 ### FR-36-29 — Drawer row ornament, per-item media, sibling dim and label roll (`sgs/nav-drawer-menu`)
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::attributes.itemOrnament`, `::attributes.itemExpanderRotate`, `::attributes.itemMedia`, `::attributes.siblingDimColour` and `::attributes.labelRoll` are declared, and `plugins/sgs-blocks/includes/helpers-item-effects.php::sgs_sibling_dim_css` emits the dim. Not on the bar, by Bean's ruling.
 U-6 and U-7 provide four item-level mechanisms to the drawer's own accordion list, each a genuinely
 different element from the bar's own item paint (FR-36-4):
 - **Row ornament (M-22).** `itemOrnament` (a per-tier `{desktop,tablet,mobile}` object: `none` | `index` | `icon`)
@@ -890,6 +899,7 @@ different element from the bar's own item paint (FR-36-4):
   serves the numbered starter pattern (`sgs/mega-compact-links-numbered`) that pairs with this unit.
 
 ### FR-36-27 — Burger trigger presentation — PARTIAL
+**Status:** PARTLY BUILT: `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.triggerMode`, `::attributes.triggerLabel`, `::attributes.burgerMorph`, `::attributes.triggerDetach` and `::attributes.triggerOpenLabel` are declared and emitted by `plugins/sgs-blocks/includes/nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css`. Not built: `triggerStyle`, `triggerSymbol` and `triggerOpenStyle` (absent from that `block.json` and from `block_attributes` for `sgs/nav-bar-menu`; `triggerStyle` exists only on `sgs/cart` and `sgs/modal`).
 The references make the trigger a designed element (one renders the word "MENU", one a symbol, one a morphing
 glyph). **BUILT** on `sgs/nav-bar-menu` (burger is bar-only), all inspector-manifested: `triggerMode`
 (`icon` | `text` | `icon-and-text`, per device: a tier object), `triggerIconPosition` (icon before or after the
@@ -942,8 +952,11 @@ the bar's, close chrome = the Menu drawer's.
 live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
 
 ### FR-36-7 — Shared nav plumbing utility (framework-reusable)
-One `viewScriptModule` + `store('sgs/nav', …)` (public API — the established SGS pattern; NOT core-nav's
-private store) for open/close/focus/`inert`/intent-timing across the disclosure + dialog surfaces. A UTILITY
+**Status:** PARTLY BUILT: the shared plumbing is built as two Interactivity stores, not one: the dialog engine is `store('sgs/nav')` in `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` (drawer, search overlay) and the desktop dropdown and mega disclosure is a separate `store('sgs/mega')` in `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`, kept apart so the modal engine is not coupled to a positioned disclosure. The body-reparent and scrollbar compensation live in `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::reparentToBody`.
+`viewScriptModule` Interactivity stores (public API — the established SGS pattern; NOT core-nav's private
+store): `store('sgs/nav')` for the dialog surfaces and a separate `store('sgs/mega')` for the disclosure
+surfaces, kept apart so the modal engine is never coupled to a positioned disclosure. They carry
+open/close/focus/`inert`/intent-timing. A UTILITY
 not a component (prove by the three call-sites). It carries the drawer's body-reparent (transform-ancestor
 escape) and scrollbar-bounce compensation as existing mechanisms, not re-derived. **No-JS honesty:** the
 menu's **links + top-level items are navigable + crawlable without JS**; the **dropdown/mega/drawer
@@ -951,6 +964,7 @@ menu's **links + top-level items are navigable + crawlable without JS**; the **d
 reachable on the target page). "Crawlable without JS" ≠ "every panel opens without JS."
 
 ### FR-36-8 — Responsive collapse + THREE operator-chosen modes + per-device visibility
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.collapsePoint` (default 768), `plugins/sgs-blocks/src/shared/nav-menu-panels/utils.js::BURGER_SCOPE_PX` (`always` stores 99999), `plugins/sgs-blocks/src/shared/nav-menu-panels/utils.js::LINK_COUNT_THRESHOLD` for the informational link-count notice in `plugins/sgs-blocks/src/blocks/nav-bar-menu/NavMenuNotices.js`, `drawerRef` resolved by `plugins/sgs-blocks/includes/class-sgs-drawer-render.php::drawer_ref_for`, `sgsCollapseVisibility` in `plugins/sgs-blocks/includes/device-visibility.php`, and `labelCollapse` in `plugins/sgs-blocks/src/blocks/button/edit.js` and `plugins/sgs-blocks/src/blocks/business-info/edit.js`.
 - **One collapsed layout.** The **collapse point N** is a visual breakpoint (operator attribute
   `collapsePoint`, default 768) — distinct from the 768/1024 device-tier *style* system (Spec 35 D2). §8
   sweeps a non-default N.
@@ -991,6 +1005,7 @@ reachable on the target page). "Crawlable without JS" ≠ "every panel opens wit
   Blocks reading Site Info carry no duplicate data.
 
 ### FR-36-24 — Per-device content + settings (beside FR-36-8; Spectra-standard)
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` with `plugins/sgs-blocks/includes/device-visibility.php` (`sgsHideOnMobile`), `ResponsiveTriStateControl` mounted in `plugins/sgs-blocks/src/blocks/site-header/edit.js::Edit`, and the R-31-9 guard `plugins/sgs-blocks/scripts/lint-responsive-controls.py`.
 Every header/footer/nav CONTAINER piece (rows + the pieces in §4) supports, per device tier
 (desktop/tablet/mobile), a **different set of blocks** AND **different SETTINGS** on those blocks. This is the
 central builder feature (Spectra parity). **Two ownership lines — do NOT conflate:**
@@ -1015,6 +1030,7 @@ available (a different `ref` on the drawer's `sgs/nav-drawer-menu`). This per-de
 the override, so FR-36-1's "may use different menus" is an explicit opt-in, not the default.
 
 ### FR-36-9 — Nav → header decoupling (one-directional)
+**Status:** PARTLY BUILT: the published surface and hide-on-scroll are built (`plugins/sgs-blocks/src/header-behaviours/view.js::publishHeight`, `::initScrollBehaviours`, `::initRowBehaviours`; `plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerHideOnScroll`) and no `data-sgs-header-state` attribute exists. Not built: a document-level hidden-state signal for a partial-width drawer (`is-row-hidden` lands on rows only), tracked in the table below and in section 12.
 The header knows nothing about the nav; coupling is nav → header only, via the header's **real published
 surface:** `--sgs-header-height` (a `:root`/`body` CSS var from a ResizeObserver,
 `plugins/sgs-blocks/src/header-behaviours/view.js::publishHeight`) + the state classes
@@ -1051,6 +1067,7 @@ anchor). If that combination is built against a hide-on-scroll header, a publish
 owed from Spec 37 first; do not work around it on the nav side by reading the header's DOM.
 
 ### FR-36-9a — Referential integrity + orphan lifecycle
+**Status:** PARTLY BUILT: built are clause (1), a trashed or unpublished mega target renders a plain link (`plugins/sgs-blocks/includes/class-sgs-mega-menu-cpt.php::resolve_panel_for_menu_item` returns null), clause (2), the burger-without-drawer notices (`plugins/sgs-blocks/src/blocks/nav-bar-menu/useDrawerNotice.js`, `plugins/sgs-blocks/src/blocks/nav-bar-menu/NavMenuNotices.js`, `plugins/sgs-blocks/src/blocks/nav-bar-menu/DropdownSettingsPanel.js`), and clause (4) by design (the panel is an independent CPT post). Not built: clause (3), the admin notice listing the items that reference a trashed mega (none under `plugins/sgs-blocks/includes`), and clause (5), the section 8 integrity sweep (none under `plugins/sgs-blocks/scripts/nav-qa`). The editor notice offers no one-click insert of a drawer block; it points to the 'Panel this burger opens' picker, where `plugins/sgs-blocks/src/blocks/nav-bar-menu/useCreateDrawer.js::useCreateDrawer` creates a new `sgs_drawer` post.
 No reference silently breaks: (1) a menu item whose mega target is trashed/missing renders as a **plain
 link**; (2) a burger whose drawer cannot be found → editor Notice + burger no-op-with-warning; (3) a trashed
 mega surfaces an admin Notice listing referencing items; (4) deleting a menu item leaves no orphan (the panel
@@ -1067,11 +1084,10 @@ cases:
 - **No drawer at all** (`drawerRef` = 0, no Active drawer answers, no `sgs/nav-drawer` on the page). Header
   STARTER patterns embed no drawer (the Active `sgs_drawer` answers), but a header assembled by inserting
   the blocks by hand may have none, so the burger opens nothing — silently, with nothing for a non-coder to
-  diagnose. The Notice says so in plain English and offers
-  **"Add the menu panel"**, which inserts an `sgs/nav-drawer` (seeded with a `sgs/nav-drawer-menu` on the
-  same menu) as a **root-level SIBLING** of whatever top-level block the header's `sgs/nav-bar-menu` sits
-  in, and selects it so the operator lands on its content. There is no one-click re-point to a different
-  drawer: a mismatch notice points at the "Panel this burger opens" picker.
+  diagnose. The Notice says so in plain English and points at the "Panel this burger opens" picker, where
+  "Create a new menu panel" (`useCreateDrawer`) saves a new `sgs_drawer` post and writes its id to `drawerRef`;
+  the drawer lives in its own post, so no block is inserted into the header or the page. A mismatch notice
+  (a drawer block on the page whose id differs) points at the same picker.
 - **The site-wide Active drawer answers** (an ordinary page holding no `sgs/nav-drawer` block is the CORRECT
   state). The Notice shows where to edit the panel ("Edit the menu panel") and declares that the editor
   canvas cannot preview it (`wp_footer` never fires there). It matches on the Active drawer's own
@@ -1082,11 +1098,11 @@ cases:
 `sgs-nav-drawer` on BOTH sides (`Sgs_Drawer_Render::drawer_ref_for()` and
 `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$drawer_ref`), so the editor compares *effective*
 refs — a blank-vs-default pair is a MATCH. **The notice only fires on `sgs/nav-bar-menu` instances** —
-`sgs/nav-drawer-menu` has no `drawerRef` attribute. The fix action is gated on `sgs/nav-drawer` and `sgs/nav-drawer-menu` being
-registered (`createBlock` does not check the slug: an unregistered one inserts a dead `core/missing` placeholder). **The drawer cannot be seeded from
+`sgs/nav-drawer-menu` has no `drawerRef` attribute. The creation action is shown only to a user who can
+edit theme options (`useCreateDrawer` probes `canUser`). **The drawer cannot be seeded from
 `sgs/site-header`'s TEMPLATE** — its root is a `<dialog>` that promotes to the top layer, it must be a
 sibling, and the container is `templateLock:'all'` around exactly three rows. A notice on the nav block is
-the only mechanism that reaches the raw-insert path. **Informational, never a gate** (Spec 37 FR-37-19 /
+the only mechanism that reaches a header assembled by inserting blocks by hand. **Informational, never a gate** (Spec 37 FR-37-19 /
 P1 DP2a): an operator can always save a header with no drawer — a client blocked from saving with no trail is
 the failure that policy exists to prevent.
 
@@ -1106,8 +1122,7 @@ assumes they are peers will hand an OUTLINE FR to a builder and get several diff
 
 `Spec maturity` answers exactly one question: **"can this FR be handed to a builder AS WRITTEN, without a
 design pass first?"** That is a property of *this document's own text*; it changes when the spec is edited,
-never when code ships. Live build status single-sources to **`.claude/LEDGER.md`** (§1a). Do not merge the
-two.
+never when code ships. Build status is each FR's own `Status:` line (§1a). Do not merge the two.
 
 | FR | Piece | Spec maturity | Owed before it can be dispatched |
 |---|---|---|---|
@@ -1123,9 +1138,10 @@ to `DISPATCHABLE` only when a frozen attribute table, a named dispatch shape and
 exist in its own text.
 
 ### FR-36-19 — Cart (`sgs/cart`, extend) — full WooCommerce header cart
+**Status:** PARTLY BUILT: the MUST and SHOULD items are built (`plugins/sgs-blocks/src/blocks/cart/block.json::attributes.displayMode`, `::attributes.autoOpenOnAdd`, `::attributes.hideOnCartCheckoutPages`, `::attributes.freeDeliveryMessage`; `plugins/sgs-blocks/src/blocks/cart/store-api.js` over `wc/store`; the `role="status"` badge in `plugins/sgs-blocks/src/blocks/cart/render.php`). Not built (NICE): the cross-sell slot, the empty-state recommendations slot and a sticky mobile 'view cart' bar (no match in the cart folder).
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
-**Status: BUILT.** `sgs/cart` renders a count badge and a mini-cart: `displayMode`
+**Built behaviour.** `sgs/cart` renders a count badge and a mini-cart: `displayMode`
 (`plugins/sgs-blocks/src/blocks/cart/block.json::attributes.displayMode`: `link` | `flyout` | `drawer`), with
 the panel hydrated client-side from the WooCommerce Store API
 (`plugins/sgs-blocks/src/blocks/cart/view.js::updateCartWidgets`). The badge node carries
@@ -1147,9 +1163,10 @@ the attribute contract is `plugins/sgs-blocks/src/blocks/cart/block.json`.
   announces (drawer copy while open; suppress the frozen original) — no double-announce.
 
 ### FR-36-20 — Search (`sgs/product-search` / `filter-search`, extend) — predictive combobox
+**Status:** PARTLY BUILT: the four display modes and the combobox are built (`plugins/sgs-blocks/src/blocks/product-search/block.json::attributes.displayMode`, `plugins/sgs-blocks/src/blocks/product-search/render.php` for `role="combobox"`, Ctrl/Cmd+K in `plugins/sgs-blocks/src/blocks/product-search/view.js`, `plugins/sgs-blocks/src/blocks/product-search/block.json::attributes.matchHighlightColour`). Results come from the plugin's own `sgs/v1/product-search` route (`plugins/sgs-blocks/includes/class-product-search-rest.php`), one `WP_Query` over `product` only: not the Store API and not post content. Not built: recent searches, popular or trending when empty, and voice input (no match in the block folder).
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
-**Status: BUILT, four display modes.** A genuine EXTEND — the full WAI-ARIA **combobox** pattern is shipped in
+**Built behaviour, four display modes.** A genuine EXTEND — the full WAI-ARIA **combobox** pattern is shipped in
 `sgs/product-search` (`role="combobox"` + `aria-expanded`/`aria-controls`/`aria-activedescendant` +
 `role="listbox"`/`option` in render.php). `displayMode` (a plain string, default `inline-bar`, validated in
 render.php) takes `inline-bar` | `icon-expand` | `full-screen-overlay` | `command-palette`; the overlay and
@@ -1163,14 +1180,15 @@ command-palette modes are a native `<dialog>` DIALOG on the shared `store('sgs/n
   palette = a DIALOG wrapping the combobox; the icon-expand reveal = a disclosure); labelled recent-searches
   on focus; dimmed background while open.
 - **NICE:** popular/trending when empty; voice input.
-- **Differentiator:** ONE shared combobox implementation reused across all display modes; native Store-API
-  (products) + post (content) wiring — competitors bolt this on via premium/third-party (FiboSearch).
+- **Differentiator:** ONE shared combobox implementation reused across all display modes; today its results
+  come from the plugin's own product-only REST route, and Store-API and post (content) wiring is not built — competitors bolt this on via premium/third-party (FiboSearch).
   Result count / no-results = a live region (WCAG 4.1.3), same as the cart.
 
 ### FR-36-21 — Social and contact row (`sgs/social-icons`, a wrapper of `sgs/icon` children)
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/social-icons/block.json::attributes.hiddenLinks`, `sgs/icon` children bound to Site Info (the block allows only `sgs/icon`), brand glyphs from `plugins/sgs-blocks/includes/data/brand-registry.json`, and `rel` set on external links by `plugins/sgs-blocks/src/blocks/icon/render.php`. Not built (NICE): explicit Follow-versus-Share components and optional `rel="me"`.
 **Spec maturity: `OUTLINE`** — see the §4 index.
 
-**Status: BUILT** (icon plan Phase B, `.claude/plans/2026-10-08-icon-unification-and-spacing-control.md`).
+**Built in** icon plan Phase B (`.claude/plans/2026-10-08-icon-unification-and-spacing-control.md`).
 `sgs/social-icons` is a thin wrapper (`allowedBlocks: ["sgs/icon"]`) whose children are real `sgs/icon` blocks,
 each with `metadata.bindings.linkUrl = { source: "sgs/site-info", args: { key } }` and the brand registry glyph
 (`includes/data/brand-registry.json`). The bindings name Site Info keys, never a client's URL, so the same row
@@ -1196,6 +1214,7 @@ missing key at the end, a filled key with no icon is flagged; List View drag reo
   optional `rel="me"`.
 
 ### FR-36-22 — Logo (`sgs/responsive-logo`, extend) — the logo OBJECT
+**Status:** PARTLY BUILT: built are the three-tier chain (`plugins/sgs-blocks/includes/class-sgs-site-info-logo.php::resolve_id`), per-device images, `plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.colourTreatment`, `::attributes.darkLogoId`, the Lottie substrate (`::attributes.lottieId`) and the shrink width (`::attributes.shrinkWidth`; the sticky-header compact-mark swap is only that width shrink). Not built: the logo-plus-site-title lockup toggle and favicon sync (no `lockup` or `favicon` match in the block folder) and a separate transparent-header variant.
 **Spec maturity: `OUTLINE`** — the resolution chain below is frozen and dispatchable on its own; the
 lockup / favicon / variant half needs a frozen attribute table first (§4 index).
 
@@ -1244,6 +1263,7 @@ lockup / favicon / variant half needs a frozen attribute table first (§4 index)
   visible focus (first tab-stop); `<img>` in `<a href="/">` near DOM top.
 
 ### FR-36-23 — Business-info / contact (`sgs/business-info`, extend) — the Site-Info source of truth
+**Status:** PARTLY BUILT: click-to-call, click-to-email, click-to-map and `labelCollapse` are built (`plugins/sgs-blocks/src/blocks/business-info/render.php`, `plugins/sgs-blocks/src/blocks/business-info/block.json::attributes.labelCollapse`, `::attributes.addressLink`) over the single Site Info store, and `plugins/sgs-blocks/includes/class-org-website-schema.php` upgrades to `LocalBusiness` from the same fields. Not built: the live open/closed state from opening hours and the multi-location repeat (no match in the block folder).
 **Spec maturity: `OUTLINE`** — needs the `sgs_site_info` field roster + sanitisers as a frozen table before
 dispatch (§4 index).
 
@@ -1261,8 +1281,9 @@ dispatch (§4 index).
   native live open/closed without a plugin.
 
 ### FR-36-26 — Link lists (footer + anywhere): typed or menu-bound, in ONE block
+**Status:** BUILT: `plugins/sgs-blocks/src/blocks/icon-list/block.json::attributes.source`, `::attributes.menuRef`, `::attributes.markerType` and `::attributes.renderLandmark` are declared; menu resolution goes through `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::blocks_from_ref` and the flatten helper is `plugins/sgs-blocks/includes/helpers-list-markers.php::sgs_icon_list_flatten_menu_blocks`.
 **Spec maturity: `DISPATCHABLE`** — FR-36-26c freezes the attribute table, the definition of done and the
-live verification (§4 index). **Status: BUILT.** Presentation (heading + markers + typography) and
+live verification (§4 index). **Built:** Presentation (heading + markers + typography) and
 data+semantics (source toggle + menu binding + the FR-36-26a contract) both ship. This is the footer-menu
 answer to the `core/navigation` ban (§1).
 
@@ -1302,6 +1323,7 @@ marker renderer is ONE shared PHP helper (shared presentation, each consumer kee
 semantics).
 
 #### FR-36-26a — Discoverability contract: a11y / SEO / AI-crawl / schema, per type
+**Status:** BUILT: the three-type contract is implemented in `plugins/sgs-blocks/src/blocks/icon-list/render.php` (`aria-labelledby` to the heading, `wp_unique_id`, `<nav>` only when `renderLandmark` and a heading are set, `<ol>` for numbered); `aria-current` is client-side (`plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage`). `SiteNavigationElement` JSON-LD is not emitted (FR-36-17).
 The correct output genuinely DIFFERS by type. This table is the contract:
 
 | Type | Element | Accessible name | `aria-current` | Schema |
@@ -1383,6 +1405,7 @@ navigation noisier, not richer. So the naming work above applies to the nav as a
 and not per column inside a panel.
 
 #### FR-36-26c — Build scope and contract (BUILT)
+**Status:** BUILT: every attribute in the table below is declared in `plugins/sgs-blocks/src/blocks/icon-list/block.json::attributes` (`heading`, `headingLevel`, `source`, `menuRef`, `markerType`, `numberFormat`, `renderLandmark`); the live three-type render verification was not re-run in this pass.
 **Authoring contract.** Never `core/list` or `core/navigation` (both banned); `markerType` comes from the rendered marker (`icon`/`emoji`/`bullet`/`numbered`/`none`), with `numbered` forcing `<ol>`; the heading is the block's own `heading` ATTRIBUTE, never a sibling `sgs/heading` block (a sibling would break the `aria-labelledby` contract in FR-36-26a); the `<nav>` landmark defaults OFF for typed lists (FR-36-26a rule 3); binding a typed list to a real menu is an OPERATOR decision.
 
 **Data model — attributes on `sgs/icon-list`.** Shapes are frozen: declare the SHAPE, not just the value,
@@ -1444,6 +1467,7 @@ page (proving it is client-side, not baked). Then `plugins/sgs-blocks/scripts/na
 ## 5. Accessibility (governing; primary-source-grounded)
 
 ### FR-36-10 — Disclosure vs dialog
+**Status:** BUILT: no `role="menu"`, `menubar` or `aria-haspopup` appears in `plugins/sgs-blocks/includes/nav-menu-markup.php` or in the `nav-bar-menu` and `nav-drawer-menu` folders, and `plugins/sgs-blocks/src/blocks/nav-drawer/render.php` emits no `aria-modal`; the drawer is a native `<dialog>` opened by `plugins/sgs-blocks/src/shared/nav-interactivity/store.js` with `showModal()` or `.show()`.
 Dropdowns AND mega = **DISCLOSURE** (`<nav aria-label>` + `<button aria-expanded>`; `aria-controls` SHOULD;
 OMIT `aria-haspopup`; Tab through, NO trap; Escape closes + returns focus; arrow keys optional). NEVER
 `role="menu"/"menubar"`. Drawer = **DIALOG** — a native `<dialog>`, modal-in-BEHAVIOUR via either
@@ -1456,6 +1480,7 @@ under either — see FR-36-6. Mega = a bigger disclosure sharing `sgs/nav-bar-me
 `displayMode` auto-swaps between the two patterns) — never a second contract.
 
 ### FR-36-11 — WCAG (2.1 AA + 2.2 wins)
+**Status:** PARTLY BUILT: `aria-current` is stamped client-side (`plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage`, the same in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage`); `forced-colors` rules sit in `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css` and `plugins/sgs-blocks/src/blocks/nav-drawer/style.css`, and the `prefers-contrast` baseline in `plugins/sgs-blocks/assets/css/contrast.css`; the skip link is WordPress core's `#wp-skip-link`, styled in `theme/sgs-theme/assets/css/utilities.css`. Not confirmed: the `nav-drawer-menu` and `mega-panel` stylesheets carry no `forced-colors` rule of their own, and contrast, focus and target sizes were not re-measured on a live page in this pass.
 `aria-current="page"` — **computed CLIENT-SIDE** (compare `location.pathname` at mount), NOT server-baked,
 because LiteSpeed (this stack's confirmed active cache layer) would otherwise serve a stale page's answer;
 unique labels on multiple `<nav>`s + descriptive anchor text; accessible names on icon buttons (burger, ×) +
@@ -1479,12 +1504,14 @@ clause is carried by FR-41-6**: two explicit, operator-reachable non-colour defa
 on Hover and a weight change on current.
 
 ### FR-36-12 — Operator a11y feedback INFORMATIONAL ONLY (P2 DP2a)
+**Status:** PARTLY BUILT: informational Notices are built (`plugins/sgs-blocks/src/blocks/nav-bar-menu/NavMenuNotices.js`: drawer pairing and link count) and none blocks a save. Not built: the 'Nav Health' panel (section 7 Opp 3; no match under `plugins/sgs-blocks/src`).
 Editor/admin a11y feedback = a passive Notice, never a gate. (The *operator-facing* a11y warnings are the
 "Nav Health" surface — §7 Opp 3, Phase 3.) Distinct from FR-36-9a *error* states.
 
 ## 6. Rendered output + editor controls
 
 ### FR-36-13 — No inline styling (Spec 32)
+**Status:** BUILT: `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check` exits 0 (run 2026-10-09); `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php` print their own `<nav>` root through `get_block_wrapper_attributes`, and `plugins/sgs-blocks/src/blocks/nav-drawer/render.php` prints the `<dialog>`.
 Nothing renders as inline `style="…"`: native supports flip to scoped serialisation
 (`__experimentalSkipSerialization` + `wp_style_engine_get_styles(...,['selector'=>"#uid"])` into the scoped
 `<style>`); box-object attrs; responsive tiers + `:hover` in stylesheet rules; custom bps → `sgsCustomCss`.
@@ -1512,6 +1539,7 @@ routing impact (CSS routes off `block_attributes` keyed on `block_slug`, never
 `wraps_block`/`container_kind`). The no-inline contract is fully met.
 
 ### FR-36-14 — Control-completeness (Spec 35A Part L)
+**Status:** BUILT for the `hideExtensions` mandate: `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::supports.sgs.hideExtensions` and `plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::supports.sgs.hideExtensions` declare `[ "clickEffects", "parallax", "spacing" ]`, and `plugins/sgs-blocks/src/blocks/nav-drawer/block.json::supports.sgs.hideExtensions` declares `[ "clickEffects", "parallax" ]`. The rest of the control-completeness contract is enforced by the inspector-scan gates (`plugins/sgs-blocks/scripts/inspector-scan/rules/25-no-own-device-switcher.js`) and was not re-run in this pass.
 Settings/Styles/Advanced via `group`; ≤3-default `PanelBody` + `ToolsPanel` (P2 §5); `LinkControl` per
 item/CTA; `StateToggleControl` (hover); the shared **`TypographyControls` + `sgs_typography_css_rule`** (`plugins/sgs-blocks/CLAUDE.md` "Block Customisation Standard" item 2, D209,
 never bespoke font controls); `ResponsiveControl` (tiers) + the **BUILT Responsive-Visibility extension** +
@@ -1545,6 +1573,7 @@ a default.** Open framework-wide gaps (`conditional-visibility.js` has no `hideE
 Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern) are in Open Questions.
 
 ### FR-36-28 — Nav colour-state system → Part 14 (§14)
+**Status:** PARTLY BUILT: the mechanism is Part 14 and is BUILT except the items in section 14.0a.3 (FR-41-18 not built; FR-41-20 and FR-41-36 partial); the ARIA active-trail is not built.
 
 **The `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` colour, state and control system (shared) is specified in §14 of this spec.** It is the concrete mechanism satisfying FR-36-4's "distinct hover+focus states" and the colour half of FR-36-11, and it sits under FR-36-14's control-completeness contract rather than beside it. ⛔ It does **not** satisfy FR-36-4's "active-trail" clause (FR-41-20).
 
@@ -1554,9 +1583,11 @@ Custom CSS field in the Advanced tab is a Spec 35A Part F anti-pattern) are in O
 
 ## 6a. Build order
 
-⛔ **Live per-FR build status is NOT tracked here.** It single-sources to **`.claude/LEDGER.md`**. A status
-table inside a requirements doc drifts against the code and, worse, wears a verification badge that stops the
-next reader checking.
+⛔ **Each FR records its own build status.** The `Status:` line under every FR heading names what is built
+and what is not, with the evidence as `path::symbol`; a status that cannot cite evidence is not written. A
+status line is a dated claim (this version was verified 2026-10-09): re-run its evidence before relying on
+it, and update the line in the same change that changes the code. `.claude/LEDGER.md` carries only short notes
+on work in progress.
 
 **Specs 36+37 complete first; Spec 47's route then writes headers, footers and drawers through their block attributes.** FR-36-15 is blocked by nothing; FR-36-25 depends on FR-36-21/22/23; only the *branded* Indus header sliver of FR-36-18 waits for Spec 47. See Spec 37 §6.
 
@@ -1587,6 +1618,7 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 ## 8. Acceptance — the concrete live-QC gate
 
 ### FR-36-16 — Reproduce both menus + the regression gate + Bean's eye (R-31-13)
+**Status:** PARTLY BUILT: the sweeps exist (`plugins/sgs-blocks/scripts/nav-qa/axe-run.mjs`, `plugins/sgs-blocks/scripts/nav-qa/elementfrompoint-sweep.mjs`, `plugins/sgs-blocks/scripts/nav-qa/crawl-assert.mjs`, `plugins/sgs-blocks/scripts/nav-qa/probes.mamas.json`) and the CPT-drawer parity gate passed on 2026-09-20 (`.claude/reports/2026-09-20-w2-gate2-rerun.md`; visual fidelity not claimed). Not built: a script for the late-CSS A/B (no stylesheet-blocking run under `plugins/sgs-blocks/scripts/nav-qa`); no Indus mega-region gate report was found under `.claude/reports`; the owner's eye remains the closing check.
 - **Mama's (gate-1):** flat 5-item classic-menu bar + a **featured** item + a **cart badge** (`sgs/cart` with
   the `role="status"` badge); mobile → burger → drawer (accordion) + CTA + logo basics.
 - **Indus (gate-2):** a 7-item bar of plain links + **3 dropdowns + at least one mega ("Brands"), rendered at
@@ -1695,6 +1727,7 @@ grounds the owner's eye checks on drawer clones (`.claude/reports/2026-07-29-nav
    is unchanged: only the eye closes.
 
 ### FR-36-18 — Live production instances render from CPTs
+**Status:** BUILT: verified over SSH on 2026-10-09 (`wp option get sgs_active_header_cpt_id` and `sgs_active_footer_cpt_id`, then `wp post get`): the canary and the Indus test site each have a published `sgs_header` and `sgs_footer` as the active pair. The branded Indus header waits for Spec 47 and was not checked.
 Every live site (the sandybrown canary and the Indus test site, `lavender-dinosaur-183533`, deploy target
 `indus-test`) renders its header and footer from CPTs (`sgs_header` / `sgs_footer`) built on the current nav
 blocks; both render generic proof headers; a branded header is produced through Spec 47's header surface. Any
@@ -1704,6 +1737,7 @@ with a before/after computed check that both menus render + collapse.
 ## 9. Emittable by construction
 
 ### FR-36-15 — Emittable by construction (DP6)
+**Status:** PARTLY BUILT: the nav blocks take every setting as attributes (the computed route calibrates `sgs/nav-drawer`, `sgs/mega-panel` and `sgs/mega-aside` in `scripts/computed-route/calibration-fixtures.json`) and the mega self-reference guard is built (`plugins/sgs-blocks/includes/helpers-mega-render.php::sgs_mega_render_item_panel`). Not built: any emitter that writes a classic `nav_menu`, its `nav_menu_item` rows or per-client `sgs_mega_menu` posts from a draft (no such code under `scripts/computed-route` or `scripts/wp-build-page.js`; the only `nav_menu_item` writers are QA fixtures and migrations under `plugins/sgs-blocks/scripts`).
 Write a **classic `nav_menu`** (the primary path — `wp_update_nav_menu_item()`; add a `nav_menu_item`
 targeting each `sgs_mega_menu` post — the native association, no map); write `sgs/nav-bar-menu` with
 mode/style/`drawerRef` attrs for the header placement, and `sgs/nav-drawer-menu` for the drawer placement;
@@ -1728,6 +1762,7 @@ container at every breakpoint), not clamp-forced.
 ## 11. Discoverability — SEO / AI-search / schema / performance
 
 ### FR-36-17 — Crawlable, schema-friendly, fast
+**Status:** PARTLY BUILT: semantic `<nav>` roots with computed labels (`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`, `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php`) and `BreadcrumbList` JSON-LD (`plugins/sgs-blocks/src/blocks/breadcrumbs/render.php`) are built. Not built: `SiteNavigationElement` JSON-LD and the AI-built navigation from a sitemap (Phase 3, no code). Server-rendered mega content, no AJAX and the performance budget were not re-measured in this pass.
 - **Crawlable, server-rendered, NO AJAX:** every bar/dropdown/mega link AND all mega-panel **content**
   (headings/text, not just links) is in the initial server HTML — no lazy-load — so crawlers + AI search see
   the whole structure + the rich content. **Scope the moat honestly:** plain crawlable links are table-stakes;
@@ -1749,6 +1784,7 @@ container at every breakpoint), not clamp-forced.
 - **Performance / no-CLS:** no layout shift; within budget; not render-blocking; `wp-perf-gate` in §8.
 
 ### FR-36-25 — Structured-data-once (single source rendered everywhere) — the category-level differentiator
+**Status:** PARTLY BUILT: the three sources already read one store (`sgs/social-icons` children bound to `sgs/site-info`; the logo through `plugins/sgs-blocks/includes/class-sgs-site-info-logo.php::resolve_id`; `LocalBusiness` in `plugins/sgs-blocks/includes/class-org-website-schema.php`). Not built: the explicit across-all-placements guarantee (Phase 3; no check was found that asserts header, footer and drawer read the same entry) and the live open/closed state (FR-36-23).
 The biggest meet-and-exceed lever across the pieces: structured data entered ONCE, rendered contextually. The
 **Site-Info source** (FR-36-23), the **single social list** (FR-36-21), and the **logo object** (FR-36-22) are
 each edited once and rendered in header + footer + drawer + (for Site-Info) `LocalBusiness` schema — no
@@ -1805,7 +1841,7 @@ Companions: Spec 35 (PART O control-type contract), Spec 35A (Part L control com
 
 ### 14.0a Build status
 
-Requirement-level status is BUILT unless named in §14.0a.3. Do not cache a step count or percentage here; live status is single-sourced to `.claude/LEDGER.md`.
+Requirement-level status is BUILT unless named in §14.0a.3. Do not cache a step count or percentage here; each FR's status is recorded in this section (§14.0a.2 and §14.0a.3) and on the FR's own `Status:` line, and `.claude/LEDGER.md` holds only short notes on work in progress.
 
 #### 14.0a.1 The CSS is emitted by a set of PHP files, not by `render.php` alone
 

@@ -108,7 +108,7 @@ and [a self-referencing block crashes the editor](https://github.com/WordPress/g
 **FR-42-7a -- trashed or missing form.** The referenced
 `sgs_form` post trashed/missing while an embed still references its slug degrades to a
 clear, named copy state, never a raw PHP error. Two audiences, two messages (a single wp-admin-vocabulary message shown to a public visitor is a dead
-end): (i) **public-visitor-facing** — a generic, site-configurable fallback ("This form
+end): (i) **public-visitor-facing** — a generic fixed, translatable fallback ("This form
 isn't available right now — please email/call us instead"), never technical vocabulary;
 (ii) **editor-only** (shown only to a logged-in user with `edit_sgs_forms`) — the concrete
 next action, e.g. "This form reference is broken — go to Forms → find `<slug>` →
@@ -191,9 +191,9 @@ plainly rather than implying the benefit already exists.
 | FR-42-2 | built | `custom-fields` skipped entirely; settings stay root block attributes |
 | FR-42-3 | built | `revisions` retention cap = 10, via `wp_revisions_to_keep` |
 | FR-42-4 | built | `LinkControl`-based picker, slug-keyed, shared component with Spec 43 |
-| FR-42-5 | unverified | Picker shows a type badge, not a bare title |
+| FR-42-5 | NOT BUILT | Picker shows a type badge, not a bare title (`plugins/sgs-blocks/src/blocks/form/SavedFormPicker.js::SavedFormPicker` only scopes the link search to `sgs_form`; WordPress's own search may label the post type, to be checked in the editor) |
 | FR-42-6 | NOT BUILT | Client-side draft resumption (only the step index is kept; answers are lost on refresh) |
-| FR-42-7a | unverified | Trashed/missing-form embed degrade: two audiences, two messages |
+| FR-42-7a | built | Trashed/missing-form embed degrade: two audiences, two messages (`plugins/sgs-blocks/src/blocks/form/render.php`) |
 | FR-42-7b | built | Delete guard (hook-level) + Gutenberg #33234 race check |
 | FR-42-8 | built | Cache/nonce contract: cache-independent lookup at submit time |
 | FR-42-9 | built | Mandate enforced in the editor: saved-forms-only embed |

@@ -415,7 +415,7 @@ If both steps are skipped (single service via `typeSlug` + single/no provider), 
 - Dynamic custom fields rendered from `bookingType.customFields` in the API response
 - Custom field types: text, textarea, select, checkbox, radio, file, email, phone, number
 - Client-side validation before submission
-- All inputs have minimum 44px touch targets (WCAG 2.2 AA)
+- All inputs have minimum 44px touch targets (WCAG 2.2's cheap win)
 
 **Step 5: Payment** (skipped if service is free / `requiresPayment` is `false`)
 - Calls `POST /api/v1/book/{orgSlug}/{typeSlug}/payment-intent` to create a Stripe Payment Intent
@@ -441,7 +441,7 @@ If both steps are skipped (single service via `typeSlug` + single/no provider), 
 - Step transitions announced to screen readers via `aria-label` on the active step
 - Focus moved to the first interactive element of each new step
 - All interactive elements have visible focus indicators
-- Colour contrast meets WCAG 2.2 AA (4.5:1 for text, 3:1 for large text/UI components)
+- Colour contrast meets WCAG 2.1 AA (4.5:1 for text, 3:1 for large text/UI components)
 - Error messages associated with inputs via `aria-describedby`
 - Calendar date picker supports keyboard navigation (arrow keys, Enter, Escape)
 - 44px minimum touch targets on all buttons and inputs

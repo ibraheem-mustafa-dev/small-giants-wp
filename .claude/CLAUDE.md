@@ -4,8 +4,8 @@ One home per job:
 
 | Job | Home |
 |---|---|
-| Current status, what's next, parked work | `LEDGER.md` — replaced each handoff, never appended, ≤ 24,576 bytes |
-| What the system must do | `specs/` — roster and dead-never-cite list in [`specs/README.md`](specs/README.md) |
+| Current status, what's next, parked work, notes on work in progress | `LEDGER.md` — replaced each handoff, never appended, ≤ 24,576 bytes |
+| What the system must do, and each requirement's built/not-built status | `specs/` — every FR carries its own `Status:` line; roster and old-number map in [`specs/README.md`](specs/README.md) |
 | How a piece of work will be done, and anything deferred from it | `plans/` (finished plans in `plans/archive/`) |
 | Rules | `../CLAUDE.md`, plus path-scoped `rules/*.md` |
 | Lessons | Claude Code auto memory (its `MEMORY.md` index loads every session) |

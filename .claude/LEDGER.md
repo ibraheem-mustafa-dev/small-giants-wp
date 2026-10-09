@@ -64,7 +64,7 @@ Open owed items:
 
 **State:** the spec tidy is committed and pushed. Specs 41, 28, 30, 26 and 33 are merged into Specs 36, 27 and 32 (FR ids unchanged); `.claude/rules/framework-principles.md` holds the nine binding rules R-31-n; `lint-spec-drift.py` has 0 gating findings and the preflight passes.
 **Blockers:** none.
-**Resume from:** `plans/2026-10-09-spec-tidy-followups.md` (decisions only Bean can take, then small fixes) and `plans/2026-10-09-retire-old-converter-code.md` (remove the old converter, a separate session).
+**Resume from:** `prompts/Spec Tidy Leftovers Prompt.md` (four decisions for Bean, then small fixes and live checks) and `prompts/Remove Old Converter Prompt.md` (remove the old converter, a separate session).
 
 ## Parked
 
@@ -90,6 +90,6 @@ Open owed items:
 
 ## Known failing tests
 
-- `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: belong to the old converter and go with it (`plans/2026-10-09-retire-old-converter-code.md`).
+- `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: belong to the old converter and go with it (`prompts/Remove Old Converter Prompt.md`).
 - `test_wp_integration::test_native_hover_zoom_routes`: serves the card-grid zoom control (Parked).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (README exports, D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.
