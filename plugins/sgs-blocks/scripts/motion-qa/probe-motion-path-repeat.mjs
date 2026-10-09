@@ -25,7 +25,7 @@
  *
  * ⚠ Never sample at a fixed delay. This site sets `scroll-behavior: smooth` on <html>,
  * which has already produced false results twice on this project (see
- * probe-step14-scrub-focus.mjs). Scroll position is polled until settled.
+ * probe-step13-pin-focus.mjs). Scroll position is polled until settled.
  *
  * NEGATIVE CONTROL. A static element on the same page is sampled through the identical
  * scroll cycle. If it reported movement, "pass 2 moved" would prove nothing about

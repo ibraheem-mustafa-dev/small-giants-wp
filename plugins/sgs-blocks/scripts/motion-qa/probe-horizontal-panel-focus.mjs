@@ -61,7 +61,7 @@
  *
  *  (B) LIVE MECHANISM, UNFIXED — real `gsap`/`ScrollTrigger` (re-imported by
  *      URL from an already-loaded live canary, same technique
- *      `probe-step13-pin-focus.mjs` / `probe-step14-scrub-focus.mjs` use), a
+ *      `probe-step13-pin-focus.mjs` uses), a
  *      literal copy of `fx-horizontal-panel.js`'s own scrollTrigger config,
  *      and real focusable controls in panels 2/3. Measures: pre-scroll (no
  *      pin engaged) AND mid-pin (`position: fixed`), does focusing an
