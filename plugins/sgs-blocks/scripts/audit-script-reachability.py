@@ -33,9 +33,9 @@ FALSE-POSITIVE CLASSES ALREADY FOUND AND FIXED — each cost a wrong number firs
   1. TESTS. pytest discovers `test_*.py` by convention, so nothing ever names them.
      A filename-reference detector reports every test as unreferenced. First run:
      29 "unreferenced", ALL of them tests. Excluded here, with this reason recorded.
-  2. MODULE-STYLE REFERENCES. Python drops the extension — `_load_sibling("check_bound_emit")`
+  2. MODULE-STYLE REFERENCES. Python drops the extension — `_load_sibling("check_variant_reseed")`
      and `from converter.context import ...` contain no ".py". Matching filenames alone
-     reported all 8 cheat-gate checks as unwired while run.py loads every one.
+     reported the db-consistency checks as unwired while run.py loads every one.
      131 -> 94 once import-aware patterns were added.
   3. MANIFEST REGISTRATION. `inspector-scan/rules.json` registers 16 rule modules that
      nothing imports by name. They are wired through data, not code.
@@ -114,7 +114,7 @@ def discover() -> list[Path]:
 # Inverted: read each file ONCE, extract the set of things it REFERENCES, then
 # intersect with the script inventory. O(files) instead of O(files x scripts).
 
-# A path-ish token: filenames with extensions, e.g. `run.js`, `check_bound_emit.py`.
+# A path-ish token: filenames with extensions, e.g. `run.js`, `check_variant_reseed.py`.
 # ⛔ NO BACKSLASHES IN THIS PATTERN, deliberately. It was first written with a
 # trailing word-boundary escape, and an intermediate edit turned those two
 # characters into a single 0x08 BACKSPACE byte. The pattern then demanded a
@@ -129,7 +129,7 @@ def discover() -> list[Path]:
 _FILE_TOKEN = re.compile(r"[A-Za-z0-9_.-]+[.](?:py|mjs|js|php|sh)")
 
 # Module references, where the extension is ABSENT — the class that made the first
-# run report all 8 cheat-gate checks as unwired while run.py loads every one.
+# run report the db-consistency checks as unwired while run.py loads every one.
 # ⛔ WORD BOUNDARIES ARE BUILT VIA _B, NEVER WRITTEN AS A LITERAL ESCAPE.
 # "\b" is a VALID Python string escape (backspace, 0x08) — unlike "\s"/"\w",
 # which are not. So when one of these lines passed through a non-raw context
@@ -357,8 +357,8 @@ def self_test() -> int:
           rule in by and by[rule]["verdict"] == "WIRED",
           by.get(rule, {}).get("wired_via"))
 
-    # B: a dynamically loaded cheat-gate check must read WIRED (module-stem class).
-    cg = "plugins/sgs-blocks/scripts/cheat-gate/check_bound_emit.py"
+    # B: a dynamically loaded db-consistency check must read WIRED (module-stem class).
+    cg = "plugins/sgs-blocks/scripts/db-consistency/check_variant_reseed.py"
     check("dynamically loaded check is WIRED",
           cg in by and by[cg]["verdict"] == "WIRED",
           by.get(cg, {}).get("wired_via"))

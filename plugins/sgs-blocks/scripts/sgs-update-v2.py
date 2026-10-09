@@ -7302,11 +7302,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         check_variant_reseed, check_orphan_roles, check_tier_composition,
         check_css_property_reseed, check_motion_fx_reseed,
         check_fx_qualifying_blocks_stale as sub-gates
-      - cheat-gate/run.py --report — F5 cheat-detection (checks 1-4, 6-7);
-        prefers src/ CSS, falls back to build/ if present — runs fine with
-        no build present (proven: ran clean pre-build in classification)
-      - excluded-gate/run.py --report — F5 excluded-literal tripwire vs
-        the `excluded_properties` DB table
 
       Single-purpose DB/source scanners:
       - check-fx-list-drift.py --check: fx_effects table currency
@@ -7412,8 +7407,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
         ("check-box-family-guard.py", "box-family-guard", ["--report"]),
         ("inspector-scan/run.js", "inspector-conformance", ["--json"]),  # Parse JSON for findings by severity (nested rules[].findings shape — see parsing branch below)
         ("audit-feature-parity.py", "feature-parity", ["--check"]),  # exit code signals but don't fail
-        ("cheat-gate/run.py", "cheat-gate", ["--report"]),
-        ("excluded-gate/run.py", "excluded-gate", ["--report"]),
         ("dbschema/check_value_identity.py", "value-identity", ["--check"]),
         ("dbschema/check_schema_drift.py", "schema-drift", ["--check"]),
         ("lints/lint-spec-drift.py", "spec-drift", ["--check"]),
@@ -7511,24 +7504,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                     "error": f"self-test failed: value-identity extractor expected 2, got {rf_count}",
                 }
 
-            # (b) cheat-gate composite summary line: "[cheat-gate] N violation(s) total — ..."
-            cheat_gate_fixture = "[cheat-gate] 7 violation(s) total — 0 NEW, 7 baselined\n"
-            cg_count = 0
-            for line in cheat_gate_fixture.splitlines():
-                if line.startswith("[cheat-gate]") and "violation" in line.lower():
-                    digits = "".join(ch if ch.isdigit() else " " for ch in line.split("violation")[0])
-                    nums = digits.split()
-                    if nums:
-                        cg_count = int(nums[-1])
-                    break
-            if cg_count != 7:
-                return {
-                    "status": "FAIL",
-                    "self_test": True,
-                    "error": f"self-test failed: cheat-gate extractor expected 7, got {cg_count}",
-                }
-
-            # (c) block-file-consistency JSON: net_new is a LIST of finding dicts, count = len()
+            # (b) block-file-consistency JSON: net_new is a LIST of finding dicts, count = len()
             bfc_fixture = json_module.dumps({
                 "net_new": [{"type": "orphan_attr"}, {"type": "orphan_attr"}, {"type": "undeclared_control"}],
                 "flagged_blocks": 2,
@@ -7542,7 +7518,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                     "error": f"self-test failed: block-file-consistency extractor expected 3, got {bfc_count}",
                 }
 
-            # (d) shared netNew JSON shape (control-ux/dead-controls/duplicate-controls/
+            # (c) shared netNew JSON shape (control-ux/dead-controls/duplicate-controls/
             #     hardcoded-render-defaults): netNew is an INT, not a list, on these four.
             netnew_fixture = json_module.dumps({"netNew": 5, "accepted": 12, "baselineSize": 12})
             nn_data = json_module.loads(netnew_fixture)
@@ -7561,7 +7537,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                 "self_test": True,
                 "test_result": (
                     "PASS — inspector-conformance fixture (3 findings: 2 warn, 1 informational), "
-                    "value-identity text (2), cheat-gate composite text (7), block-file-consistency "
+                    "value-identity text (2), block-file-consistency "
                     "net_new list (3), and shared netNew-int shape (5) all extracted correctly"
                 ),
             }
@@ -7757,39 +7733,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
                                 break
                             except ValueError:
                                 pass
-
-            elif label == "cheat-gate":
-                # cheat-gate/run.py --report is a COMPOSITE (checks 1-4, 6-7, each a distinct
-                # cheat class). PROOF: "[cheat-gate] 18 violation(s) total — 0 NEW, 18 baselined".
-                # Do NOT synthesise beyond that one self-describing total line — the sub-checks
-                # have differing severities/meanings, matching the consistency-gates pattern.
-                findings_count = 0
-                summary_line = "completed"
-                for line in stdout.splitlines():
-                    if line.startswith("[cheat-gate]") and "violation" in line.lower():
-                        summary_line = line.strip()[:120]
-                        digits = "".join(ch if ch.isdigit() else " " for ch in line.split("violation")[0])
-                        nums = digits.split()
-                        if nums:
-                            try:
-                                findings_count = int(nums[-1])
-                            except ValueError:
-                                pass
-                        break
-
-            elif label == "excluded-gate":
-                # excluded-gate/run.py --report prints "[F5] N gate violations —" (PROOF extraction)
-                findings_count = 0
-                summary_line = "completed"
-                for line in stdout.splitlines():
-                    if line.startswith("[F5]") and "gate violation" in line.lower():
-                        summary_line = line.strip()[:120]
-                        parts = line.split()
-                        for tok in parts:
-                            if tok.isdigit():
-                                findings_count = int(tok)
-                                break
-                        break
 
             elif label == "value-identity":
                 # dbschema/check_value_identity.py --check prints

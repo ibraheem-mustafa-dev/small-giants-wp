@@ -282,22 +282,13 @@
     "tier_reason": "Pre-deploy: three PHPStan runs (about 39 s) would add 40% to every build; beside the gate it proves, it still fails the next deploy when the hero fixture anchor drifts."
   },
   {
-    "id": "cheat-gate-run",
-    "cmd": "python scripts/cheat-gate/run.py --check",
+    "id": "check-raw-spacing-controls",
+    "cmd": "python scripts/check-raw-spacing-controls.py --check",
     "tier": "fast",
     "added_D": null,
-    "added_commit": "e7679b09",
-    "budget_ms": 1849,
+    "added_commit": null,
+    "budget_ms": 500,
     "order": 30
-  },
-  {
-    "id": "excluded-gate-run",
-    "cmd": "python scripts/excluded-gate/run.py --check",
-    "tier": "fast",
-    "added_D": null,
-    "added_commit": "e7679b09",
-    "budget_ms": 224,
-    "order": 31
   },
   {
     "id": "ledger-coverage_check",

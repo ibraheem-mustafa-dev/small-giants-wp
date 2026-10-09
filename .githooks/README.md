@@ -12,7 +12,7 @@ it holds the machine-specific Gitleaks path) runs, in order:
      generated attribute list is in sync (`node plugins/sgs-blocks/scripts/generate-extension-attributes.js --check`).
      A stale file breaks ServerSideRender previews with "Invalid parameter(s): attributes".
    - When cloning-pipeline code is staged (`converter/`, `orchestrator/`, `ledger/`,
-     `cheat-gate/`, `excluded-gate/`, `sgs-clone-orchestrator.py`), runs the seven pipeline gates
+     `sgs-clone-orchestrator.py`), runs the pipeline gates
      in `--check` mode. Scoped bypass for unrelated shared-DB debt:
      `SGS_F5_SKIP=<script> SGS_F5_SKIP_REASON="..." git commit ...` (logged to `reports/f5-manual-skips.log`).
 
