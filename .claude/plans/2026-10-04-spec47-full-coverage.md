@@ -157,6 +157,25 @@ false positives (random sample of 30, interval 39% to 73%).
 **Owed to Bean:** Spec 47 §3.8 writes a parent attribute only where its paint reaches exactly one measured descendant
 (`lib/resolve.mjs::resolveViaAncestor`). The mega-panel tiles (40 rows on mega-lenses) and accordion headers need it
 relaxed to "every reached descendant wants the same value"; risk: with one measured tile the parent moves unmeasured ones.
+The draft's template identity (below) turns this into evidence: allow the parent write when every reached descendant is a
+copy of one `sc-for` loop body and the property is static there.
+
+**Route-accuracy build order (Bean chose it 2026-10-09; council `.claude/reports/2026-10-09-route-accuracy-council/`,
+proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces items 1, 2 and 3 above rather than adding to them:
+1. The answer sheet (`evidence/fixtures.json`, 100 labelled rows) becomes a permanent test every route change is scored on.
+2. Skeleton writer: generator (draft code via the runtime's `data-dc-tpl` and `__dcAnnotatedTemplate`, block candidates
+   from the DB and saved decisions), AI finaliser for low-confidence rows, review table, saved decisions; Fill reads the
+   exact IDs. Generator rules owed: footer wrapper blocks, a run of links becomes one `sgs/icon-list`, a typed brand name
+   becomes the logo. Fill fixes owed: social-icon styling onto the row's `childIcon*` settings, icon size from the glyph not
+   the box, five business-info settings dropped unreported. Spec 47 needs a clause: identity from the draft code is allowed,
+   values never (R-47-4).
+3. Exact ID pairing in the walker, with word pairing as a cross-check; a disagreement is labelled mispaired and never written
+   through. Inside a block, match the block's named parts within its own draft element.
+4. The "does it paint?" check (neutralise a value in the browser; nothing moves means not a difference), after 3.
+5. Try before write: render the block twice through `/wp/v2/block-renderer`, map the CSS difference onto the live uid,
+   measure (proven on the home cards); blocks with `wp_unique_id`/`microtime` classes or block context rebuild as today.
+Before the next measuring run: rebuild home on the local mirror from the committed tree (it still carries the
+2026-10-09 card padding).
 
 ## Contact (page 190): state at the end of 2026-10-08
 

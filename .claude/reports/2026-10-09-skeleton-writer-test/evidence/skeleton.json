@@ -1,0 +1,418 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "footer"
+		},
+		"draftRef": {
+			"js": "(root) => root.querySelector('footer[data-dc-tpl=\"846\"]')"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "grid"
+				},
+				"draftRef": {
+					"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"847\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"848\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "EYE CARE"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"849\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "BIRMINGHAM"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"850\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Designer eyewear from an independent optician in Birmingham."
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"851\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/social-icons",
+								"attributes": {},
+								"draftRef": "footer[data-dc-tpl=\"846\"] [data-dc-tpl=\"852\"]",
+								"siteInfoRow": [
+									"instagram",
+									"google",
+									"whatsapp"
+								],
+								"childRefs": {
+									"instagram": "[data-dc-tpl=\"853\"]",
+									"google": "[data-dc-tpl=\"864\"]",
+									"whatsapp": "[data-dc-tpl=\"870\"]"
+								},
+								"childAttributes": {
+									"linkTarget": "_blank"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"873\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Shop"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"874\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Sunglasses"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"875\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goSun: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "All brands"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"876\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script toggleMegaBrands: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Prescription lenses"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"877\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goLenses: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Glasses — arriving soon"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"878\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"879\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Help"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"880\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Delivery & returns"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"881\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goHelp: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "FAQs"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"882\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goHelp: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Size guide"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"883\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script openSizeGuide: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Contact"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"884\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goContact: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"885\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Visit or call"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"886\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "About Eye Care"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"887\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\" and navigates by script goAbout: destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "0121 729 8233",
+									"linkSource": "phone"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"888\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "address"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"889\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"address\" must read: 644 Washwood Heath Rd<br>Birmingham B8 2HQ"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "hours"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"891\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"hours\" must read: Mon–Sat 9.30–17.30"
+									}
+								],
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"892\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/business-info",
+						"attributes": {
+							"displayType": "copyright",
+							"copyrightPrefix": ""
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"893\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "text",
+								"detail": "Site Info \"copyright\" must read: © 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners"
+							}
+						],
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"894\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Privacy"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"895\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\": destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Terms"
+								},
+								"draftRef": {
+									"js": "(root) => { const f = root.querySelector('footer[data-dc-tpl=\"846\"]'); const h = f && f.closest('.sc-host'); return f ? [ ...f.querySelectorAll('[data-dc-tpl=\"896\"]') ].filter((x) => x.closest('.sc-host') === h)[0] || null : null; }"
+								},
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link is \"#\": destination not in the draft, url left empty"
+									}
+								],
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]
