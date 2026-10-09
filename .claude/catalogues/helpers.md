@@ -230,16 +230,27 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. |
 | `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. |
 
-#### `includes/helpers-icon.php` — 6 function(s)
+#### `includes/helpers-icon.php` — 17 function(s)
 
 | Function | Signature | Purpose |
 |---|---|---|
 | `sgs_icon_length_value` | `function sgs_icon_length_value( $raw, int $max_px = 512 ): string` | A size an icon control stored, as one safe CSS length, or ''. |
 | `sgs_icon_link_scheme` | `function sgs_icon_link_scheme( string $url ): string` | A link's scheme, lowercase ('tel', 'mailto', 'https'), or '' for a relative link. |
 | `sgs_icon_accessible_name` | `function sgs_icon_accessible_name( string $aria_label, string $bound_key, ?array $glyph_brand, string $url )…` | The name a linked icon announces, first match wins: the client's own label; the registry's label for the Site Info key the link is bound to… |
+| `sgs_icon_visible_label` | `function sgs_icon_visible_label( string $label_text, string $aria_label, string $bound_key, ?array…` | The text a visible label shows: the client's own label text, else the icon's accessible name (sgs_icon_accessible_name()), so the words a… |
+| `sgs_icon_label_position` | `function sgs_icon_label_position( $own, string $group ): string` | Where an icon's visible label sits: its own position, except that an icon left on `end` (the default) inside an `sgs/social-icons` row… |
 | `sgs_icon_is_editor_render` | `function sgs_icon_is_editor_render(): bool` | True when the block renders for the editor: an admin screen, or a REST request in the editor's `edit` context by a user who can edit posts… |
 | `sgs_icon_group_context` | `function sgs_icon_group_context( $context ): array` | The group defaults a wrapping `sgs/social-icons` hands its `sgs/icon` children through block context… |
 | `sgs_icon_group_border_decls` | `function sgs_icon_group_border_decls( $width_box, $style ): array` | The group border a `sgs/social-icons` row gives its icons, as the custom properties icon/style.css reads (`--sgs-si-border-width`… |
+| `sgs_icon_outline_shapes` | `function sgs_icon_outline_shapes(): array` | The custom outline shapes (icon plan D2), keyed by slug, in the registry's order: one SVG path each in a `0 0 100 100` viewBox. Read from… |
+| `sgs_icon_box_shapes` | `function sgs_icon_box_shapes(): array` | The shapes icon/style.css draws as a box (background and CSS border): the square takes a radius, the circle and pill draw their own. |
+| `sgs_icon_shape_slugs` | `function sgs_icon_shape_slugs(): array` | Every `shape` value an icon accepts, box shapes first, then the outlines; `icon/block.json::attributes.shape.enum` lists exactly these… |
+| `sgs_icon_is_outline_shape` | `function sgs_icon_is_outline_shape( string $shape ): bool` | **UNDOCUMENTED** |
+| `sgs_icon_shape_width_only` | `function sgs_icon_shape_width_only( string $shape ): bool` | **UNDOCUMENTED** |
+| `sgs_icon_outline_svg` | `function sgs_icon_outline_svg( string $shape, string $clip_id ): string` | The inline SVG an outline shape draws behind the glyph. Paint comes only from icon/style.css (classes `sgs-icon__outline`… |
+| `sgs_icon_outline_stroke` | `function sgs_icon_outline_stroke( $width_box, $style ): array` | The stroke an outline shape draws for a border width box and style (a wrapping row's group border): the same declarations a box border… |
+| `sgs_icon_outline_from_border` | `function sgs_icon_outline_from_border( array $border ): array` | An outline shape's stroke, read from the declarations `sgs_border_element_decls()` built for the icon's own border, so the border… |
+| `sgs_icon_css_value_tokens` | `function sgs_icon_css_value_tokens( string $value ): array` | A CSS value split on top-level spaces, so `calc(1px + 1px) 0 0 0` gives four tokens. |
 
 #### `includes/helpers-info-toggle.php` — 1 function(s)
 
@@ -268,7 +279,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_link_underline_css` | `function sgs_link_underline_css( array $attributes, $prefix, $selector ): string` | CSS for how the links inside `$selector` are underlined. |
+| `sgs_link_underline_css` | `function sgs_link_underline_css( array $attributes, $prefix, $selector, $paint = '' ): string` | CSS for how the links inside `$selector` are underlined. |
 
 #### `includes/helpers-link.php` — 1 function(s)
 
@@ -671,11 +682,11 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 
 | Function | Signature | Purpose |
 |---|---|---|
-| `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 28 P1). |
-| `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 28 P1). |
-| `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 28 P1). |
+| `sgs_saving_display` | `function sgs_saving_display( int $anchor_per_unit_pence, int $pack_per_unit_pence, string $framing_mode, bool…` | Plain-text saving label for one row of the comparative value ladder (Spec 27 Part 2 P1). |
+| `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). |
+| `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). |
 
-**67 files, 324 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**67 files, 335 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -717,6 +728,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `ResponsiveTriStateControl.js` | `ResponsiveTriStateControl (default)` | ResponsiveTriStateControl — the DP1 tri-state on/off control (Spec 35 T1.2). |
 | `RowQuickInsertAppender.js` | `RowQuickInsertAppender (default)` | Promoted quick-insert appender for a freeform row block (site-header-row / site-footer-row). Steering, not gating: the row still… |
 | `RowScrollBehaviourControls.js` | `RowScrollBehaviourControls (default)` | RowScrollBehaviourControls — per-row transparent / hide-on-scroll toggles |
+| `SavedPostPicker.js` | `SavedPostPicker (default)` | SavedPostPicker: a searchable picker for posts of one non-public custom post type (sgs_form, sgs_choice_flow, ...). |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
 | `SeparatorAxisRow.js` | `SeparatorAxisRow (default)` | SeparatorAxisRow — one axis of `SgsSeparatorControl`: the per-device thickness beside ONE colour swatch whose popover holds the… |
@@ -741,7 +753,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 
-**57 files.**
+**58 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
