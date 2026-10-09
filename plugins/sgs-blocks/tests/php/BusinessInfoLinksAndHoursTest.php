@@ -60,6 +60,18 @@ final class BusinessInfoLinksAndHoursTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);background-repeat:no-repeat;background-origin:content-box;/', $out['css'] );
 	}
 
+	public function test_a_linked_address_draws_the_sweep_on_its_inline_text_so_every_line_is_underlined(): void {
+		$this->site_info( array( 'address' => '644 Washwood Heath Rd<br>Birmingham B8 2HQ', 'maps_cid' => '1234567890' ) );
+		$out = $this->render_block( 'sgs/business-info', array( 'displayType' => 'address', 'addressLink' => true, 'linkUnderline' => 'sweep' ) );
+
+		$this->assertStringContainsString( '<span class="sgs-business-info__text">644 Washwood Heath Rd<br>Birmingham B8 2HQ</span>', $out['html'] );
+		// The line sits on the inline span, not on the link's flex box.
+		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a \.sgs-business-info__text\{background-image:linear-gradient/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a:hover \.sgs-business-info__text/', $out['css'], 'hover on the link paints the span' );
+		$this->assertMatchesRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a:focus-visible \.sgs-business-info__text/', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/(\.sgs-biz-[0-9a-f]{8})\1 a\{[^}]*background-image/', $out['css'], 'negative control: the link box carries no line' );
+	}
+
 	public function test_the_attribution_credit_keeps_its_own_sweep(): void {
 		$out = $this->render_block( 'sgs/business-info', array( 'displayType' => 'attribution', 'linkUnderline' => 'sweep' ) );
 

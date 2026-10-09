@@ -43,9 +43,12 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 	 * @param array  $attributes Block attributes.
 	 * @param string $prefix     Attribute prefix ('' for the block's own text), as sgs_link_colour_css.
 	 * @param string $selector   Scoped selector of the element holding the links (not the `a`).
+	 * @param string $paint      Optional descendant selector (leading space) inside the link that carries the
+	 *                           sweep line. For a link that is a flex box, an inline element inside it lets the
+	 *                           line follow every wrapped line instead of sitting under the box's last line.
 	 * @return string CSS, or '' when the setting is unset or unknown.
 	 */
-	function sgs_link_underline_css( array $attributes, $prefix, $selector ): string {
+	function sgs_link_underline_css( array $attributes, $prefix, $selector, $paint = '' ): string {
 		$mode = (string) ( $attributes[ sgs_typography_attr( $prefix, 'LinkUnderline' ) ] ?? '' );
 		if ( ! in_array( $mode, array( 'none', 'always', 'sweep' ), true ) || '' === trim( (string) $selector ) ) {
 			return '';
@@ -70,12 +73,15 @@ if ( ! function_exists( 'sgs_link_underline_css' ) ) {
 		}
 		$size = '' !== $thickness ? $thickness : 'var(--wp--custom--link-sweep--thickness, 1px)';
 
-		$css  = $link . '{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);'
+		$line = $link . $paint;
+		// With a paint target the link itself only drops its text underline; the line is drawn on the target.
+		$css  = '' === $paint ? '' : $link . '{text-decoration:none;}';
+		$css .= $line . '{' . ( '' === $paint ? 'text-decoration:none;' : '' ) . 'background-image:linear-gradient(currentColor,currentColor);'
 			. 'background-repeat:no-repeat;background-origin:content-box;background-position:0 100%;background-size:0 ' . $size . ';'
 			. 'transition:background-size var(--wp--custom--link-sweep--duration, 0.25s) ease-out;}';
-		$css .= $link . ':dir(rtl){background-position:100% 100%;}';
-		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size );
-		$css .= '@media (prefers-reduced-motion: reduce){' . $link . '{transition:none;}}';
+		$css .= $line . ':dir(rtl){background-position:100% 100%;}';
+		$css .= sgs_hover_state_rules( $link, 'background-size:100% ' . $size, ':focus-visible', $paint );
+		$css .= '@media (prefers-reduced-motion: reduce){' . $line . '{transition:none;}}';
 		$css .= $forced;
 		return $css;
 	}

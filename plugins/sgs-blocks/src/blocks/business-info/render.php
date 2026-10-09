@@ -202,7 +202,10 @@ switch ( $display_type ) {
 		if ( '' !== $address_raw ) {
 			// Address is stored sanitised by Sgs_Site_Info::sanitise_address()
 			// which allows only plain text + <br>. Safe to echo as-is.
-			$inner = $icon_html( 'map-pin' ) . $label_html( wp_kses( $address_raw, array( 'br' => array() ) ) );
+			$address_text = wp_kses( $address_raw, array( 'br' => array() ) );
+			// A linked address wraps its text in an inline span: the link is a flex box, so the
+			// underline sweep is drawn on that span and follows every line of a wrapped address.
+			$inner = $icon_html( 'map-pin' ) . $label_html( ! empty( $attributes['addressLink'] ) ? '<span class="sgs-business-info__text">' . $address_text . '</span>' : $address_text );
 			// addressLink: the business on Google Maps, from the Maps CID, else the
 			// Google Business Profile link, else a Maps search for the address.
 			if ( ! empty( $attributes['addressLink'] ) ) {
@@ -654,7 +657,7 @@ if ( $border['base'] ) {
 // and the theme's link focus underline (0,2,0); the attribution credit draws its
 // own sweep, so only the phone, email and address links take this setting.
 $sgs_bi_link_underline = in_array( $display_type, array( 'phone', 'email', 'address' ), true )
-	? sgs_link_underline_css( $attributes, '', $root_sel . $root_sel )
+	? sgs_link_underline_css( $attributes, '', $root_sel . $root_sel, 'address' === $display_type ? ' .sgs-business-info__text' : '' )
 	: '';
 if ( '' !== $sgs_bi_link_underline ) {
 	$scoped_css[] = $sgs_bi_link_underline;
