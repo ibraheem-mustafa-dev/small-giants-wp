@@ -14,7 +14,7 @@ lists, per post:
 Undeclared attributes are read from the block's own block.json at run time, never a hand list.
 
 Usage (read-only; nothing is ever written to a site):
-  python survey-icon-oldshape.py --target eye-care-test     # a build-deploy.py TARGETS name or a host, over `ssh hd`
+  python survey-icon-oldshape.py --target eye-care-test     # a build-deploy.py TARGETS name or a host, over ssh
   python survey-icon-oldshape.py --file dump.json           # [{"ID":1,"post_type":"page","post_content":"..."}]
   python survey-icon-oldshape.py --file post.html           # one post's raw content
   python survey-icon-oldshape.py --self-test                # prove it finds each shape and passes clean content
@@ -93,9 +93,15 @@ def target_host(name: str) -> str:
     return name
 
 
-def ssh(command: str) -> str:
-    """Run one read-only command on the shared host over `ssh hd`."""
-    done = subprocess.run(["ssh", "hd", command], capture_output=True, text=True, encoding="utf-8", timeout=600)
+SSH = ["ssh", "-o", "BatchMode=yes", "-i", str(Path.home() / ".ssh" / "id_ed25519"), "-p", "65002",
+       "u945238940@141.136.39.73"]  # build-deploy.py's SSH_FALLBACK + SSH_USER_HOST (the `hd` alias is Git Bash only)
+
+
+def ssh(command: str, stdin: str = "") -> str:
+    """Run one read-only command on the shared host (UTF-8 bytes both ways, so no CRLF or code-page rewrite)."""
+    done = subprocess.run([*SSH, command], input=stdin.encode("utf-8"), capture_output=True, timeout=600)
+    done.stdout = done.stdout.decode("utf-8")
+    done.stderr = done.stderr.decode("utf-8", "replace")
     if 0 != done.returncode:
         raise RuntimeError(done.stderr.strip() or f"ssh exited {done.returncode}")
     return done.stdout
@@ -106,22 +112,14 @@ def posts_from_target(name: str) -> list[dict]:
     host = target_host(name)
     if not re.fullmatch(r"[a-z0-9.-]+", host):
         raise RuntimeError(f"unexpected host {host!r}")
-    root = f"domains/{host}/public_html"
-    types = ssh(f"cd {root} && wp post-type list --field=name --format=csv").split()
-    types = [t for t in types if re.fullmatch(r"[a-z0-9_-]+", t) and "name" != t]
-    listed = json.loads(ssh(f"cd {root} && wp post list --post_type={','.join(types)} --post_status=any "
-                            "--fields=ID,post_type --format=json --posts_per_page=-1") or "[]")
-    ids = [str(int(p["ID"])) for p in listed]
-    kinds = {str(p["ID"]): p["post_type"] for p in listed}
-    if not ids:
-        return []
-    raw = ssh(f"cd {root} && for id in {' '.join(ids)}; do echo \"@@SGS-POST $id\"; wp post get $id --field=post_content; done")
-    posts = []
-    for chunk in raw.split("@@SGS-POST ")[1:]:
-        pid, _, content = chunk.partition("\n")
-        if "wp:sgs/icon" in content or "wp:sgs/social-icons" in content:
-            posts.append({"ID": pid.strip(), "post_type": kinds.get(pid.strip(), "?"), "post_content": content})
-    return posts
+    # One read-only query, sent as a PHP file on stdin so no content or quoting passes through the remote shell.
+    php = (
+        "<?php global $wpdb; echo wp_json_encode( $wpdb->get_results( \"SELECT ID, post_type, post_content FROM "
+        "{$wpdb->posts} WHERE post_type <> 'revision' AND ( post_content LIKE '%wp:sgs/icon %' "
+        "OR post_content LIKE '%wp:sgs/social-icons%' )\", ARRAY_A ) );\n"
+    )
+    raw = ssh(f"cd domains/{host}/public_html && wp eval-file - --skip-plugins --skip-themes", stdin=php)
+    return [{"ID": str(p["ID"]), "post_type": p["post_type"], "post_content": p["post_content"]} for p in json.loads(raw or "[]")]
 
 
 def posts_from_file(path: Path) -> list[dict]:
@@ -174,7 +172,7 @@ def self_test() -> int:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     group = ap.add_mutually_exclusive_group(required=True)
-    group.add_argument("--target", help="build-deploy.py TARGETS name or host (read-only over ssh hd)")
+    group.add_argument("--target", help="build-deploy.py TARGETS name or host (read-only over ssh)")
     group.add_argument("--file", type=Path, help="a JSON dump of posts or one post's raw content")
     group.add_argument("--self-test", action="store_true")
     args = ap.parse_args(argv)
