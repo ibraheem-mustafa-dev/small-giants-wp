@@ -174,13 +174,17 @@ proofs `.claude/reports/2026-10-09-skeleton-writer-test/`).** It replaces items 
 4. The "does it paint?" check (neutralise a value in the browser; nothing moves means not a difference), after 3.
 5. Try before write: render the block twice through `/wp/v2/block-renderer`, map the CSS difference onto the live uid,
    measure (proven on the home cards); blocks with `wp_unique_id`/`microtime` classes or block context rebuild as today.
-Before the next measuring run: rebuild home on the local mirror from the committed tree (it still carries the
-2026-10-09 card padding), and refresh the mirror from eye-care-test (header and footer changed). Footer and header changed
-shape on 2026-10-09 (register N47-N49): the wordmark is an image on both sides, Visit or call is one icon-list
-(`cr-ref-footer-23`), and `cr-ref-footer-4`, `-24`, `-25`, `-26` and `cr-ref-header-9` no longer exist. Regenerate
-`qa/parity/footer.full.mjs` and `header.full.mjs` (`pairs.mjs`), retarget the `footer.mjs`/`header.mjs` hand pairs that
-find the wordmark by its words, and take the ledger entries on `cr-ref-footer-24` (the phone tap area) to Bean to re-point at
-the list's phone item; never edit a ledger entry without Bean's decision.
+Header and footer reshaped on 2026-10-09 (register N47-N49): the wordmark is an image on both sides and Visit or call is
+one icon-list (`cr-ref-footer-23`). Done the same day: mirror refreshed from eye-care-test (home cards back to 291px at 375;
+`refresh-from-remote.sh` now runs its WSL step with `--exec`, because `wsl --` expanded `$got` in an extra shell and the
+siteurl check always read empty), both `.full` configs regenerated, the wordmark, address, hours and social hand pairs
+retargeted (live social boxes are `sgs/icon` shapes found by their hidden link name), a `header-logo-group` pair added, and
+ledger D-40 to D-47 (the phone's tap-area padding) removed on Bean's decision: the list item keeps its natural tap area.
+The header lost its four word-matched generated pairs: two were the proven mispairs (live outer header against the draft's
+inner row; the logo group against the words span), the other two are the wordmark now covered by hand.
+Open: the walker counts the icons' visually hidden link names as painted text (`text-extra` and label style rows), a
+"paints nothing" false alarm for the tool list; ledger D-105 to D-125 still name the removed `cr-ref-footer-24`, `-25`,
+`-26` (they match nothing; Bean to decide); the draft still has "Glasses — arriving soon" (N48), reported as missing text.
 
 ## Contact (page 190): state at the end of 2026-10-08
 

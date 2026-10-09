@@ -1,26 +1,27 @@
 {
  "surface": "header",
- "when": "2026-10-06T16:18:05.594Z",
+ "when": "2026-10-09T18:03:14.413Z",
  "width": 1440,
  "recheck": [
   375,
-  768
+  768,
+  1920
  ],
  "lifted": [
   "header",
   ".sgs-site-header"
  ],
  "blocks": 13,
- "kept": 4,
+ "kept": 0,
  "coveredByHand": [
   "cr-ref-header-3",
-  "cr-ref-header-8",
   "cr-ref-header-13"
  ],
  "handMeasured": [
   "cr-ref-header-0",
   "cr-ref-header-3",
   "cr-ref-header-6",
+  "cr-ref-header-5",
   "cr-ref-header-8",
   "cr-ref-header-12",
   "cr-ref-header-11",
@@ -31,35 +32,37 @@
   {
    "name": "trust-ticker",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "header-bar",
    "ok": true,
-   "checked": 13,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "header-logo",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
+  },
+  {
+   "name": "header-logo-group",
+   "ok": true,
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "header-wordmark",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "header-about",
    "ok": true,
-   "checked": 1,
+   "checked": 3,
    "split": [],
    "why": null
   },
@@ -73,43 +76,57 @@
   {
    "name": "header-bag",
    "ok": true,
+   "judged": false,
    "checked": 2,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "shop-trigger",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "brands-trigger",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "lenses-trigger",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "help-trigger",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   }
  ],
  "retargeted": {
   "header-bag": ".cr-ref-header-13"
  },
  "left": [
+  {
+   "ref": "cr-ref-header-15",
+   "draft": null,
+   "why": "no matched words",
+   "words": 1,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
   {
    "ref": "cr-ref-header-12",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
@@ -118,15 +135,6 @@
    "matched": 4,
    "first": "about",
    "last": "help"
-  },
-  {
-   "ref": "cr-ref-header-10",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
-   "why": "its draft element at 375 does not hold the same words (no partner at 768)",
-   "words": 9,
-   "matched": 9,
-   "first": "0121",
-   "last": "0"
   },
   {
    "ref": "cr-ref-header-11",
@@ -142,6 +150,24 @@
    "last": "8233"
   },
   {
+   "ref": "cr-ref-header-10",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > div:nth-child(3)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 768)",
+   "words": 10,
+   "matched": 9,
+   "first": "0121",
+   "last": "0"
+  },
+  {
+   "ref": "cr-ref-header-1",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
+   "why": "its draft element at 375 does not hold the same words (no partner at 375)",
+   "words": 15,
+   "matched": 14,
+   "first": "sunglasses",
+   "last": "0"
+  },
+  {
    "ref": "cr-ref-header-4",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > nav:nth-child(1)",
    "why": "its draft element at 375 does not hold the same words (no partner at 375)",
@@ -155,51 +181,21 @@
    "why": "no painted words (an image, an icon or an empty wrapper)"
   },
   {
-   "ref": "cr-ref-header-6",
-   "why": "its paired ancestor holds 1 picture live against 0 on the draft"
-  }
- ],
- "keptPairs": [
+   "ref": "cr-ref-header-5",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
+  },
   {
-   "ref": "cr-ref-header-1",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
-   "why": null,
-   "words": 17,
-   "matched": 17,
-   "first": "sunglasses",
-   "last": "0",
-   "drafts": {
-    "375": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
-    "768": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)",
-    "1440": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1)"
-   }
+   "ref": "cr-ref-header-6",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
   },
   {
    "ref": "cr-ref-header-7",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)",
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "eye",
-   "last": "birmingham"
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
   },
   {
-   "ref": "cr-ref-header-5",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2)",
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "eye",
-   "last": "birmingham"
-  },
-  {
-   "ref": "cr-ref-header-9",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > header:nth-child(2) > div:nth-child(1) > a:nth-child(2) > span:nth-child(2) > span:nth-child(2)",
-   "why": null,
-   "words": 1,
-   "matched": 1,
-   "first": "birmingham",
-   "last": "birmingham"
+   "ref": "cr-ref-header-8",
+   "why": "its paired ancestor holds 2 picture live against 0 on the draft"
   }
- ]
+ ],
+ "keptPairs": []
 }

@@ -22,7 +22,8 @@ const lpart = ( i, path ) => `(r) => { const c = (${ lcol( i ) })(r); try { retu
 const dlink = ( re ) => `(r) => { const f = ${ DF }; return f && [...f.querySelectorAll('a')].find((a) => /${ re }/i.test(a.textContent.trim())); }`;
 const llink = ( re ) => `(r) => { const f = ${ LF }; return f && [...f.querySelectorAll('a')].find((a) => /${ re }/i.test(a.textContent.trim())); }`;
 const dsocial = ( label ) => `(r) => { const f = ${ DF }; return f && f.querySelector('a[aria-label="${ label }"]'); }`;
-const lsocial = ( label ) => `(r) => { const f = ${ LF }; return f && f.querySelector('.sgs-social-icons__item[aria-label="${ label }"]'); }`;
+// A live social box is the sgs/icon whose visually hidden link name is the label; its shape paints the box.
+const lsocial = ( label ) => `(r) => { const f = ${ LF }; const i = f && [...f.querySelectorAll('.sgs-social-icons .sgs-icon')].find((e) => (e.querySelector('.sgs-icon__label')?.textContent || '').trim() === '${ label }'); return i && i.querySelector('.sgs-icon__shape'); }`;
 const dicon = ( label ) => `(r) => { const a = (${ dsocial( label ) })(r); return a && a.querySelector('img,svg'); }`;
 const licon = ( label ) => `(r) => { const a = (${ lsocial( label ) })(r); return a && a.querySelector('svg'); }`;
 const dbar = `(r) => { const f = ${ DF }; return f && f.children[1]; }`;
@@ -62,14 +63,13 @@ export default {
 		{ name: 'col-help', draft: { js: dcol( 2 ) }, live: { js: lcol( 2 ) }, text: false, box: [ 'h' ] },
 		{ name: 'col-visit', draft: { js: dcol( 3 ) }, live: { js: lcol( 3 ) }, text: false, box: [ 'h' ] },
 
-		// Brand block: wordmark, tagline words, description.
-		{ name: 'brand-wordmark', draft: { js: dpart( 0, 'd.children[0]' ) }, live: { js: lpart( 0, 'c.querySelector("h4")' ) }, box: [ 'h' ] },
-		{ name: 'brand-tagline', draft: { js: dpart( 0, 'd.children[1]' ) }, live: { js: lpart( 0, 'c.children[1]' ) }, box: [ 'h' ] },
-		{ name: 'brand-description', draft: { js: dpart( 0, 'd.querySelector("p")' ) }, live: { js: lpart( 0, 'c.children[2]' ) } },
+		// Brand block: the wordmark image (register N47) and the description.
+		{ name: 'brand-wordmark', draft: { js: dpart( 0, 'd.querySelector("img")' ) }, live: { js: lpart( 0, 'c.querySelector("img")' ) }, text: false, box: [ 'w', 'h' ] },
+		{ name: 'brand-description', draft: { js: dpart( 0, 'd.querySelector("p")' ) }, live: { js: lpart( 0, 'c.children[1]' ) } },
 
 		// Social boxes: each box (look, hover, place) and its icon as its own pair. The draft lists
 		// Instagram, Google, WhatsApp; live lists Instagram, WhatsApp, Google (the structure check shows the order).
-		{ name: 'social-row', draft: { js: dpart( 0, 'd.children[3]' ) }, live: { js: lpart( 0, 'c.querySelector(".sgs-social-icons")' ) }, text: false, box: [ 'h' ] },
+		{ name: 'social-row', draft: { js: dpart( 0, 'd.children[2]' ) }, live: { js: lpart( 0, 'c.querySelector(".sgs-social-icons")' ) }, text: false, box: [ 'h' ] },
 		{ name: 'social-instagram', draft: { js: dsocial( 'Instagram' ) }, live: { js: lsocial( 'Follow us on Instagram' ) }, hover: true, text: false, box: [ 'w', 'h' ], props: SOCIAL_PROPS },
 		{ name: 'social-instagram-icon', draft: { js: dicon( 'Instagram' ) }, live: { js: licon( 'Follow us on Instagram' ) }, text: false, box: [ 'w', 'h' ] },
 		{ name: 'social-google', draft: { js: dsocial( 'Google Business profile' ) }, live: { js: lsocial( 'Read our reviews on Google' ) }, hover: true, text: false, box: [ 'w', 'h' ], props: SOCIAL_PROPS },
@@ -82,11 +82,10 @@ export default {
 		{ name: 'col-help-heading', draft: { js: dpart( 2, 'd.children[0]' ) }, live: { js: lpart( 2, 'c.querySelector("h5")' ) }, box: [ 'h' ] },
 		{ name: 'col-visit-heading', draft: { js: dpart( 3, 'd.children[0]' ) }, live: { js: lpart( 3, 'c.querySelector("h5")' ) }, box: [ 'h' ] },
 
-		// Shop links. "Glasses - arriving soon" is plain text on both sides (a span against a list item).
+		// Shop links. Live has no "Glasses - arriving soon" line (register N48).
 		{ name: 'link-sunglasses', draft: { js: dlink( '^sunglasses$' ) }, live: { js: llink( '^sunglasses$' ) }, hover: true },
 		{ name: 'link-all-brands', draft: { js: dlink( '^all brands$' ) }, live: { js: llink( '^all brands$' ) }, hover: true },
 		{ name: 'link-prescription-lenses', draft: { js: dlink( '^prescription lenses$' ) }, live: { js: llink( '^prescription lenses$' ) }, hover: true },
-		{ name: 'text-glasses-soon', draft: { js: dpart( 1, 'd.children[4]' ) }, live: { js: lpart( 1, 'c.querySelector("ul").lastElementChild' ) } },
 
 		// Help links.
 		{ name: 'link-delivery', draft: { js: dlink( '^delivery' ) }, live: { js: llink( '^delivery' ) }, hover: true },
@@ -94,11 +93,11 @@ export default {
 		{ name: 'link-size-guide', draft: { js: dlink( '^size guide$' ) }, live: { js: llink( '^size guide$' ) }, hover: true },
 		{ name: 'link-contact', draft: { js: dlink( '^contact$' ) }, live: { js: llink( '^contact$' ) }, hover: true },
 
-		// Visit or call: About link, phone, address, hours.
+		// Visit or call: About link, phone, address, hours; on live one Site Info-fed link list (register N49).
 		{ name: 'link-about', draft: { js: dlink( '^about eye care$' ) }, live: { js: llink( '^about eye care$' ) }, hover: true },
 		{ name: 'link-phone', draft: { js: `(r) => { const f = ${ DF }; return f && [...f.querySelectorAll('a')].find((a) => /^tel:/.test(a.getAttribute('href') || '') || /^0121/.test(a.textContent.trim())); }` }, live: { js: `(r) => { const f = ${ LF }; return f && f.querySelector('a[href^="tel:"]'); }` }, hover: true },
-		{ name: 'address', draft: { js: dlink( '^644 washwood' ) }, live: { js: `(r) => { const f = ${ LF }; return f && f.querySelector('address'); }` }, hover: true },
-		{ name: 'hours', draft: { js: dpart( 3, 'd.children[4]' ) }, live: { js: lpart( 3, 'c.querySelector(".sgs-business-hours")' ) } },
+		{ name: 'address', draft: { js: dlink( '^644 washwood' ) }, live: { js: llink( '^644 washwood' ) }, hover: true },
+		{ name: 'hours', draft: { js: dpart( 3, 'd.children[4]' ) }, live: { js: lpart( 3, 'c.querySelector("ul").lastElementChild' ) } },
 
 		// Bottom bar: the bar with its hairline, the copyright line, and the Privacy and Terms links.
 		{ name: 'bottom-bar', draft: { js: dbar }, live: { js: lbar }, box: [ 'h' ], props: [ 'border-top-width', 'border-top-color', 'border-top-style', 'background-color' ] },
@@ -108,7 +107,7 @@ export default {
 	],
 	accept: [],
 	review: {
-		'opening@1440': 'Footer, full width: brand column (wordmark, BIRMINGHAM tagline, description, three social boxes), Shop, Help and Visit or call columns with headings and links, address and hours line, then the bottom bar hairline, copyright line and Privacy and Terms links. Compared region by region against the draft.',
+		'opening@1440': 'Footer, full width: brand column (wordmark image, description, three social boxes), Shop, Help and Visit or call columns with headings and links, address and hours line, then the bottom bar hairline, copyright line and Privacy and Terms links. Compared region by region against the draft.',
 		'opening@768': 'Footer at tablet width: column wrap, brand block with social boxes, headings and links, address and hours, bottom bar with copyright and Privacy and Terms, compared against the draft region by region.',
 		'opening@375': 'Footer at phone width: single column stack, brand block and social boxes, column headings and links, address and hours line, bottom bar hairline, copyright and Privacy and Terms links compared against the draft.',
 	},

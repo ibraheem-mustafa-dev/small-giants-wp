@@ -41,7 +41,8 @@ WSL_WORK="$( MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u root -- wslpath -a "$( cygpath 
 ESC_REMOTE="${REMOTE_URL//\//\\\\/}"
 ESC_LOCAL="${LOCAL_URL//\//\\\\/}"
 echo "== import into $LOCAL_URL ($DOCROOT)"
-MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u root -- bash -lc "
+# --exec runs bash directly: `wsl --` would pass the script through an extra shell that expands \$got before bash sees it.
+MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u root --exec bash -lc "
   set -euo pipefail
   cd '$DOCROOT'
   [ -d wp-content ] || { echo 'Missing $DOCROOT' >&2; exit 1; }

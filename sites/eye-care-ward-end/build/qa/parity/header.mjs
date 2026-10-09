@@ -181,8 +181,12 @@ export default {
 			text: false, box: [ 'h' ], props: [ 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'background-color' ] },
 		{ name: 'header-logo', states: [ 'closed', 'scrolled' ], draft: `${ DHEADER } a[aria-label="Eye Care Birmingham home"] img`, live: `${ LHEADER } .sgs-responsive-logo__link img`,
 			text: false, box: [ 'w', 'h' ] },
-		{ name: 'header-wordmark', states: [ 'closed', 'scrolled' ], draft: { text: '^eye care$', tag: 'span', within: DHEADER }, live: { text: '^eye care$', tag: 'h2', within: LHEADER },
-			props: [ 'font-family', 'font-size', 'font-weight', 'letter-spacing', 'line-height', 'color' ], box: [ 'w', 'h' ] },
+		// The whole logo link (mark plus wordmark) as one box.
+		{ name: 'header-logo-group', states: [ 'closed', 'scrolled' ], draft: `${ DHEADER } a[aria-label="Eye Care Birmingham home"]`, live: `${ LHEADER } .cr-ref-header-5`,
+			text: false, box: [ 'w', 'h' ] },
+		// The wordmark is an image on both sides (register N47): compared by its box, at rest and shrunk.
+		{ name: 'header-wordmark', states: [ 'closed', 'scrolled' ], draft: `${ DHEADER } img[src*="eye-care-wordmark"]`, live: `${ LHEADER } .cr-ref-header-8 img`,
+			text: false, box: [ 'w', 'h' ] },
 
 		// Right-hand controls at rest: hover end state and keyboard focus ring on each.
 		{ name: 'header-about', states: [ 'closed' ], hover: true, draft: { text: '^about eye care$', tag: 'a', within: DHEADER }, live: { text: '^about eye care$', tag: 'a', within: LHEADER } },

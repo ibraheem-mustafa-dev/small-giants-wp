@@ -1,42 +1,29 @@
 {
  "surface": "footer",
- "when": "2026-10-06T16:17:05.401Z",
+ "when": "2026-10-09T18:08:31.735Z",
  "width": 1440,
  "recheck": [
   375,
-  768
+  768,
+  1920
  ],
  "lifted": [
   "footer",
   ".sgs-site-footer",
   ".sgs-whatsapp-cta--floating"
  ],
- "blocks": 34,
- "kept": 4,
+ "blocks": 25,
+ "kept": 5,
  "coveredByHand": [
   "cr-ref-footer-0",
   "cr-ref-footer-1",
-  "cr-ref-footer-2",
   "cr-ref-footer-7",
   "cr-ref-footer-14",
   "cr-ref-footer-21",
-  "cr-ref-footer-3",
-  "cr-ref-footer-4",
   "cr-ref-footer-5",
   "cr-ref-footer-8",
   "cr-ref-footer-15",
   "cr-ref-footer-22",
-  "cr-ref-footer-10",
-  "cr-ref-footer-11",
-  "cr-ref-footer-12",
-  "cr-ref-footer-13",
-  "cr-ref-footer-17",
-  "cr-ref-footer-18",
-  "cr-ref-footer-19",
-  "cr-ref-footer-20",
-  "cr-ref-footer-23",
-  "cr-ref-footer-25",
-  "cr-ref-footer-26",
   "cr-ref-footer-27",
   "cr-ref-footer-28",
   "cr-ref-footer-30",
@@ -50,24 +37,17 @@
   "cr-ref-footer-14",
   "cr-ref-footer-21",
   "cr-ref-footer-3",
-  "cr-ref-footer-4",
   "cr-ref-footer-5",
   "cr-ref-footer-6",
+  "cr-ref-footer-36",
+  "cr-ref-footer-41",
+  "cr-ref-footer-34",
   "cr-ref-footer-8",
   "cr-ref-footer-15",
   "cr-ref-footer-22",
-  "cr-ref-footer-10",
-  "cr-ref-footer-11",
-  "cr-ref-footer-12",
-  "cr-ref-footer-13",
-  "cr-ref-footer-17",
-  "cr-ref-footer-18",
-  "cr-ref-footer-19",
-  "cr-ref-footer-20",
+  "cr-ref-footer-9",
+  "cr-ref-footer-16",
   "cr-ref-footer-23",
-  "cr-ref-footer-24",
-  "cr-ref-footer-25",
-  "cr-ref-footer-26",
   "cr-ref-footer-27",
   "cr-ref-footer-28",
   "cr-ref-footer-30",
@@ -77,58 +57,45 @@
   {
    "name": "footer-root",
    "ok": true,
-   "checked": 51,
+   "checked": 48,
    "split": [],
    "why": null
   },
   {
    "name": "columns-row",
    "ok": true,
-   "checked": 39,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "col-brand",
    "ok": true,
-   "checked": 8,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "col-shop",
    "ok": true,
-   "checked": 9,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "col-help",
    "ok": true,
-   "checked": 8,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "col-visit",
    "ok": true,
-   "checked": 14,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "brand-wordmark",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
-  },
-  {
-   "name": "brand-tagline",
-   "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "brand-description",
@@ -140,65 +107,60 @@
   {
    "name": "social-row",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-instagram",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-instagram-icon",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-google",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-google-icon",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-whatsapp",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "social-whatsapp-icon",
    "ok": true,
-   "checked": 0,
-   "split": [],
-   "why": null
+   "judged": false,
+   "why": "not judged: the config declares text: false, so its two sides are not expected to hold the same words"
   },
   {
    "name": "col-shop-heading",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "col-help-heading",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "col-visit-heading",
@@ -210,30 +172,26 @@
   {
    "name": "link-sunglasses",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-all-brands",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-prescription-lenses",
    "ok": true,
+   "judged": false,
    "checked": 2,
    "split": [],
-   "why": null
-  },
-  {
-   "name": "text-glasses-soon",
-   "ok": true,
-   "checked": 4,
-   "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-delivery",
@@ -245,30 +203,34 @@
   {
    "name": "link-faqs",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-size-guide",
    "ok": true,
+   "judged": false,
    "checked": 2,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-contact",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-about",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-phone",
@@ -280,16 +242,17 @@
   {
    "name": "address",
    "ok": true,
-   "checked": 5,
+   "checked": 6,
    "split": [],
    "why": null
   },
   {
    "name": "hours",
    "ok": true,
+   "judged": false,
    "checked": 2,
    "split": [],
-   "why": null
+   "why": "not judged: 2 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "bottom-bar",
@@ -308,38 +271,56 @@
   {
    "name": "link-privacy",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   },
   {
    "name": "link-terms",
    "ok": true,
+   "judged": false,
    "checked": 1,
    "split": [],
-   "why": null
+   "why": "not judged: 1 matched word(s) inside the pair is too few to tell a mispair from an incidental token"
   }
  ],
  "retargeted": {
-  "col-brand": ".cr-ref-footer-2",
   "col-shop": ".cr-ref-footer-7",
   "col-help": ".cr-ref-footer-14",
   "col-visit": ".cr-ref-footer-21",
-  "link-sunglasses": ".cr-ref-footer-10",
-  "link-all-brands": ".cr-ref-footer-11",
-  "link-prescription-lenses": ".cr-ref-footer-12",
-  "link-delivery": ".cr-ref-footer-17",
-  "link-faqs": ".cr-ref-footer-18",
-  "link-size-guide": ".cr-ref-footer-19",
-  "link-contact": ".cr-ref-footer-20",
-  "link-about": ".cr-ref-footer-23",
-  "address": ".cr-ref-footer-25",
-  "hours": ".cr-ref-footer-26",
   "bottom-copyright": ".cr-ref-footer-28",
   "link-privacy": ".cr-ref-footer-30",
   "link-terms": ".cr-ref-footer-31"
  },
  "left": [
+  {
+   "ref": "cr-ref-footer-9",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2)",
+   "why": "the draft element also holds 1 word(s) that belong outside this block",
+   "words": 5,
+   "matched": 5,
+   "first": "sunglasses",
+   "last": "lenses"
+  },
+  {
+   "ref": "cr-ref-footer-16",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3)",
+   "why": "the draft element also holds 1 word(s) that belong outside this block",
+   "words": 7,
+   "matched": 7,
+   "first": "delivery",
+   "last": "contact"
+  },
+  {
+   "ref": "cr-ref-footer-23",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(4)",
+   "why": "the draft element also holds 3 word(s) that belong outside this block",
+   "words": 15,
+   "matched": 15,
+   "first": "about",
+   "last": "9.30–17.30"
+  },
   {
    "ref": "cr-ref-footer-32",
    "why": "no painted words (an image, an icon or an empty wrapper)"
@@ -349,24 +330,15 @@
    "why": "no painted words (an image, an icon or an empty wrapper)"
   },
   {
+   "ref": "cr-ref-footer-3",
+   "why": "its paired ancestor holds 1 picture live against 0 on the draft"
+  },
+  {
    "ref": "cr-ref-footer-6",
    "why": "no draft element around its media is near its size (307x44)"
   }
  ],
  "keptPairs": [
-  {
-   "ref": "cr-ref-footer-24",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(4) > a:nth-child(3) > span:nth-child(1)",
-   "textRun": {
-    "direct": true,
-    "match": "(^|[^\\p{L}\\p{N}])(0121|729|8233)($|[^\\p{L}\\p{N}])"
-   },
-   "why": null,
-   "words": 3,
-   "matched": 3,
-   "first": "0121",
-   "last": "8233"
-  },
   {
    "ref": "cr-ref-footer-29",
    "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(2) > span:nth-child(2)",
@@ -381,38 +353,50 @@
    "last": "terms"
   },
   {
-   "ref": "cr-ref-footer-9",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2)",
+   "ref": "cr-ref-footer-2",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1)",
    "why": null,
-   "words": 9,
-   "matched": 9,
+   "words": 8,
+   "matched": 8,
    "first": null,
    "last": null,
    "group": {
     "paths": [
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2) > a:nth-child(3)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2) > a:nth-child(4)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(2) > span:nth-child(5)"
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > img:nth-child(1)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)",
+     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3)"
     ]
    }
   },
   {
-   "ref": "cr-ref-footer-16",
-   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3)",
+   "ref": "cr-ref-footer-34",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(1)",
+   "media": "svg",
    "why": null,
-   "words": 7,
-   "matched": 7,
+   "words": 0,
+   "matched": 0,
    "first": null,
-   "last": null,
-   "group": {
-    "paths": [
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3) > a:nth-child(2)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3) > a:nth-child(3)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3) > a:nth-child(4)",
-     "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(3) > a:nth-child(5)"
-    ]
-   }
+   "last": null
+  },
+  {
+   "ref": "cr-ref-footer-36",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(2)",
+   "media": "svg",
+   "why": null,
+   "words": 0,
+   "matched": 0,
+   "first": null,
+   "last": null
+  },
+  {
+   "ref": "cr-ref-footer-41",
+   "draft": "body > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > footer:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > a:nth-child(3)",
+   "media": "svg",
+   "why": null,
+   "words": 0,
+   "matched": 0,
+   "first": null,
+   "last": null
   }
  ]
 }
