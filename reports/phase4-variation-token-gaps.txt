@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-10-06 22:11:52 UTC
+# Stage 3 Style Variation Sync — 2026-10-09 03:39:00 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 246 | Conflicts: 161
+Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 250 | Conflicts: 161
 
 ## Per-client results
 
@@ -96,7 +96,7 @@ Inserted: 0 | Skipped: 34 | Conflicts: 26
 - CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
 - CONFLICT: color-primary (framework='#0D1B2A', client='#e68a95') → inserted as mamas-munches-color-primary
 - CONFLICT: color-primary-text (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-primary-text
-- CONFLICT: color-primary-dark (framework='#060D14', client='#c56a7a') → inserted as mamas-munches-color-primary-dark
+- CONFLICT: color-primary-dark (framework='#060D14', client='#b7475b') → inserted as mamas-munches-color-primary-dark
 - CONFLICT: color-surface (framework='#FFFFFF', client='#fbf3dc') → inserted as mamas-munches-color-surface
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#fff9f0') → inserted as mamas-munches-color-surface-alt
 - CONFLICT: color-surface-pink (framework='#F5C2C8', client='#f5c2c8') → inserted as mamas-munches-color-surface-pink
@@ -124,7 +124,7 @@ _(theme-snapshot.json not found)_
 
 ### sgs-construction
 
-Inserted: 0 | Skipped: 31 | Conflicts: 20
+Inserted: 0 | Skipped: 32 | Conflicts: 20
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#0A0A0A') → inserted as sgs-construction-color-primary-dark
@@ -149,7 +149,7 @@ Inserted: 0 | Skipped: 31 | Conflicts: 20
 
 ### sgs-healthcare
 
-Inserted: 0 | Skipped: 32 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#124550') → inserted as sgs-healthcare-color-primary-dark
@@ -173,7 +173,7 @@ Inserted: 0 | Skipped: 32 | Conflicts: 19
 
 ### sgs-mosque
 
-Inserted: 0 | Skipped: 32 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#102519') → inserted as sgs-mosque-color-primary-dark
@@ -197,7 +197,7 @@ Inserted: 0 | Skipped: 32 | Conflicts: 19
 
 ### sgs-professional
 
-Inserted: 0 | Skipped: 32 | Conflicts: 19
+Inserted: 0 | Skipped: 33 | Conflicts: 19
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-primary
 - CONFLICT: color-primary-dark (framework='#060D14', client='#131D3E') → inserted as sgs-professional-color-primary-dark

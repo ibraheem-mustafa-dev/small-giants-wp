@@ -271,6 +271,14 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "cardBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -490,6 +498,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "chipBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "chip"
       }
     },
@@ -13015,6 +13031,87 @@
     },
     {
       "slug": "sgs/icon",
+      "attr": "labelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "label-text"
+      }
+    },
+    {
+      "slug": "sgs/icon",
       "attr": "opacityHover",
       "fields": {
         "css_property": "opacity",
@@ -23057,6 +23154,78 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "childIconLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "childIconShapeSize",
       "fields": {
         "css_property": "width",
@@ -25302,10 +25471,27 @@
     },
     {
       "slug": "sgs/theme-toggle",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "wrapper",
         "css_state": "hover"
       }
@@ -26826,6 +27012,14 @@
     },
     {
       "slug": "sgs/wishlist-link",
+      "attr": "badgeBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
       "attr": "badgeTextColour",
       "fields": {
         "css_property": "color",
@@ -26863,10 +27057,26 @@
     },
     {
       "slug": "sgs/wishlist-panel",
+      "attr": "barBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
       "attr": "buttonBackgroundColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "buttonBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "button"
       }
     },
@@ -27331,6 +27541,14 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "headingColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "menuActiveBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -27340,10 +27558,26 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "menuActiveBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "menuActive"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "menuActiveIndicatorColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "menuIndicator"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuActiveIndicatorColourGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "menuIndicator"
       }
     },
@@ -30813,6 +31047,42 @@
         "css_property": "stroke",
         "role": "color",
         "css_element": "shape",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "labelColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label",
         "css_state": "hover"
       }
     },
@@ -35859,6 +36129,42 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "childIconLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "childIconLabelColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "label",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -36864,6 +37170,14 @@
     },
     {
       "slug": "sgs/theme-toggle",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/theme-toggle",
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -37342,6 +37656,49 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "iconColourGradient",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-link",
+      "attr": "iconColourHoverGradient",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "icon",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "headingColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "itemNameColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "itemName"
+      }
+    },
+    {
+      "slug": "sgs/wishlist-panel",
+      "attr": "priceColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "price"
       }
     },
     {
