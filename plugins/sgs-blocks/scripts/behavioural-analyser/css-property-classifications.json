@@ -5420,6 +5420,22 @@
     },
     {
       "slug": "sgs/collapsible-text",
+      "attr": "linkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "linkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -20022,6 +20038,22 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "descLinkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "desc"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLinkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "desc"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "descTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -21689,6 +21721,22 @@
         "css_property": "color-link",
         "css_element": "attribution",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "attribution"
       }
     },
     {
@@ -24587,6 +24635,22 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "quoteLinkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLinkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "quoteTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -25363,6 +25427,22 @@
         "css_property": "background-image,color",
         "css_element": "description",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "entry"
       }
     },
     {
