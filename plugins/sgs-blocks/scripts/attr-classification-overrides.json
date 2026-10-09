@@ -7018,6 +7018,82 @@
 				"css_property": "line-height",
 				"css_element": "label"
 			}
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "iconRotateHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "offsetXHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "offsetYHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "paintDuration",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconRotateHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconOffsetXHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconOffsetYHover",
+			"fields": {
+				"role": "select-from-enum",
+				"css_property": "transform",
+				"css_state": "hover"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
+		},
+		{
+			"slug": "sgs/social-icons",
+			"attr": "childIconPaintDuration",
+			"fields": {
+				"role": "select-from-enum"
+			},
+			"_why": "The hover pose (move, turn) and the paint-transition duration of the icon shape have no cluster member (the motion cluster holds one duration and one easing: the move's), so the classifier left them without a role or as unclaimed motion. Recorded as select-from-enum like scaleHover (the same hover transform)."
 		}
 	]
 }

@@ -11,6 +11,34 @@ import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { ShadowControl, shadowAttrKeys } from '../../components';
 import MotionEasingControl from '../../components/MotionEasingControl';
 
+/** The attribute names an icon stores the motion and shadow under (written by the fields below). */
+export const ICON_MOTION_NAMES = {
+	x: 'offsetXHover',
+	y: 'offsetYHover',
+	rotate: 'iconRotateHover',
+	moveMs: 'transitionDuration',
+	paintMs: 'paintDuration',
+	easing: 'transitionEasing',
+	easingCustom: 'transitionEasingCustom',
+	lift: 'shadowLiftOnHover',
+};
+
+/** The attribute names a social-icons row stores its group defaults under. */
+export const ROW_MOTION_NAMES = {
+	x: 'childIconOffsetXHover',
+	y: 'childIconOffsetYHover',
+	rotate: 'childIconRotateHover',
+	moveMs: 'childIconTransitionDuration',
+	paintMs: 'childIconPaintDuration',
+	easing: 'childIconTransitionEasing',
+	easingCustom: 'childIconTransitionEasingCustom',
+	lift: 'childIconShadowLiftOnHover',
+};
+
+/** The shadow attribute families, by literal base name. */
+export const ICON_SHADOW_KEYS = shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } );
+export const ROW_SHADOW_KEYS = shadowAttrKeys( 'childIconBoxShadow', { hover: true, hoverColour: true } );
+
 const BRAND_HOVER_OPTIONS = [
 	{ label: __( 'Swap: the ground and the logo trade colours', 'sgs-blocks' ), value: 'swap' },
 	{ label: __( 'Hold: keep the brand ground and logo colour', 'sgs-blocks' ), value: 'hold' },
@@ -131,10 +159,11 @@ export function HoverMotionFields( { attributes, setAttributes, names } ) {
  * @param {Object}   props.attributes    Stored attributes.
  * @param {Function} props.setAttributes Setter.
  * @param {Object}   props.names         ICON_MOTION_NAMES or ROW_MOTION_NAMES.
+ * @param {Object}   props.shadowKeys    ICON_SHADOW_KEYS or ROW_SHADOW_KEYS.
  * @param {string}   props.help          Optional line under the panel title.
  * @return {JSX.Element} The panel.
  */
-export function IconShadowPanel( { attributes, setAttributes, names, help } ) {
+export function IconShadowPanel( { attributes, setAttributes, names, shadowKeys, help } ) {
 	// The shared control reads and writes the lift switch as `shadowLiftOnHover`; a row stores it under its own name.
 	const view = { ...attributes, shadowLiftOnHover: attributes[ names.lift ] };
 	const write = ( next ) => {
@@ -148,7 +177,7 @@ export function IconShadowPanel( { attributes, setAttributes, names, help } ) {
 				label={ __( 'Shadow', 'sgs-blocks' ) }
 				attributes={ view }
 				setAttributes={ write }
-				attrNames={ shadowAttrKeys( names.shadow, { hover: true, hoverColour: true } ) }
+				attrNames={ shadowKeys }
 			/>
 		</PanelBody>
 	);

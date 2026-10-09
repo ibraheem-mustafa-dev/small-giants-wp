@@ -80,7 +80,8 @@
 					"clusters": [
 						"text",
 						"fill",
-						"layout"
+						"layout",
+						"motion"
 					],
 					"prefix": "childIcon",
 					"attrMap": {
@@ -92,6 +93,8 @@
 						"css:border-width": "childIconBorderWidth",
 						"css:border-style": "childIconBorderStyle",
 						"css:width": "childIconShapeSize",
+						"css:transition-duration": "childIconTransitionDuration",
+						"css:transition-timing-function": "childIconTransitionEasing",
 						"css:box-shadow": "childIconBoxShadow"
 					},
 					"states": {

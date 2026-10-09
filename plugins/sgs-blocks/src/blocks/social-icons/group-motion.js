@@ -9,7 +9,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl } from '@wordpress/components';
 import { ROW_MOTION_NAMES, iconMotionStyle, iconShadowStyle } from '../icon/icon-motion';
-import { BrandHoverControl, HoverMotionFields, IconShadowPanel } from '../icon/motion-panels';
+import { BrandHoverControl, HoverMotionFields, IconShadowPanel, ROW_SHADOW_KEYS } from '../icon/motion-panels';
 import { isCssGradient } from '../../utils/background-preview';
 
 /**
@@ -32,7 +32,17 @@ export function rowMotionCanvasStyle( attributes, hoverMap = {} ) {
 	return {
 		...style,
 		...iconMotionStyle( attributes, ROW_MOTION_NAMES, '--sgs-si' ),
-		...iconShadowStyle( attributes, ROW_MOTION_NAMES, '--sgs-si', { hoverMap } ),
+		...iconShadowStyle(
+			{
+				shadow: attributes.childIconBoxShadow,
+				colour: attributes.childIconBoxShadowColour,
+				hover: attributes.childIconBoxShadowHover,
+				hoverColour: attributes.childIconBoxShadowColourHover,
+				lift: attributes.childIconShadowLiftOnHover,
+			},
+			'--sgs-si',
+			{ hoverMap }
+		),
 	};
 }
 
@@ -69,6 +79,7 @@ export default function RowMotionPanels( { attributes, setAttributes } ) {
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				names={ ROW_MOTION_NAMES }
+				shadowKeys={ ROW_SHADOW_KEYS }
 				help={ __( 'For every icon without a shadow of its own. The outline shapes draw no box, so they take none.', 'sgs-blocks' ) }
 			/>
 		</>

@@ -107,7 +107,8 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
 	}
 	Object.assign( style, iconMotionStyle( attributes, ICON_MOTION_NAMES, '--sgs-icon' ) );
 	if ( ! isOutlineShape( shape ) ) {
-		Object.assign( style, iconShadowStyle( attributes, ICON_MOTION_NAMES, '--sgs-icon', { pinHover: true, hoverMap } ) );
+		const { boxShadow, boxShadowColour, boxShadowHover, boxShadowColourHover, shadowLiftOnHover } = attributes;
+		Object.assign( style, iconShadowStyle( { shadow: boxShadow, colour: boxShadowColour, hover: boxShadowHover, hoverColour: boxShadowColourHover, lift: shadowLiftOnHover }, '--sgs-icon', { pinHover: true, hoverMap } ) );
 	}
 	if ( 'number' === typeof scaleHover && Math.abs( scaleHover - 1.1 ) > 0.0001 ) {
 		style[ '--sgs-icon-hover-scale' ] = scaleHover;

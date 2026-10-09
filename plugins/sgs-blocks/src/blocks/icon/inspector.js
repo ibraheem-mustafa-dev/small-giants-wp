@@ -37,8 +37,7 @@ import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import IconLabelPanel from './inspector-label';
 import { metadataWithoutLinkBinding } from './icon-state';
-import { ICON_MOTION_NAMES } from './icon-motion';
-import { BrandHoverControl, HoverMotionFields, IconShadowPanel } from './motion-panels';
+import { BrandHoverControl, HoverMotionFields, IconShadowPanel, ICON_MOTION_NAMES, ICON_SHADOW_KEYS } from './motion-panels';
 
 /**
  * An outline shape fills with a flat colour only (render.php prints no background gradient for it), so its background
@@ -371,6 +370,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					names={ ICON_MOTION_NAMES }
+					shadowKeys={ ICON_SHADOW_KEYS }
 					help={ outlineShown ? __( 'The outline shapes draw no box, so they take no shadow. Use the square, circle or pill.', 'sgs-blocks' ) : undefined }
 				/>
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>

@@ -13,6 +13,8 @@ const path = require( 'path' );
 
 import { ICON_MOTION_NAMES, ROW_MOTION_NAMES, iconMotionStyle, iconShadowStyle } from '../../src/blocks/icon/icon-motion';
 
+const SHADOW_BASE = { '--sgs-icon': 'boxShadow', '--sgs-si': 'childIconBoxShadow' };
+
 const PLUGIN = path.resolve( __dirname, '..', '..' );
 
 const ICON_CASES = [
@@ -34,8 +36,8 @@ const ROW_CASES = [
 ];
 
 const cases = [
-	...ICON_CASES.map( ( attributes ) => ( { attributes, prefix: '--sgs-icon', names: ICON_MOTION_NAMES, pin: true } ) ),
-	...ROW_CASES.map( ( attributes ) => ( { attributes, prefix: '--sgs-si', names: ROW_MOTION_NAMES, pin: false } ) ),
+	...ICON_CASES.map( ( attributes ) => ( { attributes, prefix: '--sgs-icon', names: { ...ICON_MOTION_NAMES, shadow: 'boxShadow' }, pin: true } ) ),
+	...ROW_CASES.map( ( attributes ) => ( { attributes, prefix: '--sgs-si', names: { ...ROW_MOTION_NAMES, shadow: 'childIconBoxShadow' }, pin: false } ) ),
 ];
 
 let php;
@@ -53,7 +55,17 @@ beforeAll( () => {
 const jsVars = ( c ) => {
 	const style = {
 		...iconMotionStyle( c.attributes, c.names, c.prefix ),
-		...iconShadowStyle( c.attributes, c.names, c.prefix, { pinHover: c.pin } ),
+		...iconShadowStyle(
+			{
+				shadow: c.attributes[ SHADOW_BASE[ c.prefix ] ],
+				colour: c.attributes[ SHADOW_BASE[ c.prefix ] + 'Colour' ],
+				hover: c.attributes[ SHADOW_BASE[ c.prefix ] + 'Hover' ],
+				hoverColour: c.attributes[ SHADOW_BASE[ c.prefix ] + 'ColourHover' ],
+				lift: c.attributes[ c.names.lift ],
+			},
+			c.prefix,
+			{ pinHover: c.pin }
+		),
 	};
 	return Object.fromEntries( Object.entries( style ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) ).map( ( [ k, v ] ) => [ k, String( v ) ] ) );
 };
