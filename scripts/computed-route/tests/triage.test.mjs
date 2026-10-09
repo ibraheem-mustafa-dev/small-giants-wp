@@ -622,6 +622,32 @@ test( 'negative control: a parent accepted by a walker rule (no ledger entry) an
 	assert.equal( v.class, 'U' );
 } );
 
+// A pair comparing two elements of very different size (shop 2026-10-08: the draft's 77px "Filter" header row against
+// the live 812px filter dialog): the walker measured the wrong draft element, so no setting is judged through it.
+const sizedWalk = ( r, dBox, lBox, dText = 'Filter', lText = 'Filter Women Men Style Colour Clear all' ) => ( { runs: [ { state: r.state, width: r.width, pairs: { [ r.pair ]: { draft: { styles: {}, box: dBox, text: dText }, live: { trace: { ref: r.ref }, box: lBox, text: lText }, diffs: [ r ] } } } ] } );
+
+test( 'negative control: a 44px tap area around the same words (Contact phone link, 19px against 44px) is not mispaired', () => {
+	const r = row( { key: 'padding-top', draft: '0px', live: '7.5px', path: '' } );
+	const v = triage( reportOf( { missing: [ r ] } ), sizedWalk( r, { w: 91, h: 19 }, { w: 109, h: 44 }, '0121 000 0000', '0121 000 0000' ), 's', ctxOf() ).verdicts[ 0 ];
+	assert.notEqual( v.decidedBy, 'mispaired' );
+} );
+
+test( 'MUST FAIL: a row whose pair boxes differ more than twice in size is W, mispaired, before any setting lookup', () => {
+	const r = row( { key: 'padding-top', draft: '20px', live: '0px', path: '' } );
+	let asked = 0;
+	const ctx = ctxOf( { resolver: () => ( asked++, { gap: 'no-setting', detail: 'none' } ) } );
+	const v = triage( reportOf( { missing: [ r ] } ), sizedWalk( r, { w: 375, h: 77 }, { w: 375, h: 812 } ), 's', ctx ).verdicts[ 0 ];
+	assert.equal( v.class, 'W' );
+	assert.equal( v.decidedBy, 'mispaired' );
+	assert.equal( asked, 0 );
+} );
+
+test( 'negative control: a pair within twice its twin\'s size keeps the ordinary verdict', () => {
+	const r = row( { key: 'padding-top', draft: '20px', live: '0px', path: '' } );
+	const v = triage( reportOf( { missing: [ r ] } ), sizedWalk( r, { w: 375, h: 166 }, { w: 375, h: 151 } ), 's', ctxOf() ).verdicts[ 0 ];
+	assert.equal( v.class, 'F' );
+} );
+
 // A block that wraps its own root only in some modes: calibrated wrapped (a heading on), measured on a page unwrapped.
 const wrappedCal = () => ( {
 	elements: { '': {}, '.sgs-field-textarea': {}, '.sgs-field-textarea > .sgs-field__item:nth-of-type(1) > .sgs-field__text': {} },

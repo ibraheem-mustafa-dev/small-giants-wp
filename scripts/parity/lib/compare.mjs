@@ -370,3 +370,58 @@ const INERT_ACCEPTS = INERT_LAYOUT.map( ( key ) => ( {
 	kind: 'style', key, notPainted: true,
 	reason: 'Layout property on an element whose painted box and content match (a flex vs block wrapper with one child, centred text, or the row gap of a one-row flex)',
 } ) );
+
+// Box-held properties: padding, margin and border widths, and a flex-grow, move only boxes and text. Where the pair and
+// every pair measured inside it keep their painted box and text position, the difference paints nothing (a draft that
+// pads an outer element where live pads an inner one by the same amount). Transition timing is never box-held: it
+// changes how motion feels, which no box can prove.
+export const BOX_HELD = /^(?:(?:padding|margin)-(?:top|right|bottom|left)|border-(?:top|right|bottom|left)-width|flex-grow)$/;
+const HELD_REASON = 'Box-held property that paints nothing: the pair and every pair inside it keep their painted box and text position (GAP-CHECKLIST 8)';
+const near = ( a, b, tol ) => null != a && null != b && Math.abs( a - b ) <= tol;
+
+// Whether a pair paints where its draft twin does: both boxes read with the same size, its text at the same inset (or
+// no text on either side), and no box row of its own left open.
+export function pairSettled( p, tol ) {
+	const d = p?.draft;
+	const l = p?.live;
+	if ( ! d?.box || ! l?.box || d.missing || l.missing || ! near( d.box.w, l.box.w, tol ) || ! near( d.box.h, l.box.h, tol ) ) {
+		return false;
+	}
+	for ( const k of [ 'textX', 'textY' ] ) {
+		const a = d.extras?.[ k ];
+		const b = l.extras?.[ k ];
+		if ( ( null == a ) !== ( null == b ) || ( null != a && ! near( a, b, tol ) ) ) {
+			return false;
+		}
+	}
+	return ( p.diffs || [] ).every( ( x ) => 'box' !== x.kind || x.accepted );
+}
+
+// Whether the live element traced as q sits inside the one traced as p (the same block deeper down, or a block whose
+// owner frame on p's block lies under p's element).
+export function inside( q, p ) {
+	if ( ! q || ! p || ( q.ref === p.ref && q.path === p.path ) ) {
+		return false;
+	}
+	const under = ( path ) => '' === p.path || String( path ).startsWith( `${ p.path } > ` );
+	if ( q.ref === p.ref ) {
+		return '' === p.path ? '' !== q.path : under( q.path );
+	}
+	return ( q.owners || [] ).some( ( o ) => o.ref === p.ref && under( o.path ) );
+}
+
+// One state's box-held pass, after every pair is judged: an open box-held style row is accepted on a settled pair whose
+// every pair inside it is settled too.
+export function acceptHeld( pairs, tol ) {
+	const named = Object.entries( pairs ).filter( ( [ n, p ] ) => ! n.startsWith( '(' ) && p?.live?.trace );
+	for ( const [ , p ] of named ) {
+		const open = ( p.diffs || [] ).filter( ( x ) => 'style' === x.kind && ! x.accepted && BOX_HELD.test( x.key ) );
+		if ( ! open.length || ! pairSettled( p, tol ) ) {
+			continue;
+		}
+		if ( named.every( ( [ , q ] ) => q === p || ! inside( q.live.trace, p.live.trace ) || pairSettled( q, tol ) ) ) {
+			open.forEach( ( x ) => ( x.accepted = HELD_REASON ) );
+		}
+	}
+	return pairs;
+}

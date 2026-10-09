@@ -1,6 +1,6 @@
 // One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check,
 // load entrances and links, each difference judged against the config's accepts.
-import { comparePair, compareScroll, isAccepted } from './compare.mjs';
+import { comparePair, compareScroll, isAccepted, acceptHeld } from './compare.mjs';
 import { compareStructure, driveDiffs } from './structure.mjs';
 import { anchorOffset } from './helpers.mjs';
 import { compareChrome } from './chrome-walk.mjs';
@@ -75,6 +75,8 @@ export function compareState( run, d, l, { state, width, cfg, accept, divergence
 		const { diffs: kept, unmatched: dropped } = dropUnmatched( all, unmatched );
 		run.pairs[ p.name ] = { draft: d.snap[ p.name ], live: l.snap[ p.name ], diffs: judge( p.name, kept ), ...( dropped.length ? { unmatched: dropped } : {} ) };
 	}
+	// Box-held rows that move nothing on the pair or inside it (compare.mjs::acceptHeld).
+	acceptHeld( run.pairs, tol.box );
 	if ( autoOn ) {
 		const a = autoPair( d.auto, l.auto, cfg );
 		run.pairs[ '(auto)' ] = { words: a.words, diffs: judge( '(auto)', a.diffs ) };

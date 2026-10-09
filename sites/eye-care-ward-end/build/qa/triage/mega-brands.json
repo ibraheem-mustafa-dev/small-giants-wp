@@ -4,9 +4,9 @@
  "walk": "sites/eye-care-ward-end/build/qa/solve/mega-brands/2026-10-08T21-59-08/round-1/report.json",
  "date": "2026-10-09",
  "counts": {
-  "W": 106,
+  "W": 119,
   "F": 4,
-  "T": 28,
+  "T": 15,
   "U": 0,
   "L": 0
  },
@@ -431,30 +431,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontFamily"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "fontFamily",
-     "css_property": "font-family",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -472,30 +460,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "fontWeight"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "fontWeight",
-     "css_property": "font-weight",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -513,30 +489,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "letterSpacing"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "letterSpacing",
-     "css_property": "letter-spacing",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -554,30 +518,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "textTransform"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "textTransform",
-     "css_property": "text-transform",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -595,176 +547,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourText"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ".sgs-button__label"
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourText",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHover",
-     "css_property": "color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColour",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHover",
-     "css_property": "color",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColour",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconColourHoverGradient",
-     "css_property": "stroke",
-     "css_element": "icon",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourTextHoverGradient",
-     "css_property": "color-gradient",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "boxShadowColourHover",
-     "css_property": "box-shadow-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "clickEffects",
-     "setting": "sgsClickRippleColour",
-     "css_property": null,
-     "css_element": null
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -782,37 +576,17 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "custom"
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -831,38 +605,17 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "link",
-      "custom"
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -881,37 +634,17 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "custom"
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -930,38 +663,17 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "padding"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "padding",
-     "css_property": "padding",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "link",
-      "custom"
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -980,30 +692,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "iconGap"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -1021,30 +721,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "iconGap"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -1063,51 +751,17 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "used-value",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "used-value",
-     "property": "width",
-     "declared": {}
-    },
-    {
-     "check": "resolver",
-     "gap": "used-value",
-     "detail": "width is the box's used size, not a declared value"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "widthType",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "customWidth",
-     "css_property": "width",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs"
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null,
-     "css_state": null,
-     "source": "sgs-ext"
-    },
-    {
-     "check": "extension",
-     "extension": "childSizing",
-     "setting": "sgsChildWidth",
-     "css_property": null,
-     "css_element": null
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -1125,30 +779,18 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "iconGap"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "iconGap",
-     "css_property": "gap",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
    ]
   },
@@ -1167,114 +809,19 @@
    "solveClass": "unresolved",
    "solveReason": "not written",
    "class": "W",
-   "decidedBy": "canvas-settable",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "gap": "no-setting",
-     "detail": "sgs/button has no setting for flex-direction"
-    },
-    {
-     "check": "canvas-settable",
-     "ref": "cr-ref-header-3",
-     "block": "sgs/site-header-row",
-     "setting": "flexDirection",
-     "property": "flex-direction",
-     "via": "declared",
-     "where": "ancestor",
-     "reachabilityVerified": false
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
+     ]
     }
-   ],
-   "source": {
-    "render": [
-     {
-      "file": "button/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     },
-     {
-      "file": "container/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     },
-     {
-      "file": "mega-group/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     },
-     {
-      "file": "mega-panel/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     },
-     {
-      "file": "nav-bar-menu/render.php",
-      "mentions": [
-       "flexDirection"
-      ],
-      "absent": []
-     },
-     {
-      "file": "site-header-row/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     },
-     {
-      "file": "site-header/render.php",
-      "mentions": [],
-      "absent": [
-       "flexDirection"
-      ]
-     }
-    ],
-    "rules": [
-     {
-      "file": "mega-group/style.css",
-      "selector": ".sgs-mega-group",
-      "declaration": "flex-direction:column"
-     }
-    ],
-    "helpers": [
-     {
-      "block": "container",
-      "cite": "includes/class-sgs-container-wrapper.php::SGS_Container_Wrapper",
-      "mentions": [],
-      "declares": [
-       "a flex mode (display:flex + // forced flex-direction:column, see the layout branch below), so it",
-       "isplay:flex'; $base_outer_decls[] = 'flex-direction:column'; } if ( $shadow ) { // T2",
-       "' !== $flex_direction ) { $gd[] = 'flex-direction:' . esc_attr( $flex_direction ); }"
-      ]
-     },
-     {
-      "block": "container",
-      "cite": "includes/container-scroll-row-css.php::sgs_container_scroll_row_css",
-      "mentions": [],
-      "declares": [
-       "} $rules = $row_sel . '{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-st"
-      ]
-     },
-     {
-      "block": "site-header",
-      "cite": "includes/sgs-header-rows-align-css.php::sgs_header_rows_align_css",
-      "mentions": [],
-      "declares": [
-       "array( 'start' => 'display:flex;flex-direction:column;justify-content:flex-start;', 'ce",
-       "-start;', 'center' => 'display:flex;flex-direction:column;justify-content:center;', 'end'",
-       "center;', 'end' => 'display:flex;flex-direction:column;justify-content:flex-end;', 'stre"
-      ]
-     }
-    ]
-   }
+   ]
   },
   {
    "key": "cr-ref-mega-brands-8||style|painted-ground",
@@ -1290,70 +837,17 @@
    ],
    "solveClass": "unresolved",
    "solveReason": "not written",
-   "class": "T",
-   "decidedBy": "resolver-writes",
+   "class": "W",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "resolver",
-     "wouldWrite": [
-      "colourBackground"
+     "check": "mispaired",
+     "widths": [
+      1440,
+      1920
      ],
-     "on": {
-      "ref": "cr-ref-mega-brands-8",
-      "block": "sgs/button",
-      "path": ""
-     },
-     "holds": false
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackground",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHover",
-     "css_property": "background-color",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": null,
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "attribute",
-     "block": "sgs/button",
-     "setting": "colourBackgroundHoverGradient",
-     "css_property": "background-image",
-     "css_element": "wrapper",
-     "css_state": "hover",
-     "source": "sgs",
-     "reaches": true
-    },
-    {
-     "check": "discovered",
-     "block": "sgs/button",
-     "setting": "inheritStyle",
-     "values": [
-      "secondary",
-      "outline",
-      "link",
-      "custom"
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -6138,20 +5632,16 @@
    "solveClass": "derived",
    "solveReason": null,
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": 344,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -6171,20 +5661,16 @@
    "solveClass": "derived",
    "solveReason": null,
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-8||style|width",
-     "ref": "cr-ref-mega-brands-8",
-     "key": "width",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -212,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -6204,20 +5690,16 @@
    "solveClass": "derived",
    "solveReason": null,
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap|style|padding-right",
-     "ref": "cr-ref-header-4",
-     "key": "padding-right",
-     "relation": "ancestor",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -53,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -6237,20 +5719,16 @@
    "solveClass": "derived",
    "solveReason": null,
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-header-4|.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(2) > .sgs-nav-bar-menu__mega > .sgs-nav-bar-menu__mega-panel-wrap > .sgs-mega-panel > .sgs-mega-panel__content > .sgs-mega-group > .sgs-container > .sgs-container__inner > h3:nth-of-type(1)|style|line-height",
-     "ref": "cr-ref-header-4",
-     "key": "line-height",
-     "relation": "ancestor",
-     "match": "layout-row",
-     "width": 1440,
-     "delta": -93,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]
@@ -6270,20 +5748,16 @@
    "solveClass": "derived",
    "solveReason": null,
    "class": "W",
-   "decidedBy": "consequence",
+   "decidedBy": "mispaired",
    "evidence": [
     {
-     "check": "consequence",
-     "parent": "cr-ref-mega-brands-8||style|padding-top",
-     "ref": "cr-ref-mega-brands-8",
-     "key": "padding-top",
-     "relation": "self",
-     "match": "same-delta",
-     "width": 1440,
-     "delta": -15,
+     "check": "mispaired",
      "widths": [
       1440,
       1920
+     ],
+     "sizes": [
+      "266x84 draft, 54x31 live"
      ]
     }
    ]

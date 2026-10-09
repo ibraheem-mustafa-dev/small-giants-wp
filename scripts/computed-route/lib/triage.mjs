@@ -214,6 +214,24 @@ const animating = ( snap, key ) => {
 	return ! family || ! frames || 'none' === frames || family.test( frames );
 };
 const snapshotOf = ( walk, r, side ) => ( walk?.runs || [] ).find( ( run ) => run.width === r.width && ( undefined === run.state || undefined === r.state || run.state === r.state ) && run.pairs?.[ r.pair ] )?.pairs[ r.pair ][ side ];
+// A row whose pair compares two elements of very different size: at every width the row was read, one side's box is more
+// than twice the other's in width or height AND the two hold different words (a draft header row paired with a whole live
+// dialog). A size alone is not enough: a 44px tap area around the same words is one element made taller. The walker
+// measured the wrong draft element, so no setting can be judged through the row: { check: 'mispaired', widths, sizes }
+// or null.
+const wordsOf = ( t ) => String( t ?? '' ).toLowerCase().replace( /\s+/g, ' ' ).trim();
+const differentWords = ( a, b ) => '' !== wordsOf( a ) && '' !== wordsOf( b ) && wordsOf( a ) !== wordsOf( b );
+export function mispairOf( issue, walk ) {
+	const off = ( a, b ) => a > 0 && b > 0 && Math.max( a, b ) / Math.min( a, b ) > 2;
+	const reads = issue.rows.map( ( r ) => {
+		const ds = snapshotOf( walk, r, 'draft' );
+		const ls = snapshotOf( walk, r, 'live' );
+		const d = ds?.box;
+		const l = ls?.box;
+		return d && l && ( off( d.w, l.w ) || off( d.h, l.h ) ) && differentWords( ds.text, ls.text ) ? { width: r.width, size: `${ d.w }x${ d.h } draft, ${ l.w }x${ l.h } live` } : null;
+	} );
+	return reads.length && reads.every( Boolean ) ? { check: 'mispaired', widths: reads.map( ( x ) => x.width ), sizes: [ ...new Set( reads.map( ( x ) => x.size ) ) ].slice( 0, 4 ) } : null;
+}
 export function transientOf( rows, walk ) {
 	const caught = ( r ) => [ 'draft', 'live' ].some( ( side ) => atStart( r.key, r[ side ] ) && animating( snapshotOf( walk, r, side ), r.key ) );
 	const hits = rows.filter( ( r ) => 'style' === r.kind && MOTION.test( r.key ) && caught( r ) );
@@ -542,6 +560,11 @@ export function triageIssue( issue, ctx ) {
 	if ( issue.rows.every( ( x ) => null == x.draft || null == x.live ) && unread.length ) {
 		evidence.unshift( { check: 'unmeasured-side', sides: unread, detail: `${ issue.rows.length } rows, the ${ unread.join( ' and ' ) } value was never read at any width: no paint is compared` } );
 		return verdict( 'W', 'unmeasured-side' );
+	}
+	const mispaired = mispairOf( issue, ctx.walk );
+	if ( mispaired ) {
+		evidence.unshift( mispaired );
+		return verdict( 'W', 'mispaired' );
 	}
 	// An enclosing block's reading of an element whose own row is open: one issue, owned by that row, whatever its kind.
 	if ( conseq && explained.every( ( e ) => 'same-element' === e.match ) ) {
