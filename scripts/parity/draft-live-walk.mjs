@@ -36,7 +36,7 @@ import { writeReport, sideBySide } from './lib/report.mjs';
 import { lintConfig, loadHandScope } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
-import { makeHelpers } from './lib/helpers.mjs';
+import { makeHelpers, retargetLive } from './lib/helpers.mjs';
 import { sampleTimeline, collectChrome } from './lib/chrome-walk.mjs';
 import { withAutoScroll, collectAutoOn, markClipped } from './lib/auto-walk.mjs';
 import closeOnExit from '../lib/close-browser-on-exit.js';
@@ -57,7 +57,8 @@ if ( ! argv[ 0 ] || ! fs.existsSync( cfgPath ) ) {
 	console.error( 'Usage: node draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375,1920] [--states a,b] [--no-accept] [--no-review] [--lint] [--inject-live-css "css"]' );
 	process.exit( 2 );
 }
-const cfg = ( await import( pathToFileURL( cfgPath ).href ) ).default;
+// SGS_LIVE_ORIGIN: measure a local mirror of the live site instead (computed-route solve.mjs --site).
+const cfg = retargetLive( ( await import( pathToFileURL( cfgPath ).href ) ).default, process.env.SGS_LIVE_ORIGIN );
 const onlyStates = flag( '--states' )?.split( ',' );
 const problems = lintConfig( cfg, loadHandScope( cfgPath, cfg ), onlyStates );
 if ( problems.length || argv.includes( '--lint' ) ) {

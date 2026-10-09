@@ -161,3 +161,28 @@ export function anchorOffset( p, ds, ls, t ) {
 	}
 	return out;
 }
+
+// A config measured on another copy of its live site (a local mirror of the test site, SGS_LIVE_ORIGIN): every string
+// in the config that starts with the live URL's origin moves to `origin`; the draft side, finder functions and any
+// other text stay as they are. No origin returns the config unchanged.
+export function retargetLive( cfg, origin ) {
+	if ( ! origin ) {
+		return cfg;
+	}
+	const from = new URL( String( cfg.live.url ).replace( '{cb}', '0' ) ).origin;
+	const to = String( origin ).replace( /\/+$/, '' );
+	const move = ( v ) => {
+		if ( 'string' === typeof v ) {
+			// A URL on that origin: the origin alone, or followed by a path, query or fragment (never other text).
+			return v.startsWith( from ) && /^(?:$|[/?#])/.test( v.slice( from.length ) ) ? to + v.slice( from.length ) : v;
+		}
+		if ( Array.isArray( v ) ) {
+			return v.map( move );
+		}
+		if ( v && 'object' === typeof v && Object.getPrototypeOf( v ) === Object.prototype ) {
+			return Object.fromEntries( Object.entries( v ).map( ( [ k, x ] ) => [ k, move( x ) ] ) );
+		}
+		return v;
+	};
+	return move( cfg );
+}

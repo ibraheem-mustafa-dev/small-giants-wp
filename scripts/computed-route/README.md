@@ -116,6 +116,9 @@ file names the rule it proves and has one case marked MUST FAIL.
 | `tests/walker-diagram-reads.test.mjs` | GAP-CHECKLIST section 27: a drawn line's stroke weight and dash are icon rows, a positioned element's `left`/`top` are rows (in-flow elements read none), and Solve writes an offset only from the draft's declared value; headless Chromium on local HTML. |
 | `tests/fill-diagram.test.mjs` | R-47-4 for diagrams: the Eye Care draft's front-view lines, guides (uneven reaches in one path included), ticks and a positioned label are measured to the unit in headless Chromium; a selector matching nothing is an error, never a zero. |
 | `tests/walker-refs.test.mjs` | FR-47-6 items 6 and 7 at unit level (element paths, row stamping, divergence matching); flow position rows and the identity transform (GAP-CHECKLIST section 17). |
+| `tests/walker-inert-layout.test.mjs` | The walker's one shared paints-nothing rule (`scripts/parity/lib/compare.mjs::INERT_LAYOUT`): a gap shorthand on a pair whose box matches is accepted with no config entry (MUST FAIL), never while a box difference is open, never for a painting property; and the detector that fails when a client walker config repeats the rule. |
+| `tests/walker-box-held.test.mjs` | `compare.mjs::acceptHeld`: padding, margin, border widths and flex-grow are accepted when the pair and every pair inside it keep their box and text position (MUST FAIL, the lens outer-versus-inner padding); never when text moves in a same-size box, a pair inside moves, or the pair itself moves; transition timing is never box-held. |
+| `tests/site-switch.test.mjs` | `--site`: `retargetLive` moves every live URL of a config to a mirror's origin and nothing else (MUST FAIL); `solve.mjs::siteOverride` builds with the mirror's credentials, skips the remote host check and hands the walker its origin (MUST FAIL); no site changes nothing; an unknown site is refused. |
 | `tests/wp-session.test.mjs` | `scripts/lib/wp-session.js` in headless Chromium: a child attached to the shared browser and the owner both survive a page dialog; a confirm is dismissed and a beforeunload left, as Playwright's default does (MUST FAIL: the two auto-dismissals raced and one crashed with "No dialog is showing"; dismissing a beforeunload aborted the editor navigation). |
 | `tests/draft-serve.test.mjs` | FR-47-4 draft server: no path escape or symlink escape (MUST FAIL), ephemeral port, directory index, content types, Range, and close frees the port. |
 | `tests/fill-skeleton.test.mjs` | FR-47-4: the finder vocabulary, slot scoping, node numbering, skeleton problems and the clean tree. |
@@ -167,6 +170,7 @@ file names the rule it proves and has one case marked MUST FAIL.
 - `ratioSetting(raw, def)` → `{ value }` or `{ error }`: a measured `aspect-ratio` in the setting's form (the enum value painting the same ratio, `"w / h"` for a free string, `auto` as the empty setting; `auto w / h` cannot be held).
 - `tracksSetting(raw)` → `{ value }` or `{ error }`: measured px grid tracks as fr proportions to the smallest track, floored at 0 (`"496.562px 451.438px"` → `"minmax(0, 1.1fr) minmax(0, 1fr)"`; equal tracks → `"repeat(N, minmax(0, 1fr))"`).
 
+- `snapFontFamily(value, snapshot, { log, where, prefer })` → the font-family preset slug whose first family matches a measured font stack (`prefer`, the slug the node already holds, first), or null (the stack is written as measured).
 ### `lib/resolve.mjs` (reads block.json files)
 
 - `timeToMs(value)` → a CSS time as whole milliseconds (`0.25s` → `250`, `1s` → `1000`), else null. `formatValue` uses it so the route never hands a duration setting a decimal or a unit suffix: `sgs_transition_vars` would refuse it and silently apply the default, and before that helper was fixed it stripped it to a tenth of the value asked for.
@@ -316,10 +320,13 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 - `writableGroups(report, stateMap)` → `{ groups, box, unmapped, unmappedState, other }`; each group carries its setting `state` and `walkerStates`; a row with no draft value goes to `other` (nothing to write).
 - `rowDistance(row)` → px distance from the draft (0 or 1 for non-lengths).
 - `regressedRows(prev, report)` → open style or box rows that are new or further from the draft than last round (keyed per walker state).
+- `heldReason(held, r)` → the text saying what the tree already holds for a row's group (`held[groupKey]`, recorded by `writeRound` when a setting already holds the draft value).
+- `widthPattern(report, r)` → `{ fails, matches }`: the widths, in the row's walker state, where the group differs and where it matches; a difference that follows the width points at how one width is written.
 - `classify(report, { writes, gaps, held?, elements, stateMap })` → `{ hardcode, missing, unresolved, derived, other }`; `held` (from `writeRound` or `heldGroups`) makes a row whose setting already holds the draft value a Hardcode, unless one side was never read: that row is unresolved `unmeasured-side`.
 - `intendedCount(report)` → accepted rows.
 - `knownPaths(cal)` → every element path a calibration knows (its elements, each setting's slots and reaches, and the discovered slots); the write path and triage read the same set, so a row whose only evidence is a discovered slot is never gapped `unmapped-element` by one and resolved by the other.
 - `stateDisagreement(report, group, stateMap)` → `{ width, values, detail }` when the walker states mapped to the group's setting state read different draft values at one width, else null; it compares every mapped state, not only those with an open row, because a baseline state usually has none.
+- `effectiveState(report, g, stateMap)` → the setting state a group resolves in: a walker state mapped to a setting state (`open`, `scrolled`) keeps it only for what that state changes; when every draft value the group reads matches the rest walker states' value at that width, or the element is never read at rest, the group resolves at rest (`null`). `writableGroups` re-keys such a group and merges it into the element's rest group; `lib/triage.mjs::resolveIssue` resolves in the same state.
 - `TEXT_READ_CAP`: the walker's text read cap (400 characters), beyond which a text row's words cannot be trusted whole.
 - `HANDOVER_OWNERS`: `site-info`, `product-data`, `content-page`, `behaviour`, `woocommerce-text`.
 - `contentTypeOf(row)` → `text`, `presence` or `link` for a content row, else null.
@@ -339,6 +346,7 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 
 ### `lib/winning-rule.mjs`
 - `propertyFamily(prop)` → the property names that can set it (logical longhands and shorthands). `explainCascade(matched, prop, draft, sources)` → `{ winner, carrier }` from a CDP matched-rules result. `readWinningRules(rows, { liveUrl })` → a Map of row to `{ text }` or `{ note }`.
+- `describeCascade(ex, prop)` → the plain-text line for an `explainCascade` result: the winning rule and the losing rule carrying the draft's value, or that no matched rule sets the property. `rowSelector(row)` → the element's selector from a row's ref and path.
 
 ### `lib/references.mjs` (reads `plugins/sgs-blocks/src/blocks/*/render.php`)
 - `BLOCKS_SRC`: the block sources folder. `CORE_PLACEHOLDERS`: core blocks that print another post or part, with the attribute naming it.
@@ -437,6 +445,8 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 ### `lib/guard.mjs`
 - `explains(w, r, cal)` → true when calibration ties write `w` to regressed row `r` (its own property, a calibrated side effect, or a discovered layout effect).
 - `anchorRef(report, r)` → the ref of the pair a distance row (`y-from-<pair>`, `x-from-`, `right-from-`) is measured from, from the walk's live trace, or null. When the row's own node holds no write, the guard's suspects are the writes inside that node and inside the anchor pair.
+- `ownSizeRow(r)` → whether a row is a node's own height or width box row (no path), which sums everything inside the node and so cannot judge one write.
+- `landed(s, report)` → true when every row a setting was written from (matched by the write's group key) is closed in the report: the direct verdict on that setting.
 - `settingsOf(writes)` → the writes grouped by node and attribute (writes to one attribute chain, so they are undone together).
 - `suspectOrder(settings, calFor)` → layout-mode settings first, then settings writing a layout property, then the latest.
 - `guardRound(base, report, tree, lastWrites, blocked, calFor, trials)` → the writes whose state changed (reverted, under trial, restored); settles last round's trials against the new walk first.
@@ -455,6 +465,10 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - `solveLoop({ maxRounds, build, walk, guard, write, save, blocked?, log? })` → `{ report, writes, gaps, rounds, lastWrote }`: the build, walk and write rounds with every step passed in; `maxRounds` 0 is measure-only (one build, one walk, never a write).
 - `revertRegressions(prev, report, tree, lastWrites, blocked, calFor?, trials?)` → the writes the guard undid this round (`lib/guard.mjs::guardRound`).
 - `wrongWrites(writes, reportAfter, stateMap)` → writes a later round reverted or that moved their rows further from the draft.
+- `unpaintedBorder(report, g)` → a `not-painted` gap for a border colour row on a side the draft gives no border at any measured width (its value is the text colour carried by currentColor, so a written colour would paint nothing), else null.
+- `settingRatio(wrong, writes)` → Spec 47 §3.3's ratio: wrong settings (one attribute on one node) over every setting written.
+- `siteOverride(s, site, targets, readUrl)` → `{ surface, sshArgs, liveOrigin }` for `--site <calibration target>`: the surface built with that target's credentials (a mirror is a database copy, so the post ids and templates are the surface's own), `sshArgs` null for a local mirror (no remote host check), and the target's origin, which `walk` passes to the walker as `SGS_LIVE_ORIGIN` (`scripts/parity/lib/helpers.mjs::retargetLive` moves every live URL of the config to it). No site returns the surface unchanged.
+- `envUrl(file, key)` → `WP_URL_<key>` from a secrets env file, or null.
 
 ### `fill.mjs` (runs Chromium, serves a local folder)
 - `calibrationLoader(dir)` → the block-to-calibration function: `solve.mjs::calibrationFor` when `dir` is null, else reads `<dir>/<block>.json`.

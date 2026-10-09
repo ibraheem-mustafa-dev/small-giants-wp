@@ -36,6 +36,16 @@ wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts
 
 Use `local-eye-care` or `local-sandybrown` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, then runs `wp cache flush`. Build first (`npm run build` in `plugins/sgs-blocks`).
 
-## Re-cloning
+## Refresh the database and uploads from the test site
 
-These are one-off mirrors; the database is not kept in step with the live sites.
+The database is not kept in step with the test sites by itself. Before measuring on a mirror, refresh it (from Git Bash, which holds the SSH key):
+
+```
+bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test
+```
+
+It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up the local database to `/var/www/<local-site>-before-refresh.sql` in WSL, dumps the test site's database with `mysqldump` (Hostinger's `wp db export` writes nothing) and its `wp-content/uploads`, imports both, rewrites the test site's URL to the mirror's (plain and JSON-escaped), flushes the cache, and fails unless `siteurl` is the mirror's. The mail block, `WP_ENVIRONMENT_TYPE` and cron settings live in files and `wp-config.php`, which it never touches. Then sync the build (above): the mirror runs the repo's build, not the test site's.
+
+## Measuring on a mirror
+
+`scripts/computed-route/solve.mjs --site local-eye-care` builds and walks a surface on the mirror instead of the test site (`solve.mjs::siteOverride`; the walker's live URLs move with `SGS_LIVE_ORIGIN`). The mirror is a database copy, so the surface's post ids and templates are its own. Calibration targets the mirrors as `local-eye-care` / `local-sandybrown`.

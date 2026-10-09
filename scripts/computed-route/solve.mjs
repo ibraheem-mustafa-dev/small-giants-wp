@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting
 // write through the resolver, rebuild, and repeat (at most three write rounds), then classify what survives.
-//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3]
+//   node scripts/computed-route/solve.mjs --client eye-care-ward-end --surface footer [--out <dir>] [--rounds 3] [--site <calibration target>]
 // Reads only sites/<client>/build/surfaces.json for the surface. Writes the updated tree back to the surface's tree
 // file, and solve-report.md / solve-report.json (plus every round's walker report) to --out.
 import fs from 'fs';
@@ -18,6 +18,7 @@ import { guardRound, closeTrials } from './lib/guard.mjs';
 import { readWinningRules } from './lib/winning-rule.mjs';
 import { detectReferences, referenceOf, BLOCKS_SRC } from './lib/references.mjs';
 import { entranceStart, groupRects } from './lib/entrance.mjs';
+import { retargetLive } from '../parity/lib/helpers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -98,6 +99,33 @@ export function outsideOwner( node, { refs = {}, source = blockRenderSource } = 
 	return /wc_get_product|get_post_meta|WC_Product/.test( src ) ? 'product-data' : null;
 }
 
+// --site <name>: run a surface against another copy of its site, a calibration-targets.json entry (a local mirror of
+// the test site, a database copy, so its post ids and templates are the surface's own). The build logs in with that
+// target's credentials, a mirror (one with a local pluginDir) has no remote host to check before a build, and the
+// walker measures the target's origin (WP_URL_<envKey>, read by readUrl). No site: the surface as it is.
+// Returns { surface, sshArgs, liveOrigin }; sshArgs undefined keeps assertQuiet's remote default.
+export function siteOverride( s, site, targets, readUrl ) {
+	if ( ! site ) {
+		return { surface: s, sshArgs: undefined, liveOrigin: null };
+	}
+	const t = targets[ site ];
+	if ( ! t ) {
+		throw new Error( `--site ${ site } is not in calibration-targets.json` );
+	}
+	return {
+		surface: { ...s, envFile: t.envFile, envKey: t.envKey, site },
+		sshArgs: t.pluginDir ? null : undefined,
+		liveOrigin: String( readUrl( t.envFile, t.envKey ) || '' ).replace( /\/+$/, '' ) || null,
+	};
+}
+
+// WP_URL_<key> from a secrets env file, or null.
+export function envUrl( file, key ) {
+	const f = path.join( REPO, file );
+	const line = fs.existsSync( f ) ? fs.readFileSync( f, 'utf8' ).split( /\r?\n/ ).find( ( l ) => l.startsWith( `WP_URL_${ key }=` ) ) : null;
+	return line ? line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ) : null;
+}
+
 function targetArgs( t ) {
 	if ( t.postId ) {
 		return [ '--post-id', String( t.postId ) ];
@@ -129,11 +157,11 @@ export function mergeReports( parts ) {
 	return { ...parts[ 0 ], runs: parts.flatMap( ( r ) => r.runs || [] ), errors: Object.assign( {}, ...parts.map( ( r ) => r.errors || {} ) ) };
 }
 
-async function walk( walker, outDir, walkStates = null ) {
+async function walk( walker, outDir, walkStates = null, liveOrigin = null ) {
 	const dirOf = ( ws ) => path.join( outDir, `w${ ws.join( '-' ) }` );
 	const one = ( ws ) => new Promise( ( done ) => {
 		const args = [ 'scripts/parity/draft-live-walk.mjs', walker, ...WALK_FLAGS, '--widths', ws.join( ',' ), '--out', dirOf( ws ), '--draft-cache', path.join( path.dirname( outDir ), `draft-cache-${ ws.join( '-' ) }.json` ), ...( walkStates?.length ? [ '--states', walkStates.join( ',' ) ] : [] ) ];
-		spawn( 'node', args, { cwd: REPO, stdio: 'inherit', timeout: 1800000 } ).on( 'close', done );
+		spawn( 'node', args, { cwd: REPO, stdio: 'inherit', timeout: 1800000, env: { ...process.env, ...( liveOrigin ? { SGS_LIVE_ORIGIN: liveOrigin } : {} ) } } ).on( 'close', done );
 	} );
 	await Promise.all( WIDTH_GROUPS.map( one ) );
 	const parts = WIDTH_GROUPS.map( ( ws ) => {
@@ -451,7 +479,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const maxRounds = Number( flag( '--rounds' ) || 3 );
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const surfaces = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
-	const s = surfaces[ surface ];
+	const site = siteOverride( surfaces[ surface ], surfaces[ surface ] ? flag( '--site' ) : null, JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-targets.json' ), 'utf8' ) ), envUrl );
+	const s = site.surface;
 	if ( ! s ) {
 		console.error( `no surface "${ surface }" in surfaces.json` );
 		process.exit( 2 );
@@ -483,10 +512,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		maxRounds,
 		blocked,
 		build: () => {
-			assertQuiet();
+			assertQuiet( site.sshArgs );
 			return build( s, treeFile );
 		},
-		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates ),
+		walk: ( round ) => walk( walker, path.join( outDir, `round-${ round }` ), s.walkStates, site.liveOrigin ),
 		guard: ( prev, rep, lastWrites ) => guardRound( prev, rep, tree, lastWrites, blocked, calibrationFor, trials ),
 		// The settling walk only judges open trials: with no last writes the guard opens no new one.
 		settle: ( prev, rep ) => guardRound( prev, rep, tree, [], blocked, calibrationFor, trials ),
@@ -504,7 +533,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const heldRows = classes.hardcode;
 	if ( heldRows.length && ! argv.includes( '--no-rules' ) ) {
 		try {
-			const liveUrl = ( await import( pathToFileURL( walker ).href ) ).default?.live?.url;
+			const liveUrl = retargetLive( ( await import( pathToFileURL( walker ).href ) ).default, site.liveOrigin )?.live?.url;
 			for ( const [ row, found ] of await readWinningRules( heldRows, { liveUrl } ) ) {
 				row.winningRule = found.text || found.note || null;
 			}
