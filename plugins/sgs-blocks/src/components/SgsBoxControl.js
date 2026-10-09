@@ -40,6 +40,14 @@
  * produce a mixed state because re-linking always collapses every side to
  * the first side's value first (`toggleLinked`, unchanged).
  *
+ * ── Paired Vertical / Horizontal mode (opt-in via `splitOnAxis`) ───────
+ * With `splitOnAxis` the link button cycles three states: linked (one row), Vertical and Horizontal (two rows;
+ * Vertical writes top and bottom, Horizontal writes left and right), then each side (four rows). Without the prop
+ * the control keeps its two states. It opens paired when top equals bottom and left equals right but not all four,
+ * linked when all four are equal, per side otherwise. A control not given all four sides (a radius) never pairs.
+ * Custom state follows the rows through every move (`carryCustomRows`). Blocks opt in per attribute through
+ * `block.json::supports.sgs.spacingAxes` (`utils/spacing-axes.js`).
+ *
  * ── Spacing presets (C16, 2026-08-27, opt-in via `presets` prop) ────────
  * Mirrors `SgsLengthControl.js`'s existing single-length preset pattern
  * (`useSettings( 'spacing.spacingSizes' )` normalised through
@@ -79,6 +87,9 @@ import {
 	sidesRight,
 	sidesBottom,
 	sidesLeft,
+	sidesAxial,
+	sidesVertical,
+	sidesHorizontal,
 	cornerAll,
 	cornerTopLeft,
 	cornerTopRight,
@@ -98,6 +109,19 @@ const SIDE_LABELS = {
 	bottom: __( 'Bottom', 'sgs-blocks' ),
 	left: __( 'Left', 'sgs-blocks' ),
 };
+
+/** The paired mode's two rows and the sides each one writes. */
+const AXES = {
+	vertical: [ 'top', 'bottom' ],
+	horizontal: [ 'left', 'right' ],
+};
+
+const AXIS_LABELS = {
+	vertical: __( 'Vertical', 'sgs-blocks' ),
+	horizontal: __( 'Horizontal', 'sgs-blocks' ),
+};
+
+const AXIS_ICONS = { vertical: sidesVertical, horizontal: sidesHorizontal };
 
 /** Row icons, as core's spacing and radius controls draw them; the text label stays the accessible name. */
 const KEY_ICONS = {
@@ -216,6 +240,9 @@ function parseLength( raw ) {
  *                                   shows it exactly as an inherited value
  *                                   ("Default (M)" / "Default (20px)", and the
  *                                   size as placeholder); nothing is written.
+ * @param {boolean}  [props.splitOnAxis=false] Offer the paired Vertical / Horizontal
+ *                                   state between linked and each side. OPT-IN;
+ *                                   ignored unless all four sides are requested.
  * @param {Object}   [props.labels]  { side: label } — names for non-side keys
  *                                   (the four corners of a radius).
  * @param {number}   [props.min]     RangeControl minimum override. Omit to
@@ -250,6 +277,7 @@ export default function SgsBoxControl( {
 	inherited: inheritedProp,
 	defaults = {},
 	labels = SIDE_LABELS,
+	splitOnAxis = false,
 } ) {
 	// A caller that knows the tiers passes `inherited`; inside a ResponsiveOverride it comes from the override.
 	const inheritedFromOverride = useContext( InheritedBoxContext );
@@ -272,10 +300,21 @@ export default function SgsBoxControl( {
 	// What an unset side paints: a wider tier's value first, else the block's declared default.
 	const unsetValue = ( key ) => inherited[ key ] || defaults?.[ key ] || '';
 
-	// Starts linked only when every side reads the same, counting what an unset side inherits.
-	const [ isLinked, setIsLinked ] = useState( () => {
-		const raw = sides.map( ( s ) => values[ s ] || unsetValue( s ) );
-		return raw.every( ( v ) => v === raw[ 0 ] );
+	// The paired mode needs the four sides of a box; a radius's corners never pair.
+	const canSplit = splitOnAxis && ALL_SIDES.every( ( s ) => sides.includes( s ) );
+
+	// 'linked' | 'axial' | 'sides'. Starts linked only when every side reads the same, counting what an unset side
+	// inherits; paired when each axis reads the same; otherwise per side.
+	const [ mode, setMode ] = useState( () => {
+		const shown = ( s ) => values[ s ] || unsetValue( s );
+		const raw = sides.map( shown );
+		if ( raw.every( ( v ) => v === raw[ 0 ] ) ) {
+			return 'linked';
+		}
+		if ( canSplit && shown( 'top' ) === shown( 'bottom' ) && shown( 'left' ) === shown( 'right' ) ) {
+			return 'axial';
+		}
+		return 'sides';
 	} );
 
 	const firstSide = sides[ 0 ];
@@ -287,7 +326,7 @@ export default function SgsBoxControl( {
 		setCustomRows( ( prev ) => ( !! prev[ rowKey ] === on ? prev : { ...prev, [ rowKey ]: on } ) );
 
 	// What an unset row takes from a wider tier or, failing that, the block's declared default: the side's own,
-	// or the first side's on the linked row. '' when the row has its own value.
+	// the axis's first side's, or the first side's on the linked row. '' when the row has its own value.
 	const inheritedFor = ( sideKey, value ) => ( value ? '' : unsetValue( sideKey || firstSide ) );
 
 	const setSide = ( side, raw ) => {
@@ -302,41 +341,73 @@ export default function SgsBoxControl( {
 		onChange( next );
 	};
 
-	// Custom… picked with nothing typed is held per row. Unlinking hands the linked row's Custom to every side;
-	// re-linking makes the linked row Custom when ANY side was Custom. The departing mode's keys are dropped.
-	const carryCustomRows = ( toLinked ) =>
+	// Each axis writes only its own sides.
+	const setAxis = ( axis, raw ) => {
+		const next = { ...values };
+		AXES[ axis ].forEach( ( s ) => {
+			next[ s ] = raw;
+		} );
+		onChange( next );
+	};
+
+	// The rows a mode shows: the sides each one covers, keyed as `customRows` is.
+	const rowsOf = ( forMode ) => {
+		if ( 'linked' === forMode ) {
+			return [ { key: 'linked', covers: sides } ];
+		}
+		if ( 'axial' === forMode ) {
+			return Object.entries( AXES ).map( ( [ key, covers ] ) => ( { key, covers } ) );
+		}
+		return sides.map( ( s ) => ( { key: s, covers: [ s ] } ) );
+	};
+
+	// Custom… picked with nothing typed is held per row. Moving between modes hands a row's Custom to every row
+	// that covers any of its sides: a Custom row that splits gives Custom to each half, and rows that merge are
+	// Custom when ANY of them was. The departing mode's keys are dropped.
+	const carryCustomRows = ( from, to ) =>
 		setCustomRows( ( prev ) => {
 			const next = { ...prev };
-			const on = toLinked ? sides.some( ( s ) => prev[ s ] ) : !! prev.linked;
-			sides.forEach( ( s ) => {
-				if ( toLinked || ! on ) {
-					delete next[ s ];
-				} else {
-					next[ s ] = true;
+			const fromRows = rowsOf( from );
+			fromRows.forEach( ( r ) => delete next[ r.key ] );
+			rowsOf( to ).forEach( ( r ) => {
+				if ( fromRows.some( ( f ) => prev[ f.key ] && f.covers.some( ( s ) => r.covers.includes( s ) ) ) ) {
+					next[ r.key ] = true;
 				}
 			} );
-			if ( toLinked && on ) {
-				next.linked = true;
-			} else {
-				delete next.linked;
-			}
 			return next;
 		} );
 
+	// linked -> paired (when offered, else each side) -> each side -> linked.
+	const nextMode = { linked: canSplit ? 'axial' : 'sides', axial: 'sides', sides: 'linked' }[ mode ];
+
 	const toggleLinked = () => {
-		if ( ! isLinked ) {
+		if ( 'linked' === nextMode ) {
 			// Re-linking collapses to the first side's value, mirroring core
 			// BoxControl's own re-link-collapses-to-one-value behaviour. A
 			// preset value collapses cleanly too — it's just another string.
 			setAllSides( values[ firstSide ] ?? '' );
+		} else if ( 'axial' === nextMode ) {
+			// Pairing collapses each axis to its first side's value (top, left); nothing is written when the
+			// axes already agree.
+			const top = values.top ?? '';
+			const left = values.left ?? '';
+			if ( ( values.bottom ?? '' ) !== top || ( values.right ?? '' ) !== left ) {
+				onChange( { ...values, bottom: top, right: left } );
+			}
 		}
-		carryCustomRows( ! isLinked );
-		setIsLinked( ! isLinked );
+		carryCustomRows( mode, nextMode );
+		setMode( nextMode );
 	};
 
-	const linkLabel = isLinked
-		? __( 'Unlink sides', 'sgs-blocks' )
-		: __( 'Link sides', 'sgs-blocks' );
+	// The label names what the button does next.
+	const linkLabel = {
+		linked: canSplit
+			? __( 'Set vertical and horizontal separately', 'sgs-blocks' )
+			: __( 'Unlink sides', 'sgs-blocks' ),
+		axial: __( 'Set each side separately', 'sgs-blocks' ),
+		sides: __( 'Link sides', 'sgs-blocks' ),
+	}[ mode ];
+	const linkButtonIcon = { linked: linkIcon, axial: sidesAxial, sides: linkOffIcon }[ mode ];
 
 	const explicitRange = min !== undefined || max !== undefined;
 
@@ -344,15 +415,15 @@ export default function SgsBoxControl( {
 	const linkButton = (
 		<Button
 			size="small"
-			icon={ isLinked ? linkIcon : linkOffIcon }
+			icon={ linkButtonIcon }
 			iconSize={ 24 }
 			label={ linkLabel }
 			onClick={ toggleLinked }
 		/>
 	);
 
-	const rowIcon = ( sideKey ) => {
-		const icon = sideKey ? KEY_ICONS[ sideKey ] : allIconFor( sides );
+	const rowIcon = ( sideKey, axis ) => {
+		const icon = axis ? AXIS_ICONS[ axis ] : sideKey ? KEY_ICONS[ sideKey ] : allIconFor( sides );
 		return icon ? (
 			<FlexItem className="sgs-box-control__side-icon">
 				<Icon icon={ icon } size={ 24 } />
@@ -372,8 +443,8 @@ export default function SgsBoxControl( {
 	 * the value box; typing stores a length, which the select reads as Custom. `Custom…` picked from Default keeps
 	 * the select on Custom (`customRows`) until a value is typed or another option is picked.
 	 */
-	const presetRow = ( sideKey, value, onSideChange, rowLabel ) => {
-		const rowKey = sideKey || 'linked';
+	const presetRow = ( sideKey, value, onSideChange, rowLabel, axis ) => {
+		const rowKey = axis || sideKey || 'linked';
 		const slug = presetSlugFromValue( value );
 		const knownPreset = slug ? filteredSizes.find( ( s ) => s.slug === slug ) : undefined;
 		const isUnknownPreset = !! slug && ! knownPreset; // design doc row H
@@ -389,7 +460,7 @@ export default function SgsBoxControl( {
 
 		// "Default" (value '') is unset: the side paints what the block's stylesheet or a wider tier gives it,
 		// and an inherited value is named in the label. Nothing is written for it.
-		const inheritedRaw = inheritedFor( sideKey, value );
+		const inheritedRaw = inheritedFor( axis ? AXES[ axis ][ 0 ] : sideKey, value );
 		const inheritedText = inheritedDefault( inheritedRaw, filteredSizes );
 		const options = [
 			{
@@ -420,7 +491,7 @@ export default function SgsBoxControl( {
 
 		return (
 			<Flex align="center" gap={ 2 } key={ rowKey } className="sgs-box-control__row">
-				{ rowIcon( sideKey ) }
+				{ rowIcon( sideKey, axis ) }
 				<FlexBlock>
 					<SelectControl
 						label={ rowLabel }
@@ -475,9 +546,12 @@ export default function SgsBoxControl( {
 	 * Side icon, value box and slider (no presets). An unset side shows what it inherits or the block's declared
 	 * default as the placeholder (a declared preset as its size) and the slider rests at it; nothing is written.
 	 */
-	const plainRow = ( sideKey, value, onSideChange, rowLabel ) => {
+	const plainRow = ( sideKey, value, onSideChange, rowLabel, axis ) => {
 		const own = parseLength( value );
-		const inheritedRaw = inheritedDefault( inheritedFor( sideKey, value ), filteredSizes ).size;
+		const inheritedRaw = inheritedDefault(
+			inheritedFor( axis ? AXES[ axis ][ 0 ] : sideKey, value ),
+			filteredSizes
+		).size;
 		const rest = parseLength( inheritedRaw );
 		const unit = own.num === undefined && rest.num !== undefined ? rest.unit : own.unit;
 		const unitRange = rangeForUnit( unit );
@@ -485,8 +559,8 @@ export default function SgsBoxControl( {
 		const rowMax = explicitRange ? max ?? 300 : unitRange.max;
 		const rowStep = explicitRange ? 1 : unitRange.step;
 		return (
-			<Flex align="center" gap={ 2 } key={ sideKey || 'linked' } className="sgs-box-control__row">
-				{ rowIcon( sideKey ) }
+			<Flex align="center" gap={ 2 } key={ axis || sideKey || 'linked' } className="sgs-box-control__row">
+				{ rowIcon( sideKey, axis ) }
 				<FlexItem className="sgs-box-control__value" style={ VALUE_BOX_STYLE }>
 					<UnitControl
 						label={ rowLabel }
@@ -526,11 +600,21 @@ export default function SgsBoxControl( {
 				{ sides.length > 1 && linkButton }
 			</Flex>
 			<VStack spacing={ 2 }>
-				{ isLinked
-					? row( null, values[ firstSide ] ?? '', setAllSides, label )
-					: sides.map( ( side ) =>
-							row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
-					  ) }
+				{ 'linked' === mode && row( null, values[ firstSide ] ?? '', setAllSides, label ) }
+				{ 'axial' === mode &&
+					Object.keys( AXES ).map( ( axis ) =>
+						row(
+							null,
+							values[ AXES[ axis ][ 0 ] ] ?? '',
+							( raw ) => setAxis( axis, raw ),
+							AXIS_LABELS[ axis ],
+							axis
+						)
+					) }
+				{ 'sides' === mode &&
+					sides.map( ( side ) =>
+						row( side, values[ side ] ?? '', ( raw ) => setSide( side, raw ), labels[ side ] ?? side )
+					) }
 			</VStack>
 		</div>
 	);

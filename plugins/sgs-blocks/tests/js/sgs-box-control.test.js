@@ -34,6 +34,9 @@ jest.mock( '@wordpress/icons', () => {
 		'sidesRight',
 		'sidesBottom',
 		'sidesLeft',
+		'sidesAxial',
+		'sidesVertical',
+		'sidesHorizontal',
 		'cornerAll',
 		'cornerTopLeft',
 		'cornerTopRight',
@@ -351,5 +354,170 @@ describe( 'SgsBoxControl never shows a raw var()', () => {
 		renderControlled( {}, { inherited: all( preset( 90 ) ) } );
 		expect( selects()[ 0 ].options[ 0 ].textContent ).toBe( 'Default' );
 		expect( valueBoxes()[ 0 ].placeholder ).toBe( '' );
+	} );
+} );
+
+describe( 'SgsBoxControl paired vertical / horizontal mode (splitOnAxis)', () => {
+	const linkButton = () => container.querySelector( '[data-testid="link-button"]' );
+	const toggle = () => act( () => linkButton().click() );
+	const rowIcons = () =>
+		[ ...container.querySelectorAll( '.sgs-box-control__side-icon [data-icon]' ) ].map( ( el ) => el.dataset.icon );
+	const rowLabels = () => selects().map( ( s ) => s.getAttribute( 'aria-label' ) );
+	const selectValues = () => selects().map( ( s ) => s.value );
+	const preset = ( slug ) => `var(--wp--preset--spacing--${ slug })`;
+	const pair = { top: '10px', right: '20px', bottom: '10px', left: '20px' };
+	const SIDES_LABELS = [ 'Top', 'Right', 'Bottom', 'Left' ];
+
+	test( 'cycles linked, then Vertical and Horizontal, then each side, then linked again', () => {
+		renderControlled( {}, { splitOnAxis: true } );
+		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Set vertical and horizontal separately' );
+		toggle();
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( rowIcons() ).toEqual( [ 'sidesVertical', 'sidesHorizontal' ] );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Set each side separately' );
+		toggle();
+		expect( rowLabels() ).toEqual( SIDES_LABELS );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
+		toggle();
+		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+	} );
+
+	test( 'negative control: without the prop it is two states and never shows Vertical or Horizontal', () => {
+		renderControlled( {} );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Unlink sides' );
+		toggle();
+		expect( rowLabels() ).toEqual( SIDES_LABELS );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Link sides' );
+		toggle();
+		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+		expect( container.textContent ).not.toMatch( /Vertical|Horizontal/ );
+		expect( rowIcons() ).not.toContain( 'sidesVertical' );
+	} );
+
+	test( 'opens paired when top equals bottom and left equals right but not all four', () => {
+		renderControlled( pair, { splitOnAxis: true } );
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '10px', '20px' ] );
+	} );
+
+	test( 'opens linked when all four are equal', () => {
+		renderControlled( { top: '5px', right: '5px', bottom: '5px', left: '5px' }, { splitOnAxis: true } );
+		expect( rowLabels() ).toEqual( [ 'Padding' ] );
+	} );
+
+	test( 'opens per side when the sides do not pair up', () => {
+		renderControlled( { top: '1px', right: '2px', bottom: '3px', left: '4px' }, { splitOnAxis: true } );
+		expect( rowLabels() ).toEqual( SIDES_LABELS );
+	} );
+
+	test( 'without the prop a paired value still opens per side', () => {
+		renderControlled( pair );
+		expect( rowLabels() ).toEqual( SIDES_LABELS );
+	} );
+
+	test( 'Vertical writes top and bottom only; Horizontal writes left and right only', () => {
+		const writes = renderControlled( pair, { splitOnAxis: true } );
+		change( valueBoxes()[ 0 ], '30px' );
+		expect( writes.at( -1 ) ).toEqual( { top: '30px', right: '20px', bottom: '30px', left: '20px' } );
+		change( valueBoxes()[ 1 ], '40px' );
+		expect( writes.at( -1 ) ).toEqual( { top: '30px', right: '40px', bottom: '30px', left: '40px' } );
+	} );
+
+	test( 'a preset picked on Vertical stores its var() on top and bottom only', () => {
+		const writes = renderControlled( pair, { splitOnAxis: true } );
+		change( selects()[ 0 ], '40' );
+		expect( writes.at( -1 ) ).toEqual( { top: preset( 40 ), right: '20px', bottom: preset( 40 ), left: '20px' } );
+	} );
+
+	test( 'moving from paired to each side writes nothing, so no value is invented', () => {
+		const writes = renderControlled( pair, { splitOnAxis: true } );
+		toggle();
+		expect( writes ).toEqual( [] );
+		expect( valueBoxes().map( ( b ) => b.value ) ).toEqual( [ '10px', '20px', '10px', '20px' ] );
+	} );
+
+	test( 'from each side to linked collapses to the first side, and linked to paired needs no further write', () => {
+		const writes = renderControlled( { top: '1px', right: '2px', bottom: '3px', left: '4px' }, { splitOnAxis: true } );
+		toggle();
+		expect( writes.at( -1 ) ).toEqual( { top: '1px', right: '1px', bottom: '1px', left: '1px' } );
+		const count = writes.length;
+		toggle();
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( writes ).toHaveLength( count );
+	} );
+
+	test( 'Custom on Vertical (a typed length) carries to top and bottom only, and back up through linked', () => {
+		renderControlled( pair, { splitOnAxis: true } );
+		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
+		change( selects()[ 1 ], '' ); // Horizontal back to Default
+		expect( selectValues() ).toEqual( [ '__custom__', '' ] );
+		toggle(); // each side
+		expect( rowLabels() ).toEqual( SIDES_LABELS );
+		expect( selectValues() ).toEqual( [ '__custom__', '', '__custom__', '' ] );
+	} );
+
+	test( 'Custom picked with nothing typed on Vertical carries to top and bottom', () => {
+		renderControlled( {}, { splitOnAxis: true } );
+		toggle(); // paired, nothing stored
+		change( selects()[ 0 ], '__custom__' );
+		expect( selectValues() ).toEqual( [ '__custom__', '' ] );
+		toggle(); // each side
+		expect( selectValues() ).toEqual( [ '__custom__', '', '__custom__', '' ] );
+		toggle(); // linked: a Custom side makes the linked row Custom
+		expect( selectValues() ).toEqual( [ '__custom__' ] );
+		toggle(); // paired again: the linked Custom reaches both axes
+		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
+	} );
+
+	test( 'Custom on the linked row carries to Vertical and Horizontal and on to every side', () => {
+		renderControlled( {}, { splitOnAxis: true } );
+		change( selects()[ 0 ], '__custom__' );
+		toggle();
+		expect( selectValues() ).toEqual( [ '__custom__', '__custom__' ] );
+		toggle();
+		expect( selectValues() ).toEqual( [ '__custom__', '__custom__', '__custom__', '__custom__' ] );
+	} );
+
+	test( 'negative control: nothing Custom stays Default through every transition', () => {
+		renderControlled( {}, { splitOnAxis: true } );
+		toggle();
+		expect( selectValues() ).toEqual( [ '', '' ] );
+		toggle();
+		expect( selectValues() ).toEqual( [ '', '', '', '' ] );
+		toggle();
+		expect( selectValues() ).toEqual( [ '' ] );
+	} );
+
+	test( 'declared defaults show on the axis rows, writing nothing', () => {
+		const writes = renderControlled(
+			{},
+			{ splitOnAxis: true, defaults: { top: preset( 30 ), bottom: preset( 30 ), left: preset( 40 ), right: preset( 40 ) } }
+		);
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( selects().map( ( s ) => s.options[ 0 ].textContent ) ).toEqual( [ 'Default (S)', 'Default (M)' ] );
+		expect( valueBoxes().map( ( b ) => b.placeholder ) ).toEqual( [ '1rem', '1.5rem' ] );
+		expect( writes ).toEqual( [] );
+	} );
+
+	test( 'a value inherited from a wider tier shows on the axis rows', () => {
+		renderControlled( {}, { splitOnAxis: true, inherited: { top: '8px', bottom: '8px', left: '12px', right: '12px' } } );
+		expect( rowLabels() ).toEqual( [ 'Vertical', 'Horizontal' ] );
+		expect( valueBoxes().map( ( b ) => b.placeholder ) ).toEqual( [ '8px', '12px' ] );
+	} );
+
+	test( 'paired rows without presets are value boxes and write both sides', () => {
+		const writes = renderControlled( pair, { splitOnAxis: true, presets: false } );
+		expect( selects() ).toHaveLength( 0 );
+		expect( valueBoxes() ).toHaveLength( 2 );
+		change( valueBoxes()[ 1 ], '50px' );
+		expect( writes.at( -1 ) ).toEqual( { top: '10px', right: '50px', bottom: '10px', left: '50px' } );
+	} );
+
+	test( 'a radius (corners) never offers the paired mode', () => {
+		renderControlled( {}, { splitOnAxis: true, sides: [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ], presets: false } );
+		expect( linkButton().getAttribute( 'aria-label' ) ).toBe( 'Unlink sides' );
+		toggle();
+		expect( container.textContent ).not.toMatch( /Vertical|Horizontal/ );
 	} );
 } );

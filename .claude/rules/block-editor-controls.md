@@ -194,6 +194,16 @@ directly (inspector-scan rule `30-raw-box-control`). Its contract, matching core
 - **Header line:** the label and core's small link button (`size="small"`, `iconSize={ 24 }`, unpressed) sit on one
   line; linked shows one row with the `sidesAll` / `cornerAll` icon, unlinked one row per side or corner, each
   starting with its side icon from `@wordpress/icons`.
+- **Paired Vertical / Horizontal mode (opt-in):** a block declares `block.json::supports.sgs.spacingAxes: { "<attr>": true }`
+  and the mount passes `splitOnAxis={ spacingAxesFor( name, '<attr>' ) }` (`src/utils/spacing-axes.js`). The link button
+  then cycles linked (one row), Vertical and Horizontal (two rows with the `sidesVertical` / `sidesHorizontal` icons;
+  Vertical writes top and bottom, Horizontal left and right), each side (four rows), then linked again; its label names
+  the next step ("Set vertical and horizontal separately", "Set each side separately", "Link sides") and its icon the
+  current state. It opens paired when top equals bottom and left equals right but not all four, linked when all four
+  are equal, per side otherwise. Entering paired collapses each axis to its first side (top, left); `Custom…` state
+  follows the rows through every move (`carryCustomRows`), and declared/inherited defaults show on the axis rows from
+  the axis's first side. Without the prop the control keeps exactly two states and never shows Vertical or Horizontal;
+  a radius (corners) never pairs.
 - **Preset select + value box:** with `presets`, each row is a select listing the theme spacing presets by NAME only
   (no measurements, no slider) plus `Custom…`, and a 104px value box (`SgsBoxControl.js::VALUE_BOX_STYLE`) showing the
   picked preset's size. Picking a preset stores `var(--wp--preset--spacing--<slug>)`; typing in the box stores a
