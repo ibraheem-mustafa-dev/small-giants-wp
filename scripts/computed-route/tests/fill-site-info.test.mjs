@@ -58,3 +58,23 @@ test( 'fillTree: a bound icon gets the draft link and one site-info handover ent
 	assert.equal( u.tree[ 0 ].attributes.linkUrl, '/delivery/' );
 	assert.deepEqual( u.handover, [] );
 } );
+
+// The calibrated link sits on the block's nested anchor (`.sgs-icon__link`) while the draft's anchor IS the element the
+// node copies, so its address arrives at the root slot: the block's one link setting takes it.
+const NESTED = { link: { linkUrl: { path: '.sgs-icon__link', attr: 'href' } } };
+
+test( 'a draft link at the root slot lands on the block\'s one nested link setting, and is handed over when bound', () => {
+	const r = linkDecisions( { calibration: NESTED, attributes: bound( 'socials.instagram' ), slots: { '': 'https://instagram.com/eyecare' }, origin: 'http://x' } );
+	assert.deepEqual( r.writes, [ { attr: 'linkUrl', value: 'https://instagram.com/eyecare', merge: 'replace' } ] );
+	assert.equal( r.handover.length, 1 );
+	assert.equal( r.unmapped.length, 0 );
+} );
+
+test( 'NEGATIVE: an exact slot for the link wins over the root slot, and a block with two link elements takes no root guess', () => {
+	const exact = linkDecisions( { calibration: NESTED, attributes: {}, slots: { '': 'https://a.test/', '.sgs-icon__link': 'https://b.test/' }, origin: 'http://x' } );
+	assert.equal( exact.writes[ 0 ].value, 'https://b.test/' );
+	const two = { link: { linkUrl: { path: '.a', attr: 'href' }, ctaUrl: { path: '.b', attr: 'href' } } };
+	const r = linkDecisions( { calibration: two, attributes: {}, slots: { '': 'https://c.test/' }, origin: 'http://x' } );
+	assert.equal( r.writes.length, 0 );
+	assert.equal( r.unmapped.length, 1 );
+} );
