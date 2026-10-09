@@ -1441,7 +1441,7 @@
 
 /* Defaults the Typography panel's "Attribute tag" settings override. */
 :where(.sgs-product-card__attribute-tag) {
-	padding: 4px 7px;
+	padding: var(--wp--preset--spacing--10, 0.25rem) 7px;
 	font-size: 9.5px;
 	font-weight: 600;
 	letter-spacing: 0.12em;

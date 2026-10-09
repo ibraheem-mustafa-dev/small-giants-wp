@@ -123,7 +123,7 @@ function anchorUses( anchor, values ) {
 	return [ 'desktop', 'tablet', 'mobile' ].some( ( tier ) => values.includes( anchor?.[ tier ] ) );
 }
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const {
 		drawerRef,
 		anchor,
@@ -834,7 +834,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ToolsPanelItem>
 				</ToolsPanel>
 
-				<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<ChromePanel name={ name } attributes={ attributes } setAttributes={ setAttributes } />
 				<MotionPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }

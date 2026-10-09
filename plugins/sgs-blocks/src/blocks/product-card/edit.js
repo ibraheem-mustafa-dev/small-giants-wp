@@ -44,6 +44,7 @@ import {
 } from '../../components/primitives';
 import { colourVar, SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss, linkUnderlinePreviewCss, textIndentPreviewCss, typographyPreviewCss, usePreviewTier, isCssGradient, sgsBorderPreview } from '../../utils';
 import { typedCardPreview, TypedMediaOverlays, TypedRating, TypedSwatches, attributeTagText } from './typed-canvas';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -651,7 +652,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	);
 }
 
-export default function Edit( { attributes, setAttributes, clientId, context } ) {
+export default function Edit( { attributes, setAttributes, clientId, context, name } ) {
 	const {
 		variantStyle,
 		sourceMode,
@@ -1952,6 +1953,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					setAttributes={ setAttributes }
 				/>
 				<ListingOverlaysPanel
+					name={ name }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
@@ -2158,6 +2160,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								label={ __( 'Saving badge padding', 'sgs-blocks' ) }
 								values={ savingBadgePadding ?? {} }
 								presets
+								defaults={ spacingDefaultsFor( name, 'savingBadgePadding' ) }
 								onChange={ ( next ) =>
 									setAttributes( { savingBadgePadding: next } )
 								}
@@ -2271,6 +2274,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								label={ __( 'Attribute tag padding', 'sgs-blocks' ) }
 								values={ attributeTagPadding ?? {} }
 								presets
+								defaults={ spacingDefaultsFor( name, 'attributeTagPadding' ) }
 								onChange={ ( next ) =>
 									setAttributes( { attributeTagPadding: next } )
 								}

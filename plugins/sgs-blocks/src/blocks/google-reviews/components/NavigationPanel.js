@@ -17,6 +17,7 @@ import { DesignTokenPicker, ResponsiveOverride } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { Section, Row } from './panel-kit';
 import { TierBox, TierLength, BorderField } from './panel-fields';
+import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 
 const ARROW_BORDER_ATTRS = [
 	'arrowBorderWidth',
@@ -60,7 +61,7 @@ export const NAVIGATION_ATTRS = [
 	...ARROW_BORDER_ATTRS,
 ];
 
-export default function NavigationPanel( { attributes, setAttributes } ) {
+export default function NavigationPanel( { name, attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	const pagination = attributes.pagination || 'scrollbar';
 
@@ -185,7 +186,12 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 				/>
 			</Row>
 			<Row label={ __( 'Rail padding', 'sgs-blocks' ) } attrs={ [ 'railPadding' ] } { ...shared }>
-				<TierBox label={ __( 'Space around the row of reviews', 'sgs-blocks' ) } attr="railPadding" { ...shared } />
+				<TierBox
+					label={ __( 'Space around the row of reviews', 'sgs-blocks' ) }
+					attr="railPadding"
+					defaults={ spacingDefaultsFor( name, 'railPadding' ) }
+					{ ...shared }
+				/>
 			</Row>
 		</Section>
 	);

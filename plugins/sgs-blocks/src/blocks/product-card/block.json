@@ -558,6 +558,26 @@
 					},
 					"_note": "css:padding maps to the single ctaPadding box-object attr {top,right,bottom,left} — migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (mirrors sgs/button's padding box family + the tagPadding attr already on this block). Resolves the prior converter AmbiguousLayerAttrError collision and the elementless-ctaPaddingX misroute onto the card root. ctaColourTextGradient/ctaColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) — keyed css:color-gradient since ctaColourBackground already claims css:background-color; sgs_button_element_style_css() only paints the text gradient per-state when that state's own background attr is unset. ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient added 2026-09-06 (colour-conformance FILL surface, Case E) — sgs_button_element_style_css() already read these keys via its generic ColourBackground(Hover)Gradient closure (mirrors sgs/button's own colourBackgroundGradient), they were simply never declared as attributes here; keyed css:background-image to match sgs/button's own DB row (sgs_background_paint_decl() emits background-image for a gradient, never background-color)."
 				}
+			},
+			"spacingDefaults": {
+				"attributeTagPadding": {
+					"top": "var(--wp--preset--spacing--10)",
+					"right": "7px",
+					"bottom": "var(--wp--preset--spacing--10)",
+					"left": "7px"
+				},
+				"brandPadding": {
+					"top": "10px",
+					"right": "12px",
+					"bottom": "10px",
+					"left": "12px"
+				},
+				"savingBadgePadding": {
+					"top": "6px",
+					"right": "10px",
+					"bottom": "6px",
+					"left": "10px"
+				}
 			}
 		},
 		"html": false,

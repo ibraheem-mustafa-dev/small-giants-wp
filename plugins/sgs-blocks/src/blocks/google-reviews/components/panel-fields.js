@@ -32,8 +32,11 @@ export function TierLength( { label, attr, attributes, setAttributes } ) {
 	);
 }
 
-/** A tier object of four-side boxes (padding), one box per device. */
-export function TierBox( { label, attr, attributes, setAttributes } ) {
+/**
+ * A tier object of four-side boxes (padding), one box per device. `defaults` is the block's declared default per
+ * side (`spacingDefaultsFor( name, attr )`), shown on an untouched side.
+ */
+export function TierBox( { label, attr, attributes, setAttributes, defaults } ) {
 	return (
 		<ResponsiveOverride
 			value={ attributes[ attr ] }
@@ -45,6 +48,7 @@ export function TierBox( { label, attr, attributes, setAttributes } ) {
 					values={ ownValue && 'object' === typeof ownValue ? ownValue : {} }
 					units={ BOX_UNITS }
 					presets
+					defaults={ defaults }
 					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 				/>
 			) }

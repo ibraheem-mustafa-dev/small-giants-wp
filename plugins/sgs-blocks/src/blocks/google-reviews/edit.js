@@ -41,7 +41,7 @@ import ReviewTextPanel from './components/ReviewTextPanel';
 import ButtonsPanel from './components/ButtonsPanel';
 import NavigationPanel from './components/NavigationPanel';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		variant,
 		dataSource,
@@ -253,7 +253,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<ReviewerPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ReviewTextPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ButtonsPanel attributes={ attributes } setAttributes={ setAttributes } />
-			{ 'slider' === variant && <NavigationPanel attributes={ attributes } setAttributes={ setAttributes } /> }
+			{ 'slider' === variant && <NavigationPanel name={ name } attributes={ attributes } setAttributes={ setAttributes } /> }
 
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />

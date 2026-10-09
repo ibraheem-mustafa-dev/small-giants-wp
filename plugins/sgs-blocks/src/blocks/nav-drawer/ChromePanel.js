@@ -14,6 +14,7 @@ import { ResponsiveBoxControl, ResponsiveLengthControl, SgsColourPanel, fillRow 
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
 import CloseBoxControls from './CloseBoxControls';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /** The three logo tiers: attribute suffix and label. */
 const LOGO_TIERS = [
@@ -28,7 +29,7 @@ const LOGO_TIERS = [
  * @param {Function} props.setAttributes Setter.
  * @return {Element} The panel.
  */
-export default function ChromePanel( { attributes, setAttributes } ) {
+export default function ChromePanel( { name, attributes, setAttributes } ) {
 	const {
 		chromeRowHeight,
 		chromeRowGap,
@@ -146,6 +147,7 @@ export default function ChromePanel( { attributes, setAttributes } ) {
 			<ResponsiveBoxControl
 				label={ __( 'Top row padding', 'sgs-blocks' ) }
 				presets
+				defaults={ spacingDefaultsFor( name, 'chromeRowPadding' ) }
 				values={ {
 					base: chromeRowPadding?.desktop ?? {},
 					tablet: chromeRowPadding?.tablet ?? {},

@@ -1,7 +1,7 @@
 /* ===== SGS Filter Search — Frontend + Editor ===== */
 
 .sgs-filter-search {
-	margin-block-end: var( --wp--preset--spacing--20, 0.75rem );
+	margin-block-end: var(--wp--preset--spacing--20, 0.5rem);
 }
 
 /* ─── Input ─────────────────────────────────────────────────────────────── */

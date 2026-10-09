@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { BOX_UNITS, ResponsiveOverride, SgsBoxControl, normaliseResponsiveBox } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /**
  * sgs/nav-drawer-menu — Styles tab: "Mega panel padding" ToolsPanel.
@@ -15,7 +16,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *                                          {top,right,bottom,left} boxes.
  * @param {Function} root0.setAttributes    The block's attribute setter.
  */
-export default function MegaBodyPaddingPanel( { megaBodyPadding, setAttributes } ) {
+export default function MegaBodyPaddingPanel( { name, megaBodyPadding, setAttributes } ) {
 	return (
 		<ToolsPanel
 			label={ __( 'Mega panel padding', 'sgs-blocks' ) }
@@ -42,6 +43,7 @@ export default function MegaBodyPaddingPanel( { megaBodyPadding, setAttributes }
 							values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 							units={ BOX_UNITS }
 							presets
+							defaults={ spacingDefaultsFor( name, 'megaBodyPadding' ) }
 							onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 						/>
 					) }

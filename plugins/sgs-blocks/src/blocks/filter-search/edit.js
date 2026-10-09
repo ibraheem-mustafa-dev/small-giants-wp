@@ -14,8 +14,9 @@ import { PanelBody } from '@wordpress/components';
 import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
 import { borderPaintPreview, textPaintPreview, tierBoxLonghands, usePreviewTier, isCssGradient } from '../../utils';
 import FilterSearchSettings from './FilterSearchSettings';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const { searchMode, taxonomy, showCounts, attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
 	const isTermsMode = 'taxonomy-terms' === searchMode;
 
@@ -139,6 +140,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
+						defaults={ spacingDefaultsFor( name, 'margin' ) }
 						values={ {
 							base: margin?.desktop ?? {},
 							tablet: margin?.tablet ?? {},

@@ -78,7 +78,7 @@ import blockMetadata from './block.json';
 
 const SWEEP_ELIGIBILITY = blockMetadata?.supports?.sgs?.sweepEligibility;
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		ref,
 		navLabel,
@@ -614,6 +614,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 
 				<MegaBodyPaddingPanel
+					name={ name }
 					megaBodyPadding={ attributes.megaBodyPadding }
 					setAttributes={ setAttributes }
 				/>

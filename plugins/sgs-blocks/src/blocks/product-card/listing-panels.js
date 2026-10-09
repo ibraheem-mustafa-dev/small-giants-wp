@@ -13,6 +13,7 @@ import {
 } from '@wordpress/components';
 import { MEDIA_SIZING_RATIO_OPTIONS, SgsBoxControl, SgsLengthControl } from '../../components';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength } from '../../utils';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /**
  * Connected-product panel: which elements a live card shows and where its
@@ -230,13 +231,14 @@ export function ListingDotsPanel( { attributes, setAttributes } ) {
  * @param {Function} props.setAttributes Attribute setter.
  * @return {Element} The panel.
  */
-export function ListingOverlaysPanel( { attributes, setAttributes } ) {
+export function ListingOverlaysPanel( { name, attributes, setAttributes } ) {
 	return (
 		<PanelBody title={ __( 'Photo overlays', 'sgs-blocks' ) } initialOpen={ false }>
 			<SgsBoxControl
 				label={ __( 'Brand overlay padding', 'sgs-blocks' ) }
 				values={ attributes.brandPadding ?? {} }
 				presets
+				defaults={ spacingDefaultsFor( name, 'brandPadding' ) }
 				onChange={ ( next ) => setAttributes( { brandPadding: next } ) }
 			/>
 		</PanelBody>

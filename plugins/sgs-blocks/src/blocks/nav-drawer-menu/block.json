@@ -488,7 +488,14 @@
 				}
 			},
 			"imageControls": false,
-			"_note_imageControls": "Opt-out: the only <img> is the per-item media thumbnail (itemMedia), a decorative slot showing each linked page's own featured image, sized by itemMediaWidth/itemMediaHeight/itemMediaRadius and always object-fit cover. It is not an operator-placed image, so the image-controls panel (focal point, fit, filters) does not apply."
+			"_note_imageControls": "Opt-out: the only <img> is the per-item media thumbnail (itemMedia), a decorative slot showing each linked page's own featured image, sized by itemMediaWidth/itemMediaHeight/itemMediaRadius and always object-fit cover. It is not an operator-placed image, so the image-controls panel (focal point, fit, filters) does not apply.",
+			"spacingDefaults": {
+				"megaBodyPadding": {
+					"right": "12px",
+					"bottom": "12px",
+					"left": "12px"
+				}
+			}
 		}
 	},
 	"attributes": {

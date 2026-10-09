@@ -540,6 +540,12 @@
 				"seeAllPadding": [
 					"seeAllPadding"
 				]
+			},
+			"spacingDefaults": {
+				"railPadding": {
+					"top": "22px",
+					"bottom": "14px"
+				}
 			}
 		},
 		"align": [
