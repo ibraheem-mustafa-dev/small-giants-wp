@@ -12,7 +12,7 @@ last_updated: 2026-10-09
 - **Spec 47's "Solve" tool** measures the draft against the live site and writes block settings itself. The About page is at 100%. Current counts live in the triage files, never in this document.
 - **Nav / header / footer** (Specs 36 and 37): Waves 1 to 3C are live on sandybrown; Waves 4 and 5 have not started. You deferred the last mile of Gate 3C.
 - **Indus Foods** has its own test site (`indus-test`) because the active header, footer and theme-snapshot pointers are single global settings per site.
-- **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 47 only: Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old converter code is still in the repo and waits for its removal plan.
+- **Specs** are tidied to current truth (24 live specs; the generated block reference is separate). Cloning is Spec 47 only: Specs 31, 44, 45, 20 and 19 are gone, and the roster's "Not a live spec" table maps every old number to its home. The old cloning converter and its scripts, gates and database tables are deleted; git history holds them.
 - **Need you directly:** the drawer-burger click retest, the mega-motion eye check, and the Eye Care rulings listed under Parked.
 
 ## Blockers
@@ -59,14 +59,9 @@ Open owed items:
 **Bean-only tasks:** the drawer-burger click retest (does the intermittent click-miss still occur now the duplicate-burger fix has shipped? If so, dispatch `/systematic-debugging`), and the mega-motion eye check (R-31-13), booked with the next live URL.
 **Also open (Spec 36 Status lines hold the detail):** FR-36-16, the late-CSS A/B (`plugins/sgs-blocks/scripts/nav-qa/late-css-ab.mjs`) still fails on the canary header drawer because the close control and first link are placed by `nav-drawer/style.css`, not the block's scoped rules; Bean decides whether to relax the test to the dialog box plus dismissal or to emit the drawer's whole layout in the scoped rules. FR-36-17, the mega pages exceed the 100 KB CSS and 50 KB JS budget. FR-36-11 (the active-item state under forced colours) and FR-36-26c (`aria-current` across two pages and axe) are not yet re-measured live. The homepage layout shift (0.82 at 375) is untraced. FR-38-31, the aurora and ink wave styles painted black in a local Chrome (Bean's eye on a real GPU, Spec 38). `sgs/mega-group`'s focus ring uses the accent colour (found during the unified-email plan, not its work); `sgs-client-notes` still deploys through `plugins/sgs-blocks/scripts/deploy-client-notes-quick.py` instead of `build-deploy.py`.
 
-### Front S: Spec set and old converter removal
-
-**State:** the spec tidy and its leftovers are done and pushed. Specs 41, 28, 30, 26 and 33 are merged into Specs 36, 27 and 32 (FR ids unchanged); Spec 36 Part 14 is condensed; Spec 05 client notes is active; every spec carries its own FR status; `lint-spec-drift.py` has 0 gating findings. The framework DB was reseeded for the new gradient and spacing attributes and sandybrown runs them (blocks-only deploy, 2026-10-09).
-**Blockers:** none.
-**Resume from:** `prompts/Remove Old Converter Prompt.md` (remove the old converter; session 6f is mid-way, so check `git log` before starting).
-
 ## Parked
 
+- **Held-back dead scripts (Bean to rule):** about 160 files under `plugins/sgs-blocks/scripts/`, `scripts/` and `tools/` that no gate, hook, npm script, skill or runtime file reaches, but that a spec, an active plan or another session still cites: the `nav-qa/` family (its `gate3c/parity-*.mjs` files are walker configs named in `plans/2026-10-01-header-nav-thread-plan.md`), `qa/check-box-*-live.*`, `generative-background/`, `perf/`, `probes/`, `motion-qa/`, `surveys/` libraries, the `fixtures/destructive-only-controls/` pair, `consistency/build-setting-types.py` (the only reader of `block_attributes.emit_shape`, so `sgs-update-v2.py::_populate_emit_shape` and `lib/render_emits.py` stand or fall with it), `parity/draft-vs-live/`, `extract-button-presets.py`, `build-tier-fixture-page.py` (another session was editing it). Each is delete-or-wire; the live-script closure that produced the list was a one-off tracer in a scratch folder, so re-deriving it needs that tool committed first (ask for `plugins/sgs-blocks/scripts/audit-live-script-closure.py`). Kept on purpose, not dead: `plugins/sgs-blocks/scripts/dbschema/retire_table.py`, `plugins/sgs-blocks/scripts/dbschema/rebuild_compare.py`, `plugins/sgs-blocks/scripts/data/retired/*.json.gz` (the archives that make every table drop reversible).
 - **CR12, PARKED pending Bean:** the deriver hard-refuses Eye Care on contrast; 3 design options sit on its register row (`plans/2026-10-02-eye-care-fix-register.md`).
 - **PARKED (Bean):** 24 `product-card::valueLadder*::L3` rows need a bound-mode canvas mirror (triage §6).
 - **Canvas cross-check rulings:** decisions D-52..D-71 are ledger entries; the 72 confirmed gaps are register CR23, "Bean's call" (`plans/2026-10-02-eye-care-fix-register.md`).
@@ -89,6 +84,6 @@ Open owed items:
 
 ## Known failing tests
 
-- `test_preflight_chain::test_precommit_gate_drift_pass` (drift-validator path missing) and `test_validate_stage_artifact::test_stage_9_coverage_gap_levels`: belong to the old converter and go with it (`prompts/Remove Old Converter Prompt.md`).
+- `db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): they fail against the live schema (an `OperationalError` in `check_variant_reseed.py`); the converter removal did not touch that code.
 - `test_wp_integration::test_native_hover_zoom_routes`: serves the card-grid zoom control (Parked).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (README exports, D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.

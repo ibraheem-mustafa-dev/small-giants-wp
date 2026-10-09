@@ -12,7 +12,7 @@ date: 2026-09-26
 form and choice-flow track is in `archive/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`.
 
 ## 1. The cloning pipeline creates form and flow posts (Spec 42 FR-42-10, Spec 43 FR-43-14)
-- **Gap:** `sgs-clone-orchestrator.py --deploy-target` cannot create a new `sgs_form` or `sgs_choice_flow` post, so a
+- **Gap:** the Spec 47 computed route (`scripts/computed-route/`) cannot create a new `sgs_form` or `sgs_choice_flow` post, so a
   cloned draft containing a form or a flow still emits inline content. That breaches the rule that forms and flows
   live as saved posts.
 - **Decided for forms (Bean, 2026-09-26, Spec 42 §9):** every form is a saved post; a cloned form becomes a saved
