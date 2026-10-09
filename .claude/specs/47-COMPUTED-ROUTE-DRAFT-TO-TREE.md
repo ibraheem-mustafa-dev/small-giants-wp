@@ -215,7 +215,9 @@ listed in `noMarker`.
   targets too, with the same post IDs and a `pluginDir` the deploy check hashes directly instead of over SSH. They
   measure the same as the hosted sites for the same build and snapshot (google-reviews, accordion and accordion-item
   identical, 2026-10-05) and are where whole-library recalibration runs: Hostinger's edge challenges bursts of
-  automated logins.
+  automated logins. Solve runs on a mirror too (`solve.mjs --site <target>`, `solve.mjs::siteOverride`; About measured
+  row for row as on eye-care-test, 2026-10-09); `scripts/local-wp/refresh-from-remote.sh` first brings the mirror's
+  database and uploads up to the test site's.
 - One run opens one browser and logs in once (`scripts/lib/wp-session.js`): every `wp-build-page.js` step opens a tab
   in it through `SGS_CDP_URL`. With `SGS_CDP_URL` already set, the run attaches to that browser instead.
 - One build holds a block: one default instance per variant plus one instance per (setting, marker), each wrapped in an

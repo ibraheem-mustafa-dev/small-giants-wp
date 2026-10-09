@@ -83,7 +83,7 @@ Proof levels: **Live** = read from the rendered page. **Code** = read from the s
 | The header problem is two different elements compared | **Live** (rater A). Draft and live header are built the same way (no padding on the outer header, 12px/16px on the row inside, same 1px border). | My first diagnosis (padding on the wrong layer) was wrong. |
 | Product got worse | **Report-only for the cause.** A nested section repeats the page padding (live read), but that padding was already in the tree; today's writes were text styles only. | Cause unknown. Do not fix until proven. |
 | Solve crashes instead of reporting a failed page build | **Code + measured** (help, about, lens, contact in parallel). | Small fix; also: run local pages one at a time (parallel editor builds time out). |
-| Parent settings that reach several identical children are never written | **Code + measured** (mega-lenses tile padding, 40 rows; accordion headers). | Rule R-47-5. **Your decision:** allow it when every child wants the same value? Risk: if only one child is measured, the others move too. |
+| Parent settings that reach several identical children are never written | **Code + measured** (mega-lenses tile padding, 40 rows; accordion headers). | Spec 47 §3.8 (the ancestor-hop rule, justified by R-47-5). **Your decision:** allow it when every child wants the same value? Risk: if only one child is measured, the others move too. |
 | Mega-group "child sizing" still not discovered by calibration | **Measured** (a clean solo run still finds nothing). | The old "two runs collided" theory is disproved; cause still open. |
 
 ---
@@ -110,7 +110,7 @@ Also fixed during the session: a test whose premise my own framework fix made un
 3. **Give the guard a memory** so it stops repeating trials.
 4. **Apply the prepared underline fix.**
 5. **Clean re-run of shop**, then prove product's cause before touching it.
-6. **Your decision on R-47-5** (parent settings reaching several identical children).
+6. **Your decision on Spec 47 §3.8** (parent settings reaching several identical children).
 7. Then re-run the baseline locally and re-audit a random sample, so the false-positive rate is measured again, not assumed.
 
 **The tree files** (the saved page designs Solve edits) were put back to their committed state at the end of the session: today's writes only ever reached the local copy, and some were proven wrong (home, shop). Everything measured is kept in the reports.

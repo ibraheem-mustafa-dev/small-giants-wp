@@ -25,7 +25,7 @@ last_updated: 2026-10-09
 
 **State:** every surface built and live on eye-care-test; both sites run WooCommerce 11.1.2. Draft `https://mintcream-lyrebird-224487.hostingersite.com/`; test site `https://darkcyan-grouse-898606.hostingersite.com` (credentials `.claude/secrets/eye-care-test.env`). Spec 47's computed route (`scripts/computed-route/`, `specs/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md`) is built except stage 5 (a second draft); route defects with owners are in its §5 Residual.
 **Blockers:** none.
-**Resume from:** Session D in `plans/2026-10-04-spec47-full-coverage.md`, or the next tier of `plans/2026-10-05-eye-care-functionality-backlog.md`.
+**Resume from:** `plans/2026-10-04-spec47-full-coverage.md` "Session D, 2026-10-09" (open tool defects in order), or the next tier of `plans/2026-10-05-eye-care-functionality-backlog.md`.
 
 Governing documents (one job each):
 - Fix register, the source of truth for what gets fixed: `plans/2026-10-02-eye-care-fix-register.md`.
@@ -45,7 +45,8 @@ Open owed items:
 - **F3/E14** (every element the gate found has a control or a zero-specificity default): ceilings CLASS-2 0, CLASS-3 0, CANNOT-RESOLVE 0; only the advisory backlogs rule 03 and rule 31 remain (triage §6). Owner: the backlog.
 - **Box alignment** (`check:box-alignment`): indus-test's next deploy must carry `b90def34b`, `50449c17e` and `afae93d66`; the front-end separator at a numeric 40% width is not yet read in LTR and RTL. Owner: the backlog.
 - **CR6** (padding and margin print only the sides that are set) is done and live, front end and editor (`plans/archive/2026-10-07-cr6-box-longhand-migration.md`). The 31 held routing rows stay NULL on purpose.
-- **Spec 47 sweep** (`sites/eye-care-ward-end/build/qa/sweep/2026-10-08/sweep.json`): every surface measured with `--rounds 0`, none stale; Hardcode is only the footer social-icon borders (P2-r). The three-round Solve baseline is owed (`plans/2026-10-04-spec47-full-coverage.md`, Session D).
+- **Spec 47 local baseline** (2026-10-09, 3 rounds on all 17 surfaces against the local mirror `localhost:8081` via `solve.mjs --site local-eye-care`; report `.claude/reports/2026-10-09-session-d-local-baseline/REPORT.md`): sweep `sites/eye-care-ward-end/build/qa/sweep/2026-10-09/sweep.json` 1,613 open, none stale; about 57% of open rows are false positives (council audit). Trees restored to HEAD (the baseline's writes reached only the mirror; home and shop writes proven bad). Open tool defects, in order, are in the plan.
+- **Framework gaps closed 2026-10-09:** `sgs/mega-panel` `groupPadding` / `groupTransitionDuration` and the WooCommerce chips `sgsChipGap` extension, reseeded (`76835cca7`); live on sandybrown (`46bd7d184`) and on the local mirror, NOT yet on eye-care-test (still `2f458e858`). After any reseed run `plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py`: a full `sgs-update-v2.py` leaves `sgs/hero.splitMediaType` reclassified.
 - **Icon unification and spacing control** (`plans/2026-10-08-icon-unification-and-spacing-control.md`): `sgs/icon` is the one icon block (Site Info links, hide-when-empty, 8 shapes, labels on any side) and `sgs/social-icons` its Site Info row (Eye Care footer rebuilt, P2-r closed); the Spacing control is rebuilt, names each untouched side's real default (per device and per setting) and offers core's Vertical/Horizontal paired mode (on cta-section, tabs and google-reviews padding). The QC council is closed (11 fixed, 2 rejected with measurements). Sandybrown runs `46bd7d184`, read live; eye-care-test still runs an older build without the 2026-10-09 binding and spacing fixes until its next deploy. Blocked: Phase C (the Eye Care drawer, on session 79's `mobile-menu.tree.json`).
 - **Register rows:** every row carries a Lane and a hash in the fix register; the wiring gate blocks new gaps only (baseline `plugins/sgs-blocks/scripts/wiring-fingerprint-baseline.json`).
 
@@ -86,4 +87,4 @@ Open owed items:
 
 - `db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): they fail against the live schema (an `OperationalError` in `check_variant_reseed.py`); the converter removal did not touch that code.
 - `test_wp_integration::test_native_hover_zoom_routes`: serves the card-grid zoom control (Parked).
-- `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (README exports, D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.
+- `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json` (D-72 to D-91 register citations): serves Front F; the fix is in `plans/2026-10-04-spec47-full-coverage.md` §Carried and open.

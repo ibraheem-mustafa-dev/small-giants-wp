@@ -424,6 +424,7 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 sites (database and `wp-content`, WordPress 7.1.2), for browser-heavy runs Hostinger's edge would challenge.
 Calibration targets them as `local-eye-care` / `local-sandybrown`; one run opens one browser and logs in once
 (`scripts/lib/wp-session.js`). Start, sync and safety details: `scripts/local-wp/README.md`.
+Before measuring, refresh a mirror from its test site (`bash scripts/local-wp/refresh-from-remote.sh local-eye-care eye-care-test`, from Git Bash) and sync the build. Solve runs on a mirror with `solve.mjs --site local-eye-care` (about 40 seconds a walk, no edge challenge); run page surfaces one at a time, because parallel block-editor builds on the mirror time out.
 
 ⚠️ **`curl http://localhost:8081/` times out even when the site is fine.** The WSL port proxy binds 8081 and
 8082 on **IPv6 loopback only** (`netstat -ano` shows `[::1]:8081`), and curl resolves `localhost` to IPv4

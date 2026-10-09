@@ -45,7 +45,7 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
 ## Carried and open
 
 - **Route lint is red** (`node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`
-  exits 1). One cause left (the README exports were listed 2026-10-09):
+  exits 1). One cause:
   divergence entries D-72 to D-86 (Lenses: the draft's scroll reveal never fires below 1440, so its measured positions are
   a draft flaw) and D-88 to D-91 (Contact: a hover border colour on a node with no border paints nothing, D-65 ruling)
   cite no register item. Give those rulings a fix-register row (or cite the existing one) and set each entry's
@@ -81,16 +81,11 @@ per surface are in `sites/eye-care-ward-end/build/qa/triage/*.json`; read them t
   committed; `.claude/LEDGER.md` does not name it, so its deploy state is not recorded there. It ships with the next green
   `build-deploy.py`.
 - **`mega-group` discovery data is empty** (`cache/mega-group.json::discovered.sgsChildSizing` is `{}`), though Spec 47 L1.3
-  resolves child sizing through discovery. **It costs rows:** 9 `flex-grow` rows on the mega surfaces are triaged F
-  `no-setting` only because of it. Ruled out 2026-10-07: the render, the editor registration, the comparison
-  (`lib/calibrate.mjs::discoverEffects`) and a panel rule overriding the flex. **Cause found 2026-10-07:** two
-  calibrations ran on the same mirror at once and both build onto the site's one calibration page with the same
-  `cr-ref-cal-<n>` classes. Guard built (`5bebb2b6d`): `lib/calibration-lock.mjs`, a per-site lock that makes a second
-  calibration refuse to start. **Next:** once the local-eye-care calibration lock is free (a nav-bar-menu re-measure
-  held it on 2026-10-08, about 50 minutes a run), re-run
-  `calibrate.mjs --site local-eye-care --blocks sgs/mega-group --recalibrate` alone and confirm `discovered.sgsChildSizing`
-  records `flex-grow` on the root; the 2026-10-05 run may itself have been crossed (its discovery is empty), which the
-  clean run will show.
+  resolves child sizing through discovery. It costs 9 `flex-grow` rows on the mega surfaces (triaged F `no-setting`). Ruled
+  out: the render, the editor registration, `lib/calibrate.mjs::discoverEffects`, a panel rule overriding the flex, and
+  two calibrations crossing on one page (a clean solo `--recalibrate` on `local-eye-care`, 2026-10-09, still records
+  nothing; the per-site lock `lib/calibration-lock.mjs`, `5bebb2b6d`, stays as a guard). Cause unknown; next, render one
+  calibration instance with `sgsChildSizing` `fill` and read the root's computed `flex-grow` against the fixture default.
 
 ## Session D, 2026-10-09: labels, framework gaps, the local route
 
@@ -126,14 +121,45 @@ Assessed and NOT gaps: the lens configurator's 28 rows (the draft pads the outer
 amounts, `lensAsidePad`) and 40 of the shop's 43 (invisible, mispaired, or existing settings). Product's related cards are
 `sgs/product-card` with hover lift and shadow off: an existing setting Solve never wrote (a tool defect, below).
 
-**Open tool defects, for the baseline** (grouped by mechanism; sizes from the 2026-10-09 triage): `consequence` by the loose
-`layout-row` match (231 rows, unproven: does a follower close when its parent does); calibration coverage (`uncalibrated-fit`,
-the dead-calibration rows); `css_property` NULL settings the resolver cannot see (`sgsChildSizing`, `surfaceBlur`, native
-`supports` margin); parent-block context settings (accordion header settings via `providesContext`); a hand pair that
-displaced a generated pair at pairing time and misses live at walk time leaves the block unmeasured (Contact `-20`
-`form-card`); a generated pair at the wrong level (`unmeasured-side`, mega-brands-41, brand-strip track); business-info
-`displayType` (below); repeated inner text pairing; layout never written (flex row against grid); missed x rows; theme options
-Solve cannot write.
+**Local baseline, 2026-10-09** (3-round Solve on all 17 surfaces against the local mirror, `--site local-eye-care`; report
+`.claude/reports/2026-10-09-session-d-local-baseline/REPORT.md` with the council's live, code and random-row checks). Sweep
+1,817 -> 1,613 open, none stale. Best: mega-lenses 111 -> 29 (1 wrong setting of 22), mega-help 43 -> 12, mega-sunglasses
+43 -> 26. Worse during the run: home 199 -> 208 (proven: Solve wrote 22px mobile side padding on cards -31, -35 and -39
+whose `.sgs-container__inner` already had it, so items went 291 -> 247px) and product 317 -> 350 (cause unproven: its
+40px narrowing is a nested section repeating the page padding that was already in the tree). Shop is untrusted (its
+first try crashed in guard round 6 and the retry started from that tree). The trees were restored to HEAD; the
+baseline's writes are kept as `baseline-tree-writes.diff` in the report folder. About 57% of open style and box rows are
+false positives (random sample of 30, interval 39% to 73%).
+
+**Open tool defects, in order** (each proven by a live read, a code read or a run; the report cites which):
+1. `scripts/parity/lib/compare.mjs::INERT_LAYOUT` (`ba31e5157`) accepts display, gap, alignment and text-align for any
+   value once the pair's own box matches; children can move inside a same-size box. Require every pair inside to be
+   settled, as `acceptHeld` does. Council severity high.
+2. Solve writes through a mispaired pair: `lib/triage.mjs::mispairOf` is never applied in `solve.mjs::writeRound` /
+   `lib/solve-rows.mjs::writableGroups` (mega-brands 5 of 6 wrong settings; header 3 of 3: the draft's inner row compared
+   with the live header root, live read).
+3. `lib/guard.mjs::guardRound` deletes an exhausted trial with its `tried` set, so the same suspects are tried again until
+   the `maxRounds * 4 + 1` cap (home rounds 5 to 13 repeat exactly); this is why home's doubled padding survived.
+4. Underline rows carry the pair element's path, not the link's: `scripts/parity/lib/ref-trace.mjs::TEXT_CARRIED` lacks
+   `text-decoration-*` while `collect.mjs` reads them from `paint.mjs::paintedDecoration(carrier)` (footer-29, -30, -31
+   hardcode). Fix: record the decorated element's path in `traceRef` (`decoPath`) and stamp `text-decoration-*` with it;
+   the test is ready in the report folder (`walker-decoration.test.mjs.pending`).
+5. A padding write doubled by a level below already carrying it (home cards): `solve.mjs::writeRound` should not write a box
+   side on a node whose inner wrapper already paints the draft value (read the inner element's padding in the walk first).
+6. Shop: clean re-run from the committed tree; product: prove the cause of the 87 new rows before any fix.
+7. `solve.mjs` throws ENOENT reading `round-1/report.json` after a round-1 build failure instead of reporting it.
+8. Smaller, from the council: ledger `placed-after` attribution never compares shift sizes (`ac78fee32`);
+   `effectiveState` misses an open-state style live adds; `acceptHeld` ignores unpaired children and box x/y; a nested
+   container shift can repeat on each child row; `SGS_LIVE_ORIGIN` in the environment retargets every walk.
+9. Still open from before: the loose `layout-row` consequence (unproven followers), calibration coverage
+   (`uncalibrated-fit`; mega-group `sgsChildSizing` discovery is empty even on a clean solo run, so the crossed-runs
+   theory is disproved), `css_property` NULL settings, a hand pair that displaced a generated pair and misses live
+   (Contact `-20` `form-card`), business-info `displayType`, repeated inner text pairing, layout never written, missed x
+   rows, theme options Solve cannot write.
+
+**Owed to Bean:** Spec 47 §3.8 writes a parent attribute only where its paint reaches exactly one measured descendant
+(`lib/resolve.mjs::resolveViaAncestor`). The mega-panel tiles (40 rows on mega-lenses) and accordion headers need it
+relaxed to "every reached descendant wants the same value"; risk: with one measured tile the parent moves unmeasured ones.
 
 ## Contact (page 190): state at the end of 2026-10-08
 
