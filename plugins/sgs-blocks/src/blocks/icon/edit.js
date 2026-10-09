@@ -8,7 +8,16 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useBlockProps, BlockControls, useSettings } from '@wordpress/block-editor';
 import { LogicalAlignToolbar } from '../../components';
-import { colourVar, tierBoxLonghands, usePreviewTier, resolveTier, sgsBorderPreview, flattenPresetSetting } from '../../utils';
+import {
+	colourVar,
+	tierBoxLonghands,
+	usePreviewTier,
+	resolveTier,
+	sgsBorderPreview,
+	flattenPresetSetting,
+	resolveTextColourPreviewStyle,
+	typographyPreviewStyle,
+} from '../../utils';
 import IconInspector from './inspector';
 import CanvasGlyph from './glyph';
 import {
@@ -17,6 +26,8 @@ import {
 	siteInfoLinkState,
 	resolveBrand,
 	accessibleName,
+	visibleLabel,
+	labelPositionFor,
 	iconLengthValue,
 	iconGroupContext,
 	attributesInGroup,
@@ -100,6 +111,54 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs ) {
 	return style;
 }
 
+/**
+ * The visible label's custom properties on the canvas root (render.php's twin): the gap for the previewed device and
+ * the own label colours, only while a label shows.
+ *
+ * @param {Object}   attributes  Effective attributes.
+ * @param {string}   tier        Previewed device.
+ * @param {string[]} presetSlugs Theme spacing preset slugs.
+ * @return {Object} React style fragment.
+ */
+export function canvasLabelRootStyle( attributes, tier, presetSlugs ) {
+	const style = {};
+	const gap = iconLengthValue( resolveTier( attributes.labelGap, tier ).value, 640, presetSlugs );
+	if ( gap ) {
+		style[ '--sgs-icon-label-gap' ] = gap;
+	}
+	const colour = colourVar( attributes.labelColour );
+	if ( colour ) {
+		style[ '--sgs-icon-label-colour' ] = colour;
+	}
+	const hover = colourVar( attributes.labelColourHover );
+	if ( hover ) {
+		style[ '--sgs-icon-label-colour-hover' ] = hover;
+	}
+	return style;
+}
+
+/**
+ * The canvas label: render.php's `.sgs-icon__label-text`, painted by style.css plus the own typography and a resting
+ * gradient, as render.php's scoped rules do.
+ *
+ * @param {Object} props
+ * @param {string} props.text       The label text (visibleLabel()).
+ * @param {Object} props.attributes Effective attributes.
+ * @param {string} props.tier       Previewed device.
+ * @return {JSX.Element} The label.
+ */
+export function CanvasLabel( { text, attributes, tier } ) {
+	const style = {
+		...typographyPreviewStyle( attributes, 'label', tier ),
+		...resolveTextColourPreviewStyle( '', attributes.labelColourGradient ),
+	};
+	return (
+		<span className="sgs-icon__label-text" style={ style }>
+			{ text }
+		</span>
+	);
+}
+
 export default function Edit( { attributes: ownAttributes, setAttributes, context } ) {
 	const tier = usePreviewTier();
 	const [ palette ] = useSettings( 'color.palette' );
@@ -117,6 +176,11 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const link = siteInfoLinkState( boundKey, window.sgsBlocksData?.siteInfo );
 	const brand = resolveBrand( attributes, boundKey );
 	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl } );
+	// A bound link the editor cannot resolve still names the label from its key, as the page does once it resolves.
+	const labelNameArgs = { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl || link.link };
+	const defaultLabel = visibleLabel( '', labelNameArgs );
+	const labelText = attributes.showLabel ? visibleLabel( attributes.labelText, labelNameArgs ) : '';
+	const labelPosition = labelPositionFor( attributes.labelPosition, '' );
 	const showBg = !! showBackground || brand.brandOn;
 	// An outline shape draws its border as the SVG's stroke (render.php's twin): the box takes no border preview.
 	const outline = outlineCanvas( attributes, group, tier, presetSlugs );
@@ -155,11 +219,15 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		'brand' === iconSource && brand.glyphBrand?.glyph?.svg && 'sgs-icon--mark',
 		iconAlign && 'start' !== iconAlign && `sgs-icon--align-${ iconAlign }`,
 		( link.hidden || hiddenInRow ) && 'sgs-icon--hidden-empty',
+		labelText && 'sgs-icon--has-label',
+		labelText && 'end' !== labelPosition && `sgs-icon--label-${ labelPosition }`,
+		labelText && ( attributes.labelColour || attributes.labelColourGradient ) && 'sgs-icon--own-label-colour',
 	]
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs ), ...outline.style } } );
+	const labelRootStyle = labelText ? canvasLabelRootStyle( attributes, tier, presetSlugs ) : {};
+	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs ), ...outline.style, ...labelRootStyle } } );
 	const linked = !! linkUrl || link.bound;
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
@@ -177,10 +245,35 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 					onChange={ ( value ) => setAttributes( { iconAlign: value } ) }
 				/>
 			</BlockControls>
-			<IconInspector attributes={ ownAttributes } setAttributes={ setAttributes } state={ { boundKey, link, brand, name, paintedShape: shape } } />
+			<IconInspector
+				attributes={ ownAttributes }
+				setAttributes={ setAttributes }
+				state={ {
+					boundKey,
+					link,
+					brand,
+					name,
+					paintedShape: shape,
+					labelOn: !! attributes.showLabel,
+					labelFromRow: group.showLabel,
+					defaultLabel,
+				} }
+			/>
 			<div { ...blockProps }>
 				{ /* A span, not a link: the canvas must not navigate. Same class, so the 44px target and shape paint. */ }
-				{ linked ? <span className="sgs-icon__link">{ shapeEl }</span> : shapeEl }
+				{ linked && (
+					<span className="sgs-icon__link">
+						{ shapeEl }
+						{ labelText && <CanvasLabel text={ labelText } attributes={ attributes } tier={ tier } /> }
+					</span>
+				) }
+				{ ! linked && labelText && (
+					<span className="sgs-icon__inner">
+						{ shapeEl }
+						<CanvasLabel text={ labelText } attributes={ attributes } tier={ tier } />
+					</span>
+				) }
+				{ ! linked && ! labelText && shapeEl }
 				{ hiddenInRow && (
 					<span className="sgs-icon__notice" role="note">
 						{ sprintf(

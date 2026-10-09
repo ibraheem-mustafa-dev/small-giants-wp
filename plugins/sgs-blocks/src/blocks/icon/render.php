@@ -27,6 +27,13 @@
  * takes the row's shape; the row can switch the background on and give every icon a border, and an icon's own border
  * wins.
  *
+ * Visible label (`showLabel`, or the row's group switch): `.sgs-icon__label-text` inside the link, after the shape (start
+ * and below are layout classes on the root), its text `labelText` else the accessible name (sgs_icon_visible_label()).
+ * The visible text then is the link's name, so the visually hidden name is not printed as well; " (opens in new
+ * tab)" stays visually hidden. An unlinked labelled icon wraps the shape and label in `.sgs-icon__inner` and is plain
+ * text, not an image. Label colour: own (--sgs-icon-label-colour), the row's (--sgs-si-label-colour), then the icon
+ * colour a client set, else the site text colour (style.css).
+ *
  * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
  * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
  *
@@ -99,7 +106,7 @@ if ( 'square' === $shape && '' !== $group['shape'] ) {
 	$shape = $group['shape'];
 }
 $is_outline = sgs_icon_is_outline_shape( $shape );
-$show_bg = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
+$show_bg    = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
 
 // ── Link ─────────────────────────────────────────────────────────────────────
 $link_url    = trim( (string) ( $attributes['linkUrl'] ?? '' ) );
@@ -110,6 +117,12 @@ if ( '_blank' === $link_target && '' === $link_rel ) {
 	$link_rel = 'noopener noreferrer';
 }
 $aria_label = trim( (string) ( $attributes['ariaLabel'] ?? '' ) );
+
+// ── Visible label ────────────────────────────────────────────────────────────
+$show_label     = ! empty( $attributes['showLabel'] ) || $group['show_label'];
+$label_position = sgs_icon_label_position( $attributes['labelPosition'] ?? 'end', $group['label_position'] );
+$label_text     = $show_label ? sgs_icon_visible_label( (string) ( $attributes['labelText'] ?? '' ), $aria_label, $bound_link_key, $glyph_brand, $link_url ) : '';
+$has_label      = '' !== $label_text;
 
 if ( 'dashicon' === $icon_source ) {
 	wp_enqueue_style( 'dashicons' );
@@ -220,6 +233,16 @@ if ( 'start' !== $icon_align ) {
 if ( $is_hidden_empty ) {
 	$classes[] = 'sgs-icon--hidden-empty';
 }
+if ( $has_label ) {
+	$classes[] = 'sgs-icon--has-label';
+	if ( 'end' !== $label_position ) {
+		$classes[] = 'sgs-icon--label-' . $label_position;
+	}
+	// A wrapping row's group label gradient skips an icon with a label colour of its own.
+	if ( '' !== (string) ( $attributes['labelColour'] ?? '' ) || '' !== (string) ( $attributes['labelColourGradient'] ?? '' ) ) {
+		$classes[] = 'sgs-icon--own-label-colour';
+	}
+}
 
 // ── Root custom properties: sizes, own colours, brand colours, motion ────────
 $root_decls = array();
@@ -230,6 +253,7 @@ $tier_decls = array(
 
 $icon_size_tiers  = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null );
 $shape_size_tiers = sgs_responsive_normalise_object( $attributes['shapeSize'] ?? null );
+$label_gap_tiers  = $has_label ? sgs_responsive_normalise_object( $attributes['labelGap'] ?? null ) : array();
 $sizes_linked     = ! array_key_exists( 'shapeSizeLinked', $attributes ) || ! empty( $attributes['shapeSizeLinked'] );
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	$decls     = array();
@@ -245,6 +269,10 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	}
 	if ( '' !== $shape_h ) {
 		$decls[] = '--sgs-icon-shape-h:' . $shape_h;
+	}
+	$label_gap = sgs_icon_length_value( $label_gap_tiers[ $tier ] ?? '', 640 );
+	if ( '' !== $label_gap ) {
+		$decls[] = '--sgs-icon-label-gap:' . $label_gap;
 	}
 	if ( 'desktop' !== $tier && isset( $outline_w[ $tier ] ) ) {
 		$decls[] = '--sgs-icon-outline-w:' . $outline_w[ $tier ];
@@ -264,6 +292,10 @@ $own_colours = array(
 	'backgroundColour'      => '--sgs-icon-bg',
 	'backgroundColourHover' => '--sgs-icon-bg-hover',
 );
+if ( $has_label ) {
+	$own_colours['labelColour']      = '--sgs-icon-label-colour';
+	$own_colours['labelColourHover'] = '--sgs-icon-label-colour-hover';
+}
 foreach ( $own_colours as $attr => $property ) {
 	$value = sgs_colour_value( is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '' );
 	if ( '' !== $value ) {
@@ -345,6 +377,25 @@ if ( '' !== $icon_grad_hover['css'] ) {
 }
 if ( '' !== $icon_grad_hover['fallback_rule'] ) {
 	$scoped_css[] = $icon_grad_hover['fallback_rule'];
+}
+
+// ── Label: gradient text (resting and hover) and typography ──────────────────
+if ( $has_label ) {
+	$label_grad       = sgs_css_gradient_value( (string) ( $attributes['labelColourGradient'] ?? '' ) );
+	$label_hover_grad = sgs_css_gradient_value( (string) ( $attributes['labelColourHoverGradient'] ?? '' ) );
+	if ( '' !== $label_grad ) {
+		$scoped_css[] = $root_sel . ' .sgs-icon__label-text{' . sgs_text_colour_decl( $label_grad ) . ';}';
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-icon__label-text', $label_grad );
+	}
+	if ( '' !== $label_hover_grad ) {
+		$scoped_css[] = sgs_hover_state_rules( $link_sel, sgs_text_colour_decl( $label_hover_grad ), ':focus-visible', ' .sgs-icon__label-text' );
+	} elseif ( '' !== $label_grad && '' !== (string) ( $attributes['labelColourHover'] ?? '' ) ) {
+		// A flat hover colour over a resting gradient: drop the gradient so the hover colour shows.
+		$scoped_css[] = sgs_hover_state_rules( $link_sel, 'background-image:none;color:var(--sgs-icon-label-colour-hover)', ':focus-visible', ' .sgs-icon__label-text' );
+	}
+	// One class above a wrapping row's group label rule, so an icon's own label typography wins.
+	$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-icon.sgs-icon .sgs-icon__label-text' );
+	$scoped_css   = array_values( array_filter( $scoped_css, 'strlen' ) );
 }
 
 // ── Border CSS ───────────────────────────────────────────────────────────────
@@ -443,28 +494,35 @@ if ( 'dashicon' === $icon_source ) {
 	$glyph_svg  = sgs_svg_inject_defs( $glyph_svg, $icon_grad_hover['defs'] );
 	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
 }
-$image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
+$image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] && ! $has_label ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
 // An outline shape with something to paint (a background or a stroke) draws its SVG behind the glyph.
 $outline_svg = $is_outline && ( $show_bg || array() !== $outline_w ) ? sgs_icon_outline_svg( $shape, $uid . '-oc' ) : '';
 $output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $outline_svg . $glyph_html . '</span>';
+$label_html  = $has_label ? '<span class="sgs-icon__label-text">' . esc_html( $label_text ) . '</span>' : '';
 
 // ── Accessible name and link (step 10) ───────────────────────────────────────
 $wrapper_extra = array( 'class' => implode( ' ', $classes ) );
 if ( '' !== $link_url ) {
-	$accessible_name = sgs_icon_accessible_name( $aria_label, $bound_link_key, $glyph_brand, $link_url );
-	$label_html      = '';
-	if ( '' !== $accessible_name ) {
-		$new_tab    = '_blank' === $link_target ? __( ' (opens in new tab)', 'sgs-blocks' ) : '';
-		$label_html = '<span class="sgs-icon__label">' . esc_html( $accessible_name . $new_tab ) . '</span>';
+	// A visible label is the link's name; otherwise the name prints visually hidden. Either way the new-tab warning is
+	// read, never shown.
+	$new_tab     = '_blank' === $link_target ? __( ' (opens in new tab)', 'sgs-blocks' ) : '';
+	$hidden_name = $new_tab;
+	if ( ! $has_label ) {
+		$accessible_name = sgs_icon_accessible_name( $aria_label, $bound_link_key, $glyph_brand, $link_url );
+		$hidden_name     = '' !== $accessible_name ? $accessible_name . $new_tab : '';
 	}
 	$output = sprintf(
-		'<a class="sgs-icon__link" href="%s"%s%s>%s%s</a>',
+		'<a class="sgs-icon__link" href="%s"%s%s>%s%s%s</a>',
 		esc_url( $link_url ),
 		'_blank' === $link_target ? ' target="_blank"' : '',
 		'' !== $link_rel ? ' rel="' . esc_attr( $link_rel ) . '"' : '',
 		$output,
-		$label_html
+		$label_html,
+		'' !== $hidden_name ? '<span class="sgs-icon__label">' . esc_html( $hidden_name ) . '</span>' : ''
 	);
+} elseif ( $has_label ) {
+	// An unlinked labelled icon is text beside a decorative glyph.
+	$output = '<span class="sgs-icon__inner">' . $output . $label_html . '</span>';
 } elseif ( '' !== $aria_label && ! $group['in_group'] ) {
 	// An unlinked icon with a label is an image with that name (inside a row, its shape is); without one it is decorative.
 	$wrapper_extra['role']       = 'img';

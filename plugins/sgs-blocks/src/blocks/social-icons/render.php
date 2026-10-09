@@ -5,9 +5,13 @@
  *
  * Group defaults (icon plan Phase B): sizes and colours print here as the `--sgs-si-*` custom properties
  * icon/style.css reads after an icon's own value, so an icon's own setting always wins. The shape, the background
- * switch, the border and the colour mode reach the children through block context
- * (`block.json::providesContext`, read by `sgs_icon_group_context()`); an unticked Links key
+ * switch, the border, the colour mode and the visible label switch and position reach the children through block
+ * context (`block.json::providesContext`, read by `sgs_icon_group_context()`); an unticked Links key
  * (`hiddenLinks`) makes its child render nothing. The row renders nothing when no child renders.
+ *
+ * Label group defaults: flat colours as --sgs-si-label-colour[-hover]; a gradient as a scoped rule that skips an icon
+ * with a label colour of its own (`.sgs-icon--own-label-colour`); typography as one scoped rule an icon's own label
+ * rule out-ranks by one class.
  *
  * NO-INLINE (Spec 32): every declaration goes into the block's own scoped `<style>`; lengths pass
  * sgs_icon_length_value()'s allowlist, colours sgs_colour_value().
@@ -75,6 +79,8 @@ $group_colours = array(
 	'childIconColourHover'       => '--sgs-si-colour-hover',
 	'childIconBorderColour'      => '--sgs-si-border-colour',
 	'childIconBorderColourHover' => '--sgs-si-border-colour-hover',
+	'childIconLabelColour'       => '--sgs-si-label-colour',
+	'childIconLabelColourHover'  => '--sgs-si-label-colour-hover',
 );
 foreach ( $group_colours as $attr => $property ) {
 	$value = sgs_colour_value( is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '' );
@@ -126,6 +132,22 @@ if ( '' !== $grad_hover['css'] ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-icon:not(.sgs-icon--own-colour):not(.sgs-icon--mark) .sgs-icon__link', $grad_hover['css'], ':focus-visible', ' .sgs-icon__svg svg' );
 }
 $defs = $grad['defs'] . $grad_hover['defs'];
+
+// ── Group label: gradient text for labels with no colour of their own, and typography ─
+$label_grad       = sgs_css_gradient_value( (string) ( $attributes['childIconLabelColourGradient'] ?? '' ) );
+$label_hover_grad = sgs_css_gradient_value( (string) ( $attributes['childIconLabelColourHoverGradient'] ?? '' ) );
+if ( '' !== $label_grad ) {
+	$scoped_css[] = $root_sel . ' .sgs-icon:not(.sgs-icon--own-label-colour) .sgs-icon__label-text{' . sgs_text_colour_decl( $label_grad ) . ';}';
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-icon:not(.sgs-icon--own-label-colour) .sgs-icon__label-text', $label_grad );
+}
+if ( '' !== $label_hover_grad ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-icon:not(.sgs-icon--own-label-colour) .sgs-icon__link', sgs_text_colour_decl( $label_hover_grad ), ':focus-visible', ' .sgs-icon__label-text' );
+} elseif ( '' !== $label_grad && '' !== (string) ( $attributes['childIconLabelColourHover'] ?? '' ) ) {
+	// A flat hover colour over a resting gradient: drop the gradient so the hover colour shows.
+	$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-icon:not(.sgs-icon--own-label-colour) .sgs-icon__link', 'background-image:none;color:var(--sgs-si-label-colour-hover)', ':focus-visible', ' .sgs-icon__label-text' );
+}
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'childIconLabel', '.' . $uid . '.sgs-social-icons .sgs-icon__label-text' );
+$scoped_css   = array_values( array_filter( $scoped_css, 'strlen' ) );
 
 // ── Spacing: padding and margin around the row ───────────────────────────────
 $padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );

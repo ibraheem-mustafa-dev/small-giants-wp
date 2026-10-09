@@ -1,6 +1,7 @@
 /**
  * sgs/icon inspector: colours, the Icon panel (glyph, size, fill, rotation, colour mode, link), accessibility and
- * the Styles-tab panels. The Shape and Border panels live in inspector-shape.js.
+ * the Styles-tab panels. The Shape and Border panels live in inspector-shape.js, the Label panel in
+ * inspector-label.js.
  *
  * @package SGS\Blocks
  */
@@ -34,6 +35,7 @@ import { patchTier } from '../../utils';
 import { BRANDS } from '../../utils/brand-registry';
 import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
+import IconLabelPanel from './inspector-label';
 import { metadataWithoutLinkBinding } from './icon-state';
 
 /**
@@ -109,14 +111,25 @@ export function currentIconName( attrs ) {
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
  * @param {Object}   props.state         { boundKey, link (siteInfoLinkState), brand (resolveBrand), name (accessibleName),
- *                                       paintedShape (the shape the canvas paints) }.
+ *                                       paintedShape (the shape the canvas paints), labelOn (a visible label shows),
+ *                                       labelFromRow (the row switched it on), defaultLabel (a blank label's text) }.
  * @return {JSX.Element} Inspector panels.
  */
 export default function IconInspector( { attributes, setAttributes, state } ) {
 	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, scaleHover, opacityHover, textAlign } = attributes;
-	const { boundKey, link, brand, name, paintedShape } = state;
+	const { boundKey, link, brand, name, paintedShape, labelOn, labelFromRow, defaultLabel } = state;
 	// The shape the canvas paints (a row's group shape replaces the square), which decides what the colours can do.
 	const outlineShown = isOutlineShape( paintedShape || attributes.shape );
+	let accessibleHelp = __( 'Describes the icon for screen readers. Leave blank for a decorative icon.', 'sgs-blocks' );
+	if ( labelOn && ( linkUrl || boundKey ) ) {
+		accessibleHelp = __( 'Screen readers read the visible label as the link name. This only fills a blank label.', 'sgs-blocks' );
+	} else if ( linkUrl || boundKey ) {
+		accessibleHelp = sprintf(
+			/* translators: %s: the name screen readers announce. */
+			__( 'What screen readers say for this link. Blank: "%s".', 'sgs-blocks' ),
+			name.name
+		);
+	}
 	const strokeGlyph = ! [ 'emoji', 'dashicon' ].includes( iconSource ) && ! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
 
 	const handleIconChange = ( { source, name: picked, svg } ) => {
@@ -148,6 +161,14 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							} ),
 							outlineShown
 						),
+					labelOn &&
+						textRow( {
+							key: 'label',
+							label: __( 'Label colour', 'sgs-blocks' ),
+							attrs: { base: 'labelColour', hover: 'labelColourHover', gradient: 'labelColourGradient', hoverGradient: 'labelColourHoverGradient' },
+							attributes,
+							setAttributes,
+						} ),
 				] }
 			/>
 			<InspectorControls>
@@ -237,18 +258,11 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 					) }
 				</PanelBody>
 				<ShapePanels attributes={ attributes } setAttributes={ setAttributes } brandOn={ brand.brandOn } outlineShown={ outlineShown } />
+				<IconLabelPanel attributes={ attributes } setAttributes={ setAttributes } state={ { labelOn, labelFromRow, defaultLabel } } />
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }
-						help={
-							linkUrl || boundKey
-								? sprintf(
-										/* translators: %s: the name screen readers announce. */
-										__( 'What screen readers say for this link. Blank: "%s".', 'sgs-blocks' ),
-										name.name
-								  )
-								: __( 'Describes the icon for screen readers. Leave blank for a decorative icon.', 'sgs-blocks' )
-						}
+						help={ accessibleHelp }
 						value={ ariaLabel }
 						onChange={ ( value ) => setAttributes( { ariaLabel: value } ) }
 						__nextHasNoMarginBottom

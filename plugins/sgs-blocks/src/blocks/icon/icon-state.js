@@ -152,6 +152,35 @@ export function accessibleName( { ariaLabel, boundKey, glyphBrand, url } ) {
 }
 
 /**
+ * The text a visible label shows: the client's own label text, else the accessible name (accessibleName()). Twin:
+ * sgs_icon_visible_label().
+ *
+ * @param {string} labelText The block's labelText.
+ * @param {Object} nameArgs  accessibleName() arguments: { ariaLabel, boundKey, glyphBrand, url }.
+ * @return {string} The label, '' when nothing names the icon.
+ */
+export function visibleLabel( labelText, nameArgs ) {
+	const own = String( labelText || '' ).trim();
+	return own || accessibleName( nameArgs ).name;
+}
+
+/** The label positions, in the order the inspector offers them. */
+export const LABEL_POSITIONS = [ 'end', 'start', 'below' ];
+
+/**
+ * Where the visible label sits: the icon's own position, except that an icon left on `end` inside a row takes the
+ * row's. Twin: sgs_icon_label_position().
+ *
+ * @param {string} own   The block's labelPosition.
+ * @param {string} group The row's position (iconGroupContext().labelPosition), or ''.
+ * @return {string} end | start | below.
+ */
+export function labelPositionFor( own, group ) {
+	const mine = LABEL_POSITIONS.includes( own ) ? own : 'end';
+	return 'end' === mine && group ? group : mine;
+}
+
+/**
  * A stored size as the CSS length the page paints, or ''. Twin: sgs_icon_length_value().
  *
  * @param {*}        raw         Stored value.
@@ -191,7 +220,7 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
  * sgs_icon_group_context() (includes/helpers-icon.php).
  *
  * @param {Object} context The block's `context` prop.
- * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean, borderWidth:Object, borderStyle:string}}
+ * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean, borderWidth:Object, borderStyle:string, showLabel:boolean, labelPosition:string}}
  */
 export function iconGroupContext( context ) {
 	context = context && 'object' === typeof context ? context : {};
@@ -208,12 +237,15 @@ export function iconGroupContext( context ) {
 		border: !! borderBoxPreview( context[ 'sgs/socialIconsBorderWidth' ], context[ 'sgs/socialIconsBorderStyle' ] ).borderWidth,
 		borderWidth: borderWidth && 'object' === typeof borderWidth && ! Array.isArray( borderWidth ) ? borderWidth : {},
 		borderStyle: 'string' === typeof context[ 'sgs/socialIconsBorderStyle' ] ? context[ 'sgs/socialIconsBorderStyle' ] : '',
+		showLabel: !! context[ 'sgs/socialIconsShowLabel' ],
+		labelPosition: LABEL_POSITIONS.includes( context[ 'sgs/socialIconsLabelPosition' ] ) ? context[ 'sgs/socialIconsLabelPosition' ] : '',
 	};
 }
 
 /**
  * The attributes the icon paints with inside a row: colour mode `inherit` takes the row's mode, the square (the
- * default shape) takes the row's shape, and the row can switch the background on. Twin: icon/render.php.
+ * default shape) takes the row's shape, the row can switch the background and the visible label on, and a label left
+ * on `end` takes the row's position. Twin: icon/render.php.
  *
  * @param {Object} attributes Block attributes.
  * @param {Object} group      iconGroupContext() result.
@@ -231,6 +263,8 @@ export function attributesInGroup( attributes, group ) {
 		next.shape = group.shape;
 	}
 	next.showBackground = !! attributes.showBackground || group.showBg;
+	next.showLabel = !! attributes.showLabel || group.showLabel;
+	next.labelPosition = labelPositionFor( attributes.labelPosition, group.labelPosition );
 	return next;
 }
 

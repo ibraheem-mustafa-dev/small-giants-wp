@@ -113,6 +113,39 @@ if ( ! function_exists( 'sgs_icon_accessible_name' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_icon_visible_label' ) ) {
+	/**
+	 * The text a visible label shows: the client's own label text, else the icon's accessible name
+	 * (sgs_icon_accessible_name()), so the words a sighted visitor reads are the link's name.
+	 *
+	 * @param string     $label_text  The block's `labelText`.
+	 * @param string     $aria_label  The block's `ariaLabel`.
+	 * @param string     $bound_key   Site Info key `linkUrl` is bound to, or ''.
+	 * @param array|null $glyph_brand Registry entry the glyph draws, or null.
+	 * @param string     $url         The link, or ''.
+	 * @return string The label (unescaped), '' when nothing names the icon.
+	 */
+	function sgs_icon_visible_label( string $label_text, string $aria_label, string $bound_key, ?array $glyph_brand, string $url ): string {
+		$own = trim( $label_text );
+		return '' !== $own ? $own : sgs_icon_accessible_name( $aria_label, $bound_key, $glyph_brand, $url );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_label_position' ) ) {
+	/**
+	 * Where an icon's visible label sits: its own position, except that an icon left on `end` (the default) inside an
+	 * `sgs/social-icons` row takes the row's position.
+	 *
+	 * @param mixed  $own   The block's `labelPosition`.
+	 * @param string $group The row's position from sgs_icon_group_context(), or ''.
+	 * @return string end | start | below.
+	 */
+	function sgs_icon_label_position( $own, string $group ): string {
+		$own = is_string( $own ) && in_array( $own, array( 'end', 'start', 'below' ), true ) ? $own : 'end';
+		return 'end' === $own && '' !== $group ? $group : $own;
+	}
+}
+
 if ( ! function_exists( 'sgs_icon_is_editor_render' ) ) {
 	/**
 	 * True when the block renders for the editor: an admin screen, or a REST request in the editor's `edit` context
@@ -142,24 +175,27 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 	 * the attribute has a default, so core always passes it.
 	 *
 	 * @param mixed $context The icon's block context (`$block->context`).
-	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool, border_width:array, border_style:string}
+	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool, border_width:array, border_style:string, show_label:bool, label_position:string}
 	 */
 	function sgs_icon_group_context( $context ): array {
-		$context  = is_array( $context ) ? $context : array();
-		$in_group = array_key_exists( 'sgs/socialIconsColourMode', $context );
-		$mode     = (string) ( $context['sgs/socialIconsColourMode'] ?? '' );
-		$hidden   = is_array( $context['sgs/socialIconsHiddenLinks'] ?? null ) ? array_values( array_filter( $context['sgs/socialIconsHiddenLinks'], 'is_string' ) ) : array();
-		$shape    = (string) ( $context['sgs/socialIconsShape'] ?? '' );
-		$width    = is_array( $context['sgs/socialIconsBorderWidth'] ?? null ) ? $context['sgs/socialIconsBorderWidth'] : array();
+		$context   = is_array( $context ) ? $context : array();
+		$in_group  = array_key_exists( 'sgs/socialIconsColourMode', $context );
+		$mode      = (string) ( $context['sgs/socialIconsColourMode'] ?? '' );
+		$hidden    = is_array( $context['sgs/socialIconsHiddenLinks'] ?? null ) ? array_values( array_filter( $context['sgs/socialIconsHiddenLinks'], 'is_string' ) ) : array();
+		$shape     = (string) ( $context['sgs/socialIconsShape'] ?? '' );
+		$width     = is_array( $context['sgs/socialIconsBorderWidth'] ?? null ) ? $context['sgs/socialIconsBorderWidth'] : array();
+		$label_pos = (string) ( $context['sgs/socialIconsLabelPosition'] ?? '' );
 		return array(
-			'in_group'     => $in_group,
-			'colour_mode'  => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
-			'hidden'       => $hidden,
-			'shape'        => in_array( $shape, sgs_icon_shape_slugs(), true ) ? $shape : '',
-			'show_bg'      => ! empty( $context['sgs/socialIconsShowBackground'] ),
-			'border'       => array() !== sgs_icon_group_border_decls( $width, $context['sgs/socialIconsBorderStyle'] ?? '' ),
-			'border_width' => $width,
-			'border_style' => is_string( $context['sgs/socialIconsBorderStyle'] ?? null ) ? $context['sgs/socialIconsBorderStyle'] : '',
+			'in_group'       => $in_group,
+			'colour_mode'    => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
+			'hidden'         => $hidden,
+			'shape'          => in_array( $shape, sgs_icon_shape_slugs(), true ) ? $shape : '',
+			'show_bg'        => ! empty( $context['sgs/socialIconsShowBackground'] ),
+			'border'         => array() !== sgs_icon_group_border_decls( $width, $context['sgs/socialIconsBorderStyle'] ?? '' ),
+			'border_width'   => $width,
+			'border_style'   => is_string( $context['sgs/socialIconsBorderStyle'] ?? null ) ? $context['sgs/socialIconsBorderStyle'] : '',
+			'show_label'     => ! empty( $context['sgs/socialIconsShowLabel'] ),
+			'label_position' => in_array( $label_pos, array( 'end', 'start', 'below' ), true ) ? $label_pos : '',
 		);
 	}
 }

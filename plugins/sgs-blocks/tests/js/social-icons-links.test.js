@@ -117,6 +117,8 @@ describe( 'sgs/icon group context twin', () => {
 			border: true,
 			borderWidth: { top: '1px' },
 			borderStyle: '',
+			showLabel: false,
+			labelPosition: '',
 		} );
 		expect( attributesInGroup( { colourMode: 'inherit', shape: 'square' }, group ) ).toMatchObject( { colourMode: 'theme', shape: 'circle', showBackground: true } );
 		expect( attributesInGroup( { colourMode: 'brand', shape: 'pill' }, group ) ).toMatchObject( { colourMode: 'brand', shape: 'pill' } );

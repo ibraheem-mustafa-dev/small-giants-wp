@@ -1,8 +1,8 @@
 /**
  * sgs/social-icons editor: a row of sgs/icon children (a new row starts with one bound icon per filled Site Info
  * key), the Links checklist, and the group defaults the children read: sizes, colours and the group border as
- * --sgs-si-* custom properties on the canvas root (render.php's twin), shape, background and colour mode through
- * block context.
+ * --sgs-si-* custom properties on the canvas root (render.php's twin), shape, background, colour mode and the visible
+ * label switch and position through block context, and the label gradient and typography as one scoped canvas rule.
  *
  * @package SGS\Blocks
  */
@@ -27,12 +27,22 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
-import { colourVar, tierBoxLonghands, usePreviewTier, resolveTier, sgsBorderPreview, flattenPresetSetting, patchTier, isCssGradient } from '../../utils';
+import {
+	colourVar,
+	tierBoxLonghands,
+	usePreviewTier,
+	resolveTier,
+	sgsBorderPreview,
+	flattenPresetSetting,
+	patchTier,
+	isCssGradient,
+} from '../../utils';
 import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
 import { ShapeToggle } from '../icon/shape-options';
 import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
+import { SocialIconLabelsPanel, rowLabelPreviewCss } from './labels';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -71,6 +81,8 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 		childIconBorderColourHover,
 		childIconBorderWidth,
 		childIconBorderStyle,
+		childIconLabelColour,
+		childIconLabelColourHover,
 		gap,
 		rowAlign,
 	} = attributes;
@@ -99,6 +111,8 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 		[ '--sgs-si-bg-hover', childIconBackgroundHover ],
 		[ '--sgs-si-border-colour', childIconBorderColour ],
 		[ '--sgs-si-border-colour-hover', childIconBorderColourHover ],
+		[ '--sgs-si-label-colour', childIconLabelColour ],
+		[ '--sgs-si-label-colour-hover', childIconLabelColourHover ],
 	];
 	groupColours.forEach( ( [ property, slug ] ) => {
 		const value = colourVar( slug );
@@ -174,6 +188,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		childIconBorderStyle,
 		childIconBorderColour,
 		childIconBorderColourHover,
+		childIconShowLabel,
 		gap,
 		rowAlign,
 	} = attributes;
@@ -185,6 +200,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const scope = `sgs-si-canvas-${ useInstanceId( Edit ) }`;
 	const glyphGradient = rowGlyphGradientPreview( scope, attributes.childIconColourGradient, attributes.childIconColourHoverGradient );
+	const labelCss = rowLabelPreviewCss( scope, attributes, tier );
 	const blockProps = useBlockProps( {
 		className: `sgs-social-icons ${ scope }`,
 		style: rowCanvasStyle( attributes, tier, palette, presetSlugs ),
@@ -231,6 +247,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								hover: 'childIconBackgroundHover',
 								gradient: 'childIconBackgroundGradient',
 								hoverGradient: 'childIconBackgroundHoverGradient',
+							},
+							attributes,
+							setAttributes,
+						} ),
+					childIconShowLabel &&
+						textRow( {
+							key: 'label',
+							label: __( 'Label colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'childIconLabelColour',
+								hover: 'childIconLabelColourHover',
+								gradient: 'childIconLabelColourGradient',
+								hoverGradient: 'childIconLabelColourHoverGradient',
 							},
 							attributes,
 							setAttributes,
@@ -357,6 +386,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						] }
 					/>
 				</PanelBody>
+				<SocialIconLabelsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Row', 'sgs-blocks' ) } initialOpen={ false }>
 					<ResponsiveControl label={ __( 'Gap between icons', 'sgs-blocks' ) }>
 						{ ( t ) => (
@@ -425,6 +455,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</svg>
 				) }
 				{ glyphGradient.css && <style>{ glyphGradient.css }</style> }
+				{ labelCss && <style>{ labelCss }</style> }
 				{ innerBlocksProps.children }
 			</div>
 		</>

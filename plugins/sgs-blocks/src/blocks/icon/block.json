@@ -23,7 +23,9 @@
 		"sgs/socialIconsShape",
 		"sgs/socialIconsShowBackground",
 		"sgs/socialIconsBorderWidth",
-		"sgs/socialIconsBorderStyle"
+		"sgs/socialIconsBorderStyle",
+		"sgs/socialIconsShowLabel",
+		"sgs/socialIconsLabelPosition"
 	],
 	"supports": {
 		"align": [
@@ -116,6 +118,32 @@
 						"css:width": "iconSize"
 					},
 					"_note": "`.sgs-icon__svg` / `__dashicon` / `__emoji`: the glyph, sized by iconSize (--sgs-icon-size, per device)."
+				},
+				"label": {
+					"label": "Label",
+					"order": 4,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "label",
+					"contentAttrs": [
+						"labelText"
+					],
+					"attrMap": {
+						"css:color": "labelColour",
+						"css:background-image": "labelColourGradient",
+						"css:gap": "labelGap"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:background-image": "labelColourHoverGradient"
+							}
+						}
+					},
+					"_note": "`.sgs-icon__label-text`: the optional visible label inside the link (showLabel), beside or below the shape (labelPosition). Its text is the link's accessible name. labelGap is the space between the shape and the label (the link's gap). Colours print as --sgs-icon-label-colour[-hover] only when set, so a wrapping sgs/social-icons group default (--sgs-si-label-colour) shows through; unset, the label takes the icon colour a client set, else the site's text colour."
 				}
 			}
 		}
@@ -323,6 +351,119 @@
 			"type": "string",
 			"default": "",
 			"description": "The link's accessible name, or an unlinked icon's image name. Blank: the registry label for the bound Site Info key or brand glyph, else one from the link (Call, Email, the site name)."
+		},
+		"showLabel": {
+			"type": "boolean",
+			"default": false,
+			"description": "Shows a visible text label inside the link, beside or below the icon. The label then is the link's name for screen readers. Inside an sgs/social-icons row, the row can switch it on for every icon."
+		},
+		"labelText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "The visible label. Blank: the accessible name (ariaLabel, else the registry label for the bound Site Info key or brand glyph, else one from the link)."
+		},
+		"labelPosition": {
+			"type": "string",
+			"default": "end",
+			"enum": [
+				"end",
+				"start",
+				"below"
+			],
+			"description": "Where the label sits: after the icon (end), before it (start; both follow the reading direction) or below it. Inside a row, an icon left on end takes the row's position."
+		},
+		"labelGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between the icon and its label per device {desktop,tablet,mobile}: a CSS length or a theme spacing preset. Unset = spacing-20."
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painting the label text (wins over labelColour)."
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of labelColourGradient."
+		},
+		"labelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"labelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
 		},
 		"scaleHover": {
 			"type": "number",

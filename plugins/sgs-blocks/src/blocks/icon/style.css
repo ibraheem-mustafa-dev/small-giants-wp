@@ -3,6 +3,7 @@
  * Markup (render.php): root .sgs-icon (alignment; Spacing padding and margin sit OUTSIDE the shape)
  *   > optional a.sgs-icon__link (at least 44 x 44px, focus ring)
  *     > .sgs-icon__shape (size, background, border, radius) > .sgs-icon__svg | __dashicon | __emoji
+ *     + optional .sgs-icon__label-text (the visible label; an unlinked labelled icon wraps both in .sgs-icon__inner)
  *
  * Colour precedence per slot: the icon's own value (--sgs-icon-*), a wrapping sgs/social-icons group default
  * (--sgs-si-*), the brand (--sgs-icon-brand-*), then the theme role painted here. render.php prints a custom
@@ -218,11 +219,11 @@
 	transition: opacity var(--wp--custom--transition--fast, 0.15s ease);
 }
 
-.sgs-icon--shape-circle .sgs-icon__link {
+.sgs-icon--shape-circle:not(.sgs-icon--has-label) .sgs-icon__link {
 	border-radius: 50%;
 }
 
-.sgs-icon--shape-pill .sgs-icon__link {
+.sgs-icon--shape-pill:not(.sgs-icon--has-label) .sgs-icon__link {
 	border-radius: 9999px;
 }
 
@@ -277,8 +278,47 @@
 	border: 0;
 }
 
+/* ── Visible label: after the shape (end), before it (start; both follow the reading direction) or below it ── */
+.sgs-icon__inner {
+	display: inline-flex;
+	align-items: center;
+}
+
+.sgs-icon--has-label .sgs-icon__link,
+.sgs-icon--has-label .sgs-icon__inner {
+	gap: var(--sgs-icon-label-gap, var(--wp--preset--spacing--20, 0.5rem));
+}
+
+.sgs-icon--label-start .sgs-icon__link,
+.sgs-icon--label-start .sgs-icon__inner {
+	flex-direction: row-reverse;
+}
+
+.sgs-icon--label-below .sgs-icon__link,
+.sgs-icon--label-below .sgs-icon__inner {
+	flex-direction: column;
+}
+
+:where(.sgs-icon--label-below .sgs-icon__label-text) {
+	text-align: center;
+}
+
+/* The label sits on the page, not on the shape's ground, so it skips the brand and on-ground colours: its own colour,
+ * the row's label colour, the icon colour a client set (own, then the row's), else the site's text colour (text never
+ * defaults to the brand primary: check-text-colour-defaults.py). */
+.sgs-icon__label-text {
+	color: var(--sgs-icon-label-colour, var(--sgs-si-label-colour, var(--sgs-icon-colour, var(--sgs-si-colour, inherit))));
+	transition: color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-icon__link:hover .sgs-icon__label-text,
+.sgs-icon__link:focus-visible .sgs-icon__label-text {
+	color: var(--sgs-icon-label-colour-hover, var(--sgs-si-label-colour-hover, var(--sgs-icon-label-colour, var(--sgs-si-label-colour, var(--sgs-icon-colour, var(--sgs-si-colour, inherit))))));
+}
+
 /* The editor's view of an icon whose Site Info link is empty (visitors never get it). */
-.sgs-icon--hidden-empty .sgs-icon__shape {
+.sgs-icon--hidden-empty .sgs-icon__shape,
+.sgs-icon--hidden-empty .sgs-icon__label-text {
 	opacity: 0.4;
 }
 
@@ -286,6 +326,10 @@
 	.sgs-icon__shape,
 	.sgs-icon__link,
 	.sgs-icon__outline-path {
+		transition: none;
+	}
+
+	.sgs-icon__label-text {
 		transition: none;
 	}
 

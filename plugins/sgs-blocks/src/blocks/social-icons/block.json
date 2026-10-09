@@ -26,7 +26,9 @@
 		"sgs/socialIconsShape": "childIconShape",
 		"sgs/socialIconsShowBackground": "childIconShowBackground",
 		"sgs/socialIconsBorderWidth": "childIconBorderWidth",
-		"sgs/socialIconsBorderStyle": "childIconBorderStyle"
+		"sgs/socialIconsBorderStyle": "childIconBorderStyle",
+		"sgs/socialIconsShowLabel": "childIconShowLabel",
+		"sgs/socialIconsLabelPosition": "childIconLabelPosition"
 	},
 	"supports": {
 		"align": false,
@@ -112,6 +114,27 @@
 						"css:width": "childIconSize"
 					},
 					"_note": "Group default glyph size (--sgs-si-size) for every child's `.sgs-icon__svg`."
+				},
+				"label": {
+					"label": "Icon labels",
+					"order": 4,
+					"clusters": [
+						"text"
+					],
+					"prefix": "childIconLabel",
+					"attrMap": {
+						"css:color": "childIconLabelColour",
+						"css:background-image": "childIconLabelColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "childIconLabelColourHover",
+								"css:background-image": "childIconLabelColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Group defaults for every child's `.sgs-icon__label-text`: colours as --sgs-si-label-colour[-hover] (a gradient as a scoped rule that skips an icon with a label colour of its own), typography as one scoped rule an icon's own label typography out-ranks. childIconShowLabel and childIconLabelPosition reach the children through block context."
 				}
 			}
 		}
@@ -241,6 +264,108 @@
 				"outset"
 			],
 			"description": "Group default: '' paints solid when a width is set."
+		},
+		"childIconShowLabel": {
+			"type": "boolean",
+			"default": false,
+			"description": "Shows every icon's visible label (an icon can also switch on its own)."
+		},
+		"childIconLabelPosition": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"end",
+				"start",
+				"below"
+			],
+			"description": "Label position for every icon left on end. '' leaves each icon's own."
+		},
+		"childIconLabelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painting every label (wins over childIconLabelColour); an icon with its own label colour keeps it."
+		},
+		"childIconLabelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"childIconLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"childIconLabelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"childIconLabelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"childIconLabelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"childIconLabelLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"childIconLabelLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"childIconLabelLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"childIconLabelLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"childIconLabelTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
 		},
 		"gap": {
 			"type": "object",
