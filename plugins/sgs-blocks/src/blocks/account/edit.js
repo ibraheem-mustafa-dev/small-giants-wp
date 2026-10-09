@@ -162,6 +162,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( breakpoint ) => (
 							<SpacingControl
 								custom
+								hideLabelFromVision
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								value={ gap?.[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>

@@ -281,6 +281,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( tier ) => (
 							<SpacingControl
 								custom
+								hideLabelFromVision
 								label={ __( 'Gap', 'sgs-blocks' ) }
 								value={ attributes.gap?.[ tier ] ?? '' }
 								onChange={ ( val ) =>

@@ -18,6 +18,9 @@
  *    link back. Stored shape: a preset slug ("20") or a length with a unit
  *    ("11px"); the read side is sgs_css_length_value().
  *
+ * hideLabelFromVision hides the label visually (it stays for screen readers) when a
+ * wrapper such as ResponsiveControl already shows the same label.
+ *
  * The freeInput prop must be set explicitly — omitting it or passing false
  * preserves the existing preset-dropdown behaviour with zero behaviour change
  * for current callers.
@@ -61,7 +64,7 @@ function normaliseFreeInput( raw ) {
 
 const CUSTOM_KEY = '__custom';
 
-export default function SpacingControl( { label, value, onChange, freeInput = false, custom = false } ) {
+export default function SpacingControl( { label, value, onChange, freeInput = false, custom = false, hideLabelFromVision = false } ) {
 	const [ pickedCustom, setPickedCustom ] = useState( false );
 	// Guard against null/undefined from useSettings (can occur before settings load).
 	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
@@ -72,6 +75,7 @@ export default function SpacingControl( { label, value, onChange, freeInput = fa
 		return (
 			<UnitControl
 				label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
 				value={ value || '' }
 				units={ FREE_UNITS }
 				onChange={ ( val ) => onChange( normaliseFreeInput( val ) ) }
@@ -89,6 +93,7 @@ export default function SpacingControl( { label, value, onChange, freeInput = fa
 			<div className="sgs-spacing-control__custom">
 				<UnitControl
 					label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
 					value={ value || '' }
 					units={ FREE_UNITS }
 					onChange={ ( val ) => onChange( normaliseFreeInput( val ) ) }
@@ -121,6 +126,7 @@ export default function SpacingControl( { label, value, onChange, freeInput = fa
 	return (
 		<SelectControl
 			label={ label }
+				hideLabelFromVision={ hideLabelFromVision }
 			value={ value || '' }
 			options={ options }
 			onChange={ ( val ) => {

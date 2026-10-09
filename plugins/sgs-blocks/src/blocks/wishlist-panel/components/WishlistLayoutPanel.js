@@ -154,6 +154,7 @@ export default function WishlistLayoutPanel( { attributes, setAttributes } ) {
 						{ ( breakpoint ) => (
 							<SpacingControl
 								custom
+								hideLabelFromVision
 								label={ __( 'Row gap', 'sgs-blocks' ) }
 								value={ gap[ breakpoint ] ?? '' }
 								onChange={ ( value ) =>
