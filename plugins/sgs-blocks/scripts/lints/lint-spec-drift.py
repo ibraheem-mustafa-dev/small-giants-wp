@@ -168,6 +168,14 @@ def _db_slugs() -> set:
         con.close()
 
 
+# Roots a bare citation such as `includes/x.php` or `src/blocks/y/render.php` resolves under.
+_CITATION_ROOTS = (
+    "plugins/sgs-blocks",
+    "theme/sgs-theme",
+    "plugins/sgs-blocks/src/blocks",
+)
+
+
 def _resolve_citation(path_str: str, symbol: str) -> tuple:
     """Resolve `path::symbol`. Returns (ok, reason_if_not_ok).
 
@@ -177,6 +185,14 @@ def _resolve_citation(path_str: str, symbol: str) -> tuple:
     human grep would also find it.
     """
     p = REPO / path_str
+    if not p.is_file():
+        # A spec may cite a path relative to a root the reader knows (`includes/x.php`
+        # means plugins/sgs-blocks/includes/x.php). Try the framework roots in order.
+        for root in _CITATION_ROOTS:
+            candidate = REPO / root / path_str
+            if candidate.is_file():
+                p = candidate
+                break
     if not p.is_file():
         return False, f"file `{path_str}` does not exist"
     try:
