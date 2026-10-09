@@ -137,18 +137,9 @@ Stage 2's `npm run build` is what the script runs itself unless you pass `--skip
 
 ---
 
-## Per-page deploy (DIFFERENT — handled by `/sgs-clone --deploy-target`)
+## Per-page deploy (DIFFERENT, handled by `/sgs-clone`)
 
-For deploying a **single client page** (cv2 output → live URL), DO NOT use this skill. Use `/sgs-clone` with the `--deploy-target page:<id>` flag — Stage 10 of the cloning pipeline runs `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py` to upload images + patch the target page via REST. Different scope (per-page) and cadence (per-clone-run).
-
-Example:
-```bash
-python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --client mamas-munches --page homepage --auto-section \
-  --skip-autonomy-gate --skip-register --mode draft \
-  --deploy-target page:144
-```
+For a **single client page or surface**, DO NOT use this skill. Use `/sgs-clone`: the computed route (Spec 47) builds the tree onto the client's own test site through `scripts/wp-build-page.js` and Solve writes the settings. Per-client tokens deploy with `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`. This skill ships the plugin and theme build only.
 
 ---
 
