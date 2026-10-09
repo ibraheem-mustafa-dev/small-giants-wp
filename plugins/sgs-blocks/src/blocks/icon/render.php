@@ -7,6 +7,11 @@
  * shape (`.sgs-icon__shape`: size, background, border, radius) with the glyph (`.sgs-icon__svg`, `__dashicon` or
  * `__emoji`) centred inside.
  *
+ * Shapes: square, circle and pill are the box (background and CSS border); the custom outlines (hexagon, diamond,
+ * octagon, star, blob: includes/data/icon-shapes.json) draw an inline `.sgs-icon__outline` SVG behind the glyph whose fill
+ * is the background and whose stroke is the border, painted by style.css from the same custom properties. Outlines
+ * take no radius, no gradient and one size (width).
+ *
  * Colour precedence per slot (icon plan Phase A step 6): the icon's own value, then a wrapping `sgs/social-icons`
  * group default (`--sgs-si-*`), then the brand (when brand colours apply), then the theme role in style.css. This
  * file prints a custom property only for a value the client set, so every later layer can show through.
@@ -88,11 +93,12 @@ $draw_fixed  = $brand_on && 'brand' === $icon_source && null !== $glyph_brand &&
 $brand_paint = $brand_on ? sgs_brand_paint( $colour_brand, $draw_fixed ) : null;
 
 // ── Shape, background, border ────────────────────────────────────────────────
-$shape = (string) ( $attributes['shape'] ?? 'square' );
-$shape = in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : 'square';
+$shape = is_string( $attributes['shape'] ?? null ) ? $attributes['shape'] : 'square';
+$shape = in_array( $shape, sgs_icon_shape_slugs(), true ) ? $shape : 'square';
 if ( 'square' === $shape && '' !== $group['shape'] ) {
 	$shape = $group['shape'];
 }
+$is_outline = sgs_icon_is_outline_shape( $shape );
 $show_bg = ! empty( $attributes['showBackground'] ) || $group['show_bg'] || $brand_on;
 
 // ── Link ─────────────────────────────────────────────────────────────────────
@@ -139,6 +145,44 @@ if ( 'square' !== $shape ) {
 $has_border   = (bool) preg_grep( '/^border(-(top|right|bottom|left))?-width\s*:/', array_merge( $border['base'], $border['tablet'], $border['mobile'] ) );
 $group_border = ! $has_border && $group['border'];
 
+// An outline shape draws its border as the SVG's stroke (sgs_icon_outline_svg()), so the box border prints nothing.
+// The stroke is read from the border helper's own declarations (sgs_icon_outline_from_border()): one width per device
+// and the same flat colours as a box border, printed as the --sgs-icon-border-colour[-hover] custom properties
+// style.css feeds the stroke. Gradients are box shapes only.
+$outline_w     = array();
+$outline_dash  = 'solid';
+$outline_decls = array();
+if ( $is_outline ) {
+	$stroke       = sgs_icon_outline_from_border( $border );
+	$outline_w    = $stroke['width'];
+	$outline_dash = $stroke['dash'];
+	$has_border   = array() !== $outline_w;
+	if ( ! $has_border && ! $stroke['none'] && $group['border'] ) {
+		$group_stroke = sgs_icon_outline_stroke( $group['border_width'], $group['border_style'] );
+		if ( '' !== $group_stroke['width'] ) {
+			$outline_w['desktop'] = $group_stroke['width'];
+			$outline_dash         = $group_stroke['dash'];
+		}
+	}
+	$group_border = ! $has_border && array() !== $outline_w;
+	if ( $has_border && '' !== $stroke['colour'] ) {
+		$outline_decls[] = '--sgs-icon-border-colour:' . $stroke['colour'];
+	}
+	if ( $has_border && '' !== $stroke['hover'] ) {
+		$outline_decls[] = '--sgs-icon-border-colour-hover:' . $stroke['hover'];
+	}
+	if ( isset( $outline_w['desktop'] ) ) {
+		$outline_decls[] = '--sgs-icon-outline-w:' . $outline_w['desktop'];
+	}
+	$border = array(
+		'base'   => array(),
+		'tablet' => array(),
+		'mobile' => array(),
+		'hover'  => array(),
+		'rules'  => array(),
+	);
+}
+
 $icon_align = (string) ( $attributes['iconAlign'] ?? 'start' );
 $icon_align = in_array( $icon_align, array( 'start', 'center', 'end' ), true ) ? $icon_align : 'start';
 $classes    = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source, 'sgs-icon--shape-' . $shape, $uid );
@@ -148,8 +192,14 @@ if ( $show_bg ) {
 if ( $show_bg || $has_border || $group_border ) {
 	$classes[] = 'sgs-icon--boxed';
 }
-if ( $group_border ) {
+if ( $group_border && ! $is_outline ) {
 	$classes[] = 'sgs-icon--group-border';
+}
+if ( $is_outline ) {
+	$classes[] = 'sgs-icon--outline';
+	if ( array() !== $outline_w && 'solid' !== $outline_dash ) {
+		$classes[] = 'sgs-icon--outline-' . $outline_dash;
+	}
 }
 if ( $brand_on ) {
 	$classes[] = 'sgs-icon--brand';
@@ -189,12 +239,15 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	}
 	$box     = is_array( $shape_size_tiers[ $tier ] ?? null ) ? $shape_size_tiers[ $tier ] : array();
 	$shape_w = sgs_icon_length_value( $box['width'] ?? '', 640 );
-	$shape_h = 'circle' === $shape || $sizes_linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
+	$shape_h = sgs_icon_shape_width_only( $shape ) || $sizes_linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
 	if ( '' !== $shape_w ) {
 		$decls[] = '--sgs-icon-shape-w:' . $shape_w;
 	}
 	if ( '' !== $shape_h ) {
 		$decls[] = '--sgs-icon-shape-h:' . $shape_h;
+	}
+	if ( 'desktop' !== $tier && isset( $outline_w[ $tier ] ) ) {
+		$decls[] = '--sgs-icon-outline-w:' . $outline_w[ $tier ];
 	}
 	if ( 'desktop' === $tier ) {
 		$root_decls = $decls;
@@ -202,6 +255,7 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 		$tier_decls[ $tier ] = $decls;
 	}
 }
+$root_decls = array_merge( $root_decls, $outline_decls );
 
 // Own colours: a custom property only for a value the client set.
 $own_colours = array(
@@ -262,8 +316,8 @@ if ( $root_decls ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $root_decls ) . ';}';
 }
 
-// ── Gradients: background (box shapes) and glyph ─────────────────────────────
-if ( $show_bg ) {
+// ── Gradients: background (box shapes only) and glyph ────────────────────────
+if ( $show_bg && ! $is_outline ) {
 	$bg_gradient       = sgs_css_gradient_value( (string) ( $attributes['backgroundColourGradient'] ?? '' ) );
 	$bg_hover_gradient = sgs_css_gradient_value( (string) ( $attributes['backgroundColourHoverGradient'] ?? '' ) );
 	if ( '' !== $bg_gradient ) {
@@ -390,7 +444,9 @@ if ( 'dashicon' === $icon_source ) {
 	$glyph_html = '<span class="sgs-icon__svg" aria-hidden="true">' . $glyph_svg . '</span>';
 }
 $image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
-$output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $glyph_html . '</span>';
+// An outline shape with something to paint (a background or a stroke) draws its SVG behind the glyph.
+$outline_svg = $is_outline && ( $show_bg || array() !== $outline_w ) ? sgs_icon_outline_svg( $shape, $uid . '-oc' ) : '';
+$output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $outline_svg . $glyph_html . '</span>';
 
 // ── Accessible name and link (step 10) ───────────────────────────────────────
 $wrapper_extra = array( 'class' => implode( ' ', $classes ) );

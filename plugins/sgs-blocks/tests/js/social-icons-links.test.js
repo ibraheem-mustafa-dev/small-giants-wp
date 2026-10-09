@@ -108,7 +108,16 @@ describe( 'sgs/icon group context twin', () => {
 			'sgs/socialIconsBorderStyle': '',
 			'sgs/socialIconsHiddenLinks': [ 'phone' ],
 		} );
-		expect( group ).toEqual( { inGroup: true, colourMode: 'theme', hidden: [ 'phone' ], shape: 'circle', showBg: true, border: true } );
+		expect( group ).toEqual( {
+			inGroup: true,
+			colourMode: 'theme',
+			hidden: [ 'phone' ],
+			shape: 'circle',
+			showBg: true,
+			border: true,
+			borderWidth: { top: '1px' },
+			borderStyle: '',
+		} );
 		expect( attributesInGroup( { colourMode: 'inherit', shape: 'square' }, group ) ).toMatchObject( { colourMode: 'theme', shape: 'circle', showBackground: true } );
 		expect( attributesInGroup( { colourMode: 'brand', shape: 'pill' }, group ) ).toMatchObject( { colourMode: 'brand', shape: 'pill' } );
 	} );

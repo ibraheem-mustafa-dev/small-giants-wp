@@ -155,7 +155,12 @@
 				"",
 				"square",
 				"circle",
-				"pill"
+				"pill",
+				"hexagon",
+				"diamond",
+				"octagon",
+				"star",
+				"blob"
 			],
 			"description": "Shape for every icon left on the square. '' leaves each icon's own shape."
 		},

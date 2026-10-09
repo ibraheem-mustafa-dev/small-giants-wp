@@ -1,7 +1,8 @@
 <?php
 /**
  * Render helpers for sgs/icon: the length allowlist its scoped CSS accepts, its link's accessible name, whether a
- * render is the editor's, and the group defaults a wrapping `sgs/social-icons` row hands its icons.
+ * render is the editor's, the group defaults a wrapping `sgs/social-icons` row hands its icons, and the shape list
+ * with the custom outlines' registry reader (`includes/data/icon-shapes.json`), SVG and stroke.
  *
  * Shared by `src/blocks/icon/render.php` and `src/blocks/social-icons/render.php`.
  *
@@ -141,7 +142,7 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 	 * the attribute has a default, so core always passes it.
 	 *
 	 * @param mixed $context The icon's block context (`$block->context`).
-	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool}
+	 * @return array{in_group:bool, colour_mode:string, hidden:string[], shape:string, show_bg:bool, border:bool, border_width:array, border_style:string}
 	 */
 	function sgs_icon_group_context( $context ): array {
 		$context  = is_array( $context ) ? $context : array();
@@ -151,12 +152,14 @@ if ( ! function_exists( 'sgs_icon_group_context' ) ) {
 		$shape    = (string) ( $context['sgs/socialIconsShape'] ?? '' );
 		$width    = is_array( $context['sgs/socialIconsBorderWidth'] ?? null ) ? $context['sgs/socialIconsBorderWidth'] : array();
 		return array(
-			'in_group'    => $in_group,
-			'colour_mode' => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
-			'hidden'      => $hidden,
-			'shape'       => in_array( $shape, array( 'square', 'circle', 'pill' ), true ) ? $shape : '',
-			'show_bg'     => ! empty( $context['sgs/socialIconsShowBackground'] ),
-			'border'      => array() !== sgs_icon_group_border_decls( $width, $context['sgs/socialIconsBorderStyle'] ?? '' ),
+			'in_group'     => $in_group,
+			'colour_mode'  => in_array( $mode, array( 'inherit', 'theme', 'brand' ), true ) ? $mode : 'inherit',
+			'hidden'       => $hidden,
+			'shape'        => in_array( $shape, sgs_icon_shape_slugs(), true ) ? $shape : '',
+			'show_bg'      => ! empty( $context['sgs/socialIconsShowBackground'] ),
+			'border'       => array() !== sgs_icon_group_border_decls( $width, $context['sgs/socialIconsBorderStyle'] ?? '' ),
+			'border_width' => $width,
+			'border_style' => is_string( $context['sgs/socialIconsBorderStyle'] ?? null ) ? $context['sgs/socialIconsBorderStyle'] : '',
 		);
 	}
 }
@@ -178,5 +181,226 @@ if ( ! function_exists( 'sgs_icon_group_border_decls' ) ) {
 			return array();
 		}
 		return array( '--sgs-si-border-width:' . $width, '--sgs-si-border-style:' . $style );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_outline_shapes' ) ) {
+	/**
+	 * The custom outline shapes (icon plan D2), keyed by slug, in the registry's order: one SVG path each in a
+	 * `0 0 100 100` viewBox. Read from `includes/data/icon-shapes.json`, the one list the editor imports through
+	 * `src/utils/icon-shapes.js`. An entry with an unsafe slug, a box-shape slug or a path holding anything but path
+	 * commands and numbers is dropped, so a bad edit to the JSON never reaches the markup.
+	 *
+	 * @return array<string,array{slug:string,label:string,d:string}>
+	 */
+	function sgs_icon_outline_shapes(): array {
+		static $shapes = null;
+		if ( null !== $shapes ) {
+			return $shapes;
+		}
+		$shapes = array();
+		$raw    = @file_get_contents( __DIR__ . '/data/icon-shapes.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPress.PHP.NoSilencedErrors.Discouraged -- a local plugin data file; a missing file leaves no outline shapes.
+		$data   = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		$list   = is_array( $data['shapes'] ?? null ) ? $data['shapes'] : array();
+		foreach ( $list as $entry ) {
+			$slug = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
+			$d    = is_string( $entry['d'] ?? null ) ? trim( $entry['d'] ) : '';
+			if ( ! preg_match( '/^[a-z][a-z0-9-]*$/', $slug ) || in_array( $slug, sgs_icon_box_shapes(), true ) || ! preg_match( '/^[MLHVCSQTAZmlhvcsqtaz0-9.,\s-]+$/', $d ) ) {
+				continue;
+			}
+			$shapes[ $slug ] = array(
+				'slug'  => $slug,
+				'label' => is_string( $entry['label'] ?? null ) ? $entry['label'] : $slug,
+				'd'     => $d,
+			);
+		}
+		return $shapes;
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_box_shapes' ) ) {
+	/**
+	 * The shapes icon/style.css draws as a box (background and CSS border): the square takes a radius, the circle
+	 * and pill draw their own.
+	 *
+	 * @return string[]
+	 */
+	function sgs_icon_box_shapes(): array {
+		return array( 'square', 'circle', 'pill' );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_shape_slugs' ) ) {
+	/**
+	 * Every `shape` value an icon accepts, box shapes first, then the outlines; `icon/block.json::attributes.shape.enum`
+	 * lists exactly these (IconRenderTest asserts it).
+	 *
+	 * @return string[]
+	 */
+	function sgs_icon_shape_slugs(): array {
+		return array_merge( sgs_icon_box_shapes(), array_keys( sgs_icon_outline_shapes() ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_is_outline_shape' ) ) {
+	/**
+	 * @param string $shape A `shape` value.
+	 * @return bool True for a custom outline (drawn by an inline SVG, not the box).
+	 */
+	function sgs_icon_is_outline_shape( string $shape ): bool {
+		return isset( sgs_icon_outline_shapes()[ $shape ] );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_shape_width_only' ) ) {
+	/**
+	 * @param string $shape A `shape` value.
+	 * @return bool True when the shape's height always equals its width (the circle and every outline).
+	 */
+	function sgs_icon_shape_width_only( string $shape ): bool {
+		return 'circle' === $shape || sgs_icon_is_outline_shape( $shape );
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_outline_svg' ) ) {
+	/**
+	 * The inline SVG an outline shape draws behind the glyph. Paint comes only from icon/style.css (classes
+	 * `sgs-icon__outline`, `sgs-icon__outline-path` and the `--sgs-icon-*` chain): the markup carries no fill or
+	 * stroke. The stroke is twice the border width and clipped to the path, so the visible half sits inside the shape
+	 * and the viewBox never cuts it.
+	 *
+	 * @param string $shape   An outline slug.
+	 * @param string $clip_id The clip path's id (unique per icon render).
+	 * @return string SVG markup, or '' for a shape that is not an outline.
+	 */
+	function sgs_icon_outline_svg( string $shape, string $clip_id ): string {
+		$entry = sgs_icon_outline_shapes()[ $shape ] ?? null;
+		if ( null === $entry ) {
+			return '';
+		}
+		$d  = esc_attr( $entry['d'] );
+		$id = esc_attr( $clip_id );
+		return '<svg class="sgs-icon__outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+			. '<defs><clipPath id="' . $id . '"><path d="' . $d . '"/></clipPath></defs>'
+			. '<path class="sgs-icon__outline-path" d="' . $d . '" clip-path="url(#' . $id . ')"/>'
+			. '</svg>';
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_outline_stroke' ) ) {
+	/**
+	 * The stroke an outline shape draws for a border width box and style (a wrapping row's group border): the same
+	 * declarations a box border prints (sgs_border_box_decls()) read through sgs_icon_outline_from_border(), so a group
+	 * border and an icon's own border follow one rule. Editor twin: `outlineStroke()` (src/blocks/icon/icon-state.js).
+	 *
+	 * @param mixed $width_box Stored `{top,right,bottom,left}` widths.
+	 * @param mixed $style     Stored border style.
+	 * @return array{width:string,dash:string} `dash` is 'solid', 'dashed' or 'dotted'; `width` '' for no stroke.
+	 */
+	function sgs_icon_outline_stroke( $width_box, $style ): array {
+		$stroke = sgs_icon_outline_from_border( array( 'base' => sgs_border_box_decls( $width_box, $style ) ) );
+		$width  = $stroke['width']['desktop'] ?? '';
+		return array(
+			'width' => $width,
+			'dash'  => '' !== $width ? $stroke['dash'] : 'solid',
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_outline_from_border' ) ) {
+	/**
+	 * An outline shape's stroke, read from the declarations `sgs_border_element_decls()` built for the icon's own
+	 * border, so the border attributes are read in one place: per device the width (the top side when set, else the
+	 * first set side; an unset side prints `0`), the dash pattern, the flat resting and hover colours, and whether the
+	 * client chose the style `none` (which also keeps a row's group border off). A gradient prints no `border-color`,
+	 * so an outline ignores it. Width: the first printed side that is set (an unset side prints `0`), as one length
+	 * through sgs_css_single_length_value(), since style.css doubles it inside calc(); a side holding a list gives its
+	 * first length.
+	 *
+	 * @param array $border sgs_border_element_decls() result.
+	 * @return array{width:array<string,string>,dash:string,colour:string,hover:string,none:bool}
+	 */
+	function sgs_icon_outline_from_border( array $border ): array {
+		$out = array(
+			'width'  => array(),
+			'dash'   => 'solid',
+			'colour' => '',
+			'hover'  => '',
+			'none'   => false,
+		);
+		foreach ( (array) ( $border['rules'] ?? array() ) as $rule ) {
+			if ( false !== strpos( (string) $rule, '{border-style:none;border-width:0;}' ) ) {
+				$out['none'] = true;
+			}
+		}
+		foreach ( array(
+			'base'   => 'desktop',
+			'tablet' => 'tablet',
+			'mobile' => 'mobile',
+		) as $key => $tier ) {
+			$style = '';
+			$sides = array();
+			foreach ( (array) ( $border[ $key ] ?? array() ) as $decl ) {
+				if ( ! preg_match( '/^border-(style|width|color):(.+)$/s', (string) $decl, $m ) ) {
+					continue;
+				}
+				if ( 'style' === $m[1] ) {
+					$style = $m[2];
+				} elseif ( 'width' === $m[1] ) {
+					$sides = sgs_icon_css_value_tokens( $m[2] );
+				} elseif ( 'base' === $key ) {
+					$out['colour'] = $m[2];
+				}
+			}
+			foreach ( $sides as $side ) {
+				$width = '0' === $side ? '' : sgs_css_single_length_value( $side );
+				if ( '' !== $width ) {
+					$out['width'][ $tier ] = $width;
+					$out['dash']           = in_array( $style, array( 'dashed', 'dotted' ), true ) ? $style : 'solid';
+					break;
+				}
+			}
+		}
+		foreach ( (array) ( $border['hover'] ?? array() ) as $decl ) {
+			if ( preg_match( '/^border-color:(.+)$/s', (string) $decl, $m ) ) {
+				$out['hover'] = $m[1];
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_icon_css_value_tokens' ) ) {
+	/**
+	 * A CSS value split on top-level spaces, so `calc(1px + 1px) 0 0 0` gives four tokens.
+	 *
+	 * @param string $value CSS value.
+	 * @return string[] Tokens.
+	 */
+	function sgs_icon_css_value_tokens( string $value ): array {
+		$tokens  = array();
+		$current = '';
+		$depth   = 0;
+		$length  = strlen( $value );
+		for ( $i = 0; $i < $length; $i++ ) {
+			$char = $value[ $i ];
+			if ( '(' === $char ) {
+				++$depth;
+			} elseif ( ')' === $char ) {
+				--$depth;
+			}
+			if ( ' ' === $char && 0 === $depth ) {
+				if ( '' !== $current ) {
+					$tokens[] = $current;
+				}
+				$current = '';
+				continue;
+			}
+			$current .= $char;
+		}
+		if ( '' !== $current ) {
+			$tokens[] = $current;
+		}
+		return $tokens;
 	}
 }

@@ -1,0 +1,31 @@
+{
+	"$comment": "The custom outline shapes of sgs/icon (icon plan D2, Phase D): a fixed list, each one SVG path in a 0 0 100 100 viewBox that touches the box's edges. PHP reads it through includes/helpers-icon.php::sgs_icon_outline_shapes(); the editor imports it through src/utils/icon-shapes.js. The box shapes (square, circle, pill) are drawn by icon/style.css and are not listed here. Per entry: slug (the `shape` enum value), label (the inspector's name for it), d (the path). The star points up, fills the box's width and is centred vertically; its inner radius is 0.78 of its outer radius, the least that keeps a centred glyph box half the shape's size inside its inner pentagon (icon/style.css gives the star a default size of twice the icon for that reason). render.php draws the path behind the glyph with its stroke inside the path (twice the border width, clipped to the path), so a path may run to the viewBox edge.",
+	"viewBox": "0 0 100 100",
+	"shapes": [
+		{
+			"slug": "hexagon",
+			"label": "Hexagon",
+			"d": "M50 0L93.3 25V75L50 100L6.7 75V25Z"
+		},
+		{
+			"slug": "diamond",
+			"label": "Diamond",
+			"d": "M50 0L100 50L50 100L0 50Z"
+		},
+		{
+			"slug": "octagon",
+			"label": "Octagon",
+			"d": "M29.29 0H70.71L100 29.29V70.71L70.71 100H29.29L0 70.71V29.29Z"
+		},
+		{
+			"slug": "star",
+			"label": "Star",
+			"d": "M50 2.45L74.1 21.84L100 38.77L89 67.69L80.9 97.55L50 96.03L19.1 97.55L11 67.69L0 38.77L25.9 21.84Z"
+		},
+		{
+			"slug": "blob",
+			"label": "Blob",
+			"d": "M54 2C79 1 99 19 98 45C97 73 77 99 48 98C21 97 1 79 2 51C3 24 28 3 54 2Z"
+		}
+	]
+}

@@ -32,8 +32,32 @@ import {
 } from '../../components';
 import { patchTier } from '../../utils';
 import { BRANDS } from '../../utils/brand-registry';
+import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import { metadataWithoutLinkBinding } from './icon-state';
+
+/**
+ * An outline shape fills with a flat colour only (render.php prints no background gradient for it), so its background
+ * row drops the gradient toggle from every state and says why: never a control that paints nothing.
+ *
+ * @param {Object}  row     A fillRow() descriptor.
+ * @param {boolean} outline The painted shape is a custom outline.
+ * @return {Object} The row.
+ */
+function solidForOutline( row, outline ) {
+	if ( ! outline ) {
+		return row;
+	}
+	return {
+		...row,
+		states: row.states.map( ( { gradientValue, onGradientChange, ...state } ) => state ), // eslint-disable-line no-unused-vars
+		after: (
+			<p className="components-base-control__help">
+				{ __( 'Gradients paint the square, circle and pill only; this shape fills with a flat colour.', 'sgs-blocks' ) }
+			</p>
+		),
+	};
+}
 
 const ICON_SOURCES = [ 'lucide', 'brand', 'emoji', 'wp-icon', 'dashicon', 'custom' ];
 
@@ -84,12 +108,15 @@ export function currentIconName( attrs ) {
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
- * @param {Object}   props.state         { boundKey, link (siteInfoLinkState), brand (resolveBrand), name (accessibleName) }.
+ * @param {Object}   props.state         { boundKey, link (siteInfoLinkState), brand (resolveBrand), name (accessibleName),
+ *                                       paintedShape (the shape the canvas paints) }.
  * @return {JSX.Element} Inspector panels.
  */
 export default function IconInspector( { attributes, setAttributes, state } ) {
 	const { iconSource, iconSvg, iconSize, iconFill, iconRotate, colourMode, showBackground, linkUrl, linkTarget, linkRel, ariaLabel, scaleHover, opacityHover, textAlign } = attributes;
-	const { boundKey, link, brand, name } = state;
+	const { boundKey, link, brand, name, paintedShape } = state;
+	// The shape the canvas paints (a row's group shape replaces the square), which decides what the colours can do.
+	const outlineShown = isOutlineShape( paintedShape || attributes.shape );
 	const strokeGlyph = ! [ 'emoji', 'dashicon' ].includes( iconSource ) && ! ( 'brand' === iconSource && brand.glyphBrand?.glyph?.svg );
 
 	const handleIconChange = ( { source, name: picked, svg } ) => {
@@ -111,13 +138,16 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						setAttributes,
 					} ),
 					( showBackground || brand.brandOn ) &&
-						fillRow( {
-							key: 'background',
-							label: __( 'Background colour', 'sgs-blocks' ),
-							attrs: { base: 'backgroundColour', hover: 'backgroundColourHover', gradient: 'backgroundColourGradient', hoverGradient: 'backgroundColourHoverGradient' },
-							attributes,
-							setAttributes,
-						} ),
+						solidForOutline(
+							fillRow( {
+								key: 'background',
+								label: __( 'Background colour', 'sgs-blocks' ),
+								attrs: { base: 'backgroundColour', hover: 'backgroundColourHover', gradient: 'backgroundColourGradient', hoverGradient: 'backgroundColourHoverGradient' },
+								attributes,
+								setAttributes,
+							} ),
+							outlineShown
+						),
 				] }
 			/>
 			<InspectorControls>
@@ -206,7 +236,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 						/>
 					) }
 				</PanelBody>
-				<ShapePanels attributes={ attributes } setAttributes={ setAttributes } brandOn={ brand.brandOn } />
+				<ShapePanels attributes={ attributes } setAttributes={ setAttributes } brandOn={ brand.brandOn } outlineShown={ outlineShown } />
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }

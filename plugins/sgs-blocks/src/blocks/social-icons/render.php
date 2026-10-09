@@ -51,7 +51,7 @@ foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 	}
 	$box     = is_array( $shape_tiers[ $tier ] ?? null ) ? $shape_tiers[ $tier ] : array();
 	$shape_w = sgs_icon_length_value( $box['width'] ?? '', 640 );
-	$shape_h = 'circle' === $group_shape || $linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
+	$shape_h = sgs_icon_shape_width_only( $group_shape ) || $linked ? '' : sgs_icon_length_value( $box['height'] ?? '', 640 );
 	if ( '' !== $shape_w ) {
 		$decls[] = '--sgs-si-shape-w:' . $shape_w;
 	}

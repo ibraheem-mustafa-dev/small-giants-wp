@@ -27,10 +27,11 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, tierBoxLonghands, usePreviewTier, resolveTier, sgsBorderPreview, flattenPresetSetting, patchTier, isCssGradient } from '../../utils';
 import { svgStrokeGradientPreview, parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 import { iconLengthValue } from '../icon/icon-state';
+import { ShapeToggle } from '../icon/shape-options';
+import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 import { templateFromSiteInfo, checklistRows, toggleLink } from './links';
 
 const LENGTH_UNITS = [
@@ -80,7 +81,7 @@ export function rowCanvasStyle( attributes, tier, palette, presetSlugs ) {
 	}
 	const box = resolveTier( childIconShapeSize, tier ).value;
 	const width = iconLengthValue( box?.width, 640, presetSlugs );
-	const height = 'circle' === childIconShape || childIconShapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
+	const height = shapeUsesWidthOnly( childIconShape ) || childIconShapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
 	if ( width ) {
 		style[ '--sgs-si-shape-w' ] = width;
 	}
@@ -282,20 +283,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</ResponsiveControl>
 				</PanelBody>
 				<PanelBody title={ __( 'Icon shape', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleGroupControl
+					<ShapeToggle
 						label={ __( 'Shape', 'sgs-blocks' ) }
-						help={ __( 'For icons left on the square. Each icon: keep every icon’s own shape.', 'sgs-blocks' ) }
+						help={ __( 'For icons left on the square. With no shape picked (click the picked one again), each icon keeps its own.', 'sgs-blocks' ) }
 						value={ childIconShape }
 						onChange={ ( value ) => setAttributes( { childIconShape: value ?? '' } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption value="" label={ __( 'Each icon', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="square" label={ __( 'Square', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="circle" label={ __( 'Circle', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="pill" label={ __( 'Pill', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
+						isDeselectable
+					/>
 					<ToggleControl
 						label={ __( 'Background', 'sgs-blocks' ) }
 						help={ __( 'Paints a shape behind every icon.', 'sgs-blocks' ) }
@@ -309,14 +303,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ ( t ) => (
 							<>
 								<SgsLengthControl
-									label={ 'circle' === childIconShape || childIconShapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
+									label={ shapeUsesWidthOnly( childIconShape ) || childIconShapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
 									value={ childIconShapeSize?.[ t ]?.width ?? '' }
 									units={ LENGTH_UNITS }
 									presets
 									help={ __( 'Blank: the icon size plus a little room each side.', 'sgs-blocks' ) }
 									onChange={ ( value ) => writeShapeSize( t, 'width', value ) }
 								/>
-								{ 'circle' !== childIconShape && ! childIconShapeSizeLinked && (
+								{ ! shapeUsesWidthOnly( childIconShape ) && ! childIconShapeSizeLinked && (
 									<SgsLengthControl
 										label={ __( 'Height', 'sgs-blocks' ) }
 										value={ childIconShapeSize?.[ t ]?.height ?? '' }
@@ -328,7 +322,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</>
 						) }
 					</ResponsiveControl>
-					{ 'circle' !== childIconShape && (
+					{ ! shapeUsesWidthOnly( childIconShape ) && (
 						<ToggleControl
 							label={ __( 'Same width and height', 'sgs-blocks' ) }
 							checked={ childIconShapeSizeLinked }

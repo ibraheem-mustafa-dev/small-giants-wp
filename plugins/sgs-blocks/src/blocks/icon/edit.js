@@ -20,7 +20,10 @@ import {
 	iconLengthValue,
 	iconGroupContext,
 	attributesInGroup,
+	outlineCanvas,
 } from './icon-state';
+import { CanvasOutline } from './shape-options';
+import { shapeUsesWidthOnly } from '../../utils/icon-shapes';
 
 /**
  * The canvas root's custom properties and spacing: render.php's root rule for the previewed device.
@@ -40,7 +43,7 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs ) {
 	}
 	const box = resolveTier( shapeSize, tier ).value;
 	const width = iconLengthValue( box?.width, 640, presetSlugs );
-	const height = 'circle' === shape || shapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
+	const height = shapeUsesWidthOnly( shape ) || shapeSizeLinked ? '' : iconLengthValue( box?.height, 640, presetSlugs );
 	if ( width ) {
 		style[ '--sgs-icon-shape-w' ] = width;
 	}
@@ -115,8 +118,10 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const brand = resolveBrand( attributes, boundKey );
 	const name = accessibleName( { ariaLabel: attributes.ariaLabel, boundKey, glyphBrand: brand.glyphBrand, url: linkUrl } );
 	const showBg = !! showBackground || brand.brandOn;
+	// An outline shape draws its border as the SVG's stroke (render.php's twin): the box takes no border preview.
+	const outline = outlineCanvas( attributes, group, tier, presetSlugs );
 
-	const shapeStyle = sgsBorderPreview(
+	const boxBorder = sgsBorderPreview(
 		{
 			widthValues: borderWidth,
 			styleValue: borderStyle,
@@ -127,9 +132,10 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		tier,
 		palette
 	);
-	const hasBorder = !! ( shapeStyle.borderWidth || shapeStyle.borderTopWidth || shapeStyle.borderStyle );
-	const groupBorder = ! hasBorder && group.border;
-	if ( showBg && backgroundColourGradient ) {
+	const shapeStyle = outline.outline ? {} : boxBorder;
+	const hasBorder = outline.outline ? outline.own : !! ( boxBorder.borderWidth || boxBorder.borderTopWidth || boxBorder.borderStyle );
+	const groupBorder = outline.outline ? ! outline.own && outline.stroke : ! hasBorder && group.border;
+	if ( showBg && backgroundColourGradient && ! outline.outline ) {
 		shapeStyle.backgroundImage = backgroundColourGradient;
 	}
 
@@ -140,7 +146,9 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		`sgs-icon--shape-${ shape }`,
 		showBg && 'sgs-icon--has-bg',
 		( showBg || hasBorder || groupBorder ) && 'sgs-icon--boxed',
-		groupBorder && 'sgs-icon--group-border',
+		groupBorder && ! outline.outline && 'sgs-icon--group-border',
+		outline.outline && 'sgs-icon--outline',
+		outline.stroke && 'solid' !== outline.dash && `sgs-icon--outline-${ outline.dash }`,
 		brand.brandOn && 'sgs-icon--brand',
 		fillGlyph && 'sgs-icon--fill',
 		( attributes.iconColour || attributes.iconColourGradient ) && 'sgs-icon--own-colour',
@@ -151,10 +159,11 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		.filter( Boolean )
 		.join( ' ' );
 
-	const blockProps = useBlockProps( { className, style: canvasRootStyle( attributes, tier, brand, presetSlugs ) } );
+	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs ), ...outline.style } } );
 	const linked = !! linkUrl || link.bound;
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
+			{ outline.outline && ( showBg || outline.stroke ) && <CanvasOutline shape={ shape } /> }
 			<CanvasGlyph attributes={ attributes } glyphBrand={ brand.glyphBrand } drawFixed={ brand.drawFixed } />
 		</span>
 	);
@@ -168,7 +177,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 					onChange={ ( value ) => setAttributes( { iconAlign: value } ) }
 				/>
 			</BlockControls>
-			<IconInspector attributes={ ownAttributes } setAttributes={ setAttributes } state={ { boundKey, link, brand, name } } />
+			<IconInspector attributes={ ownAttributes } setAttributes={ setAttributes } state={ { boundKey, link, brand, name, paintedShape: shape } } />
 			<div { ...blockProps }>
 				{ /* A span, not a link: the canvas must not navigate. Same class, so the 44px target and shape paint. */ }
 				{ linked ? <span className="sgs-icon__link">{ shapeEl }</span> : shapeEl }

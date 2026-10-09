@@ -12,6 +12,11 @@
  * --sgs-si-shape-h, --sgs-si-colour, --sgs-si-colour-hover, --sgs-si-bg, --sgs-si-bg-hover,
  * --sgs-si-border-colour, --sgs-si-border-colour-hover, and --sgs-si-border-width / --sgs-si-border-style, painted
  * only on an icon render.php marks .sgs-icon--group-border (inside a row with a group border, no border of its own).
+ *
+ * Outline shapes (.sgs-icon--outline: hexagon, diamond, octagon, star, blob) draw an inline svg.sgs-icon__outline behind the
+ * glyph: its path's fill is the background chain and its stroke the border chain, the same custom properties a box
+ * shape paints with. render.php prints the stroke width as --sgs-icon-outline-w; the stroke is twice that and clipped
+ * to the path, so the visible line sits inside the shape. The box itself paints no background and no border.
  */
 
 .wp-block-sgs-icon {
@@ -102,6 +107,67 @@
 	border-radius: 9999px;
 }
 
+/* Outline shapes: square-proportioned (width only, like the circle), the SVG behind the glyph. */
+.sgs-icon--outline .sgs-icon__shape {
+	position: relative;
+	isolation: isolate;
+	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, var(--sgs-icon-size-used)));
+}
+
+.sgs-icon--boxed.sgs-icon--outline .sgs-icon__shape {
+	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(var(--sgs-icon-size-used) + 2 * var(--wp--preset--spacing--20, 0.5rem))));
+}
+
+/* The star's inner pentagon holds a glyph half the shape's size (includes/data/icon-shapes.json), so its default size
+ * is twice the icon. */
+.sgs-icon--boxed.sgs-icon--shape-star .sgs-icon__shape {
+	inline-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(2 * var(--sgs-icon-size-used))));
+	block-size: var(--sgs-icon-shape-w, var(--sgs-si-shape-w, calc(2 * var(--sgs-icon-size-used))));
+}
+
+/* The box paints nothing for an outline, at rest or on hover: the SVG draws the fill and the stroke. */
+.sgs-icon.sgs-icon--outline .sgs-icon__shape,
+.sgs-icon.sgs-icon--outline .sgs-icon__link:hover .sgs-icon__shape,
+.sgs-icon.sgs-icon--outline .sgs-icon__link:focus-visible .sgs-icon__shape {
+	background-color: transparent;
+	background-image: none;
+	border-style: none;
+}
+
+.sgs-icon__outline {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	display: block;
+	inline-size: 100%;
+	block-size: 100%;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.sgs-icon__outline-path {
+	fill: none;
+	stroke: var(--sgs-icon-border-colour, var(--sgs-si-border-colour, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))));
+	stroke-width: calc(2 * var(--sgs-icon-outline-w, 0px));
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+	transition:
+		fill var(--wp--custom--transition--fast, 0.15s ease),
+		stroke var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-icon--has-bg .sgs-icon__outline-path {
+	fill: var(--sgs-icon-bg, var(--sgs-si-bg, var(--sgs-icon-brand-ground, var(--wp--preset--color--surface))));
+}
+
+.sgs-icon--outline-dashed .sgs-icon__outline-path {
+	stroke-dasharray: calc(3 * var(--sgs-icon-outline-w, 0px)) calc(2 * var(--sgs-icon-outline-w, 0px));
+}
+
+.sgs-icon--outline-dotted .sgs-icon__outline-path {
+	stroke-dasharray: var(--sgs-icon-outline-w, 0px) var(--sgs-icon-outline-w, 0px);
+}
+
 /* A wrapping row's group border, for an icon with no border of its own (its own border prints on a more specific
  * scoped rule and wins). */
 .sgs-icon--group-border .sgs-icon__shape {
@@ -187,6 +253,17 @@
 	background-image: var(--sgs-icon-bg-hover-image, var(--sgs-si-bg-hover-gradient, var(--sgs-icon-bg-image, var(--sgs-si-bg-gradient, none))));
 }
 
+/* Outline shapes take the same hover colours: the stroke the border's, the fill the background's. */
+.sgs-icon__link:hover .sgs-icon__outline-path,
+.sgs-icon__link:focus-visible .sgs-icon__outline-path {
+	stroke: var(--sgs-icon-border-colour-hover, var(--sgs-si-border-colour-hover, var(--sgs-icon-bg-hover, var(--sgs-si-bg-hover, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))))));
+}
+
+.sgs-icon--has-bg .sgs-icon__link:hover .sgs-icon__outline-path,
+.sgs-icon--has-bg .sgs-icon__link:focus-visible .sgs-icon__outline-path {
+	fill: var(--sgs-icon-bg-hover, var(--sgs-si-bg-hover, var(--sgs-icon-brand-ground-hover, var(--wp--preset--color--primary))));
+}
+
 /* The link's name, read by screen readers, never shown. */
 .sgs-icon__label {
 	position: absolute;
@@ -207,7 +284,8 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-icon__shape,
-	.sgs-icon__link {
+	.sgs-icon__link,
+	.sgs-icon__outline-path {
 		transition: none;
 	}
 
@@ -222,5 +300,18 @@
 	.sgs-icon--boxed .sgs-icon__shape {
 		outline: 1px solid CanvasText;
 		outline-offset: -1px;
+	}
+
+	/* An outline shape keeps its own outline visible instead of a square box line. */
+	.sgs-icon--boxed.sgs-icon--outline .sgs-icon__shape {
+		outline: none;
+	}
+
+	.sgs-icon--boxed .sgs-icon__outline-path,
+	.sgs-icon--boxed .sgs-icon__link:hover .sgs-icon__outline-path,
+	.sgs-icon--boxed .sgs-icon__link:focus-visible .sgs-icon__outline-path {
+		fill: Canvas;
+		stroke: CanvasText;
+		stroke-width: max(2px, calc(2 * var(--sgs-icon-outline-w, 0px)));
 	}
 }

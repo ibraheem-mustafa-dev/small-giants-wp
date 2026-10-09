@@ -13,7 +13,11 @@ import {
 	brandByLucideName,
 	brandPaint,
 } from '../../utils/brand-registry';
-import { borderBoxPreview } from '../../utils/border-style';
+import { borderBoxPreview, resolveBorderStyle } from '../../utils/border-style';
+import { SHAPE_SLUGS, isOutlineShape } from '../../utils/icon-shapes';
+import { colourVar } from '../../utils/tokens';
+import { cssLengthValue, cssSingleLengthValue, cssValueTokens } from '../../utils/css-length';
+import { isCssGradient } from '../../utils/background-preview';
 
 /** The Site Info admin page, relative to wp-admin (both editors run there). */
 export const SITE_INFO_ADMIN_URL = 'admin.php?page=sgs-site-info';
@@ -187,20 +191,23 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
  * sgs_icon_group_context() (includes/helpers-icon.php).
  *
  * @param {Object} context The block's `context` prop.
- * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean}}
+ * @return {{inGroup:boolean, colourMode:string, hidden:string[], shape:string, showBg:boolean, border:boolean, borderWidth:Object, borderStyle:string}}
  */
 export function iconGroupContext( context ) {
 	context = context && 'object' === typeof context ? context : {};
 	const mode = context[ 'sgs/socialIconsColourMode' ];
 	const shape = context[ 'sgs/socialIconsShape' ];
 	const hidden = context[ 'sgs/socialIconsHiddenLinks' ];
+	const borderWidth = context[ 'sgs/socialIconsBorderWidth' ];
 	return {
 		inGroup: undefined !== mode && null !== mode,
 		colourMode: [ 'inherit', 'theme', 'brand' ].includes( mode ) ? mode : 'inherit',
 		hidden: Array.isArray( hidden ) ? hidden.filter( ( k ) => 'string' === typeof k ) : [],
-		shape: [ 'square', 'circle', 'pill' ].includes( shape ) ? shape : '',
+		shape: SHAPE_SLUGS.includes( shape ) ? shape : '',
 		showBg: !! context[ 'sgs/socialIconsShowBackground' ],
 		border: !! borderBoxPreview( context[ 'sgs/socialIconsBorderWidth' ], context[ 'sgs/socialIconsBorderStyle' ] ).borderWidth,
+		borderWidth: borderWidth && 'object' === typeof borderWidth && ! Array.isArray( borderWidth ) ? borderWidth : {},
+		borderStyle: 'string' === typeof context[ 'sgs/socialIconsBorderStyle' ] ? context[ 'sgs/socialIconsBorderStyle' ] : '',
 	};
 }
 
@@ -225,4 +232,118 @@ export function attributesInGroup( attributes, group ) {
 	}
 	next.showBackground = !! attributes.showBackground || group.showBg;
 	return next;
+}
+
+/**
+ * The stroke an outline shape draws for a border width box and style. Twin: sgs_icon_outline_stroke() (through
+ * sgs_border_box_decls() and sgs_icon_outline_from_border()): each side as the box border prints it (an unset side is
+ * `0`), then the first set side as one length; dashed and dotted keep their pattern, any other style is solid, `none`
+ * or no width draws nothing.
+ *
+ * @param {Object}   widthBox    `{top,right,bottom,left}` widths.
+ * @param {string}   style       Stored border style.
+ * @param {string[]} presetSlugs Theme spacing preset slugs.
+ * @return {{width:string, dash:string}} `dash` 'solid' | 'dashed' | 'dotted'; `width` '' for no stroke.
+ */
+export function outlineStroke( widthBox, style, presetSlugs = [] ) {
+	const none = { width: '', dash: 'solid' };
+	const kind = resolveBorderStyle( style );
+	const box = widthBox && 'object' === typeof widthBox && ! Array.isArray( widthBox ) ? widthBox : {};
+	const sides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => {
+		const raw = box[ side ];
+		return ( 'string' === typeof raw || 'number' === typeof raw || 'boolean' === typeof raw ? cssLengthValue( phpScalarString( raw ), presetSlugs ) : '' ) || '';
+	} );
+	if ( 'none' === kind || ! sides.some( Boolean ) ) {
+		return none;
+	}
+	for ( const token of cssValueTokens( sides.map( ( v ) => v || '0' ).join( ' ' ) ) ) {
+		const width = '0' === token ? '' : cssSingleLengthValue( token, presetSlugs );
+		if ( width ) {
+			return { width, dash: [ 'dashed', 'dotted' ].includes( kind ) ? kind : 'solid' };
+		}
+	}
+	return none;
+}
+
+/**
+ * A scalar as PHP's (string) cast writes it (true is '1', false is '').
+ *
+ * @param {string|number|boolean} value Scalar.
+ * @return {string} String.
+ */
+function phpScalarString( value ) {
+	if ( 'boolean' === typeof value ) {
+		return value ? '1' : '';
+	}
+	return String( value );
+}
+
+/**
+ * What an outline shape paints on the canvas for the previewed device: whether it has a stroke, the dash pattern and
+ * the root custom properties (stroke width, own border colours). Twin: icon/render.php's outline block (own border
+ * per device, else the row's group border; an own style of `none` draws no stroke at all).
+ *
+ * @param {Object}   attributes  Effective attributes (attributesInGroup()).
+ * @param {Object}   group       iconGroupContext() result.
+ * @param {string}   tier        Previewed device.
+ * @param {string[]} presetSlugs Theme spacing preset slugs.
+ * @return {{outline:boolean, stroke:boolean, own:boolean, dash:string, style:Object}} `style` is a React style fragment.
+ */
+export function outlineCanvas( attributes, group, tier, presetSlugs = [] ) {
+	const result = { outline: false, stroke: false, own: false, dash: 'solid', style: {} };
+	if ( ! isOutlineShape( attributes?.shape ) ) {
+		return result;
+	}
+	result.outline = true;
+	const raw = attributes.borderWidth;
+	const tiered = !! raw && 'object' === typeof raw && ( !! raw.desktop || !! raw.tablet || !! raw.mobile );
+	const widths = {};
+	[ 'desktop', 'tablet', 'mobile' ].forEach( ( t ) => {
+		let box = null;
+		if ( tiered ) {
+			box = raw[ t ];
+		} else if ( 'desktop' === t ) {
+			box = raw;
+		}
+		const stroke = outlineStroke( box, attributes.borderStyle, presetSlugs );
+		if ( stroke.width ) {
+			widths[ t ] = stroke.width;
+			result.dash = stroke.dash;
+		}
+	} );
+	result.own = Object.keys( widths ).length > 0;
+	if ( ! result.own && 'none' !== resolveBorderStyle( attributes.borderStyle ) && group?.border ) {
+		const stroke = outlineStroke( group.borderWidth, group.borderStyle, presetSlugs );
+		if ( stroke.width ) {
+			widths.desktop = stroke.width;
+			result.dash = stroke.dash;
+		}
+	}
+	// The narrower device's width wins where it is set, as the page's max-width media rules do.
+	let width = widths.desktop;
+	if ( 'tablet' === tier || 'mobile' === tier ) {
+		width = widths.tablet || width;
+	}
+	if ( 'mobile' === tier ) {
+		width = widths.mobile || width;
+	}
+	result.stroke = Object.keys( widths ).length > 0;
+	if ( width ) {
+		result.style[ '--sgs-icon-outline-w' ] = width;
+	}
+	if ( result.own ) {
+		// sgs_border_element_decls() paints a stored gradient as a ring instead of a border colour (a resting gradient
+		// takes the hover paint with it), so the stroke then shows the default colours, as on the page.
+		const restingGradient = isCssGradient( attributes.borderColourGradient );
+		const hoverGradient = restingGradient || isCssGradient( attributes.borderColourHoverGradient );
+		const colour = restingGradient ? undefined : colourVar( attributes.borderColour );
+		const hover = hoverGradient ? undefined : colourVar( attributes.borderColourHover );
+		if ( colour ) {
+			result.style[ '--sgs-icon-border-colour' ] = colour;
+		}
+		if ( hover ) {
+			result.style[ '--sgs-icon-border-colour-hover' ] = hover;
+		}
+	}
+	return result;
 }

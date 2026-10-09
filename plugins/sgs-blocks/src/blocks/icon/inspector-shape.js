@@ -1,6 +1,6 @@
 /**
- * sgs/icon inspector: the Shape panel (outline, background switch, per-device shape size) and the Border panel
- * (the shared SgsBorderControl; the radius only for the square).
+ * sgs/icon inspector: the Shape panel (shape, background switch, per-device shape size) and the Border panel
+ * (the shared SgsBorderControl; the radius only for the square, solid colours only for an outline shape).
  *
  * @package SGS\Blocks
  */
@@ -8,8 +8,9 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { ResponsiveControl, SgsLengthControl, SgsBorderControl } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { patchTier } from '../../utils';
+import { isOutlineShape, shapeUsesWidthOnly } from '../../utils/icon-shapes';
+import { ShapeToggle } from './shape-options';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -23,9 +24,10 @@ const LENGTH_UNITS = [
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
  * @param {boolean}  props.brandOn       Brand colours apply (they turn the background on).
+ * @param {boolean}  props.outlineShown  The painted shape is a custom outline (its own, or a row's group shape).
  * @return {JSX.Element} The Shape and Border panels.
  */
-export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
+export default function ShapePanels( { attributes, setAttributes, brandOn, outlineShown = false } ) {
 	const {
 		shape = 'square',
 		showBackground,
@@ -39,7 +41,9 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 		borderColourHoverGradient,
 		borderRadius,
 	} = attributes;
-	const usesHeight = 'circle' !== shape && ! shapeSizeLinked;
+	const widthOnly = shapeUsesWidthOnly( shape );
+	const outline = outlineShown || isOutlineShape( shape );
+	const usesHeight = ! widthOnly && ! shapeSizeLinked;
 	// The border is judged against the shape's own background when it has a flat one.
 	const iconContrastAgainst =
 		attributes.backgroundColour && ! attributes.backgroundColourGradient ? attributes.backgroundColour : '';
@@ -53,21 +57,19 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 	return (
 		<>
 			<PanelBody title={ __( 'Shape', 'sgs-blocks' ) } initialOpen={ false }>
-				<ToggleGroupControl
+				<ShapeToggle
 					label={ __( 'Shape', 'sgs-blocks' ) }
 					value={ shape }
 					onChange={ ( value ) =>
-						// Only the square takes a radius: leaving it clears the radius.
-						setAttributes( { shape: value, ...( 'square' === value ? {} : { borderRadius: {} } ) } )
+						// Only the square takes a radius: leaving it clears the radius. An outline's stroke takes a flat
+						// colour only, and a stored border gradient would hide it: moving to an outline clears them.
+						setAttributes( {
+							shape: value || 'square',
+							...( 'square' === value ? {} : { borderRadius: {} } ),
+							...( isOutlineShape( value ) ? { borderColourGradient: '', borderColourHoverGradient: '' } : {} ),
+						} )
 					}
-					isBlock
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				>
-					<ToggleGroupControlOption value="square" label={ __( 'Square', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="circle" label={ __( 'Circle', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="pill" label={ __( 'Pill', 'sgs-blocks' ) } />
-				</ToggleGroupControl>
+				/>
 				<ToggleControl
 					label={ __( 'Background', 'sgs-blocks' ) }
 					help={
@@ -84,7 +86,7 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 					{ ( tier ) => (
 						<>
 							<SgsLengthControl
-								label={ 'circle' === shape || shapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
+								label={ widthOnly || shapeSizeLinked ? __( 'Size', 'sgs-blocks' ) : __( 'Width', 'sgs-blocks' ) }
 								value={ shapeSize?.[ tier ]?.width ?? '' }
 								units={ LENGTH_UNITS }
 								presets
@@ -103,7 +105,7 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 						</>
 					) }
 				</ResponsiveControl>
-				{ 'circle' !== shape && (
+				{ ! widthOnly && (
 					<ToggleControl
 						label={ __( 'Same width and height', 'sgs-blocks' ) }
 						checked={ shapeSizeLinked }
@@ -128,8 +130,13 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 							value: borderColour,
 							linked: true,
 							onChange: ( value ) => setAttributes( { borderColour: value ?? '' } ),
-							gradientValue: borderColourGradient,
-							onGradientChange: ( value ) => setAttributes( { borderColourGradient: value ?? '' } ),
+							// An outline's stroke takes a flat colour only: no gradient control that would paint nothing.
+							...( outline
+								? {}
+								: {
+										gradientValue: borderColourGradient,
+										onGradientChange: ( value ) => setAttributes( { borderColourGradient: value ?? '' } ),
+								  } ),
 						},
 						{
 							key: 'hover',
@@ -137,8 +144,12 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 							value: borderColourHover,
 							linked: true,
 							onChange: ( value ) => setAttributes( { borderColourHover: value ?? '' } ),
-							gradientValue: borderColourHoverGradient,
-							onGradientChange: ( value ) => setAttributes( { borderColourHoverGradient: value ?? '' } ),
+							...( outline
+								? {}
+								: {
+										gradientValue: borderColourHoverGradient,
+										onGradientChange: ( value ) => setAttributes( { borderColourHoverGradient: value ?? '' } ),
+								  } ),
 						},
 					] }
 					{ ...( 'square' === shape
@@ -153,6 +164,11 @@ export default function ShapePanels( { attributes, setAttributes, brandOn } ) {
 						  }
 						: {} ) }
 				/>
+				{ outline && (
+					<p className="components-base-control__help">
+						{ __( 'This shape draws its border as a line around the outline: one width (the top side), a flat colour, dashed or dotted kept. Gradients paint the square, circle and pill only.', 'sgs-blocks' ) }
+					</p>
+				) }
 			</PanelBody>
 		</>
 	);

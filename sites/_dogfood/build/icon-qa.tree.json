@@ -25,5 +25,15 @@
  { "name": "sgs/heading", "attributes": { "content": "12. Instagram bound, colour mode Theme", "level": "h2" } },
  { "name": "sgs/icon", "attributes": { "className": "iqa-12", "iconName": "instagram", "shape": "circle", "showBackground": true, "colourMode": "theme", "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "socials.instagram" } } } } } },
  { "name": "sgs/heading", "attributes": { "content": "13. Manual link, new tab, no label", "level": "h2" } },
- { "name": "sgs/icon", "attributes": { "className": "iqa-13", "iconName": "external-link", "showBackground": true, "linkUrl": "https://example.com/", "linkTarget": "_blank" } }
+ { "name": "sgs/icon", "attributes": { "className": "iqa-13", "iconName": "external-link", "showBackground": true, "linkUrl": "https://example.com/", "linkTarget": "_blank" } },
+ { "name": "sgs/heading", "attributes": { "content": "14. Hexagon outline with background", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-14", "iconName": "star", "shape": "hexagon", "showBackground": true, "backgroundColour": "accent" } },
+ { "name": "sgs/heading", "attributes": { "content": "15. Diamond outline, background, 2px dashed border", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-15", "iconName": "star", "shape": "diamond", "showBackground": true, "borderWidth": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }, "borderStyle": "dashed", "borderColour": "primary" } },
+ { "name": "sgs/heading", "attributes": { "content": "16. Octagon outline, background, linked to Site Info phone (filled)", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-16", "iconName": "phone", "shape": "octagon", "showBackground": true, "metadata": { "bindings": { "linkUrl": { "source": "sgs/site-info", "args": { "key": "phone" } } } } } },
+ { "name": "sgs/heading", "attributes": { "content": "17. Blob outline with background", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-17", "iconName": "heart", "shape": "blob", "showBackground": true, "backgroundColour": "accent" } },
+ { "name": "sgs/heading", "attributes": { "content": "18. Star outline, background, 2px border, default size (twice the icon)", "level": "h2" } },
+ { "name": "sgs/icon", "attributes": { "className": "iqa-18", "iconName": "star", "shape": "star", "showBackground": true, "borderWidth": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }, "borderColour": "primary" } }
 ]
